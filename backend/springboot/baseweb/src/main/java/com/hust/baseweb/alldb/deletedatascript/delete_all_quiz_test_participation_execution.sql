@@ -1,0 +1,4 @@
+delete from quiz_group_question_assignment;
+delete from edu_test_quiz_group_participation_assignment;
+delete from quiz_group_question_participation_execution;
+delete from quiz_group_question_participation_execution_choice;

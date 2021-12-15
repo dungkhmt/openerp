@@ -1,0 +1,26 @@
+
+-cd project/dev-core-dms
+-git pull origin dev-core-dms
+-docker ps (cho phép xem các containers đang chạy trên server)
+-access vào postgres (coi như access vào máy cài postgres), cmd: docker exec -it pgsql bash
+-cmd: psql dms -U postgres  (de vao postgres, DB la dms)
+-cmd: \dt (show cac tables trong DB)
+-cmd: chay cac sql script de tao tables, update data
+-thoat khoi DB, cmd: \q (se ve may chua database postgres)
+-thoat khoi may chua B postgres, cmd: exit
+-dung lenh mvn de build ra file *.jar
+	cmd: mvn -Dmaven.test.skip=true package  (keo dependency)
+	cmd: docker build -t dms .   (de build image ten baseweb, dong goi environment va file app *.jar trong image)
+	(Xem config Dockerfile)
+
+build basewebfrontend
+cd project/basewebfrontend
+-git pull origin dev-core-dms
+-build image
+	cmd: docker build -t basewebfrontend .
+	
+-de xem cac docker image tai ve tren may, cmd: docker image ls
+-Access vao thu muc deploy, cmd: cd ~/projects/deploy/baseweb
+-chay lenh, cmd: docker-compose up -d   (de start cac component moi, duoc update, cac component cu, ko duoc update thi ko restart)
+-xem log tam thoi, cmd: docker logs dms
+

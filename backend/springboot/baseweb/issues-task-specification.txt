@@ -1,0 +1,17 @@
+-Màn hình "Tạo mới chi tiết chuyến giao hàng" -> khối lượng 1 đơn vị sản phẩm (em để 2 chữ số sau dấu phảy), đồng thời thay thế bằng "Tổng khối lượng" (SL sản phẩm x khối lượng 1 đơn vị sản phẩm)
+-Update lại cấu trúc bảng distance_travel_time  để primary key là cặp (from, to)
+-Thêm nút "Hiển thị bản đồ" trong màn hình "Chi tiết chuyến giao hàng"
+-Thêm nút "Phê duyệt" chuyến trong màn hình "Chi tiết chuyến giao hàng"
+-Màn hình "Chi tiết đợt giao hàng" -> thêm button "DS đơn hàng chưa được xếp chuyến"
+
+----------------------
+Xóa hết data cũ, Upload DS đơn hàng lần 1 -> OK
+-Tiếp tục upload DS đơn hàng lần 2 -> exception org.postgresql.util.PSQLException: ERROR: null value in column "contact_mech_purpose_type_id" violates not-null constraint
+-Chạy thuật toán auto của Hoàng
+
+---------------
+Khi Xóa 1 shipment_item khỏi 1 delivery_plan -> duyệt qua các trip phục vụ shipment_item này, nếu status_id = "APPROVED" thì không xóa được, còn nếu status_id = "CREATED" thì xóa được, đồng thời xóa bản ghi tương ứng khỏi bảng delivery_trip_detail
+
+----------------
+
+

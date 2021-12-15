@@ -1,0 +1,101 @@
+order_header
+
+depends
+	order_type
+	enumeration
+	facility
+	billing_account
+	product_store
+	shopping_list
+	user_login
+	status_item
+	uom
+	order_header_note
+	order_item_ship_group_assoc
+
+defines
+	order_role
+	order_status
+	delivery
+	order_item
+	order_adjustment
+	item_issuance
+	shipment
+-------------
+order_type
+-------------
+enumeration
+
+depends	
+		enumeration_type
+		
+-------------
+facility
+
+depends
+	facility_type
+	facility_group
+	party
+	inventory_item_type
+	uom
+	product_store
+	facility_type_attr
+	geo_point
+-------------
+product_store
+
+depends
+	product_store_group
+	facility
+	enumeration
+	party
+	uom
+	status_item
+	tax_authority
+------------
+inventory_item
+
+------------
+inventory_item_detail
+----------------------------------
+select count(*) from order_header;
+select * from status_item;
+
+select * from order_header_note;
+
+select * from order_item_ship_group_assoc;
+select * from enumeration;
+select * from enumeration_type;
+select * from facility_type;
+select * from facility_group;
+select * from order_type_attr;
+select * from inventory_item_type;
+select FACILITY_NAME,default_inventory_item_type_id from facility;
+select * from facility_type_attr;
+select * from uom;
+select * from uom_type;
+select facility_size,facility_size_uom_id, facility_name from facility;
+
+select origin_facility_id, order_id from order_header;
+
+select VAT_TAX_AUTH_PARTY_ID from product_store;
+select * from product_store_group;
+select * from tax_authority;
+
+select BILLING_ACCOUNT_ID, product_store_id, ORIGIN_FACILITY_ID, order_id from order_header 
+where PRODUCT_STORE_ID is not null 
+and BILLING_ACCOUNT_ID is not null;
+select * from content;
+
+select * from plan_purchase_order;
+select distinct order_type_id from order_header;
+select * from delivery as d, order_header as o;
+
+select * from order_item_billing;
+select * from item_issuance;
+select * from order_shipment;
+select * from shipment;
+select * from shipment_item;
+select * from inventory_item;
+select * from inventory_item_detail;
+select * from item_issuance;
