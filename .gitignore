@@ -2,10 +2,6 @@
 
 # dependencies
 ./frontend/webreactjs/basewebfrontend/node_modules
-/.pnp
-.pnp.js
-debug.log
-./backend/springboot/baseweb/./notes-curl-call-api.txt
 
 # testing
 ./frontend/webreactjs/basewebfrontend/coverage
@@ -40,8 +36,6 @@ yarn-error.log*
 HELP.md
 ./backend/springboot/baseweb/target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**
-!**/src/test/**
 ./backend/springboot/baseweb/logs/
 ./backend/springboot/baseweb/*.yml
-./backend/springboot/baseweb/.idea/ 
+./backend/springboot/baseweb/.idea/
