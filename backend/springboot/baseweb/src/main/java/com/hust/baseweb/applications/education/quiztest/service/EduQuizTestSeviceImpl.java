@@ -300,6 +300,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                 if (minQty > mGroup2Qty.get(g)) {
                     minQty = mGroup2Qty.get(g);
                 }
+                log.info("autoAssignParticipants2QuizTestGroup, Qty = " + mGroup2Qty.get(g) + " minQty = " + minQty);
             }
             cand.clear();
             for (EduTestQuizGroup g : eduTestQuizGroups) {
@@ -325,6 +326,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                 a.setQuizGroupId(g.getQuizGroupId());
                 a.setParticipationUserLoginId(p.getParticipantUserLoginId());
                 a = eduTestQuizGroupParticipationAssignmentRepo.save(a);
+                mGroup2Qty.put(g,minQty + 1);
             }
         }
 
