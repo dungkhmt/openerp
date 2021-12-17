@@ -92,6 +92,12 @@ public class ClassController {
         SimpleResponse res = classService.register(im.getClassId(), principal.getName());
         return ResponseEntity.status(res.getStatus()).body(res.getMessage());
     }
+    @GetMapping("/ping")
+    public ResponseEntity<?> ping(Principal principal){
+        log.info("ping");
+        return ResponseEntity.ok().body("OK");
+    }
+
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @PostMapping("/add-class-user-login-role")
     public ResponseEntity addEduClassUserLoginRole(Principal principal,

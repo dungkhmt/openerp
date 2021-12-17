@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { useParams, useHistory } from "react-router";
+import { useParams } from "react-router";
 import {
   a11yProps,
   AntTab,
   AntTabs,
   TabPanel,
 } from "../../../../component/tab";
+/*
 import {
   Avatar,
   Card,
@@ -15,19 +16,21 @@ import {
   Typography,
   IconButton,
 } from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
+*/
+//import EditIcon from "@material-ui/icons/Edit";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { teal } from "@material-ui/core/colors";
 import TeacherViewDetailClassStudentList from "./TeacherViewDetailClassStudentList";
 import TeacherViewDetailClassStudentRegistered from "./TeacherViewDetailClassStudentRegistered";
-import TClassUpdatePopup from "./TClassUpdatePopup";
+//import TClassUpdatePopup from "./TClassUpdatePopup";
 import TeacherViewDetailClassExercises from "./TeacherViewDetailClassExercises";
 import TeacherViewDetailClassExerciseSubmission from "./TeacherViewDetailClassExerciseSubmission";
 import TeacherViewDetailClassGeneralInfo from "./TeacherViewDetailClassGeneralInfo";
 import TeacherViewLogUserQuizList from "../../../../component/education/course/TeacherViewLogUserQuizList";
-import TeacherViewQuizDetail from "../../../../component/education/course/TeacherViewQuizDetail";
+//import TeacherViewQuizDetail from "../../../../component/education/course/TeacherViewQuizDetail";
 import TeacherClassViewLearningSessionList from "./TeacherClassViewLearningSessionList";
 
+/*
 const useStyles = makeStyles((theme) => ({
   btn: {
     // width: 180,
@@ -47,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "1rem",
   },
 }));
-
+*/
 const tabsLabel = [
   "Thông tin chung",
   "DS Sinh viên",
@@ -61,9 +64,9 @@ const tabsLabel = [
 export default function TeacherViewDetailClass() {
   const params = useParams();
   const classId = params.classId;
-  const history = useHistory();
+  //const history = useHistory();
   const [selectedTab, setSelectedTab] = useState(0);
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   const theme = useTheme();
   function handleChangeTab(e, newTab) {
     setSelectedTab(newTab);

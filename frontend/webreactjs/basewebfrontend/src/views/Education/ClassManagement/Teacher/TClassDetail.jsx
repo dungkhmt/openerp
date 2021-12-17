@@ -10,7 +10,7 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Box from "@material-ui/core/Box";
@@ -29,7 +29,7 @@ import {
   FcClock,
   FcConferenceCall,
   FcExpired,
-  FcMindMap
+  FcMindMap,
 } from "react-icons/fc";
 import { useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router";
@@ -45,7 +45,7 @@ import TeacherViewLogUserQuizList from "../../../../component/education/course/T
 import displayTime from "../../../../utils/DateTimeUtils";
 import changePageSize, {
   localization,
-  tableIcons
+  tableIcons,
 } from "../../../../utils/MaterialTableUtils";
 import { errorNoti } from "../../../../utils/notification";
 
@@ -135,7 +135,7 @@ function TClassDetail() {
   const classes = useStyles();
   const params = useParams();
   const history = useHistory();
-  const token = useSelector((state) => state.auth.token);
+  //const token = useSelector((state) => state.auth.token);
 
   const tabs = [
     "Thông tin chung",
@@ -182,7 +182,7 @@ function TClassDetail() {
   // Tables's ref.
   const studentTableRef = useRef(null);
   const registTableRef = useRef(null);
-  const assignTableRef = useRef(null);
+  //const assignTableRef = useRef(null);
   const studentAssignTableRef = useRef(null);
 
   const headerProperties = {
@@ -195,6 +195,7 @@ function TClassDetail() {
     },
   };
 
+  /*
   // Column.
   const assignCols = [
     {
@@ -211,7 +212,7 @@ function TClassDetail() {
       },
     },
   ];
-
+*/
   const registCols = [
     {
       field: "name",
@@ -463,9 +464,9 @@ function TClassDetail() {
       "put",
       "/edu/class/registration-status",
       (res) => {
-        if (res.data[id].status == 200) {
+        if (res.data[id].status === 200) {
           // Remove student in student list.
-          setStudents(students.filter((student) => student.id != id));
+          setStudents(students.filter((student) => student.id !== id));
         } else {
           // The student may have been removed previously.
           errorNoti("Rất tiếc! Đã có lỗi xảy ra. Vui lòng thử lại.");
@@ -497,13 +498,13 @@ function TClassDetail() {
         let result;
 
         // In case it is necessary to update the student list.
-        if (type == "APPROVED" && fetchedStudents) {
+        if (type === "APPROVED" && fetchedStudents) {
           let newStudents = [];
 
           for (let i = 0; i < registStudents.length; i++) {
             result = data[registStudents[i].id];
 
-            if (result == undefined || result.status != 200) {
+            if (result === undefined || result.status !== 200) {
               // Not selected or status update failed.
               tmp.push(registStudents[i]);
             } else {
@@ -521,7 +522,7 @@ function TClassDetail() {
           for (let i = 0; i < registStudents.length; i++) {
             result = data[registStudents[i].id];
 
-            if (result == undefined || result.status != 200) {
+            if (result === undefined || result.status !== 200) {
               // Not selected or status update failed.
               tmp.push(registStudents[i]);
             }

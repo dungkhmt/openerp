@@ -3,14 +3,14 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-  MenuItem,
+  //MenuItem,
 } from "@material-ui/core";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@material-ui/core";
 import { request } from "../../../../api";
 
 export default function LearningSessionFormAddQuizTest(props) {
-  const { open, performUpdate, setOpen, sessionId } = props;
+  const { open, setOpen, sessionId } = props;
   const [testId, setTestId] = useState(null);
   const [testName, setTestName] = useState(null);
   const [duration, setDuration] = useState(60);

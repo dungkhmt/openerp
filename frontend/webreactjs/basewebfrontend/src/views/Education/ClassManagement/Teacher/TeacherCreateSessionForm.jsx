@@ -3,13 +3,13 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-  MenuItem,
+  //MenuItem,
 } from "@material-ui/core";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@material-ui/core";
 import { request } from "../../../../api";
 export default function TeacherCreateSessionForm(props) {
-  const { open, performUpdate, setOpen, classId } = props;
+  const { open, setOpen, classId } = props;
   const [sessionName, setSessionName] = useState(null);
   const [description, setDescription] = useState(null);
   function handleChangeSessionName(e) {

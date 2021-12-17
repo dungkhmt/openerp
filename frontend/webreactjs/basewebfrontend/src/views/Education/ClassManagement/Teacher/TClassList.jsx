@@ -5,9 +5,9 @@ import {
   CardHeader,
   Paper,
   Typography,
-  IconButton,
+  //IconButton,
 } from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
+//import EditIcon from "@material-ui/icons/Edit";
 import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
 import MaterialTable from "material-table";
 import React, { useEffect, useRef, useState } from "react";
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 function TClassList() {
   const classes = useStyles();
   const history = useHistory();
-  const token = useSelector((state) => state.auth.token);
+  //const token = useSelector((state) => state.auth.token);
 
   // Table.
   const headerProperties = {
@@ -123,9 +123,9 @@ function TClassList() {
 
   // Functions.
 
-  function onUpdateClass(classId) {
-    alert("Edit Class ", classId);
-  }
+  //function onUpdateClass(classId) {
+  //  alert("Edit Class ", classId);
+  //}
   const getClasses = () => {
     request(
       // token, history,

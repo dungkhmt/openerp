@@ -45,6 +45,7 @@ public class ApiController {
         return ResponseEntity.ok().headers(headers).body(response);
     }
 
+
     @GetMapping("/check-authority")
     public ResponseEntity<?> checkAuthorities(Principal principal, @RequestParam String applicationId) {
 
