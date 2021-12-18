@@ -67,6 +67,11 @@ export default function QuizTestStudentListResult(props) {
     {
       columns: [
         {
+          title: "UserLoginID",
+          ...TableHeaderStyle,
+          width: { wch: "50" },
+        },
+        {
           title: "Họ và tên",
           ...TableHeaderStyle,
           width: { wch: "50" },
@@ -86,6 +91,10 @@ export default function QuizTestStudentListResult(props) {
         ? []
         : studentListResult.map((student) => {
             return [
+              {
+                value: student.userLoginId,
+                ...TableCellStyle,
+              },
               {
                 value: student.fullName,
                 ...TableCellStyle,
@@ -133,6 +142,12 @@ export default function QuizTestStudentListResult(props) {
   ];
 
   const generalColumns = [
+    {
+      field: "userLoginId",
+      title: "UserLoginID",
+      ...headerProperties,
+      width: "40%",
+    },
     {
       field: "fullName",
       title: "Họ và tên",
@@ -222,6 +237,7 @@ export default function QuizTestStudentListResult(props) {
               groupId: elm.quizGroupId,
               fullName: elm.participationFullName,
               grade: elm.grade,
+              userLoginId: elm.participationUserLoginId,
             };
             objectResult[elm.participationUserLoginId] = userObj;
           } else {

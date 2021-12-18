@@ -81,12 +81,12 @@ public class QuizGroupQuestionParticipationExecutionChoiceController {
             questionId);
         a.forEach(quizGroupQuestionParticipationExecutionChoice -> {
             quizGroupQuestionParticipationExecutionChoiceRepo.delete(quizGroupQuestionParticipationExecutionChoice);
-            log.info("quizChooseAnswer, chooseAnsIds, delete previous choice answer for question " +
-                     questionId +
-                     " of groupId " +
-                     groupId +
-                     " of user " +
-                     userId);
+            //log.info("quizChooseAnswer, chooseAnsIds, delete previous choice answer for question " +
+            //         questionId +
+            //         " of groupId " +
+            //         groupId +
+            //         " of user " +
+            //         userId);
         });
 
         Date createdStamp = new Date();

@@ -137,10 +137,10 @@ public class EduQuizTestGroupServiceImpl implements EduQuizTestGroupService {
 
         // randome indices sequence based on permutation
         int[] indices = Utils.genSequence(permutation,len);
-        log.info("getTestGroupQuestionDetail, update len = " + len + " indices = " + indices.toString());
+        //log.info("getTestGroupQuestionDetail, update len = " + len + " indices = " + indices.toString());
 
-        log.info("getTestGroupQuestionDetail, random indices = ");
-        for(int i = 0; i < indices.length; i++) log.info(indices[i] + " ");
+        //log.info("getTestGroupQuestionDetail, random indices = ");
+        //for(int i = 0; i < indices.length; i++) log.info(indices[i] + " ");
 
         tmpl.forEach(asign -> {
             //System.out.println("here ");
