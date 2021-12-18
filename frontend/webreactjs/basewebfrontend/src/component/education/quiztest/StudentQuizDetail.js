@@ -90,7 +90,7 @@ export default function StudentQuizDetail() {
     console.log(stateCheckBox);
     let listAns = [];
     Object.keys(stateCheckBox[quesId]).map((element, index) => {
-      if (stateCheckBox[quesId][element] == true) {
+      if (stateCheckBox[quesId][element] === true) {
         listAns.push(element);
       }
     });

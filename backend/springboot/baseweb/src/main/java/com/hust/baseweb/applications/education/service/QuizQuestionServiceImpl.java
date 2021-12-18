@@ -255,6 +255,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
             quizQuestionDetailModel.setCreatedStamp(tempDate);
         } catch (Exception e) {
             //  Block of code to handle errors
+            e.printStackTrace();
         }
         List<QuizChoiceAnswer> quizChoiceAnswers = quizChoiceAnswerRepo.findAllByQuizQuestion(quizQuestion);
         //log.info("findQuizDetail, questionId = " +
