@@ -11,34 +11,27 @@ import App from "./App";
 import "./index.css";
 import appReducer from "./reducers";
 import * as serviceWorker from "./serviceWorker";
+import { validateToken } from "./state/AuthState";
+
+validateToken();
 
 const loggerMiddleware = createLogger();
 let middleware = [
   thunkMiddleware, // lets us dispatch() functions
 ];
+
 if (process.env.NODE_ENV !== "production") {
   middleware = [...middleware, loggerMiddleware]; // neat middleware that logs actions
 }
-var startState = {};
 
-if (
-  localStorage.getItem("TOKEN") !== null &&
-  localStorage.getItem("TOKEN") !== "null"
-) {
-  startState = {
-    auth: {
-      token: localStorage.getItem("TOKEN"),
-      isAuthenticated: true,
-    },
-  };
-} else {
-  startState = {
-    auth: {
-      token: null,
-      isAuthenticated: false,
-    },
-  };
-}
+let startState = {};
+
+startState = {
+  auth: {
+    token: undefined,
+    isAuthenticated: false,
+  },
+};
 
 const rootReducer = (state, action) => {
   // Clean store.
@@ -57,7 +50,8 @@ export const store = createStore(
 );
 
 store.subscribe(() => {
-  localStorage.setItem("TOKEN", store.getState().auth.token);
+  if (store.getState().auth.token !== undefined)
+    localStorage.setItem("TOKEN", store.getState().auth.token);
 });
 
 ReactDOM.render(

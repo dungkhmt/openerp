@@ -1,12 +1,15 @@
 import { CssBaseline } from "@material-ui/core";
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
-import React, { Component } from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Router } from "react-router-dom";
 // import { BrowserRouter as Router } from "react-router-dom";
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { success } from "./action/index.js";
 import history from "./history.js";
 import Routes from "./Routes";
+import { useAuthState } from "./state/AuthState.js";
 
 const theme = createMuiTheme({
   typography: {
@@ -34,32 +37,37 @@ console.log(
   "font-family:monospace;color:#1976d2;font-size:12px;"
 );
 
-class App extends Component {
-  render() {
-    return (
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        {/* <Router> */}
-        <Router history={history}>
-          <Routes />
-          <ToastContainer
-            position="bottom-center"
-            transition={Slide}
-            autoClose={3000}
-            limit={3}
-            hideProgressBar={true}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-          />
-        </Router>
-        {/* </Router> */}
-      </MuiThemeProvider>
-    );
-  }
+function App() {
+  const dispatch = useDispatch();
+  const { isAuthenticated, token } = useAuthState();
+
+  useEffect(() => {
+    if (isAuthenticated.get()) dispatch(success(token.get()));
+  }, [isAuthenticated.get()]);
+
+  return (
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
+      {/* <Router> */}
+      <Router history={history}>
+        <Routes />
+        <ToastContainer
+          position="bottom-center"
+          transition={Slide}
+          autoClose={3000}
+          limit={3}
+          hideProgressBar={true}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </Router>
+      {/* </Router> */}
+    </MuiThemeProvider>
+  );
 }
 
 export default App;

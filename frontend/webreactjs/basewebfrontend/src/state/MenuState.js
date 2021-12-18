@@ -25,14 +25,18 @@ export function fetchMenu() {
     "get",
     "/menu",
     (res) => {
-      menuState.permittedFunctions.set(new Set(res.data));
-      menuState.isFetching.set(false);
-      menuState.isFetched.set(true);
+      menuState.merge({
+        permittedFunctions: new Set(res.data),
+        isFetching: false,
+        isFetched: true,
+      });
     },
     {
       onError: () => {
-        menuState.isFetching.set(false);
-        menuState.isFetched.set(false);
+        menuState.merge({
+          isFetching: false,
+          isFetched: false,
+        });
       },
       401: () => {},
     }

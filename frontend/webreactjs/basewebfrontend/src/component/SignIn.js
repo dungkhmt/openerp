@@ -73,9 +73,13 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn(props) {
   const history = useHistory();
   const classes = useStyles();
+
+  //
   const [userName, setUserName] = useState(""); // new State (var) userName
   const [password, setPassword] = useState(""); // new State (var) password
   const [isTyping, setIsTyping] = useState(false);
+
+  //
   const handleUserNameChange = (event) => {
     setIsTyping(true);
     setUserName(event.target.value);
@@ -108,7 +112,7 @@ export default function SignIn(props) {
           alt="Welcome"
           src="/static/images/welcome.jpg"
           className={classes.image}
-        ></img>
+        />
         <div className={classes.paper}>
           {/* <img
           // alt="Hust"

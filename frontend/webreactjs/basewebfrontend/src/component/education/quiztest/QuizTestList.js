@@ -1,37 +1,12 @@
 import { Button, Tooltip } from "@material-ui/core/";
-//import IconButton from '@material-ui/core/IconButton';
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import TableCell from "@material-ui/core/TableCell";
-import TableRow from "@material-ui/core/TableRow";
 import AddIcon from "@material-ui/icons/Add";
 import MaterialTable from "material-table";
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { authGet } from "../../../api";
 
 const nextLine = <pre></pre>;
-
-const lineBreak = <pre style={{ userSelect: "none" }}> </pre>;
-
-const StyledTableCell = withStyles((theme) => ({
-  head: {
-    backgroundColor: "rgb(63, 81, 181)",
-    color: theme.palette.common.white,
-    fontSize: 16,
-  },
-  body: {
-    fontSize: 16,
-  },
-}))(TableCell);
-
-const StyledTableRow = withStyles((theme) => ({
-  root: {
-    "&:nth-of-type(even)": {
-      backgroundColor: theme.palette.action.hover,
-    },
-  },
-}))(TableRow);
 
 function createData(
   testId,
@@ -61,12 +36,6 @@ function createData(
 }
 
 const rows = [];
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 700,
-  },
-});
 
 const headerProperties = {
   headerStyle: {
@@ -144,48 +113,51 @@ const columns = [
 
 function QuizTestList() {
   const history = useHistory();
-  const classes = useStyles();
+
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const [quizTestList, setQuizTestList] = useState([]);
 
   async function getAllQuizTestByUser() {
-    let list = await authGet(dispatch, token, "/get-all-quiz-test-by-user");
+    try {
+      let list = await authGet(dispatch, token, "/get-all-quiz-test-by-user");
+      let listClass = await authGet(dispatch, token, "/edu/class/list/teacher");
 
-    let listClass = await authGet(dispatch, token, "/edu/class/list/teacher");
+      rows.splice(0, rows.length);
 
-    rows.splice(0, rows.length);
-    list.map((elm, index) => {
-      let foundIndex = -1;
-      for (let index = 0; index < listClass.length; index++) {
-        if (listClass[index].id == elm.classId) {
-          foundIndex = index;
-          break;
+      list.map((elm, index) => {
+        let foundIndex = -1;
+        for (let index = 0; index < listClass.length; index++) {
+          if (listClass[index].id == elm.classId) {
+            foundIndex = index;
+            break;
+          }
         }
-      }
-      if (foundIndex == -1) {
-        //alert("Something went wrong !!!");
-      } else
-        rows.push(
-          createData(
-            elm.testId,
-            elm.testName,
-            elm.scheduleDatetime,
-            elm.duration,
-            listClass[foundIndex].classCode,
-            elm.classId
-          )
-        );
-    });
 
-    setQuizTestList(rows);
+        if (foundIndex == -1) {
+          //alert("Something went wrong !!!");
+        } else
+          rows.push(
+            createData(
+              elm.testId,
+              elm.testName,
+              elm.scheduleDatetime,
+              elm.duration,
+              listClass[foundIndex].classCode,
+              elm.classId
+            )
+          );
+      });
+
+      setQuizTestList(rows);
+    } catch (e) {
+      // console.log("ERROR", e);
+    }
   }
 
   useEffect(() => {
     getAllQuizTestByUser();
-    return () => {};
   }, []);
 
   /* let body = {

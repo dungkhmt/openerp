@@ -5,12 +5,12 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import classNames from "classnames";
 import PropTypes from "prop-types";
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 import PrimaryButton from "../../../component/button/PrimaryButton";
 import { MENU_LIST } from "../../../config/menuconfig";
+import { useAuthState } from "../../../state/AuthState";
 import { fetchMenu } from "../../../state/MenuState";
 import GroupMenuItem, { menuItemBaseStyle } from "./GroupMenuItem";
 import { blackColor, whiteColor } from "./MenuItem";
@@ -111,11 +111,11 @@ const useStyles = makeStyles((theme) => ({
 export default function SideBar(props) {
   const classes = useStyles();
   const { open, image, color: bgColor } = props;
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const { isAuthenticated, isValidating } = useAuthState();
 
   useEffect(() => {
-    if (isAuthenticated) fetchMenu();
-  }, []);
+    if (isAuthenticated.get()) fetchMenu();
+  }, [isAuthenticated.get()]);
 
   return (
     <Drawer
@@ -151,7 +151,7 @@ export default function SideBar(props) {
           ))}
         </List>
       </SimpleBar>
-      {!isAuthenticated && open && (
+      {!isAuthenticated.get() && !isValidating.get() && open && (
         <Box
           className={classes.signInContainer}
           display="flex"
