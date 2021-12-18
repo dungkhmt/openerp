@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Log4j2
 @RestController
 @CrossOrigin
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@AllArgsConstructor(onConstructor_ = @Autowired)
 public class ApiController {
 
     private UserService userService;
@@ -94,20 +94,33 @@ public class ApiController {
 
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(Principal principal, @RequestBody PasswordChangeModel passwordChangeModel) {
-        log.info("changePassword, userlogin = " + principal.getName() + " password = " + passwordChangeModel.getNewPassword());
+        log.info("changePassword, userlogin = " +
+                 principal.getName() +
+                 " password = " +
+                 passwordChangeModel.getNewPassword());
         UserLogin userLogin = userService.findById(principal.getName());
 
         // TO BE CHECKED
         //if (UserLogin.PASSWORD_ENCODER.matches(passwordChangeModel.getCurrentPassword(), userLogin.getPassword())) {
-        if(true){
+        if (true) {
             UserLogin user = userService.updatePassword(userLogin, passwordChangeModel.getNewPassword());
-            log.info("changePassword, userlogin = " + principal.getName() + " password = " + passwordChangeModel.getNewPassword() + " successfully");
+            log.info("changePassword, userlogin = " +
+                     principal.getName() +
+                     " password = " +
+                     passwordChangeModel.getNewPassword() +
+                     " successfully");
             return ResponseEntity.ok().body("OK");
 
-        }else{
-            log.info("changePassword, userlogin = " + principal.getName() + " password = " + passwordChangeModel.getNewPassword() +
-            " ERROR current password  = " + passwordChangeModel.getCurrentPassword() +
-                     " DIFFERS " + userLogin.getPassword() + " not correct");
+        } else {
+            log.info("changePassword, userlogin = " +
+                     principal.getName() +
+                     " password = " +
+                     passwordChangeModel.getNewPassword() +
+                     " ERROR current password  = " +
+                     passwordChangeModel.getCurrentPassword() +
+                     " DIFFERS " +
+                     userLogin.getPassword() +
+                     " not correct");
 
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password isn't correct");
@@ -157,5 +170,10 @@ public class ApiController {
     /*Jedis jedis = new Jedis("localhost");
         Map<String, String> res = jedis.hgetAll("spring:session:sessions:154894ef-efe4-4acf-b479-bce0275694fd");
         return ResponseEntity.ok().body(res.get("sessionAttr:SPRING_SECURITY_CONTEXT"));*/
+
+    @GetMapping("/ping")
+    public ResponseEntity<?> ping() {
+        return ResponseEntity.ok().body("Validated");
+    }
 }
 

@@ -60,6 +60,7 @@ public class ClassController {
     private VideoService videoService;
     private NotificationsService notificationsService;
     private ClassRepo classRepo;
+
     @PostMapping
     public ResponseEntity<?> getClassesOfCurrSemester(
         Principal principal,
@@ -92,16 +93,13 @@ public class ClassController {
         SimpleResponse res = classService.register(im.getClassId(), principal.getName());
         return ResponseEntity.status(res.getStatus()).body(res.getMessage());
     }
-    @GetMapping("/ping")
-    public ResponseEntity<?> ping(Principal principal){
-        log.info("ping");
-        return ResponseEntity.ok().body("OK");
-    }
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @PostMapping("/add-class-user-login-role")
-    public ResponseEntity addEduClassUserLoginRole(Principal principal,
-                                                @RequestBody AddEduClassUserLoginRoleIM input){
+    public ResponseEntity addEduClassUserLoginRole(
+        Principal principal,
+        @RequestBody AddEduClassUserLoginRoleIM input
+    ) {
         log.info("addEduClassUserLoginRole, classId = " + input.getClassId()
                  + " userlogin = " + input.getUserLoginId() + " roleId = " + input.getRoleId());
 
@@ -109,35 +107,41 @@ public class ClassController {
 
         return ResponseEntity.ok().body("OK");
     }
+
     @GetMapping("/get-classes-of-user/{userLoginId}")
-    public ResponseEntity getClassesOfUser(Principal principal, @PathVariable String userLoginId){
+    public ResponseEntity getClassesOfUser(Principal principal, @PathVariable String userLoginId) {
         String currentUserLoginId = principal.getName();
         log.info("getClassesOfUser, currentUserLoginId = " + currentUserLoginId + " userLoginId = " + userLoginId);
 
-        if(userLoginId.equals("null")) userLoginId = currentUserLoginId;
+        if (userLoginId.equals("null")) {
+            userLoginId = currentUserLoginId;
+        }
 
         List<ClassOfUserOM> eduClasses = classService.getClassOfUser(userLoginId);
         return ResponseEntity.ok().body(eduClasses);
     }
+
     @GetMapping("/get-role-list-educlass-userlogin")
-    public ResponseEntity<?> getRoleListEduClassUserLogin(){
+    public ResponseEntity<?> getRoleListEduClassUserLogin() {
         List<EduClassUserLoginRoleType> lst = new ArrayList();
-        lst.add(new EduClassUserLoginRoleType(EduClassUserLoginRole.ROLE_PARTICIPANT,"Người tham gia"));
-        lst.add(new EduClassUserLoginRoleType(EduClassUserLoginRole.ROLE_OWNER,"Người tạo và sở hữu"));
-        lst.add(new EduClassUserLoginRoleType(EduClassUserLoginRole.ROLE_MANAGER,"Người quản lý"));
+        lst.add(new EduClassUserLoginRoleType(EduClassUserLoginRole.ROLE_PARTICIPANT, "Người tham gia"));
+        lst.add(new EduClassUserLoginRoleType(EduClassUserLoginRole.ROLE_OWNER, "Người tạo và sở hữu"));
+        lst.add(new EduClassUserLoginRoleType(EduClassUserLoginRole.ROLE_MANAGER, "Người quản lý"));
         return ResponseEntity.ok().body(lst);
     }
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @GetMapping("/update-class-status")
-    public ResponseEntity updateClassStatus(Principal principal, @RequestParam UUID classId,
-                                            @RequestParam String status){
+    public ResponseEntity updateClassStatus(
+        Principal principal, @RequestParam UUID classId,
+        @RequestParam String status
+    ) {
         log.info("updateClassStatus, classId = " + classId + ", status = " + status);
         EduClass eduClass = classRepo.findById(classId).orElse(null);
-        if(eduClass != null){
+        if (eduClass != null) {
             eduClass.setStatusId(status);
             eduClass = classRepo.save(eduClass);
-        }else{
+        } else {
             log.info("updateClassStatus, classId = " + classId + ", status = " + status + " class NOT FOUND??");
         }
         return ResponseEntity.ok().body("OK");
@@ -304,10 +308,16 @@ public class ClassController {
         for (String userLoginId : userLoginIds) {
             log.info("createChapterMaterialOfCourse, push notif to " + userLoginId);
             notificationsService.create(u.getUserLoginId(), userLoginId,
-                                        u.getUserLoginId() + " vừa upload bài giảng "
-                                        + eduCourseChapterMaterialModelCreate.getMaterialName()
-                + ", chương " + eduCourseChapterMaterial.getEduCourseChapter().getChapterName()
-                                        + ", môn học" + eduCourseChapterMaterial.getEduCourseChapter().getEduCourse().getName(),
+                                        u.getUserLoginId() +
+                                        " vừa upload bài giảng "
+                                        +
+                                        eduCourseChapterMaterialModelCreate.getMaterialName()
+                                        +
+                                        ", chương " +
+                                        eduCourseChapterMaterial.getEduCourseChapter().getChapterName()
+                                        +
+                                        ", môn học" +
+                                        eduCourseChapterMaterial.getEduCourseChapter().getEduCourse().getName(),
                                         "");
         }
         return ResponseEntity.ok().body(eduCourseChapterMaterial);
@@ -326,7 +336,8 @@ public class ClassController {
 
     @GetMapping("/get-course-chapter-material-detail/{courseId}/{classId}")
     public ResponseEntity<?> getCourseChapterMaterialDetailV2(
-            Principal principal, @PathVariable UUID courseId, @PathVariable UUID classId) {
+        Principal principal, @PathVariable UUID courseId, @PathVariable UUID classId
+    ) {
         log.info("getCourseChapterMaterialDetail, id = " + courseId);
         String userId = principal.getName();
         logUserLoginCourseChapterMaterialService.logUserLoginMaterialV2(userId, classId, courseId);
@@ -374,18 +385,20 @@ public class ClassController {
 
     @GetMapping("/get-log-user-course-chapter-material-by-page")
     public ResponseEntity<?> getLogUserCourseChapterMaterialByPage(
-        @RequestParam(name="classId") UUID classId,
-        @RequestParam(name="page", defaultValue = "0") int page,
-        @RequestParam(name="pageSize", defaultValue = "5") int pageSize,
-        @RequestParam(name="sortType", defaultValue = "desc") String sortType,
-        @RequestParam(name="keyword", defaultValue = "_") String keyword
+        @RequestParam(name = "classId") UUID classId,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "pageSize", defaultValue = "5") int pageSize,
+        @RequestParam(name = "sortType", defaultValue = "desc") String sortType,
+        @RequestParam(name = "keyword", defaultValue = "_") String keyword
     ) {
         log.info("getLogUserCourseChapterMaterial, classId = " + classId);
 
         Sort sort = Sort.by("createStamp");
-        if(sortType.equals("desc")) sort = sort.descending();
+        if (sortType.equals("desc")) {
+            sort = sort.descending();
+        }
         Pageable pageable = PageRequest.of(page, pageSize, sort);
-        
+
         Page<StudentCourseParticipationModel> studentCourseParticipationModels =
             logUserLoginCourseChapterMaterialService.findDataByClassIdAndPage(classId, keyword, pageable);
         return ResponseEntity.ok().body(studentCourseParticipationModels);
