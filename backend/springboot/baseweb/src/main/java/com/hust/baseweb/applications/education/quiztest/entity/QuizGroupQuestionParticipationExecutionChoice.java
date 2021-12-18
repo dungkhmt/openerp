@@ -31,4 +31,5 @@ public class QuizGroupQuestionParticipationExecutionChoice {
     private UUID choiceAnswerId;
 
 
+
 }
