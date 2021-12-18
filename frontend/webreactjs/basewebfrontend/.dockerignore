@@ -3,3 +3,4 @@ docs
 .dockerignore
 .editorconfig
 .gitignore
+README.md
