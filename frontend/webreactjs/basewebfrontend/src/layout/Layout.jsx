@@ -7,9 +7,9 @@ import Typography from "@material-ui/core/Typography";
 import { default as MenuIcon } from "@material-ui/icons/Menu";
 import clsx from "clsx";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
 import { ReactComponent as Logo } from "../assets/icons/logo.svg";
 import bgImage from "../assets/img/sidebar-2.webp";
+import { useAuthState } from "../state/AuthState";
 import AccountButton from "./account/AccountButton";
 import NotificationButton from "./notification/NotificationButton";
 import SideBar, { drawerWidth, miniDrawerWidth } from "./sidebar/v1/SideBar";
@@ -98,8 +98,11 @@ const useStyles = makeStyles((theme) => ({
 function Layout(props) {
   const { children } = props;
   const classes = useStyles();
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
+  //
+  const { isAuthenticated } = useAuthState();
+
+  //
   const [open, setOpen] = React.useState(true);
   const [image] = useState(bgImage);
   const [color] = useState("blue");
@@ -154,7 +157,7 @@ function Layout(props) {
           {/* use this div tag to push the icons to the right */}
           <div className={classes.grow}></div>
           <div className={classes.sectionDesktop}>
-            {isAuthenticated && (
+            {isAuthenticated.get() && (
               <>
                 <NotificationButton />
                 <AccountButton />

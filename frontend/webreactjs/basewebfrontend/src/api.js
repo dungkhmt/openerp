@@ -1,8 +1,8 @@
 import axios from "axios";
-import { store } from ".";
 import { failed } from "./action/Auth";
 import { API_URL } from "./config/config";
 import history from "./history";
+import { authState } from "./state/AuthState";
 import { infoNoti, wifiOffNotify } from "./utils/notification";
 
 export const authPost = (dispatch, token, url, body) => {
@@ -227,7 +227,7 @@ export async function request(
       data: data,
       ...config,
       headers: {
-        "X-Auth-Token": store.getState().auth.token,
+        "X-Auth-Token": authState.token.get(),
         ...config?.headers,
       },
     });

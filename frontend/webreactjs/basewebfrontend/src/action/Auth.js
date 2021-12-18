@@ -1,7 +1,8 @@
 import base64 from "base-64";
 import { request } from "../api";
-import { API_URL } from "../config/config";
+import { authState } from "../state/AuthState";
 import { menuState } from "../state/MenuState";
+import { notificationState } from "../state/NotificationState";
 import { errorNoti } from "../utils/notification";
 export const LOGIN_REQUESTING = "LOGIN_REQUESTING";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
@@ -10,14 +11,24 @@ export const LOGIN_FAILURE = "LOGIN_FAILURE";
 export const ERROR = "ERROR";
 
 export const logout = () => {
+  authState.merge({
+    isAuthenticated: false,
+    token: undefined,
+    isValidating: false,
+  });
   menuState.permittedFunctions.set(new Set());
+  notificationState.merge({
+    notifications: undefined,
+    numUnRead: 0,
+    hasMore: false,
+  });
 
   return (dispatch, getState) => {
-    dispatch(logoutsuccess());
-    dispatch(requesting()); // create a action
+    dispatch(logoutSuccessfully());
 
     // Don't care if this request success or not.
-    request("get", "/logout", (res) => {}, {
+    dispatch(requesting()); // create a action
+    request("get", "/logout", undefined, {
       onError: () => dispatch(failed()),
       401: () => {},
     });
@@ -28,37 +39,36 @@ export const login = (username, password) => {
   return (dispatch) => {
     dispatch(requesting()); // create a action
 
-    const headers = new Headers();
+    request(
+      "get",
+      `/`,
+      (res) => {
+        const token = res.headers["x-auth-token"];
 
-    //headers.append("Accept", "application/json");
-    headers.set(
-      "Authorization",
-      "Basic " + base64.encode(username + ":" + password)
-    );
-    headers.append("Content-Type", "application/json");
-    fetch(`${API_URL}/`, {
-      method: "GET",
-      headers: headers,
-    })
-      .then((res) => {
-        if (res.ok) {
-          dispatch(success(res.headers.get("X-Auth-Token")));
-        } else if (res.status === 401) {
+        authState.merge({
+          isAuthenticated: true,
+          token: token,
+          isValidating: false,
+        });
+        dispatch(success(token));
+      },
+      {
+        401: (error) => {
           dispatch(failed(true, "Username or password is incorrect!!"));
           errorNoti("Tài khoản hoặc mật khẩu không đúng");
-        }
-        return res.json();
-      })
-      .then(
-        (res) => {
-          // if (res.status === "SUCCESS") {
-          //     dispatch(success());
-          // } else{
-          //     dispatch(failed());
-          // }
         },
-        (error) => {}
-      );
+        rest: (e) => {
+          dispatch(failed());
+        },
+      },
+      {},
+      {
+        headers: {
+          Authorization: "Basic " + base64.encode(username + ":" + password),
+          "X-Auth-Token": undefined,
+        },
+      }
+    );
   };
 };
 
@@ -75,17 +85,14 @@ export const failed = (errorState = false, errorMsg = null) => {
     errorMsg: errorMsg,
   };
 };
-const success = (token) => {
-  // token la tham so cua ham success
-  //function success(token){
+
+export const success = (token) => {
   return {
     type: LOGIN_SUCCESS,
     token: token,
   };
 };
-const logoutsuccess = (token) => {
-  // token la tham so cua ham success
-  //function success(token){
+const logoutSuccessfully = (token) => {
   return {
     type: LOGOUT_SUCCESS,
   };
