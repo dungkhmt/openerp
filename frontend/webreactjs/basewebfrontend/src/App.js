@@ -1,5 +1,5 @@
 import { CssBaseline } from "@material-ui/core";
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
+import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Router } from "react-router-dom";
@@ -11,7 +11,7 @@ import history from "./history.js";
 import Routes from "./Routes";
 import { useAuthState } from "./state/AuthState.js";
 
-const theme = createMuiTheme({
+const theme = createTheme({
   typography: {
     fontFamily: `-apple-system, "Segoe UI", BlinkMacSystemFont, "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",

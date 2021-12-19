@@ -1,6 +1,6 @@
 import { Button, Checkbox, Tooltip } from "@material-ui/core/";
 import { green } from "@material-ui/core/colors";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 import MaterialTable from "material-table";
 import React, { useEffect, useReducer, useState } from "react";
@@ -12,7 +12,7 @@ import { request } from "../../../api";
 //   },
 // });
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: green,
   },

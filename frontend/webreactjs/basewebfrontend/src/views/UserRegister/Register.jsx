@@ -16,7 +16,7 @@ import {
 import Button from "@material-ui/core/Button";
 import { green } from "@material-ui/core/colors";
 import {
-  createMuiTheme,
+  createTheme,
   makeStyles,
   ThemeProvider,
 } from "@material-ui/core/styles";
@@ -30,7 +30,7 @@ import CustomizedDialogs from "../../component/dialog/CustomizedDialogs";
 import PositiveButton from "../../component/education/classmanagement/PositiveButton";
 import { errorNoti } from "../../utils/notification";
 
-const theme = createMuiTheme({
+const theme = createTheme({
   overrides: {
     MuiMenuItem: {
       root: {

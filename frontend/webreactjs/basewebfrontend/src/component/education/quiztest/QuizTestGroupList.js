@@ -7,7 +7,7 @@ import {
 } from "@material-ui/core/";
 import { blue, green, grey } from "@material-ui/core/colors";
 import {
-  createMuiTheme,
+  createTheme,
   makeStyles,
   ThemeProvider,
 } from "@material-ui/core/styles";
@@ -95,7 +95,7 @@ export default function QuizTestGroupList(props) {
 
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
-  const theme = createMuiTheme({
+  const theme = createTheme({
     palette: {
       primary: green,
     },
