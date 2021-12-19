@@ -47,12 +47,24 @@ export default function LearningSessionStudentViewQuizTestList(props) {
   const [sucessRequest, setSucessRequest] = useState(false);
   const [errorRequest, setErrorRequest] = useState(false);
   const [messageRequest, setMessageRequest] = useState(false);
+  const [sessionDetail, setSessionDetail] = useState(null);
   const [quizGroupTestDetail, setquizGroupTestDetail] = useState({});
   const classes = useStyles();
   // const Checkboxclasses = useCheckBoxStyles();
   const [stateCheckBox, setStateCheckBox] = useState({});
   const [mapS, setMapS] = useState({});
 
+  function getSessionDetail() {
+    request(
+      // token,
+      // history,
+      "get",
+      "/get-sessions-of-class/" + sessionId,
+      (res) => {
+        setSessionDetail(res.data);
+      }
+    );
+  }
   async function getQuestionList() {
     request(
       // token,
@@ -157,6 +169,7 @@ export default function LearningSessionStudentViewQuizTestList(props) {
   };
   useEffect(() => {
     //getQuestionList();
+    //getSessionDetail();
   }, []);
 
   return (
@@ -181,13 +194,6 @@ export default function LearningSessionStudentViewQuizTestList(props) {
           </Alert>
         </Snackbar>
         <div style={{ padding: "0px 20px 20px 30px" }}>
-          <div style={{ justifyContent: "space-between", display: "flex" }}>
-            <h3>Quiz test: {quizGroupTestDetail.testName}</h3>
-            <h3>Môn: {quizGroupTestDetail.courseName}</h3>
-          </div>
-
-          <h4>Bắt đầu: {quizGroupTestDetail.scheduleDatetime}</h4>
-          <h4>Thời gian: {quizGroupTestDetail.duration} phút</h4>
           <Button
             variant="contained"
             color="primary"
@@ -270,16 +276,10 @@ export default function LearningSessionStudentViewQuizTestList(props) {
                 );
               })
             ) : (
-              <p style={{ justifyContent: "center" }}>
-                {" "}
-                Chưa có câu hỏi cho mã đề này
-              </p>
+              <p style={{ justifyContent: "center" }}> </p>
             )
           ) : (
-            <p style={{ justifyContent: "center" }}>
-              {" "}
-              Chưa phát đề cho sinh viên{" "}
-            </p>
+            <p style={{ justifyContent: "center" }}> </p>
           )}
         </Grid>
       </Card>

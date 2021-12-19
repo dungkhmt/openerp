@@ -2,6 +2,7 @@ package com.hust.baseweb.applications.education.classmanagement.service;
 
 import com.hust.baseweb.applications.education.classmanagement.entity.EduClassSession;
 import com.hust.baseweb.applications.education.classmanagement.enumeration.RegistStatus;
+import com.hust.baseweb.applications.education.classmanagement.model.EduClassSessionDetailOM;
 import com.hust.baseweb.applications.education.classmanagement.repo.EduClassSessionRepo;
 import com.hust.baseweb.applications.education.entity.EduClass;
 import com.hust.baseweb.applications.education.entity.EduCourse;
@@ -108,5 +109,19 @@ public class EduClassSessionServiceImpl implements EduClassSessionService{
         List<EduQuizTest> lst = eduQuizTestRepo.findAllBySessionId(sessionId);
 
         return lst;
+    }
+
+    @Override
+    public EduClassSessionDetailOM getSessionDetail(UUID sessionId) {
+        EduClassSession s = eduClassSessionRepo.findById(sessionId).orElse(null);
+        EduClassSessionDetailOM m = new EduClassSessionDetailOM();
+        if(s != null){
+            m.setSessionId(s.getSessionId()) ;
+            m.setSessionName(s.getSessionName());
+            m.setClassId(s.getClassId());
+        }
+        return m;
+
+
     }
 }

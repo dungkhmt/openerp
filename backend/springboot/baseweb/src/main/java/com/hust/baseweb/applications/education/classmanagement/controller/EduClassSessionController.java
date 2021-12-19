@@ -3,6 +3,7 @@ package com.hust.baseweb.applications.education.classmanagement.controller;
 import com.hust.baseweb.applications.education.classmanagement.entity.EduClassSession;
 import com.hust.baseweb.applications.education.classmanagement.model.CreateEduClassSessionIM;
 import com.hust.baseweb.applications.education.classmanagement.model.CreateQuizTestOfClassSessionIM;
+import com.hust.baseweb.applications.education.classmanagement.model.EduClassSessionDetailOM;
 import com.hust.baseweb.applications.education.classmanagement.service.EduClassSessionService;
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
 import com.hust.baseweb.entity.UserLogin;
@@ -30,9 +31,17 @@ public class EduClassSessionController {
 
     @GetMapping("/get-sessions-of-class/{classId}")
     public ResponseEntity<?> getSessionsOfClass(Principal principal, @PathVariable UUID classId){
+
         List<EduClassSession> lst = eduClassSessionService.findAllByClassId(classId);
         return ResponseEntity.ok().body(lst);
     }
+    @GetMapping("/get-session-detail/{sessionId}")
+    public ResponseEntity<?> getSessionDetail(Principal principal, @PathVariable UUID sessionId){
+        log.info("getSessionDetail sessionId = " + sessionId);
+        EduClassSessionDetailOM sessionDetail = eduClassSessionService.getSessionDetail(sessionId);
+        return ResponseEntity.ok().body(sessionDetail);
+    }
+
     @PostMapping("/add-a-session-of-class")
     public ResponseEntity<?> addASessionOfClass(Principal principal, @RequestBody CreateEduClassSessionIM input){
         UserLogin u = userService.findById(principal.getName());
