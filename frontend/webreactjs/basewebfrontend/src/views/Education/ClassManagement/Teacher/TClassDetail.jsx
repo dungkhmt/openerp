@@ -31,7 +31,7 @@ import {
   FcExpired,
   FcMindMap,
 } from "react-icons/fc";
-import { useSelector } from "react-redux";
+//import { useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router";
 import { request } from "../../../../api";
 import { drawerWidth } from "../../../../assets/jss/material-dashboard-react";
@@ -42,7 +42,7 @@ import PositiveButton from "../../../../component/education/classmanagement/Posi
 import { StyledBadge } from "../../../../component/education/classmanagement/StyledBadge";
 import TeacherViewLogUserCourseChapterMaterialList from "../../../../component/education/course/TeacherViewLogUserCourseChapterMaterialList";
 import TeacherViewLogUserQuizList from "../../../../component/education/course/TeacherViewLogUserQuizList";
-import displayTime from "../../../../utils/DateTimeUtils";
+//import displayTime from "../../../../utils/DateTimeUtils";
 import changePageSize, {
   localization,
   tableIcons,

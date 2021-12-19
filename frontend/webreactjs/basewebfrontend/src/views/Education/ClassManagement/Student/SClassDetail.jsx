@@ -52,9 +52,9 @@ const useStyles = makeStyles((theme) => ({
 function SClassDetail() {
   const classes = useStyles();
   const params = useParams();
-  const token = useSelector((state) => state.auth.token);
+  //const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
-  const history = useHistory();
+  //const history = useHistory();
 
   const [classDetail, setClassDetail] = useState({});
 

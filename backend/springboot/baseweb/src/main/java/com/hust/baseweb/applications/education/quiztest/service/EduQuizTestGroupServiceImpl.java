@@ -125,7 +125,7 @@ public class EduQuizTestGroupServiceImpl implements EduQuizTestGroupService {
         }
         */
         int len = tmpl.size();
-        log.info("getTestGroupQuestionDetail, permutation = " + permutation + " len = tmpl.sz = " + len);
+        //log.info("getTestGroupQuestionDetail, permutation = " + permutation + " len = tmpl.sz = " + len);
         for(QuizGroupQuestionAssignment asign: tmpl){
             //System.out.println("here ");
             QuizQuestionDetailModel quizQuestion = quizQuestionService.findQuizDetail(asign.getQuestionId());
@@ -151,7 +151,7 @@ public class EduQuizTestGroupServiceImpl implements EduQuizTestGroupService {
             List<QuizChoiceAnswer> answers = new ArrayList();
             for(int i = 0;i < indices.length; i++){
                 if(indices[i] >= quizQuestion.getQuizChoiceAnswerList().size()){
-                    log.info("getTestGroupQuestionDetail, indices[" + i + "] = " + indices[i] + " > answers.size -> continue");
+                    //log.info("getTestGroupQuestionDetail, indices[" + i + "] = " + indices[i] + " > answers.size -> continue");
                     continue;
                 }
                 answers.add(quizQuestion.getQuizChoiceAnswerList().get(indices[i]));
@@ -185,11 +185,11 @@ public class EduQuizTestGroupServiceImpl implements EduQuizTestGroupService {
         for(int i = 0; i < indices.length; i++){
             int idx = indices[i];
             if(idx >= listQuestions.size()){
-                log.info("getTestGroupQuestionDetail, indices[" + i + "] = " + idx + " > listQuesions.sz -> continue");
+                //log.info("getTestGroupQuestionDetail, indices[" + i + "] = " + idx + " > listQuesions.sz -> continue");
                 continue;
             }
             sorted_lst.add(listQuestions.get(idx));
-            log.info("getTestGroupQuestionDetail ADD sorted_lst.sz = " + sorted_lst.size() + "/" + listQuestions.size() );
+            //log.info("getTestGroupQuestionDetail ADD sorted_lst.sz = " + sorted_lst.size() + "/" + listQuestions.size() );
         }
 
         /*

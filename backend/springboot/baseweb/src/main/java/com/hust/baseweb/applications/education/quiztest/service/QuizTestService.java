@@ -46,5 +46,10 @@ public interface QuizTestService {
 
     public List<QuizTestParticipationExecutionResultOutputModel> getQuizTestParticipationExecutionResult(String testId);
 
+    public List<QuizTestParticipationExecutionResultOutputModel> getQuizTestParticipationExecutionResultNewByPQD(String testId);
+
+    // check if a user has answered a quiz question in z quiz group (de thi)
+    public boolean userAnsweredAQuizQuestion(String userLoginId, UUID questionId, UUID quizGroupId);
+
     public int copyQuestionsFromQuizTest2QuizTest(UserLogin u, String fromQuizTestId, String toQuizTestId);
 }

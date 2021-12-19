@@ -37,8 +37,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function LearningSessionStudentViewQuizTestList(props) {
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
-  const history = useHistory();
+  //const token = useSelector((state) => state.auth.token);
+  //const history = useHistory();
 
   //const testQuizId = history.location.state.testId;
   const [testQuizId, setTestQuizId] = useState(null);
@@ -51,6 +51,7 @@ export default function LearningSessionStudentViewQuizTestList(props) {
   const classes = useStyles();
   // const Checkboxclasses = useCheckBoxStyles();
   const [stateCheckBox, setStateCheckBox] = useState({});
+  const [mapS, setMapS] = useState({});
 
   async function getQuestionList() {
     request(
@@ -61,8 +62,12 @@ export default function LearningSessionStudentViewQuizTestList(props) {
       (res) => {
         setListQuestions(res.data.listQuestion);
         setquizGroupTestDetail(res.data);
+        setTestQuizId(res.data.testId);
         let tmpObj = {};
+        let tmpMap = {};
         res.data.listQuestion.forEach((element) => {
+          tmpMap[element["questionId"]] = false;
+
           tmpObj[element["questionId"]] = new Object();
           element["quizChoiceAnswerList"].forEach((ele) => {
             tmpObj[element["questionId"]][ele["choiceAnswerId"]] =
@@ -75,7 +80,8 @@ export default function LearningSessionStudentViewQuizTestList(props) {
                 : false;
           });
         });
-        console.log(tmpObj);
+        setMapS(tmpMap);
+        //console.log(tmpObj);
         setStateCheckBox(tmpObj);
       },
       {
@@ -113,6 +119,8 @@ export default function LearningSessionStudentViewQuizTestList(props) {
         console.log(res);
         setMessageRequest("Đã lưu vào hệ thống!");
         setSucessRequest(true);
+        mapS[quesId] = true;
+        setMapS(mapS);
       },
       {
         400: () => {
@@ -144,8 +152,11 @@ export default function LearningSessionStudentViewQuizTestList(props) {
   const handleCloseError = () => {
     setErrorRequest(false);
   };
-  useEffect(() => {
+  const handleClickGetQuiz = () => {
     getQuestionList();
+  };
+  useEffect(() => {
+    //getQuestionList();
   }, []);
 
   return (
@@ -177,6 +188,13 @@ export default function LearningSessionStudentViewQuizTestList(props) {
 
           <h4>Bắt đầu: {quizGroupTestDetail.scheduleDatetime}</h4>
           <h4>Thời gian: {quizGroupTestDetail.duration} phút</h4>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleClickGetQuiz}
+          >
+            Xem câu hỏi
+          </Button>
         </div>
         <Grid container spacing={3}>
           {quizGroupTestDetail.quizGroupId != null ? (
@@ -239,11 +257,12 @@ export default function LearningSessionStudentViewQuizTestList(props) {
                         <Button
                           variant="contained"
                           color="primary"
+                          disabled={mapS[element["questionId"]]}
                           onClick={() => {
                             handleClick(element["questionId"]);
                           }}
                         >
-                          Lưu
+                          Chọn
                         </Button>
                       </div>
                     </Paper>

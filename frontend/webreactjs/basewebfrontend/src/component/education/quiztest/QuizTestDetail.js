@@ -48,7 +48,7 @@ const tabsLabel = [
   "DS quiz trong Kỳ thi",
   "Kết quả",
   "Kết quả tổng quát",
-  "Biểu đồ"
+  "Biểu đồ",
 ];
 
 const weekDay = [
@@ -154,6 +154,7 @@ export default function QuizTestDetail() {
       duration: res.duration,
       scheduleDateTime: scheduleDateTime,
       testName: res.testName,
+      statusId: res.statusId,
     });
 
     //do something to get course info from testInfo.courseId
@@ -181,7 +182,15 @@ export default function QuizTestDetail() {
       <Typography
         variant="subtitle1"
         className={classes.testName}
-      >{`${testInfo.testName}`}</Typography>
+      >{`Kỳ thi: ${testInfo.testName}`}</Typography>
+      <Typography
+        variant="subtitle1"
+        className={classes.testName}
+      >{`Mã kỳ thi: ${testInfo.testId}`}</Typography>
+      <Typography
+        variant="subtitle1"
+        className={classes.testName}
+      >{`Trạng thái: ${testInfo.statusId}`}</Typography>
 
       <Box display="flex" alignItems="center" pt={2}>
         <FcClock size={24} />
