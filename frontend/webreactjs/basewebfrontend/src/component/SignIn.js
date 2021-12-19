@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import React, { useState } from "react";
 import { Redirect, useHistory } from "react-router";
 import { NavLink } from "react-router-dom";
+import { useRouteState } from "../state/RouteState";
 
 /*
 function Copyright() {
@@ -75,9 +76,14 @@ export default function SignIn(props) {
   const classes = useStyles();
 
   //
+  const { currentRoute } = useRouteState();
+
+  //
   const [userName, setUserName] = useState(""); // new State (var) userName
   const [password, setPassword] = useState(""); // new State (var) password
   const [isTyping, setIsTyping] = useState(false);
+  const [isRequesting, setIsRequesting] = useState(false);
+  const [loggedInSuccessfully, setLoggedInSuccessfully] = useState(false);
 
   //
   const handleUserNameChange = (event) => {
@@ -92,14 +98,20 @@ export default function SignIn(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsRequesting(true);
     setIsTyping(false);
-    props.requestLogin(userName, password);
+
+    props.requestLogin(userName, password, () => {
+      setLoggedInSuccessfully(true);
+      setIsRequesting(false);
+    });
   };
 
-  if (props.isAuthenticated === true) {
+  if (loggedInSuccessfully) {
     props.getScreenSecurityInfo(history);
-    if (history.location.state && history.location.state.from) {
-      history.replace(history.location.state.from);
+
+    if (currentRoute.get()) {
+      history.replace(currentRoute.get());
       return null;
     } else
       return (
@@ -171,7 +183,7 @@ export default function SignIn(props) {
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             /> */}
-            {props.isRequesting === true ? (
+            {isRequesting ? (
               <Button
                 disabled={true}
                 type="submit"
@@ -179,7 +191,7 @@ export default function SignIn(props) {
                 variant="contained"
                 className={classes.submit}
               >
-                <CircularProgress /> Sign In
+                <CircularProgress /> Đăng nhập
               </Button>
             ) : (
               <Button

@@ -12,7 +12,8 @@ const mapStateToProps = (state1) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  requestLogin: (username, password) => dispatch(login(username, password)), // truyen action login thanh props login, create action
+  requestLogin: (username, password, onLoginSuccessfully) =>
+    dispatch(login(username, password, onLoginSuccessfully)), // truyen action login thanh props login, create action
   getScreenSecurityInfo: (history) => dispatch(getScrSecurInfo(history)),
 });
 

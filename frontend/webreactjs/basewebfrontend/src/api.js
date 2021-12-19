@@ -1,7 +1,8 @@
 import axios from "axios";
-import { failed } from "./action/Auth";
+import { failed, logout } from "./action/Auth";
 import { API_URL } from "./config/config";
 import history from "./history";
+import { store } from "./index";
 import { authState } from "./state/AuthState";
 import { infoNoti, wifiOffNotify } from "./utils/notification";
 
@@ -248,7 +249,8 @@ export async function request(
           if (isFunction(errorHandlers[401])) {
             errorHandlers[401](e);
           } else {
-            history.push({ pathname: "/login" });
+            history.push({pathname: "/login"});
+            store.dispatch(logout());
           }
           break;
         case 403:

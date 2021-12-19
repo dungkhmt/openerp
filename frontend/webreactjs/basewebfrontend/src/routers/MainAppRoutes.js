@@ -3,7 +3,6 @@ import React, { lazy, Suspense, useEffect } from "react";
 import { Route, Switch, useLocation } from "react-router-dom";
 import PrivateRoute from "../common/PrivateRoute";
 import { Home } from "../component";
-import error from "../component/common/errornotfound";
 import { Layout } from "../layout";
 import { drawerWidth } from "../layout/sidebar/v1/SideBar";
 import { useNotificationState } from "../state/NotificationState";
@@ -14,7 +13,6 @@ import AdminRoute from "./AdminRoute";
 const EduRoute = lazy(() => import("./EduRoute"));
 const UserLoginRoute = lazy(() => import("./UserLoginRoute"));
 const TestGroupRoute = lazy(() => import("./TestGroupRoute"));
-
 const UserGroupRoute = lazy(() => import("./UserGroupRoute"));
 
 function MainAppRoute(props) {
