@@ -6,6 +6,7 @@ import { request } from "../../../api";
 import { localization } from "../../../utils/MaterialTableUtils";
 import { exportResultListPdf } from "./TeacherQuizResultExportPDF.js";
 import ViewHistoryLogQuizGroupQuestionParticipationExecutionChoice from "./ViewHistoryLogQuizGroupQuestionParticipationExecutionChoice";
+import { toFormattedDateTime } from "../../../utils/dateutils";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -137,6 +138,11 @@ export default function QuizTestStudentListResult(props) {
     {
       field: "grade",
       title: "Điểm",
+      ...headerProperties,
+    },
+    {
+      field: "createdStamp",
+      title: "Thời gian submit",
       ...headerProperties,
     },
   ];
@@ -275,6 +281,9 @@ export default function QuizTestStudentListResult(props) {
             groupId: elm.quizGroupId,
             questionId: elm.questionId,
             grade: elm.grade,
+            createdStamp: elm.createdStamp
+              ? toFormattedDateTime(elm.createdStamp)
+              : "",
           });
         });
         setStudentListResult(temp);

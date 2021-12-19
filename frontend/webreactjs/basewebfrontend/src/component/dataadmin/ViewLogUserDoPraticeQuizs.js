@@ -15,7 +15,7 @@ function ViewLogUserDoPraticeQuizs() {
     { title: "CourseName", field: "courseName" },
     { title: "Chapter", field: "topicName" },
     { title: "Grade", field: "grade" },
-    { title: "Date", field: "date" },
+    { title: "DateTime", field: "date" },
   ];
   return (
     <div>

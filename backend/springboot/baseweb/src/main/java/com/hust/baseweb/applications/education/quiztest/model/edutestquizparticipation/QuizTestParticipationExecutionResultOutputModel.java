@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ public class QuizTestParticipationExecutionResultOutputModel {
 
     private String testId;
     private UUID quizGroupId;
+    private String quizGroupCode;
     private String participationUserLoginId;
     private String participationFullName;
     private UUID questionId;
@@ -25,5 +27,6 @@ public class QuizTestParticipationExecutionResultOutputModel {
     List<UUID> chooseAnsIds;
     private char result;// Y or N
     private int grade;// diem, ket qua
+    private Date createdStamp;
 
 }

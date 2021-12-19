@@ -288,6 +288,7 @@ public class QuizTestController {
     ) {
         List<QuizTestParticipationExecutionResultOutputModel> quizTestParticipationExecutionResultOutputModels =
             quizTestService.getQuizTestParticipationExecutionResult(input.getTestId());
+            //quizTestService.getQuizTestParticipationExecutionResultNewByPQD(input.getTestId());
 
         return ResponseEntity.ok().body(quizTestParticipationExecutionResultOutputModels);
     }
