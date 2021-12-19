@@ -66,10 +66,10 @@ public class Utils {
             //if(i >= len) break;
             seq[i] = permutation.charAt(i) - '0';//Integer.valueOf(permutation.charAt(i) + "");
         }
-        System.out.println("Utils.genSequence, n = " + n + " len = " + len + " permutation = " + permutation);
+        //System.out.println("Utils.genSequence, n = " + n + " len = " + len + " permutation = " + permutation);
         for(int i = n; i < len; i++){
             seq[i] = seq[i-n] + n;
-            System.out.println("Utils.genSequence, continue seq[" + i + "] = " + seq[i]);
+            //System.out.println("Utils.genSequence, continue seq[" + i + "] = " + seq[i]);
         }
         return seq;
     }
