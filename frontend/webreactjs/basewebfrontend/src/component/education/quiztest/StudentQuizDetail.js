@@ -1,24 +1,13 @@
-import Button from "@material-ui/core/Button";
+import { useState } from "@hookstate/core";
 import Card from "@material-ui/core/Card";
-import Checkbox from "@material-ui/core/Checkbox";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
-
-// const useCheckBoxStyles = makeStyles((theme) => ({
-//   root: {
-//     display: "flex",
-//   },
-//   formControl: {
-//     margin: theme.spacing(3),
-//   },
-// }));
+import Quiz from "./Quiz";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,111 +25,107 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function StudentQuizDetail() {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
   const history = useHistory();
-  const testQuizId = history.location.state.testId;
-  const [ListQuestions, setListQuestions] = useState([]);
-  const [sucessRequest, setSucessRequest] = useState(false);
-  const [errorRequest, setErrorRequest] = useState(false);
-  const [messageRequest, setMessageRequest] = useState(false);
-  const [quizGroupTestDetail, setquizGroupTestDetail] = useState({});
+  const testQuizId = history.location.state?.testId;
   const classes = useStyles();
-  // const Checkboxclasses = useCheckBoxStyles();
-  const [stateCheckBox, setStateCheckBox] = useState({});
 
-  async function getQuestionList() {
+  //
+  const [questions, setQuestions] = React.useState([]);
+  const [requestSuccessfully, setRequestSuccessfully] = React.useState(false);
+  const [requestFailed, setRequestFailed] = React.useState(false);
+  const [messageRequest, setMessageRequest] = React.useState(false);
+  const [quizGroupTestDetail, setQuizGroupTestDetail] = React.useState({});
+
+  // Keep track of checking state of all choices of all quiz
+  const checkState = useState([]);
+
+  function getQuestionList() {
     request(
-      // token,
-      // history,
       "get",
       "/get-quiz-test-participation-group-question/" + testQuizId,
       (res) => {
-        setListQuestions(res.data.listQuestion);
-        setquizGroupTestDetail(res.data);
-        let tmpObj = {};
-        res.data.listQuestion.forEach((element) => {
-          tmpObj[element["questionId"]] = new Object();
-          element["quizChoiceAnswerList"].forEach((ele) => {
-            tmpObj[element["questionId"]][ele["choiceAnswerId"]] =
-              res.data.participationExecutionChoice.hasOwnProperty(
-                element["questionId"]
-              )
-                ? res.data.participationExecutionChoice[
-                    element["questionId"]
-                  ].includes(ele["choiceAnswerId"])
-                : false;
+        const {
+          listQuestion,
+          participationExecutionChoice,
+          ...quizGroupTestDetail
+        } = res.data;
+
+        setQuestions(listQuestion);
+        setQuizGroupTestDetail(quizGroupTestDetail);
+
+        // Restore test result
+        // TODO: optimize code
+        const chkState = [];
+
+        listQuestion.forEach((question) => {
+          const choices = {};
+          const choseAnswers =
+            participationExecutionChoice[question.questionId];
+
+          question.quizChoiceAnswerList.forEach((ans) => {
+            choices[ans.choiceAnswerId] = false;
           });
+
+          choices.submitted = false;
+          if (choseAnswers) {
+            choseAnswers.forEach((choseAnsId) => {
+              choices[choseAnsId] = true;
+            });
+
+            choices.submitted = true;
+          }
+
+          chkState.push(choices);
         });
-        console.log(tmpObj);
-        setStateCheckBox(tmpObj);
+
+        checkState.set(chkState);
       },
       {
         401: () => {},
         406: () => {
           setMessageRequest("Quá thời gian làm bài!");
-          setErrorRequest(true);
+          setRequestFailed(true);
         },
       }
     );
   }
 
-  const handleClick = (quesId) => {
-    console.log(quesId);
-    console.log(stateCheckBox);
-    let listAns = [];
-    Object.keys(stateCheckBox[quesId]).map((element, index) => {
-      if (stateCheckBox[quesId][element] === true) {
-        listAns.push(element);
-      }
-    });
-    let tmpOb = {
-      testId: testQuizId,
-      questionId: quesId,
-      quizGroupId: quizGroupTestDetail.quizGroupId,
-      chooseAnsIds: listAns,
-    };
-    console.log(tmpOb);
+  const onSave = (order, questionId, choseAnswers) => {
     request(
-      // token,
-      // history,
       "post",
       "/quiz-test-choose_answer-by-user",
       (res) => {
-        console.log(res);
+        checkState[order].submitted.set(true);
         setMessageRequest("Đã lưu vào hệ thống!");
-        setSucessRequest(true);
+        setRequestSuccessfully(true);
       },
       {
         400: () => {
           setMessageRequest("Không được để trống!");
-          setErrorRequest(true);
+          setRequestFailed(true);
         },
         406: () => {
           setMessageRequest("Quá thời gian làm bài!");
-          setErrorRequest(true);
+          setRequestFailed(true);
         },
       },
-      tmpOb
+      {
+        testId: testQuizId,
+        questionId: questionId,
+        quizGroupId: quizGroupTestDetail.quizGroupId,
+        chooseAnsIds: choseAnswers,
+      }
     );
   };
 
-  const handleChange = (event, quesID) => {
-    setStateCheckBox({
-      ...stateCheckBox,
-      [quesID]: {
-        ...stateCheckBox[quesID],
-        [event.target.name]: event.target.checked,
-      },
-    });
+  const handleCloseSuccess = () => {
+    setRequestSuccessfully(false);
   };
 
-  const handleCloseSucess = () => {
-    setSucessRequest(false);
-  };
   const handleCloseError = () => {
-    setErrorRequest(false);
+    setRequestFailed(false);
   };
+
   useEffect(() => {
     getQuestionList();
   }, []);
@@ -149,16 +134,16 @@ export default function StudentQuizDetail() {
     <div className={classes.root}>
       <Card style={{ padding: "20px 20px 20px 20px" }}>
         <Snackbar
-          open={sucessRequest}
+          open={requestSuccessfully}
           autoHideDuration={2000}
-          onClose={handleCloseSucess}
+          onClose={handleCloseSuccess}
         >
           <Alert variant="filled" severity="success">
             {messageRequest}
           </Alert>
         </Snackbar>
         <Snackbar
-          open={errorRequest}
+          open={requestFailed}
           autoHideDuration={8000}
           onClose={handleCloseError}
         >
@@ -171,82 +156,23 @@ export default function StudentQuizDetail() {
             <h3>Quiz test: {quizGroupTestDetail.testName}</h3>
             <h3>Môn: {quizGroupTestDetail.courseName}</h3>
           </div>
-
           <h4>Bắt đầu: {quizGroupTestDetail.scheduleDatetime}</h4>
           <h4>Thời gian: {quizGroupTestDetail.duration} phút</h4>
         </div>
+
+        {/* Quiz */}
         <Grid container spacing={3}>
-          {quizGroupTestDetail.quizGroupId != null ? (
-            ListQuestions != null ? (
-              ListQuestions.map((element, index) => {
-                return (
-                  <Grid item xs={12} key={index}>
-                    <Paper className={classes.paper}>
-                      <div className={classes.root}>
-                        <h4>Quiz {index + 1}</h4>{" "}
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: element["statement"],
-                          }}
-                        />
-                        {element.attachment &&
-                          element.attachment.length !== 0 &&
-                          element.attachment.map((url, index) => (
-                            <div key={index} className={classes.imageContainer}>
-                              <div className={classes.imageWrapper}>
-                                <img
-                                  src={`data:image/jpeg;base64,${url}`}
-                                  alt="quiz test"
-                                  className={classes.imageQuiz}
-                                />
-                              </div>
-                            </div>
-                          ))}
-                        {element["quizChoiceAnswerList"].map((answer, ind) => {
-                          return (
-                            <div key={ind} style={{ display: "flex" }}>
-                              <Checkbox
-                                key={answer["choiceAnswerId"]}
-                                checked={
-                                  stateCheckBox[element["questionId"]]
-                                    ? stateCheckBox[element["questionId"]][
-                                        answer["choiceAnswerId"]
-                                      ]
-                                    : false
-                                }
-                                color="primary"
-                                inputProps={{
-                                  "aria-label": "secondary checkbox",
-                                }}
-                                onChange={(event) =>
-                                  handleChange(event, element["questionId"])
-                                }
-                                name={answer["choiceAnswerId"]}
-                              />
-                              <p
-                                dangerouslySetInnerHTML={{
-                                  __html: answer.choiceAnswerContent,
-                                }}
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => {
-                            handleClick(element["questionId"]);
-                          }}
-                        >
-                          Lưu
-                        </Button>
-                      </div>
-                    </Paper>
-                  </Grid>
-                );
-              })
+          {quizGroupTestDetail.quizGroupId ? (
+            questions != null ? (
+              questions.map((question, idx) => (
+                <Quiz
+                  key={question.questionId}
+                  question={question}
+                  choseAnswers={checkState[idx]}
+                  order={idx}
+                  onSave={onSave}
+                />
+              ))
             ) : (
               <p style={{ justifyContent: "center" }}>
                 {" "}
