@@ -5,6 +5,7 @@ import PrivateRoute from "./common/PrivateRoute";
 import SignInContainer from "./container/SignInContainer";
 import { Layout } from "./layout";
 import MainAppRoute from "./routers/MainAppRoutes";
+import { routeState } from "./state/RouteState";
 
 const Register = lazy(() => import("../src/views/UserRegister/Register"));
 const ForgetPassword = lazy(() =>
@@ -44,7 +45,16 @@ function Routes(props) {
           path="/userlogin/change-password/:username"
         />
         <Route component={SignInContainer} path="/login" />
-        <Route component={MainAppRoute} path="*" />
+        <Route
+          path="*"
+          render={(props) => {
+            routeState.merge({
+              currentRoute: props.location.pathname,
+            });
+
+            return <MainAppRoute {...props} />;
+          }}
+        />
       </Switch>
     </Suspense>
   );
