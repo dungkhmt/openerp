@@ -5,6 +5,7 @@ import { green } from "@material-ui/core/colors";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
+import CheckCircleOutlineRoundedIcon from "@material-ui/icons/CheckCircleOutlineRounded";
 import React from "react";
 import ReactHtmlParser from "react-html-parser";
 
@@ -99,18 +100,31 @@ export default function Quiz({ question, order, choseAnswers, onSave }) {
                 </div>
               ))}
               <div style={{ textAlign: "right" }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSubmit}
-                  style={{
-                    backgroundColor: checkState.submitted.get()
-                      ? green[800]
-                      : undefined,
-                  }}
-                >
-                  {checkState.submitted.get() ? "Đã lưu" : "Lưu"}
-                </Button>
+                {checkState.submitted.get() ? (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    endIcon={<CheckCircleOutlineRoundedIcon />}
+                    onClick={handleSubmit}
+                    style={{
+                      textTransform: "none",
+                      backgroundColor: green[800],
+                    }}
+                  >
+                    Đã lưu
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmit}
+                    style={{
+                      textTransform: "none",
+                    }}
+                  >
+                    Lưu
+                  </Button>
+                )}
               </div>
             </>
           )}
