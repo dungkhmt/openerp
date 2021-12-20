@@ -3,6 +3,7 @@ package com.hust.baseweb.applications.education.quiztest.service;
 import com.hust.baseweb.applications.education.entity.QuizChoiceAnswer;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailModel;
 import com.hust.baseweb.applications.education.quiztest.entity.*;
+import com.hust.baseweb.applications.education.quiztest.model.QuizChoiceAnswerHideCorrectAnswer;
 import com.hust.baseweb.applications.education.quiztest.model.QuizGroupTestDetailModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestgroup.GenerateQuizTestGroupInputModel;
 import com.hust.baseweb.applications.education.quiztest.repo.*;
@@ -148,13 +149,17 @@ public class EduQuizTestGroupServiceImpl implements EduQuizTestGroupService {
             //System.out.println("ok ");
 
             // random order choices based on permutation
-            List<QuizChoiceAnswer> answers = new ArrayList();
+            //List<QuizChoiceAnswer> answers = new ArrayList();
+            List<QuizChoiceAnswerHideCorrectAnswer> answers = new ArrayList();
             for(int i = 0;i < indices.length; i++){
                 if(indices[i] >= quizQuestion.getQuizChoiceAnswerList().size()){
                     //log.info("getTestGroupQuestionDetail, indices[" + i + "] = " + indices[i] + " > answers.size -> continue");
                     continue;
                 }
                 answers.add(quizQuestion.getQuizChoiceAnswerList().get(indices[i]));
+                //QuizChoiceAnswer ans = quizQuestion.getQuizChoiceAnswerList().get(indices[i]);
+
+
                 if(answers.size() == quizQuestion.getQuizChoiceAnswerList().size()) break;
             }
             //for(int i = m+1; i < quizQuestion.getQuizChoiceAnswerList().size();i++){
