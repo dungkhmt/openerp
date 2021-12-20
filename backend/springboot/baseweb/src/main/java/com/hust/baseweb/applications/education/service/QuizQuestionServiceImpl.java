@@ -10,6 +10,7 @@ import com.hust.baseweb.applications.education.model.quiz.QuizChooseAnswerInputM
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionCreateInputModel;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailModel;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionUpdateInputModel;
+import com.hust.baseweb.applications.education.quiztest.model.QuizChoiceAnswerHideCorrectAnswer;
 import com.hust.baseweb.applications.education.repo.*;
 import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.config.FileSystemStorageProperties;
@@ -263,7 +264,12 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         //         ", GOT quizChoideAnswers.sz = " +
         //         quizChoiceAnswers.size());
 
-        quizQuestionDetailModel.setQuizChoiceAnswerList(quizChoiceAnswers);
+        //quizQuestionDetailModel.setQuizChoiceAnswerList(quizChoiceAnswers);
+        List<QuizChoiceAnswerHideCorrectAnswer> ans = new ArrayList();
+        for(QuizChoiceAnswer a: quizChoiceAnswers){
+            ans.add(new QuizChoiceAnswerHideCorrectAnswer(a.getChoiceAnswerId(),a.getChoiceAnswerContent()));
+        }
+        quizQuestionDetailModel.setQuizChoiceAnswerList(ans);
 
         return quizQuestionDetailModel;
     }
@@ -293,7 +299,12 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
     @Override
     public boolean checkAnswer(String userId, QuizChooseAnswerInputModel quizChooseAnswerInputModel) {
-        QuizQuestionDetailModel quizQuestionDetail = findQuizDetail(quizChooseAnswerInputModel.getQuestionId());
+        //QuizQuestionDetailModel quizQuestionDetail = findQuizDetail(quizChooseAnswerInputModel.getQuestionId());
+        QuizQuestion q = quizQuestionRepo.findById(quizChooseAnswerInputModel.getQuestionId()).orElse(null);
+        if(q == null) return false;
+        List<QuizChoiceAnswer> quizChoiceAnswers = quizChoiceAnswerRepo.findAllByQuizQuestion(q);
+
+
         String classCode = "";
         if(quizChooseAnswerInputModel.getClassId() != null) {
             EduClass eduClass = classRepo.findById(quizChooseAnswerInputModel.getClassId()).orElse(null);
@@ -304,8 +315,10 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         String isCorrectAnswer = "Y";
         boolean ans = true;
 
-        List<UUID> correctAns = quizQuestionDetail
-            .getQuizChoiceAnswerList()
+
+        List<UUID> correctAns =
+            //quizQuestionDetail.getQuizChoiceAnswerList()
+            quizChoiceAnswers
             .stream()
             .filter(answer -> answer.getIsCorrectAnswer() == 'Y')
             .map(QuizChoiceAnswer::getChoiceAnswerId)
@@ -330,8 +343,11 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
         logUserLoginQuizQuestion.setClassId(quizChooseAnswerInputModel.getClassId());
 
-        logUserLoginQuizQuestion.setQuestionTopicId(quizQuestionDetail.getQuizCourseTopic().getQuizCourseTopicId());
-        logUserLoginQuizQuestion.setQuestionTopicName(quizQuestionDetail.getQuizCourseTopic().getQuizCourseTopicName());
+
+        //logUserLoginQuizQuestion.setQuestionTopicId(quizQuestionDetail.getQuizCourseTopic().getQuizCourseTopicId());
+        //logUserLoginQuizQuestion.setQuestionTopicName(quizQuestionDetail.getQuizCourseTopic().getQuizCourseTopicName());
+        logUserLoginQuizQuestion.setQuestionTopicId(q.getQuizCourseTopic().getQuizCourseTopicId());
+        logUserLoginQuizQuestion.setQuestionTopicName(q.getQuizCourseTopic().getQuizCourseTopicName());
 
         logUserLoginQuizQuestion = logUserLoginQuizQuestionRepo.save(logUserLoginQuizQuestion);
 
@@ -359,7 +375,13 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         }
 
         List<QuizChoiceAnswer> quizChoiceAnswers = quizChoiceAnswerRepo.findAllByQuizQuestion(quizQuestion);
-        quizQuestionDetailModel.setQuizChoiceAnswerList(quizChoiceAnswers);
+        List<QuizChoiceAnswerHideCorrectAnswer> ans = new ArrayList();
+        for(QuizChoiceAnswer a: quizChoiceAnswers){
+            ans.add(new QuizChoiceAnswerHideCorrectAnswer(a.getChoiceAnswerId(),a.getChoiceAnswerContent()));
+        }
+        //quizQuestionDetailModel.setQuizChoiceAnswerList(quizChoiceAnswers);
+        quizQuestionDetailModel.setQuizChoiceAnswerList(ans);
+
 
         if (quizQuestion.getAttachment() != null) {
             String[] fileId = quizQuestion.getAttachment().split(";", -1);

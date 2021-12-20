@@ -19,6 +19,8 @@ import com.hust.baseweb.applications.education.quiztest.model.quiztestquestion.C
 import com.hust.baseweb.applications.education.quiztest.repo.*;
 import com.hust.baseweb.applications.education.quiztest.repo.EduQuizTestGroupRepo.QuizTestGroupInfo;
 import com.hust.baseweb.applications.education.quiztest.repo.EduQuizTestRepo.StudentInfo;
+import com.hust.baseweb.applications.education.repo.QuizChoiceAnswerRepo;
+import com.hust.baseweb.applications.education.repo.QuizQuestionRepo;
 import com.hust.baseweb.applications.education.service.QuizQuestionService;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.repo.UserLoginRepo;
@@ -50,7 +52,8 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
     QuizGroupQuestionAssignmentRepo quizGroupQuestionAssignmentRepo;
     QuizGroupQuestionParticipationExecutionChoiceRepo quizGroupQuestionParticipationExecutionChoiceRepo;
     EduQuizTestQuizQuestionService eduQuizTestQuizQuestionService;
-
+    QuizQuestionRepo quizQuestionRepo;
+    QuizChoiceAnswerRepo quizChoiceAnswerRepo;
     @Override
     public EduQuizTest save(QuizTestCreateInputModel input, UserLogin user) {
         EduQuizTest newRecord = new EduQuizTest();
@@ -929,14 +932,20 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                         quizTestParticipationExecutionResultOutputModel.setCreatedStamp(createdStamp);
 
                         //get question
-                        QuizQuestionDetailModel quizQuestionDetail = quizQuestionService.findQuizDetail(question.getQuestionId());
-                        quizTestParticipationExecutionResultOutputModel.setQuizChoiceAnswerList(quizQuestionDetail.getQuizChoiceAnswerList());
-                        quizTestParticipationExecutionResultOutputModel.setQuestionContent(quizQuestionDetail.getStatement());
+                        //QuizQuestionDetailModel quizQuestionDetail = quizQuestionService.findQuizDetail(question.getQuestionId());
+                        //quizTestParticipationExecutionResultOutputModel.setQuizChoiceAnswerList(quizQuestionDetail.getQuizChoiceAnswerList());
+                        //quizTestParticipationExecutionResultOutputModel.setQuestionContent(quizQuestionDetail.getStatement());
+
+                        QuizQuestion q = quizQuestionRepo.findById(question.getQuestionId()).orElse(null);
+                        List<QuizChoiceAnswer> ans = quizChoiceAnswerRepo.findAllByQuizQuestion(q);
+                        quizTestParticipationExecutionResultOutputModel.setQuestionContent(q.getQuestionContent());
+
                         //check choice in question
 
                         boolean ques_ans = true;
-                        List<UUID> correctAns = quizQuestionDetail
-                            .getQuizChoiceAnswerList()
+                        List<UUID> correctAns =
+                            //quizQuestionDetail.getQuizChoiceAnswerList()
+                            ans
                             .stream()
                             .filter(answer -> answer.getIsCorrectAnswer() == 'Y')
                             .map(QuizChoiceAnswer::getChoiceAnswerId)
@@ -972,8 +981,8 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                         quizTestParticipationExecutionResultOutputModel.setParticipationFullName(studentInfo.getFull_name());
 
                         listResult.add(quizTestParticipationExecutionResultOutputModel);
-                        log.info("getQuizTestParticipationExecutionResult, add result with user " + quizTestParticipationExecutionResultOutputModel.getParticipationUserLoginId()
-                        + " group " + eduTestQuizGroup.getGroupCode() + " question " + question.getQuestionId() + " time = " + quizTestParticipationExecutionResultOutputModel.getCreatedStamp());
+                        //log.info("getQuizTestParticipationExecutionResult, add result with user " + quizTestParticipationExecutionResultOutputModel.getParticipationUserLoginId()
+                        //+ " group " + eduTestQuizGroup.getGroupCode() + " question " + question.getQuestionId() + " time = " + quizTestParticipationExecutionResultOutputModel.getCreatedStamp());
                     });
                 }
 
