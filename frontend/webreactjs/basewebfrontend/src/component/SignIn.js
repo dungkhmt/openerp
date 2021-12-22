@@ -1,5 +1,6 @@
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { green } from "@material-ui/core/colors";
 import Link from "@material-ui/core/Link";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
@@ -61,13 +62,28 @@ const useStyles = makeStyles((theme) => ({
   wrapper: {
     background: "white",
   },
-  submit: {
+  submitBtnWrapper: {
+    margin: theme.spacing(1),
+    position: "relative",
+  },
+  submitBtn: {
     margin: theme.spacing(3, 0, 2),
     height: 40,
+    width: 160,
+    borderRadius: 20,
+    textTransform: "none",
     backgroundColor: "green",
     "&:hover": {
       backgroundColor: "green",
     },
+  },
+  buttonProgress: {
+    color: green[500],
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: -8,
+    marginLeft: -12,
   },
 }));
 
@@ -101,10 +117,18 @@ export default function SignIn(props) {
     setIsRequesting(true);
     setIsTyping(false);
 
-    props.requestLogin(userName, password, () => {
-      setLoggedInSuccessfully(true);
-      setIsRequesting(false);
-    });
+    props.requestLogin(
+      userName,
+      password,
+      () => {
+        setLoggedInSuccessfully(true);
+      },
+      {
+        onError: () => {
+          setIsRequesting(false);
+        },
+      }
+    );
   };
 
   if (loggedInSuccessfully) {
@@ -183,27 +207,24 @@ export default function SignIn(props) {
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             /> */}
-            {isRequesting ? (
+
+            <div className={classes.submitBtnWrapper}>
               <Button
-                disabled={true}
-                type="submit"
-                fullWidth
-                variant="contained"
-                className={classes.submit}
-              >
-                <CircularProgress /> Đăng nhập
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                fullWidth
                 variant="contained"
                 color="primary"
-                className={classes.submit}
+                disabled={isRequesting}
+                type="submit"
+                className={classes.submitBtn}
               >
                 Đăng nhập
               </Button>
-            )}
+              {isRequesting && (
+                <CircularProgress
+                  size={24}
+                  className={classes.buttonProgress}
+                />
+              )}
+            </div>
 
             {/* <Grid item xs>
                 

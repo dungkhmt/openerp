@@ -35,7 +35,12 @@ export const logout = () => {
   };
 };
 
-export const login = (username, password, onLoginSuccessfully) => {
+export const login = (
+  username,
+  password,
+  onLoginSuccessfully,
+  onLoginFailed
+) => {
   return (dispatch) => {
     dispatch(requesting()); // create a action
 
@@ -51,7 +56,7 @@ export const login = (username, password, onLoginSuccessfully) => {
           isValidating: false,
         });
         dispatch(success(token));
-        onLoginSuccessfully()
+        onLoginSuccessfully();
       },
       {
         401: (error) => {
@@ -61,6 +66,7 @@ export const login = (username, password, onLoginSuccessfully) => {
         rest: (e) => {
           dispatch(failed());
         },
+        ...onLoginFailed,
       },
       {},
       {
