@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link, useHistory } from "react-router-dom";
 import { authGet } from "../../../api";
+import withScreenSecurity from "../../withScreenSecurity";
 
 function TeacherCourseList() {
   const params = useParams();
@@ -47,4 +48,5 @@ function TeacherCourseList() {
   );
 }
 
-export default TeacherCourseList;
+const screenName = "SCREEN_EDUCATION_TEACHING_MANAGEMENT_TEACHER";
+export default withScreenSecurity(TeacherCourseList, screenName, true);

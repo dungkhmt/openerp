@@ -43,6 +43,11 @@ VALUES ('MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER', 'MENU', NULL, 'EDUCATION_T
 
 insert into public.application
 (application_id, application_type_id, module_id, permission_id, description)
+VALUES ('SCREEN_EDUCATION_TEACHING_MANAGEMENT_TEACHER', 'MENU', NULL, 'EDUCATION_TEACHING_MANAGEMENT_TEACHER',
+'Screen teaching management for eduTeachers');
+
+insert into public.application
+(application_id, application_type_id, module_id, permission_id, description)
 VALUES ('MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_VIEW_LIST_COURSE', 'MENU', 'MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER', 'EDUCATION_TEACHING_MANAGEMENT_TEACHER',
 'Menu teaching management for eduTeachers: view list courses');
 
@@ -71,6 +76,11 @@ VALUES ('MENU_EDUCATION_TEACHING_MANAGEMENT_STUDENT_QUIZ_TEST_LIST', 'MENU', 'ME
 INSERT INTO public.application
 (application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
 VALUES('SCREEN_VIEW_QUIZ_TEST_TEACHER', 'SCREEN', NULL, 'VIEW_QUIZ_TEST_TEACHER', 'Screen teacher view quiz test', NULL, '2021-10-22 15:35:30.537');
+
+INSERT INTO public.application
+(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
+VALUES('SCREEN_EDUCATION_TEACHING_MANAGEMENT_TEACHER', 'SCREEN', NULL, 'EDUCATION_TEACHING_MANAGEMENT_TEACHER', 'Screen teacher view course, class', NULL, '2021-10-22 15:35:30.537');
+
 
 -- group permission
 insert into public.security_group_permission

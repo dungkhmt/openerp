@@ -15,6 +15,7 @@ import { useHistory } from "react-router-dom";
 import { failed } from "../../../action/Auth";
 import { authPost } from "../../../api";
 import { API_URL } from "../../../config/config";
+import withScreenSecurity from "../../withScreenSecurity";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ClassCreate() {
+function ClassCreate() {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -382,3 +383,6 @@ export default function ClassCreate() {
     </MuiPickersUtilsProvider>
   );
 }
+
+const screenName = "SCREEN_EDUCATION_TEACHING_MANAGEMENT_TEACHER";
+export default withScreenSecurity(ClassCreate, screenName, true);
