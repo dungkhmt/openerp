@@ -13,8 +13,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import MaterialTable from "material-table";
 import React, { Fragment, useEffect, useState } from "react";
 import { BiDetail } from "react-icons/bi";
-import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useParams } from "react-router";
+import {
+  useDispatch,
+  //useSelector
+} from "react-redux";
+import {
+  //useHistory,
+  useParams,
+} from "react-router";
 import { Link as RouterLink } from "react-router-dom";
 import { request } from "../../../../api";
 import AssignmentTab from "../../../../component/education/classmanagement/student/AssignmentTab";

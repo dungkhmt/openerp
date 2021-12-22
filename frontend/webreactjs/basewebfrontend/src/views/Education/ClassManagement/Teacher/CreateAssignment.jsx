@@ -23,7 +23,7 @@ import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useForm } from "react-hook-form";
 import { FcCalendar } from "react-icons/fc";
-import { useSelector } from "react-redux";
+//import { useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router";
 import { request } from "../../../../api";
 import NegativeButton from "../../../../component/education/classmanagement/NegativeButton";
@@ -66,7 +66,7 @@ function CreateAssignment() {
   const params = useParams();
   const assignId = params.assignmentId;
   const history = useHistory();
-  const token = useSelector((state) => state.auth.token);
+  //const token = useSelector((state) => state.auth.token);
 
   // Use for updating.
   const [assignDetail, setAssignDetail] = useState({});
@@ -177,22 +177,22 @@ function CreateAssignment() {
 
   // onChangeHandlers.
   const onChangeOpenTime = (newDate) => {
-    if (newDate.getTime() != new Date(watch("openTime")).getTime()) {
+    if (newDate.getTime() !== new Date(watch("openTime")).getTime()) {
       // Handle server errors.
       if (errors.openTime) {
-        if (errors.openTime.type == "require future date") {
+        if (errors.openTime.type === "require future date") {
           // Accept just changing the value will clear the error,
           // because the new value may fall in [start of day, current open time) or (current open time, submit time).
           clearError("openTime");
-        } else if (errors.openTime.type == "not allowed changing") {
-          if (newDate.getTime() == assignDetail.openTime.getTime()) {
+        } else if (errors.openTime.type === "not allowed changing") {
+          if (newDate.getTime() === assignDetail.openTime.getTime()) {
             clearError("openTime");
           }
         }
       } else {
         if (notAllowedChanging) {
           // Runs in each OnChange and runs only when recieve 'not allowed changing' error after submiting.
-          if (newDate.getTime() != assignDetail.openTime.getTime()) {
+          if (newDate.getTime() !== assignDetail.openTime.getTime()) {
             setError(
               "openTime",
               "not allowed changing",
@@ -213,7 +213,7 @@ function CreateAssignment() {
           );
         }
       } else {
-        if (errors.closeTime?.type == "require subsequent date") {
+        if (errors.closeTime?.type === "require subsequent date") {
           clearError("closeTime");
         }
       }
@@ -223,9 +223,9 @@ function CreateAssignment() {
   };
 
   const onChangeCloseTime = (newDate) => {
-    if (newDate.getTime() != new Date(watch("closeTime")).getTime()) {
+    if (newDate.getTime() !== new Date(watch("closeTime")).getTime()) {
       if (errors.closeTime) {
-        if (errors.closeTime.type == "require subsequent date") {
+        if (errors.closeTime.type === "require subsequent date") {
           // The 'require subsequent date' error can be removed.
           if (new Date(watch("openTime")).getTime() <= newDate.getTime()) {
             if (invalidChange) {
@@ -246,7 +246,7 @@ function CreateAssignment() {
               clearError("closeTime");
             }
           }
-        } else if (errors.closeTime.type == "invalid change") {
+        } else if (errors.closeTime.type === "invalid change") {
           if (newDate.getTime() >= assignDetail.closeTime.getTime()) {
             clearError("closeTime");
           }
@@ -285,12 +285,12 @@ function CreateAssignment() {
     if (assignId) {
       // Check for changes.
       if (
-        formData.name != assignDetail.name ||
-        new Date(formData.openTime).getTime() !=
+        formData.name !== assignDetail.name ||
+        new Date(formData.openTime).getTime() !==
           new Date(assignDetail.openTime).getTime() ||
-        new Date(formData.closeTime).getTime() !=
+        new Date(formData.closeTime).getTime() !==
           new Date(assignDetail.closeTime).getTime() ||
-        subject != assignDetail.subject
+        subject !== assignDetail.subject
       ) {
         request(
           // token,
@@ -313,7 +313,7 @@ function CreateAssignment() {
                     case "openTime":
                       setError("openTime", error.type, error.message);
 
-                      if (error.type == "require future date") {
+                      if (error.type === "require future date") {
                         setNotAllowedChanging(false);
                       } else {
                         setNotAllowedChanging(true);
@@ -322,7 +322,7 @@ function CreateAssignment() {
                     case "closeTime":
                       setError("closeTime", error.type, error.message);
 
-                      if (error.type == "require subsequent date") {
+                      if (error.type === "require subsequent date") {
                         setInvalidChange(false);
                       } else {
                         setInvalidChange(true);
@@ -330,6 +330,8 @@ function CreateAssignment() {
                       break;
                     case "id":
                       errorNoti("Bài tập đã bị xoá trước đó.");
+                      break;
+                    default:
                       break;
                   }
                 });
@@ -373,6 +375,8 @@ function CreateAssignment() {
                     break;
                   case "classId":
                     errorNoti("Lớp đã bị xoá trước đó.");
+                    break;
+                  default:
                     break;
                 }
               });

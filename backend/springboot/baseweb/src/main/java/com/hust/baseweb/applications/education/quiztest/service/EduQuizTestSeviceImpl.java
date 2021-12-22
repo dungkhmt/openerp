@@ -187,6 +187,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
             eduModel.setTestId(eduEntity.getTestId());
             eduModel.setTestName(eduEntity.getTestName());
             eduModel.setCourseId(eduEntity.getCourseId());
+            eduModel.setViewTypeId(eduEntity.getViewTypeId());
 
             String strDate = null;
             if (eduEntity.getScheduleDatetime() != null) {

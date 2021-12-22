@@ -102,5 +102,6 @@ VALUES ('admin', 'ROLE_EDUCATION_LEARNING_MANAGEMENT_STUDENT', NOW(), NOW());
 
 insert into security_group_permission(group_id,permission_id)
 values('ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER','VIEW_QUIZ_TEST_TEACHER');
+insert into security_group_permission(group_id,permission_id) values('ROLE_FULL_ADMIN','VIEW_QUIZ_TEST_TEACHER');
 
 

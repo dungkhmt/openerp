@@ -17,8 +17,11 @@ import React, { Fragment, useEffect, useState } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { BiDetail } from "react-icons/bi";
 import { FcUpload } from "react-icons/fc";
-import { useSelector } from "react-redux";
-import { useHistory, useParams } from "react-router";
+//import { useSelector } from "react-redux";
+import {
+  //useHistory,
+  useParams,
+} from "react-router";
 import { request } from "../../../../api";
 import NegativeButton from "../../../../component/education/classmanagement/NegativeButton";
 import PositiveButton from "../../../../component/education/classmanagement/PositiveButton";
@@ -124,8 +127,8 @@ const children = ({ remainingTime }) => {
 function SAssignmentDetail() {
   const classes = useStyles();
   const params = useParams();
-  const history = useHistory();
-  const token = useSelector((state) => state.auth.token);
+  //const history = useHistory();
+  //const token = useSelector((state) => state.auth.token);
 
   // Countdown.
   const [remainingTime, setRemainingTime] = useState(0);
@@ -225,9 +228,9 @@ function SAssignmentDetail() {
         },
         {
           400: (e) => {
-            if ("not exist" == e.response.data?.error) {
+            if ("not exist" === e.response.data?.error) {
               errorNoti("Bài tập này đã bị xoá trước đó.");
-            } else if ("deadline exceeded" == e.response.data?.error) {
+            } else if ("deadline exceeded" === e.response.data?.error) {
               errorNoti("Đã quá hạn nộp bài.");
               setRemainingTime(0);
             } else {
@@ -332,7 +335,7 @@ function SAssignmentDetail() {
                             color="primary"
                             label={assignDetail.submitedFileName}
                           />
-                          {remainingTime > 0 && isUpdating == false ? (
+                          {remainingTime > 0 && isUpdating === false ? (
                             <PositiveButton
                               label="Chỉnh sửa"
                               className={classes.editBtn}
@@ -366,7 +369,7 @@ function SAssignmentDetail() {
           </Grid>
         </CardContent>
         {remainingTime > 0 &&
-        (assignDetail.submitedFileName == null || isUpdating == true) ? (
+        (assignDetail.submitedFileName == null || isUpdating === true) ? (
           <Fragment>
             <CardHeader
               avatar={

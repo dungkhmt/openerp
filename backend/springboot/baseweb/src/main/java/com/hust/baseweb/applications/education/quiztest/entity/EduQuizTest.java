@@ -20,6 +20,11 @@ public class EduQuizTest {
     public static final String QUIZ_TEST_STATUS_OPEN = "OPEN";
     public static final String QUIZ_TEST_STATUS_HIDDEN = "HIDDEN";
 
+
+    public static final String QUIZ_TEST_VIEW_TYPE_LIST = "VIEW_LIST";
+    public static final String QUIZ_TEST_VIEW_TYPE_STEP = "VIEW_STEP";
+
+
     @Id
     @Column(name = "test_id")
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,4 +60,6 @@ public class EduQuizTest {
     @Column(name="session_id")
     private UUID sessionId;
 
+    @Column(name="view_type_id")
+    private String viewTypeId;
 }

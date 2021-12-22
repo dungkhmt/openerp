@@ -20,4 +20,6 @@ public class EduQuizTestModel {
     private String courseId;
 
     private String statusId;
+
+    private String viewTypeId;
 }

@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StudentQuizDetailStep() {
+export default function StudentQuizDetailStepForm() {
   const history = useHistory();
   const testQuizId = history.location.state?.testId;
   const classes = useStyles();
@@ -36,18 +36,25 @@ export default function StudentQuizDetailStep() {
   const [quizGroupTestDetail, setQuizGroupTestDetail] = useState({});
 
   // Keep track of checking state of all choices of all quiz
-  const checkState = useState([]);
+  //const checkState = useState([]);
+  const [checkState, setCheckState] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [question, setQuestion] = useState(null);
+  const [currentCheckState, setCurrentCheckState] = useState(null);
+  const [hasData, setHasData] = useState(false);
   function handleNextQuestionClick() {
     let i = currentIndex;
+    //console.log("click Next, currentIndex = i = ", i);
     setCurrentIndex(i + 1);
     setQuestion(questions[i + 1]);
+    setCurrentCheckState(checkState[i + 1]);
   }
   function handlePrevQuestionClick() {
     let i = currentIndex;
+    //console.log("click Prev, currentIndex = i = ", i);
     setCurrentIndex(i - 1);
-    setQuestion(questions[i]);
+    setQuestion(questions[i - 1]);
+    setCurrentCheckState(checkState[i - 1]);
   }
   function getQuestionList() {
     request(
@@ -89,7 +96,10 @@ export default function StudentQuizDetailStep() {
           chkState.push(choices);
         });
 
-        checkState.set(chkState);
+        //checkState.set(chkState);
+        setCheckState(chkState);
+        console.log("get list questions, checkState = ", chkState);
+        setCurrentCheckState(checkState[currentIndex]);
       },
       {
         401: () => {},
@@ -106,7 +116,9 @@ export default function StudentQuizDetailStep() {
       "post",
       "/quiz-test-choose_answer-by-user",
       (res) => {
-        checkState[order].submitted.set(true);
+        //checkState[order].submitted.set(true);
+        currentCheckState.submitted.set(true);
+
         setMessageRequest("Đã lưu vào hệ thống!");
         setRequestSuccessfully(true);
       },
@@ -129,33 +141,92 @@ export default function StudentQuizDetailStep() {
     );
   };
 
+  function handleClickViewQuestion() {
+    getQuestionList();
+    setHasData(true);
+  }
+  const handleCloseSuccess = () => {
+    setRequestSuccessfully(false);
+  };
+
+  const handleCloseError = () => {
+    setRequestFailed(false);
+  };
+
   useEffect(() => {
     getQuestionList();
+    //console.log("finished getQuestionList");
   }, []);
 
   return (
     <div>
-      {currentIndex > 0 ? (
-        <Button onClick={handleNextQuestionClick}>Next</Button>
-      ) : (
-        ""
-      )}
-      {currentIndex < questions.length ? (
-        <Button onClick={handlePrevQuestionClick}>Prev</Button>
-      ) : (
-        ""
-      )}
-      {question && checkState[currentIndex] ? (
-        <Quiz
-          key={question.questionId}
-          question={question}
-          choseAnswers={checkState[currentIndex]}
-          order={currentIndex}
-          onSave={onSave}
-        />
-      ) : (
-        ""
-      )}
+      <Snackbar
+        open={requestSuccessfully}
+        autoHideDuration={2000}
+        onClose={handleCloseSuccess}
+      >
+        <Alert variant="filled" severity="success">
+          {messageRequest}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={requestFailed}
+        autoHideDuration={8000}
+        onClose={handleCloseError}
+      >
+        <Alert variant="filled" severity="error">
+          {messageRequest}
+        </Alert>
+      </Snackbar>
+
+      <div style={{}}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleClickViewQuestion}
+        >
+          View Questions
+        </Button>
+      </div>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        {hasData && currentIndex < questions.length - 1 ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleNextQuestionClick}
+          >
+            Next
+          </Button>
+        ) : (
+          ""
+        )}
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        {hasData && currentIndex > 0 ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handlePrevQuestionClick}
+          >
+            Prev
+          </Button>
+        ) : (
+          ""
+        )}
+      </div>
+
+      <div>
+        {hasData && question && currentCheckState ? (
+          <Quiz
+            key={question.questionId}
+            question={question}
+            choseAnswers={currentCheckState}
+            order={currentIndex}
+            onSave={onSave}
+          />
+        ) : (
+          ""
+        )}
+      </div>
     </div>
   );
 }

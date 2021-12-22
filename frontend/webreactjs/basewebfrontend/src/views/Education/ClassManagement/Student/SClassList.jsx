@@ -14,7 +14,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaListUl } from "react-icons/fa";
 import { FcApproval } from "react-icons/fc";
 import { GiSandsOfTime } from "react-icons/gi";
-import { useSelector } from "react-redux";
+//import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import { request } from "../../../../api";
 import changePageSize, {
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 
 function SClassList() {
   const classes = useStyles();
-  const token = useSelector((state) => state.auth.token);
+  //const token = useSelector((state) => state.auth.token);
   const history = useHistory();
 
   // Table.

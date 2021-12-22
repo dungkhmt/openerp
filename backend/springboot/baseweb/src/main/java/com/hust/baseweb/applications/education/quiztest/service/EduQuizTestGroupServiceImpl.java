@@ -78,7 +78,7 @@ public class EduQuizTestGroupServiceImpl implements EduQuizTestGroupService {
         String strDate = formatter.format(test.getScheduleDatetime());
         testDetail.setScheduleDatetime(strDate);
         testDetail.setCourseName(courseName);
-
+        testDetail.setViewTypeId(test.getViewTypeId());
 
         List<EduTestQuizGroupParticipationAssignment> listGroupAsignment = eduTestQuizGroupParticipationAssignmentRepo.findEduTestQuizGroupParticipationAssignmentsByParticipationUserLoginId(
             principal.getName());
