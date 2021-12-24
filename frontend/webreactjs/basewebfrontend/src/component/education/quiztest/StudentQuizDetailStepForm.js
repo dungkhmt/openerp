@@ -3,10 +3,11 @@ import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
 import Quiz from "./Quiz";
+import { useState } from "@hookstate/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,19 +30,20 @@ export default function StudentQuizDetailStepForm() {
   const classes = useStyles();
 
   //
-  const [questions, setQuestions] = useState([]);
-  const [requestSuccessfully, setRequestSuccessfully] = useState(false);
-  const [requestFailed, setRequestFailed] = useState(false);
-  const [messageRequest, setMessageRequest] = useState(false);
-  const [quizGroupTestDetail, setQuizGroupTestDetail] = useState({});
+  const [questions, setQuestions] = React.useState([]);
+  const [requestSuccessfully, setRequestSuccessfully] = React.useState(false);
+  const [requestFailed, setRequestFailed] = React.useState(false);
+  const [messageRequest, setMessageRequest] = React.useState(false);
+  const [quizGroupTestDetail, setQuizGroupTestDetail] = React.useState({});
 
   // Keep track of checking state of all choices of all quiz
-  //const checkState = useState([]);
-  const [checkState, setCheckState] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [question, setQuestion] = useState(null);
-  const [currentCheckState, setCurrentCheckState] = useState(null);
-  const [hasData, setHasData] = useState(false);
+  const checkState = useState([]);
+  //const [checkState, setCheckState] = useState([]);
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [question, setQuestion] = React.useState(null);
+  const [currentCheckState, setCurrentCheckState] = React.useState(null);
+  const [hasData, setHasData] = React.useState(false);
+
   function handleNextQuestionClick() {
     let i = currentIndex;
     //console.log("click Next, currentIndex = i = ", i);
@@ -96,8 +98,9 @@ export default function StudentQuizDetailStepForm() {
           chkState.push(choices);
         });
 
-        //checkState.set(chkState);
-        setCheckState(chkState);
+        checkState.set(chkState);
+        //setCheckState(chkState);
+
         console.log("get list questions, checkState = ", chkState);
         setCurrentCheckState(checkState[currentIndex]);
       },
@@ -116,8 +119,8 @@ export default function StudentQuizDetailStepForm() {
       "post",
       "/quiz-test-choose_answer-by-user",
       (res) => {
-        //checkState[order].submitted.set(true);
-        currentCheckState.submitted.set(true);
+        checkState[order].submitted.set(true);
+        //currentCheckState.submitted.set(true);
 
         setMessageRequest("Đã lưu vào hệ thống!");
         setRequestSuccessfully(true);
@@ -219,7 +222,8 @@ export default function StudentQuizDetailStepForm() {
           <Quiz
             key={question.questionId}
             question={question}
-            choseAnswers={currentCheckState}
+            //choseAnswers={currentCheckState}
+            choseAnswers={checkState[currentIndex]}
             order={currentIndex}
             onSave={onSave}
           />

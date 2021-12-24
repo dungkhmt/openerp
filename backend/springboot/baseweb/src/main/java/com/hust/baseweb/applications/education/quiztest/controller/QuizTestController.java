@@ -118,8 +118,10 @@ public class QuizTestController {
         UserLogin user = userService.findById(principal.getName());
 
         List<EduQuizTestModel> listQuizTest = quizTestService.getListOpenQuizTestOfSession(sessionId,user.getUserLoginId());
-        if(listQuizTest == null ||  listQuizTest.size() == 0)
+        if(listQuizTest == null ||  listQuizTest.size() == 0) {
+            log.info("getActiveQuizTestOfSession, listQuizTest null or size = 0 -> RETURN");
             return ResponseEntity.ok().body(new QuizGroupTestDetailModel());
+        }
 
         QuizGroupTestDetailModel testDetail = null;
         //for(EduQuizTestModel qt: listQuizTest){
@@ -137,13 +139,15 @@ public class QuizTestController {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
             }
             */
-
-            EduTestQuizParticipant testParticipant = eduTestQuizParticipationRepo.findEduTestQuizParticipantByParticipantUserLoginIdAndAndTestId(
+            log.info("getActiveQuizTestOfSession, get TestId = " + testID);
+            EduTestQuizParticipant testParticipant = eduTestQuizParticipationRepo
+                .findEduTestQuizParticipantByParticipantUserLoginIdAndAndTestId(
                 principal.getName(),
                 testID);
 
             if (testParticipant == null ||
                 (!testParticipant.getStatusId().equals(EduTestQuizParticipant.STATUS_APPROVED))) {
+                log.info("getActiveQuizTestOfSession, participant to testID " + testID + " is NULL -> return");
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
             }
             testDetail = eduQuizTestGroupService.getTestGroupQuestionDetail(principal, testID);
