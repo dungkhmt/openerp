@@ -2,6 +2,9 @@
 const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = {
+  eslint: {
+    enable: false, // To speed up the slow compilation time of a CRA
+  },
   babel: {
     plugins: ["@babel/plugin-proposal-nullish-coalescing-operator"],
     babelrc: true,
