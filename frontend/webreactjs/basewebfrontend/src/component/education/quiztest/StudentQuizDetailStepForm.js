@@ -1,5 +1,4 @@
-import { useState } from "@hookstate/core";
-import Card from "@material-ui/core/Card";
+import { Card, Button } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
@@ -8,8 +7,8 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
 import Quiz from "./Quiz";
-import StudentQuizDetailStepForm from "./StudentQuizDetailStepForm";
-import StudentQuizDetailListForm from "./StudentQuizDetailListForm";
+import { useState } from "@hookstate/core";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -25,10 +24,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StudentQuizDetail() {
+export default function StudentQuizDetailStepForm() {
   const history = useHistory();
   const testQuizId = history.location.state?.testId;
-
   const classes = useStyles();
 
   //
@@ -37,14 +35,29 @@ export default function StudentQuizDetail() {
   const [requestFailed, setRequestFailed] = React.useState(false);
   const [messageRequest, setMessageRequest] = React.useState(false);
   const [quizGroupTestDetail, setQuizGroupTestDetail] = React.useState({});
-  //const [viewTypeId, setViewTypeId] = React.useState(null);
-  const [viewTypeId, setViewTypeId] = React.useState(
-    history.location.state?.viewTypeId
-  );
 
   // Keep track of checking state of all choices of all quiz
   const checkState = useState([]);
+  //const [checkState, setCheckState] = useState([]);
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [question, setQuestion] = React.useState(null);
+  const [currentCheckState, setCurrentCheckState] = React.useState(null);
+  const [hasData, setHasData] = React.useState(false);
 
+  function handleNextQuestionClick() {
+    let i = currentIndex;
+    //console.log("click Next, currentIndex = i = ", i);
+    setCurrentIndex(i + 1);
+    setQuestion(questions[i + 1]);
+    setCurrentCheckState(checkState[i + 1]);
+  }
+  function handlePrevQuestionClick() {
+    let i = currentIndex;
+    //console.log("click Prev, currentIndex = i = ", i);
+    setCurrentIndex(i - 1);
+    setQuestion(questions[i - 1]);
+    setCurrentCheckState(checkState[i - 1]);
+  }
   function getQuestionList() {
     request(
       "get",
@@ -57,9 +70,8 @@ export default function StudentQuizDetail() {
         } = res.data;
 
         setQuestions(listQuestion);
+        setQuestion(listQuestion[currentIndex]);
         setQuizGroupTestDetail(quizGroupTestDetail);
-
-        setViewTypeId(quizGroupTestDetail.viewTypeId);
 
         // Restore test result
         // TODO: optimize code
@@ -87,6 +99,10 @@ export default function StudentQuizDetail() {
         });
 
         checkState.set(chkState);
+        //setCheckState(chkState);
+
+        console.log("get list questions, checkState = ", chkState);
+        setCurrentCheckState(checkState[currentIndex]);
       },
       {
         401: () => {},
@@ -104,6 +120,8 @@ export default function StudentQuizDetail() {
       "/quiz-test-choose_answer-by-user",
       (res) => {
         checkState[order].submitted.set(true);
+        //currentCheckState.submitted.set(true);
+
         setMessageRequest("Đã lưu vào hệ thống!");
         setRequestSuccessfully(true);
       },
@@ -126,6 +144,10 @@ export default function StudentQuizDetail() {
     );
   };
 
+  function handleClickViewQuestion() {
+    getQuestionList();
+    setHasData(true);
+  }
   const handleCloseSuccess = () => {
     setRequestSuccessfully(false);
   };
@@ -136,72 +158,79 @@ export default function StudentQuizDetail() {
 
   useEffect(() => {
     getQuestionList();
+    //console.log("finished getQuestionList");
   }, []);
 
   return (
-    <div className={classes.root}>
-      <Card style={{ padding: "20px 20px 20px 20px" }}>
-        <Snackbar
-          open={requestSuccessfully}
-          autoHideDuration={2000}
-          onClose={handleCloseSuccess}
-        >
-          <Alert variant="filled" severity="success">
-            {messageRequest}
-          </Alert>
-        </Snackbar>
-        <Snackbar
-          open={requestFailed}
-          autoHideDuration={8000}
-          onClose={handleCloseError}
-        >
-          <Alert variant="filled" severity="error">
-            {messageRequest}
-          </Alert>
-        </Snackbar>
-        <div style={{ padding: "0px 20px 20px 30px" }}>
-          <div style={{ justifyContent: "space-between", display: "flex" }}>
-            <h3>Quiz test: {quizGroupTestDetail.testName}</h3>
-            <h3>Môn: {quizGroupTestDetail.courseName}</h3>
-          </div>
-          <h4>Bắt đầu: {quizGroupTestDetail.scheduleDatetime}</h4>
-          <h4>Thời gian: {quizGroupTestDetail.duration} phút</h4>
-        </div>
+    <div>
+      <Snackbar
+        open={requestSuccessfully}
+        autoHideDuration={2000}
+        onClose={handleCloseSuccess}
+      >
+        <Alert variant="filled" severity="success">
+          {messageRequest}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={requestFailed}
+        autoHideDuration={8000}
+        onClose={handleCloseError}
+      >
+        <Alert variant="filled" severity="error">
+          {messageRequest}
+        </Alert>
+      </Snackbar>
 
-        {viewTypeId === "VIEW_STEP" ? (
-          <StudentQuizDetailStepForm />
+      <div style={{}}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleClickViewQuestion}
+        >
+          View Questions
+        </Button>
+      </div>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        {hasData && currentIndex < questions.length - 1 ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleNextQuestionClick}
+          >
+            Next
+          </Button>
         ) : (
-          <StudentQuizDetailListForm />
+          ""
         )}
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        {hasData && currentIndex > 0 ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handlePrevQuestionClick}
+          >
+            Prev
+          </Button>
+        ) : (
+          ""
+        )}
+      </div>
 
-        {/*
-          <Grid container spacing={3}>
-            {quizGroupTestDetail.quizGroupId ? (
-              questions != null ? (
-                questions.map((question, idx) => (
-                  <Quiz
-                    key={question.questionId}
-                    question={question}
-                    choseAnswers={checkState[idx]}
-                    order={idx}
-                    onSave={onSave}
-                  />
-                ))
-              ) : (
-                <p style={{ justifyContent: "center" }}>
-                  {" "}
-                  Chưa có câu hỏi cho mã đề này
-                </p>
-              )
-            ) : (
-              <p style={{ justifyContent: "center" }}>
-                {" "}
-                Chưa phát đề cho sinh viên{" "}
-              </p>
-            )}
-          </Grid>
-            */}
-      </Card>
+      <div>
+        {hasData && question && currentCheckState ? (
+          <Quiz
+            key={question.questionId}
+            question={question}
+            //choseAnswers={currentCheckState}
+            choseAnswers={checkState[currentIndex]}
+            order={currentIndex}
+            onSave={onSave}
+          />
+        ) : (
+          ""
+        )}
+      </div>
     </div>
   );
 }

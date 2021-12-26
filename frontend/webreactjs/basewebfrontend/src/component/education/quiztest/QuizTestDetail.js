@@ -20,6 +20,7 @@ import QuizTestJoinRequestList from "./QuizTestJoinRequestList";
 import QuizTestResultChart from "./QuizTestResultChart";
 import QuizTestStudentListResult from "./QuizTestResultList";
 import QuizTestStudentList from "./QuizTestStudentList";
+import withScreenSecurity from "../../withScreenSecurity";
 
 const useStyles = makeStyles((theme) => ({
   btn: {
@@ -61,7 +62,7 @@ const weekDay = [
   "Thứ bảy",
 ];
 
-export default function QuizTestDetail() {
+function QuizTestDetail() {
   let param = useParams();
   let testId = param.id;
   const history = useHistory();
@@ -301,3 +302,6 @@ export default function QuizTestDetail() {
     </>
   );
 }
+
+const screenName = "SCREEN_VIEW_QUIZ_TEST_TEACHER";
+export default withScreenSecurity(QuizTestDetail, screenName, true);

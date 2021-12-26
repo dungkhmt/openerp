@@ -6,6 +6,7 @@ import { Link, useHistory } from "react-router-dom";
 import { request } from "../../../api";
 import TeacherCourseQuizChoiceAnswerList from "./TeacherCourseQuizChoiceAnswerList";
 import TeacherCourseQuizContent from "./TeacherCourseQuizContent";
+import withScreenSecurity from "../../withScreenSecurity";
 
 function TeacherCourseQuizDetail() {
   const params = useParams();
@@ -44,4 +45,5 @@ function TeacherCourseQuizDetail() {
   );
 }
 
-export default TeacherCourseQuizDetail;
+const screenName = "SCREEN_EDUCATION_TEACHING_MANAGEMENT_TEACHER";
+export default withScreenSecurity(TeacherCourseQuizDetail, screenName, true);

@@ -57,7 +57,16 @@ export default function Quiz({ question, order, choseAnswers, onSave }) {
 
     onSave(order, questionId, choseAnswers);
   };
-
+  /*
+  console.log(
+    "load, checkState ",
+    checkState,
+    " order = ",
+    order,
+    "question = ",
+    question
+  );
+  */
   return (
     <Grid item xs={12} key={questionId}>
       <Paper className={classes.paper}>

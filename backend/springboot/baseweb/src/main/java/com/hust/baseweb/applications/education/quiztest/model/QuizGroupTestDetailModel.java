@@ -26,6 +26,7 @@ public class QuizGroupTestDetailModel {
     private String quizGroupId;
     private String groupCode;
 
+    private String viewTypeId;
 
     private List<QuizQuestionDetailModel> listQuestion;
 

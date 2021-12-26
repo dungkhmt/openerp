@@ -20,6 +20,7 @@ import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
 import { authGet, authPostMultiPart } from "../../../api";
 import AlertDialog from "../../common/AlertDialog";
+import withScreenSecurity from "../../withScreenSecurity";
 
 let reDirect = null;
 const useStyles = makeStyles((theme) => ({
@@ -259,4 +260,5 @@ function CreateQuizOfCourse() {
   );
 }
 
-export default CreateQuizOfCourse;
+const screenName = "SCREEN_EDUCATION_TEACHING_MANAGEMENT_TEACHER";
+export default withScreenSecurity(CreateQuizOfCourse, screenName, true);

@@ -19,6 +19,7 @@ import changePageSize, {
   localization,
   tableIcons,
 } from "../../../../utils/MaterialTableUtils";
+import withScreenSecurity from "../../../../component/withScreenSecurity";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -230,5 +231,5 @@ function TClassList() {
   );
 }
 
-export default TClassList;
-// export default withAsynchScreenSecurity(TClassList, "SCR_TCLASSLIST");
+const screenName = "SCREEN_EDUCATION_TEACHING_MANAGEMENT_TEACHER";
+export default withScreenSecurity(TClassList, screenName, true);

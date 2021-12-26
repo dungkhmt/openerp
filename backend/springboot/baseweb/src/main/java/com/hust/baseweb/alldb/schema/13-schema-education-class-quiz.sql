@@ -72,6 +72,7 @@ create table edu_quiz_test(
     course_id varchar(10),
     class_id uuid,
     session_id uuid,
+    view_type_id varchar(100),
     status_id varchar(30),
     created_by_user_login_id varchar(60),
 

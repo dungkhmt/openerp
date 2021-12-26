@@ -12,15 +12,15 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(4),
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(4),
   },
 
   noComment: {
-    margin: '10px auto',
-    textAlign: 'center',
-    fontSize: '16px',
-    fontWeight: 'bold'
-  }
+    margin: "10px auto",
+    textAlign: "center",
+    fontSize: "16px",
+    fontWeight: "bold",
+  },
 }));
 
 function StudentCourseChapterMaterialDetail() {
@@ -38,7 +38,6 @@ function StudentCourseChapterMaterialDetail() {
   const [chapterId, setChapterId] = useState(null);
   const [chapterName, setChapterName] = useState(null);
   const classes = useStyles();
-
 
   async function getCourseChapterMaterialDetail() {
     // let res = await authGet(
@@ -58,29 +57,33 @@ function StudentCourseChapterMaterialDetail() {
     setChapterName(res.eduCourseChapter.chapterName);
   }
 
-  async function getListCommentsEduCourseMaterial(){
+  async function getListCommentsEduCourseMaterial() {
     let res = await authGet(
       dispatch,
       token,
       `/edu/class/comment/${chapterMaterialId}`
     );
-    
-    let cmtOnVideo = res.filter(cmt => {return cmt.replyToCommentId===null});
-    let cmtReplyCmt = res.filter(cmt => {return cmt.replyToCommentId!==null});
 
-    cmtOnVideo.map(cmtOnVid=>{
+    let cmtOnVideo = res.filter((cmt) => {
+      return cmt.replyToCommentId === null;
+    });
+    let cmtReplyCmt = res.filter((cmt) => {
+      return cmt.replyToCommentId !== null;
+    });
+
+    cmtOnVideo.map((cmtOnVid) => {
       cmtOnVid.listReplyComments = [];
       return cmtOnVid;
-    })
-    cmtReplyCmt.forEach(cmt => {
-      cmtOnVideo.map(cmtOnVid=>{
-        if(cmtOnVid.commentId === cmt.replyToCommentId){
+    });
+    cmtReplyCmt.forEach((cmt) => {
+      cmtOnVideo.map((cmtOnVid) => {
+        if (cmtOnVid.commentId === cmt.replyToCommentId) {
           cmtOnVid.listReplyComments.push(cmt);
         }
 
         return cmtOnVid;
-      })
-    })
+      });
+    });
     setListComment(cmtOnVideo);
     console.log(cmtOnVideo);
   }
@@ -89,9 +92,9 @@ function StudentCourseChapterMaterialDetail() {
       commentMessage: comment.commentMessage,
       eduCourseMaterialId: chapterMaterialId,
       replyToCommentId: comment.replyToCommentId,
-    }
+    };
 
-    if(comment.commentMessage!==""){
+    if (comment.commentMessage !== "") {
       let commentPost = await authPost(
         dispatch,
         token,
@@ -101,7 +104,7 @@ function StudentCourseChapterMaterialDetail() {
     }
 
     // if flag change, rerender listcomment
-    setFlag(!flag)
+    setFlag(!flag);
     //   console.log(commentPost);
     //   if(commentPost.commentId){
     //     if(!commentPost.replyToCommentId){
@@ -123,15 +126,15 @@ function StudentCourseChapterMaterialDetail() {
     //   }
     //   console.log(listComment)
     // }
-  }
+  };
 
   const getMessageFromInput = (message, replyToCommentId) => {
     setComment({
       ...comment,
       commentMessage: message,
-      replyToCommentId
-    })
-  }
+      replyToCommentId,
+    });
+  };
 
   useEffect(() => {
     getCourseChapterMaterialDetail();
@@ -141,30 +144,34 @@ function StudentCourseChapterMaterialDetail() {
 
   return (
     <>
-    <Card>
-      <CardContent>
-        Quay về chương:{" "}
-        <Link to={"/edu/student/course/chapter/detail/" + chapterId}>
-          {chapterName}
-        </Link>
-        <Player id={sourceId} />
-      </CardContent>
-    </Card>
-    <Card className={classes.root}>
-      <InputComment
-        getMessageFromInput={getMessageFromInput}
-        commentOnCourse={commentOnCourse}
-      />
-      {listComment.length=== 0 &&<div className={classes.noComment}>Video này chưa có bình luận nào</div>}
-      {listComment.length >= 0 &&
-        listComment.map(cmt => 
-        <CommentItem
-          comment={cmt}
+      <Card>
+        <CardContent>
+          Quay về chương:{" "}
+          <Link to={"/edu/student/course/chapter/detail/" + chapterId}>
+            {chapterName}
+          </Link>
+          <Player id={sourceId} />
+        </CardContent>
+      </Card>
+      <Card className={classes.root}>
+        <InputComment
           getMessageFromInput={getMessageFromInput}
           commentOnCourse={commentOnCourse}
-        />)
-      }
-    </Card>
+        />
+        {listComment.length === 0 && (
+          <div className={classes.noComment}>
+            Video này chưa có bình luận nào
+          </div>
+        )}
+        {listComment.length >= 0 &&
+          listComment.map((cmt) => (
+            <CommentItem
+              comment={cmt}
+              getMessageFromInput={getMessageFromInput}
+              commentOnCourse={commentOnCourse}
+            />
+          ))}
+      </Card>
     </>
   );
 }

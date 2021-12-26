@@ -5,6 +5,7 @@ import { useParams } from "react-router";
 import { Link, useHistory } from "react-router-dom";
 import { authGet } from "../../../api";
 import Player from "../../../utils/Player";
+import withScreenSecurity from "../../withScreenSecurity";
 
 function TeacherCourseChapterMaterialDetail() {
   const params = useParams();
@@ -45,4 +46,9 @@ function TeacherCourseChapterMaterialDetail() {
   );
 }
 
-export default TeacherCourseChapterMaterialDetail;
+const screenName = "SCREEN_EDUCATION_TEACHING_MANAGEMENT_TEACHER";
+export default withScreenSecurity(
+  TeacherCourseChapterMaterialDetail,
+  screenName,
+  true
+);

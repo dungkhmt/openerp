@@ -17,10 +17,11 @@ function StudentQuizList() {
     await registerQuiz(quizid);
     await getQuizList();
   }
-  const onClickQuizId = (quizid) => {
+  const onClickQuizId = (quizid, viewTypeId) => {
     console.log("click " + quizid);
     history.push("/edu/class/student/quiztest/detail", {
       testId: quizid,
+      viewTypeId: viewTypeId,
     });
   };
   const columns = [
@@ -37,7 +38,7 @@ function StudentQuizList() {
           <a
             style={{ cursor: "pointer" }}
             onClick={() => {
-              onClickQuizId(rowData["testId"]);
+              onClickQuizId(rowData["testId"], rowData["viewTypeId"]);
             }}
           >
             {" "}

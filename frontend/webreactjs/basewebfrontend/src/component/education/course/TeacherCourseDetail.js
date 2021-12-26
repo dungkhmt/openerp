@@ -6,6 +6,7 @@ import TeacherCourseChapterList from "./TeacherCourseChapterList";
 import TeacherCourseQuizList from "./TeacherCourseQuizList";
 import TeacherCourseTopicList from "./TeacherCourseTopicList";
 import TeacherViewCourseQuizList from "./TeacherViewCourseQuizList";
+import withScreenSecurity from "../../withScreenSecurity";
 
 function TeacherCourseDetail() {
   const params = useParams();
@@ -27,4 +28,5 @@ function TeacherCourseDetail() {
   );
 }
 
-export default TeacherCourseDetail;
+const screenName = "SCREEN_EDUCATION_TEACHING_MANAGEMENT_TEACHER";
+export default withScreenSecurity(TeacherCourseDetail, screenName, true);

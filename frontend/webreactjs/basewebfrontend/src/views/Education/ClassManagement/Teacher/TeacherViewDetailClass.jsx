@@ -29,6 +29,7 @@ import TeacherViewDetailClassGeneralInfo from "./TeacherViewDetailClassGeneralIn
 import TeacherViewLogUserQuizList from "../../../../component/education/course/TeacherViewLogUserQuizList";
 //import TeacherViewQuizDetail from "../../../../component/education/course/TeacherViewQuizDetail";
 import TeacherClassViewLearningSessionList from "./TeacherClassViewLearningSessionList";
+import withScreenSecurity from "../../../../component/withScreenSecurity";
 
 /*
 const useStyles = makeStyles((theme) => ({
@@ -61,7 +62,7 @@ const tabsLabel = [
   "Buổi học",
 ];
 
-export default function TeacherViewDetailClass() {
+function TeacherViewDetailClass() {
   const params = useParams();
   const classId = params.classId;
   //const history = useHistory();
@@ -111,3 +112,6 @@ export default function TeacherViewDetailClass() {
     </div>
   );
 }
+
+const screenName = "SCREEN_EDUCATION_TEACHING_MANAGEMENT_TEACHER";
+export default withScreenSecurity(TeacherViewDetailClass, screenName, true);

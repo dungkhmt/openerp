@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { authGet } from "../../../api";
+import withScreenSecurity from "../../withScreenSecurity";
 
 const nextLine = <pre></pre>;
 
@@ -242,4 +243,5 @@ function QuizTestList() {
   );
 }
 
-export default QuizTestList;
+const screenName = "SCREEN_VIEW_QUIZ_TEST_TEACHER";
+export default withScreenSecurity(QuizTestList, screenName, true);

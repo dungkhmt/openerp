@@ -7,8 +7,11 @@ import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import {
+  useDispatch,
+  //useSelector
+} from "react-redux";
+//import { useHistory } from "react-router-dom";
 import { request } from "../../../../api";
 
 // const useCheckBoxStyles = makeStyles((theme) => ({
@@ -36,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LearningSessionStudentViewQuizTestList(props) {
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
   //const token = useSelector((state) => state.auth.token);
   //const history = useHistory();
 
@@ -111,7 +114,7 @@ export default function LearningSessionStudentViewQuizTestList(props) {
     console.log(stateCheckBox);
     let listAns = [];
     Object.keys(stateCheckBox[quesId]).map((element, index) => {
-      if (stateCheckBox[quesId][element] == true) {
+      if (stateCheckBox[quesId][element] === true) {
         listAns.push(element);
       }
     });
