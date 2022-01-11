@@ -10,35 +10,34 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import React, { useState, useEffect } from "react";
-import {Link, useHistory} from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Editor, } from "react-draft-wysiwyg";
+import { Editor } from "react-draft-wysiwyg";
 import { ContentState, convertToRaw, EditorState } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import {authPost} from "../../../api";
-import {Button, TableHead} from "@material-ui/core";
+import { authPost } from "../../../api";
+import { Button, TableHead } from "@material-ui/core";
 import draftToHtml from "draftjs-to-html";
-import {API_URL} from "../../../config/config";
-import {cpp, cppLanguage} from '@codemirror/lang-cpp';
-import {java} from '@codemirror/lang-java';
-import {pythonLanguage} from '@codemirror/lang-python';
-import { go } from '@codemirror/legacy-modes/mode/go';
-import { javascript } from '@codemirror/lang-javascript';
-import { StreamLanguage } from '@codemirror/stream-parser';
+import { API_URL } from "../../../config/config";
+import { cpp, cppLanguage } from "@codemirror/lang-cpp";
+import { java } from "@codemirror/lang-java";
+import { pythonLanguage } from "@codemirror/lang-python";
+import { go } from "@codemirror/legacy-modes/mode/go";
+import { javascript } from "@codemirror/lang-javascript";
+import { StreamLanguage } from "@codemirror/stream-parser";
 import CodeMirror from "@uiw/react-codemirror";
-import {SubmitWarming} from "./SubmitWarming";
-import {CompileStatus} from "./CompileStatus";
-import {SubmitSuccess} from "./SubmitSuccess";
-import {useParams} from "react-router";
-import {request} from "./Request";
-import {sleep, StyledTableCell, StyledTableRow} from "./lib";
+import { SubmitWarming } from "./SubmitWarming";
+import { CompileStatus } from "./CompileStatus";
+import { SubmitSuccess } from "./SubmitSuccess";
+import { useParams } from "react-router";
+import { request } from "./Request";
+import { sleep, StyledTableCell, StyledTableRow } from "./lib";
 import htmlToDraft from "html-to-draftjs";
 import Paper from "@material-ui/core/Paper";
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@mui/material/TableBody";
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,16 +61,13 @@ const descriptionStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
       width: "100%",
       minWidth: 120,
-
     },
-
   },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
     maxWidth: 300,
   },
-
 }));
 
 const editorStyle = {
@@ -84,8 +80,8 @@ const editorStyle = {
   },
 };
 
-function EditProblem(){
-  const {problemId} = useParams();
+function EditProblem() {
+  const { problemId } = useParams();
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -99,9 +95,13 @@ function EditProblem(){
   const listCategory = [];
   const classes = useStyles();
   const descriptionClass = descriptionStyles();
-  const [editorStateDescription, setEditorStateDescription] = useState(EditorState.createEmpty());
-  const [editorStateSolution, setEditorStateSolution] = useState(EditorState.createEmpty());
-  const [codeSolution, setCodeSolution] = useState();
+  const [editorStateDescription, setEditorStateDescription] = useState(
+    EditorState.createEmpty()
+  );
+  const [editorStateSolution, setEditorStateSolution] = useState(
+    EditorState.createEmpty()
+  );
+  const [codeSolution, setCodeSolution] = useState("");
   const [languageSolution, setLanguageSolution] = useState("CPP");
   const computerLanguageList = ["CPP", "GOLANG", "JAVA", "PYTHON3"];
   const [showSubmitWarming, setShowSubmitWarming] = useState(false);
@@ -111,9 +111,9 @@ function EditProblem(){
   const [isPublic, setIsPublic] = useState(false);
   const [testCases, setTestCases] = useState([]);
 
-  useEffect( () =>{
+  useEffect(() => {
     console.log("problemid ", problemId);
-    let url = API_URL+"/problem-details/"+problemId;
+    let url = API_URL + "/problem-details/" + problemId;
     console.log("url ", url);
     request(
       "get",
@@ -129,47 +129,52 @@ function EditProblem(){
         setTimeLimit(res.data.timeLimit);
         setIsPublic(res.data.publicProblem);
         let problemDescriptionHtml = htmlToDraft(res.data.problemDescription);
-        let {contentBlocks, entityMap} = problemDescriptionHtml;
-        let contentDescriptionState = ContentState.createFromBlockArray(contentBlocks, entityMap);
-        let statementDescription = EditorState.createWithContent(contentDescriptionState);
+        let { contentBlocks, entityMap } = problemDescriptionHtml;
+        let contentDescriptionState = ContentState.createFromBlockArray(
+          contentBlocks,
+          entityMap
+        );
+        let statementDescription = EditorState.createWithContent(
+          contentDescriptionState
+        );
         setEditorStateDescription(statementDescription);
         console.log("statementDescription ", statementDescription);
         let solutionHtml = htmlToDraft(res.data.solution);
         let contentBlocks1 = solutionHtml.contentBlocks;
         let entityMap1 = solutionHtml.entityMap;
-        let contentSolutionState = ContentState.createFromBlockArray(contentBlocks1, entityMap1);
-        let statementSolution = EditorState.createWithContent(contentSolutionState);
+        let contentSolutionState = ContentState.createFromBlockArray(
+          contentBlocks1,
+          entityMap1
+        );
+        let statementSolution =
+          EditorState.createWithContent(contentSolutionState);
         setEditorStateSolution(statementSolution);
-
       },
       {}
-    ).then ();
-
+    ).then();
 
     request(
       "GET",
-      API_URL+"/get-test-case-list-by-problem/"+problemId,
+      API_URL + "/get-test-case-list-by-problem/" + problemId,
 
-      (res) =>{
+      (res) => {
         console.log("res", res.data);
         setTestCases(res.data);
       },
       {}
-    )
+    );
   }, [problemId]);
 
   const onChangeEditorStateDescription = (editorState) => {
     setEditorStateDescription(editorState);
   };
 
-
-
   const onChangeEditorStateSolution = (editorState) => {
     setEditorStateSolution(editorState);
-  }
+  };
 
-  const getExtension = () =>{
-    switch (languageSolution){
+  const getExtension = () => {
+    switch (languageSolution) {
       case "CPP":
         return [cppLanguage];
       case "GoLang":
@@ -181,14 +186,14 @@ function EditProblem(){
       default:
         return javascript();
     }
-  }
+  };
 
-  function checkCompile(){
+  function checkCompile() {
     console.log("check compile");
     let body = {
       source: codeSolution,
-      computerLanguage: languageSolution
-    }
+      computerLanguage: languageSolution,
+    };
     // authPost(dispatch, token, "/check-compile", body).then(
     //   (res) =>{
     //     console.log("res", res);
@@ -204,13 +209,13 @@ function EditProblem(){
     // )
     request(
       "post",
-      API_URL+"/check-compile",
-      (res)=>{
-        if(res.data.status == "Successful"){
+      API_URL + "/check-compile",
+      (res) => {
+        if (res.data.status == "Successful") {
           setShowCompile(true);
           setShowSubmitWarming(false);
           setStatusSuccessful(true);
-        }else{
+        } else {
           setShowCompile(true);
           setStatusSuccessful(false);
         }
@@ -220,14 +225,17 @@ function EditProblem(){
     ).then();
   }
 
-
-  function handleSubmit(){
-    if(!statusSuccessful){
+  function handleSubmit() {
+    if (!statusSuccessful) {
       setShowSubmitWarming(true);
       return;
     }
-    let description = draftToHtml(convertToRaw(editorStateDescription.getCurrentContent()));
-    let solution = draftToHtml(convertToRaw(editorStateSolution.getCurrentContent()));
+    let description = draftToHtml(
+      convertToRaw(editorStateDescription.getCurrentContent())
+    );
+    let solution = draftToHtml(
+      convertToRaw(editorStateSolution.getCurrentContent())
+    );
 
     let body = {
       problemName: problemName,
@@ -239,14 +247,14 @@ function EditProblem(){
       correctSolutionLanguage: languageSolution,
       solution: solution,
       correctSolutionSourceCode: codeSolution,
-    }
+    };
     request(
       "post",
-      API_URL+"/update-problem-detail/"+problemId,
-      (res) =>{
+      API_URL + "/update-problem-detail/" + problemId,
+      (res) => {
         console.log("res ", res);
         setShowSubmitSuccess(true);
-        sleep(1000).then(r => {
+        sleep(1000).then((r) => {
           history.push("/programming-contest/list-problems");
         });
       },
@@ -261,7 +269,7 @@ function EditProblem(){
         <Card>
           <CardContent>
             <Typography variant="h5" component="h2">
-              Edit Problem <Typography variant="h4" > {problemId}</Typography>
+              Edit Problem <Typography variant="h4"> {problemId}</Typography>
             </Typography>
             <form className={classes.root} noValidate autoComplete="off">
               <div>
@@ -275,8 +283,7 @@ function EditProblem(){
                   onChange={(event) => {
                     setProblemName(event.target.value);
                   }}
-                >
-                </TextField>
+                ></TextField>
 
                 <TextField
                   autoFocus
@@ -288,8 +295,7 @@ function EditProblem(){
                     setTimeLimit(event.target.value);
                   }}
                   value={timeLimit}
-                >
-                </TextField>
+                ></TextField>
 
                 <TextField
                   autoFocus
@@ -301,11 +307,9 @@ function EditProblem(){
                     setMemoryLimit(event.target.value);
                   }}
                   value={memoryLimit}
-                >
-                </TextField>
+                ></TextField>
 
                 <TextField
-
                   autoFocus
                   required
                   select
@@ -362,10 +366,13 @@ function EditProblem(){
                     {"false"}
                   </MenuItem>
                 </TextField>
-
               </div>
             </form>
-            <form className={descriptionClass.root} noValidate autoComplete="off">
+            <form
+              className={descriptionClass.root}
+              noValidate
+              autoComplete="off"
+            >
               <div>
                 <Typography>
                   <h2>Problem Description</h2>
@@ -395,7 +402,7 @@ function EditProblem(){
               <h2>Correct Solution Source Code</h2>
             </Typography>
             <TextField
-              style={{width:0.075*window.innerWidth, margin:20}}
+              style={{ width: 0.075 * window.innerWidth, margin: 20 }}
               variant={"outlined"}
               size={"small"}
               autoFocus
@@ -420,19 +427,18 @@ function EditProblem(){
                 setCodeSolution(value);
               }}
               autoFocus={false}
-
               value={codeSolution}
             />
             <CompileStatus
               showCompile={showCompile}
-              statusSuccessful={statusSuccessful}/>
-
+              statusSuccessful={statusSuccessful}
+            />
           </CardContent>
           <CardActions>
             <Button
               variant="contained"
               color="light"
-              style={{marginLeft:"45px"}}
+              style={{ marginLeft: "45px" }}
               onClick={checkCompile}
             >
               Check Solution Compile
@@ -460,49 +466,50 @@ function EditProblem(){
               </TableHead>
 
               <TableBody>
-                {
-                  testCases.map((testCase, idx) => (
-                    <StyledTableRow>
-                      <StyledTableCell component="th" scope="row">
-                        {idx}
-                      </StyledTableCell>
-                      <StyledTableCell align="left">
-                        {testCase.testCase}
-                      </StyledTableCell>
-                      <StyledTableCell align="left">
-                        {testCase.correctAns}
-                      </StyledTableCell>
-                      <StyledTableCell align="left">
-                        {testCase.point}
-                      </StyledTableCell>
-                      <StyledTableCell align="left">
-                        <Link to={"/programming-contest/edit-testcase/"+problemId+"/"+testCase.testCaseId}  style={{ textDecoration: 'none', color:"black", cursor:""}} >
-                          <Button
-                            variant="contained"
-                            color="light"
-                          >
-                            Edit
-                          </Button>
-                        </Link>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                    ))
-                }
-
+                {testCases.map((testCase, idx) => (
+                  <StyledTableRow>
+                    <StyledTableCell component="th" scope="row">
+                      {idx}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {testCase.testCase}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {testCase.correctAns}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {testCase.point}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <Link
+                        to={
+                          "/programming-contest/edit-testcase/" +
+                          problemId +
+                          "/" +
+                          testCase.testCaseId
+                        }
+                        style={{
+                          textDecoration: "none",
+                          color: "black",
+                          cursor: "",
+                        }}
+                      >
+                        <Button variant="contained" color="light">
+                          Edit
+                        </Button>
+                      </Link>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
               </TableBody>
-
             </Table>
           </TableContainer>
-
-
-
-
 
           <CardActions>
             <Button
               variant="contained"
               color="light"
-              style={{marginLeft:"45px"}}
+              style={{ marginLeft: "45px" }}
               onClick={handleSubmit}
             >
               Save
@@ -510,7 +517,8 @@ function EditProblem(){
 
             <SubmitSuccess
               showSubmitSuccess={showSubmitSuccess}
-              content={"You have saved problem"}/>
+              content={"You have saved problem"}
+            />
           </CardActions>
         </Card>
       </MuiPickersUtilsProvider>
@@ -518,4 +526,3 @@ function EditProblem(){
   );
 }
 export default EditProblem;
-
