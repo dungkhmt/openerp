@@ -217,3 +217,15 @@ create table solution_hint_to_quiz_question(
     constraint fk_solution_hint_to_quiz_question_question_id foreign key(question_id) references quiz_question(question_id),
     constraint fk_solution_hint_to_quiz_question_created_by_user_login_id foreign key(created_by_user_login_id) references user_login(user_login_id)
 );
+
+create table quiz_question_course_topic(
+  question_id uuid not null,
+  quiz_course_topic_id varchar(50),
+  from_date timestamp,
+  thru_date timestamp,
+    created_by_user_login_id varchar(60),
+    last_updated_stamp            TIMESTAMP,
+    created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+
+);

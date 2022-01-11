@@ -26,15 +26,21 @@ import { Chat } from "./menuconfig/chat";
 import { eduLearningManagement } from "./menuconfig/classmanagement/student";
 import { eduTeachingManagement } from "./menuconfig/classmanagement/teacher";
 import { DataAdministration } from "./menuconfig/dataadmin";
+import {
+  ProgrammingContestMenuTeacher,
+  ProgrammingContestMenuStudent,
+} from "./menuconfig/ProgramingContest";
 import { general } from "./menuconfig/general";
 import { teachingassignment } from "./menuconfig/teachingassignment";
 import { user } from "./menuconfig/user";
 
 export const MENU_LIST = [];
 MENU_LIST.push(general);
-// MENU_LIST.push(ProgrammingContestMenuConfig);
+MENU_LIST.push(ProgrammingContestMenuTeacher);
+MENU_LIST.push(ProgrammingContestMenuStudent);
 MENU_LIST.push(eduTeachingManagement);
 MENU_LIST.push(eduLearningManagement);
+
 MENU_LIST.push(DataAdministration);
 MENU_LIST.push(Chat);
 MENU_LIST.push(teachingassignment);

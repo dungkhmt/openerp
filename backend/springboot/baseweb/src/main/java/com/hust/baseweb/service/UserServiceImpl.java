@@ -480,7 +480,7 @@ public class UserServiceImpl implements UserService {
             UserRegister userRegister = userRegisterRepo.findById(userLoginId).orElse(null);
             String affiliations = "";
             if(userRegister != null) affiliations = userRegister.getAffiliations();
-            log.info("findPersonByUserLoginId, affiliations of " + userLoginId + " = " + affiliations);
+            //log.info("findPersonByUserLoginId, affiliations of " + userLoginId + " = " + affiliations);
             Person person = personRepo.findByPartyId(userLogin.getParty().getPartyId());
             if (person == null) {
                 log.info("findPersonByUserLoginId, person of " + userLoginId + " not exists");

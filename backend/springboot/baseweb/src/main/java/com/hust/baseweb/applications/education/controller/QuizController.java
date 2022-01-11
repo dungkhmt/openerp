@@ -64,7 +64,7 @@ public class QuizController {
     @GetMapping("/get-number-comments-on-quiz/{questionId}")
     public ResponseEntity<?> getNumberCommentsOnQuiz(Principal principal, @PathVariable UUID questionId){
         int nbr = commentOnQuizQuestionService.getNumberCommentsOnQuiz(questionId);
-        log.info("getNumberCommentsOnQuiz, questionId = " + questionId + " size = " + nbr);
+        //log.info("getNumberCommentsOnQuiz, questionId = " + questionId + " size = " + nbr);
         return ResponseEntity.ok().body(nbr);
     }
 
@@ -72,7 +72,7 @@ public class QuizController {
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @GetMapping("/get-all-quiz-course-topics")
     public ResponseEntity<?> getAllQuizCourseTopics(Principal principal) {
-        log.info("getAllQuizCourseTopics");
+        //log.info("getAllQuizCourseTopics");
         List<QuizCourseTopic> quizCourseTopics = quizCourseTopicService.findAll();
         return ResponseEntity.ok().body(quizCourseTopics);
     }
@@ -80,7 +80,7 @@ public class QuizController {
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @GetMapping("/edu/teacher/course/quiz/detail/{questionId}")
     public ResponseEntity<?> getAllQuizCourseTopics(Principal principal, @PathVariable UUID questionId) {
-        log.info("getQuizQuestion" + questionId);
+        //log.info("getQuizQuestion" + questionId);
         QuizQuestionDetailModel quizQuestionDetailModel = quizQuestionService.findById(questionId);
         return ResponseEntity.ok().body(quizQuestionDetailModel);
     }
@@ -117,7 +117,7 @@ public class QuizController {
         Principal principal, @RequestBody
         QuizCourseTopicCreateInputModel input
     ) {
-        log.info("createQuizCourseTopic, topicId = " + input.getQuizCourseTopicId());
+        //log.info("createQuizCourseTopic, topicId = " + input.getQuizCourseTopicId());
         QuizCourseTopic quizCourseTopic = quizCourseTopicService.save(input);
         return ResponseEntity.ok().body(quizCourseTopic);
     }
@@ -140,7 +140,13 @@ public class QuizController {
         lst.add("N");
         return ResponseEntity.ok().body(lst);
     }
-
+    @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
+    @PostMapping("/copy-quiz-question-to-course")
+    public ResponseEntity<?> copyQuizQuestionToAQuizTopic(Principal principal,
+                                                          @RequestBody AssignQuizQuestionToQuizCourseTopicIM input){
+        // TODO
+        return null;
+    }
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @PostMapping("/create-quiz-question")
     public ResponseEntity<?> createQuizQuestion(

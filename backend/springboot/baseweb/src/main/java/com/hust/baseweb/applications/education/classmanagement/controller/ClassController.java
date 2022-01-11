@@ -326,10 +326,10 @@ public class ClassController {
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @GetMapping("/get-course-chapter-material-detail/{id}")
     public ResponseEntity<?> getCourseChapterMaterialDetail(Principal principal, @PathVariable UUID id) {
-        log.info("getCourseChapterMaterialDetail, id = " + id);
+        //log.info("getCourseChapterMaterialDetail, id = " + id);
         UserLogin userLogin = userService.findById(principal.getName());
         logUserLoginCourseChapterMaterialService.logUserLoginMaterial(userLogin, id);
-        log.info("getCourseChapterMaterialDetail, id = " + id);
+        //log.info("getCourseChapterMaterialDetail, id = " + id);
         EduCourseChapterMaterial eduCourseChapterMaterial = eduCourseChapterMaterialService.findById(id);
         return ResponseEntity.ok().body(eduCourseChapterMaterial);
     }

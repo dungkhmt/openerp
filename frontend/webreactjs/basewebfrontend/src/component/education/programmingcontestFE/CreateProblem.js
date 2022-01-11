@@ -12,26 +12,26 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Editor, } from "react-draft-wysiwyg";
+import { Editor } from "react-draft-wysiwyg";
 import { ContentState, convertToRaw, EditorState } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import {authPost} from "../../../api";
-import {Button} from "@material-ui/core";
+import { authPost } from "../../../api";
+import { Button } from "@material-ui/core";
 import draftToHtml from "draftjs-to-html";
-import {API_URL} from "../../../config/config";
-import {cpp, cppLanguage} from '@codemirror/lang-cpp';
-import {java} from '@codemirror/lang-java';
-import {pythonLanguage} from '@codemirror/lang-python';
-import { go } from '@codemirror/legacy-modes/mode/go';
-import { javascript } from '@codemirror/lang-javascript';
-import { StreamLanguage } from '@codemirror/stream-parser';
+import { API_URL } from "../../../config/config";
+import { cpp, cppLanguage } from "@codemirror/lang-cpp";
+import { java } from "@codemirror/lang-java";
+import { pythonLanguage } from "@codemirror/lang-python";
+import { go } from "@codemirror/legacy-modes/mode/go";
+import { javascript } from "@codemirror/lang-javascript";
+import { StreamLanguage } from "@codemirror/stream-parser";
 import CodeMirror from "@uiw/react-codemirror";
-import {SubmitWarming} from "./SubmitWarming";
-import {CompileStatus} from "./CompileStatus";
-import {SubmitSuccess} from "./SubmitSuccess";
-import {errorNoti, successNoti} from "../../../utils/notification";
-import {request} from "./Request";
-import lib, {sleep} from "./lib";
+import { SubmitWarming } from "./SubmitWarming";
+import { CompileStatus } from "./CompileStatus";
+import { SubmitSuccess } from "./SubmitSuccess";
+import { errorNoti, successNoti } from "../../../utils/notification";
+import { request } from "./Request";
+import lib, { sleep } from "./lib";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,16 +55,13 @@ const descriptionStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
       width: "100%",
       minWidth: 120,
-
     },
-
   },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
     maxWidth: 300,
   },
-
 }));
 
 const editorStyle = {
@@ -77,7 +74,7 @@ const editorStyle = {
   },
 };
 
-function CreateProblem(){
+function CreateProblem() {
   const history = useHistory();
   const [problemId, setProblemID] = useState();
   const [problemName, setProblemName] = useState();
@@ -90,9 +87,13 @@ function CreateProblem(){
   const listCategory = [];
   const classes = useStyles();
   const descriptionClass = descriptionStyles();
-  const [editorStateDescription, setEditorStateDescription] = useState(EditorState.createEmpty());
-  const [editorStateSolution, setEditorStateSolution] = useState(EditorState.createEmpty());
-  const [codeSolution, setCodeSolution] = useState("");
+  const [editorStateDescription, setEditorStateDescription] = useState(
+    EditorState.createEmpty()
+  );
+  const [editorStateSolution, setEditorStateSolution] = useState(
+    EditorState.createEmpty()
+  );
+  const [codeSolution, setCodeSolution] = useState();
   const [languageSolution, setLanguageSolution] = useState("CPP");
   const computerLanguageList = ["CPP", "GOLANG", "JAVA", "PYTHON3"];
   const [showSubmitWarming, setShowSubmitWarming] = useState(false);
@@ -107,10 +108,10 @@ function CreateProblem(){
 
   const onChangeEditorStateSolution = (editorState) => {
     setEditorStateSolution(editorState);
-  }
+  };
 
-  const getExtension = () =>{
-    switch (languageSolution){
+  const getExtension = () => {
+    switch (languageSolution) {
       case "CPP":
         return [cppLanguage];
       case "GoLang":
@@ -122,24 +123,24 @@ function CreateProblem(){
       default:
         return javascript();
     }
-  }
+  };
 
-  function checkCompile(){
+  function checkCompile() {
     console.log("check compile");
     let body = {
       source: codeSolution,
-      computerLanguage: languageSolution
-    }
+      computerLanguage: languageSolution,
+    };
 
     request(
       "post",
-      API_URL+"/check-compile",
-      (res)=>{
-        if(res.data.status == "Successful"){
+      API_URL + "/check-compile",
+      (res) => {
+        if (res.data.status == "Successful") {
           setShowCompile(true);
           setShowSubmitWarming(false);
           setStatusSuccessful(true);
-        }else{
+        } else {
           setShowCompile(true);
           setStatusSuccessful(false);
         }
@@ -147,17 +148,19 @@ function CreateProblem(){
       {},
       body
     ).then();
-
   }
 
-
-  function handleSubmit(){
-    if(!statusSuccessful){
+  function handleSubmit() {
+    if (!statusSuccessful) {
       setShowSubmitWarming(true);
       return;
     }
-    let description = draftToHtml(convertToRaw(editorStateDescription.getCurrentContent()));
-    let solution = draftToHtml(convertToRaw(editorStateSolution.getCurrentContent()));
+    let description = draftToHtml(
+      convertToRaw(editorStateDescription.getCurrentContent())
+    );
+    let solution = draftToHtml(
+      convertToRaw(editorStateSolution.getCurrentContent())
+    );
     let body = {
       problemId: problemId,
       problemName: problemName,
@@ -170,14 +173,14 @@ function CreateProblem(){
       solution: solution,
       correctSolutionSourceCode: codeSolution,
       isPublic: isPublic,
-    }
+    };
     request(
       "post",
-      API_URL+"/create-problem",
-      (res) =>{
+      API_URL + "/create-problem",
+      (res) => {
         console.log("res ", res);
         setShowSubmitSuccess(true);
-        sleep(1000).then(r => {
+        sleep(1000).then((r) => {
           history.push("/programming-contest/list-problems");
         });
       },
@@ -185,7 +188,6 @@ function CreateProblem(){
       body
     ).then();
   }
-
 
   return (
     <div>
@@ -206,8 +208,7 @@ function CreateProblem(){
                   onChange={(event) => {
                     setProblemID(event.target.value);
                   }}
-                >
-                </TextField>
+                ></TextField>
                 <TextField
                   autoFocus
                   required
@@ -217,8 +218,7 @@ function CreateProblem(){
                   onChange={(event) => {
                     setProblemName(event.target.value);
                   }}
-                >
-                </TextField>
+                ></TextField>
 
                 <TextField
                   autoFocus
@@ -229,8 +229,7 @@ function CreateProblem(){
                   onChange={(event) => {
                     setTimeLimit(event.target.value);
                   }}
-                >
-                </TextField>
+                ></TextField>
 
                 <TextField
                   autoFocus
@@ -241,8 +240,7 @@ function CreateProblem(){
                   onChange={(event) => {
                     setMemoryLimit(event.target.value);
                   }}
-                >
-                </TextField>
+                ></TextField>
 
                 <TextField
                   autoFocus
@@ -280,20 +278,18 @@ function CreateProblem(){
                   ))}
                 </TextField>
 
-
                 <TextField
                   autoFocus
                   // required
                   select
-                  id="public problem"
-                  label="Public Problem"
-                  placeholder="Public Problem"
+                  id="categoryId"
+                  label="Category ID"
+                  placeholder="Category ID"
                   onChange={(event) => {
                     setIsPublic(event.target.value);
                   }}
                   value={isPublic}
                 >
-
                   <MenuItem key={"true"} value={true}>
                     {"true"}
                   </MenuItem>
@@ -301,10 +297,13 @@ function CreateProblem(){
                     {"false"}
                   </MenuItem>
                 </TextField>
-
               </div>
             </form>
-            <form className={descriptionClass.root} noValidate autoComplete="off">
+            <form
+              className={descriptionClass.root}
+              noValidate
+              autoComplete="off"
+            >
               <div>
                 <Typography>
                   <h2>Problem Description</h2>
@@ -334,7 +333,7 @@ function CreateProblem(){
               <h2>Correct Solution Source Code</h2>
             </Typography>
             <TextField
-              style={{width:0.075*window.innerWidth, margin:20}}
+              style={{ width: 0.075 * window.innerWidth, margin: 20 }}
               variant={"outlined"}
               size={"small"}
               autoFocus
@@ -352,7 +351,6 @@ function CreateProblem(){
               ))}
             </TextField>
             <CodeMirror
-              value={codeSolution}
               height={"500px"}
               width="100%"
               extensions={getExtension()}
@@ -363,14 +361,14 @@ function CreateProblem(){
             />
             <CompileStatus
               showCompile={showCompile}
-              statusSuccessful={statusSuccessful}/>
-
+              statusSuccessful={statusSuccessful}
+            />
           </CardContent>
           <CardActions>
             <Button
               variant="contained"
               color="light"
-              style={{marginLeft:"45px"}}
+              style={{ marginLeft: "45px" }}
               onClick={checkCompile}
             >
               Check Solution Compile
@@ -378,7 +376,7 @@ function CreateProblem(){
             <Button
               variant="contained"
               color="light"
-              style={{marginLeft:"45px"}}
+              style={{ marginLeft: "45px" }}
               onClick={handleSubmit}
             >
               Save
@@ -389,7 +387,8 @@ function CreateProblem(){
             />
             <SubmitSuccess
               showSubmitSuccess={showSubmitSuccess}
-              content={"You have saved problem"}/>
+              content={"You have saved problem"}
+            />
           </CardActions>
         </Card>
       </MuiPickersUtilsProvider>
@@ -397,4 +396,3 @@ function CreateProblem(){
   );
 }
 export default CreateProblem;
-
