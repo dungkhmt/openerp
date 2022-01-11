@@ -9,6 +9,7 @@ import { useNotificationState } from "../state/NotificationState";
 import NotFound from "../views/errors/NotFound";
 import AccountActivationRoute from "./AccountActivationRoute";
 import AdminRoute from "./AdminRoute";
+import ProgrammingContestRoutes from "./ProgrammingContestRoutes";
 
 const EduRoute = lazy(() => import("./EduRoute"));
 const UserLoginRoute = lazy(() => import("./UserLoginRoute"));
@@ -65,7 +66,7 @@ function MainAppRoute(props) {
 
           <PrivateRoute component={AdminRoute} path="/admin/data" />
           <PrivateRoute component={AccountActivationRoute} path="/activation" />
-
+          <PrivateRoute component={ProgrammingContestRoutes} path="/programming-contest" />
           <PrivateRoute
             component={TestGroupRoute}
             isAuthenticated={props.isAuthenticated}

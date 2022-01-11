@@ -82,6 +82,7 @@ create TABLE user_login
     created_stamp            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     otp_resend_number        INT       DEFAULT 0 NULL,
     party_id                 UUID,
+    email                   varchar(100),
     CONSTRAINT pk_user_login PRIMARY KEY (user_login_id),
     CONSTRAINT user_party FOREIGN KEY (party_id) REFERENCES party (party_id)
 );
