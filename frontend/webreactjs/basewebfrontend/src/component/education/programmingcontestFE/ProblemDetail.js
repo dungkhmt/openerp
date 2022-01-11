@@ -135,7 +135,8 @@ export default function ProblemDetail(props) {
     };
     request(
       "post",
-      API_URL + "/problem-detail-run-code/" + problemId,
+      //API_URL + "/problem-detail-run-code/" + problemId,
+      "/problem-detail-run-code/" + problemId,
       (res) => {
         setRun(true);
         setRunCodeLoading(false);
@@ -175,7 +176,8 @@ export default function ProblemDetail(props) {
 
     request(
       "post",
-      API_URL + "/problem-details-submission/" + problemId,
+      //API_URL + "/problem-details-submission/" + problemId,
+      "/problem-details-submission/" + problemId,
       (res) => {
         console.log("ressss ", res);
         problemSubmissionList.push(res.data);
@@ -195,7 +197,8 @@ export default function ProblemDetail(props) {
 
     request(
       "get",
-      API_URL + "/get-all-problem-submission-by-user/" + problemId,
+      //API_URL + "/get-all-problem-submission-by-user/" + problemId,
+      "/get-all-problem-submission-by-user/" + problemId,
       (res) => {
         console.log("list problem submission ", res);
         setProblemSubmissionList(res.data.contents);
@@ -203,12 +206,17 @@ export default function ProblemDetail(props) {
       }
     ).then();
 
-    request("get", API_URL + "/problem-details/" + problemId, (res) => {
-      console.log("res ", res);
-      setProblem(res.data);
-      setDescription(res.data.problemDescription);
-      setSolution(res.data.solution);
-    }).then();
+    request(
+      "get",
+      //API_URL + "/problem-details/" + problemId,
+      "/problem-details/" + problemId,
+      (res) => {
+        console.log("res ", res);
+        setProblem(res.data);
+        setDescription(res.data.problemDescription);
+        setSolution(res.data.solution);
+      }
+    ).then();
   }, []);
 
   return (
