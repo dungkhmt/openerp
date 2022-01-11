@@ -20,8 +20,8 @@ import {request} from "./Request";
 export default function CreateTestCase(props){
   const history = useHistory();
   const [value, setValue] = useState(0);
-  const [input, setInput] = useState();
-  const [result, setResult] = useState();
+  const [input, setInput] = useState("");
+  const [result, setResult] = useState("");
   const [screenHeight, setScreenHeight] = useState((window.innerHeight-300)/2 + "px");
   const {problemId} = useParams();
   const token = useSelector((state) => state.auth.token);
@@ -164,6 +164,7 @@ export default function CreateTestCase(props){
           <br/> <br/>
 
           <CodeMirror
+            value={input}
             height={"200px"}
             width="100%"
             onChange={(value, viewUpdate) => {

@@ -15,7 +15,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Editor } from "react-draft-wysiwyg";
 import { ContentState, convertToRaw, EditorState } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { authPost } from "../../../api";
 import { Button } from "@material-ui/core";
 import draftToHtml from "draftjs-to-html";
 import { API_URL } from "../../../config/config";
@@ -93,7 +92,7 @@ function CreateProblem() {
   const [editorStateSolution, setEditorStateSolution] = useState(
     EditorState.createEmpty()
   );
-  const [codeSolution, setCodeSolution] = useState();
+  const [codeSolution, setCodeSolution] = useState("");
   const [languageSolution, setLanguageSolution] = useState("CPP");
   const computerLanguageList = ["CPP", "GOLANG", "JAVA", "PYTHON3"];
   const [showSubmitWarming, setShowSubmitWarming] = useState(false);
@@ -351,6 +350,7 @@ function CreateProblem() {
               ))}
             </TextField>
             <CodeMirror
+              value={codeSolution}
               height={"500px"}
               width="100%"
               extensions={getExtension()}
@@ -359,6 +359,7 @@ function CreateProblem() {
               }}
               autoFocus={false}
             />
+
             <CompileStatus
               showCompile={showCompile}
               statusSuccessful={statusSuccessful}

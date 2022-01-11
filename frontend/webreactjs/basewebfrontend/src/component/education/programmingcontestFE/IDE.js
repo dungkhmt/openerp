@@ -21,7 +21,7 @@ function IDE(){
   const dispatch = useDispatch();
   const [computerLanguage, setComputerLanguage] = useState("CPP");
   const computerLanguageList = ["CPP", "GOLANG", "JAVA", "PYTHON3"];
-  const [source, setSource] = useState();
+  const [source, setSource] = useState("");
   const [screenHeight, setScreenHeight] = useState((window.innerHeight-200) + "px");
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
@@ -144,6 +144,7 @@ function IDE(){
       <Grid container spacing={12}>
         <Grid item xs={8}>
           <CodeMirror
+            value={source}
             height={screenHeight}
             width="100%"
             extensions={getExtension()}
