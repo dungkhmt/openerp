@@ -23,7 +23,7 @@ function ProblemSubmissionDetail(){
   const [runTime, setRunTime] = useState();
   const [score, setScore] = useState();
   const [submissionLanguage, setSubmissionLanguage] = useState();
-  const [submissionSource, setSubmissionSource] = useState();
+  const [submissionSource, setSubmissionSource] = useState("");
   const [submittedAt, setSubmittedAt] = useState();
   const [testCasePass, setTestCasePass] = useState();
   const [status, setStatus] = useState();

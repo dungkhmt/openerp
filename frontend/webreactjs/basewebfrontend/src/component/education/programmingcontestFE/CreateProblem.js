@@ -92,7 +92,7 @@ function CreateProblem(){
   const descriptionClass = descriptionStyles();
   const [editorStateDescription, setEditorStateDescription] = useState(EditorState.createEmpty());
   const [editorStateSolution, setEditorStateSolution] = useState(EditorState.createEmpty());
-  const [codeSolution, setCodeSolution] = useState();
+  const [codeSolution, setCodeSolution] = useState("");
   const [languageSolution, setLanguageSolution] = useState("CPP");
   const computerLanguageList = ["CPP", "GOLANG", "JAVA", "PYTHON3"];
   const [showSubmitWarming, setShowSubmitWarming] = useState(false);
@@ -285,9 +285,9 @@ function CreateProblem(){
                   autoFocus
                   // required
                   select
-                  id="categoryId"
-                  label="Category ID"
-                  placeholder="Category ID"
+                  id="public problem"
+                  label="Public Problem"
+                  placeholder="Public Problem"
                   onChange={(event) => {
                     setIsPublic(event.target.value);
                   }}
@@ -352,6 +352,7 @@ function CreateProblem(){
               ))}
             </TextField>
             <CodeMirror
+              value={codeSolution}
               height={"500px"}
               width="100%"
               extensions={getExtension()}

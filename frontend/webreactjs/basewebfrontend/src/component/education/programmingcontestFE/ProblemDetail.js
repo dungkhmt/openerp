@@ -75,7 +75,7 @@ export default function ProblemDetail(props){
   const [computerLanguage, setComputerLanguage] = useState("CPP");
   const computerLanguageList = ["CPP", "GOLANG", "JAVA", "PYTHON3"];
   const classes = useStyles();
-  const [source, setSource] = useState();
+  const [source, setSource] = useState("");
   const [showConsole, setShowConsole] = useState(false);
   const [screenHeight, setScreenHeight] = useState((window.innerHeight-180) + "px");
   const [runCodeLoading, setRunCodeLoading] = useState(false);
@@ -329,6 +329,7 @@ export default function ProblemDetail(props){
               }}
               autoFocus={false}
               theme={color}
+              value={source}
             />
             <Console
               showConsole={showConsole}

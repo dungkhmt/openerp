@@ -34,7 +34,7 @@ export function ContestProblemComponent(props){
   const [output, setOutput] = useState("");
   const [expected, setExpected] = useState();
   const [run, setRun] = useState(false);
-  const [input, setInput] = useState();
+  const [input, setInput] = useState("");
   const [testCaseResult, setTestCaseResult] = useState();
   const [runTestCaseLoad, setRunTestCaseLoad] = useState(false);
   const [runTestCaseShow, setRunTestCaseShow] = useState(false);
