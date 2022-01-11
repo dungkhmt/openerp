@@ -20,7 +20,7 @@ public interface ContestSubmissionRepo extends JpaRepository<ContestSubmissionEn
             "and csn.contest_id=:contest_id " +
             "and csn.user_submission_id = ul.user_login_id " +
             "inner join person  " +
-            "on person.person_id = ul.person_id " +
+            "on person.party_id = ul.party_id " +
             "group by problem_id, user_submission_id, ul.email, problem_id, user_submission_id, person.first_name, person.middle_name, person.last_name) " +
             "as cur group by user_submission_id, email, first_name, middle_name, last_name order by point desc "
             ,
