@@ -19,4 +19,5 @@ public class CommentOnQuizQuestionDetailOM {
     private String createdByUserLoginId;
     private String fullNameOfCreator;
     private Date createdStamp;
+    private UUID replyToCommentId;
 }

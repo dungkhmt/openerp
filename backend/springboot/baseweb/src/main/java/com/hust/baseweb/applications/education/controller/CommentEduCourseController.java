@@ -24,14 +24,14 @@ public class CommentEduCourseController {
     public ResponseEntity<?> createComment(
         Principal principal,
         @RequestBody CommentsEduCourseMaterial input
-        ){
+    ){
         UserLogin u = userService.findById(principal.getName());
         CommentsEduCourseMaterial commentsEduCourseMaterial = commentsEduCourseMaterialService.createComment(
             input.getEduCourseMaterialId(),
             input.getReplyToCommentId(),
             input.getCommentMessage(),
             u
-            );
+        );
         return ResponseEntity.ok().body(commentsEduCourseMaterial);
     }
 
@@ -42,5 +42,45 @@ public class CommentEduCourseController {
     ){
         List<CommentEduCourseDetailOM> lst = commentsEduCourseMaterialService.findByEduCourseMaterialId(eduCourseMaterialId);
         return ResponseEntity.ok().body(lst);
+    }
+
+    @GetMapping("/edu/class/main-comment/{eduCourseMaterialId}")
+    public ResponseEntity<?> getListMainCommentsOnEduCourse(
+        Principal principal,
+        @PathVariable UUID eduCourseMaterialId
+    ){
+        List<CommentEduCourseDetailOM> lst = commentsEduCourseMaterialService.findByEduCourseMaterialIdWithoutReplyComment(eduCourseMaterialId);
+        return ResponseEntity.ok().body(lst);
+    }
+
+    @GetMapping("/edu/class/reply-comment/{commentId}")
+    public ResponseEntity<?> getListReplyCommentByCommentId(
+        Principal principal,
+        @PathVariable UUID commentId
+    ){
+        List<CommentEduCourseDetailOM> lst = commentsEduCourseMaterialService.findByReplyCommentId(commentId);
+        return ResponseEntity.ok().body(lst);
+    }
+
+    @PutMapping("/edu/class/comment/{commentId}")
+    public ResponseEntity<?> editCommentOnEduCourse(
+        Principal principal,
+        @RequestBody CommentsEduCourseMaterial input,
+        @PathVariable UUID commentId
+    ){
+        CommentsEduCourseMaterial commentsEduCourseMaterial = commentsEduCourseMaterialService.editCommentEduCourse(
+            commentId,
+            input.getCommentMessage()
+        );
+        return ResponseEntity.ok().body(commentsEduCourseMaterial);
+    }
+
+    @DeleteMapping("/edu/class/comment/{commentId}")
+    public ResponseEntity<?> deleteCommentOnEduCourse(
+        Principal principal,
+        @PathVariable UUID commentId
+    ){
+        commentsEduCourseMaterialService.deleteCommentEduCourse(commentId);
+        return ResponseEntity.ok().body(commentId);
     }
 }

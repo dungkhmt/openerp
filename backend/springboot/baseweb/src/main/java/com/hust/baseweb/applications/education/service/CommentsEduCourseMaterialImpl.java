@@ -29,7 +29,7 @@ public class CommentsEduCourseMaterialImpl implements CommentsEduCourseMaterialS
         UUID replyToCommentId,
         String comment,
         UserLogin u
-        ) {
+    ) {
         CommentsEduCourseMaterial commentsEduCourseMaterial = new CommentsEduCourseMaterial();
         commentsEduCourseMaterial.setCommentMessage(comment);
         commentsEduCourseMaterial.setEduCourseMaterialId(eduCourseMaterialId);
@@ -60,10 +60,76 @@ public class CommentsEduCourseMaterialImpl implements CommentsEduCourseMaterialS
             PersonModel person = userService.findPersonByUserLoginId(cmtDetail.getPostedByUserLoginId());
             if(person != null){
                 cmtDetail.setFullNameOfCreator(person.getLastName() + " " + person.getMiddleName()
-                                        + " " + person.getFirstName());
+                                               + " " + person.getFirstName());
             }
             list.add(cmtDetail);
         }
         return list;
+    }
+
+    @Override
+    public List<CommentEduCourseDetailOM> findByEduCourseMaterialIdWithoutReplyComment(UUID eduCourseMaterialId){
+        List<CommentsEduCourseMaterial> lst = commentsEduCourseMaterialRepo.findByEduCourseMaterialIdWithoutReplyComment(eduCourseMaterialId);
+        List<CommentEduCourseDetailOM> list = new ArrayList();
+        for(CommentsEduCourseMaterial cmt: lst){
+            // get info of comment detail
+            CommentEduCourseDetailOM cmtDetail = new CommentEduCourseDetailOM();
+            cmtDetail.setCommentId(cmt.getCommentId());
+            cmtDetail.setReplyToCommentId(cmt.getReplyToCommentId());
+            cmtDetail.setCommentMessage(cmt.getCommentMessage());
+            cmtDetail.setPostedByUserLoginId(cmt.getPostedByUserLoginId());
+            cmtDetail.setCreatedStamp(cmt.getCreatedStamp());
+
+            //get name of comment' person
+            PersonModel person = userService.findPersonByUserLoginId(cmtDetail.getPostedByUserLoginId());
+            if(person != null){
+                cmtDetail.setFullNameOfCreator(person.getLastName() + " " + person.getMiddleName()
+                                               + " " + person.getFirstName());
+            }
+            list.add(cmtDetail);
+        }
+        return list;
+    }
+
+    @Override
+    public List<CommentEduCourseDetailOM> findByReplyCommentId(UUID commentId){
+        List<CommentsEduCourseMaterial> lst = commentsEduCourseMaterialRepo.findByReplyToCommentId(commentId);
+        List<CommentEduCourseDetailOM> list = new ArrayList();
+        for(CommentsEduCourseMaterial cmt: lst){
+            // get info of comment detail
+            CommentEduCourseDetailOM cmtDetail = new CommentEduCourseDetailOM();
+            cmtDetail.setCommentId(cmt.getCommentId());
+            cmtDetail.setReplyToCommentId(cmt.getReplyToCommentId());
+            cmtDetail.setCommentMessage(cmt.getCommentMessage());
+            cmtDetail.setPostedByUserLoginId(cmt.getPostedByUserLoginId());
+            cmtDetail.setCreatedStamp(cmt.getCreatedStamp());
+
+            //get name of comment' person
+            PersonModel person = userService.findPersonByUserLoginId(cmtDetail.getPostedByUserLoginId());
+            if(person != null){
+                cmtDetail.setFullNameOfCreator(person.getLastName() + " " + person.getMiddleName()
+                                               + " " + person.getFirstName());
+            }
+            list.add(cmtDetail);
+        }
+        return list;
+    }
+
+    @Override
+    public CommentsEduCourseMaterial editCommentEduCourse(UUID commentId, String comment){
+
+        CommentsEduCourseMaterial newComment = commentsEduCourseMaterialRepo.findByCommentId(commentId);
+        newComment.setCommentMessage(comment);
+        newComment = commentsEduCourseMaterialRepo.save(newComment);
+        return newComment;
+    }
+
+    @Override
+    public CommentsEduCourseMaterial deleteCommentEduCourse(UUID commentId){
+        CommentsEduCourseMaterial deleteCmt = commentsEduCourseMaterialRepo.findByCommentId(commentId);
+        commentsEduCourseMaterialRepo.deleteAllByReplyToCommentId(commentId);
+        commentsEduCourseMaterialRepo.deleteById(commentId);
+
+        return deleteCmt;
     }
 }

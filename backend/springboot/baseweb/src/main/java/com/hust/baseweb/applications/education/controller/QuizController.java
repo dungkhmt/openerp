@@ -52,8 +52,14 @@ public class QuizController {
         UserLogin u = userService.findById(principal.getName());
         log.info("postCommentOnQuizQuestion, user " + u.getUserLoginId() + " post comments = " + input.getComment());
 
-        CommentOnQuizQuestion commentOnQuizQuestion = commentOnQuizQuestionService.createComment(input.getQuestionId(), input.getComment(), u);
+        //CommentOnQuizQuestion commentOnQuizQuestion = commentOnQuizQuestionService.createComment(input.getQuestionId(), input.getComment(), u);
 
+        CommentOnQuizQuestion commentOnQuizQuestion = commentOnQuizQuestionService.createComment(
+            input.getQuestionId(),
+            input.getComment(),
+            input.getReplyToCommentId(),
+            u
+        );
         return ResponseEntity.ok().body(commentOnQuizQuestion);
     }
     @GetMapping("/get-list-comments-on-quiz/{questionId}")

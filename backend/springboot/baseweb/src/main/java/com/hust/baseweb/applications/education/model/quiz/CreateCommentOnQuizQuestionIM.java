@@ -14,4 +14,5 @@ import java.util.UUID;
 public class CreateCommentOnQuizQuestionIM {
     private String comment;
     private UUID questionId;
+    private UUID replyToCommentId;
 }

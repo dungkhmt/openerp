@@ -2,7 +2,6 @@ package com.hust.baseweb.applications.education.service;
 
 import com.hust.baseweb.applications.education.config.EducationConfigProperties;
 import com.hust.baseweb.applications.education.entity.CommentOnQuizQuestion;
-import com.hust.baseweb.applications.education.entity.QuizQuestion;
 import com.hust.baseweb.applications.education.model.quiz.CommentOnQuizQuestionDetailOM;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailModel;
 import com.hust.baseweb.applications.education.repo.CommentOnQuizQuestionRepo;
@@ -41,10 +40,11 @@ public class CommentOnQuizQuestionServiceImpl implements CommentOnQuizQuestionSe
     private EducationConfigProperties properties;
 
     @Override
-    public CommentOnQuizQuestion createComment(UUID questionId, String comment, UserLogin u) {
+    public CommentOnQuizQuestion createComment(UUID questionId, String comment, UUID replyToCommentId, UserLogin u) {
         CommentOnQuizQuestion commentOnQuizQuestion = new CommentOnQuizQuestion();
         commentOnQuizQuestion.setCommentText(comment);
         commentOnQuizQuestion.setQuestionId(questionId);
+        commentOnQuizQuestion.setReplyToCommentId(replyToCommentId);
         commentOnQuizQuestion.setCreatedByUserLoginId(u.getUserLoginId());
         commentOnQuizQuestion.setCreatedStamp(new Date());
         commentOnQuizQuestion.setStatusId(CommentOnQuizQuestion.STATUS_CREATED);
@@ -62,7 +62,7 @@ public class CommentOnQuizQuestionServiceImpl implements CommentOnQuizQuestionSe
         String url = "/edu/teacher/course/quiz/view/detail/" + questionId + "/" + q.getQuizCourseTopic().getEduCourse().getId();
 
         log.info("createComment, push notification from " + fromUserLoginId + " to " + toUserLoginId
-        + " msg = " + msg + ", url = " + url);
+                 + " msg = " + msg + ", url = " + url);
         notificationsService.create(fromUserLoginId, toUserLoginId, msg,url);
 
         return commentOnQuizQuestion;
@@ -70,14 +70,16 @@ public class CommentOnQuizQuestionServiceImpl implements CommentOnQuizQuestionSe
 
     @Override
     public List<CommentOnQuizQuestionDetailOM> findByQuestionId(UUID questionId) {
-        List<CommentOnQuizQuestion> lst = commentOnQuizQuestionRepo.findAllByQuestionId(questionId);
+        List<CommentOnQuizQuestion> lst = commentOnQuizQuestionRepo.findAllByQuestionIdWithoutReplyComment(questionId);
         List<CommentOnQuizQuestionDetailOM> list = new ArrayList();
         for(CommentOnQuizQuestion c: lst){
             CommentOnQuizQuestionDetailOM cd = new CommentOnQuizQuestionDetailOM();
             cd.setCommentId(c.getCommentId());
             cd.setCommentText(c.getCommentText());
+            cd.setQuestionId(c.getQuestionId());
             cd.setCreatedByUserLoginId(c.getCreatedByUserLoginId());
             cd.setCreatedStamp(c.getCreatedStamp());
+            cd.setReplyToCommentId(c.getReplyToCommentId());
 
             PersonModel person = userService.findPersonByUserLoginId(c.getCreatedByUserLoginId());
             if(person != null){
@@ -88,9 +90,52 @@ public class CommentOnQuizQuestionServiceImpl implements CommentOnQuizQuestionSe
         }
         return list;
     }
+
+    @Override
+    public List<CommentOnQuizQuestionDetailOM> findByReplyToCommentId(UUID questionId) {
+        List<CommentOnQuizQuestion> lst = commentOnQuizQuestionRepo.findAllByReplyToCommentId(questionId);
+        List<CommentOnQuizQuestionDetailOM> list = new ArrayList();
+        for(CommentOnQuizQuestion c: lst){
+            CommentOnQuizQuestionDetailOM cd = new CommentOnQuizQuestionDetailOM();
+            cd.setCommentId(c.getCommentId());
+            cd.setCommentText(c.getCommentText());
+            cd.setCreatedByUserLoginId(c.getCreatedByUserLoginId());
+            cd.setCreatedStamp(c.getCreatedStamp());
+            cd.setReplyToCommentId(c.getReplyToCommentId());
+
+            PersonModel person = userService.findPersonByUserLoginId(c.getCreatedByUserLoginId());
+            if(person != null){
+                cd.setFullNameOfCreator(person.getLastName() + " " + person.getMiddleName()
+                                        + " " + person.getFirstName());
+            }
+            list.add(cd);
+        }
+        return list;
+    }
+
     @Override
     public int getNumberCommentsOnQuiz(UUID questionId){
         int nbr = commentOnQuizQuestionRepo.getNumberCommentsOnQuiz(questionId);
         return nbr;
+    }
+
+    @Override
+    public CommentOnQuizQuestion deleteCommentOnQuiz(UUID commentId){
+        CommentOnQuizQuestion deleteComment = commentOnQuizQuestionRepo.findByCommentId(commentId);
+
+        commentOnQuizQuestionRepo.deleteReplyCommentByCommentId(commentId);
+        commentOnQuizQuestionRepo.deleteByCommentId(commentId);
+
+        return deleteComment;
+    }
+
+    @Override
+    public CommentOnQuizQuestion updateComment(UUID commentId, String commentText){
+        CommentOnQuizQuestion deleteComment = commentOnQuizQuestionRepo.findByCommentId(commentId);
+        deleteComment.setCommentText(commentText);
+
+        deleteComment = commentOnQuizQuestionRepo.save(deleteComment);
+
+        return deleteComment;
     }
 }
