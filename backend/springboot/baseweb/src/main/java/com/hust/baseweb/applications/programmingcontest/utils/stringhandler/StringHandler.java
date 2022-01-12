@@ -31,7 +31,9 @@ public class StringHandler {
         int cnt = 0;
         int score = 0;
         for(int i = 0; i < testCaseAns.size(); i++){
-            if(replaceSpace(testCaseAns.get(i)).equals(replaceSpace(ans[i]))){
+            String a = replaceSpace(testCaseAns.get(i));
+            String b = replaceSpace(ans[i]);
+            if(!a.equals(b)){
                 if(status == null && ans[i].contains("Time Limit Exceeded")){
                     status = "Time Limit Exceeded";
                 }else{
@@ -61,6 +63,6 @@ public class StringHandler {
 
         s = s.replaceAll("\n", " ");
         return s.replaceAll("( +)", " ").trim();
+
     }
 }
-
