@@ -1,7 +1,6 @@
-package com.hust.baseweb.applications.programmingcontest.utils.executor;
+package com.hust.minileetcode.utils.executor;
 
-
-import com.hust.baseweb.applications.programmingcontest.entity.TestCaseEntity;
+import com.hust.minileetcode.entity.TestCaseEntity;
 
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class Python3Executor {
                 + source + "\n"
                 + "EOF" + "\n"
                 + buildCmd +"\n"
-                + "if  [-d __pycache__]; then" +"\n"
+                + "if  [ -d __pycache__ ]; then" +"\n"
                 + "  echo Successful\n"
                 + "else\n"
                 + "  echo Compile Error\n"
@@ -68,7 +67,7 @@ public class Python3Executor {
                 + source + "\n"
                 + "EOF" + "\n"
                 + buildCmd +"\n"
-                + "if  [-d __pycache__]; then" +"\n"
+                + "if  [ -d __pycache__ ]; then" +"\n"
                 + genTestCase +"\n"
                 + "n=0\n"
                 + "start=$(date +%s%N)\n"
