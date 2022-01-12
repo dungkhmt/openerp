@@ -60,7 +60,7 @@ public class StringHandler {
         }
 
         s = s.replaceAll("\n", " ");
-        return s.replaceAll("( +)", " ");
+        return s.replaceAll("( +)", " ").trim();
     }
 }
 
