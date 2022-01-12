@@ -1,6 +1,7 @@
-package com.hust.minileetcode.utils.executor;
+package com.hust.baseweb.applications.programmingcontest.utils.executor;
 
-import com.hust.minileetcode.entity.TestCaseEntity;
+
+import com.hust.baseweb.applications.programmingcontest.entity.TestCaseEntity;
 
 import java.util.List;
 

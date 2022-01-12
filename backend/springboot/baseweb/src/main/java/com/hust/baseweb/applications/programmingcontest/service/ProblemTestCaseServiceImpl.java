@@ -828,7 +828,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             default:
                 throw new Exception(exception);
         }
-        tempDir.pushToConcurrentLinkedQueue(tempName);
+//        tempDir.pushToConcurrentLinkedQueue(tempName);
         return ans;
     }
 

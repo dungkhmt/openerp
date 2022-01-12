@@ -10,6 +10,7 @@ import NotFound from "../views/errors/NotFound";
 import AccountActivationRoute from "./AccountActivationRoute";
 import AdminRoute from "./AdminRoute";
 import ProgrammingContestRoutes from "./ProgrammingContestRoutes";
+import ChatRoute from "./ChatRoute";
 
 const EduRoute = lazy(() => import("./EduRoute"));
 const UserLoginRoute = lazy(() => import("./UserLoginRoute"));
@@ -65,8 +66,12 @@ function MainAppRoute(props) {
           <PrivateRoute component={EduRoute} path="/edu" />
 
           <PrivateRoute component={AdminRoute} path="/admin/data" />
+          <PrivateRoute component={ChatRoute} path="/chat" />
           <PrivateRoute component={AccountActivationRoute} path="/activation" />
-          <PrivateRoute component={ProgrammingContestRoutes} path="/programming-contest" />
+          <PrivateRoute
+            component={ProgrammingContestRoutes}
+            path="/programming-contest"
+          />
           <PrivateRoute
             component={TestGroupRoute}
             isAuthenticated={props.isAuthenticated}
