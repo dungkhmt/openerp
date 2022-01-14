@@ -256,7 +256,7 @@ export default function EditContest(props) {
   function handleSubmit() {
     let body = {
       contestName: contestName,
-      contestTime: contestTime,
+      contestSolvingTime: contestTime,
       problemIds: problemSelected,
     };
     request(
