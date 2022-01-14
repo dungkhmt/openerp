@@ -87,6 +87,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         problemEntity.setCategoryId(modelCreateContestProblem.getCategoryId());
         problemEntity.setSolution(modelCreateContestProblem.getSolution());
         problemEntity.setTimeLimit(modelCreateContestProblem.getTimeLimit());
+        problemEntity.setPublicProblem(modelCreateContestProblem.getIsPublic());
         problemEntity.setCorrectSolutionLanguage(modelCreateContestProblem.getCorrectSolutionLanguage());
         problemEntity.setCorrectSolutionSourceCode(modelCreateContestProblem.getCorrectSolutionSourceCode());
         try {

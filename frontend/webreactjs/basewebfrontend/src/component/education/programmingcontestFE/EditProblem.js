@@ -245,6 +245,7 @@ function EditProblem() {
       timeLimit: timeLimit,
       levelId: levelId,
       categoryId: categoryId,
+      isPublic: isPublic,
       memoryLimit: memoryLimit,
       correctSolutionLanguage: languageSolution,
       solution: solution,
@@ -354,9 +355,9 @@ function EditProblem() {
                   autoFocus
                   // required
                   select
-                  id="categoryId"
-                  label="Category ID"
-                  placeholder="Category ID"
+                  id="isPublic"
+                  label="Public"
+                  placeholder="Public"
                   onChange={(event) => {
                     setIsPublic(event.target.value);
                   }}
