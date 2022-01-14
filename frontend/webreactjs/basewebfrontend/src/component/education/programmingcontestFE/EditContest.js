@@ -287,7 +287,7 @@ export default function EditContest(props) {
       }
     ).then();
 
-    request("get", "/get-contest-detail-teacher/" + contestId, (res) => {
+    request("get", "/get-contest-detail/" + contestId, (res) => {
       setContestTime(res.data.contestTime);
       let arr = [];
       res.data.list.map((p) => {
