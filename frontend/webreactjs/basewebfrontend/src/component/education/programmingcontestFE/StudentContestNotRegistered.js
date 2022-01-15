@@ -31,7 +31,7 @@ export function StudentContestNotRegistered(){
   async function getContestList() {
     request(
       "get",
-      API_URL+"/get-contest-paging-not-registered?size="+pageSize+"&page="+(page-1),
+      "/get-contest-paging-not-registered?size="+pageSize+"&page="+(page-1),
       (res)=>{
         console.log("contest list", res.data);
         setTotalPage(res.data.totalPages);
@@ -80,7 +80,7 @@ export function StudentContestNotRegistered(){
                         onClick={() => {
                           request(
                             "post",
-                            API_URL+"/student-register-contest/"+contest.contestId,
+                            "/student-register-contest/"+contest.contestId,
                             (res)=>{
                               console.log("res ", res.data);
                               successNoti(res.data.message, true);

@@ -255,7 +255,7 @@ export default function CreateContest(props){
     }
     request(
       "post",
-      API_URL+"/create-contest",
+      "/create-contest",
       (res)=>{
         // console.log("problem list", res.data);
         setShowSubmitSuccess(true);
@@ -273,7 +273,7 @@ export default function CreateContest(props){
   useEffect(() =>{
     request(
       "get",
-      API_URL+"/get-contest-problem-paging?size="+pageSize+"&page="+(page-1),
+      "/get-contest-problem-paging?size="+pageSize+"&page="+(page-1),
       (res)=>{
         // console.log("problem list", res.data);
         setTotalPages(res.data.totalPages);

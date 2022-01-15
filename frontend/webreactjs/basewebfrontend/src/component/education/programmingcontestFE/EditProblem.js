@@ -114,11 +114,11 @@ function EditProblem() {
 
   useEffect(() => {
     console.log("problemid ", problemId);
-    let url = API_URL + "/problem-details/" + problemId;
+    let url =  "/problem-details/" + problemId;
     console.log("url ", url);
     request(
       "get",
-      API_URL + "/problem-details/" + problemId,
+       "/problem-details/" + problemId,
       (res) => {
         console.log("res data", res.data);
         console.log(res.data.levelId);
@@ -156,7 +156,7 @@ function EditProblem() {
 
     request(
       "GET",
-      API_URL + "/get-test-case-list-by-problem/" + problemId,
+       "/get-test-case-list-by-problem/" + problemId,
 
       (res) => {
         console.log("res", res.data);
@@ -197,7 +197,7 @@ function EditProblem() {
     };
     request(
       "post",
-      API_URL + "/check-compile",
+       "/check-compile",
       (res) => {
         if (res.data.status == "Successful") {
           setShowCompile(true);
@@ -239,7 +239,7 @@ function EditProblem() {
     };
     request(
       "post",
-      API_URL + "/update-problem-detail/" + problemId,
+       "/update-problem-detail/" + problemId,
       (res) => {
         console.log("res ", res);
         setShowSubmitSuccess(true);

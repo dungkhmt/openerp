@@ -30,7 +30,7 @@ export function StudentContestRegistered(){
   async function getContestList() {
     request(
       "get",
-      API_URL+"/get-contest-paging-registered?size="+pageSize+"&page="+(page-1),
+      "/get-contest-paging-registered?size="+pageSize+"&page="+(page-1),
       (res)=>{
         console.log("contest list", res.data);
         setTotalPage(res.data.totalPages);

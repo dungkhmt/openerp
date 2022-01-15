@@ -48,7 +48,7 @@ function IDE(){
 
 
 
-    // await fetch(API_URL + "/ide/"+computerLanguage, {
+    // await fetch( "/ide/"+computerLanguage, {
     //   method: "POST",
     //   headers: {
     //     "content-type": "application/json",

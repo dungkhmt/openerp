@@ -174,7 +174,7 @@ export function ContestProblemComponent(props){
               }
               request(
                 "post",
-                API_URL + "/problem-detail-run-code/" + problemId,
+                 "/problem-detail-run-code/" + problemId,
                 (res) => {
                   setRun(true);
                   setRunCodeLoading(false);
@@ -226,7 +226,7 @@ export function ContestProblemComponent(props){
               };
               request(
                 "post",
-                API_URL+"/contest-submit-problem",
+                "/contest-submit-problem",
                 (res) =>{
                   setTestCaseResult(res.data);
                   console.log("run all test case");

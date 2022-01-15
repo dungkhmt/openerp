@@ -47,7 +47,7 @@ function ProblemSubmissionDetail(){
     console.log("problemSubmissionId ", problemSubmissionId);
     request(
       "get",
-      API_URL+"/get-problem-submission/"+problemSubmissionId,
+      "/get-problem-submission/"+problemSubmissionId,
       (res)=>{
         setMemoryUsage(res.data.memoryUsage);
         setProblemId(res.data.problemId);

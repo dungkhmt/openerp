@@ -69,7 +69,7 @@ export default function SolvingContest(){
     console.log("body ", body);
     request(
       "post",
-      API_URL+"/contest-submit-all",
+      "/contest-submit-all",
       (res) => {
         console.log("ok");
       }

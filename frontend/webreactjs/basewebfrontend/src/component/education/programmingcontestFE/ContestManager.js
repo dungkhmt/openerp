@@ -112,7 +112,7 @@ export function ContestManager(){
   function getUserPending(){
     request(
       "get",
-      API_URL+"/get-user-register-pending-contest/"+contestId+"?size="+pagePendingSize+"&page="+(pagePending-1),
+      "/get-user-register-pending-contest/"+contestId+"?size="+pagePendingSize+"&page="+(pagePending-1),
       (res) => {
         console.log("res pending", res.data);
         setPendings(res.data.contents.content);
@@ -124,7 +124,7 @@ export function ContestManager(){
   function getUserSuccessful(){
     request(
       "get",
-      API_URL+"/get-user-register-successful-contest/"+contestId+"?size="+pageSuccessfulSize+"&page="+(pageSuccessful-1),
+      "/get-user-register-successful-contest/"+contestId+"?size="+pageSuccessfulSize+"&page="+(pageSuccessful-1),
       (res) => {
         console.log("res pending", res.data);
         setSuccessful(res.data.contents.content);
@@ -136,7 +136,7 @@ export function ContestManager(){
   function getRanking(){
     request(
       "get",
-      API_URL+"/get-ranking-contest/"+contestId+"?size="+pageRankingSize+"&page="+(pageRanking-1),
+      "/get-ranking-contest/"+contestId+"?size="+pageRankingSize+"&page="+(pageRanking-1),
       (res) =>{
         console.log("ranking ", res.data);
         setTotalPageRanking(res.data.totalPages);
@@ -148,7 +148,7 @@ export function ContestManager(){
   function recalculatedRanking(){
     request(
       "post",
-      API_URL+"/recalculate-ranking/"+contestId
+      "/recalculate-ranking/"+contestId
     ).then(() =>{
       getRanking();
     })
@@ -157,7 +157,7 @@ export function ContestManager(){
   function searchUser(keyword){
     request(
       "get",
-      API_URL+"/search-user/"+contestId+"?size="+pageSearchSize+"&page="+(pageSearch-1)+"&keyword="+keyword,
+      "/search-user/"+contestId+"?size="+pageSearchSize+"&page="+(pageSearch-1)+"&keyword="+keyword,
       (res) => {
         console.log("res search", res);
         setSearchUsers(res.data.contents.content);
@@ -581,7 +581,7 @@ export function ContestManager(){
                                   successful.push(s);
                                   request(
                                     "POST",
-                                    API_URL+"/add-user-to-contest",
+                                    "/add-user-to-contest",
                                     {},
                                     {},
                                     body
@@ -617,7 +617,7 @@ export function ContestManager(){
 
                                 request(
                                   "POST",
-                                  API_URL+"/delete-user-contest",
+                                  "/delete-user-contest",
                                   {},
                                   {},
                                   body

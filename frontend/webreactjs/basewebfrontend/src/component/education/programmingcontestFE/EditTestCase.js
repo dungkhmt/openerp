@@ -42,7 +42,7 @@ export default function EditTestCase(props){
     }
     request(
       "POST",
-      API_URL+"/get-test-case-result/"+problemId,
+      "/get-test-case-result/"+problemId,
       (res) =>{
         console.log("res", res);
         setLoad(false);
@@ -69,7 +69,7 @@ export default function EditTestCase(props){
 
     request(
       "POST",
-      API_URL+"/update-test-case/"+testCaseId,
+      "/update-test-case/"+testCaseId,
 
       (res) =>{
         successNoti("Your test case is saved", true);
@@ -87,7 +87,7 @@ export default function EditTestCase(props){
 
     request(
       "GET",
-      API_URL+"/get-test-case-detail/"+testCaseId,
+      "/get-test-case-detail/"+testCaseId,
       (res) => {
         console.log("res", res)
         setDescription(res.data.problemDescription)

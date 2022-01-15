@@ -64,7 +64,7 @@ export default function ListPracticalProblem(){
     console.log("p ", page);
     request(
       "get",
-      API_URL+"/get-problem-public-paging?size="+pageSize+"&page="+(page-1),
+      "/get-problem-public-paging?size="+pageSize+"&page="+(page-1),
       (res)=>{
         console.log("problem list", res.data);
         setTotalPage(res.data.totalPages);

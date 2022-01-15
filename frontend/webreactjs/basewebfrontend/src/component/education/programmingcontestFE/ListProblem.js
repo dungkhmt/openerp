@@ -32,7 +32,7 @@ function ListProblem(){
     console.log("p ", page);
     request(
       "get",
-      API_URL+"/get-contest-problem-paging?size="+pageSize+"&page="+(page-1),
+      "/get-contest-problem-paging?size="+pageSize+"&page="+(page-1),
       (res)=>{
         console.log("problem list", res.data);
         setTotalPage(res.data.totalPages);

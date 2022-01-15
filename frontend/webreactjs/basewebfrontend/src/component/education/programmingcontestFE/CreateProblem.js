@@ -134,7 +134,7 @@ function CreateProblem() {
 
     request(
       "post",
-      API_URL + "/check-compile",
+       "/check-compile",
       (res) => {
         console.log("res check compile", res);
         if (res.data.status == "Successful") {
@@ -178,7 +178,7 @@ function CreateProblem() {
     };
     request(
       "post",
-      API_URL + "/create-problem",
+       "/create-problem",
       (res) => {
         console.log("res ", res);
         setShowSubmitSuccess(true);

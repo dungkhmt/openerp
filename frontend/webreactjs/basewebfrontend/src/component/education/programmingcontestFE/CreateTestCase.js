@@ -45,7 +45,7 @@ export default function CreateTestCase(props){
 
     request(
       "POST",
-      API_URL+"/get-test-case-result/"+problemId,
+      "/get-test-case-result/"+problemId,
       (res) =>{
         console.log("res", res);
         setLoad(false);
@@ -76,7 +76,7 @@ export default function CreateTestCase(props){
 
     request(
       "POST",
-      API_URL+"/save-test-case/"+problemId,
+      "/save-test-case/"+problemId,
       (res) =>{
         console.log("res", res);
         // setShowSubmitSuccess(true);
@@ -96,7 +96,7 @@ export default function CreateTestCase(props){
     console.log("token ", token);
     request(
       "GET",
-      API_URL+"/problem-details/"+problemId,
+      "/problem-details/"+problemId,
       (res) =>{
         console.log("res ", res);
         setDescription(res.data.problemDescription);
