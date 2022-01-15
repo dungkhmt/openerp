@@ -10,6 +10,7 @@ import {ScrollBox} from 'react-scroll-box'; // ES6
 
 import {Alert} from "@material-ui/lab";
 import ContestRunTestCase from "./ContestRunTestCase";
+import {Markup} from "interweave";
 
 
 function a11yProps(index) {
@@ -162,8 +163,10 @@ export function ConsoleOutput(props){
       }else if(compileError){
         return (
           <Alert severity="error">
-            Compile Error <br/>
-            {output}
+            Compile Error
+            <br/>
+            <Markup
+              content={output}/>
           </Alert>
         );
       }else{

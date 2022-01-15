@@ -110,6 +110,7 @@ function EditProblem() {
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
   const [testCases, setTestCases] = useState([]);
+  const [compileMessage, setCompileMessage] = useState("");
 
   useEffect(() => {
     console.log("problemid ", problemId);
@@ -117,8 +118,7 @@ function EditProblem() {
     console.log("url ", url);
     request(
       "get",
-      //API_URL + "/problem-details/" + problemId,
-      "/problem-details/" + problemId,
+      API_URL + "/problem-details/" + problemId,
       (res) => {
         console.log("res data", res.data);
         console.log(res.data.levelId);
@@ -156,8 +156,8 @@ function EditProblem() {
 
     request(
       "GET",
-      //API_URL + "/get-test-case-list-by-problem/" + problemId,
-      "/get-test-case-list-by-problem/" + problemId,
+      API_URL + "/get-test-case-list-by-problem/" + problemId,
+
       (res) => {
         console.log("res", res.data);
         setTestCases(res.data);
@@ -195,23 +195,9 @@ function EditProblem() {
       source: codeSolution,
       computerLanguage: languageSolution,
     };
-    // authPost(dispatch, token, "/check-compile", body).then(
-    //   (res) =>{
-    //     console.log("res", res);
-    //     if(res.status == "Successful"){
-    //       setShowCompile(true);
-    //       setShowSubmitWarming(false);
-    //       setStatusSuccessful(true);
-    //     }else{
-    //       setShowCompile(true);
-    //       setStatusSuccessful(false);
-    //     }
-    //   }
-    // )
     request(
       "post",
-      // API_URL + "/check-compile",
-      "/check-compile",
+      API_URL + "/check-compile",
       (res) => {
         if (res.data.status == "Successful") {
           setShowCompile(true);
@@ -221,6 +207,7 @@ function EditProblem() {
           setShowCompile(true);
           setStatusSuccessful(false);
         }
+        setCompileMessage(res.data.message);
       },
       {},
       body
@@ -245,7 +232,6 @@ function EditProblem() {
       timeLimit: timeLimit,
       levelId: levelId,
       categoryId: categoryId,
-      isPublic: isPublic,
       memoryLimit: memoryLimit,
       correctSolutionLanguage: languageSolution,
       solution: solution,
@@ -253,8 +239,7 @@ function EditProblem() {
     };
     request(
       "post",
-      //API_URL + "/update-problem-detail/" + problemId,
-      "/update-problem-detail/" + problemId,
+      API_URL + "/update-problem-detail/" + problemId,
       (res) => {
         console.log("res ", res);
         setShowSubmitSuccess(true);
@@ -355,9 +340,9 @@ function EditProblem() {
                   autoFocus
                   // required
                   select
-                  id="isPublic"
-                  label="Public"
-                  placeholder="Public"
+                  id="categoryId"
+                  label="Category ID"
+                  placeholder="Category ID"
                   onChange={(event) => {
                     setIsPublic(event.target.value);
                   }}
@@ -433,9 +418,11 @@ function EditProblem() {
               autoFocus={false}
               value={codeSolution}
             />
+            <br/>
             <CompileStatus
               showCompile={showCompile}
               statusSuccessful={statusSuccessful}
+              message={compileMessage}
             />
           </CardContent>
           <CardActions>
