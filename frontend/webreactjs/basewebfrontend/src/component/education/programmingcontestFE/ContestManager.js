@@ -38,9 +38,9 @@ export function ContestManager(){
   const [problems, setProblems] = useState([]);
   const [timeLimit, setTimeLimit] = useState();
   const [pendings, setPendings] = useState([]);
-  const [pagePendingSize, setPagePendingSize] = useState(50);
-  const [pageSuccessfulSize, setPageSuccessfulSize] = useState(50);
-  const pageSizes = [50,100, 150];
+  const [pagePendingSize, setPagePendingSize] = useState(10);
+  const [pageSuccessfulSize, setPageSuccessfulSize] = useState(10);
+  const pageSizes = [10, 20, 50,100, 150];
   const [totalPagePending, setTotalPagePending] = useState(0);
   const [totalPageSuccessful, setTotalPageSuccessful] = useState(0);
   const [pagePending, setPagePending] = useState(1);
@@ -50,16 +50,16 @@ export function ContestManager(){
   const [pageRanking, setPageRanking] = useState(1);
   const [ranking, setRanking] = useState([]);
   const [totalPageRanking, setTotalPageRanking] = useState(0);
-  const [pageRankingSize, setPageRankingSize] = useState(50);
+  const [pageRankingSize, setPageRankingSize] = useState(10);
 
   const [searchUsers, setSearchUsers] = useState([]);
-  const [pageSearchSize, setPageSearchSize] = useState(50);
+  const [pageSearchSize, setPageSearchSize] = useState(10);
   const [totalPageSearch, setTotalPageSearch] = useState(0);
   const [pageSearch, setPageSearch] = useState(1);
   const [keyword, setKeyword]= useState("");
 
   const [contestSubmissions, setContestSubmissions] = useState([]);
-  const [pageSubmissionSize, setPageSubmissionSize] = useState(50);
+  const [pageSubmissionSize, setPageSubmissionSize] = useState(10 );
   const [totalPageSubmission, setTotalPageSubmission] = useState(0);
   const [pageSubmission, setPageSubmission] = useState(1);
 
@@ -72,34 +72,39 @@ export function ContestManager(){
   const handlePageSubmissionSizeChange = (event) => {
     setPageSubmissionSize(event.target.value);
     setPageSubmission(1);
+    getSubmission(event.target.value, 1);
   }
 
   const handlePageSearchSizeChange = (event) => {
     setPageSearchSize(event.target.value);
     setPageSearch(1);
+    searchUser(keyword, event.target.value,  1)
   }
 
   const handlePagePendingSizeChange = (event) => {
     setPagePendingSize(event.target.value);
     setPagePending(1);
+    getUserPending(event.target.value, 1)
     // getProblemContestList();
   };
 
   const handlePageRankingSizeChange = (event) =>{
     setPageRankingSize(event.target.value);
     setPageRanking(1);
+    getRanking(event.target.value, 1)
   }
 
   const handlePageSuccessfulSizeChange = (event) => {
     setPageSuccessfulSize(event.target.value);
     setPageSuccessful(1);
+    getUserSuccessful(event.target.value, 1)
   }
 
 
-  function getSubmission(){
+  function getSubmission(s, p){
     request(
       "get",
-      "/get-contest-submission-paging/"+contestId+"?size="+pageSubmissionSize+"&page="+(pageSubmission-1),
+      "/get-contest-submission-paging/"+contestId+"?size="+s+"&page="+(p-1),
       (res)=>{
         console.log("res submission", res.data);
         setContestSubmissions(res.data.content);
@@ -109,10 +114,10 @@ export function ContestManager(){
     ).then();
   }
 
-  function getUserPending(){
+  function getUserPending(s, p){
     request(
       "get",
-      "/get-user-register-pending-contest/"+contestId+"?size="+pagePendingSize+"&page="+(pagePending-1),
+      "/get-user-register-pending-contest/"+contestId+"?size="+s+"&page="+(p-1),
       (res) => {
         console.log("res pending", res.data);
         setPendings(res.data.contents.content);
@@ -121,10 +126,10 @@ export function ContestManager(){
     ).then();
   }
 
-  function getUserSuccessful(){
+  function getUserSuccessful(s, p){
     request(
       "get",
-      "/get-user-register-successful-contest/"+contestId+"?size="+pageSuccessfulSize+"&page="+(pageSuccessful-1),
+      "/get-user-register-successful-contest/"+contestId+"?size="+s+"&page="+(p-1),
       (res) => {
         console.log("res pending", res.data);
         setSuccessful(res.data.contents.content);
@@ -133,10 +138,10 @@ export function ContestManager(){
     ).then();
   }
 
-  function getRanking(){
+  function getRanking(s, p){
     request(
       "get",
-      "/get-ranking-contest/"+contestId+"?size="+pageRankingSize+"&page="+(pageRanking-1),
+      "/get-ranking-contest/"+contestId+"?size="+s+"&page="+(p-1),
       (res) =>{
         console.log("ranking ", res.data);
         setTotalPageRanking(res.data.totalPages);
@@ -150,14 +155,14 @@ export function ContestManager(){
       "post",
       "/recalculate-ranking/"+contestId
     ).then(() =>{
-      getRanking();
+      getRanking(pageRankingSize, pageRanking);
     })
   }
 
-  function searchUser(keyword){
+  function searchUser(keyword, s, p){
     request(
       "get",
-      "/search-user/"+contestId+"?size="+pageSearchSize+"&page="+(pageSearch-1)+"&keyword="+keyword,
+      "/search-user/"+contestId+"?size="+s+"&page="+(p-1)+"&keyword="+keyword,
       (res) => {
         console.log("res search", res);
         setSearchUsers(res.data.contents.content);
@@ -178,11 +183,11 @@ export function ContestManager(){
       }
     ).then();
 
-    getUserPending();
-    getUserSuccessful()
-    getRanking();
-    searchUser(keyword);
-    getSubmission();
+    getUserPending(pagePendingSize, 1);
+    getUserSuccessful(pageSuccessfulSize, 1)
+    getRanking(pageRankingSize, 1);
+    searchUser(keyword, pageSearchSize, 1);
+    getSubmission(pageSubmissionSize, 1);
   },[])
 
 
@@ -300,7 +305,7 @@ export function ContestManager(){
               shape="rounded"
               onChange={(event, value) =>{
                 setPageSuccessful(value);
-
+                getUserSuccessful(pageSuccessfulSize, value);
               }}
             />
           </Grid>
@@ -450,7 +455,7 @@ export function ContestManager(){
                 shape="rounded"
                 onChange={(event, value) =>{
                   setPagePending(value);
-                  getUserPending();
+                  getUserPending(pagePendingSize, value);
                 }}
               />
             </Grid>
@@ -480,7 +485,7 @@ export function ContestManager(){
                     placeholder={"search..."}
                     onChange={(event) =>{
                       setKeyword(event.target.value);
-                      searchUser(event.target.value);
+                      searchUser(event.target.value, pageSearchSize, pageSearch);
                     }}
                   />
                 </Search>
@@ -589,7 +594,7 @@ export function ContestManager(){
                                     () =>{
                                       setLoad(false);
                                       setLoad(true);
-                                      searchUser(keyword);
+                                      searchUser(keyword, pageSearchSize, pageSearch);
                                     }
                                   )
                                 }}
@@ -625,7 +630,7 @@ export function ContestManager(){
                                   () =>{
                                     setLoad(false);
                                     setLoad(true);
-                                    searchUser(keyword);
+                                    searchUser(keyword, pageSearchSize, pageSearch);
                                   }
                                 )
                               }}
@@ -676,7 +681,7 @@ export function ContestManager(){
                 shape="rounded"
                 onChange={(event, value) =>{
                   setPageSearch(value);
-                  searchUser();
+                  searchUser(keyword, pageSearchSize, pageSearch);
                 }}
               />
             </Grid>
@@ -775,7 +780,7 @@ export function ContestManager(){
                 shape="rounded"
                 onChange={(event, value) =>{
                   setPageRanking(value);
-                  getRanking();
+                  getRanking(pageRankingSize, value);
                 }}
               />
             </Grid>
@@ -812,6 +817,7 @@ export function ContestManager(){
                 <StyledTableCell align="center">Lang</StyledTableCell>
                 <StyledTableCell align="center">Status</StyledTableCell>
                 <StyledTableCell align="center">Point</StyledTableCell>
+                <StyledTableCell align="center">Submitted At</StyledTableCell>
               </TableRow>
             </TableHead>
 
@@ -842,6 +848,9 @@ export function ContestManager(){
                     </StyledTableCell>
                     <StyledTableCell align="center">
                       <b>{s.point}</b>
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      <b>{s.createAt}</b>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))
@@ -884,7 +893,7 @@ export function ContestManager(){
               shape="rounded"
               onChange={(event, value) =>{
                 setPageSubmission(value);
-                getSubmission();
+                getSubmission(pageSubmissionSize, value);
               }}
             />
           </Grid>

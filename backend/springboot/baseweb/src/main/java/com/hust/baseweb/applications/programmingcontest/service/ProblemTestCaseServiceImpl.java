@@ -13,6 +13,7 @@ import com.hust.baseweb.repo.UserLoginRepo;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.repo.*;
+import com.hust.baseweb.utils.DateTimeUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -736,8 +737,19 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public Page<ContestSubmissionEntity> findContestSubmissionByContestIdPaging(Pageable pageable, String contestId) {
-        return contestSubmissionPagingAndSortingRepo.findAllByContestId(pageable, contestId);
+    public Page<ContestSubmission> findContestSubmissionByContestIdPaging(Pageable pageable, String contestId) {
+        return contestSubmissionPagingAndSortingRepo.findAllByContestId(pageable, contestId).map(
+            contestSubmissionEntity -> ContestSubmission.builder()
+                                                        .contestSubmissionId(contestSubmissionEntity.getContestSubmissionId())
+                                                        .contestId(contestSubmissionEntity.getContestId())
+                                                        .createAt(contestSubmissionEntity.getCreatedAt() != null ? DateTimeUtils.dateToString(contestSubmissionEntity.getCreatedAt(), DateTimeUtils.DateTimeFormat.DATE_TIME_ISO_FORMAT) : null)
+                                                        .sourceCodeLanguage(contestSubmissionEntity.getSourceCodeLanguage())
+                                                        .point(contestSubmissionEntity.getPoint())
+                                                        .problemId(contestSubmissionEntity.getProblemId())
+                                                        .testCasePass(contestSubmissionEntity.getTestCasePass())
+                                                        .status(contestSubmissionEntity.getStatus())
+                                                        .userId(contestSubmissionEntity.getUserId())
+                                                        .build());
     }
 
     @Override
