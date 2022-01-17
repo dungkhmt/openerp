@@ -37,19 +37,19 @@ export default function ContestRunTestCase(props){
             Submit Result
           </Typography>
           <Typography variant={"h6"}>
-            {submitResult.problemName}
+            {submitResult != undefined ? submitResult.problemName : ""}
           </Typography>
           <Box sx={{ width: '100%', bgcolor: 'background.paper', height:"120px" , border: "1px solid black", padding: "10px", justifyItems:"center", justifySelf:"center", marginRight:10}}>
             <Grid container alignItems="center">
               <Grid item xs>
                 <Typography variant="h5" >
-                  status: <span  style={{color:getStatusColor(`${submitResult.status}`)}}>{`${submitResult.status}`}</span>
+                  status: <span  style={{color:getStatusColor(`${submitResult != undefined ? submitResult.status : ""}`)}}>{`${submitResult != undefined ? submitResult.status : ""}`}</span>
                 </Typography>
 
               </Grid>
               <Grid item xs>
                 <Typography variant="h6" align="right">
-                  <b>{submitResult.testCasePass}</b> test cases passed.
+                  <b>{submitResult != undefined ? submitResult.testCasePass : ""}</b> test cases passed.
                 </Typography>
               </Grid>
 
@@ -57,14 +57,14 @@ export default function ContestRunTestCase(props){
             <Grid container alignItems="center">
               <Grid item xs>
                 <Typography variant="h6" >
-                  Run Time: <i>{submitResult.runtime} ms</i><br/>
-                  Memory Usage: <i>{submitResult.memoryUsage} kb</i>
+                  Run Time: <i>{submitResult != undefined ? submitResult.runtime : ""} ms</i><br/>
+                  Memory Usage: <i>{submitResult != undefined ? submitResult.memoryUsage : ""} kb</i>
                 </Typography>
 
               </Grid>
               <Grid item xs>
                 <Typography variant="h6" align="right" >
-                  point: <b>{submitResult.score}</b>
+                  point: <b>{submitResult != undefined ? submitResult.score : ""}</b>
                 </Typography>
 
               </Grid>
