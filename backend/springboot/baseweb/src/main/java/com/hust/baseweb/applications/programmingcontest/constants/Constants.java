@@ -22,6 +22,8 @@ public class Constants {
         MapLevelOrder.put("hard", 3);
     }
 
+    public static final String SPLIT_TEST_CASE = "testcasedone";
+
     public enum RegistrationType{
         PENDING("PENDING"),
         SUCCESSFUL("SUCCESSFUL"),

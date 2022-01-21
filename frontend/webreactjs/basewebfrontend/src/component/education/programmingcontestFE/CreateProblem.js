@@ -100,6 +100,7 @@ function CreateProblem() {
   const [statusSuccessful, setStatusSuccessful] = useState(false);
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
+  const [compileMessage, setCompileMessage] = useState("");
   const onChangeEditorStateDescription = (editorState) => {
     console.log(problemDescriptions);
     setEditorStateDescription(editorState);
@@ -133,9 +134,9 @@ function CreateProblem() {
 
     request(
       "post",
-      //API_URL + "/check-compile",
-      "/check-compile",
+       "/check-compile",
       (res) => {
+        console.log("res check compile", res);
         if (res.data.status == "Successful") {
           setShowCompile(true);
           setShowSubmitWarming(false);
@@ -144,6 +145,7 @@ function CreateProblem() {
           setShowCompile(true);
           setStatusSuccessful(false);
         }
+        setCompileMessage(res.data.message);
       },
       {},
       body
@@ -176,8 +178,7 @@ function CreateProblem() {
     };
     request(
       "post",
-      //API_URL + "/create-problem",
-      "/create-problem",
+       "/create-problem",
       (res) => {
         console.log("res ", res);
         setShowSubmitSuccess(true);
@@ -283,9 +284,9 @@ function CreateProblem() {
                   autoFocus
                   // required
                   select
-                  id="categoryId"
-                  label="Category ID"
-                  placeholder="Category ID"
+                  id="Public Problem"
+                  label="Public Problem"
+                  placeholder="Public Problem"
                   onChange={(event) => {
                     setIsPublic(event.target.value);
                   }}
@@ -361,10 +362,11 @@ function CreateProblem() {
               }}
               autoFocus={false}
             />
-
+            <br/>
             <CompileStatus
               showCompile={showCompile}
               statusSuccessful={statusSuccessful}
+              message={compileMessage}
             />
           </CardContent>
           <CardActions>

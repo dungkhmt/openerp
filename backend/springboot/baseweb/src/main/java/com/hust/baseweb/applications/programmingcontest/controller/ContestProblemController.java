@@ -44,23 +44,17 @@ public class ContestProblemController {
 
     @PostMapping("/add-problem-language-source-code/{problemId}")
     public ResponseEntity<?> addProblemLanguageSourceCode(
-            @PathVariable("problemId") String problemId,
-            @RequestBody ModelAddProblemLanguageSourceCode modelAddProblemLanguageSourceCode) throws Exception{
-            try {
-                problemTestCaseService.updateProblemSourceCode(modelAddProblemLanguageSourceCode, problemId);
-                return ResponseEntity.status(200).body(null);
-            }catch (Exception e){
-                throw new Exception(e.toString());
-            }
+        @PathVariable("problemId") String problemId,
+        @RequestBody ModelAddProblemLanguageSourceCode modelAddProblemLanguageSourceCode) throws Exception{
+        problemTestCaseService.updateProblemSourceCode(modelAddProblemLanguageSourceCode, problemId);
+        return ResponseEntity.status(200).body(null);
     }
 
 
     @PostMapping("/get-test-case-result/{problemId}")
     public ResponseEntity<?> getTestCaseResult(@PathVariable("problemId") String problemId, @RequestBody ModelGetTestCaseResult testCaseResult, Principal principal) throws Exception {
         log.info("get test case result {}", problemId);
-        String testcaseResult = problemTestCaseService.getTestCaseResult(problemId, principal.getName(), testCaseResult);
-        log.info("testcaseResult {}", testcaseResult);
-        ModelGetTestCaseResultResponse resp = ModelGetTestCaseResultResponse.builder().result(testcaseResult).build();
+        ModelGetTestCaseResultResponse resp = problemTestCaseService.getTestCaseResult(problemId, principal.getName(), testCaseResult);
         return ResponseEntity.status(200).body(resp);
     }
 
@@ -111,9 +105,8 @@ public class ContestProblemController {
 
     @PostMapping("/check-compile")
     public ResponseEntity<?> checkCompile(@RequestBody ModelCheckCompile modelCheckCompile, Principal principal) throws Exception {
-        String resp = problemTestCaseService.checkCompile(modelCheckCompile, principal.getName());
-        ModelCheckCompileResponse modelCheckCompileResponse = ModelCheckCompileResponse.builder().status(resp).build();
-        return ResponseEntity.status(200).body(modelCheckCompileResponse);
+        ModelCheckCompileResponse resp = problemTestCaseService.checkCompile(modelCheckCompile, principal.getName());
+        return ResponseEntity.status(200).body(resp);
     }
 
     @PostMapping("/save-test-case/{problemId}")
@@ -289,12 +282,12 @@ public class ContestProblemController {
     @GetMapping("/get-ranking-contest/{contestId}")
     public ResponseEntity<?> getRankingContest(@PathVariable("contestId") String contestId, Pageable pageable){
         log.info("getRankingContest page {}", pageable);
-        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("point"));
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("point").descending());
         Page<UserSubmissionContestResultNativeEntity> page = problemTestCaseService.getRankingByContestId(pageable, contestId);
         log.info("ranking page {}", page);
         return ResponseEntity.status(200).body(page);
     }
-    
+
     @PostMapping("/recalculate-ranking/{contestId}")
     public ResponseEntity<?> recalculateRanking(@PathVariable("contestId") String contestId){
         log.info("/recalculate-ranking/ contestid {}", contestId);
@@ -338,10 +331,12 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(null);
     }
 
+
     @GetMapping("/get-contest-submission-paging/{contestId}")
     public ResponseEntity<?> getContestSubmissionPaging(@PathVariable("contestId") String contestId, Pageable pageable){
         log.info("getContestSubmissionPaging");
-        Page<ContestSubmissionEntity> page = problemTestCaseService.findContestSubmissionByContestIdPaging(pageable, contestId);
+        pageable = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), Sort.by("createdAt").descending());
+        Page<ContestSubmission> page = problemTestCaseService.findContestSubmissionByContestIdPaging(pageable, contestId);
         log.info("page {}", page);
         return ResponseEntity.status(200).body(page);
     }

@@ -29,9 +29,9 @@ public interface ProblemTestCaseService {
 
     ModelProblemDetailRunCodeResponse problemDetailRunCode(String problemId, ModelProblemDetailRunCode modelProblemDetailRunCode, String userName) throws Exception;
 
-    String getTestCaseResult(String problemId, String userName, ModelGetTestCaseResult modelGetTestCaseResult) throws Exception;
+    ModelGetTestCaseResultResponse getTestCaseResult(String problemId, String userName, ModelGetTestCaseResult modelGetTestCaseResult) throws Exception;
 
-    String checkCompile(ModelCheckCompile modelCheckCompile, String userName) throws Exception;
+    ModelCheckCompileResponse checkCompile(ModelCheckCompile modelCheckCompile, String userName) throws Exception;
 
     TestCaseEntity saveTestCase(String problemId, ModelSaveTestcase modelSaveTestcase);
 
@@ -86,7 +86,7 @@ public interface ProblemTestCaseService {
 
     void deleteUserContest(ModelAddUserToContest modelAddUserToContest) throws MiniLeetCodeException;
 
-    Page<ContestSubmissionEntity> findContestSubmissionByContestIdPaging(Pageable pageable, String contestId);
+    Page<ContestSubmission> findContestSubmissionByContestIdPaging(Pageable pageable, String contestId);
 
     ContestSubmissionEntity getContestSubmissionDetail(UUID submissionId);
 }

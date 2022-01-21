@@ -10,6 +10,7 @@ import {ScrollBox} from 'react-scroll-box'; // ES6
 
 import {Alert} from "@material-ui/lab";
 import ContestRunTestCase from "./ContestRunTestCase";
+import {Markup} from "interweave";
 
 
 function a11yProps(index) {
@@ -162,8 +163,10 @@ export function ConsoleOutput(props){
       }else if(compileError){
         return (
           <Alert severity="error">
-            Compile Error <br/>
-            {output}
+            Compile Error
+            <br/>
+            <Markup
+              content={output != undefined ? output : ""}/>
           </Alert>
         );
       }else{
@@ -172,13 +175,13 @@ export function ConsoleOutput(props){
             <div >
               <Alert severity="success">Accept</Alert>
               <Box sx={{ display: 'flex',  bgcolor: 'background.paper', p: 1}}>
-                <Typography noWrap={false}>Input: {input}</Typography>
+                <Typography noWrap={false}>Input: {input != undefined ? input : ""}</Typography>
               </Box>
               <Box sx={{ display: 'flex',  bgcolor: 'background.paper', p: 1}}>
-                <Typography>Output: {output}</Typography>
+                <Typography>Output: {output != undefined ? output : ""}</Typography>
               </Box>
               <Box sx={{ display: 'flex',  bgcolor: 'background.paper', p: 1}}>
-                <Typography>Expected: {expected}</Typography>
+                <Typography>Expected: {expected != undefined ? expected: ""}</Typography>
               </Box>
             </div>
           );
@@ -188,17 +191,17 @@ export function ConsoleOutput(props){
               <Alert severity="warning">Wrong Answer</Alert>
               <Box sx={{display: 'flex',  bgcolor: 'background.paper', p: 1}}>
                 <ScrollBox style={{width: '100%', overflow:"auto", height:"50px"}}  >
-                  Input: {input}
+                  Input: {input != undefined ? input : ""}
                 </ScrollBox>
               </Box>
               <Box sx={{ display: 'flex',  bgcolor: 'background.paper', p: 1}}>
                 <ScrollBox style={{width: '100%', overflow:"auto", height:"50px"}}  >
-                  Output: {output}
+                  Output: {output != undefined ? output : ""}
                 </ScrollBox>
               </Box>
               <Box sx={{ display: 'flex',  bgcolor: 'background.paper', p: 1}}>
                 <ScrollBox style={{width: '100%', overflow:"auto", height:"50px"}}  >
-                  Expected: {expected}
+                  Expected: {expected != undefined ? expected : ""}
                 </ScrollBox>
               </Box>
               {/*<Box sx={{ border: 1 }}>11</Box>*/}

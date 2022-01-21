@@ -9,4 +9,5 @@ import lombok.Setter;
 @Builder
 public class ModelGetTestCaseResultResponse {
     private String result;
+    private String status;
 }

@@ -1,9 +1,11 @@
 import {Alert} from "@material-ui/lab";
 import * as React from "react";
+import {Markup} from "interweave";
 
 export function CompileStatus(props){
   const showCompile=props.showCompile;
   const statusSuccessful=props.statusSuccessful
+  const message = props.message;
   if(!showCompile){
     return(
       <div>
@@ -20,7 +22,9 @@ export function CompileStatus(props){
       return (
 
         <div>
-          <Alert severity="error">CompileError</Alert>
+          <Alert severity="error">
+            <Markup content={message}/>
+          </Alert>
         </div>
       );
     }

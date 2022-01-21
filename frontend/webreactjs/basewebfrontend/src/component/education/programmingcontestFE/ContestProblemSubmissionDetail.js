@@ -46,8 +46,7 @@ export default function ContestProblemSubmissionDetail() {
     console.log("problemSubmissionId ", problemSubmissionId);
     request(
       "get",
-      //API_URL + "/get-contest-problem-submission-detail/" + problemSubmissionId,
-      "/get-contest-problem-submission-detail/" + problemSubmissionId,
+       "/get-contest-problem-submission-detail/" + problemSubmissionId,
       (res) => {
         setMemoryUsage(res.data.memoryUsage);
         setProblemId(res.data.problemId);

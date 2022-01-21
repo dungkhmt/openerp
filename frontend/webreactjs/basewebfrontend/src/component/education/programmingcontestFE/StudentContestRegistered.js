@@ -1,29 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { request } from "./Request";
-import { API_URL } from "../../../config/config";
+import React, {useEffect, useState} from "react";
+import {request} from "./Request";
+import {API_URL} from "../../../config/config";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
-import {
-  Button,
-  Grid,
-  MenuItem,
-  Table,
-  TableBody,
-  TableHead,
-  TextField,
-} from "@material-ui/core";
+import {Button, Grid, MenuItem, Table, TableBody, TableHead, TextField} from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
-import { StyledTableCell, StyledTableRow } from "./lib";
-import { Link } from "react-router-dom";
+import {StyledTableCell, StyledTableRow} from "./lib";
+import {Link} from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
-import { successNoti } from "../../../utils/notification";
+import {successNoti} from "../../../utils/notification";
 
-export function StudentContestRegistered() {
+export function StudentContestRegistered(){
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPage] = useState(0);
-  const pageSizes = [20, 50, 100];
-  const [contests, setContests] = useState([]);
+  const pageSizes = [20,50, 100];
+  const [contests, setContests] = useState([])
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -38,9 +30,8 @@ export function StudentContestRegistered() {
   async function getContestList() {
     request(
       "get",
-      //API_URL+"/get-contest-paging-registered?size="+pageSize+"&page="+(page-1),
-      "/get-contest-paging-registered?size=" + pageSize + "&page=" + (page - 1),
-      (res) => {
+      "/get-contest-paging-registered?size="+pageSize+"&page="+(page-1),
+      (res)=>{
         console.log("contest list", res.data);
         setTotalPage(res.data.totalPages);
         setContests(res.data.contents);
@@ -51,11 +42,13 @@ export function StudentContestRegistered() {
   useEffect(() => {
     console.log("use effect");
     getContestList().then();
-  }, [page, pageSize]);
+  }, [page, pageSize])
 
-  function handleRegister(contestId) {}
+  function handleRegister(contestId){
 
-  return (
+  }
+
+  return(
     <div>
       <div>
         <div>
@@ -65,34 +58,26 @@ export function StudentContestRegistered() {
                 <TableRow>
                   <StyledTableCell></StyledTableCell>
                   <StyledTableCell align="left">Title</StyledTableCell>
-                  <StyledTableCell align="center">
-                    Register Contest
-                  </StyledTableCell>
+                  <StyledTableCell align="center">Register Contest</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {contests.map((contest, index) => (
                   <StyledTableRow>
                     <StyledTableCell component="th" scope="row">
-                      {pageSize * (page - 1) + index + 1}
+                      {pageSize*(page-1) + index +1}
                     </StyledTableCell>
 
                     <StyledTableCell align="left">
                       <b>{contest.contestName}</b>
+
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      <Link
-                        to={
-                          "/programming-contest/solving-contest/" +
-                          contest.contestId
-                        }
-                        style={{
-                          textDecoration: "none",
-                          color: "black",
-                          cursor: "",
-                        }}
-                      >
-                        <Button variant="contained" color="light">
+                      <Link to={"/programming-contest/solving-contest/"+contest.contestId}  style={{ textDecoration: 'none', color:"black", cursor:""}} >
+                        <Button
+                          variant="contained"
+                          color="light"
+                        >
                           Solve
                         </Button>
                       </Link>
@@ -106,6 +91,7 @@ export function StudentContestRegistered() {
         <br></br>
         <Grid container spacing={12}>
           <Grid item xs={6}>
+
             <TextField
               variant={"outlined"}
               autoFocus
@@ -124,7 +110,7 @@ export function StudentContestRegistered() {
             </TextField>
           </Grid>
 
-          <Grid item>
+          <Grid item >
             <Pagination
               className="my-3"
               count={totalPages}
@@ -137,7 +123,11 @@ export function StudentContestRegistered() {
             />
           </Grid>
         </Grid>
+
+
       </div>
+
+
     </div>
   );
 }

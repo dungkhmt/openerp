@@ -1,27 +1,22 @@
 import Pagination from "@material-ui/lab/Pagination";
 import React, { useState, useEffect } from "react";
-import {
-  Grid,
-  MenuItem,
-  Table,
-  TableBody,
-  TableHead,
-  TextField,
-} from "@material-ui/core";
+import {Grid, MenuItem, Table, TableBody, TableHead, TextField} from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
-import { Link } from "react-router-dom";
-import { request } from "./Request";
-import { API_URL } from "../../../config/config";
+import {Link} from "react-router-dom";
+import {request} from "./Request";
+import {API_URL} from "../../../config/config";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
-import { getColorLevel, StyledTableCell, StyledTableRow } from "./lib";
+import {getColorLevel, StyledTableCell, StyledTableRow} from "./lib";
 
-function ListProblem() {
+function ListProblem(){
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPage] = useState(0);
-  const pageSizes = [20, 50, 100];
-  const [contestProblems, setContestProblems] = useState([]);
+  const pageSizes = [20,50, 100];
+  const [contestProblems, setContestProblems] = useState([])
+
+
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -37,9 +32,8 @@ function ListProblem() {
     console.log("p ", page);
     request(
       "get",
-      // API_URL+"/get-contest-problem-paging?size="+pageSize+"&page="+(page-1),
-      "/get-contest-problem-paging?size=" + pageSize + "&page=" + (page - 1),
-      (res) => {
+      "/get-contest-problem-paging?size="+pageSize+"&page="+(page-1),
+      (res)=>{
         console.log("problem list", res.data);
         setTotalPage(res.data.totalPages);
         setContestProblems(res.data.content);
@@ -50,7 +44,7 @@ function ListProblem() {
   useEffect(() => {
     console.log("use effect");
     getProblemContestList().then();
-  }, [page, pageSize]);
+  }, [page, pageSize])
 
   return (
     <div>
@@ -70,54 +64,31 @@ function ListProblem() {
             <TableBody>
               {contestProblems.map((problem) => (
                 <StyledTableRow>
-                  <StyledTableCell component="th" scope="row"></StyledTableCell>
+                  <StyledTableCell component="th" scope="row">
+
+                  </StyledTableCell>
 
                   <StyledTableCell align="left">
-                    <Link
-                      to={
-                        "/programming-contest/problem-detail/" +
-                        problem.problemId
-                      }
-                      style={{
-                        textDecoration: "none",
-                        color: "#000000",
-                        hover: { color: "#00D8FF", textPrimary: "#00D8FF" },
-                      }}
-                    >
+                    <Link to={"/programming-contest/problem-detail/"+problem.problemId}  style={{ textDecoration: 'none', color:"#000000", hover:{color:"#00D8FF", textPrimary:"#00D8FF"}}} >
                       {problem.problemName}
                     </Link>
                   </StyledTableCell>
 
-                  <StyledTableCell align="left"></StyledTableCell>
-
                   <StyledTableCell align="left">
-                    <span
-                      style={{ color: getColorLevel(`${problem.levelId}`) }}
-                    >{`${problem.levelId}`}</span>
+
                   </StyledTableCell>
 
                   <StyledTableCell align="left">
-                    <Link
-                      to={
-                        "/programming-contest/problem-detail-create-test-case/" +
-                        problem.problemId
-                      }
-                      style={{ textDecoration: "none", color: "black" }}
-                    >
+                    <span style={{color:getColorLevel(`${problem.levelId}`)}}>{`${problem.levelId}`}</span>
+                  </StyledTableCell>
+
+                  <StyledTableCell align="left">
+                    <Link to={"/programming-contest/problem-detail-create-test-case/"+problem.problemId}  style={{ textDecoration: 'none', color:"black"}} >
                       ADD
                     </Link>
                   </StyledTableCell>
                   <StyledTableCell align="left">
-                    <Link
-                      to={
-                        "/programming-contest/edit-problem/" + problem.problemId
-                      }
-                      style={{
-                        textDecoration: "none",
-                        color: "black",
-                        cursor: "",
-                      }}
-                    >
+                    <Link to={"/programming-contest/edit-problem/"+problem.problemId}  style={{ textDecoration: 'none', color:"black", cursor:""}} >
                       Edit
                     </Link>
                   </StyledTableCell>
@@ -127,9 +98,10 @@ function ListProblem() {
           </Table>
         </TableContainer>
       </div>
-      <br />
+      <br/>
       <Grid container spacing={12}>
         <Grid item xs={6}>
+
           <TextField
             variant={"outlined"}
             autoFocus
@@ -148,7 +120,7 @@ function ListProblem() {
           </TextField>
         </Grid>
 
-        <Grid item>
+        <Grid item >
           <Pagination
             className="my-3"
             count={totalPages}
@@ -161,7 +133,9 @@ function ListProblem() {
           />
         </Grid>
       </Grid>
+
+
     </div>
-  );
+  )
 }
 export default ListProblem;

@@ -7,4 +7,5 @@ import lombok.Data;
 @Builder
 public class ModelCheckCompileResponse {
     String status;
+    String message;
 }

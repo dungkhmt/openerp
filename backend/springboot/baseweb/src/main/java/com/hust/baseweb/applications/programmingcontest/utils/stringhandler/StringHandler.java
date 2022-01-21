@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.utils.stringhandler;
 
+import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class StringHandler {
         String runtimeString = response.substring(runTimeIndex+1);
         Long runtime = Long.parseLong(runtimeString);
         response = response.substring(0, runTimeIndex);
-        String []ans = response.split("testcasedone\n");
+        String []ans = response.split(Constants.SPLIT_TEST_CASE);
 
         status = null;
         int cnt = 0;
@@ -36,7 +37,7 @@ public class StringHandler {
             if(!a.equals(b)){
                 if(status == null && ans[i].contains("Time Limit Exceeded")){
                     status = "Time Limit Exceeded";
-                }else{
+                }else if(!ans[i].contains("Time Limit Exceeded")){
                     status = "Wrong Answer";
                 }
             }else{
@@ -66,3 +67,4 @@ public class StringHandler {
 
     }
 }
+
