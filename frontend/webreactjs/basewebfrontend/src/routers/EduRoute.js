@@ -47,6 +47,9 @@ import ResourceList from "../component/education/resourcelink/ResourceList";
 import ResourceDomainCreate from "../component/education/resourcelink/ResourceDomainCreate";
 import ResourceCreate from "../component/education/resourcelink/ResourceCreate";
 import ResourceDomainEdit from "../component/education/resourcelink/ResourceDomainEdit";
+import ClassTeacherAssignmentPlanDetail from "../component/education/classteacherassignment/ClassTeacherAssignmentPlanDetail";
+import ClassTeacherAssignmentPlanList from "../component/education/classteacherassignment/ClassTeacherAssignmentPlanList";
+import BCASolver from "../component/education/BCASolver";
 
 import NotFound from "../views/errors/NotFound";
 
@@ -154,6 +157,20 @@ export default function EduRoute() {
           component={ResourceList}
           path={`${path}/domains/:id/resources`}
         />
+        <Route
+          component={ClassTeacherAssignmentPlanList}
+          path={`${path}/class-teacher-assignment-plan/list`}
+        />
+        <Route
+          component={ClassTeacherAssignmentPlanDetail}
+          path={`${path}/class-teacher-assignment-plan/detail/:planId`}
+        />
+
+        <Route component={BCASolver} path={`${path}/solve`} />
+
+        <Route component={CreateSemester} path={`${path}/semester`} />
+
+        <Route component={ClassCreate} path={`${path}/class/add`} />
 
         <Route
           component={StudentCourseChapterMaterialDetail}
