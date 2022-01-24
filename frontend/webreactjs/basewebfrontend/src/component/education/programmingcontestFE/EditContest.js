@@ -1,65 +1,47 @@
+import React, {useEffect, useState} from "react";
+// import Typography from "@material-ui/core/Typography";
+import PropTypes from 'prop-types';
+import { alpha } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Checkbox from '@mui/material/Checkbox';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import DeleteIcon from '@mui/icons-material/Delete';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import { visuallyHidden } from '@mui/utils';
+import {request} from "./Request";
+import {API_URL} from "../../../config/config";
+import Pagination from "@material-ui/lab/Pagination";
 import DateFnsUtils from "@date-io/date-fns";
-import {
-  Card,
-  CardActions,
-  CardContent,
-  TextField,
-  Typography,
-  MenuItem,
-} from "@material-ui/core/";
-import { makeStyles } from "@material-ui/core/styles";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import React, { useState, useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Editor } from "react-draft-wysiwyg";
-import { ContentState, convertToRaw, EditorState } from "draft-js";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { authPost } from "../../../api";
-import { Button, TableHead } from "@material-ui/core";
-import draftToHtml from "draftjs-to-html";
-import { API_URL } from "../../../config/config";
-import { cpp, cppLanguage } from "@codemirror/lang-cpp";
-import { java } from "@codemirror/lang-java";
-import { pythonLanguage } from "@codemirror/lang-python";
-import { go } from "@codemirror/legacy-modes/mode/go";
-import { javascript } from "@codemirror/lang-javascript";
-import { StreamLanguage } from "@codemirror/stream-parser";
-import CodeMirror from "@uiw/react-codemirror";
-import { SubmitWarming } from "./SubmitWarming";
-import { CompileStatus } from "./CompileStatus";
-import { SubmitSuccess } from "./SubmitSuccess";
-import { useParams } from "react-router";
-import { request } from "./Request";
-import { sleep, StyledTableCell, StyledTableRow } from "./lib";
-import htmlToDraft from "html-to-draftjs";
-import Paper from "@material-ui/core/Paper";
-import TableContainer from "@mui/material/TableContainer";
-import Table from "@mui/material/Table";
-import TableRow from "@material-ui/core/TableRow";
-import TableBody from "@mui/material/TableBody";
+import {MuiPickersUtilsProvider} from "@material-ui/pickers";
+import {Button, Card, CardActions, TextField} from "@material-ui/core";
+import CardContent from "@material-ui/core/CardContent";
+import {makeStyles} from "@material-ui/core/styles";
+import {TableFooter} from "@mui/material";
+import lib, {sleep} from "./lib";
+import {SubmitSuccess} from "./SubmitSuccess";
+import {useHistory, useParams} from "react-router-dom";
+import {getColorLevel} from "./lib";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(4),
     "& .MuiTextField-root": {
       margin: theme.spacing(1),
-      width: "40%",
-      minWidth: 120,
-    },
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    maxWidth: 300,
-  },
-}));
-const descriptionStyles = makeStyles((theme) => ({
-  root: {
-    padding: theme.spacing(4),
-    "& .MuiTextField-root": {
-      margin: theme.spacing(1),
-      width: "100%",
+      width: "30%",
       minWidth: 120,
     },
   },
@@ -70,451 +52,396 @@ const descriptionStyles = makeStyles((theme) => ({
   },
 }));
 
-const editorStyle = {
-  toolbar: {
-    background: "#FFFFFF",
-  },
-  editor: {
-    border: "1px solid black",
-    minHeight: "300px",
-  },
-};
 
-function EditProblem() {
-  const { problemId } = useParams();
-  const token = useSelector((state) => state.auth.token);
-  const dispatch = useDispatch();
-  const history = useHistory();
-  const [problemName, setProblemName] = useState("");
-  const [problemDescriptions, setProblemDescription] = useState();
-  const [timeLimit, setTimeLimit] = useState(1);
-  const [memoryLimit, setMemoryLimit] = useState(1);
-  const [levelId, setLevelId] = useState("");
-  const [categoryId, setCategoryId] = useState();
-  const defaultLevel = ["easy", "medium", "hard"];
-  const listCategory = [];
-  const classes = useStyles();
-  const descriptionClass = descriptionStyles();
-  const [editorStateDescription, setEditorStateDescription] = useState(
-    EditorState.createEmpty()
-  );
-  const [editorStateSolution, setEditorStateSolution] = useState(
-    EditorState.createEmpty()
-  );
-  const [codeSolution, setCodeSolution] = useState("");
-  const [languageSolution, setLanguageSolution] = useState("CPP");
-  const computerLanguageList = ["CPP", "GOLANG", "JAVA", "PYTHON3"];
-  const [showSubmitWarming, setShowSubmitWarming] = useState(false);
-  const [showCompile, setShowCompile] = useState(false);
-  const [statusSuccessful, setStatusSuccessful] = useState(false);
-  const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
-  const [isPublic, setIsPublic] = useState(false);
-  const [testCases, setTestCases] = useState([]);
-  const [compileMessage, setCompileMessage] = useState("");
-
-  useEffect(() => {
-    console.log("problemid ", problemId);
-    let url =  "/problem-details/" + problemId;
-    console.log("url ", url);
-    request(
-      "get",
-       "/problem-details/" + problemId,
-      (res) => {
-        console.log("res data", res.data);
-        console.log(res.data.levelId);
-        // setEditorStateDescription(EditorState.set(res.data.problemDescription));
-        setProblemName(res.data.problemName);
-        setLevelId(res.data.levelId);
-        setMemoryLimit(res.data.memoryLimit);
-        setCodeSolution(res.data.correctSolutionSourceCode);
-        setTimeLimit(res.data.timeLimit);
-        setIsPublic(res.data.publicProblem);
-        let problemDescriptionHtml = htmlToDraft(res.data.problemDescription);
-        let { contentBlocks, entityMap } = problemDescriptionHtml;
-        let contentDescriptionState = ContentState.createFromBlockArray(
-          contentBlocks,
-          entityMap
-        );
-        let statementDescription = EditorState.createWithContent(
-          contentDescriptionState
-        );
-        setEditorStateDescription(statementDescription);
-        console.log("statementDescription ", statementDescription);
-        let solutionHtml = htmlToDraft(res.data.solution);
-        let contentBlocks1 = solutionHtml.contentBlocks;
-        let entityMap1 = solutionHtml.entityMap;
-        let contentSolutionState = ContentState.createFromBlockArray(
-          contentBlocks1,
-          entityMap1
-        );
-        let statementSolution =
-          EditorState.createWithContent(contentSolutionState);
-        setEditorStateSolution(statementSolution);
-      },
-      {}
-    ).then();
-
-    request(
-      "GET",
-       "/get-test-case-list-by-problem/" + problemId,
-
-      (res) => {
-        console.log("res", res.data);
-        setTestCases(res.data);
-      },
-      {}
-    );
-  }, [problemId]);
-
-  const onChangeEditorStateDescription = (editorState) => {
-    setEditorStateDescription(editorState);
-  };
-
-  const onChangeEditorStateSolution = (editorState) => {
-    setEditorStateSolution(editorState);
-  };
-
-  const getExtension = () => {
-    switch (languageSolution) {
-      case "CPP":
-        return [cppLanguage];
-      case "GoLang":
-        return StreamLanguage.define(go);
-      case "Java":
-        return java();
-      case "Python3":
-        return StreamLanguage.define(pythonLanguage);
-      default:
-        return javascript();
-    }
-  };
-
-  function checkCompile() {
-    console.log("check compile");
-    let body = {
-      source: codeSolution,
-      computerLanguage: languageSolution,
-    };
-    request(
-      "post",
-       "/check-compile",
-      (res) => {
-        if (res.data.status == "Successful") {
-          setShowCompile(true);
-          setShowSubmitWarming(false);
-          setStatusSuccessful(true);
-        } else {
-          setShowCompile(true);
-          setStatusSuccessful(false);
-        }
-        setCompileMessage(res.data.message);
-      },
-      {},
-      body
-    ).then();
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
   }
-
-  function handleSubmit() {
-    if (!statusSuccessful) {
-      setShowSubmitWarming(true);
-      return;
-    }
-    let description = draftToHtml(
-      convertToRaw(editorStateDescription.getCurrentContent())
-    );
-    let solution = draftToHtml(
-      convertToRaw(editorStateSolution.getCurrentContent())
-    );
-
-    let body = {
-      problemName: problemName,
-      problemDescription: description,
-      timeLimit: timeLimit,
-      levelId: levelId,
-      categoryId: categoryId,
-      memoryLimit: memoryLimit,
-      correctSolutionLanguage: languageSolution,
-      solution: solution,
-      correctSolutionSourceCode: codeSolution,
-      isPublic: isPublic,
-    };
-    request(
-      "post",
-       "/update-problem-detail/" + problemId,
-      (res) => {
-        console.log("res ", res);
-        setShowSubmitSuccess(true);
-        sleep(1000).then((r) => {
-          history.push("/programming-contest/list-problems");
-        });
-      },
-      {},
-      body
-    ).then();
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
   }
+  return 0;
+}
+
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+// This method is created for cross-browser compatibility, if you don't
+// need to support IE11, you can use Array.prototype.sort() directly
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) {
+      return order;
+    }
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
+}
+
+const headCells = [
+  {
+    id: 'problemName',
+    numeric: false,
+    disablePadding: true,
+    label: 'Title',
+  },
+  {
+    id: 'levelOrder',
+    numeric: true,
+    disablePadding: false,
+    label: 'Difficulty',
+  },
+];
+
+function EnhancedTableHead(props) {
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+    props;
+  const createSortHandler = (property) => (event) => {
+    onRequestSort(event, property);
+  };
 
   return (
+    <TableHead>
+      <TableRow>
+        <TableCell padding="checkbox">
+          <Checkbox
+            color="primary"
+            indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={rowCount > 0 && numSelected === rowCount}
+            onChange={onSelectAllClick}
+            inputProps={{
+              'aria-label': 'select all desserts',
+            }}
+          />
+        </TableCell>
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            align={headCell.numeric ? 'right' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'normal'}
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id)}
+            >
+              {headCell.label}
+              {orderBy === headCell.id ? (
+                <Box component="span" sx={visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </Box>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  );
+}
+
+EnhancedTableHead.propTypes = {
+  numSelected: PropTypes.number.isRequired,
+  onRequestSort: PropTypes.func.isRequired,
+  onSelectAllClick: PropTypes.func.isRequired,
+  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  orderBy: PropTypes.string.isRequired,
+  rowCount: PropTypes.number.isRequired,
+};
+
+const EnhancedTableToolbar = (props) => {
+  const { numSelected } = props;
+
+  return (
+    <Toolbar
+      sx={{
+        pl: { sm: 2 },
+        pr: { xs: 1, sm: 1 },
+        ...(numSelected > 0 && {
+          bgcolor: (theme) =>
+            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+        }),
+      }}
+    >
+      {numSelected > 0 ? (
+        <Typography
+          sx={{ flex: '1 1 100%' }}
+          color="inherit"
+          variant="subtitle1"
+          component="div"
+        >
+          {numSelected} selected
+        </Typography>
+      ) : (
+        <Typography
+          sx={{ flex: '1 1 100%' }}
+          variant="h6"
+          id="tableTitle"
+          component="div"
+        >
+          Choose Problem
+        </Typography>
+      )}
+
+      {numSelected > 0 ? (
+        <Tooltip title="Delete">
+          <IconButton>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      ) : (
+        <Tooltip title="Filter list">
+          <IconButton>
+            <FilterListIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Toolbar>
+  );
+};
+
+EnhancedTableToolbar.propTypes = {
+  numSelected: PropTypes.number.isRequired,
+};
+export default function EditContest(props){
+  const {contestId} = useParams();
+  const history = useHistory();
+  const [contestName, setContestName] = useState("");
+  const [contestTime, setContestTime] = useState(Number(0));
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [contestProblems, setContestProblems] = useState([]);
+  const [pageSize, setPageSize] = useState(5);
+  const [problemSelected, setProblemSelected] =useState([]);
+  const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
+  const isSelected = (name) => problemSelected.indexOf(name) !== -1;
+
+  const classes = useStyles();
+  const handleClick = (event, name) => {
+    const selectedIndex = problemSelected.indexOf(name);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(problemSelected, name);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(problemSelected.slice(1));
+    } else if (selectedIndex === problemSelected.length - 1) {
+      newSelected = newSelected.concat(problemSelected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        problemSelected.slice(0, selectedIndex),
+        problemSelected.slice(selectedIndex + 1),
+      );
+    }
+    console.log("newSelected ", newSelected);
+    setProblemSelected(newSelected);
+  };
+  const handlePageChange = (event, value) => {
+    setPage(value);
+    // getProblemContestList();
+  };
+  function handleSubmit(){
+    let body = {
+      contestName: contestName,
+      contestSolvingTime: contestTime,
+      problemIds: problemSelected,
+    }
+    request(
+      "post",
+      "/edit-contest/"+contestId,
+      (res)=>{
+        // console.log("problem list", res.data);
+        setShowSubmitSuccess(true);
+        sleep(1000).then(r => {
+          history.push("/programming-contest/list-contest");
+        });
+
+      },
+      {}
+      ,
+      body
+    ).then();
+  }
+
+  useEffect(() =>{
+    request(
+      "get",
+      "/get-contest-problem-paging?size="+pageSize+"&page="+(page-1),
+      (res)=>{
+        // console.log("problem list", res.data);
+        setTotalPages(res.data.totalPages);
+        setContestProblems(res.data.content);
+      }
+    ).then();
+
+    request(
+      "get",
+      "/get-contest-detail/"+contestId,
+      (res) =>{
+        setContestTime(res.data.contestTime);
+        let arr = [];
+        res.data.list.map((p) => {
+          arr.push(p.problemId);
+        });
+        console.log("arr ", arr);
+        setProblemSelected(arr);
+        setContestName(res.data.contestName);
+        console.log("res ", res.data);
+      }
+    ).then();
+  }, [page])
+
+
+  return(
     <div>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Card>
           <CardContent>
             <Typography variant="h5" component="h2">
-              Edit Problem <Typography variant="h4"> {problemId}</Typography>
+              Edit Contest {contestId}
             </Typography>
-            <form className={classes.root} noValidate autoComplete="off">
-              <div>
-                <TextField
-                  value={problemName}
-                  autoFocus
-                  required
-                  id="problemName"
-                  label="Problem Name"
-                  placeholder="Problem Name"
-                  onChange={(event) => {
-                    setProblemName(event.target.value);
-                  }}
-                ></TextField>
-
-                <TextField
-                  autoFocus
-                  required
-                  id="timeLimit"
-                  label="Time Limit"
-                  placeholder="Time Limit"
-                  onChange={(event) => {
-                    setTimeLimit(event.target.value);
-                  }}
-                  value={timeLimit}
-                ></TextField>
-
-                <TextField
-                  autoFocus
-                  required
-                  id="memoryLimit"
-                  label="Memory Limit"
-                  placeholder="Memory Limit"
-                  onChange={(event) => {
-                    setMemoryLimit(event.target.value);
-                  }}
-                  value={memoryLimit}
-                ></TextField>
-
-                <TextField
-                  autoFocus
-                  required
-                  select
-                  id="levelId"
-                  label="Level ID"
-                  placeholder="Level ID"
-                  onChange={(event) => {
-                    setLevelId(event.target.value);
-                  }}
-                  value={levelId}
-                >
-                  {defaultLevel.map((item) => (
-                    <MenuItem key={item} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))}
-                </TextField>
-
-                <TextField
-                  autoFocus
-                  // required
-                  select
-                  id="categoryId"
-                  label="Category ID"
-                  placeholder="Category ID"
-                  onChange={(event) => {
-                    setCategoryId(event.target.value);
-                  }}
-                  value={categoryId}
-                >
-                  {listCategory.map((item) => (
-                    <MenuItem key={item} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))}
-                </TextField>
-
-                <TextField
-                  autoFocus
-                  // required
-                  select
-                  id="Public Problem"
-                  label="Public Problem"
-                  placeholder="Public Problem"
-                  onChange={(event) => {
-                    setIsPublic(event.target.value);
-                  }}
-                  value={isPublic}
-                >
-                  <MenuItem key={"true"} value={true}>
-                    {"true"}
-                  </MenuItem>
-                  <MenuItem key={"false"} value={false}>
-                    {"false"}
-                  </MenuItem>
-                </TextField>
-              </div>
-            </form>
-            <form
-              className={descriptionClass.root}
-              noValidate
-              autoComplete="off"
-            >
-              <div>
-                <Typography>
-                  <h2>Problem Description</h2>
-                </Typography>
-                <Editor
-                  editorState={editorStateDescription}
-                  handlePastedText={() => false}
-                  onEditorStateChange={onChangeEditorStateDescription}
-                  toolbarStyle={editorStyle.toolbar}
-                  editorStyle={editorStyle.editor}
-                />
-              </div>
-              <div>
-                <Typography>
-                  <h2>Problem Solution</h2>
-                </Typography>
-                <Editor
-                  editorState={editorStateSolution}
-                  handlePastedText={() => false}
-                  onEditorStateChange={onChangeEditorStateSolution}
-                  toolbarStyle={editorStyle.toolbar}
-                  editorStyle={editorStyle.editor}
-                />
-              </div>
-            </form>
-            <Typography>
-              <h2>Correct Solution Source Code</h2>
-            </Typography>
-            <TextField
-              style={{ width: 0.075 * window.innerWidth, margin: 20 }}
-              variant={"outlined"}
-              size={"small"}
-              autoFocus
-              value={languageSolution}
-              select
-              id="computerLanguage"
-              onChange={(event) => {
-                setLanguageSolution(event.target.value);
-              }}
-            >
-              {computerLanguageList.map((item) => (
-                <MenuItem key={item} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </TextField>
-            <CodeMirror
-              height={"500px"}
-              width="100%"
-              extensions={getExtension()}
-              onChange={(value, viewUpdate) => {
-                setCodeSolution(value);
-              }}
-              autoFocus={false}
-              value={codeSolution}
-            />
             <br/>
-            <CompileStatus
-              showCompile={showCompile}
-              statusSuccessful={statusSuccessful}
-              message={compileMessage}
-            />
+            <form className={classes.root} noValidate autoComplete="off">
+
+
+              <TextField
+                autoFocus
+                required
+                value={contestName}
+                id="contestName"
+                label="Contest Name"
+                placeholder="Contest Name"
+                onChange={(event) => {
+                  setContestName(event.target.value);
+                }}
+              >
+              </TextField>
+
+              <TextField
+                autoFocus
+                value={contestTime}
+                required
+                id="timeLimit"
+                label="Time Limit"
+                placeholder="Time Limit"
+                onChange={(event) => {
+                  setContestTime(Number(event.target.value));
+                }}
+              >
+              </TextField>
+
+            </form>
+
+
+            <Box sx={{ width: '100%' }}>
+              <Paper sx={{ width: '100%', mb: 2 }}>
+                <EnhancedTableToolbar numSelected={problemSelected.length} />
+                <TableContainer>
+                  <Table
+                    sx={{ minWidth: 750 }}
+                    aria-labelledby="tableTitle"
+                    size={'medium'}
+                  >
+                    <EnhancedTableHead
+                      numSelected={problemSelected.length}
+                      // order={order}
+                      // orderBy={orderBy}
+                      // onSelectAllClick={handleSelectAllClick}
+                      // onRequestSort={handleRequestSort}
+                      // rowCount={rows.length}
+                    />
+                    <TableBody>
+                      {contestProblems.map((p, index) =>{
+                        const isItemSelected = isSelected(p.problemId);
+                        const labelId = `enhanced-table-checkbox-${index}`;
+                        return(
+                          <TableRow
+                            hover
+                            onClick={(event) => handleClick(event, p.problemId)}
+                            role="checkbox"
+                            aria-checked={isItemSelected}
+                            tabIndex={-1}
+                            key={p.problemId}
+                            selected={isItemSelected}
+                          >
+
+                            <TableCell padding="checkbox">
+                              <Checkbox
+                                color="primary"
+                                checked={isItemSelected}
+                                inputProps={{
+                                  'aria-labelledby': labelId,
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell
+                              component="th"
+                              id={labelId}
+                              scope="row"
+                              padding="none"
+                            >
+                              {p.problemName}
+                            </TableCell>
+                            <TableCell align="right"><span style={{color:getColorLevel(`${p.levelId}`)}}>{`${p.levelId}`}</span></TableCell>
+                          </TableRow>
+                        );
+                      })}
+
+                    </TableBody>
+                    {/*<TableFooter>*/}
+                    {/*<TableRow>*/}
+
+
+                    {/*</TableRow>*/}
+                    {/*</TableFooter>*/}
+                  </Table>
+                  <TableRow>
+                    <TableCell align={"right"}>
+                      <Pagination
+                        className="my-3"
+                        count={totalPages}
+                        page={page}
+                        siblingCount={1}
+                        boundaryCount={1}
+                        variant="outlined"
+                        shape="rounded"
+                        onChange={handlePageChange}
+                      />
+                    </TableCell>
+                  </TableRow>
+
+                </TableContainer>
+
+
+              </Paper>
+            </Box>
+
+
           </CardContent>
           <CardActions>
             <Button
               variant="contained"
               color="light"
-              style={{ marginLeft: "45px" }}
-              onClick={checkCompile}
-            >
-              Check Solution Compile
-            </Button>
-            <SubmitWarming
-              showSubmitWarming={showSubmitWarming}
-              content={"Your source must be pass compile process"}
-            />
-          </CardActions>
-
-          <Typography>
-            <h2>Test case</h2>
-          </Typography>
-
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 750 }} aria-label="customized table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell></StyledTableCell>
-                  <StyledTableCell align="left">TestCase</StyledTableCell>
-                  <StyledTableCell align="left">Correct Answer</StyledTableCell>
-                  <StyledTableCell align="left">Point</StyledTableCell>
-                  <StyledTableCell align="left">Edit</StyledTableCell>
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {testCases.map((testCase, idx) => (
-                  <StyledTableRow>
-                    <StyledTableCell component="th" scope="row">
-                      {idx}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {testCase.testCase}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {testCase.correctAns}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {testCase.point}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      <Link
-                        to={
-                          "/programming-contest/edit-testcase/" +
-                          problemId +
-                          "/" +
-                          testCase.testCaseId
-                        }
-                        style={{
-                          textDecoration: "none",
-                          color: "black",
-                          cursor: "",
-                        }}
-                      >
-                        <Button variant="contained" color="light">
-                          Edit
-                        </Button>
-                      </Link>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <CardActions>
-            <Button
-              variant="contained"
-              color="light"
-              style={{ marginLeft: "45px" }}
+              style={{marginLeft:"45px"}}
               onClick={handleSubmit}
             >
               Save
             </Button>
-
             <SubmitSuccess
               showSubmitSuccess={showSubmitSuccess}
-              content={"You have saved problem"}
-            />
+              content={"You have saved contest"}/>
           </CardActions>
         </Card>
       </MuiPickersUtilsProvider>
+
+
     </div>
   );
+
+
 }
-export default EditProblem;
