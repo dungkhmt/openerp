@@ -42,6 +42,14 @@ import TClassList from "../views/Education/ClassManagement/Teacher/TClassList";
 import TeacherViewDetailClass from "../views/Education/ClassManagement/Teacher/TeacherViewDetailClass";
 import TeacherViewLearningSessionDetail from "../views/Education/ClassManagement/Teacher/TeacherViewLearningSessionDetail";
 import StudentViewLearningSessionDetail from "../views/Education/ClassManagement/Student/StudentViewLearningSessionDetail";
+import ResourceDomainList from "../component/education/resourcelink/ResourceDomainList";
+import ResourceList from "../component/education/resourcelink/ResourceList";
+import ResourceDomainCreate from "../component/education/resourcelink/ResourceDomainCreate";
+import ResourceCreate from "../component/education/resourcelink/ResourceCreate";
+import ResourceDomainEdit from "../component/education/resourcelink/ResourceDomainEdit";
+import ClassTeacherAssignmentPlanDetail from "../component/education/classteacherassignment/ClassTeacherAssignmentPlanDetail";
+import ClassTeacherAssignmentPlanList from "../component/education/classteacherassignment/ClassTeacherAssignmentPlanList";
+import BCASolver from "../component/education/BCASolver";
 
 import NotFound from "../views/errors/NotFound";
 
@@ -129,6 +137,40 @@ export default function EduRoute() {
           path={`${path}/teacher/class/session/detail/:sessionId`}
           exact
         />
+        <Route
+          component={ResourceDomainList}
+          path={`${path}/teach/resource-links/list`}
+        />
+        <Route
+          component={ResourceDomainCreate}
+          path={`${path}/domain/create`}
+        />
+        <Route
+          component={ResourceCreate}
+          path={`${path}/domains/:id/resource`}
+        />
+        <Route
+          component={ResourceDomainEdit}
+          path={`${path}/domains/:id/edit`}
+        />
+        <Route
+          component={ResourceList}
+          path={`${path}/domains/:id/resources`}
+        />
+        <Route
+          component={ClassTeacherAssignmentPlanList}
+          path={`${path}/class-teacher-assignment-plan/list`}
+        />
+        <Route
+          component={ClassTeacherAssignmentPlanDetail}
+          path={`${path}/class-teacher-assignment-plan/detail/:planId`}
+        />
+
+        <Route component={BCASolver} path={`${path}/solve`} />
+
+        <Route component={CreateSemester} path={`${path}/semester`} />
+
+        <Route component={ClassCreate} path={`${path}/class/add`} />
 
         <Route
           component={StudentCourseChapterMaterialDetail}

@@ -126,13 +126,13 @@
             <version>2.3.7</version>
         </dependency>
 
-        <!--
+
         <dependency>
             <groupId>com.google.ortools</groupId>
             <artifactId>ortools-java</artifactId>
             <version>8.0.8283</version>
         </dependency>
-        -->
+
 
         <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
         <dependency>
