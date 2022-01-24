@@ -222,6 +222,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     @Override
     public ModelGetTestCaseResultResponse getTestCaseResult(String problemId, String userName, ModelGetTestCaseResult modelGetTestCaseResult) throws Exception {
         ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
+        log.info("problem entity {}", problemEntity);
+        log.info("source {}", problemEntity.getCorrectSolutionSourceCode());
         String tempName = tempDir.createRandomScriptFileName(userName + "-" + problemEntity.getProblemName() + "-" + problemEntity.getCorrectSolutionLanguage());
         String output = runCode(problemEntity.getCorrectSolutionSourceCode(), problemEntity.getCorrectSolutionLanguage(), tempName, modelGetTestCaseResult.getTestcase(), problemEntity.getTimeLimit(), "Correct Solution Language Not Found");
         if(output.contains("Time Limit Exceeded")){
