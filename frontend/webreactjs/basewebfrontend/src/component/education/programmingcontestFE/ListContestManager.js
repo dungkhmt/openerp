@@ -68,7 +68,7 @@ export function ListContestManager(){
                       </Link>
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      <Link to={"/programming-contest/edit-contest/"+contest.contestId}  style={{ textDecoration: 'none', color:"black", cursor:""}} >
+                      <Link to={"/programming-contest/contest-edit/"+contest.contestId}  style={{ textDecoration: 'none', color:"black", cursor:""}} >
                         <Button
                           variant="contained"
                           color="light"

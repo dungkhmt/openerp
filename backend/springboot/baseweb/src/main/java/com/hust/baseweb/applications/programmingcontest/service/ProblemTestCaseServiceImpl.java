@@ -90,11 +90,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         problemEntity.setTimeLimit(modelCreateContestProblem.getTimeLimit());
         problemEntity.setCorrectSolutionLanguage(modelCreateContestProblem.getCorrectSolutionLanguage());
         problemEntity.setCorrectSolutionSourceCode(modelCreateContestProblem.getCorrectSolutionSourceCode());
-        try {
-            return problemRepo.save(problemEntity);
-        }catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
+        problemEntity.setPublicProblem(modelCreateContestProblem.getIsPublic());
+        return problemRepo.save(problemEntity);
+
     }
 
 
