@@ -1,6 +1,5 @@
 package com.hust.baseweb.applications.programmingcontest.entity;
 
-import com.hust.baseweb.entity.UserLogin;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,9 +22,12 @@ public class ContestEntity {
     @Column(name = "contest_name")
     private String contestName;
 
-    @OneToOne
-    @JoinColumn(name = "user_create_id", referencedColumnName = "user_login_id")
-    private UserLogin userCreatedContest;
+//    @OneToOne
+//    @JoinColumn(name = "user_create_id", referencedColumnName = "user_login_id")
+//    private UserLogin userCreatedContest;
+
+    @Column(name = "user_create_id")
+    private String userId;
 
     @Column(name = "contest_solving_time")
     private int contestSolvingTime;

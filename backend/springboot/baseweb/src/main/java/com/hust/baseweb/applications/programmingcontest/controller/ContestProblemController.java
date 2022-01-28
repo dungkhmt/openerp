@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -29,16 +30,10 @@ public class ContestProblemController {
     ProblemTestCaseService problemTestCaseService;
 
     @PostMapping("/create-problem")
-    public ResponseEntity<?> createContestProblem(@RequestBody ModelCreateContestProblem modelCreateContestProblem) throws MiniLeetCodeException {
-        log.info("create pronblem {}", modelCreateContestProblem);
-        problemTestCaseService.createContestProblem(modelCreateContestProblem);
+    public ResponseEntity<?> createContestProblem(@RequestBody ModelCreateContestProblem modelCreateContestProblem, Principal principal) throws MiniLeetCodeException {
+        log.info("create problem {}", modelCreateContestProblem);
+        problemTestCaseService.createContestProblem(modelCreateContestProblem, principal.getName());
         return ResponseEntity.status(200).body(null);
-    }
-
-    @PostMapping("/update-contest-problem/{problemId}")
-    public ResponseEntity<?> updateContestProblem(@RequestBody ModelCreateContestProblem modelCreateContestProblem, @PathVariable("problemId") String problemId) throws Exception{
-        ProblemEntity problemEntity = problemTestCaseService.updateContestProblem(modelCreateContestProblem, problemId);
-        return ResponseEntity.ok(problemEntity);
     }
 
 
@@ -91,10 +86,10 @@ public class ContestProblemController {
     }
 
     @PostMapping("/update-problem-detail/{problemId}")
-    public ResponseEntity<?> updateProblemDetails(@RequestBody ModelCreateContestProblem modelCreateContestProblem, @PathVariable("problemId") String problemId) throws Exception {
+    public ResponseEntity<?> updateProblemDetails(@RequestBody ModelCreateContestProblem modelCreateContestProblem, @PathVariable("problemId") String problemId, Principal principal) throws Exception {
         log.info("updateProblemDetails problemId {}", problemId);
-        ProblemEntity problemEntity = problemTestCaseService.updateContestProblem(modelCreateContestProblem, problemId);
-        return ResponseEntity.status(200).body(problemEntity);
+        ProblemEntity problemEntity = problemTestCaseService.updateContestProblem(modelCreateContestProblem, problemId, principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).body(problemEntity);
     }
 
     @PostMapping("/problem-detail-run-code/{problemId}")
@@ -349,5 +344,25 @@ public class ContestProblemController {
     }
 
 
+//    @DeleteMapping("/delete-contest/{contestId}")
+//    public ResponseEntity<?> deleteContest(@PathVariable("contestId") String contestId, Principal principal) throws MiniLeetCodeException {
+//        log.info("delete-contest {}", contestId);
+//        problemTestCaseService.deleteContest(contestId, principal.getName());
+//        return ResponseEntity.status(HttpStatus.OK).body(null);
+//    }
+//
+//    @DeleteMapping("/delete-problem/{problemId}")
+//    public ResponseEntity<?> deleteProblem(@PathVariable("problemId") String problemId, Principal principal) throws MiniLeetCodeException {
+//        log.info("delete-problem {}", problemId);
+//        problemTestCaseService.deleteProblem(problemId, principal.getName());
+//        return ResponseEntity.status(HttpStatus.OK).body(null);
+//
+//    }
+
+    @DeleteMapping("/delete-test-case/{testCaseId}")
+    public ResponseEntity<?> deleteTestCase(@PathVariable("testCaseId") UUID testCaseId, Principal principal) throws MiniLeetCodeException {
+        problemTestCaseService.deleteTestcase(testCaseId, principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
 
 }

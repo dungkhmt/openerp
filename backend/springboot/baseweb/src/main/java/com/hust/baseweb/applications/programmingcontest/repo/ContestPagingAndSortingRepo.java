@@ -8,5 +8,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface ContestPagingAndSortingRepo extends PagingAndSortingRepository<ContestEntity, String> {
     Page<ContestEntity> findAll(Pageable pageable);
-    Page<ContestEntity> findAllByUserCreatedContest(Pageable pageable, UserLogin userLogin);
+    Page<ContestEntity> findAllByUserId(Pageable pageable, String userId);
 }

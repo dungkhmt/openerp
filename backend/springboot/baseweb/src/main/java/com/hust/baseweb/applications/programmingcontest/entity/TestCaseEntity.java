@@ -28,9 +28,12 @@ public class TestCaseEntity {
     @Column(name = "correct_answer")
     private String correctAnswer;
 
-    @JoinColumn(name = "contest_problem_id", referencedColumnName = "problem_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ProblemEntity problem;
+    @Column(name = "contest_problem_id")
+    private String problemId;
+
+//    @JoinColumn(name = "contest_problem_id", referencedColumnName = "problem_id")
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private ProblemEntity problem;
 
 //    @JoinTable(name = "contest_problem_test_case",
 //            joinColumns = @JoinColumn(name = "test_case_id", referencedColumnName = "test_case_id"),

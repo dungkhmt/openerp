@@ -1,11 +1,10 @@
 package com.hust.baseweb.applications.programmingcontest.entity;
 
-import com.hust.baseweb.applications.programmingcontest.composite.UserSubmissionContestResultID;
+import com.hust.minileetcode.composite.UserSubmissionContestResultID;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.UUID;
 
 @Getter
 @Setter

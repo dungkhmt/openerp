@@ -9,5 +9,7 @@ import java.util.List;
 public interface ContestRepo extends JpaRepository<ContestEntity, String> {
     ContestEntity findContestByContestId(String contestId);
 
-    ContestEntity findContestEntityByContestIdAndUserCreatedContest(String contestId, UserLogin userLogin);
+    ContestEntity findContestEntityByContestIdAndUserId(String contestId, String userId);
+
+    void deleteByContestIdAndUserId(String contestId, String userId);
 }
