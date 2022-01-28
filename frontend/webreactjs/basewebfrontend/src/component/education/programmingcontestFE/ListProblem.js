@@ -59,6 +59,7 @@ function ListProblem(){
                 <StyledTableCell align="left">Difficulty</StyledTableCell>
                 <StyledTableCell align="left">Add Testcase</StyledTableCell>
                 <StyledTableCell align="left">Edit</StyledTableCell>
+                {/*<StyledTableCell align="left">Delete</StyledTableCell>*/}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -102,6 +103,26 @@ function ListProblem(){
                       </Button>
                     </Link>
                   </StyledTableCell>
+                  {/*<StyledTableCell align="left">*/}
+                  {/*    <Button*/}
+                  {/*      variant="contained"*/}
+                  {/*      color="light"*/}
+                  {/*      onClick={*/}
+                  {/*        ()=>{*/}
+                  {/*          request(*/}
+                  {/*            "delete",*/}
+                  {/*            "/delete-problem/"+problem.problemId,*/}
+                  {/*            (res)=>{*/}
+                  {/*              // window.location.reload();*/}
+                  {/*              getProblemContestList().then();*/}
+                  {/*            }*/}
+                  {/*          ).then();*/}
+                  {/*        }*/}
+                  {/*      }*/}
+                  {/*    >*/}
+                  {/*      Delete*/}
+                  {/*    </Button>*/}
+                  {/*</StyledTableCell>*/}
                 </StyledTableRow>
               ))}
             </TableBody>

@@ -54,6 +54,7 @@ export function ListContestManager(){
                   <StyledTableCell></StyledTableCell>
                   <StyledTableCell align="left">Title</StyledTableCell>
                   <StyledTableCell align="center">Edit</StyledTableCell>
+                  {/*<StyledTableCell align="center">Delete</StyledTableCell>*/}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -77,7 +78,26 @@ export function ListContestManager(){
                         </Button>
                       </Link>
                     </StyledTableCell>
-
+                    {/*<StyledTableCell align="center">*/}
+                    {/*  <Button*/}
+                    {/*    variant="contained"*/}
+                    {/*    color="light"*/}
+                    {/*    onClick={*/}
+                    {/*      ()=>{*/}
+                    {/*        request(*/}
+                    {/*          "delete",*/}
+                    {/*          "/delete-contest/"+contest.contestId,*/}
+                    {/*          (res)=>{*/}
+                    {/*            // window.location.reload();*/}
+                    {/*            getContestList().then();*/}
+                    {/*          }*/}
+                    {/*        ).then();*/}
+                    {/*      }*/}
+                    {/*    }*/}
+                    {/*  >*/}
+                    {/*    Delete*/}
+                    {/*  </Button>*/}
+                    {/*</StyledTableCell>*/}
 
                   </StyledTableRow>
                 ))}
