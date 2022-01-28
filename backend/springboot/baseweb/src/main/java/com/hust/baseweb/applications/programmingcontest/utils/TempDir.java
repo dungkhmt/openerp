@@ -65,7 +65,10 @@ public class TempDir {
 
     public String createRandomScriptFileName(String startName){
         int generateRandom = r.nextInt();
-        return startName + "-" + generateRandom;
+        String resp = startName + "-" + generateRandom;
+        resp = resp.replaceAll("\n", " ");
+        resp = resp.replaceAll("&","");
+        return resp.replaceAll("( +)", "-").trim();
     }
 
     public String createDirInContainer(String startName){
