@@ -1,6 +1,6 @@
 import Pagination from "@material-ui/lab/Pagination";
 import React, { useState, useEffect } from "react";
-import {Grid, MenuItem, Table, TableBody, TableHead, TextField} from "@material-ui/core";
+import {Button, Grid, MenuItem, Table, TableBody, TableHead, TextField} from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
 import {Link} from "react-router-dom";
 import {request} from "./Request";
@@ -59,6 +59,7 @@ function ListProblem(){
                 <StyledTableCell align="left">Difficulty</StyledTableCell>
                 <StyledTableCell align="left">Add Testcase</StyledTableCell>
                 <StyledTableCell align="left">Edit</StyledTableCell>
+                {/*<StyledTableCell align="left">Delete</StyledTableCell>*/}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -84,14 +85,44 @@ function ListProblem(){
 
                   <StyledTableCell align="left">
                     <Link to={"/programming-contest/problem-detail-create-test-case/"+problem.problemId}  style={{ textDecoration: 'none', color:"black"}} >
-                      ADD
+                      <Button
+                        variant="contained"
+                        color="light"
+                      >
+                        ADD
+                      </Button>
                     </Link>
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     <Link to={"/programming-contest/edit-problem/"+problem.problemId}  style={{ textDecoration: 'none', color:"black", cursor:""}} >
-                      Edit
+                      <Button
+                        variant="contained"
+                        color="light"
+                      >
+                        Edit
+                      </Button>
                     </Link>
                   </StyledTableCell>
+                  {/*<StyledTableCell align="left">*/}
+                  {/*    <Button*/}
+                  {/*      variant="contained"*/}
+                  {/*      color="light"*/}
+                  {/*      onClick={*/}
+                  {/*        ()=>{*/}
+                  {/*          request(*/}
+                  {/*            "delete",*/}
+                  {/*            "/delete-problem/"+problem.problemId,*/}
+                  {/*            (res)=>{*/}
+                  {/*              // window.location.reload();*/}
+                  {/*              getProblemContestList().then();*/}
+                  {/*            }*/}
+                  {/*          ).then();*/}
+                  {/*        }*/}
+                  {/*      }*/}
+                  {/*    >*/}
+                  {/*      Delete*/}
+                  {/*    </Button>*/}
+                  {/*</StyledTableCell>*/}
                 </StyledTableRow>
               ))}
             </TableBody>

@@ -11,9 +11,9 @@ import java.util.UUID;
 
 public interface ProblemTestCaseService {
 
-    void createContestProblem(ModelCreateContestProblem modelCreateContestProblem) throws MiniLeetCodeException;
+    void createContestProblem(ModelCreateContestProblem modelCreateContestProblem, String userID) throws MiniLeetCodeException;
 
-    ProblemEntity updateContestProblem(ModelCreateContestProblem modelCreateContestProblem, String problemId) throws Exception;
+    ProblemEntity updateContestProblem(ModelCreateContestProblem modelCreateContestProblem, String problemId, String userId) throws Exception;
 
     void updateProblemSourceCode(ModelAddProblemLanguageSourceCode modelAddProblemLanguageSourceCode, String problemId);
 
@@ -89,4 +89,10 @@ public interface ProblemTestCaseService {
     Page<ContestSubmission> findContestSubmissionByContestIdPaging(Pageable pageable, String contestId);
 
     ContestSubmissionEntity getContestSubmissionDetail(UUID submissionId);
+
+    void deleteProblem(String problemId, String userId) throws MiniLeetCodeException;
+
+    void deleteContest(String contestId, String userId) throws MiniLeetCodeException;
+
+    void deleteTestcase(UUID testcaseId, String userId) throws MiniLeetCodeException;
 }

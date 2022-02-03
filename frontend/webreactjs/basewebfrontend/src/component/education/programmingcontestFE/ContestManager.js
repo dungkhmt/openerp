@@ -133,7 +133,7 @@ export function ContestManager(){
       (res) => {
         console.log("res pending", res.data);
         setSuccessful(res.data.contents.content);
-        setTotalPagePending(res.data.contents.totalPages);
+        setTotalPageSuccessful(res.data.contents.totalPages);
       }
     ).then();
   }
@@ -264,12 +264,46 @@ export function ContestManager(){
             List Student Registered Contest
           </Typography>
         </section>
-        <RegisteredTable
-          successful={successful}
-          pageSuccessful={pageSuccessful}
-          pageSuccessfulSize={pageSuccessfulSize}
-          load={load}
-        />
+
+
+        <TableContainer component={Paper}>
+          <Table sx={{minWidth:window.innerWidth-500}}  aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell align="center"></StyledTableCell>
+                <StyledTableCell align="center">User Name</StyledTableCell>
+                <StyledTableCell align="center">Full Name</StyledTableCell>
+                <StyledTableCell align="center">Email</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {
+                successful.map((s, index) =>(
+                  <StyledTableRow>
+                    <StyledTableCell>
+                      <b>{index+1+(pageSuccessful-1)*pageSuccessfulSize}</b>
+                    </StyledTableCell>
+
+                    <StyledTableCell align="center">
+                      <b>{s.userName}</b>
+
+                    </StyledTableCell>
+
+                    <StyledTableCell align="center">
+                      <b>{s.firstName}{" "}{s.middleName}{" "}{s.lastName}</b>
+
+                    </StyledTableCell>
+
+                    <StyledTableCell align="center">
+                      <b>{s.email}</b>
+                    </StyledTableCell>
+
+                  </StyledTableRow>
+                ))
+              }
+            </TableBody>
+          </Table>
+        </TableContainer>
 
 
         <br></br>
@@ -336,7 +370,7 @@ export function ContestManager(){
                   pendings.map((s, index) =>(
                     <StyledTableRow>
                       <StyledTableCell>
-                        <b>{index+1+(pagePending-1)*pageSuccessfulSize}</b>
+                        <b>{index+1+(pagePending-1)*pagePendingSize}</b>
                       </StyledTableCell>
 
                       <StyledTableCell align="center">
@@ -512,7 +546,7 @@ export function ContestManager(){
                   searchUsers.map((s, index) =>(
                     <StyledTableRow>
                       <StyledTableCell>
-                        <b>{index+1+(pageSuccessful-1)*pageSuccessfulSize}</b>
+                        <b>{index+1+(pageSearch-1)*pageSearchSize}</b>
                       </StyledTableCell>
 
                       <StyledTableCell align="center">
@@ -718,7 +752,7 @@ export function ContestManager(){
                   ranking.map((s, index) =>(
                     <StyledTableRow>
                       <StyledTableCell>
-                        <b>{index+1+(pageSuccessful-1)*pageSuccessfulSize}</b>
+                        <b>{index+1+(pageRanking-1)*pageRankingSize}</b>
                       </StyledTableCell>
 
                       <StyledTableCell align="center">
@@ -906,55 +940,55 @@ export function ContestManager(){
   );
 }
 
-function RegisteredTable(props){
-  const {successful, pageSuccessful, pageSuccessfulSize, load} = props;
-  if(load){
-    return(
-      <div>
-        <TableContainer component={Paper}>
-          <Table sx={{minWidth:window.innerWidth-500}}  aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell align="center"></StyledTableCell>
-                <StyledTableCell align="center">User Name</StyledTableCell>
-                <StyledTableCell align="center">Full Name</StyledTableCell>
-                <StyledTableCell align="center">Email</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {
-                successful.map((s, index) =>(
-                  <StyledTableRow>
-                    <StyledTableCell>
-                      <b>{index+1+(pageSuccessful-1)*pageSuccessfulSize}</b>
-                    </StyledTableCell>
-
-                    <StyledTableCell align="center">
-                      <b>{s.userName}</b>
-
-                    </StyledTableCell>
-
-                    <StyledTableCell align="center">
-                      <b>{s.firstName}{" "}{s.middleName}{" "}{s.lastName}</b>
-
-                    </StyledTableCell>
-
-                    <StyledTableCell align="center">
-                      <b>{s.email}</b>
-                    </StyledTableCell>
-
-                  </StyledTableRow>
-                ))
-              }
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-    );
-  }else{
-    return (
-      <div></div>
-    );
-  }
-
-}
+// function RegisteredTable(props){
+//   const {successful, pageSuccessful, pageSuccessfulSize, load} = props;
+//   if(load){
+//     return(
+//       <div>
+//         <TableContainer component={Paper}>
+//           <Table sx={{minWidth:window.innerWidth-500}}  aria-label="customized table">
+//             <TableHead>
+//               <TableRow>
+//                 <StyledTableCell align="center"></StyledTableCell>
+//                 <StyledTableCell align="center">User Name</StyledTableCell>
+//                 <StyledTableCell align="center">Full Name</StyledTableCell>
+//                 <StyledTableCell align="center">Email</StyledTableCell>
+//               </TableRow>
+//             </TableHead>
+//             <TableBody>
+//               {
+//                 successful.map((s, index) =>(
+//                   <StyledTableRow>
+//                     <StyledTableCell>
+//                       <b>{index+1+(pageSuccessful-1)*pageSuccessfulSize}</b>
+//                     </StyledTableCell>
+//
+//                     <StyledTableCell align="center">
+//                       <b>{s.userName}</b>
+//
+//                     </StyledTableCell>
+//
+//                     <StyledTableCell align="center">
+//                       <b>{s.firstName}{" "}{s.middleName}{" "}{s.lastName}</b>
+//
+//                     </StyledTableCell>
+//
+//                     <StyledTableCell align="center">
+//                       <b>{s.email}</b>
+//                     </StyledTableCell>
+//
+//                   </StyledTableRow>
+//                 ))
+//               }
+//             </TableBody>
+//           </Table>
+//         </TableContainer>
+//       </div>
+//     );
+//   }else{
+//     return (
+//       <div></div>
+//     );
+//   }
+//
+// }

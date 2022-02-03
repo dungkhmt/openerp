@@ -2,9 +2,11 @@ package com.hust.baseweb.applications.programmingcontest.entity;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -26,8 +28,8 @@ public class ProblemEntity {
 //    @OneToMany(fetch = FetchType.LAZY)
 //    private List<ProblemSourceCode> problemSourceCode;
 
-    @OneToMany(mappedBy = "problem")
-    private Set<ProblemSourceCodeEntity> problemSourceCodes;
+//    @OneToMany(mappedBy = "problem")
+//    private Set<ProblemSourceCodeEntity> problemSourceCodes;
 
     @Column(name = "problem_name", unique = true)
     private String problemName;
@@ -35,9 +37,8 @@ public class ProblemEntity {
     @Column(name = "problem_description")
     private String problemDescription;
 
-//    @OneToOne
-//    @JoinColumn(name = "created_by_user_login_id", referencedColumnName = "user_login_id")
-//    private UserLogin userLogin;
+    @Column(name = "created_by_user_login_id")
+    private String userId;
 
     @Column(name = "time_limit")
     private int timeLimit;

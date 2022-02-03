@@ -236,6 +236,7 @@ function EditProblem() {
       correctSolutionLanguage: languageSolution,
       solution: solution,
       correctSolutionSourceCode: codeSolution,
+      isPublic: isPublic,
     };
     request(
       "post",
@@ -340,9 +341,9 @@ function EditProblem() {
                   autoFocus
                   // required
                   select
-                  id="categoryId"
-                  label="Category ID"
-                  placeholder="Category ID"
+                  id="Public Problem"
+                  label="Public Problem"
+                  placeholder="Public Problem"
                   onChange={(event) => {
                     setIsPublic(event.target.value);
                   }}
@@ -453,6 +454,7 @@ function EditProblem() {
                   <StyledTableCell align="left">Correct Answer</StyledTableCell>
                   <StyledTableCell align="left">Point</StyledTableCell>
                   <StyledTableCell align="left">Edit</StyledTableCell>
+                  <StyledTableCell align="left">Delete</StyledTableCell>
                 </TableRow>
               </TableHead>
 
@@ -489,6 +491,36 @@ function EditProblem() {
                           Edit
                         </Button>
                       </Link>
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <Button
+                        variant="contained"
+                        color="light"
+                        onClick={
+                          ()=>{
+                            request(
+                              "delete",
+                               "/delete-test-case/" + testCase.testCaseId,
+
+                              (res) => {
+                                request(
+                                  "GET",
+                                   "/get-test-case-list-by-problem/" + problemId,
+
+                                  (res) => {
+                                    console.log("res", res.data);
+                                    setTestCases(res.data);
+                                  },
+                                  {}
+                                ).then();
+                              },
+                              {}
+                            ).then();
+                          }
+                        }
+                      >
+                        Delete
+                      </Button>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
