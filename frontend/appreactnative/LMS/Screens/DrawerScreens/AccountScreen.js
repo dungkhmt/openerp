@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {Colors} from '../../styles/index';
 
-const AccountScreen = (props) => {
+const AccountScreen = props => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={{flex: 1, padding: 16}}>
@@ -32,7 +32,8 @@ const AccountScreen = (props) => {
                 {
                   text: 'Confirm',
                   onPress: () => {
-                    AsyncStorage.clear();
+                    AsyncStorage.removeItem('user_id');
+                    AsyncStorage.removeItem('user_token');
                     props.navigation.replace('Auth');
                   },
                 },

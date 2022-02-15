@@ -70,7 +70,7 @@ const RegisterScreen = props => {
     }
     formBody = formBody.join('&');
 
-    fetch('http://localhost:3000/api/user/register', {
+    fetch('https://openerp.dailyopt.ai/api/', {
       method: 'POST',
       body: formBody,
       headers: {

@@ -12,7 +12,9 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import base64 from 'react-native-base64';
 
+import AxiosService from '../services/AxiosService';
 import {Colors} from '../styles/index';
 import Loader from './Components/Loader';
 
@@ -40,32 +42,36 @@ const LoginScreen = ({navigation}) => {
 
     setLoading(true);
 
-    let dataToSend = {email: userEmail, password: userPassword};
-    let formBody = [];
-    for (let key in dataToSend) {
-      let encodedKey = encodeURIComponent(key);
-      let encodedValue = encodeURIComponent(dataToSend[key]);
-      formBody.push(encodedKey + '=' + encodedValue);
-    }
-    formBody = formBody.join('&');
+    let headers = new Headers();
+    headers.set(
+      'Authorization',
+      'Basic ' + base64.encode(userEmail + ':' + userPassword),
+    );
 
-    fetch('http://localhost:3000/api/user/login', {
-      method: 'POST',
-      body: formBody,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      },
+    // Clear user information
+    AsyncStorage.setItem('user_id', '');
+    AsyncStorage.setItem('user_token', '');
+
+    // Call login API
+    fetch('https://openerp.dailyopt.ai/api/', {
+      method: 'GET',
+      headers: headers,
     })
-      .then(response => response.json())
-      .then(responseJson => {
+      .then(response => {
+        // console.log(response);
+
         setLoading(false);
 
-        if (responseJson.status === 'success') {
-          AsyncStorage.setItem('user_id', responseJson.data.email);
-          navigation.replace('DrawerNavigationRoutes');
-        } else {
-          setErrortext(responseJson.msg);
-          console.log('Please check your email id or password');
+        if (response && response.headers) {
+          let authenticationToken = response.headers.get('x-auth-token');
+          if (authenticationToken !== null && authenticationToken.length > 0) {
+            AsyncStorage.setItem('user_id', userEmail.trim());
+            AsyncStorage.setItem('user_token', authenticationToken);
+            AxiosService.setToken(authenticationToken);
+            navigation.replace('DrawerNavigationRoutes');
+          } else {
+            console.error('Cannot get authentication token.');
+          }
         }
       })
       .catch(error => {
@@ -127,17 +133,20 @@ const LoginScreen = ({navigation}) => {
               onPress={handleSubmitPress}>
               <Text style={styles.buttonTextStyle}>Login</Text>
             </TouchableOpacity>
+            {/* // Temporary disable Register function
             <Text
               style={styles.registerTextStyle}
               onPress={() => navigation.replace('RegisterScreen')}>
               Don't have account? Register
             </Text>
+            */}
           </KeyboardAvoidingView>
         </View>
       </ScrollView>
     </View>
   );
 };
+
 export default LoginScreen;
 
 const styles = StyleSheet.create({

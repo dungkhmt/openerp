@@ -9,10 +9,10 @@ const SplashScreen = ({navigation}) => {
   const [animating, setAnimating] = useState(true);
 
   useEffect(() => {
-    console.log('useEffect: enter');
+    console.log('SplashScreen.useEffect: enter');
 
     setTimeout(() => {
-      console.log('setTimeout: enter');
+      console.log('SplashScreen.useEffect.setTimeout: enter');
 
       setAnimating(false);
 
@@ -32,7 +32,10 @@ const SplashScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator animating={animating} color={Colors.controlBackground} />
+      <ActivityIndicator
+        animating={animating}
+        color={Colors.controlBackground}
+      />
     </View>
   );
 };
