@@ -47,7 +47,6 @@ const TutorialScreen = ({navigation}) => {
         </Text>
         <Button
           onPress={() => {
-            console.log('START ...');
             AsyncStorage.setItem('show_tutorial', JSON.stringify(true));
             AsyncStorage.getItem('user_id').then(userId =>
               navigation.replace(
