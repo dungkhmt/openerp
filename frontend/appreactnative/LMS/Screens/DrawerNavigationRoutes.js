@@ -8,6 +8,14 @@ import AccountScreen from './DrawerScreens/AccountScreen';
 import SettingsScreen from './DrawerScreens/SettingsScreen';
 import CustomSidebarMenu from './Components/CustomSidebarMenu';
 import NavigationDrawerHeader from './Components/NavigationDrawerHeader';
+import StudentQuizTestListScreen from '../screens/Student/StudentQuizTestListScreen';
+import StudentQuizTestDetailScreen from '../screens/Student/StudentQuizTestDetailScreen';
+import StudentRegisterClassScreen from '../screens/Student/StudentRegisterClassScreen';
+import StudentClassListScreen from '../screens/Student/StudentClassListScreen';
+import StudentProblemListScreen from '../screens/Student/StudentProblemListScreen';
+import StudentIDEScreen from '../screens/Student/StudentIDEScreen';
+import StudentRegisteredProgrammingContestScreen from '../screens/Student/StudentRegisteredProgrammingContestScreen';
+import StudentNotRegisteredProgrammingContestScreen from '../screens/Student/StudentNotRegisteredProgrammingContestScreen';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -23,6 +31,119 @@ const HomeScreenStack = ({navigation}) => {
           headerLeft: () => (
             <NavigationDrawerHeader navigationProps={navigation} />
           ),
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      {/* Student */}
+      <Stack.Screen
+        name="StudentRegisterClassScreen"
+        component={StudentRegisterClassScreen}
+        options={{
+          title: 'Đăng ký lớp',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentClassListScreen"
+        component={StudentClassListScreen}
+        options={{
+          title: 'Danh sách lớp',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentQuizTestListScreen"
+        component={StudentQuizTestListScreen}
+        options={{
+          title: 'Quiz Test',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentQuizTestDetailScreen"
+        component={StudentQuizTestDetailScreen}
+        options={{
+          title: 'Chi tiết Quiz Test',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentProblemListScreen"
+        component={StudentProblemListScreen}
+        options={{
+          title: 'Problem List',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentIDEScreen"
+        component={StudentIDEScreen}
+        options={{
+          title: 'IDE',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentRegisteredProgrammingContestScreen"
+        component={StudentRegisteredProgrammingContestScreen}
+        options={{
+          title: 'Registered Programming Contest',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentNotRegisteredProgrammingContestScreen"
+        component={StudentNotRegisteredProgrammingContestScreen}
+        options={{
+          title: 'Not Registered Programming Contest',
           headerStyle: {
             backgroundColor: Colors.controlBackground,
           },
