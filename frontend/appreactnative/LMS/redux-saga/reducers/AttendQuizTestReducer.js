@@ -1,31 +1,25 @@
 import * as types from '../actions/ActionTypes';
 
 const initialState = {
-  menuItemList: [
-    /*
-    [
-      '',
-    ]
-    */
-  ],
+  status: {},
   isFetching: false,
 };
 
-const getMenuReducer = (state = initialState, action) => {
-  console.log('getMenuReducer: enter, action=' + JSON.stringify(action));
+const attendQuizTestReducer = (state = initialState, action) => {
+  console.log('attendQuizTestReducer: enter, action=' + JSON.stringify(action));
   switch (action.type) {
-    case types.GET_MENU:
+    case types.ATTEND_QUIZ_TEST:
       return {
         ...state,
         isFetching: true,
       };
-    case types.GET_MENU_SUCCESS:
+    case types.ATTEND_QUIZ_TEST_SUCCESS:
       return {
         ...state,
-        menuItemList: action.menuItemList,
+        status: action.status,
         isFetching: false,
       };
-    case types.GET_MENU_FAILURE:
+    case types.GET_QUIZ_TEST_LIST_FAILURE:
       return {
         ...state,
         isFetching: false,
@@ -36,4 +30,4 @@ const getMenuReducer = (state = initialState, action) => {
   }
 };
 
-export default getMenuReducer;
+export default attendQuizTestReducer;

@@ -206,3 +206,36 @@ export const MenuEduTeachingManagement = () => {
     ],
   };
 };
+
+export const getRouteNameByMenuId = (menuId) => {
+
+  const RouteMap = [
+    {menuId: 'MENU_PROGRAMMING_CONTEST_MANAGER', routeName: null},
+    {menuId: 'MENU_PROGRAMMING_CONTEST_MANAGER_LIST_PROBLEM', routeName: 'TeacherProblemListScreen'},
+    {menuId: 'MENU_PROGRAMMING_CONTEST_MANAGER_CREATE_PROBLEM', routeName: 'TeacherCreateProblemScreen'},
+    {menuId: 'MENU_PROGRAMMING_CONTEST_MANAGER_CREATE_CONTEST', routeName: 'TeacherCreateContestScreen'},
+    {menuId: 'MENU_PROGRAMMING_CONTEST_MANAGER_LIST_CONTEST', routeName: 'TeacherContestListScreen'},
+    {menuId: 'MENU_PROGRAMMING_CONTEST_MANAGER_IDE', routeName: 'TeacherIDEScreen'},
+    
+    {menuId: 'MENU_PROGRAMMING_CONTEST_PARTICIPANT', routeName: null},
+    {menuId: 'MENU_PROGRAMMING_CONTEST_PARTICIPANT_LIST_NOT_REGISTERED_CONTEST', routeName: 'StudentNotRegisteredProgrammingContestScreen'},
+    {menuId: 'MENU_PROGRAMMING_CONTEST_PARTICIPANT_LIST_REGISTERED_CONTEST', routeName: 'StudentRegisteredProgrammingContestScreen'},
+    {menuId: 'MENU_PROGRAMMING_CONTEST_PARTICIPANT_IDE', routeName: 'StudentIDEScreen'},
+    {menuId: 'MENU_PROGRAMMING_CONTEST_PARTICIPANT_LIST_PUBLIC_PROBLEM', routeName: 'StudentProblemListScreen'},
+
+    {menuId: 'MENU_EDUCATION_LEARNING_MANAGEMENT_STUDENT', routeName: null},
+    {menuId: 'MENU_EDUCATION_LEARNING_MANAGEMENT_STUDENT_REGISTER_CLASS', routeName: 'StudentRegisterClassScreen'},
+    {menuId: 'MENU_EDUCATION_LEARNING_MANAGEMENT_STUDENT_VIEW_LIST_CLASS', routeName: 'StudentClassListScreen'},
+    {menuId: 'MENU_EDUCATION_TEACHING_MANAGEMENT_STUDENT_QUIZ_TEST_LIST', routeName: 'StudentQuizTestListScreen'},
+    {menuId: 'MENU_EDUCATION_ASSIGNMENT_EXECUTION', routeName: 'StudentAssignmentExecutionScreen'},
+
+    {menuId: 'MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER', routeName: null},
+    {menuId: 'MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_VIEW_LIST_COURSE', routeName: 'TeacherCourseListScreen'},
+    {menuId: 'MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_VIEW_LIST_CLASS', routeName: 'TeacherClassListScreen'},
+    {menuId: 'MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_CREATE_CLASS', routeName: 'TeacherCreateClassScreen'},
+    {menuId: 'MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_QUIZ_TEST_LIST', routeName: 'TeacherQuizTestScreen'},
+    {menuId: 'MENU_EDUCATION_MANAGEMENT_PROGRAMMING_CONTEST', routeName: 'TeacherProgrammingContestScreen'},
+  ];
+
+  return RouteMap.find(x => x.menuId === menuId).routeName;
+};

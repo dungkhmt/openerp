@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {ActivityIndicator, View, StyleSheet} from 'react-native';
+import {View, Image, StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../styles/index';
 
@@ -32,9 +32,9 @@ const SplashScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator
-        animating={animating}
-        color={Colors.controlBackground}
+      <Image
+        source={require('../images/lms.png')}
+        style={{width: 96, height: 96}}
       />
     </View>
   );
@@ -48,5 +48,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.containerBackground,
+    opacity: 0.8,
   },
 });
