@@ -12,7 +12,7 @@ const initialState = {
 };
 
 const getMenuReducer = (state = initialState, action) => {
-  console.log('getMenuReducer: enter, action=' + JSON.stringify(action));
+  // console.log('getMenuReducer: enter, action=' + JSON.stringify(action));
   switch (action.type) {
     case types.GET_MENU:
       return {

@@ -4,7 +4,7 @@ class AxiosService {
   constructor() {
     this.instance = axios.create({
       baseURL: 'https://openerp.dailyopt.ai/api',
-      timeout: 5000,
+      timeout: 10000,
       headers: {
         Accept: 'application/json',
       },

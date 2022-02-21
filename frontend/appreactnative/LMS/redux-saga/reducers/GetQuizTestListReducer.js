@@ -19,7 +19,7 @@ const initialState = {
 };
 
 const getQuizTestListReducer = (state = initialState, action) => {
-  console.log('getQuizTestListReducer: enter, action=' + JSON.stringify(action));
+  // console.log('getQuizTestListReducer: enter, action=' + JSON.stringify(action));
   switch (action.type) {
     case types.GET_QUIZ_TEST_LIST:
       return {

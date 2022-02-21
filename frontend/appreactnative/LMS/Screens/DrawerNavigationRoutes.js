@@ -12,6 +12,13 @@ import StudentQuizTestListScreen from '../screens/Student/StudentQuizTestListScr
 import StudentQuizTestDetailScreen from '../screens/Student/StudentQuizTestDetailScreen';
 import StudentRegisterClassScreen from '../screens/Student/StudentRegisterClassScreen';
 import StudentClassListScreen from '../screens/Student/StudentClassListScreen';
+import StudentClassDetailScreen from '../screens/Student/StudentClassDetailScreen';
+import StudentClassChaptersTab from '../screens/Student/StudentClassChaptersTab';
+import StudentClassQuizzesTab from '../screens/Student/StudentClassQuizzesTab';
+import StudentClassMembersTab from '../screens/Student/StudentClassMembersTab';
+import StudentClassAssignmentsTab from '../screens/Student/StudentClassAssignmentsTab';
+import StudentClassSessionsTab from '../screens/Student/StudentClassSessionsTab';
+import StudentClassSessionDetailScreen from '../screens/Student/StudentClassSessionDetailScreen';
 import StudentProblemListScreen from '../screens/Student/StudentProblemListScreen';
 import StudentIDEScreen from '../screens/Student/StudentIDEScreen';
 import StudentRegisteredProgrammingContestScreen from '../screens/Student/StudentRegisteredProgrammingContestScreen';
@@ -60,6 +67,104 @@ const HomeScreenStack = ({navigation}) => {
         component={StudentClassListScreen}
         options={{
           title: 'Danh sách lớp',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentClassDetailScreen"
+        component={StudentClassDetailScreen}
+        options={{
+          title: 'Chi tiết lớp',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentClassChaptersTab"
+        component={StudentClassChaptersTab}
+        options={{
+          title: 'Nội dung',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentClassQuizzesTab"
+        component={StudentClassQuizzesTab}
+        options={{
+          title: 'Quiz',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentClassMembersTab"
+        component={StudentClassMembersTab}
+        options={{
+          title: 'Sinh viên',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentClassAssignmentsTab"
+        component={StudentClassAssignmentsTab}
+        options={{
+          title: 'Bài tập',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentClassSessionsTab"
+        component={StudentClassSessionsTab}
+        options={{
+          title: 'Buổi học',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentClassSessionDetailScreen"
+        component={StudentClassSessionDetailScreen}
+        options={{
+          title: 'Chi tiết buổi học',
           headerStyle: {
             backgroundColor: Colors.controlBackground,
           },
