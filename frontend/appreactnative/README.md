@@ -24,7 +24,7 @@ TODO:
 1. $npm install
 2. $npx react-native start
 3. $cd android
-4. $./gradlew bundleRelease --warning-mode all
+4. $./gradlew assembleDebug --warning-mode all
 5. Open a seperate Terminal and run $npx react-native run-android
 
 ### Build debug apk

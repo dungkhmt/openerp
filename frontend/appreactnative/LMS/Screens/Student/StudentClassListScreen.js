@@ -3,28 +3,68 @@ import {
   View,
   SafeAreaView,
   Text,
+  FlatList,
+  TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
 
 import {Colors} from '../../styles/index';
 import Loader from '../Components/Loader';
+import {getStudentClassListAction} from '../../redux-saga/actions/GetStudentClassListAction';
 
+const StudentClass = ({data}) => {
+  const navigation = useNavigation();
+
+  return (
+    <View style={styles.card}>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        onPress={() => {
+          if (data.status === 'APPROVED') {
+            navigation.push('StudentClassDetailScreen', {studentClassId: data.id});
+          }
+        }}>
+        <Text style={styles.classCode}>Mã lớp: {data.classCode}</Text>
+        <Text style={styles.courseId}>Mã học phần: {data.courseId}</Text>
+        <Text style={styles.name}>Tên học phần: {data.name}</Text>
+        <Text style={styles.classType}>Loại lớp: {data.classType}</Text>
+        <Text style={styles.semester}>Học kỳ: {data.semester}</Text>
+        <Text style={styles.status}>Trạng thái: {data.status}</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 const StudentClassListScreen = () => {
   console.log('StudentClassListScreen: enter');
 
   // Observer results
-  const loading = false;
+  const dispatch = useDispatch();
+  const loading = useSelector(state => state.getStudentClassListReducer.isFetching);
+  const studentClassList = useSelector(
+    state => state.getStudentClassListReducer.studentClassList,
+  );
 
   useEffect(() => {
     console.log('StudentClassListScreen.useEffect: enter');
+    dispatch(getStudentClassListAction());
   }, []);
 
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={{flex: 1}}>
         <Loader loading={loading} />
+        <FlatList
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          data={studentClassList}
+          renderItem={({item}) => <StudentClass data={item} />}
+          keyExtractor={(item, index) => item.id + index}
+          onRefresh={() => dispatch(getStudentClassListAction())}
+          refreshing={loading}
+        />
       </View>
     </SafeAreaView>
   );
@@ -49,63 +89,40 @@ const styles = StyleSheet.create({
     margin: 8,
     overflow: 'hidden',
   },
-  course: {
+  classCode: {
     fontSize: 16,
+    fontWeight: 'bold',
     color: 'blue',
     padding: 8,
   },
-  testName: {
+  courseId: {
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.text,
     padding: 8,
   },
-  schedule: {
-    padding: 8,
-    fontSize: 11,
-    color: 'blue',
-  },
-  approved: {
-    textAlign: 'center',
-    width: 120,
-    height: 32,
-    padding: 8,
-    margin: 8,
-    color: 'blue',
+  name: {
     fontWeight: 'bold',
-    fontSize: 11,
-  },
-  registered: {
-    textAlign: 'center',
-    width: 120,
-    height: 32,
     padding: 8,
-    margin: 8,
-    color: 'gray',
-    fontWeight: 'bold',
-    fontSize: 11,
-  },
-  viewType: {
-    padding: 8,
-    color: 'red',
-  },
-  buttonStyle: {
-    backgroundColor: Colors.controlBackground,
-    borderWidth: 0,
+    fontSize: 14,
     color: Colors.text,
-    borderColor: Colors.border,
-    width: 120,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 8,
-    margin: 8,
   },
-  buttonTextStyle: {
-    color: '#ffffff',
-    paddingVertical: 2,
-    paddingHorizontal: 16,
-    fontSize: 11,
-    alignContent: 'center',
+  classType: {
+    fontWeight: 'bold',
+    padding: 8,
+    fontSize: 14,
+    color: Colors.text,
+  },
+  semester: {
+    fontWeight: 'bold',
+    padding: 8,
+    fontSize: 14,
+    color: Colors.text,
+  },
+  status: {
+    fontWeight: 'bold',
+    padding: 8,
+    fontSize: 14,
+    color: Colors.text,
   },
 });

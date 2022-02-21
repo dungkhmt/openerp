@@ -6,7 +6,7 @@ const initialState = {
 };
 
 const attendQuizTestReducer = (state = initialState, action) => {
-  console.log('attendQuizTestReducer: enter, action=' + JSON.stringify(action));
+  // console.log('attendQuizTestReducer: enter, action=' + JSON.stringify(action));
   switch (action.type) {
     case types.ATTEND_QUIZ_TEST:
       return {
