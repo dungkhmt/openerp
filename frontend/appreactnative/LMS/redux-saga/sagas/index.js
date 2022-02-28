@@ -12,6 +12,8 @@ import watchGetStudentClassAssignments from './GetStudentClassAssignmentsSaga';
 import watchGetStudentClassChapters from './GetStudentClassChaptersSaga';
 import watchGetStudentClassQuizzes from './GetStudentClassQuizzesSaga';
 import watchPostActiveQuizOfSessionForStudent from './PostActiveQuizOfSessionForStudentSaga';
+import watchGetStudentRegisterClassList from './GetStudentRegisterClassListSaga';
+import watchStudentAttendClass from './StudentAttendClassSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -28,5 +30,7 @@ export default function* rootSaga() {
     watchGetStudentClassChapters(),
     watchGetStudentClassQuizzes(),
     watchPostActiveQuizOfSessionForStudent(),
+    watchGetStudentRegisterClassList(),
+    watchStudentAttendClass(),
   ]);
 }
