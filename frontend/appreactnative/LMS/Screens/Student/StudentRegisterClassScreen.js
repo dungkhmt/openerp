@@ -1,33 +1,104 @@
-import React, {useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   SafeAreaView,
   Text,
+  FlatList,
+  TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 
 import {Colors} from '../../styles/index';
 import Loader from '../Components/Loader';
+import {getStudentRegisterClassListAction} from '../../redux-saga/actions/GetStudentRegisterClassListAction';
+import {studentAttendClassAction} from '../../redux-saga/actions/StudentAttendClassAction';
 
+const StudentRegisterClass = ({data}) => {
+  // Observer results
+  const {classId} = useSelector(
+    state => state.studentAttendClassReducer.status,
+  );
+  if (classId !== null && classId !== undefined && data.id === classId) {
+    data.registered = true;
+  }
+
+  const dispatch = useDispatch();
+
+  return (
+    <View style={styles.card}>
+      <Text style={styles.classCode}>Mã lớp: {data.classCode}</Text>
+      <Text style={styles.courseId}>Mã học phần: {data.courseId}</Text>
+      <Text style={styles.name}>Tên học phần: {data.name}</Text>
+      <Text style={styles.classType}>Loại lớp: {data.classType}</Text>
+      <Text style={styles.departmentId}>Khoa/Viện: {data.departmentId}</Text>
+      {!data.registered ? (
+        <TouchableOpacity
+          style={styles.buttonStyle}
+          activeOpacity={0.5}
+          onPress={() => {
+            dispatch(studentAttendClassAction({classId: data.id}));
+          }}>
+          <Text style={styles.buttonTextStyle}>Tham gia</Text>
+        </TouchableOpacity>
+      ) : (
+        <></>
+      )}
+    </View>
+  );
+};
 
 const StudentRegisterClassScreen = () => {
   console.log('StudentRegisterClassScreen: enter');
 
   // Observer results
-  const loading = false;
+  const dispatch = useDispatch();
+  const [page] = useState(0);
+  const loading = useSelector(
+    state => state.getStudentRegisterClassListReducer.isFetching,
+  );
+  const studentRegisterClassList = useSelector(
+    state => state.getStudentRegisterClassListReducer.studentRegisterClassList,
+  );
 
   useEffect(() => {
     console.log('StudentRegisterClassScreen.useEffect: enter');
+    dispatch(getStudentRegisterClassListAction({page: page, size: 100})); // TODO: Pagination
   }, []);
 
-  return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={{flex: 1}}>
-        <Loader loading={loading} />
-      </View>
-    </SafeAreaView>
-  );
+  if (
+    studentRegisterClassList !== null &&
+    studentRegisterClassList !== undefined &&
+    studentRegisterClassList.page !== null &&
+    studentRegisterClassList.page !== undefined &&
+    studentRegisterClassList.page.content !== null &&
+    studentRegisterClassList.page.content !== undefined
+  ) {
+    return (
+      <SafeAreaView style={{flex: 1}}>
+        <View style={{flex: 1}}>
+          <Loader loading={loading} />
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            data={studentRegisterClassList.page.content}
+            renderItem={({item}) => <StudentRegisterClass data={item} />}
+            keyExtractor={(item, index) => item.id + index}
+            onRefresh={() => dispatch(getStudentRegisterClassListAction())}
+            refreshing={loading}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  } else {
+    return (
+      <SafeAreaView style={{flex: 1}}>
+        <View style={{flex: 1}}>
+          <Loader loading={loading} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 };
 
 export default StudentRegisterClassScreen;
@@ -49,21 +120,35 @@ const styles = StyleSheet.create({
     margin: 8,
     overflow: 'hidden',
   },
-  course: {
+  classCode: {
     fontSize: 16,
+    fontWeight: 'bold',
     color: 'blue',
     padding: 8,
   },
-  testName: {
+  courseId: {
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.text,
     padding: 8,
   },
-  schedule: {
+  name: {
+    fontWeight: 'bold',
     padding: 8,
-    fontSize: 11,
-    color: 'blue',
+    fontSize: 14,
+    color: Colors.text,
+  },
+  classType: {
+    fontWeight: 'bold',
+    padding: 8,
+    fontSize: 14,
+    color: Colors.text,
+  },
+  departmentId: {
+    fontWeight: 'bold',
+    padding: 8,
+    fontSize: 14,
+    color: Colors.text,
   },
   approved: {
     textAlign: 'center',
@@ -85,10 +170,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 11,
   },
-  viewType: {
-    padding: 8,
-    color: 'red',
-  },
   buttonStyle: {
     backgroundColor: Colors.controlBackground,
     borderWidth: 0,
@@ -98,7 +179,8 @@ const styles = StyleSheet.create({
     height: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    alignSelf: 'center',
+    borderRadius: 16,
     margin: 8,
   },
   buttonTextStyle: {

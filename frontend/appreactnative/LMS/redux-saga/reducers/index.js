@@ -12,6 +12,8 @@ import getStudentClassAssignmentsReducer from './GetStudentClassAssignmentsReduc
 import getStudentClassChaptersReducer from './GetStudentClassChaptersReducer';
 import getStudentClassQuizzesReducer from './GetStudentClassQuizzesReducer';
 import postActiveQuizOfSessionForStudentReducer from './PostActiveQuizOfSessionForStudentReducer';
+import getStudentRegisterClassListReducer from './GetStudentRegisterClassListReducer';
+import studentAttendClassReducer from './StudentAttendClassReducer';
 
 const rootReducer = combineReducers({
   getMenuReducer,
@@ -27,6 +29,8 @@ const rootReducer = combineReducers({
   getStudentClassChaptersReducer,
   getStudentClassQuizzesReducer,
   postActiveQuizOfSessionForStudentReducer,
+  getStudentRegisterClassListReducer,
+  studentAttendClassReducer,
 });
 
 export default rootReducer;
