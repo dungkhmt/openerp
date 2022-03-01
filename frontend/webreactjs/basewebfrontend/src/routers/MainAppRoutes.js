@@ -11,6 +11,7 @@ import AccountActivationRoute from "./AccountActivationRoute";
 import AdminRoute from "./AdminRoute";
 import ProgrammingContestRoutes from "./ProgrammingContestRoutes";
 import ChatRoute from "./ChatRoute";
+import WMSRoute from "./WMSRoute";
 
 const EduRoute = lazy(() => import("./EduRoute"));
 const UserLoginRoute = lazy(() => import("./UserLoginRoute"));
@@ -64,7 +65,7 @@ function MainAppRoute(props) {
           <PrivateRoute component={UserLoginRoute} path="/userlogin" />
 
           <PrivateRoute component={EduRoute} path="/edu" />
-
+          <PrivateRoute component={WMSRoute} path="/wms" />
           <PrivateRoute component={AdminRoute} path="/admin/data" />
           <PrivateRoute component={ChatRoute} path="/chat" />
           <PrivateRoute component={AccountActivationRoute} path="/activation" />
