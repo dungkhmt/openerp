@@ -13,8 +13,8 @@ import {useNavigation} from '@react-navigation/native';
 
 import {Colors} from '../../styles/index';
 import Loader from '../Components/Loader';
-import {getQuizTestListAction} from '../../redux-saga/actions/GetQuizTestListAction';
-import {attendQuizTestAction} from '../../redux-saga/actions/AttendQuizTestAction';
+import {studentGetQuizTestListAction} from '../../redux-saga/actions/StudentGetQuizTestListAction';
+import {studentAttendQuizTestAction} from '../../redux-saga/actions/StudentAttendQuizTestAction';
 
 const Status = ({testId, statusId}) => {
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ const Status = ({testId, statusId}) => {
         style={styles.buttonStyle}
         activeOpacity={0.5}
         onPress={() => {
-          dispatch(attendQuizTestAction({testQuizId: testId}));
+          dispatch(studentAttendQuizTestAction({testQuizId: testId}));
         }}>
         <Text style={styles.buttonTextStyle}>Tham gia</Text>
       </TouchableOpacity>
@@ -77,14 +77,14 @@ const StudentQuizTestListScreen = () => {
 
   // Observer results
   const dispatch = useDispatch();
-  const loading = useSelector(state => state.getQuizTestListReducer.isFetching);
+  const loading = useSelector(state => state.studentGetQuizTestListReducer.isFetching);
   const quizTestList = useSelector(
-    state => state.getQuizTestListReducer.quizTestList,
+    state => state.studentGetQuizTestListReducer.quizTestList,
   );
 
   // Update test status
   const {testId, statusId} = useSelector(
-    state => state.attendQuizTestReducer.status,
+    state => state.studentAttendQuizTestReducer.status,
   );
   quizTestList.forEach(element => {
     if (element.testId === testId && statusId !== null && statusId.length > 0) {
@@ -94,20 +94,25 @@ const StudentQuizTestListScreen = () => {
 
   useEffect(() => {
     console.log('StudentQuizTestListScreen.useEffect: enter');
-    dispatch(getQuizTestListAction());
+    dispatch(studentGetQuizTestListAction());
   }, []);
+
+  const renderItem = ({item}) => <Quiz quiz={item} />;
+
+  const refresh = () => {
+    dispatch(studentGetQuizTestListAction());
+  };
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={{flex: 1}}>
-        <Loader loading={loading} />
+      <View>
         <FlatList
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           data={quizTestList}
-          renderItem={({item}) => <Quiz quiz={item} />}
+          renderItem={renderItem}
           keyExtractor={(item, index) => item.testId + index}
-          onRefresh={() => dispatch(getQuizTestListAction())}
+          onRefresh={refresh}
           refreshing={loading}
         />
       </View>

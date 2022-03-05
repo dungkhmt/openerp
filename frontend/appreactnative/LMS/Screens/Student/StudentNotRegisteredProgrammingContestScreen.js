@@ -8,8 +8,6 @@ import {
 import {useSelector} from 'react-redux';
 
 import {Colors} from '../../styles/index';
-import Loader from '../Components/Loader';
-
 
 const StudentNotRegisteredProgrammingContestScreen = () => {
   console.log('StudentNotRegisteredProgrammingContestScreen: enter');
@@ -23,9 +21,7 @@ const StudentNotRegisteredProgrammingContestScreen = () => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={{flex: 1}}>
-        <Loader loading={loading} />
-      </View>
+      <View />
     </SafeAreaView>
   );
 };

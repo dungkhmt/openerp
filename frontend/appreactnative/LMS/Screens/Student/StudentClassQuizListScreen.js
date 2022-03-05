@@ -5,9 +5,8 @@ import {
   Text,
   FlatList,
   Image,
-  StyleSheet,
-  TouchableOpacity,
   useWindowDimensions,
+  StyleSheet,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import RenderHtml from 'react-native-render-html';
@@ -16,8 +15,7 @@ import PagerView from 'react-native-pager-view';
 
 import {Colors} from '../../styles/index';
 import Loader from '../Components/Loader';
-import {studentGetActiveQuizOfSessionAction} from '../../redux-saga/actions/StudentGetActiveQuizOfSessionAction';
-import {studentPostActiveQuizOfSessionAction} from '../../redux-saga/actions/StudentPostActiveQuizOfSessionAction';
+import {studentGetClassQuizListAction} from '../../redux-saga/actions/StudentGetClassQuizListAction';
 
 const Answer = ({data}) => {
   const {width} = useWindowDimensions();
@@ -27,11 +25,7 @@ const Answer = ({data}) => {
 
   return (
     <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-      <CheckBox
-        style={{width: 24, height: 24, margin: 8}}
-        value={data.checked}
-        onValueChange={value => (data.checked = value)}
-      />
+      <CheckBox style={{width: 24, height: 24, margin: 8}}></CheckBox>
       <RenderHtml contentWidth={width - 96} source={source}></RenderHtml>
     </View>
   );
@@ -42,10 +36,6 @@ const Question = ({total, index, data}) => {
   const source = {
     html: data.statement,
   };
-  const dispatch = useDispatch();
-  const quiz = useSelector(
-    state => state.studentGetActiveQuizOfSessionReducer.quiz,
-  );
 
   const renderItem = ({item}) => <Answer data={item} />;
 
@@ -75,66 +65,36 @@ const Question = ({total, index, data}) => {
           );
         }
       }}
-      ListFooterComponent={() => {
-        return (
-          <View style={styles.buttonStyle}>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={() => {
-                var payload = {testId: quiz.testId, questionId: data.questionId, quizGroupId: quiz.quizGroupId};
-                var chooseAnsIds = [];
-                quiz.listQuestion.forEach(question => {
-                  if (question.questionId === data.questionId) {
-                    data.quizChoiceAnswerList.forEach(answer => {
-                      if (answer.checked) {
-                        chooseAnsIds.push(answer.choiceAnswerId);
-                      }
-                    });
-                  }
-                });
-                payload.chooseAnsIds = chooseAnsIds;
-                // console.log(JSON.stringify(payload));
-                dispatch(studentPostActiveQuizOfSessionAction(payload));
-              }}>
-              <Text style={styles.buttonTextStyle}>Chọn</Text>
-            </TouchableOpacity>
-          </View>
-        );
-      }}
       renderItem={renderItem}
       keyExtractor={(item, index) => item.choiceAnswerId + index}
     />
   );
 };
 
-const StudentClassSessionDetailScreen = ({route}) => {
-  console.log('StudentClassSessionDetailScreen: enter');
+const StudentClassQuizzesTab = ({route}) => {
+  console.log('StudentClassQuizzesTab: enter');
 
-  const {studentClassId, classSessionId} = route.params;
+  const {studentClassId} = route.params;
   // Observer results
   const dispatch = useDispatch();
-  const loading = useSelector(
-    state => state.studentGetActiveQuizOfSessionReducer.isFetching,
-  );
-  const questionList = useSelector(
-    state => state.studentGetActiveQuizOfSessionReducer.quiz.listQuestion,
+  const loading = useSelector(state => state.studentGetClassQuizListReducer.isFetching);
+  const quizList = useSelector(
+    state => state.studentGetClassQuizListReducer.quizList,
   );
 
   useEffect(() => {
-    console.log('StudentClassSessionDetailScreen.useEffect: enter');
-    dispatch(
-      studentGetActiveQuizOfSessionAction({classSessionId: classSessionId}),
-    );
+    console.log('StudentClassQuizzesTab.useEffect: enter');
+    dispatch(studentGetClassQuizListAction({studentClassId: studentClassId}));
   }, []);
 
-  if (questionList !== undefined && questionList !== null && questionList.length > 0) {
+  if (quizList !== undefined && quizList !== null && quizList.length > 0) {
     return (
       <SafeAreaView style={{flex: 1}}>
         <View style={{flex: 1}}>
           <Loader loading={loading} />
           <PagerView style={styles.pagerView} initialPage={0}>
-            {questionList.map((question, index) => {
-              return (<View key={question.questionId}><Question total={questionList.length} index={index} data={question}></Question></View>);
+            {quizList.map((quiz, index) => {
+              return (<View key={quiz.questionId}><Question total={quizList.length} index={index} data={quiz}></Question></View>);
             })}
           </PagerView>
         </View>
@@ -149,7 +109,7 @@ const StudentClassSessionDetailScreen = ({route}) => {
   }
 };
 
-export default StudentClassSessionDetailScreen;
+export default StudentClassQuizzesTab;
 
 const styles = StyleSheet.create({
   pagerView: {
@@ -171,23 +131,5 @@ const styles = StyleSheet.create({
     },
     margin: 8,
     padding: 8,
-  },
-  buttonStyle: {
-    backgroundColor: Colors.controlBackground,
-    borderWidth: 0,
-    color: Colors.text,
-    borderColor: Colors.border,
-    height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 24,
-    margin: 24,
-  },
-  buttonTextStyle: {
-    alignContent: 'center',
-    color: '#ffffff',
-    paddingVertical: 8,
-    paddingHorizontal: 48,
-    fontSize: 16,
   },
 });

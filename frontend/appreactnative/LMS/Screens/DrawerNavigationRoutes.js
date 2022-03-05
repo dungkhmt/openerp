@@ -13,11 +13,11 @@ import StudentQuizTestDetailScreen from '../screens/Student/StudentQuizTestDetai
 import StudentRegisterClassScreen from '../screens/Student/StudentRegisterClassScreen';
 import StudentClassListScreen from '../screens/Student/StudentClassListScreen';
 import StudentClassDetailScreen from '../screens/Student/StudentClassDetailScreen';
-import StudentClassChaptersTab from '../screens/Student/StudentClassChaptersTab';
-import StudentClassQuizzesTab from '../screens/Student/StudentClassQuizzesTab';
-import StudentClassMembersTab from '../screens/Student/StudentClassMembersTab';
-import StudentClassAssignmentsTab from '../screens/Student/StudentClassAssignmentsTab';
-import StudentClassSessionsTab from '../screens/Student/StudentClassSessionsTab';
+import StudentClassChapterListScreen from '../screens/Student/StudentClassChapterListScreen';
+import StudentClassQuizListScreen from '../screens/Student/StudentClassQuizListScreen';
+import StudentClassMemberListScreen from '../screens/Student/StudentClassMemberListScreen';
+import StudentClassAssignmentListScreen from '../screens/Student/StudentClassAssignmentListScreen';
+import StudentClassSessionListScreen from '../screens/Student/StudentClassSessionListScreen';
 import StudentClassSessionDetailScreen from '../screens/Student/StudentClassSessionDetailScreen';
 import StudentProblemListScreen from '../screens/Student/StudentProblemListScreen';
 import StudentIDEScreen from '../screens/Student/StudentIDEScreen';
@@ -91,8 +91,8 @@ const HomeScreenStack = ({navigation}) => {
         }}
       />
       <Stack.Screen
-        name="StudentClassChaptersTab"
-        component={StudentClassChaptersTab}
+        name="StudentClassChapterListScreen"
+        component={StudentClassChapterListScreen}
         options={{
           title: 'Nội dung',
           headerStyle: {
@@ -105,8 +105,8 @@ const HomeScreenStack = ({navigation}) => {
         }}
       />
       <Stack.Screen
-        name="StudentClassQuizzesTab"
-        component={StudentClassQuizzesTab}
+        name="StudentClassQuizListScreen"
+        component={StudentClassQuizListScreen}
         options={{
           title: 'Quiz',
           headerStyle: {
@@ -119,8 +119,8 @@ const HomeScreenStack = ({navigation}) => {
         }}
       />
       <Stack.Screen
-        name="StudentClassMembersTab"
-        component={StudentClassMembersTab}
+        name="StudentClassMemberListScreen"
+        component={StudentClassMemberListScreen}
         options={{
           title: 'Sinh viên',
           headerStyle: {
@@ -133,8 +133,8 @@ const HomeScreenStack = ({navigation}) => {
         }}
       />
       <Stack.Screen
-        name="StudentClassAssignmentsTab"
-        component={StudentClassAssignmentsTab}
+        name="StudentClassAssignmentListScreen"
+        component={StudentClassAssignmentListScreen}
         options={{
           title: 'Bài tập',
           headerStyle: {
@@ -147,8 +147,8 @@ const HomeScreenStack = ({navigation}) => {
         }}
       />
       <Stack.Screen
-        name="StudentClassSessionsTab"
-        component={StudentClassSessionsTab}
+        name="StudentClassSessionListScreen"
+        component={StudentClassSessionListScreen}
         options={{
           title: 'Buổi học',
           headerStyle: {

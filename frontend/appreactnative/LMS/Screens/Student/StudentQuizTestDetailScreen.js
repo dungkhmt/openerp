@@ -5,21 +5,21 @@ import {useNavigation} from '@react-navigation/native';
 
 import {Colors} from '../../styles/index';
 import Loader from '../Components/Loader';
-import {getQuizTestDetailAction} from '../../redux-saga/actions/GetQuizTestDetailAction';
+import {studentGetQuizTestDetailAction} from '../../redux-saga/actions/StudentGetQuizTestDetailAction';
 
 const StudentQuizTestDetailScreen = ({route}) => {
   console.log('StudentQuizTestDetailScreen: enter');
 
   const {testId} = route.params;
   const dispatch = useDispatch();
-  const loading = useSelector(state => state.getQuizTestDetailReducer.isFetching);
+  const loading = useSelector(state => state.studentGetQuizTestDetailReducer.isFetching);
   const quizTestDetail = useSelector(
-    state => state.getQuizTestDetailReducer.quizTestDetail,
+    state => state.studentGetQuizTestDetailReducer.quizTestDetail,
   );
 
   useEffect(() => {
     console.log('StudentQuizTestDetailScreen.useEffect: enter' + testId);
-    dispatch(getQuizTestDetailAction(testId));
+    dispatch(studentGetQuizTestDetailAction(testId));
   }, []);
 
   return (
