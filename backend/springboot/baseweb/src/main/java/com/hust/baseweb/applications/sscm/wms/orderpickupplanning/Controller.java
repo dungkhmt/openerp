@@ -1,14 +1,9 @@
 package com.hust.baseweb.applications.sscm.wms.orderpickupplanning;
 
-import com.hust.baseweb.applications.sscm.wms.orderpickupplanning.model.Order;
 import com.hust.baseweb.applications.sscm.wms.orderpickupplanning.model.OrderPickupPlanningIM;
 import com.hust.baseweb.applications.sscm.wms.orderpickupplanning.model.solution.OrderPickupPlanningSolution;
-import com.hust.baseweb.applications.sscm.wms.orderpickupplanning.model.solution.OrderPickupRoute;
-import com.hust.baseweb.applications.sscm.wms.orderpickupplanning.model.solution.OrderPickupRouteElement;
 import com.hust.baseweb.applications.sscm.wms.orderpickupplanning.service.ExcelExtractor;
-import com.hust.baseweb.applications.sscm.wms.orderpickupplanning.service.MIPSolverOneTrip;
 import com.hust.baseweb.applications.sscm.wms.orderpickupplanning.service.OptimizationSolver;
-import com.hust.baseweb.applications.sscm.wms.orderpickupplanning.service.OrderPartitionMIPSolver;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Log4j2
 @org.springframework.stereotype.Controller

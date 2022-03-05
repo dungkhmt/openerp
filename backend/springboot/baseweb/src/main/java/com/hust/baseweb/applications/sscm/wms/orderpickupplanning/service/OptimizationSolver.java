@@ -46,13 +46,19 @@ public class OptimizationSolver {
                         if(mItemCode2Qty.get(itemCode) != null){
                             int req = mItemCode2Qty.get(itemCode);
                             if(oi.getQty() <= req) {
+                                ip.setQty(oi.getQty());// amount of item to be picked up at current shelf
                                 req = req - oi.getQty();
                                 oi.setQty(0);
                                 mItemCode2Qty.put(itemCode,req);
-                                //System.out.println(name() + "::propaggateRouteUpdateItem, at shelf " + shelfID + " reduce qty " + req);
+
+                                System.out.println(name() + "::propaggateRouteUpdateItem, at shelf " + shelfID +
+                                                   " item " + itemCode + " reduce qty " + req + " pickup all amount " + ip.getQty());
                             }else if(req > 0){
+                                ip.setQty(req); // amount of item to be picked up at current shelf
                                 oi.setQty(oi.getQty() - req);
                                 mItemCode2Qty.put(itemCode,0);
+                                System.out.println(name() + "::propaggateRouteUpdateItem, at shelf " + shelfID +
+                                                   " item " + itemCode + " reduce qty " + req + " pickup amount " + ip.getQty());
                             }
                         }
                     }
@@ -62,7 +68,8 @@ public class OptimizationSolver {
     }
 
     public OrderPickupPlanningSolution solve(OrderPickupPlanningIM I){
-        MIPSolverOneTrip solver = new MIPSolverOneTrip();
+        OneTripMIPSolver solver = new OneTripMIPSolver();
+        OneTripGreedySolver greedySolver = new OneTripGreedySolver();
         OrderPartitionMIPSolver partitioner = new OrderPartitionMIPSolver();
         List<List<Order>> partitions = partitioner.solve(I.getOrders(), I.getParam().getWeightCapacity());
 
@@ -70,13 +77,20 @@ public class OptimizationSolver {
         List<OrderPickupRoute> routes = new ArrayList();
         for(int k = 0; k < partitions.size(); k++) {
             List<Order> cluster = partitions.get(k);
-            OrderPickupRoute route = solver.solve(cluster,
-                                                  I.getShelfs(), I.getDistances(), I.getDoorIn(), I.getDoorOut());
+            //OrderPickupRoute route = solver.solve(cluster,
+            //                                      I.getShelfs(), I.getDistances(), I.getDoorIn(), I.getDoorOut());
+            DataMapper DM = new DataMapper();
+            DM.map(cluster,  I.getShelfs(), I.getDistances(), I.getDoorIn(), I.getDoorOut());
+            DM.printMapData();
+            //OrderPickupRoute route = solver.solve(DM);
+            OrderPickupRoute route = greedySolver.solve(DM);
 
+            route.setServedOrders(cluster);
             route.setIndex(k+1);
             routes.add(route);
             System.out.println(name() + "::solve, found route: "); route.print();
             propaggateRouteUpdateItem(cluster,route,I);
+            route.computeDescription();
         }
         sol.setRoutes(routes);
         return sol;

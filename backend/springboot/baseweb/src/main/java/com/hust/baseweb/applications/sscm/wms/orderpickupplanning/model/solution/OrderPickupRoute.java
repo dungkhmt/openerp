@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.sscm.wms.orderpickupplanning.model.solution;
 
+import com.hust.baseweb.applications.sscm.wms.orderpickupplanning.model.Order;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ public class OrderPickupRoute {
     private List<OrderPickupRouteElement> routeElements;
     private double length;
     private int numberPoints;
+    private List<Order> servedOrders;
     public void computeDescription(){
         for(OrderPickupRouteElement e: routeElements){
             e.setDescription();

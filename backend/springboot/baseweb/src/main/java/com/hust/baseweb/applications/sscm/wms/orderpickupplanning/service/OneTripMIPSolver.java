@@ -13,7 +13,7 @@ import com.hust.baseweb.applications.sscm.wms.orderpickupplanning.model.solution
 
 import java.util.*;
 
-public class MIPSolverOneTrip {
+public class OneTripMIPSolver {
     public static final int INF = 10000000;
     List<Order> orders;
     List<Shelf> shelfs;
@@ -243,6 +243,87 @@ public class MIPSolverOneTrip {
         }
         return -1;
     }
+    public OrderPickupRoute solve(DataMapper DM){
+        this.orders = DM.orders;
+        this.shelfs = DM.shelfs;
+        this.distances = DM.distances;
+        this.startLocationCode = DM.startLocationCode;
+        this.terminatingLocationCode = DM.terminatingLocationCode;
+        this.listItemCodes = DM.listItemCodes;
+        this.n = DM.n;// number of shelf points 1, 2, ..., n
+        // 0 is the start point, n+1 is the finish point
+        this.K = DM.K;// number of items
+        this.q= DM.q;// q[k][i] is the amount of item k at point i
+        this.r = DM.r;// r[k] is amount of item k requested
+        this.d = DM.d;// d[i][j] is the distance from point i to point j
+
+        createSolverAndVariables();
+        createFlowConstraints();
+        createAccumulateDistanceConstraints();
+        createAccumulateItemQtyConstraints();
+        createObjective();
+
+        timeLimit = 1000000;
+        solver.setTimeLimit(timeLimit);
+        System.out.println("model created , start solving time limit = " + timeLimit);
+        final MPSolver.ResultStatus resultStatus = solver.solve();
+
+
+        if (resultStatus == MPSolver.ResultStatus.OPTIMAL) {
+            System.out.println(name() + "solve --> OPTIMAL SOLVED!! " + solver.objective().value());
+            /*
+            for(int i = 0;i <= n; i++){
+                for(int j = 1; j <= n+1; j++){
+                    if(X[i][j].solutionValue() > 0)
+                        System.out.println("X[" + i + "," + j + "] = " + X[i][j].solutionValue());
+                }
+            }
+            for(int i = 0; i <= n+1; i++)
+                System.out.println("D[" + i + "] = " + D[i].solutionValue());
+
+            for(int i = 0; i <= n+1; i++){
+                for(int k = 0; k < K; k++){
+                    System.out.println("Y[" + k + "," + i + "] = " + Y[k][i].solutionValue());
+                }
+            }
+
+             */
+        }else{
+            System.out.println(name() + "solve --> NOT SOLVED!! ");
+        }
+
+        List<OrderPickupRouteElement> l_route = new ArrayList();
+        int i = 0;
+        while(i != n+1){
+            int j = findNext(i);
+            if(j <= n) {
+                OrderPickupRouteElement e = new OrderPickupRouteElement();
+                Shelf s = shelfs.get(j - 1);
+                e.setShelfID(s.getShelfID());
+                List<OrderPickupRouteElementItemPickup> itemPickups = new ArrayList();
+                for (int k = 0; k < K; k++) {
+                    String itemCode = listItemCodes.get(k);
+                    int qty = 0;//(int) Y[k][j].solutionValue();
+                    OrderPickupRouteElementItemPickup ip = new OrderPickupRouteElementItemPickup(itemCode, qty);
+                    itemPickups.add(ip);
+                }
+                e.setItemPickups(itemPickups);
+
+                l_route.add(e);
+            }
+            i = j;
+        }
+
+        OrderPickupRoute route = new OrderPickupRoute();
+        route.setRouteElements(l_route);
+        route.setLength(solver.objective().value());
+        route.setNumberPoints(l_route.size());
+        //route.computeDescription();
+        //OrderPickupPlanningSolution sol = new OrderPickupPlanningSolution();
+        return route;
+
+
+    }
     public OrderPickupRoute solve(List<Order> orders, List<Shelf> shelfs,
                                   List<DistanceElement> distances,
                                   String startLocationCode, String terminatingLocationCode){
@@ -301,7 +382,7 @@ public class MIPSolverOneTrip {
                 List<OrderPickupRouteElementItemPickup> itemPickups = new ArrayList();
                 for (int k = 0; k < K; k++) {
                     String itemCode = listItemCodes.get(k);
-                    int qty = (int) Y[k][j].solutionValue();
+                    int qty = 0;//(int) Y[k][j].solutionValue();
                     OrderPickupRouteElementItemPickup ip = new OrderPickupRouteElementItemPickup(itemCode, qty);
                     itemPickups.add(ip);
                 }
@@ -316,7 +397,7 @@ public class MIPSolverOneTrip {
         route.setRouteElements(l_route);
         route.setLength(solver.objective().value());
         route.setNumberPoints(l_route.size());
-        route.computeDescription();
+        //route.computeDescription();
         //OrderPickupPlanningSolution sol = new OrderPickupPlanningSolution();
         return route;
 
