@@ -7,13 +7,10 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
 import {Colors} from '../../styles/index';
-import Loader from '../Components/Loader';
-import {getStudentClassListAction} from '../../redux-saga/actions/GetStudentClassListAction';
-import StudentClassInformationTab from './StudentClassInformationTab';
+import StudentClassInformation from './StudentClassInformation';
 
 const Menu = ({data}) => {
   const navigation = useNavigation();
@@ -42,30 +39,24 @@ const StudentClassDetailScreen = ({route}) => {
 
   const {studentClassId} = route.params;
 
-  // Observer results
-  const dispatch = useDispatch();
-  const loading = useSelector(
-    state => state.getStudentClassListReducer.isFetching,
-  );
-
   const menuList = [
-    {route: 'StudentClassChaptersTab', title: 'Nội dung', description: '- Chương trình học', studentClassId: studentClassId},
-    {route: 'StudentClassQuizzesTab', title: 'Quiz', description: '- Câu hỏi trắc nghiệm', studentClassId: studentClassId},
-    {route: 'StudentClassMembersTab', title: 'Sinh viên', description: '- Danh sách thành viên', studentClassId: studentClassId},
-    {route: 'StudentClassAssignmentsTab', title: 'Bài tập', description: '- Bài tập theo chương trình học', studentClassId: studentClassId},
-    {route: 'StudentClassSessionsTab', title: 'Buổi học', description: '- Nội dung buổi học', studentClassId: studentClassId},
+    {route: 'StudentClassChapterListScreen', title: 'Nội dung', description: '- Chương trình học', studentClassId: studentClassId},
+    {route: 'StudentClassQuizListScreen', title: 'Quiz', description: '- Câu hỏi trắc nghiệm', studentClassId: studentClassId},
+    {route: 'StudentClassMemberListScreen', title: 'Sinh viên', description: '- Danh sách thành viên', studentClassId: studentClassId},
+    {route: 'StudentClassAssignmentListScreen', title: 'Bài tập', description: '- Bài tập theo chương trình học', studentClassId: studentClassId},
+    {route: 'StudentClassSessionListScreen', title: 'Buổi học', description: '- Nội dung buổi học', studentClassId: studentClassId},
     {route: null, title: null, studentClassId: null}, // Dummy
   ];
 
   useEffect(() => {
     console.log('StudentClassDetailScreen.useEffect: enter');
-    dispatch(getStudentClassListAction());
   }, []);
+
+  const renderItem = ({item}) => <Menu data={item} />;
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={{flex: 1}}>
-        <Loader loading={loading} />
+      <View>
         <FlatList
           style={{backgroundColor: '#FFFFFF', padding: 8, margin: 8}}
           showsHorizontalScrollIndicator={false}
@@ -73,12 +64,12 @@ const StudentClassDetailScreen = ({route}) => {
           data={menuList}
           numColumns={2}
           ListHeaderComponent={() => {
-            return <StudentClassInformationTab studentClassId={studentClassId} />;
+            return <StudentClassInformation studentClassId={studentClassId} />;
           }}
           ListFooterComponent={() => {
             return <View style={{height: 16}} />;
           }}
-          renderItem={({item}) => <Menu data={item} />}
+          renderItem={renderItem}
           keyExtractor={(item, index) => item.route + index}
         />
       </View>
@@ -110,7 +101,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     elevation: 8,
-    backgroundColor: '#F5EEFB',
+    backgroundColor: '#fce4ec',
     shadowColor: '#000000',
     shadowOpacity: 0.33,
     shadowRadius: 8,

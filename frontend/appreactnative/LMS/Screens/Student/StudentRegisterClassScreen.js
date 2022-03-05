@@ -10,8 +10,7 @@ import {
 import {useSelector, useDispatch} from 'react-redux';
 
 import {Colors} from '../../styles/index';
-import Loader from '../Components/Loader';
-import {getStudentRegisterClassListAction} from '../../redux-saga/actions/GetStudentRegisterClassListAction';
+import {studentGetRegisterClassListAction} from '../../redux-saga/actions/StudentGetRegisterClassListAction';
 import {studentAttendClassAction} from '../../redux-saga/actions/StudentAttendClassAction';
 
 const StudentRegisterClass = ({data}) => {
@@ -53,38 +52,48 @@ const StudentRegisterClassScreen = () => {
 
   // Observer results
   const dispatch = useDispatch();
-  const [page] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const loading = useSelector(
-    state => state.getStudentRegisterClassListReducer.isFetching,
+    state => state.studentGetRegisterClassListReducer.isFetching,
   );
-  const studentRegisterClassList = useSelector(
-    state => state.getStudentRegisterClassListReducer.studentRegisterClassList,
+  const studentRegisterClasses = useSelector(
+    state => state.studentGetRegisterClassListReducer.studentRegisterClasses,
   );
+
+  // console.log('currentPage=' + currentPage + ', ' + JSON.stringify(studentRegisterClasses));
 
   useEffect(() => {
-    console.log('StudentRegisterClassScreen.useEffect: enter');
-    dispatch(getStudentRegisterClassListAction({page: page, size: 100})); // TODO: Pagination
-  }, []);
+    console.log('StudentRegisterClassScreen.useEffect: enter, currentPage=' + currentPage);
+    dispatch(studentGetRegisterClassListAction({page: currentPage, size: 20}));
+  }, [currentPage]);
 
-  if (
-    studentRegisterClassList !== null &&
-    studentRegisterClassList !== undefined &&
-    studentRegisterClassList.page !== null &&
-    studentRegisterClassList.page !== undefined &&
-    studentRegisterClassList.page.content !== null &&
-    studentRegisterClassList.page.content !== undefined
-  ) {
+  const renderItem = ({item}) => <StudentRegisterClass data={item} />;
+
+  const refresh = () => {
+    // Reset state
+    studentRegisterClasses.semesterId = '';
+    studentRegisterClasses.list = [];
+    studentRegisterClasses.registeredClasses = [];
+    setCurrentPage(0);
+  };
+
+  const loadMore = () => {
+    setCurrentPage(currentPage + 1); // TODO: Control sao cho currentPage khong bi tang vo han.
+  };
+
+  if (studentRegisterClasses !== null && studentRegisterClasses !== undefined) {
     return (
       <SafeAreaView style={{flex: 1}}>
-        <View style={{flex: 1}}>
-          <Loader loading={loading} />
+        <View>
           <FlatList
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
-            data={studentRegisterClassList.page.content}
-            renderItem={({item}) => <StudentRegisterClass data={item} />}
+            data={studentRegisterClasses.list}
+            renderItem={renderItem}
             keyExtractor={(item, index) => item.id + index}
-            onRefresh={() => dispatch(getStudentRegisterClassListAction())}
+            onRefresh={refresh}
+            onEndReached={loadMore}
+            onEndReachedThreshold={0}
             refreshing={loading}
           />
         </View>
@@ -93,9 +102,7 @@ const StudentRegisterClassScreen = () => {
   } else {
     return (
       <SafeAreaView style={{flex: 1}}>
-        <View style={{flex: 1}}>
-          <Loader loading={loading} />
-        </View>
+        <View />
       </SafeAreaView>
     );
   }

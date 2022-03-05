@@ -1,15 +1,8 @@
 import React, {useEffect} from 'react';
-import {
-  View,
-  SafeAreaView,
-  Text,
-  StyleSheet,
-} from 'react-native';
+import {View, SafeAreaView, Text, StyleSheet} from 'react-native';
 import {useSelector} from 'react-redux';
 
 import {Colors} from '../../styles/index';
-import Loader from '../Components/Loader';
-
 
 const StudentAssignmentExecutionScreen = () => {
   console.log('StudentAssignmentExecutionScreen: enter');
@@ -23,9 +16,7 @@ const StudentAssignmentExecutionScreen = () => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={{flex: 1}}>
-        <Loader loading={loading} />
-      </View>
+      <View />
     </SafeAreaView>
   );
 };
