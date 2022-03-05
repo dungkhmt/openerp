@@ -39,11 +39,17 @@ public class OrderPartitionGreedySolver {
             tmpRL.add(L);
             for (int i = 0; i < n; i++) {
                 if (C + w[i] > weightCapacity) {
+                    System.out.println(name() + "::solve, C = " + C + " w[" + i + "] = " + w[i]
+                                       + " > capacity = " + weightCapacity + " -> create new cluster with init order " + orders.get(index[i]).getOrderID());
                     L = new ArrayList();
                     L.add(orders.get(index[i]));
+                    C = w[i];
                     tmpRL.add(L);
                 } else {
                     L.add(orders.get(index[i]));
+
+                    System.out.println(name() + "::solve, C = " + C + " w[" + i + "] = " + w[i]
+                                       + " capacity = " + weightCapacity + " -> ADD " + orders.get(index[i]).getOrderID());
                     C = C + w[i];
                 }
             }
@@ -53,5 +59,8 @@ public class OrderPartitionGreedySolver {
             }
         }
         return retList;
+    }
+    public String name(){
+        return "OrderPartitionGreedySolver";
     }
 }

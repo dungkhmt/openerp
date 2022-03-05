@@ -71,7 +71,9 @@ public class OptimizationSolver {
         OneTripMIPSolver solver = new OneTripMIPSolver();
         OneTripGreedySolver greedySolver = new OneTripGreedySolver();
         OrderPartitionMIPSolver partitioner = new OrderPartitionMIPSolver();
-        List<List<Order>> partitions = partitioner.solve(I.getOrders(), I.getParam().getWeightCapacity());
+        OrderPartitionGreedySolver greedyPartitioner = new OrderPartitionGreedySolver();
+        //List<List<Order>> partitions = partitioner.solve(I.getOrders(), I.getParam().getWeightCapacity());
+        List<List<Order>> partitions = greedyPartitioner.solve(I.getOrders(), I.getParam().getWeightCapacity(),1);
 
         OrderPickupPlanningSolution sol = new OrderPickupPlanningSolution();
         List<OrderPickupRoute> routes = new ArrayList();

@@ -90,7 +90,10 @@ public class DataMapper {
                 int k = mItemCode2Index.get(oi.getItemID());
                 r[k] += oi.getQty();
             }
+
         }
+        for(Order o: orders)
+            o.computeDescription();
 
     }
 

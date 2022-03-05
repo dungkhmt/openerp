@@ -17,6 +17,14 @@ import java.util.Set;
 public class Order {
     private String orderID;
     private List<OrderItem> items;
+    private String description;
+
+    public void computeDescription(){
+        description = "";
+        for(OrderItem i: items){
+            description += "[" + i.getItemID() + "," + i.getQty() + "," + i.getWeight() + "] ";
+        }
+    }
     public int countNbItems(){
         Set<String> S = new HashSet();
         for(OrderItem i: items){

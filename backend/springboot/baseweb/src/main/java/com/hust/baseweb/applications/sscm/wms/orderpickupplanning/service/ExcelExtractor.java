@@ -62,7 +62,7 @@ public class ExcelExtractor {
                     weight = c.getNumericCellValue();
                 Order order = mID2Order.get(orderID);
                 if(order == null){
-                    order = new Order(orderID, new ArrayList());
+                    order = new Order(orderID, new ArrayList(),"");
                     orders.add(order);
                     mID2Order.put(orderID,order);
                 }

@@ -36,6 +36,7 @@ function OrderPickupPlanning() {
   const classes = useStyles();
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedRoute, setSelectedRoute] = React.useState(null);
+  const [selectedOrders, setSelectedOrders] = React.useState(null);
 
   const columns = [
     { title: "Mã Route", field: "index", ...cellStyles },
@@ -61,6 +62,7 @@ function OrderPickupPlanning() {
   function showRouteDetail(id) {
     //alert("detail " + id);
     setSelectedRoute(routes[id - 1].routeElements);
+    setSelectedOrders(routes[id - 1].servedOrders);
     setIsOpen(true);
   }
   const handleFormSubmit = (event) => {
@@ -168,7 +170,12 @@ function OrderPickupPlanning() {
             }}
           />
         </MuiThemeProvider>
-        <RouteDetail open={isOpen} setOpen={setIsOpen} route={selectedRoute} />
+        <RouteDetail
+          open={isOpen}
+          setOpen={setIsOpen}
+          route={selectedRoute}
+          orders={selectedOrders}
+        />
       </div>
     </div>
   );
