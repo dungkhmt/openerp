@@ -45,7 +45,7 @@ export default function SolvingContest(){
   const history = useHistory();
   const [wait, setWait] = useState(true);
   const [unauthorized, setUnauthorized] = useState(false);
-
+  const [isPublic, setIsPublic] = useState(true);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -103,6 +103,7 @@ export default function SolvingContest(){
         setContestTime(res.data.contestTime);
         setProblems(res.data.list);
         setContestName(res.data.contestName);
+        setIsPublic(res.data.isPublic);
         console.log("res ", res.data);
         let arr = problems.map(()=>false);
         setSubmitted(arr);
@@ -148,7 +149,7 @@ if(wait){
             >
               <Grid container alignItems="center" style={{padding:"10px"}}>
                 {/*<b><span style={{color:"#FFFFFF"}}>{`${timer}`}</span></b>*/}
-                {contestTime !== undefined ? <Timer contestId={contestId} contestTime={contestTime} timoutSubmit={submitContest}/> : <b><span style={{color:"#FFFFFF"}}>{`00:00:00`}</span></b>}
+                {contestTime !== undefined && !isPublic ? <Timer contestId={contestId} contestTime={contestTime} timoutSubmit={submitContest}/> : <b><span style={{color:"#FFFFFF"}}>{`00:00:00`}</span></b>}
 
 
               </Grid>

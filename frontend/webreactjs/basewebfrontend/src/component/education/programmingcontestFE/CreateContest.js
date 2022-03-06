@@ -221,6 +221,7 @@ export default function CreateContest(props){
   const [problemSelected, setProblemSelected] =useState([]);
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const isSelected = (name) => problemSelected.indexOf(name) !== -1;
+  const [isPublic, setIsPublic] = useState(false);
 
   const classes = useStyles();
   const handleClick = (event, name) => {
@@ -252,6 +253,7 @@ export default function CreateContest(props){
       contestName: contestName,
       contestTime: contestTime,
       problemIds: problemSelected,
+      isPublic: isPublic,
     }
     request(
       "post",
@@ -328,6 +330,27 @@ export default function CreateContest(props){
                   setContestTime(Number(event.target.value));
                 }}
               >
+              </TextField>
+
+
+              <TextField
+                autoFocus
+                // required
+                select
+                id="Public Contest"
+                label="Public Contest"
+                placeholder="Public Contest"
+                onChange={(event) => {
+                  setIsPublic(event.target.value);
+                }}
+                value={isPublic}
+              >
+                <MenuItem key={"true"} value={true}>
+                  {"true"}
+                </MenuItem>
+                <MenuItem key={"false"} value={false}>
+                  {"false"}
+                </MenuItem>
               </TextField>
 
             </form>

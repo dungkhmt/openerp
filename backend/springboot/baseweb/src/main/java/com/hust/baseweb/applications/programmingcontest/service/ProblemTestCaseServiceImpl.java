@@ -349,6 +349,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     .contestSolvingTime(modelCreateContest.getContestTime())
                     .problems(problemEntities)
 //                    .userCreatedContest(userLogin)
+                    .isPublic(modelCreateContest.isPublic())
                     .userId(userName)
                     .build();
             return contestRepo.save(contestEntity);
@@ -442,6 +443,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .contestTime(contestEntity.getContestSolvingTime())
                 .list(problems)
                 .unauthorized(false)
+                .isPublic(contestEntity.isPublic())
                 .build();
     }
 

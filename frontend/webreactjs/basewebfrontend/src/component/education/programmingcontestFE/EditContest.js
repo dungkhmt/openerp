@@ -220,6 +220,7 @@ export default function EditContest(props){
   const [problemSelected, setProblemSelected] =useState([]);
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const isSelected = (name) => problemSelected.indexOf(name) !== -1;
+  const [isPublic, setIsPublic] = useState(false);
 
   const classes = useStyles();
   const handleClick = (event, name) => {
@@ -250,6 +251,7 @@ export default function EditContest(props){
       contestName: contestName,
       contestSolvingTime: contestTime,
       problemIds: problemSelected,
+      isPublic: isPublic,
     }
     request(
       "post",
@@ -291,6 +293,7 @@ export default function EditContest(props){
         console.log("arr ", arr);
         setProblemSelected(arr);
         setContestName(res.data.contestName);
+        setIsPublic(res.data.isPublic)
         console.log("res ", res.data);
       }
     ).then();
@@ -333,7 +336,32 @@ export default function EditContest(props){
                   setContestTime(Number(event.target.value));
                 }}
               >
+
+
+
               </TextField>
+
+              <TextField
+                autoFocus
+                // required
+                select
+                id="Public Contest"
+                label="Public Contest"
+                placeholder="Public Contest"
+                onChange={(event) => {
+                  setIsPublic(event.target.value);
+                }}
+                value={isPublic}
+              >
+                <MenuItem key={"true"} value={true}>
+                  {"true"}
+                </MenuItem>
+                <MenuItem key={"false"} value={false}>
+                  {"false"}
+                </MenuItem>
+              </TextField>
+
+
 
             </form>
 
