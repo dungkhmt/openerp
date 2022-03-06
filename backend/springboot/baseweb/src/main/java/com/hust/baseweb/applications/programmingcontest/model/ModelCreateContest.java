@@ -9,6 +9,6 @@ public class ModelCreateContest {
     private String contestId;
     private String contestName;
     private int contestTime;
-    private boolean isPublic;
+    private Boolean isPublic;
     private List<String> problemIds;
 }

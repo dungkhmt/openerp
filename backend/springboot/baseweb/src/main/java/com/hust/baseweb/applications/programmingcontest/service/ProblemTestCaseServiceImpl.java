@@ -349,7 +349,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     .contestSolvingTime(modelCreateContest.getContestTime())
                     .problems(problemEntities)
 //                    .userCreatedContest(userLogin)
-                    .isPublic(modelCreateContest.isPublic())
+                    .isPublic(modelCreateContest.getIsPublic())
                     .userId(userName)
                     .build();
             return contestRepo.save(contestEntity);
@@ -444,7 +444,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .contestTime(contestEntity.getContestSolvingTime())
                 .list(problems)
                 .unauthorized(false)
-                .isPublic(contestEntity.isPublic())
+                .isPublic(contestEntity.getIsPublic())
                 .build();
     }
 
@@ -453,7 +453,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 //        UserLogin userLogin = userLoginRepo.findByUserLoginId(userName);
         ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
         UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
-        log.info("userRegistrationContest {}", userRegistrationContest);
+        log.info("contestEntity {}", contestEntity.getIsPublic());
 
         if(userRegistrationContest == null){
             log.info("unauthorized");

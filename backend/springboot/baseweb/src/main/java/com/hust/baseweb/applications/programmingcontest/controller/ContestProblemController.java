@@ -132,7 +132,7 @@ public class ContestProblemController {
 
     @PostMapping("/create-contest")
     public ResponseEntity<?> createContest(@RequestBody ModelCreateContest modelCreateContest, Principal principal) throws Exception {
-        log.info("createContest");
+        log.info("createContest {}", modelCreateContest);
         problemTestCaseService.createContest(modelCreateContest, principal.getName());
         return ResponseEntity.status(200).body(null);
     }
