@@ -35,7 +35,7 @@ import lib, {sleep} from "./lib";
 import {SubmitSuccess} from "./SubmitSuccess";
 import {useHistory} from "react-router-dom";
 import {getColorLevel} from "./lib";
-import MenuItem from "../../../layout/sidebar/v0/MenuItem";
+import {MenuItem} from "@material-ui/core/";
 
 const useStyles = makeStyles((theme) => ({
   root: {

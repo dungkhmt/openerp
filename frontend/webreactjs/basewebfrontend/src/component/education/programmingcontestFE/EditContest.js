@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
+import {MenuItem} from "@material-ui/core/";
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
@@ -35,7 +36,6 @@ import lib, {sleep} from "./lib";
 import {SubmitSuccess} from "./SubmitSuccess";
 import {useHistory, useParams} from "react-router-dom";
 import {getColorLevel} from "./lib";
-import MenuItem from "../../../layout/sidebar/v0/MenuItem";
 
 const useStyles = makeStyles((theme) => ({
   root: {
