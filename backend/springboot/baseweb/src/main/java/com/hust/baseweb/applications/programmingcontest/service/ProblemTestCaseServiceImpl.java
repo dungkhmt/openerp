@@ -416,6 +416,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public ModelGetContestDetailResponse getContestDetailByContestIdAndTeacher(String contestId, String userName){
 //        UserLogin userLogin = userLoginRepo.findByUserLoginId(userName);
         ContestEntity contestEntity = contestRepo.findContestEntityByContestIdAndUserId(contestId, userName);
+        log.info("contestEntity {}", contestEntity);
         if(contestEntity == null){
             log.info("user does not create contest");
             return ModelGetContestDetailResponse.builder()
