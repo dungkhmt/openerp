@@ -13,6 +13,6 @@ public class ModelGetContestDetailResponse {
     private long contestTime;
     private List<ModelGetProblemDetailResponse> list;
     private boolean unauthorized;
-    private boolean isPublic;
+    private Boolean isPublic;
 
 }

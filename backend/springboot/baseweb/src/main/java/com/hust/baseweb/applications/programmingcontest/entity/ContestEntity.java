@@ -44,7 +44,7 @@ public class ContestEntity {
     private boolean tryAgain;
 
     @Column(name = "public")
-    private boolean isPublic;
+    private Boolean isPublic;
 
     @Column(name = "created_stamp")
     private Date createdAt;
