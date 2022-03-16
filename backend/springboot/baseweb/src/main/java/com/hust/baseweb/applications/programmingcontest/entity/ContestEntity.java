@@ -30,7 +30,7 @@ public class ContestEntity {
     private String userId;
 
     @Column(name = "contest_solving_time")
-    private int contestSolvingTime;
+    private long contestSolvingTime;
 
     @JoinTable(
             name = "contest_contest_problem_new",
@@ -48,5 +48,17 @@ public class ContestEntity {
 
     @Column(name = "created_stamp")
     private Date createdAt;
+
+    @Column(name = "started_at")
+    private Date startedAt;
+
+    @Column(name = "count_down")
+    private long countDown;
+
+    @Column(name = "started_count_down_time")
+    private Date startedCountDownTime;
+
+    @Column(name = "end_time")
+    private Date endTime;
 
 }

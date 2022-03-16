@@ -8,5 +8,5 @@ import lombok.Data;
 public class ModelGetContestResponse {
     private String contestId;
     private String contestName;
-    private Integer contestTime;
+    private long contestTime;
 }

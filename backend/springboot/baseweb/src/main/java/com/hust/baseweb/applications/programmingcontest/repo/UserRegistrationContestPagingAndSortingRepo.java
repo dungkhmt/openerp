@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,4 +56,7 @@ public interface UserRegistrationContestPagingAndSortingRepo extends PagingAndSo
 
     @Query("select ce from ContestEntity ce where ce.contestId not in (select urce.contestId from UserRegistrationContestEntity urce where urce.userId = :userId and urce.status = 'SUCCESSFUL')")
     Page<ContestEntity> getNotRegisteredContestByUserLogin(Pageable pageable, @Param("userId") String userId);
+
+    @Query("select ce from ContestEntity ce where ce.contestId in (select urce.contestId from UserRegistrationContestEntity urce where urce.userId = :userId and urce.status = 'SUCCESSFUL') and ce.endTime >= :now and ce.startedCountDownTime <= :now")
+    Page<ContestEntity> getContestByUserAndStatusSuccessfulInSolvingTime(Pageable pageable, @Param("userId") String userId, @Param("now") Date now);
 }
