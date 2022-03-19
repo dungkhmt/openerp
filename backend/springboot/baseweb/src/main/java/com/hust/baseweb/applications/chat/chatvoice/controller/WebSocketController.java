@@ -35,7 +35,7 @@ public class WebSocketController {
   
   @Transactional
   @MessageMapping("/{roomId}")
-  @SendTo("/topic/meet/{roomId}")
+  @SendTo("/topic/chat/{roomId}")
   public Map<String, String> handleMessage(@Payload Map<String, String> message, @DestinationVariable UUID roomId) {
     HashMap<String, String> response = new HashMap<>();
     response.put("time", Long.toString(System.currentTimeMillis()));

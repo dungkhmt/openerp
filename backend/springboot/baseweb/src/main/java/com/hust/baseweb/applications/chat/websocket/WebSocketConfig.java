@@ -1,6 +1,7 @@
-package com.hust.baseweb.applications.chat.chatvoice.websocket;
+package com.hust.baseweb.applications.chat.websocket;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -12,12 +13,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/handlerMeet").setAllowedOrigins("*").withSockJS();
+		registry.addEndpoint("/chatSocketHandler").setAllowedOrigins("*").withSockJS();
 	}
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry brokerRegistry) {
-		brokerRegistry.setApplicationDestinationPrefixes("/app/meet");
-		brokerRegistry.enableSimpleBroker("/topic/meet");
+		brokerRegistry.setApplicationDestinationPrefixes("/app/chat");
+		brokerRegistry.enableSimpleBroker("/topic/chat", "/queue");
+        brokerRegistry.setUserDestinationPrefix("/user");
 	}
 }
