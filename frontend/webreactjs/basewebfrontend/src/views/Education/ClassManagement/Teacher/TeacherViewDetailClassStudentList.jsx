@@ -4,10 +4,11 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Link,
+  //Link,
   Paper,
   Typography,
 } from "@material-ui/core";
+import { Link } from "react-router-dom";
 //import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -96,6 +97,16 @@ export default function TeacherViewDetailClassStudentList(props) {
   };
 
   const registCols = [
+    {
+      field: "id",
+      title: "User Login",
+      render: (rowData) => (
+        <Link to={"/edu/student/learning/detail/" + rowData["id"]}>
+          {rowData["id"]}
+        </Link>
+      ),
+      //...headerProperties,
+    },
     {
       field: "name",
       title: "Họ và tên",

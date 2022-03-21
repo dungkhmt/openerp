@@ -14,6 +14,9 @@ public interface QuizGroupQuestionParticipationExecutionChoiceRepo
         String userId,
         UUID groupId
     );
+    List<QuizGroupQuestionParticipationExecutionChoice> findQuizGroupQuestionParticipationExecutionChoicesByParticipationUserLoginId(
+        String userId
+    );
 
     List<QuizGroupQuestionParticipationExecutionChoice> findQuizGroupQuestionParticipationExecutionChoicesByParticipationUserLoginIdAndQuizGroupIdAndQuestionId(
         String userId,

@@ -21,10 +21,7 @@ import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.*;
@@ -69,6 +66,20 @@ public class DataAdminController {
             logUserLoginQuizQuestionService.getPageLogStudentQuiz(
             page,
             size);
+
+        return ResponseEntity.ok().body(studentQuizParticipationModels);
+
+    }
+    @GetMapping("/admin/data/view-users-do-pratice-quiz/{studentId}")
+    public ResponseEntity<?> getPageLogUsersDoQuizOfAStudent(Principal principal,
+                                                             @PathVariable String studentId,
+                                                             @RequestParam int page, int size, Pageable pageable){
+        Pageable sortedByCreatedStampDsc =
+            PageRequest.of(page, size, Sort.by("createStamp").descending());
+        Page<StudentQuizParticipationModel> studentQuizParticipationModels =
+            logUserLoginQuizQuestionService.getPageLogStudentQuizOfAStudent(studentId,
+                page,
+                size);
 
         return ResponseEntity.ok().body(studentQuizParticipationModels);
 

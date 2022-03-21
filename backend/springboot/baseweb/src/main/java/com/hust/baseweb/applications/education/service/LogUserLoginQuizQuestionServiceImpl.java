@@ -105,6 +105,69 @@ public class LogUserLoginQuizQuestionServiceImpl implements LogUserLoginQuizQues
 
         return studentQuizParticipationModels;
     }
+    @Override
+    public Page<StudentQuizParticipationModel> getPageLogStudentQuizOfAStudent(String userLoginId, Integer page, Integer size){
+        log.info("getPageLogStudentQuizOfAStudent, studentId = " + userLoginId);
+        Pageable sortedByCreatedStampDsc =
+            PageRequest.of(page, size, Sort.by("createStamp").descending());
+        Page<LogUserLoginQuizQuestion> logs = logUserLoginQuizQuestionRepo.findByUserLoginId(userLoginId, sortedByCreatedStampDsc);
+        log.info("getPageLogStudentQuizOfAStudent, studentId = " + userLoginId + " sz = " + logs.getSize());
+
+        Page<StudentQuizParticipationModel> studentQuizParticipationModels = logs.map(logi -> {
+            //PersonModel personModel = userService.findPersonByUserLoginId(log.getUserLoginId());
+            //PersonModel personModel = mUserLoginId2PersonModel.get(logi.getUserLoginId());
+            PersonModel personModel = userService.findPersonByUserLoginId(logi.getUserLoginId());
+
+            //QuizCourseTopic q = cacheQuizCourseTopic.get(log.getQuestionId());
+            int grade = 0;
+            //if(log.getIsCorrectAnswer() == 'Y')
+            if (logi.getIsCorrectAnswer() != null) {
+                if (logi.getIsCorrectAnswer().equals("Y")) {
+                    grade = 1;
+                }
+            }
+
+            EduCourse course = classService.getCourseOfClassCode(logi.getClassCode());
+            String courseId = "";
+            String courseName = "";
+            if(course != null){
+                courseId = course.getId();
+                courseName = course.getName();
+            }
+            String fullName = "";
+            String affiliations = "";
+            if (personModel != null) {
+                fullName = personModel.getLastName() +
+                           " " +
+                           personModel.getMiddleName() +
+                           " " +
+                           personModel.getFirstName();
+                affiliations = personModel.getAffiliations();
+                //log.info("findByClassId, fullName = " + fullName);
+            }else{
+                //log.info("findByClassId, personModel NULL!");
+
+            }
+            return new StudentQuizParticipationModel(
+                logi.getUserLoginId(),
+                fullName,affiliations,
+                (logi.getClassId() != null ? logi.getClassId().toString() : ""),
+                logi.getClassCode() + "",
+                (logi.getQuestionId() != null ? logi.getQuestionId().toString() : ""),
+                courseId,
+                courseName,
+                logi.getQuestionTopicName(),
+                logi.getQuestionTopicId(),
+                //q.getQuizCourseTopicName(),
+                //q.getQuizCourseTopicId(),
+                grade,
+                logi.getCreateStamp()
+            );
+        });
+
+        return studentQuizParticipationModels;
+
+    }
 
     @Override
     public Page<StudentQuizParticipationModel> getPageLogStudentQuiz(Integer page, Integer size) {

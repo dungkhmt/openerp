@@ -6,6 +6,7 @@ import com.hust.baseweb.applications.education.classmanagement.service.ClassServ
 import com.hust.baseweb.applications.education.entity.EduClass;
 import com.hust.baseweb.applications.education.entity.QuizQuestion;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailModel;
+import com.hust.baseweb.applications.education.quiztest.UserQuestionQuizExecutionOM;
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
 import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizParticipant;
 import com.hust.baseweb.applications.education.quiztest.model.*;
@@ -294,6 +295,17 @@ public class QuizTestController {
             //quizTestService.getQuizTestParticipationExecutionResultNewByPQD(input.getTestId());
 
         return ResponseEntity.ok().body(quizTestParticipationExecutionResultOutputModels);
+    }
+    @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
+    @GetMapping("/get-quiz-test-participation-execution-result-of-user-login/{userLoginId}")
+    public ResponseEntity<?> getQuizTestParticipationExecutionResultOfAStudent(
+        Principal principal, @PathVariable String userLoginId
+    ) {
+        log.info("getQuizTestParticipationExecutionResultOfAStudent, studentId = " + userLoginId);
+        List<UserQuestionQuizExecutionOM> userQuestionExecutions =
+            quizTestService.getQuizTestParticipationExecutionResultOfAUserLogin(userLoginId);
+
+        return ResponseEntity.ok().body(userQuestionExecutions);
     }
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})

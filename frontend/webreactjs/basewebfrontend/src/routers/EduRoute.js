@@ -50,7 +50,7 @@ import ResourceDomainEdit from "../component/education/resourcelink/ResourceDoma
 import ClassTeacherAssignmentPlanDetail from "../component/education/classteacherassignment/ClassTeacherAssignmentPlanDetail";
 import ClassTeacherAssignmentPlanList from "../component/education/classteacherassignment/ClassTeacherAssignmentPlanList";
 import BCASolver from "../component/education/BCASolver";
-
+import StudentLearningProgressDetail from "../views/Education/ClassManagement/Teacher/StudentLearningProgressDetail";
 import NotFound from "../views/errors/NotFound";
 
 export default function EduRoute() {
@@ -58,6 +58,12 @@ export default function EduRoute() {
   return (
     <div>
       <Switch>
+        <Route
+          component={StudentLearningProgressDetail}
+          path={`${path}/student/learning/detail/:id`}
+          exact
+        />
+
         <Route
           component={TeacherCourseList}
           path={`${path}/teacher/course/list`}

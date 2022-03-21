@@ -1,41 +1,41 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 // import Typography from "@material-ui/core/Typography";
-import PropTypes from 'prop-types';
-import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import {MenuItem} from "@material-ui/core/";
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import { visuallyHidden } from '@mui/utils';
-import {request} from "./Request";
-import {API_URL} from "../../../config/config";
+import PropTypes from "prop-types";
+import { alpha } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Table from "@mui/material/Table";
+import { MenuItem } from "@material-ui/core/";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import DeleteIcon from "@mui/icons-material/Delete";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import { visuallyHidden } from "@mui/utils";
+import { request } from "./Request";
+import { API_URL } from "../../../config/config";
 import Pagination from "@material-ui/lab/Pagination";
 import DateFnsUtils from "@date-io/date-fns";
-import {MuiPickersUtilsProvider} from "@material-ui/pickers";
-import {Button, Card, CardActions, TextField} from "@material-ui/core";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { Button, Card, CardActions, TextField } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
-import {makeStyles} from "@material-ui/core/styles";
-import {TableFooter} from "@mui/material";
-import lib, {sleep} from "./lib";
-import {SubmitSuccess} from "./SubmitSuccess";
-import {useHistory, useParams} from "react-router-dom";
-import {getColorLevel} from "./lib";
+import { makeStyles } from "@material-ui/core/styles";
+import { TableFooter } from "@mui/material";
+import lib, { sleep } from "./lib";
+import { SubmitSuccess } from "./SubmitSuccess";
+import { useHistory, useParams } from "react-router-dom";
+import { getColorLevel } from "./lib";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,7 +53,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -65,7 +64,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -86,22 +85,28 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'problemName',
+    id: "problemName",
     numeric: false,
     disablePadding: true,
-    label: 'Title',
+    label: "Title",
   },
   {
-    id: 'levelOrder',
+    id: "levelOrder",
     numeric: true,
     disablePadding: false,
-    label: 'Difficulty',
+    label: "Difficulty",
   },
 ];
 
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-    props;
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+  } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -116,26 +121,26 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              'aria-label': 'select all desserts',
+              "aria-label": "select all desserts",
             }}
           />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.numeric ? "right" : "left"}
+            padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -150,7 +155,7 @@ EnhancedTableHead.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  order: PropTypes.oneOf(["asc", "desc"]).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
@@ -165,13 +170,16 @@ const EnhancedTableToolbar = (props) => {
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
           bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+            alpha(
+              theme.palette.primary.main,
+              theme.palette.action.activatedOpacity
+            ),
         }),
       }}
     >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           color="inherit"
           variant="subtitle1"
           component="div"
@@ -180,7 +188,7 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       ) : (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           variant="h6"
           id="tableTitle"
           component="div"
@@ -209,8 +217,8 @@ const EnhancedTableToolbar = (props) => {
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
-export default function EditContest(props){
-  const {contestId} = useParams();
+export default function EditContest(props) {
+  const { contestId } = useParams();
   const history = useHistory();
   const [contestName, setContestName] = useState("");
   const [contestTime, setContestTime] = useState(Number(0));
@@ -218,7 +226,7 @@ export default function EditContest(props){
   const [totalPages, setTotalPages] = useState(0);
   const [contestProblems, setContestProblems] = useState([]);
   const [pageSize, setPageSize] = useState(5);
-  const [problemSelected, setProblemSelected] =useState([]);
+  const [problemSelected, setProblemSelected] = useState([]);
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const isSelected = (name) => problemSelected.indexOf(name) !== -1;
   const [isPublic, setIsPublic] = useState(false);
@@ -237,7 +245,7 @@ export default function EditContest(props){
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         problemSelected.slice(0, selectedIndex),
-        problemSelected.slice(selectedIndex + 1),
+        problemSelected.slice(selectedIndex + 1)
       );
     }
     console.log("newSelected ", newSelected);
@@ -247,61 +255,54 @@ export default function EditContest(props){
     setPage(value);
     // getProblemContestList();
   };
-  function handleSubmit(){
+  function handleSubmit() {
     let body = {
       contestName: contestName,
       contestSolvingTime: contestTime,
       problemIds: problemSelected,
       isPublic: isPublic,
-    }
+    };
     request(
       "post",
-      "/edit-contest/"+contestId,
-      (res)=>{
+      "/edit-contest/" + contestId,
+      (res) => {
         // console.log("problem list", res.data);
         setShowSubmitSuccess(true);
-        sleep(1000).then(r => {
+        sleep(1000).then((r) => {
           history.push("/programming-contest/list-contest");
         });
-
       },
-      {}
-      ,
+      {},
       body
     ).then();
   }
 
-  useEffect(() =>{
+  useEffect(() => {
     request(
       "get",
-      "/get-contest-problem-paging?size="+pageSize+"&page="+(page-1),
-      (res)=>{
+      "/get-contest-problem-paging?size=" + pageSize + "&page=" + (page - 1),
+      (res) => {
         // console.log("problem list", res.data);
         setTotalPages(res.data.totalPages);
         setContestProblems(res.data.content);
       }
     ).then();
 
-    request(
-      "get",
-      "/get-contest-detail/"+contestId,
-      (res) =>{
-        setContestTime(res.data.contestTime);
-        let arr = [];
-        res.data.list.map((p) => {
-          arr.push(p.problemId);
-        });
-        console.log("arr ", arr);
-        setProblemSelected(arr);
-        setContestName(res.data.contestName);
-        setIsPublic(res.data.isPublic)
-        console.log("res ", res.data);
-      }
-    ).then();
-  }, [page])
+    request("get", "/get-contest-detail/" + contestId, (res) => {
+      setContestTime(res.data.contestTime);
+      let arr = [];
+      res.data.list.map((p) => {
+        arr.push(p.problemId);
+      });
+      console.log("arr ", arr);
+      setProblemSelected(arr);
+      setContestName(res.data.contestName);
+      setIsPublic(res.data.isPublic);
+      console.log("res ", res.data);
+    }).then();
+  }, [page]);
 
-
-  return(
+  return (
     <div>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Card>
@@ -309,10 +310,8 @@ export default function EditContest(props){
             <Typography variant="h5" component="h2">
               Edit Contest {contestId}
             </Typography>
-            <br/>
+            <br />
             <form className={classes.root} noValidate autoComplete="off">
-
-
               <TextField
                 autoFocus
                 required
@@ -323,8 +322,7 @@ export default function EditContest(props){
                 onChange={(event) => {
                   setContestName(event.target.value);
                 }}
-              >
-              </TextField>
+              ></TextField>
 
               <TextField
                 autoFocus
@@ -336,11 +334,7 @@ export default function EditContest(props){
                 onChange={(event) => {
                   setContestTime(Number(event.target.value));
                 }}
-              >
-
-
-
-              </TextField>
+              ></TextField>
 
               <TextField
                 autoFocus
@@ -361,20 +355,16 @@ export default function EditContest(props){
                   {"false"}
                 </MenuItem>
               </TextField>
-
-
-
             </form>
 
-
-            <Box sx={{ width: '100%' }}>
-              <Paper sx={{ width: '100%', mb: 2 }}>
+            <Box sx={{ width: "100%" }}>
+              <Paper sx={{ width: "100%", mb: 2 }}>
                 <EnhancedTableToolbar numSelected={problemSelected.length} />
                 <TableContainer>
                   <Table
                     sx={{ minWidth: 750 }}
                     aria-labelledby="tableTitle"
-                    size={'medium'}
+                    size={"medium"}
                   >
                     <EnhancedTableHead
                       numSelected={problemSelected.length}
@@ -385,10 +375,10 @@ export default function EditContest(props){
                       // rowCount={rows.length}
                     />
                     <TableBody>
-                      {contestProblems.map((p, index) =>{
+                      {contestProblems.map((p, index) => {
                         const isItemSelected = isSelected(p.problemId);
                         const labelId = `enhanced-table-checkbox-${index}`;
-                        return(
+                        return (
                           <TableRow
                             hover
                             onClick={(event) => handleClick(event, p.problemId)}
@@ -398,13 +388,12 @@ export default function EditContest(props){
                             key={p.problemId}
                             selected={isItemSelected}
                           >
-
                             <TableCell padding="checkbox">
                               <Checkbox
                                 color="primary"
                                 checked={isItemSelected}
                                 inputProps={{
-                                  'aria-labelledby': labelId,
+                                  "aria-labelledby": labelId,
                                 }}
                               />
                             </TableCell>
@@ -416,15 +405,17 @@ export default function EditContest(props){
                             >
                               {p.problemName}
                             </TableCell>
-                            <TableCell align="right"><span style={{color:getColorLevel(`${p.levelId}`)}}>{`${p.levelId}`}</span></TableCell>
+                            <TableCell align="right">
+                              <span
+                                style={{ color: getColorLevel(`${p.levelId}`) }}
+                              >{`${p.levelId}`}</span>
+                            </TableCell>
                           </TableRow>
                         );
                       })}
-
                     </TableBody>
                     {/*<TableFooter>*/}
                     {/*<TableRow>*/}
-
 
                     {/*</TableRow>*/}
                     {/*</TableFooter>*/}
@@ -443,34 +434,26 @@ export default function EditContest(props){
                       />
                     </TableCell>
                   </TableRow>
-
                 </TableContainer>
-
-
               </Paper>
             </Box>
-
-
           </CardContent>
           <CardActions>
             <Button
               variant="contained"
               color="light"
-              style={{marginLeft:"45px"}}
+              style={{ marginLeft: "45px" }}
               onClick={handleSubmit}
             >
               Save
             </Button>
             <SubmitSuccess
               showSubmitSuccess={showSubmitSuccess}
-              content={"You have saved contest"}/>
+              content={"You have saved contest"}
+            />
           </CardActions>
         </Card>
       </MuiPickersUtilsProvider>
-
-
     </div>
   );
-
-
 }

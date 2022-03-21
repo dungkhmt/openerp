@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface EduQuizTestGroupRepo extends JpaRepository<EduTestQuizGroup, UUID> {
@@ -14,6 +15,8 @@ public interface EduQuizTestGroupRepo extends JpaRepository<EduTestQuizGroup, UU
     public List<EduTestQuizGroup> findAllByTestIdAndGroupCode(String testId, String groupCode);
 
     List<EduTestQuizGroup> findByTestId(String testId);
+
+    List<EduTestQuizGroup> findByQuizGroupIdIn(Set<UUID> quizGroupIds);
 
     EduTestQuizGroup findEduTestQuizGroupByTestIdAndQuizGroupId(
         String testId,

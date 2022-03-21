@@ -10,4 +10,6 @@ public interface LogUserLoginQuizQuestionService {
     Page<StudentQuizParticipationModel> findByClassId(UUID classId, Integer page, Integer size);
 
     Page<StudentQuizParticipationModel> getPageLogStudentQuiz(Integer page, Integer size);
+
+    Page<StudentQuizParticipationModel> getPageLogStudentQuizOfAStudent(String userLoginId, Integer page, Integer size);
 }

@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.education.quiztest.service;
 
+import com.hust.baseweb.applications.education.quiztest.UserQuestionQuizExecutionOM;
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
 import com.hust.baseweb.applications.education.quiztest.model.EditQuizTestInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.EduQuizTestModel;
@@ -45,6 +46,8 @@ public interface QuizTestService {
     public Integer deleteQuizTestGroups(String testId, String[] listQuizTestGroupId);
 
     public List<QuizTestParticipationExecutionResultOutputModel> getQuizTestParticipationExecutionResult(String testId);
+
+    public List<UserQuestionQuizExecutionOM> getQuizTestParticipationExecutionResultOfAUserLogin(String userLoginId);
 
     public List<QuizTestParticipationExecutionResultOutputModel> getQuizTestParticipationExecutionResultNewByPQD(String testId);
 
