@@ -9,6 +9,7 @@ import {StyledTableCell, StyledTableRow} from "./lib";
 import {Link} from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
 import {successNoti} from "../../../utils/notification";
+import {Timer} from "./Timer";
 
 export function StudentContestRegistered(){
   const [page, setPage] = useState(1);
@@ -16,7 +17,7 @@ export function StudentContestRegistered(){
   const [totalPages, setTotalPage] = useState(0);
   const pageSizes = [20,50, 100];
   const [contests, setContests] = useState([])
-
+  const [isCountDowns, setIsCountDowns] = useState([]);
   const handlePageChange = (event, value) => {
     setPage(value);
   };
@@ -35,6 +36,14 @@ export function StudentContestRegistered(){
         console.log("contest list", res.data);
         setTotalPage(res.data.totalPages);
         setContests(res.data.contents);
+        let arr = contests.map((c, idx) => {
+          if(c.isPublic || c.countDown == 0){
+            return false;
+          }
+          return true;
+        });
+        setIsCountDowns(arr);
+
       }
     ).then();
   }
@@ -59,6 +68,7 @@ export function StudentContestRegistered(){
                   <StyledTableCell></StyledTableCell>
                   <StyledTableCell align="left">Title</StyledTableCell>
                   <StyledTableCell align="center">Register Contest</StyledTableCell>
+                  <StyledTableCell align="center">Count Down</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -81,6 +91,22 @@ export function StudentContestRegistered(){
                           Solve
                         </Button>
                       </Link>
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {
+                        isCountDowns[index] ?
+                          <Timer
+                            id={contest.contestId}
+                            time={contest.countDown}
+                            timeOutHandler={() => {
+                              isCountDowns[index] = false;
+                            }
+                            }>
+                          </Timer>
+                          :
+                          <div></div>
+                      }
+
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}

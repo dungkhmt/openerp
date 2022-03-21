@@ -36,6 +36,7 @@ import lib, {sleep} from "./lib";
 import {SubmitSuccess} from "./SubmitSuccess";
 import {useHistory, useParams} from "react-router-dom";
 import {getColorLevel} from "./lib";
+import DateTimePicker from '@mui/lab/DateTimePicker';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -222,6 +223,7 @@ export default function EditContest(props){
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const isSelected = (name) => problemSelected.indexOf(name) !== -1;
   const [isPublic, setIsPublic] = useState(false);
+  const [startDate, setStartDate] = React.useState(new Date('2014-08-18T21:11:54'));
 
   const classes = useStyles();
   const handleClick = (event, name) => {
@@ -253,6 +255,7 @@ export default function EditContest(props){
       contestSolvingTime: contestTime,
       problemIds: problemSelected,
       isPublic: isPublic,
+      startedAt: startDate,
     }
     request(
       "post",
@@ -362,6 +365,14 @@ export default function EditContest(props){
                 </MenuItem>
               </TextField>
 
+              <DateTimePicker
+                label="Date&Time picker"
+                value={startDate}
+                onChange={(value) => {
+                  setStartDate(value);
+                }}
+                renderInput={(params) => <TextField {...params} />}
+              />
 
 
             </form>

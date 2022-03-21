@@ -117,7 +117,11 @@ export default function SolvingContest() {
           localStorage.setItem(idLanguage, "CPP");
         }
       }
-    }).then(() => {
+
+    },
+      {}
+
+    ).then(() => {
       setWait(false);
     });
   }, []);
@@ -151,9 +155,9 @@ export default function SolvingContest() {
                   {/*<b><span style={{color:"#FFFFFF"}}>{`${timer}`}</span></b>*/}
                   {contestTime !== undefined && !isPublic ? (
                     <Timer
-                      contestId={contestId}
-                      contestTime={contestTime}
-                      timoutSubmit={submitContest}
+                      id={contestId}
+                      time={contestTime}
+                      timeOutHandler={submitContest}
                     />
                   ) : (
                     <b>

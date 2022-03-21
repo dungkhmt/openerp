@@ -342,19 +342,33 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 throw new MiniLeetCodeException("Contest is already exist");
             }
             List<ProblemEntity> problemEntities = getContestProblemsFromListContestId(modelCreateContest.getProblemIds());
-            ContestEntity contestEntity = ContestEntity.builder()
-                                                       .contestId(modelCreateContest.getContestId())
-                                                       .contestName(modelCreateContest.getContestName())
-                                                       .contestSolvingTime(modelCreateContest.getContestTime())
-                                                       .problems(problemEntities)
-                                                       .isPublic(modelCreateContest.isPublic())
-                                                       .countDown(modelCreateContest.getCountDownTime())
-                                                       .startedAt(modelCreateContest.getStartedAt())
-                                                       .startedCountDownTime(DateTimeUtils.minusMinutesDate(modelCreateContest.getStartedAt(), modelCreateContest.getCountDownTime()))
-                                                       .endTime(DateTimeUtils.addMinutesDate(modelCreateContest.getStartedAt(), modelCreateContest.getContestTime()))
-                                                       .userId(userName)
-                                                       .build();
-            return contestRepo.save(contestEntity);
+            if(modelCreateContest.getStartedAt() != null){
+                ContestEntity contestEntity = ContestEntity.builder()
+                                                           .contestId(modelCreateContest.getContestId())
+                                                           .contestName(modelCreateContest.getContestName())
+                                                           .contestSolvingTime(modelCreateContest.getContestTime())
+                                                           .problems(problemEntities)
+                                                           .isPublic(modelCreateContest.isPublic())
+                                                           .countDown(modelCreateContest.getCountDownTime())
+                                                           .startedAt(modelCreateContest.getStartedAt())
+                                                           .startedCountDownTime(DateTimeUtils.minusMinutesDate(modelCreateContest.getStartedAt(), modelCreateContest.getCountDownTime()))
+                                                           .endTime(DateTimeUtils.addMinutesDate(modelCreateContest.getStartedAt(), modelCreateContest.getContestTime()))
+                                                           .userId(userName)
+                                                           .build();
+                return contestRepo.save(contestEntity);
+            }else{
+                ContestEntity contestEntity = ContestEntity.builder()
+                                                           .contestId(modelCreateContest.getContestId())
+                                                           .contestName(modelCreateContest.getContestName())
+                                                           .contestSolvingTime(modelCreateContest.getContestTime())
+                                                           .problems(problemEntities)
+                                                           .isPublic(modelCreateContest.isPublic())
+                                                           .countDown(modelCreateContest.getCountDownTime())
+                                                           .userId(userName)
+                                                           .build();
+                return contestRepo.save(contestEntity);
+            }
+
         }catch (Exception e){
             throw new Exception(e.getMessage());
         }
@@ -375,18 +389,32 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             throw new MiniLeetCodeException("You don't have privileged");
         }
         List<ProblemEntity> problemEntities = getContestProblemsFromListContestId(modelUpdateContest.getProblemIds());
-        ContestEntity contestEntity = ContestEntity.builder()
-                                                   .contestId(contestId)
-                                                   .contestName(modelUpdateContest.getContestName())
-                                                   .contestSolvingTime(modelUpdateContest.getContestSolvingTime())
-                                                   .problems(problemEntities)
-                                                   .userId(userName)
-                                                   .countDown(modelUpdateContest.getCountDownTime())
-                                                   .startedAt(modelUpdateContest.getStartedAt())
-                                                   .startedCountDownTime(DateTimeUtils.minusMinutesDate(modelUpdateContest.getStartedAt(), modelUpdateContest.getCountDownTime()))
-                                                   .endTime(DateTimeUtils.addMinutesDate(modelUpdateContest.getStartedAt(), modelUpdateContest.getContestSolvingTime()))
-                                                   .build();
-        return contestRepo.save(contestEntity);
+        if(modelUpdateContest.getStartedAt() != null){
+            ContestEntity contestEntity = ContestEntity.builder()
+                                                       .contestId(contestId)
+                                                       .contestName(modelUpdateContest.getContestName())
+                                                       .contestSolvingTime(modelUpdateContest.getContestSolvingTime())
+                                                       .problems(problemEntities)
+                                                       .userId(userName)
+                                                       .countDown(modelUpdateContest.getCountDownTime())
+                                                       .startedAt(modelUpdateContest.getStartedAt())
+                                                       .startedCountDownTime(DateTimeUtils.minusMinutesDate(modelUpdateContest.getStartedAt(), modelUpdateContest.getCountDownTime()))
+                                                       .endTime(DateTimeUtils.addMinutesDate(modelUpdateContest.getStartedAt(), modelUpdateContest.getContestSolvingTime()))
+                                                       .build();
+            return contestRepo.save(contestEntity);
+
+        }else{
+            ContestEntity contestEntity = ContestEntity.builder()
+                                                       .contestId(contestId)
+                                                       .contestName(modelUpdateContest.getContestName())
+                                                       .contestSolvingTime(modelUpdateContest.getContestSolvingTime())
+                                                       .problems(problemEntities)
+                                                       .userId(userName)
+                                                       .countDown(modelUpdateContest.getCountDownTime())
+                                                       .build();
+            return contestRepo.save(contestEntity);
+        }
+
 
     }
 
@@ -454,9 +482,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public ModelGetContestDetailResponse getContestSolvingDetailByContestId(String contestId, String userName) {
+    public ModelGetContestDetailResponse getContestSolvingDetailByContestId(String contestId, String userName) throws MiniLeetCodeException {
 //        UserLogin userLogin = userLoginRepo.findByUserLoginId(userName);
         ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+        Date now = new Date();
+        if(now.before(contestEntity.getStartedAt()) ){
+            throw new MiniLeetCodeException("Wait contest start");
+        }
         UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
         log.info("contestEntity {}", contestEntity.getIsPublic());
 
@@ -846,10 +878,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         if(contestPage != null){
             contestPage.forEach(contest -> {
                 ModelGetContestResponse modelGetContestResponse = ModelGetContestResponse.builder()
-                        .contestId(contest.getContestId())
-                        .contestName(contest.getContestName())
-                        .contestTime(contest.getContestSolvingTime())
-                        .build();
+                                                                                         .contestId(contest.getContestId())
+                                                                                         .contestName(contest.getContestName())
+                                                                                         .contestTime(contest.getContestSolvingTime())
+                                                                                         .countDown(contest.getCountDown())
+                                                                                         .startAt(contest.getStartedAt())
+                                                                                         .isPublic(contest.getIsPublic())
+                                                                                         .build();
                 lists.add(modelGetContestResponse);
             });
         }

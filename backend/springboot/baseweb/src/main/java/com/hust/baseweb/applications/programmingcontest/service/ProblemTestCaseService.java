@@ -49,7 +49,7 @@ public interface ProblemTestCaseService {
 
     ModelGetContestDetailResponse getContestDetailByContestIdAndTeacher(String contestId, String userName);
 
-    ModelGetContestDetailResponse getContestSolvingDetailByContestId(String contestId, String userName);
+    ModelGetContestDetailResponse getContestSolvingDetailByContestId(String contestId, String userName) throws MiniLeetCodeException;
 
 
     ModelContestSubmissionResponse submitContestProblem(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
