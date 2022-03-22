@@ -22,10 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -745,6 +742,52 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
         userRegistrationContest.setStatus(Constants.RegistrationType.FAILED.getValue());
         userRegistrationContestRepo.delete(userRegistrationContest);
+    }
+    @Override
+    public Page<ContestSubmission> findContestSubmissionByUserLoginIdPaging(Pageable pageable,String userLoginId){
+        return contestSubmissionPagingAndSortingRepo.findAllByUserId(pageable,userLoginId)
+                                                    .map(contestSubmissionEntity -> ContestSubmission.builder()                                                                                                          .contestSubmissionId(contestSubmissionEntity.getContestSubmissionId())
+                                                    .contestId(contestSubmissionEntity.getContestId())
+                                                    .createAt(contestSubmissionEntity.getCreatedAt() != null ? DateTimeUtils.dateToString(contestSubmissionEntity.getCreatedAt(), DateTimeUtils.DateTimeFormat.DATE_TIME_ISO_FORMAT) : null)
+                                                    .sourceCodeLanguage(contestSubmissionEntity.getSourceCodeLanguage())
+                                                    .point(contestSubmissionEntity.getPoint())
+                                                    .problemId(contestSubmissionEntity.getProblemId())
+                                                    .testCasePass(contestSubmissionEntity.getTestCasePass())
+                                                    .status(contestSubmissionEntity.getStatus())
+                                                    .userId(contestSubmissionEntity.getUserId())
+                                                    .build()
+                                                    );
+    }
+
+    @Override
+    public List<ContestSubmission> getNewestSubmissionResults(String userLoginId) {
+        List<ContestSubmissionEntity> lst = contestSubmissionPagingAndSortingRepo
+            .findAllByUserId(userLoginId);
+        List<ContestSubmission> retList = new ArrayList();
+        Set<String> keys = new HashSet();
+        for(ContestSubmissionEntity s: lst){
+            String k = s.getContestId() + "@" + s.getProblemId() + "@" + s.getUserId();
+            keys.add(k);
+            log.info("getNewestSubmissionResults, read record " + s.getContestSubmissionId() + " created stamp " + s.getCreatedAt());
+        }
+        for(ContestSubmissionEntity s: lst){
+            String k = s.getContestId() + "@" + s.getProblemId() + "@" + s.getUserId();
+            if(keys.contains(k)){
+                ContestSubmission cs = new ContestSubmission();
+                cs.setContestSubmissionId(s.getContestSubmissionId());
+                cs.setStatus(s.getStatus());
+                cs.setContestId(s.getContestId());
+                cs.setProblemId(s.getProblemId());
+                cs.setUserId(s.getUserId());
+                cs.setPoint(s.getPoint());
+                cs.setCreateAt(s.getCreatedAt() != null ? DateTimeUtils.dateToString(s.getCreatedAt(), DateTimeUtils.DateTimeFormat.DATE_TIME_ISO_FORMAT) : null);
+                cs.setTestCasePass(s.getTestCasePass());
+                cs.setSourceCodeLanguage(s.getSourceCodeLanguage());
+                retList.add(cs);
+                break;// break when reach a first entry
+            }
+        }
+        return retList;
     }
 
     @Override

@@ -4,6 +4,8 @@ import { useHistory } from "react-router-dom";
 import withScreenSecurity from "../../../../component/withScreenSecurity";
 import StudentLearningProgressDetailQuiz from "./StudentLearningProgressDetailQuiz";
 import StudentLearningProgressDetailQuizInClass from "./StudentLearningProgressDetailQuizInClass";
+import StudentLearningProgressDetailProgrammingSubmission from "./StudentLearningProgressDetailProgrammingSubmission";
+import StudentLearningProgressDetailProgrammingSubmissionResultOnProblem from "./StudentLearningProgressDetailProgrammingSubmissionResultOnProblem";
 
 import {
   a11yProps,
@@ -13,7 +15,12 @@ import {
 } from "../../../../component/tab";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 
-const tabsLabel = ["Thông tin chung", "Quiz", "Quiz In Class", "Video"];
+const tabsLabel = [
+  "Thông tin chung",
+  "Quiz",
+  "Quiz In Class",
+  "Program Submission",
+];
 
 function StudentLearningProgressDetail() {
   const params = useParams();
@@ -50,7 +57,12 @@ function StudentLearningProgressDetail() {
       </TabPanel>
 
       <TabPanel value={selectedTab} index={3} dir={theme.direction}>
-        BLANK
+        <StudentLearningProgressDetailProgrammingSubmissionResultOnProblem
+          studentId={studentId}
+        />
+        <StudentLearningProgressDetailProgrammingSubmission
+          studentId={studentId}
+        />
       </TabPanel>
     </div>
   );

@@ -150,9 +150,31 @@ public class QuizTestController {
                 log.info("getActiveQuizTestOfSession, participant to testID " + testID + " is NULL -> return");
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
             }
+
+
             testDetail = eduQuizTestGroupService.getTestGroupQuestionDetail(principal, testID);
 
-
+            // check if user has already done the quiz question, then return null
+            // in this context, each user can only take quiz once
+            Set<String> disableQuestionIds = new HashSet();
+            for(String questionId: testDetail.getParticipationExecutionChoice().keySet()){
+                List<UUID> choiceAnswers = testDetail.getParticipationExecutionChoice().get(questionId);
+                if(choiceAnswers.size() > 0){
+                    // disable this question, do not return
+                    disableQuestionIds.add(questionId);
+                }
+            }
+            for(String qid: disableQuestionIds){
+                testDetail.getParticipationExecutionChoice().remove(qid);
+                //testDetail.getListQuestion().remove(qid);
+                for(QuizQuestionDetailModel q: testDetail.getListQuestion()){
+                    if(q.getQuestionId().toString().equals(qid)){
+                        testDetail.getListQuestion().remove(q);
+                        break;
+                    }
+                }
+                log.info("getActiveQuizTestOfSession, question  " + qid + " has already been answered, remove this");
+            }
         return ResponseEntity.ok().body(testDetail);
     }
 

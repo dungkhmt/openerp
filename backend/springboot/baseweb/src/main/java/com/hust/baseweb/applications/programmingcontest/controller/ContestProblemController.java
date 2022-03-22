@@ -325,7 +325,22 @@ public class ContestProblemController {
         problemTestCaseService.deleteUserContest(modelAddUserToContest);
         return ResponseEntity.status(200).body(null);
     }
+    @GetMapping("/get-contest-result-on-problem-of-a-user/{userLoginId}")
+    public ResponseEntity<?> getContestResultOnProblemOfAUser( @PathVariable("userLoginId") String userLoginId, Pageable pageable) {
+        log.info("getContestResultOnProblemOfAUser, user = " + userLoginId);
+        List<ContestSubmission> lst = problemTestCaseService.getNewestSubmissionResults(userLoginId);
 
+        return ResponseEntity.status(200).body(lst);
+    }
+
+        @GetMapping("/get-contest-submission-paging-of-a-user/{userLoginId}")
+    public ResponseEntity<?> getContestSubmissionPagingOfAUser( @PathVariable("userLoginId") String userLoginId, Pageable pageable){
+        log.info("getContestSubmissionPagingOfAUser, user = " + userLoginId);
+        pageable = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), Sort.by("createdAt").descending());
+        Page<ContestSubmission> page = problemTestCaseService.findContestSubmissionByUserLoginIdPaging(pageable, userLoginId);
+        log.info("page {}", page);
+        return ResponseEntity.status(200).body(page);
+    }
 
     @GetMapping("/get-contest-submission-paging/{contestId}")
     public ResponseEntity<?> getContestSubmissionPaging(@PathVariable("contestId") String contestId, Pageable pageable){
