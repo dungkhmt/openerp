@@ -969,6 +969,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                         uq.setSessionName(eduClassSession.getSessionName());
                     }
                 }
+
                 uq.setDate(date);
                 userQuestionExecutions.add(uq);
             }

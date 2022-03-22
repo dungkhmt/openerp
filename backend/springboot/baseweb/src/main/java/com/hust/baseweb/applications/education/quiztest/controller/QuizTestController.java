@@ -125,6 +125,7 @@ public class QuizTestController {
 
         QuizGroupTestDetailModel testDetail = null;
         //for(EduQuizTestModel qt: listQuizTest){
+        // TO BE IMPROVED
         EduQuizTestModel qt = listQuizTest.get(0);
             String testID = qt.getTestId();
             /*

@@ -14,6 +14,7 @@ export default function StudentLearningProgressDetailQuizInClass(props) {
     { title: "ClassCode", field: "classId" },
     { title: "CourseId", field: "courseId" },
     { title: "Grade", field: "grade" },
+    { title: "TestQuiz", field: "testId" },
     { title: "Session", field: "sessionName" },
     { title: "DateTime", field: "date" },
   ];

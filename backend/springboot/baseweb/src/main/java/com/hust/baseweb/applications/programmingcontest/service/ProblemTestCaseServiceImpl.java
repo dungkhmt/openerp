@@ -770,8 +770,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             keys.add(k);
             log.info("getNewestSubmissionResults, read record " + s.getContestSubmissionId() + " created stamp " + s.getCreatedAt());
         }
+        Set<String> ignores = new HashSet();
         for(ContestSubmissionEntity s: lst){
             String k = s.getContestId() + "@" + s.getProblemId() + "@" + s.getUserId();
+            if(ignores.contains(k)){
+                continue;
+            }
             if(keys.contains(k)){
                 ContestSubmission cs = new ContestSubmission();
                 cs.setContestSubmissionId(s.getContestSubmissionId());
@@ -784,7 +788,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 cs.setTestCasePass(s.getTestCasePass());
                 cs.setSourceCodeLanguage(s.getSourceCodeLanguage());
                 retList.add(cs);
-                break;// break when reach a first entry
+                ignores.add(k);// process only the first meet
+                //break;// break when reach a first entry
             }
         }
         return retList;

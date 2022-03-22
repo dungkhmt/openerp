@@ -154,5 +154,74 @@ public class DataAdminController {
 
     }
 
+    @GetMapping("/admin/data/view-course-video-of-a-student/{studentId}")
+    public ResponseEntity<?> getPageLogUserLoginCourseChapterMaterialOfAStudent(
+        Principal principal, @PathVariable String studentId,
+        @RequestParam int page, int size, Pageable pageable
+    ){
+        Pageable sortedByCreatedStampDsc =
+            PageRequest.of(page, size, Sort.by("createStamp").descending());
+        /*
+        Get Chapter List -> tobe improved, e.g., by Caching
+         */
+        List<EduCourseChapterMaterial> chapterMaterials = eduCourseChapterMaterialRepo.findAll();
+        List<EduCourseChapter> chapters = eduCourseChapterRepo.findAll();
+        Map<UUID, EduCourseChapterMaterial> mId2ChapterMaterial = new HashMap();
+        Map<UUID, EduCourseChapter> mId2Chapter = new HashMap();
+        for(EduCourseChapterMaterial c: chapterMaterials){
+            mId2ChapterMaterial.put(c.getEduCourseMaterialId(),c);
+        }
+        for(EduCourseChapter c: chapters){
+            mId2Chapter.put(c.getChapterId(),c);
+        }
+
+        List<LogUserLoginCourseChapterMaterial> lst = dataAdminLogUserLoginCourseChapterMaterial.getPageOfUserLogin(page * size, size, studentId);
+        //Page<LogUserLoginCourseChapterMaterial> lst = dataAdminLogUserLoginCourseChapterMaterial.findAll(sortedByCreatedStampDsc);
+        int count = dataAdminLogUserLoginCourseChapterMaterial.countTotal();
+
+        List<LogUserLoginCourseChapterMaterialOutputModel> lstModel = new ArrayList();
+        for(LogUserLoginCourseChapterMaterial e: lst){
+            LogUserLoginCourseChapterMaterialOutputModel m = new LogUserLoginCourseChapterMaterialOutputModel();
+            m.setUserLoginId(e.getUserLoginId());
+            String classId = null;
+            String courseId = null;
+            String courseName = null;
+            String chapterName = null;
+            String materialName = null;
+            EduClass eduClass = e.getEduClass();
+            if(eduClass != null) {
+                classId = eduClass.getClassCode();
+                courseId = eduClass.getEduCourse().getId();
+                courseName = eduClass.getEduCourse().getName();
+            }
+            EduCourseChapterMaterial chapterMaterial = mId2ChapterMaterial.get(e.getEduCourseMaterialId());
+
+            if(chapterMaterial != null){
+                EduCourseChapter chapter = chapterMaterial.getEduCourseChapter();
+                materialName = chapterMaterial.getEduCourseMaterialName();
+                if(chapter != null){
+                    chapterName = chapter.getChapterName();
+                }
+            }
+
+            PersonModel person= userService.findPersonByUserLoginId(e.getUserLoginId());
+            if(person != null){
+                m.setFullname(person.getLastName() + " " + person.getMiddleName() + " " + person.getFirstName());
+                m.setAffiliations(person.getAffiliations());
+            }
+            m.setClassId(classId);
+            m.setCourseId(courseId);
+            m.setCourseName(courseName);
+            m.setChapterName(chapterName);
+            m.setMaterialName(materialName);
+            m.setDate(e.getCreateStamp());
+            lstModel.add(m);
+        }
+        //Page<LogUserLoginCourseChapterMaterial> aPage = new PageImpl<>(lst, pageable, count);
+        Page<LogUserLoginCourseChapterMaterialOutputModel> aPage = new PageImpl<>(lstModel, pageable, count);
+
+        return ResponseEntity.ok().body(aPage);
+
+    }
 
 }

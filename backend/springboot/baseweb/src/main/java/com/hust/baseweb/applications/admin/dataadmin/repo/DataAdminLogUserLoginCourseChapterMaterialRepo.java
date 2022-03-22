@@ -11,6 +11,9 @@ public interface DataAdminLogUserLoginCourseChapterMaterialRepo extends JpaRepos
     @Query(value="select * from log_user_login_course_chapter_material offset ?1 limit ?2",nativeQuery=true)
     List<LogUserLoginCourseChapterMaterial> getPage(int offset, int limit);
 
+    @Query(value="select * from log_user_login_course_chapter_material where user_login_id = ?3 offset ?1 limit ?2",nativeQuery=true)
+    List<LogUserLoginCourseChapterMaterial> getPageOfUserLogin(int offset, int limit, String userLoginId);
+
     @Query(value="select count(*) from log_user_login_course_chapter_material",nativeQuery=true)
     int countTotal();
 

@@ -6,6 +6,7 @@ import StudentLearningProgressDetailQuiz from "./StudentLearningProgressDetailQu
 import StudentLearningProgressDetailQuizInClass from "./StudentLearningProgressDetailQuizInClass";
 import StudentLearningProgressDetailProgrammingSubmission from "./StudentLearningProgressDetailProgrammingSubmission";
 import StudentLearningProgressDetailProgrammingSubmissionResultOnProblem from "./StudentLearningProgressDetailProgrammingSubmissionResultOnProblem";
+import StudentLearningProgressDetailViewVideo from "./StudentLearningProgressDetailViewVideo";
 
 import {
   a11yProps,
@@ -17,6 +18,7 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 
 const tabsLabel = [
   "Thông tin chung",
+  "Video",
   "Quiz",
   "Quiz In Class",
   "Program Submission",
@@ -50,13 +52,16 @@ function StudentLearningProgressDetail() {
         BLANK
       </TabPanel>
       <TabPanel value={selectedTab} index={1} dir={theme.direction}>
-        <StudentLearningProgressDetailQuiz studentId={studentId} />
+        <StudentLearningProgressDetailViewVideo studentId={studentId} />
       </TabPanel>
       <TabPanel value={selectedTab} index={2} dir={theme.direction}>
+        <StudentLearningProgressDetailQuiz studentId={studentId} />
+      </TabPanel>
+      <TabPanel value={selectedTab} index={3} dir={theme.direction}>
         <StudentLearningProgressDetailQuizInClass studentId={studentId} />
       </TabPanel>
 
-      <TabPanel value={selectedTab} index={3} dir={theme.direction}>
+      <TabPanel value={selectedTab} index={4} dir={theme.direction}>
         <StudentLearningProgressDetailProgrammingSubmissionResultOnProblem
           studentId={studentId}
         />
