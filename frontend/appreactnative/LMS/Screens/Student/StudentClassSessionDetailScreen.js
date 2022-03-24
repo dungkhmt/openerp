@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   SafeAreaView,
@@ -20,17 +20,25 @@ import {studentGetActiveQuizOfSessionAction} from '../../redux-saga/actions/Stud
 import {studentPostActiveQuizOfSessionAction} from '../../redux-saga/actions/StudentPostActiveQuizOfSessionAction';
 
 const Answer = ({data}) => {
+  // console.log('Answer: enter, choiceAnswerId = ' + data.choiceAnswerId + ', checked = ' + data.checked);
+
   const {width} = useWindowDimensions();
   const source = {
     html: data.choiceAnswerContent,
   };
 
+  const [toggleCheckBox, setToggleCheckBox] = useState(data.checked);
+  const onValueChange = newValue => {
+    data.checked = newValue;
+    setToggleCheckBox(newValue);
+  };
+
   return (
     <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
       <CheckBox
-        style={{width: 24, height: 24, margin: 8}}
-        value={data.checked}
-        onValueChange={value => (data.checked = value)}
+        style={{margin: 8}}
+        value={toggleCheckBox}
+        onValueChange={onValueChange}
       />
       <RenderHtml contentWidth={width - 96} source={source}></RenderHtml>
     </View>
@@ -38,6 +46,8 @@ const Answer = ({data}) => {
 };
 
 const Question = ({total, index, data}) => {
+  // console.log('Question: enter, questionId = ' + data.questionId + ', submitted = ' + data.submitted);
+
   const {width} = useWindowDimensions();
   const source = {
     html: data.statement,
@@ -46,8 +56,52 @@ const Question = ({total, index, data}) => {
   const quiz = useSelector(
     state => state.studentGetActiveQuizOfSessionReducer.quiz,
   );
+  const [submitted, setSubmitted] = useState(data.submitted);
 
-  const renderItem = ({item}) => <Answer data={item} />;
+  const renderItem = ({item}) => {
+    if (submitted) {
+      return <></>;
+    } else {
+      return <Answer data={item} />;
+    }
+  };
+
+  const ListFooterComponent = () => {
+    if (submitted) {
+      return (
+        <View style={{alignItems: 'center', justifyContent: 'center'}}>
+          <Text style={styles.submittedStyle}>Bạn đã submit câu trả lời</Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.buttonStyle}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => {
+              var payload = {testId: quiz.testId, questionId: data.questionId, quizGroupId: quiz.quizGroupId};
+              var chooseAnsIds = [];
+              quiz.listQuestion.forEach(question => {
+                if (question.questionId === data.questionId) {
+                  data.quizChoiceAnswerList.forEach(answer => {
+                    if (answer.checked) {
+                      chooseAnsIds.push(answer.choiceAnswerId);
+                    }
+                  });
+                }
+              });
+              payload.chooseAnsIds = chooseAnsIds;
+              // console.log(JSON.stringify(payload));
+              dispatch(studentPostActiveQuizOfSessionAction(payload));
+              data.submitted = true;
+              setSubmitted(data.submitted);
+            }}>
+            <Text style={styles.buttonTextStyle}>Chọn</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+  };
 
   return (
     <FlatList
@@ -60,7 +114,7 @@ const Question = ({total, index, data}) => {
           return (
             <View style={{flex: 1, flexDirection: 'column'}}>
               <Text style={{fontWeight: 'bold', fontSize: 15, color: 'purple', textAlign: 'center'}}>Câu {index + 1}/{total}</Text>
-              <RenderHtml contentWidth={width - 32} source={source}></RenderHtml>
+              <RenderHtml contentWidth={width - 48} source={source}></RenderHtml>
               {data.attachment.map(attachment => {
                 return <Image resizeMode='contain' style={{borderWidth: 1, width: width - 16, height: width, borderColor: 'purple', alignContent: 'center'}} source={{uri: 'data:image/png;base64,' + attachment}}/>;
               })}
@@ -70,37 +124,12 @@ const Question = ({total, index, data}) => {
           return (
             <View style={{flex: 1, flexDirection: 'column'}}>
               <Text style={{fontWeight: 'bold', fontSize: 15, color: 'purple', textAlign: 'center'}}>Câu {index + 1}/{total}</Text>
-              <RenderHtml contentWidth={width - 32} source={source}></RenderHtml>
+              <RenderHtml contentWidth={width - 48} source={source}></RenderHtml>
             </View>
           );
         }
       }}
-      ListFooterComponent={() => {
-        return (
-          <View style={styles.buttonStyle}>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={() => {
-                var payload = {testId: quiz.testId, questionId: data.questionId, quizGroupId: quiz.quizGroupId};
-                var chooseAnsIds = [];
-                quiz.listQuestion.forEach(question => {
-                  if (question.questionId === data.questionId) {
-                    data.quizChoiceAnswerList.forEach(answer => {
-                      if (answer.checked) {
-                        chooseAnsIds.push(answer.choiceAnswerId);
-                      }
-                    });
-                  }
-                });
-                payload.chooseAnsIds = chooseAnsIds;
-                // console.log(JSON.stringify(payload));
-                dispatch(studentPostActiveQuizOfSessionAction(payload));
-              }}>
-              <Text style={styles.buttonTextStyle}>Chọn</Text>
-            </TouchableOpacity>
-          </View>
-        );
-      }}
+      ListFooterComponent={ListFooterComponent}
       renderItem={renderItem}
       keyExtractor={(item, index) => item.choiceAnswerId + index}
     />
@@ -189,5 +218,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 48,
     fontSize: 16,
+  },
+  submittedStyle: {
+    alignContent: 'center',
+    color: Colors.controlBackground,
+    fontWeight: 'bold',
+    paddingVertical: 8,
+    paddingHorizontal: 48,
+    fontSize: 15,
   },
 });
