@@ -11,7 +11,6 @@ import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
 import {Colors} from '../../styles/index';
-import Loader from '../Components/Loader';
 import {studentGetClassSessionListAction} from '../../redux-saga/actions/StudentGetClassSessionListAction';
 
 const Session = ({data}) => {
@@ -58,7 +57,6 @@ const StudentClassSessionsTab = ({route}) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={{flex: 1}}>
-        <Loader loading={loading} />
         <FlatList
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}

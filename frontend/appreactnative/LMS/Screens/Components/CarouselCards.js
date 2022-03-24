@@ -5,13 +5,24 @@ import CarouselCardItem, {SLIDER_WIDTH, ITEM_WIDTH} from './CarouselCardItem';
 
 const CarouselModel = [
   {
-    imgUrl: 'https://cafedev.vn/wp-content/uploads/2020/07/cafedev_datastruct_alg.jpeg',
+    title: 'Computer Science',
+    body: '',
+    imgUrl: '',
   },
   {
-    imgUrl: 'https://www.techfry.com/images/articles/php/object-oriented-programming.jpg',
+    title: 'Network & Communication',
+    body: '',
+    imgUrl: '',
   },
   {
-    imgUrl: 'https://hninternationaledu.com/wp-content/uploads/2021/01/system-analysis-and-design.jpg',
+    title: 'Systems of Information',
+    body: '',
+    imgUrl: '',
+  },
+  {
+    title: 'Software Engineering',
+    body: '',
+    imgUrl: '',
   },
 ];
 

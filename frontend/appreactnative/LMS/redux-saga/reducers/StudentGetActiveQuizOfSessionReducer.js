@@ -140,11 +140,21 @@ const studentGetActiveQuizOfSessionReducer = (state = initialState, action) => {
     case types.STUDENT_GET_ACTIVE_QUIZ_OF_SESSION:
       return {
         ...state,
+        quiz: {},
         isFetching: true,
       };
     case types.STUDENT_GET_ACTIVE_QUIZ_OF_SESSION_SUCCESS:
-      // Transform object to reflect student choose answers for each question in a quiz.
+      // TODO: Optimize performance
+
       var transformQuiz = action.quiz;
+      transformQuiz.listQuestion.forEach(question => {
+        question.quizChoiceAnswerList.forEach(answer => {
+          answer.checked = false;
+        });
+        question.submitted = false;
+      });
+
+      // Transform object to reflect student choose answers for each question in a quiz.
       for (const [key, value] of Object.entries(
         transformQuiz.participationExecutionChoice,
       )) {
@@ -157,10 +167,7 @@ const studentGetActiveQuizOfSessionReducer = (state = initialState, action) => {
                 answer.checked = false;
               }
             });
-          } else {
-            question.quizChoiceAnswerList.forEach(answer => {
-              answer.checked = false;
-            });
+            question.submitted = true;
           }
         });
       }
