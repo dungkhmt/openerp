@@ -57,6 +57,6 @@ public interface UserRegistrationContestPagingAndSortingRepo extends PagingAndSo
     @Query("select ce from ContestEntity ce where ce.contestId not in (select urce.contestId from UserRegistrationContestEntity urce where urce.userId = :userId and urce.status = 'SUCCESSFUL')")
     Page<ContestEntity> getNotRegisteredContestByUserLogin(Pageable pageable, @Param("userId") String userId);
 
-    @Query("select ce from ContestEntity ce where ce.contestId in (select urce.contestId from UserRegistrationContestEntity urce where urce.userId = :userId and urce.status = 'SUCCESSFUL') and ((ce.endTime >= :now and ce.startedCountDownTime <= :now) or ce.startedAt is null )")
+    @Query("select ce from ContestEntity ce where ce.contestId in (select urce.contestId from UserRegistrationContestEntity urce where urce.userId = :userId and urce.status = 'SUCCESSFUL') and ((ce.endTime >= :now and ce.startedAt < :now) or ce.isPublic = true )")
     Page<ContestEntity> getContestByUserAndStatusSuccessfulInSolvingTime(Pageable pageable, @Param("userId") String userId, @Param("now") Date now);
 }
