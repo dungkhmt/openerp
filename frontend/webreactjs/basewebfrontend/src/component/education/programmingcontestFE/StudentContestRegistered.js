@@ -42,6 +42,7 @@ export function StudentContestRegistered(){
           }
           return true;
         });
+        console.log("arr ", arr);
         setIsCountDowns(arr);
 
       }
