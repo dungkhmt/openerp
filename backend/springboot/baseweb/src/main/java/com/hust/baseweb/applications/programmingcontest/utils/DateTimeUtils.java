@@ -324,7 +324,7 @@ public class DateTimeUtils {
 
     public static  Date minusMinutesDate(Date date, Long minutes){
         ZonedDateTime zonedDateTime = dateToZoneDateTime(date);
-        zonedDateTime.minusMinutes(minutes);
+        zonedDateTime = zonedDateTime.minusMinutes(minutes);
         return Date.from(zonedDateTime.toInstant());
     }
 
