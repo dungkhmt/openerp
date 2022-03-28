@@ -330,7 +330,7 @@ public class DateTimeUtils {
 
     public static Date addMinutesDate(Date date, Long minutes){
         ZonedDateTime zonedDateTime = dateToZoneDateTime(date);
-        zonedDateTime.plusMinutes(minutes);
+        zonedDateTime = zonedDateTime.plusMinutes(minutes);
         return Date.from(zonedDateTime.toInstant());
     }
 }
