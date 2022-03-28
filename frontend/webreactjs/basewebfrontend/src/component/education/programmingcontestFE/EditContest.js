@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 // import Typography from "@material-ui/core/Typography";
 import PropTypes from "prop-types";
-import { alpha } from "@mui/material/styles";
+import {alpha} from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
-import { MenuItem } from "@material-ui/core/";
+import {MenuItem} from "@material-ui/core/";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
@@ -18,27 +17,23 @@ import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import { visuallyHidden } from "@mui/utils";
-import { request } from "./Request";
-import { API_URL } from "../../../config/config";
+import {visuallyHidden} from "@mui/utils";
+import {request} from "./Request";
 import Pagination from "@material-ui/lab/Pagination";
 import DateFnsUtils from "@date-io/date-fns";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { Button, Card, CardActions, TextField } from "@material-ui/core";
+import {MuiPickersUtilsProvider} from "@material-ui/pickers";
+import {Button, Card, CardActions, TextField} from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
-import { makeStyles } from "@material-ui/core/styles";
-import { TableFooter } from "@mui/material";
-import lib, { sleep } from "./lib";
-import { SubmitSuccess } from "./SubmitSuccess";
-import { useHistory, useParams } from "react-router-dom";
-import { getColorLevel } from "./lib";
+import {makeStyles} from "@material-ui/core/styles";
+import {getColorLevel, sleep} from "./lib";
+import {SubmitSuccess} from "./SubmitSuccess";
+import {useHistory, useParams} from "react-router-dom";
 import DateTimePicker from "@mui/lab/DateTimePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(4),
@@ -163,13 +158,13 @@ EnhancedTableHead.propTypes = {
 };
 
 const EnhancedTableToolbar = (props) => {
-  const { numSelected } = props;
+  const {numSelected} = props;
 
   return (
     <Toolbar
       sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
+        pl: {sm: 2},
+        pr: {xs: 1, sm: 1},
         ...(numSelected > 0 && {
           bgcolor: (theme) =>
             alpha(
@@ -181,7 +176,7 @@ const EnhancedTableToolbar = (props) => {
     >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: "1 1 100%" }}
+          sx={{flex: "1 1 100%"}}
           color="inherit"
           variant="subtitle1"
           component="div"
@@ -190,7 +185,7 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       ) : (
         <Typography
-          sx={{ flex: "1 1 100%" }}
+          sx={{flex: "1 1 100%"}}
           variant="h6"
           id="tableTitle"
           component="div"
@@ -202,13 +197,13 @@ const EnhancedTableToolbar = (props) => {
       {numSelected > 0 ? (
         <Tooltip title="Delete">
           <IconButton>
-            <DeleteIcon />
+            <DeleteIcon/>
           </IconButton>
         </Tooltip>
       ) : (
         <Tooltip title="Filter list">
           <IconButton>
-            <FilterListIcon />
+            <FilterListIcon/>
           </IconButton>
         </Tooltip>
       )}
@@ -220,7 +215,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 export default function EditContest(props) {
-  const { contestId } = useParams();
+  const {contestId} = useParams();
   const history = useHistory();
   const [contestName, setContestName] = useState("");
   const [contestTime, setContestTime] = useState(Number(0));
@@ -235,6 +230,7 @@ export default function EditContest(props) {
   const [startDate, setStartDate] = React.useState(
     new Date("2014-08-18T21:11:54")
   );
+  const [countDown, setCountDown] = useState(Number(0));
 
   const classes = useStyles();
   const handleClick = (event, name) => {
@@ -260,6 +256,7 @@ export default function EditContest(props) {
     setPage(value);
     // getProblemContestList();
   };
+
   function handleSubmit() {
     let body = {
       contestName: contestName,
@@ -267,6 +264,7 @@ export default function EditContest(props) {
       problemIds: problemSelected,
       isPublic: isPublic,
       startedAt: startDate,
+      countDownTime:countDown,
     };
     request(
       "post",
@@ -316,7 +314,7 @@ export default function EditContest(props) {
             <Typography variant="h5" component="h2">
               Edit Contest {contestId}
             </Typography>
-            <br />
+            <br/>
             <form className={classes.root} noValidate autoComplete="off">
               <TextField
                 autoFocus
@@ -339,6 +337,17 @@ export default function EditContest(props) {
                 placeholder="Time Limit"
                 onChange={(event) => {
                   setContestTime(Number(event.target.value));
+                }}
+              ></TextField>
+
+              <TextField
+                autoFocus
+                required
+                id="Count Down"
+                label="Count Down"
+                placeholder="Count Down"
+                onChange={(event) => {
+                  setCountDown(Number(event.target.value));
                 }}
               ></TextField>
 
@@ -373,12 +382,12 @@ export default function EditContest(props) {
               </LocalizationProvider>
             </form>
 
-            <Box sx={{ width: "100%" }}>
-              <Paper sx={{ width: "100%", mb: 2 }}>
-                <EnhancedTableToolbar numSelected={problemSelected.length} />
+            <Box sx={{width: "100%"}}>
+              <Paper sx={{width: "100%", mb: 2}}>
+                <EnhancedTableToolbar numSelected={problemSelected.length}/>
                 <TableContainer>
                   <Table
-                    sx={{ minWidth: 750 }}
+                    sx={{minWidth: 750}}
                     aria-labelledby="tableTitle"
                     size={"medium"}
                   >
@@ -423,7 +432,7 @@ export default function EditContest(props) {
                             </TableCell>
                             <TableCell align="right">
                               <span
-                                style={{ color: getColorLevel(`${p.levelId}`) }}
+                                style={{color: getColorLevel(`${p.levelId}`)}}
                               >{`${p.levelId}`}</span>
                             </TableCell>
                           </TableRow>
@@ -458,7 +467,7 @@ export default function EditContest(props) {
             <Button
               variant="contained"
               color="light"
-              style={{ marginLeft: "45px" }}
+              style={{marginLeft: "45px"}}
               onClick={handleSubmit}
             >
               Save

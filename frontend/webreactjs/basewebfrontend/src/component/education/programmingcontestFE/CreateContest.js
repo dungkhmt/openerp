@@ -235,8 +235,10 @@ export default function CreateContest(props) {
   const isSelected = (name) => problemSelected.indexOf(name) !== -1;
   const [isPublic, setIsPublic] = useState(false);
   const [startDate, setStartDate] = React.useState(
-    new Date("2014-08-18T21:11:54")
+    new Date()
   );
+
+  const [countDown, setCountDown] = useState(Number(0));
 
   const classes = useStyles();
   const handleClick = (event, name) => {
@@ -270,6 +272,7 @@ export default function CreateContest(props) {
       problemIds: problemSelected,
       isPublic: isPublic,
       startedAt: startDate,
+      countDownTime:countDown,
     };
     request(
       "post",
@@ -340,6 +343,18 @@ export default function CreateContest(props) {
                   setContestTime(Number(event.target.value));
                 }}
               ></TextField>
+
+              <TextField
+                autoFocus
+                required
+                id="Count Down"
+                label="Count Down"
+                placeholder="Count Down"
+                onChange={(event) => {
+                  setCountDown(Number(event.target.value));
+                }}
+              ></TextField>
+
 
               <TextField
                 autoFocus
