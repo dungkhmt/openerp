@@ -25,6 +25,23 @@ public class TotalCostVR implements IFunctionVR {
 	private double[] costRight;
 
 	HashMap<Point, Integer> map;
+	
+	private HashMap<String, Double> vhCode2lowerCapacity;
+	private HashMap<String, Double> vhCode2upperCapacity;
+	private HashMap<Point, String> startPoint2vhCode;
+	
+	public TotalCostVR(VarRoutesVR XR, ArcWeightsManager awm,
+			HashMap<String, Double> vhCode2lowerCapacity,
+			HashMap<String, Double> vhCode2upperCapacity,
+			HashMap<Point, String> startPoint2vhCode) {
+		this.XR = XR;
+		this.awm = awm;
+		mgr = XR.getVRManager();
+		this.vhCode2lowerCapacity = vhCode2lowerCapacity;
+		this.vhCode2upperCapacity = vhCode2upperCapacity;
+		this.startPoint2vhCode = startPoint2vhCode;
+		post();
+	}
 
 	public TotalCostVR(VarRoutesVR XR, ArcWeightsManager awm) {
 		this.XR = XR;

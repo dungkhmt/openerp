@@ -10,9 +10,24 @@ import java.util.ArrayList;
  */
 public class Point {
 	public int ID;
-    double x, y;
-    String locationCode;
+	public String locationId;
+	private String typeOfPoint;
+	private String typeOfProduct;
+	private double orderWeight;
+	private double limitedWeight;
+	private double x, y;
+	private String locationCode;
     //ArrayList<Integer> bucketIDs;
+	public Point(int iD, String locationId, String typeOfPoint, String typeOfProduct, double orderWeight,
+			double limitedWeight) {
+		super();
+		ID = iD;
+		this.locationId = locationId;
+		this.typeOfPoint = typeOfPoint;
+		this.typeOfProduct = typeOfProduct;
+		this.orderWeight = orderWeight;
+		this.limitedWeight = limitedWeight;
+	}
 	public Point(int ID, double x, double y){
     	this.ID = ID;
     	this.x = x; this.y = y;
@@ -32,12 +47,6 @@ public class Point {
     	this.y = 0;
     }
     
-    public String getLocationCode() {
-		return locationCode;
-	}
-	public void setLocationCode(String locationCode) {
-		this.locationCode = locationCode;
-	}
 	public void setID(int iD) {
 		ID = iD;
 	}
@@ -69,6 +78,44 @@ public class Point {
     public void setY(double y) {
         this.y = y;
     }
+    
+    
+    public String getLocationId() {
+		return locationId;
+	}
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+	public String getTypeOfPoint() {
+		return typeOfPoint;
+	}
+	public void setTypeOfPoint(String typeOfPoint) {
+		this.typeOfPoint = typeOfPoint;
+	}
+	public String getTypeOfProduct() {
+		return typeOfProduct;
+	}
+	public void setTypeOfProduct(String typeOfProduct) {
+		this.typeOfProduct = typeOfProduct;
+	}
+	public double getOrderWeight() {
+		return orderWeight;
+	}
+	public void setOrderWeight(double orderWeight) {
+		this.orderWeight = orderWeight;
+	}
+	public double getLimitedWeight() {
+		return limitedWeight;
+	}
+	public void setLimitedWeight(double limitedWeight) {
+		this.limitedWeight = limitedWeight;
+	}
+	public String getLocationCode() {
+		return locationCode;
+	}
+	public void setLocationCode(String locationCode) {
+		this.locationCode = locationCode;
+	}
 
     double degrees(Point p) {
         double X = p.x - x;
