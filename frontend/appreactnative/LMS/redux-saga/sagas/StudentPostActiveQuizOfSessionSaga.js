@@ -10,7 +10,7 @@ export function* studentPostActiveQuizOfSessionSaga(action) {
     yield put({type: types.STUDENT_POST_ACTIVE_QUIZ_OF_SESSION_SUCCESS, message: "Đã lưu thành công"});
   } catch (err) {
     console.log('studentPostActiveQuizOfSessionSaga: ' + err);
-    yield put({type: types.STUDENT_POST_ACTIVE_QUIZ_OF_SESSION_FAILURE, message: err.message});
+    yield put({type: types.STUDENT_POST_ACTIVE_QUIZ_OF_SESSION_FAILURE, message: err.message, status: err.response.status});
   }
 }
 

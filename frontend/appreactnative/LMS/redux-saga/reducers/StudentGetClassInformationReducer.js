@@ -26,6 +26,7 @@ const studentGetClassInformationReducer = (state = initialState, action) => {
     case types.STUDENT_GET_CLASS_INFORMATION:
       return {
         ...state,
+        classInformation: {},
         isFetching: true,
       };
     case types.STUDENT_GET_CLASS_INFORMATION_SUCCESS:

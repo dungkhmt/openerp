@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     elevation: 8,
-    backgroundColor: '#fce4ec',
+    backgroundColor: '#f8bbd0',
     shadowColor: '#000000',
     shadowOpacity: 0.33,
     shadowRadius: 8,

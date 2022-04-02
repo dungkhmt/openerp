@@ -18,7 +18,7 @@ const StudentClass = ({data}) => {
 
   if (data.status === 'APPROVED') {
     return (
-      <View style={{...styles.card, backgroundColor: '#fce4ec'}}>
+      <View style={{...styles.card, backgroundColor: '#ffffff'}}>
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={() => {
@@ -34,7 +34,7 @@ const StudentClass = ({data}) => {
     );
   } else {
     return (
-      <View style={{...styles.card, backgroundColor: '#b0bec5'}}>
+      <View style={{...styles.card, backgroundColor: '#cfd8dc'}}>
         <Text style={styles.classCode}>Mã lớp: {data.classCode}</Text>
         <Text style={styles.courseId}>Mã học phần: {data.courseId}</Text>
         <Text style={styles.name}>Tên học phần: {data.name}</Text>
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   classCode: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: Colors.controlBackground,
     padding: 8,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   name: {
     fontWeight: 'bold',
     padding: 8,
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.text,
   },
   classType: {

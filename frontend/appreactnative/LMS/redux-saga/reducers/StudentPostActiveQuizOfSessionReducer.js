@@ -1,6 +1,7 @@
 import * as types from '../actions/ActionTypes';
 
 const initialState = {
+  status: 0,
   message: '',
   isFetching: false,
 };
@@ -24,6 +25,7 @@ const studentPostActiveQuizOfSessionReducer = (state = initialState, action) => 
         ...state,
         isFetching: false,
         message: action.message,
+        status: action.status,
       };
     default:
       return state;

@@ -6,10 +6,13 @@ import {
   FlatList,
   Image,
   StyleSheet,
+  Alert,
   TouchableOpacity,
   useWindowDimensions,
+  useColorScheme,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
 import RenderHtml from 'react-native-render-html';
 import CheckBox from '@react-native-community/checkbox';
 import PagerView from 'react-native-pager-view';
@@ -36,7 +39,7 @@ const Answer = ({data}) => {
   return (
     <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
       <CheckBox
-        style={{margin: 8}}
+        style={{margin: 8, width: 48}}
         value={toggleCheckBox}
         onValueChange={onValueChange}
       />
@@ -46,8 +49,15 @@ const Answer = ({data}) => {
 };
 
 const Question = ({total, index, data}) => {
-  // console.log('Question: enter, questionId = ' + data.questionId + ', submitted = ' + data.submitted);
-
+  console.log(
+    'Question: enter, questionId = ' +
+      data.questionId +
+      ', submitted = ' +
+      data.submitted,
+  );
+  const isDarkMode = useColorScheme() === 'dark';
+  const backgroundColor = isDarkMode ? Colors.containerBackgroundDarkMode : Colors.containerBackground;
+  const navigation = useNavigation();
   const {width} = useWindowDimensions();
   const source = {
     html: data.statement,
@@ -55,6 +65,9 @@ const Question = ({total, index, data}) => {
   const dispatch = useDispatch();
   const quiz = useSelector(
     state => state.studentGetActiveQuizOfSessionReducer.quiz,
+  );
+  const submitResult = useSelector(
+    state => state.studentPostActiveQuizOfSessionReducer,
   );
   const [submitted, setSubmitted] = useState(data.submitted);
 
@@ -65,6 +78,18 @@ const Question = ({total, index, data}) => {
       return <Answer data={item} />;
     }
   };
+
+  if (submitResult !== undefined && submitResult.status === 406) {
+    Alert.alert('Thông báo', 'Bài test đã hết hạn!', [
+      {
+        text: 'OK',
+        onPress: () => {
+          submitResult.status = 0; // Reset status
+          navigation.goBack(); // Go back previous screen
+        },
+      },
+    ]);
+  }
 
   const ListFooterComponent = () => {
     if (submitted) {
@@ -79,7 +104,11 @@ const Question = ({total, index, data}) => {
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {
-              var payload = {testId: quiz.testId, questionId: data.questionId, quizGroupId: quiz.quizGroupId};
+              var payload = {
+                testId: quiz.testId,
+                questionId: data.questionId,
+                quizGroupId: quiz.quizGroupId,
+              };
               var chooseAnsIds = [];
               quiz.listQuestion.forEach(question => {
                 if (question.questionId === data.questionId) {
@@ -105,26 +134,62 @@ const Question = ({total, index, data}) => {
 
   return (
     <FlatList
-      style={styles.card}
+      style={{...styles.card, backgroundColor: backgroundColor}}
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       data={data.quizChoiceAnswerList}
       ListHeaderComponent={() => {
-        if (data.attachment !== undefined && data.attachment !== null && data.attachment.length > 0) {
+        if (
+          data.attachment !== undefined &&
+          data.attachment !== null &&
+          data.attachment.length > 0
+        ) {
           return (
             <View style={{flex: 1, flexDirection: 'column'}}>
-              <Text style={{fontWeight: 'bold', fontSize: 15, color: 'purple', textAlign: 'center'}}>Câu {index + 1}/{total}</Text>
-              <RenderHtml contentWidth={width - 48} source={source}></RenderHtml>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: 15,
+                  color: 'purple',
+                  textAlign: 'center',
+                }}>
+                Câu {index + 1}/{total}
+              </Text>
+              <RenderHtml
+                contentWidth={width - 32}
+                source={source}></RenderHtml>
               {data.attachment.map(attachment => {
-                return <Image resizeMode='contain' style={{borderWidth: 1, width: width - 16, height: width, borderColor: 'purple', alignContent: 'center'}} source={{uri: 'data:image/png;base64,' + attachment}}/>;
+                return (
+                  <Image
+                    resizeMode="contain"
+                    style={{
+                      borderWidth: 1,
+                      width: width - 32,
+                      height: width - 32,
+                      borderColor: 'purple',
+                      alignContent: 'center',
+                    }}
+                    source={{uri: 'data:image/png;base64,' + attachment}}
+                  />
+                );
               })}
             </View>
           );
         } else {
           return (
             <View style={{flex: 1, flexDirection: 'column'}}>
-              <Text style={{fontWeight: 'bold', fontSize: 15, color: 'purple', textAlign: 'center'}}>Câu {index + 1}/{total}</Text>
-              <RenderHtml contentWidth={width - 48} source={source}></RenderHtml>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: 15,
+                  color: 'purple',
+                  textAlign: 'center',
+                }}>
+                Câu {index + 1}/{total}
+              </Text>
+              <RenderHtml
+                contentWidth={width - 32}
+                source={source}></RenderHtml>
             </View>
           );
         }
@@ -156,14 +221,26 @@ const StudentClassSessionDetailScreen = ({route}) => {
     );
   }, []);
 
-  if (questionList !== undefined && questionList !== null && questionList.length > 0) {
+  if (
+    questionList !== undefined &&
+    questionList !== null &&
+    questionList.length > 0
+  ) {
     return (
       <SafeAreaView style={{flex: 1}}>
         <View style={{flex: 1}}>
           <Loader loading={loading} />
           <PagerView style={styles.pagerView} initialPage={0}>
             {questionList.map((question, index) => {
-              return (<View key={question.questionId}><Question total={questionList.length} index={index} data={question}></Question></View>);
+              return (
+                <View key={question.questionId}>
+                  <Question
+                    total={questionList.length}
+                    index={index}
+                    data={question}
+                  />
+                </View>
+              );
             })}
           </PagerView>
         </View>
@@ -189,7 +266,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     elevation: 8,
-    backgroundColor: '#FFFFFF',
     shadowColor: '#000000',
     shadowOpacity: 0.33,
     shadowRadius: 8,

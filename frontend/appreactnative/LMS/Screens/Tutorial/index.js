@@ -19,6 +19,8 @@ const TutorialScreen = ({navigation}) => {
           justifyContent: 'flex-end',
         }}>
         <View style={styles.card}>
+          <Text style={{fontSize: 24, fontWeight: 'bold', color: Colors.controlBackground, textAlign: 'center', margin: 24}}>Welcome to LMS</Text>
+          <Text style={{fontSize: 20, color: Colors.text, margin: 20}}>This is an online class that allows you to study as in real class.</Text>
           <View style={styles.buttonStyle}>
             <TouchableOpacity
               activeOpacity={0.5}
@@ -44,6 +46,8 @@ const TutorialScreen = ({navigation}) => {
           justifyContent: 'flex-end',
         }}>
         <View style={styles.card}>
+          <Text style={{fontSize: 24, fontWeight: 'bold', color: Colors.controlBackground, textAlign: 'center', margin: 24}}>Study anywhere</Text>
+          <Text style={{fontSize: 20, color: Colors.text, margin: 20}}>Enjoy the captivating process of online education in any place. Comfort and convenience.</Text>
           <View style={styles.buttonStyle}>
             <TouchableOpacity
               activeOpacity={0.5}
@@ -69,6 +73,8 @@ const TutorialScreen = ({navigation}) => {
           justifyContent: 'flex-end',
         }}>
         <View style={styles.card}>
+          <Text style={{fontSize: 24, fontWeight: 'bold', color: Colors.controlBackground, textAlign: 'center', margin: 24}}>Ready to find a class?</Text>
+          <Text style={{fontSize: 20, color: Colors.text, margin: 20}}>Join online class that will help you study knowledge and take examinations to archive graduate certificate.</Text>
           <View style={styles.buttonStyle}>
             <TouchableOpacity
               activeOpacity={0.5}
@@ -110,7 +116,7 @@ const styles = StyleSheet.create({
       height: 8,
     },
     margin: 24,
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
   },
   buttonStyle: {
     backgroundColor: Colors.controlBackground,
