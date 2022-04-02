@@ -41,7 +41,7 @@ const StudentClassInformation = ({studentClassId}) => {
         <Text style={styles.card}>{classInformation.classType}</Text>
         <Text style={styles.header}>Giảng viên</Text>
         <View style={{...styles.card, flex: 1, flexDirection: 'row'}}>
-          <Image style={{width: 72, height: 72, borderRadius: 36, backgroundColor: Colors.controlBackground}} />
+          <Image style={{width: 72, height: 72, borderRadius: 36, backgroundColor: Colors.controlBackground, opacity: 0.75}} />
           <View style={{flex: 1, flexDirection: 'column'}}>
             <Text style={styles.teacherName}>{classInformation.teacherName}</Text>
             <View style={{flex: 1, flexDirection: 'row', alignContent: 'center'}}>
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     elevation: 4,
-    backgroundColor: '#fce4ec',
+    backgroundColor: '#f8bbd0',
     shadowColor: '#000000',
     shadowOpacity: 0.33,
     shadowRadius: 4,

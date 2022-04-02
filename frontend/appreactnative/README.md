@@ -30,7 +30,8 @@ TODO:
 ### Build debug apk
 
 1. $mkdir android/app/assets
-2. $npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
-3. $cd android/
-4. $./gradlew assembleDebug
-5. $cd app/build/outputs/apk/
+2. $mkdir android/app/src/main/assets
+3. $npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+4. $cd android/
+5. $./gradlew assembleDebug
+6. $cd app/build/outputs/apk/debug

@@ -6,6 +6,7 @@ import {
   FlatList,
   Image,
   useWindowDimensions,
+  useColorScheme,
   StyleSheet,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
@@ -25,7 +26,7 @@ const Answer = ({data}) => {
 
   return (
     <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-      <CheckBox style={{width: 24, height: 24, margin: 8}}></CheckBox>
+      <CheckBox style={{width: 48, margin: 8}}></CheckBox>
       <RenderHtml contentWidth={width - 96} source={source}></RenderHtml>
     </View>
   );
@@ -33,6 +34,8 @@ const Answer = ({data}) => {
 
 const Question = ({total, index, data}) => {
   const {width} = useWindowDimensions();
+  const isDarkMode = useColorScheme() === 'dark';
+  const backgroundColor = isDarkMode ? Colors.containerBackgroundDarkMode : Colors.containerBackground;
   const source = {
     html: data.statement,
   };
@@ -41,7 +44,7 @@ const Question = ({total, index, data}) => {
 
   return (
     <FlatList
-      style={styles.card}
+      style={{...styles.card, backgroundColor: backgroundColor}}
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       data={data.quizChoiceAnswerList}
@@ -52,7 +55,7 @@ const Question = ({total, index, data}) => {
               <Text style={{fontWeight: 'bold', fontSize: 15, color: 'purple', textAlign: 'center'}}>Câu {index + 1}/{total}</Text>
               <RenderHtml contentWidth={width - 32} source={source}></RenderHtml>
               {data.attachment.map(attachment => {
-                return <Image resizeMode='contain' style={{borderWidth: 1, width: width - 16, height: width, borderColor: 'purple', alignContent: 'center'}} source={{uri: 'data:image/png;base64,' + attachment}}/>;
+                return <Image resizeMode='contain' style={{borderWidth: 1, width: width - 32, height: width - 32, borderColor: 'purple', alignContent: 'center'}} source={{uri: 'data:image/png;base64,' + attachment}}/>;
               })}
             </View>
           );

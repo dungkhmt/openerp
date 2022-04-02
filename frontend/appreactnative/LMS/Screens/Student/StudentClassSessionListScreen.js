@@ -26,7 +26,6 @@ const Session = ({data}) => {
         <Text style={styles.sessionName}>Tên buổi học: {data.sessionName}</Text>
         <Text style={styles.description}>Mô tả: {data.description}</Text>
         <Text style={styles.createdByUserLoginId}>Người tạo: {data.createdByUserLoginId}</Text>
-        <Text style={styles.statusId}>Trạng thái: {data.statusId}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -91,9 +90,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   sessionName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: 'blue',
+    color: Colors.controlBackground,
     padding: 8,
   },
   description: {
@@ -104,13 +103,6 @@ const styles = StyleSheet.create({
   },
   createdByUserLoginId: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: Colors.text,
-    padding: 8,
-  },
-  statusId: {
-    fontSize: 14,
-    fontWeight: 'bold',
     color: Colors.text,
     padding: 8,
   },
