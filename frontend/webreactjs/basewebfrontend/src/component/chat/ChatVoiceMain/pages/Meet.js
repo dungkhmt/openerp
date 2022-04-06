@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Peer from 'peerjs';
 import { request } from '../../../../api';
 import ChatList from '../components/Meet/ChatList';
 import Participant from '../components/Meet/Participant';
 import FooterControl from '../components/Meet/FooterControl';
 import Main from '../components/Meet/Main';
-import { API_URL } from "../../../../config/config";
-import '../style/meet.css';
+import { API_URL } from '../../../../config/config';
 import { ADMIN_CHAT_TYPE, ADMIN_ID, PEER_CONFIG } from '../ultis/constant';
+import '../style/meet.css';
 
 const SOCKET_URL = API_URL + "/chatSocketHandler";
 
@@ -15,7 +15,7 @@ const Meet = () => {
     const sock = new window.SockJS(SOCKET_URL);
     const stompClient = window.Stomp.over(sock);
     const location = window.location.pathname.split('/');
-    const roomId = location[location.length - 1];
+    const meetId = location[location.length - 1];
     const [displayBar, setDisplayBar] = useState('chat');
     const [listMsg, setListMsg] = useState([]);
     const [listParticipant, setListPartcipant] = useState([]);
@@ -35,7 +35,7 @@ const Meet = () => {
         }, err => {
             console.log(err);
         });
-        request('get', '/roomParticipant/getParticipants?roomId=' + roomId, res => {
+        request('get', '/roomParticipant/getParticipants?roomId=' + meetId, res => {
             setListPartcipant(res.data.map(participant => ({ name: participant.participantId, id: participant.participantId, peerId: participant.peerId })));
         }, err => {
             console.log(err)
@@ -57,13 +57,22 @@ const Meet = () => {
         stompClient.connect({
             'X-Auth-Token': localStorage.getItem('TOKEN'),
         }, () => {
-            stompClient.subscribe('/topic/chat/' + roomId, (message) => handleMessage(JSON.parse(message.body)));
+            stompClient.subscribe('/topic/chat/' + meetId, (message) => handleMessage(JSON.parse(message.body)));
         });
     }
 
-    sock.onclose = () => {
-        stompClient.send("/app/chat/" + roomId, {}, JSON.stringify({ name, type: 'leave' }));
-    }
+    // add event disconnect websocket
+    useEffect(() => {
+        const onClose = () => {
+            stompClient.send("/app/chat/" + meetId, {}, JSON.stringify({ name, type: 'leave' }));
+        }
+        window.addEventListener('close', () => {
+            onClose();
+        });
+        return window.removeEventListener('close', () => {
+            onClose();
+        });
+    }, []);
 
     // handle messages received from socket
     const handleMessage = (message) => {
@@ -101,18 +110,13 @@ const Meet = () => {
 
     useEffect(() => {
         if (name) {
-            // Peer connect
             peer?.on("open", (peerId) => {
-
                 setPeerId(peerId);
-
-                // send message join room to socket
                 sendMessage('join', peerId);
-
-                // Answer
                 peer.on("call", (call) => {
                     call.answer();
                     call?.on("stream", remoteStream => {
+                        console.log(call)
                         guestVideoRef.current.srcObject = remoteStream;
                     });
                 });
@@ -122,7 +126,7 @@ const Meet = () => {
 
     const sendMessage = (type, content) => {
         stompClient.send(
-            '/app/chat/' + roomId, {
+            '/app/chat/' + meetId, {
             'X-Auth-Token': localStorage.getItem('TOKEN'),
         }, JSON.stringify({ id: '111', name, type, content })
         );
@@ -155,6 +159,7 @@ const Meet = () => {
                 setMicro={setMicro}
                 mediaStream={mediaStream}
                 setMediaStream={setMediaStream}
+                meetId={meetId}
             />
         </div>
     );

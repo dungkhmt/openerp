@@ -7,7 +7,7 @@ const Participant = (props) => {
   const renderListParticipant = () => {
     return props.listParticipant.map((participant, index) => (
       <div className='participant-item' key={index}>
-        <div className='avatar' style={getRandomStype}>
+        <div className='avatar' style={getRandomStype()}>
           {participant.name[0].toUpperCase()}
         </div>
         <div className='participant-name'>
