@@ -64,6 +64,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .correctSolutionLanguage(modelCreateContestProblem.getCorrectSolutionLanguage())
                 .correctSolutionSourceCode(modelCreateContestProblem.getCorrectSolutionSourceCode())
                 .solution(modelCreateContestProblem.getSolution())
+                .solutionCheckerSourceCode(modelCreateContestProblem.getSolutionChecker())
+                .solutionCheckerSourceLanguage(modelCreateContestProblem.getSolutionCheckerLanguage())
                 .createdAt(new Date())
                 .isPublicProblem(modelCreateContestProblem.getIsPublic())
                 .levelOrder(constants.getMapLevelOrder().get(modelCreateContestProblem.getLevelId()))
@@ -377,6 +379,11 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         if(contestEntityExist == null){
             throw new MiniLeetCodeException("Contest does not exist");
         }
+        log.info("updateContest, isPublic = " + modelUpdateContest.getIsPublic());
+        boolean isPublic = true;
+        if(modelUpdateContest.getIsPublic().equals("false"))
+            isPublic = false;
+        log.info("updateContest, modelUpdateContest.isPublic = " + modelUpdateContest.getIsPublic() + " -> isPublic  = " + isPublic);
         UserLogin userLogin = userLoginRepo.findByUserLoginId(userName);
         //check user have privileged
 //            if(!userLogin.getUserLoginId().equals(contestEntityExist.getUserCreatedContest().getUserLoginId())){
@@ -385,6 +392,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         if(!userName.equals(contestEntityExist.getUserId())){
             throw new MiniLeetCodeException("You don't have privileged");
         }
+
         List<ProblemEntity> problemEntities = getContestProblemsFromListContestId(modelUpdateContest.getProblemIds());
         if(modelUpdateContest.getStartedAt() != null){
             ContestEntity contestEntity = ContestEntity.builder()
@@ -397,6 +405,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .startedAt(modelUpdateContest.getStartedAt())
                                                        .startedCountDownTime(DateTimeUtils.minusMinutesDate(modelUpdateContest.getStartedAt(), modelUpdateContest.getCountDownTime()))
                                                        .endTime(DateTimeUtils.addMinutesDate(modelUpdateContest.getStartedAt(), modelUpdateContest.getContestSolvingTime()))
+                                                       .isPublic(isPublic)
                                                        .build();
             return contestRepo.save(contestEntity);
 

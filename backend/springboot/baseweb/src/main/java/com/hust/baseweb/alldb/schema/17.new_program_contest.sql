@@ -14,6 +14,8 @@ create table contest_problem_new
     level_order int,
     correct_solution_source_code text,
     correct_solution_language varchar(10),
+    solution_checker_source_code text,
+    solution_checker_source_language varchar(10),
     is_public bool,
     constraint pk_contest_problem_new primary key (problem_id),
     constraint fk_contest_problem_new foreign key (created_by_user_login_id) references user_login(user_login_id)

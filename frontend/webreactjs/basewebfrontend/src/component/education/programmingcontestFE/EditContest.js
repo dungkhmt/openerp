@@ -35,9 +35,8 @@ import lib, { sleep } from "./lib";
 import { SubmitSuccess } from "./SubmitSuccess";
 import { useHistory, useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { getColorLevel, sleep } from "./lib";
-import { SubmitSuccess } from "./SubmitSuccess";
-import { useHistory, useParams } from "react-router-dom";
+import { getColorLevel } from "./lib";
+
 import DateTimePicker from "@mui/lab/DateTimePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
