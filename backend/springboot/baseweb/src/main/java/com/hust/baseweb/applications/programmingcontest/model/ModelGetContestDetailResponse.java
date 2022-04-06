@@ -10,7 +10,7 @@ import java.util.List;
 public class ModelGetContestDetailResponse {
     private String contestId;
     private String contestName;
-    private int contestTime;
+    private long contestTime;
     private List<ModelGetProblemDetailResponse> list;
     private boolean unauthorized;
     private Boolean isPublic;

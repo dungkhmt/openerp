@@ -12,4 +12,6 @@ public interface ContestRepo extends JpaRepository<ContestEntity, String> {
     ContestEntity findContestEntityByContestIdAndUserId(String contestId, String userId);
 
     void deleteByContestIdAndUserId(String contestId, String userId);
+
+
 }
