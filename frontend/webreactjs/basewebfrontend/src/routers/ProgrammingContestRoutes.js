@@ -9,36 +9,30 @@ import ProblemSubmissionDetail from "../component/education/programmingcontestFE
 import CreateContest from "../component/education/programmingcontestFE/CreateContest";
 import ListContest from "../component/education/programmingcontestFE/ListContest";
 import SolvingContest from "../component/education/programmingcontestFE/SolvingContest";
-import {StudentContestNotRegistered} from "../component/education/programmingcontestFE/StudentContestNotRegistered";
-import {ListContestManager} from "../component/education/programmingcontestFE/ListContestManager";
-import {ContestManager} from "../component/education/programmingcontestFE/ContestManager";
-import {StudentContestRegistered} from "../component/education/programmingcontestFE/StudentContestRegistered";
-import {Test} from "../component/education/programmingcontestFE/Test";
+import SubmitSolutionOutput from "../component/education/programmingcontestFE/SubmitSolutionOutput";
+import { StudentContestNotRegistered } from "../component/education/programmingcontestFE/StudentContestNotRegistered";
+import { ListContestManager } from "../component/education/programmingcontestFE/ListContestManager";
+import { ContestManager } from "../component/education/programmingcontestFE/ContestManager";
+import { StudentContestRegistered } from "../component/education/programmingcontestFE/StudentContestRegistered";
+import StudentViewContestDetail from "../component/education/programmingcontestFE/StudentViewContestDetail";
+import { Test } from "../component/education/programmingcontestFE/Test";
 import EditContest from "../component/education/programmingcontestFE/EditContest";
 import ListPracticalProblem from "../component/education/programmingcontestFE/ListPracticalProblem";
 import EditTestCase from "../component/education/programmingcontestFE/EditTestCase";
 import ContestProblemSubmissionDetail from "../component/education/programmingcontestFE/ContestProblemSubmissionDetail";
-
-export default function ProgrammingContestRoutes(){
+import StudentViewProgrammingContestProblemDetail from "../component/education/programmingcontestFE/StudentViewProgrammingContestProblemDetail";
+export default function ProgrammingContestRoutes() {
   let { path } = useRouteMatch();
-  return(
+  return (
     <div>
       <Switch>
-        <Route
-          component={ListProblem}
-          path={`${path}/list-problems`}
-        />
-        <Route
-          component={CreateProblem}
-          path={`${path}/create-problem`}
-          />
+        <Route component={ListProblem} path={`${path}/list-problems`} />
+        <Route component={CreateProblem} path={`${path}/create-problem`} />
         <Route
           component={EditProblem}
-          path={`${path}/edit-problem/:problemId`}/>
-        <Route
-          component={IDE}
-          path={`${path}/ide`}
-          />
+          path={`${path}/edit-problem/:problemId`}
+        />
+        <Route component={IDE} path={`${path}/ide`} />
         <Route
           component={ProblemDetail}
           path={`${path}/problem-detail/:problemId`}
@@ -46,27 +40,35 @@ export default function ProgrammingContestRoutes(){
         <Route
           component={CreateTestCase}
           path={`${path}/problem-detail-create-test-case/:problemId`}
-          />
+        />
         <Route
           component={ProblemSubmissionDetail}
           path={`${path}/problem-submission-detail/:problemSubmissionId`}
         />
-        <Route
-          component={CreateContest}
-          path={`${path}/create-contest`}
-          />
-        <Route
-          component={ListContest}
-          path={`${path}/list-contest`}
-        />
+        <Route component={CreateContest} path={`${path}/create-contest`} />
+        <Route component={ListContest} path={`${path}/list-contest`} />
         <Route
           component={SolvingContest}
           path={`${path}/solving-contest/:contestId`}
         />
         <Route
+          component={StudentViewContestDetail}
+          path={`${path}/student-view-contest-detail/:contestId`}
+        />
+        <Route
+          component={StudentViewProgrammingContestProblemDetail}
+          path={`${path}/student-view-contest-problem-detail/:problemId`}
+        />
+
+        <Route
+          component={SubmitSolutionOutput}
+          path={`${path}/submit-solution-output/:contestId/:problemId/:testCaseId`}
+        />
+
+        <Route
           component={StudentContestNotRegistered}
           path={`${path}/student-list-contest-not-registered`}
-          />
+        />
         <Route
           component={StudentContestRegistered}
           path={`${path}/student-list-contest-registered`}
@@ -74,15 +76,12 @@ export default function ProgrammingContestRoutes(){
         <Route
           component={ListContestManager}
           path={`${path}/teacher-list-contest-manager`}
-          />
+        />
         <Route
           component={ContestManager}
           path={`${path}/contest-manager/:contestId`}
-          />
-        <Route
-          component={Test}
-          path={`${path}/test/`}
         />
+        <Route component={Test} path={`${path}/test/`} />
         <Route
           component={EditContest}
           path={`${path}/contest-edit/:contestId`}
@@ -90,7 +89,7 @@ export default function ProgrammingContestRoutes(){
         <Route
           component={ListPracticalProblem}
           path={`${path}/student-public-problem`}
-          />
+        />
 
         <Route
           component={EditTestCase}
@@ -100,8 +99,8 @@ export default function ProgrammingContestRoutes(){
         <Route
           component={ContestProblemSubmissionDetail}
           path={`${path}/contest-problem-submission-detail/:problemSubmissionId`}
-          />
+        />
       </Switch>
     </div>
-  )
+  );
 }

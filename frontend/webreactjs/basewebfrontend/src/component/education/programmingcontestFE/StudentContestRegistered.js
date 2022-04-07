@@ -92,6 +92,23 @@ export function StudentContestRegistered() {
                     <StyledTableCell align="center">
                       <Link
                         to={
+                          "/programming-contest/student-view-contest-detail/" +
+                          contest.contestId
+                        }
+                        style={{
+                          textDecoration: "none",
+                          color: "black",
+                          cursor: "",
+                        }}
+                      >
+                        <Button variant="contained" color="light">
+                          Detail
+                        </Button>
+                      </Link>
+                    </StyledTableCell>
+                    <StyledTableCell align="center">
+                      <Link
+                        to={
                           "/programming-contest/solving-contest/" +
                           contest.contestId
                         }
