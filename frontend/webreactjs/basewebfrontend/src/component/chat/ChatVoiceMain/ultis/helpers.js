@@ -18,7 +18,9 @@ export const handleTime = (time) => {
   else return 'Vừa xong';
 }
 
-export const getRandomStype = { backgroundColor: `rgb(${150 + Math.floor(Math.random() * 100)}, ${150 + Math.floor(Math.random() * 100)}, ${150 + Math.floor(Math.random() * 100)})` };
+export const getRandomStype = () => { 
+  return { backgroundColor: `rgb(${150 + Math.floor(Math.random() * 100)}, ${150 + Math.floor(Math.random() * 100)}, ${150 + Math.floor(Math.random() * 100)})` }
+};
 
 export const getDisplayMedia = async () => {
   try {

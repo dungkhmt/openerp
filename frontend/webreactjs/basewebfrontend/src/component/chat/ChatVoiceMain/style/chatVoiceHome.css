@@ -65,3 +65,23 @@
   bottom: calc(20vh - 80px);
   margin-left: 25px;
 }
+
+.meet-code-input {
+  width: 30vw;
+  margin: 30px 0;
+}
+
+.MuiTypography-root.meet-code-label {
+  margin-bottom: 15px;
+}
+
+.copy-meet-code {
+  width: 25px;
+  height: 25px;
+  margin: 5px 5px;
+  cursor: pointer;
+}
+
+.copy-meet-code:hover {
+  fill:rgba(109, 109, 109, 0.87);
+}

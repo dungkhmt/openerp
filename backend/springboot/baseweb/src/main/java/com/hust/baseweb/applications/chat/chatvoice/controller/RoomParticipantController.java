@@ -33,10 +33,6 @@ public class RoomParticipantController {
   public ResponseEntity<?> getAllParticipantsInThisRoom(@RequestParam String roomId) {
     Room room = roomService.findByRoomId(UUID.fromString(roomId));
     List<Map<String, String>>listParticipant = roomParticipantService.getAllParticipantInThisRoom(room);
-    
-    if(listParticipant.size() == 0) {
-      return ResponseEntity.notFound().build();
-    }
     return ResponseEntity.ok().body(listParticipant);
   }
 }

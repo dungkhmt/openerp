@@ -49,16 +49,14 @@ public class WebSocketController {
         return response;
       }
       case "join": {
-        String id = roomParticipantService.addParticipant(room, participant, message.get("content"));
+        roomParticipantService.addParticipant(room, participant, message.get("content"));
         response.put("id", "0");
-        response.put("name", "adminMeet");
         response.put("content", "{ \"id\": \"" + message.get("id") + "\", \"name\": \"" + message.get("name") + "\", \"type\": \"" + message.get("type") + "\", \"peerId\": \"" + message.get("content") + "\" }");
         return response;
       }
       case "leave": {
         roomParticipantService.outMeet(room, participant);
         response.put("id", "0");
-        response.put("name", "adminMeet");
         response.put("content", "{ \"id\": \"" + message.get("id") + "\", \"name\": \"" + message.get("name") + "\", \"type\": \"" + message.get("type") + "\" }");
         return response;
       }

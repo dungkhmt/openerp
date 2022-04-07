@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import classNames from 'classnames';
 import { displayHostMedia } from "../../../ultis/helpers";
 import { BAR_TYPE } from "../../../ultis/constant";
@@ -12,6 +12,12 @@ const Main = (props) => {
       <video key={listParticipantMedia.id} autoPlay className='other-video' />
     ));
   }
+
+  useEffect(() => {
+    if(props.mediaStream) {
+      hostRef.current.srcObject = props.mediaStream;
+    }
+  }, [props.mediaStream]);
 
   return (
     <div className={classNames('main-room', 'transition' ,  { 'mini-main': props.display === BAR_TYPE.CHAT || props.display === BAR_TYPE.PARTICIPANT }, { 'full-main': props.display === BAR_TYPE.NONE })}>
