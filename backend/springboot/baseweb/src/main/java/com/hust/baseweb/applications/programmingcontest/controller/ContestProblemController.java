@@ -272,13 +272,21 @@ public class ContestProblemController {
         Gson gson = new Gson();
         ModelSubmitSolutionOutput model = gson.fromJson(inputJson, ModelSubmitSolutionOutput.class);
         try {
+            String solutionOutput = "";
             InputStream inputStream = file.getInputStream();
             Scanner in = new Scanner(inputStream);
             while(in.hasNext()) {
                 String line = in.nextLine();
+                solutionOutput += line + "\n";
                 System.out.println("submitSolutionOutput: read line: " + line);
             }
             in.close();
+            ModelContestSubmissionResponse resp = problemTestCaseService.submitSolutionOutput(solutionOutput,
+                                                                                              model.getContestId(),
+                                                                                              model.getProblemId(), model.getTestCaseId(),
+                                                                                              principale.getName());
+            log.info("resp {}", resp);
+            return ResponseEntity.status(200).body(resp);
         }catch(Exception e){
             e.printStackTrace();
         }

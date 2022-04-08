@@ -3,6 +3,7 @@ import React from "react";
 import MaterialTable from "material-table";
 export default function StudentViewProblemList(props) {
   const problems = props.problems;
+  const contestId = props.contestId;
   const columns = [
     {
       title: "ProblemID",
@@ -11,6 +12,8 @@ export default function StudentViewProblemList(props) {
         <Link
           to={
             "/programming-contest/student-view-contest-problem-detail/" +
+            contestId +
+            "/" +
             rowData.problemId
           }
         >

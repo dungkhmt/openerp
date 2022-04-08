@@ -102,6 +102,7 @@ function EditProblem() {
     EditorState.createEmpty()
   );
   const [codeSolution, setCodeSolution] = useState("");
+  const [codeChecker, setCodeChecker] = useState("");
   const [languageSolution, setLanguageSolution] = useState("CPP");
   const computerLanguageList = ["CPP", "GOLANG", "JAVA", "PYTHON3"];
   const [showSubmitWarming, setShowSubmitWarming] = useState(false);
@@ -114,11 +115,11 @@ function EditProblem() {
 
   useEffect(() => {
     console.log("problemid ", problemId);
-    let url =  "/problem-details/" + problemId;
+    let url = "/problem-details/" + problemId;
     console.log("url ", url);
     request(
       "get",
-       "/problem-details/" + problemId,
+      "/problem-details/" + problemId,
       (res) => {
         console.log("res data", res.data);
         console.log(res.data.levelId);
@@ -127,6 +128,7 @@ function EditProblem() {
         setLevelId(res.data.levelId);
         setMemoryLimit(res.data.memoryLimit);
         setCodeSolution(res.data.correctSolutionSourceCode);
+        setCodeChecker(res.data.solutionCheckerSourceCode);
         setTimeLimit(res.data.timeLimit);
         setIsPublic(res.data.publicProblem);
         let problemDescriptionHtml = htmlToDraft(res.data.problemDescription);
@@ -156,7 +158,7 @@ function EditProblem() {
 
     request(
       "GET",
-       "/get-test-case-list-by-problem/" + problemId,
+      "/get-test-case-list-by-problem/" + problemId,
 
       (res) => {
         console.log("res", res.data);
@@ -197,7 +199,7 @@ function EditProblem() {
     };
     request(
       "post",
-       "/check-compile",
+      "/check-compile",
       (res) => {
         if (res.data.status == "Successful") {
           setShowCompile(true);
@@ -236,11 +238,12 @@ function EditProblem() {
       correctSolutionLanguage: languageSolution,
       solution: solution,
       correctSolutionSourceCode: codeSolution,
+      solutionChecker: codeChecker,
       isPublic: isPublic,
     };
     request(
       "post",
-       "/update-problem-detail/" + problemId,
+      "/update-problem-detail/" + problemId,
       (res) => {
         console.log("res ", res);
         setShowSubmitSuccess(true);
@@ -419,7 +422,40 @@ function EditProblem() {
               autoFocus={false}
               value={codeSolution}
             />
-            <br/>
+            <Typography>
+              <h2>Solution Checker</h2>
+            </Typography>
+            <TextField
+              style={{ width: 0.075 * window.innerWidth, margin: 20 }}
+              variant={"outlined"}
+              size={"small"}
+              autoFocus
+              value={languageSolution}
+              select
+              id="computerLanguage"
+              onChange={(event) => {
+                setLanguageSolution(event.target.value);
+              }}
+            >
+              {computerLanguageList.map((item) => (
+                <MenuItem key={item} value={item}>
+                  {item}
+                </MenuItem>
+              ))}
+            </TextField>
+            <CodeMirror
+              height={"500px"}
+              width="100%"
+              extensions={getExtension()}
+              onChange={(value, viewUpdate) => {
+                setCodeChecker(value);
+              }}
+              autoFocus={false}
+              value={codeChecker}
+            />
+            <br />
+
+            <br />
             <CompileStatus
               showCompile={showCompile}
               statusSuccessful={statusSuccessful}
@@ -496,28 +532,26 @@ function EditProblem() {
                       <Button
                         variant="contained"
                         color="light"
-                        onClick={
-                          ()=>{
-                            request(
-                              "delete",
-                               "/delete-test-case/" + testCase.testCaseId,
+                        onClick={() => {
+                          request(
+                            "delete",
+                            "/delete-test-case/" + testCase.testCaseId,
 
-                              (res) => {
-                                request(
-                                  "GET",
-                                   "/get-test-case-list-by-problem/" + problemId,
+                            (res) => {
+                              request(
+                                "GET",
+                                "/get-test-case-list-by-problem/" + problemId,
 
-                                  (res) => {
-                                    console.log("res", res.data);
-                                    setTestCases(res.data);
-                                  },
-                                  {}
-                                ).then();
-                              },
-                              {}
-                            ).then();
-                          }
-                        }
+                                (res) => {
+                                  console.log("res", res.data);
+                                  setTestCases(res.data);
+                                },
+                                {}
+                              ).then();
+                            },
+                            {}
+                          ).then();
+                        }}
                       >
                         Delete
                       </Button>

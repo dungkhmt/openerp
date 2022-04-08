@@ -13,6 +13,7 @@ export default function SubmitSolutionOutput() {
   const testCaseId = params.testCaseId;
   const [filename, setFilename] = React.useState("");
   const [isProcessing, setIsProcessing] = React.useState(false);
+  const [score, setScore] = React.useState(0);
   const token = useSelector((state) => state.auth.token);
 
   function onFileChange(event) {
@@ -39,6 +40,7 @@ export default function SubmitSolutionOutput() {
       .then((res) => {
         setIsProcessing(false);
         console.log("result submit = ", res);
+        setScore(res.score);
       })
       .catch((e) => {
         setIsProcessing(false);
@@ -69,6 +71,7 @@ export default function SubmitSolutionOutput() {
           />
         </Grid>
       </form>
+      Score: {score}
     </div>
   );
 }

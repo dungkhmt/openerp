@@ -95,6 +95,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         problemEntity.setTimeLimit(modelCreateContestProblem.getTimeLimit());
         problemEntity.setCorrectSolutionLanguage(modelCreateContestProblem.getCorrectSolutionLanguage());
         problemEntity.setCorrectSolutionSourceCode(modelCreateContestProblem.getCorrectSolutionSourceCode());
+        problemEntity.setSolutionCheckerSourceCode(modelCreateContestProblem.getSolutionChecker());
         problemEntity.setPublicProblem(modelCreateContestProblem.getIsPublic());
         return problemRepo.save(problemEntity);
 
@@ -594,6 +595,42 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public ModelContestSubmissionResponse submitSolutionOutput(
+        String solutionOutput,
+        String contestId,
+        String problemId,
+        UUID testCaseId,
+        String userName
+    ) throws Exception {
+        ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
+        UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(
+            contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+        log.info("submitSolutionOutput, userRegistrationContest {}", userRegistrationContest);
+        if(userRegistrationContest == null){
+            throw new MiniLeetCodeException("User not register contest");
+        }
+        TestCaseEntity testCase = testCaseRepo.findTestCaseByTestCaseId(testCaseId);
+        String tempName = tempDir.createRandomScriptFileName(userName+"-" + contestId + "-" + problemId);
+        String response = submissionSolutionOutput(problemEntity.getSolutionCheckerSourceCode(),
+                                                   problemEntity.getSolutionCheckerSourceLanguage(), solutionOutput, tempName, testCase,"language not found",1000000);
+
+        log.info("submitSolutionOutput, response = " + response);
+
+        ProblemSubmission problemSubmission = StringHandler.handleContestResponseSubmitSolutionOutputOneTestCase(response,testCase.getTestCasePoint());
+        return ModelContestSubmissionResponse.builder()
+                                             .status(problemSubmission.getStatus())
+                                             .testCasePass("1/1")
+                                             .runtime(problemSubmission.getRuntime())
+                                             .memoryUsage((float)0.0)
+                                             .problemName(problemEntity.getProblemName())
+                                             .contestSubmissionID(null)
+                                             .submittedAt(new Date())
+                                             .score(problemSubmission.getScore())
+                                             .build();
+
+    }
+
+    @Override
     public ModelStudentRegisterContestResponse studentRegisterContest(String contestId, String userId) throws MiniLeetCodeException {
         ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
 //
@@ -1004,6 +1041,31 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             case "GOLANG":
                 tempDir.createScriptSubmissionFile(ComputerLanguage.Languages.GOLANG, tempName, testCaseList, source, timeLimit);
                 ans = dockerClientBase.runExecutable(ComputerLanguage.Languages.GOLANG, tempName);
+                break;
+            default:
+                throw new Exception(exception);
+        }
+//        tempDir.pushToConcurrentLinkedQueue(tempName);
+        return ans;
+    }
+    private String submissionSolutionOutput(String sourceChecker, String computerLanguage, String solutionOutput, String tempName, TestCaseEntity testCase, String exception, int timeLimit) throws Exception {
+        log.info("submissionSolutionOutput, sourceChecker = " + sourceChecker + " solutionOutput = " + solutionOutput + " testCase = " + testCase.getTestCase());
+
+        String ans = "";
+        tempName = tempName.replaceAll(" ","");
+        switch (computerLanguage){
+            case "CPP":
+                tempDir.createScriptSubmissionSolutionOutputFile(ComputerLanguage.Languages.CPP, tempName, solutionOutput,
+                                                                 testCase, sourceChecker, timeLimit);
+                ans = dockerClientBase.runExecutable(ComputerLanguage.Languages.CPP,  tempName);
+                log.info("submissionSolutionOutput, sourceChecker = " + sourceChecker + " solutionOutput = " + solutionOutput + " testCase = " + testCase.getTestCase()
+                + " ans = " + ans);
+                break;
+            case "JAVA":
+                break;
+            case "PYTHON3":
+                break;
+            case "GOLANG":
                 break;
             default:
                 throw new Exception(exception);

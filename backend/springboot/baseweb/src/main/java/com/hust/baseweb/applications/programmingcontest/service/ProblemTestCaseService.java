@@ -54,6 +54,8 @@ public interface ProblemTestCaseService {
 
     ModelContestSubmissionResponse submitContestProblem(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
 
+    ModelContestSubmissionResponse submitSolutionOutput(String solutionOutput, String contestId, String problemId, UUID testCaseId, String userName) throws Exception;
+
     ModelStudentRegisterContestResponse studentRegisterContest(String contestId, String userId) throws MiniLeetCodeException;
 
     void teacherManageStudentRegisterContest(String teacherId, ModelTeacherManageStudentRegisterContest modelTeacherManageStudentRegisterContest) throws MiniLeetCodeException;

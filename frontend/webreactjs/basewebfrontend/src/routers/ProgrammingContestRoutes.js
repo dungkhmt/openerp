@@ -57,7 +57,7 @@ export default function ProgrammingContestRoutes() {
         />
         <Route
           component={StudentViewProgrammingContestProblemDetail}
-          path={`${path}/student-view-contest-problem-detail/:problemId`}
+          path={`${path}/student-view-contest-problem-detail/:contestId/:problemId`}
         />
 
         <Route

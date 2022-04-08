@@ -71,7 +71,7 @@ export default function StudentViewContestDetail() {
   }, []);
   return (
     <div>
-      <StudentViewProblemList problems={problems} />
+      <StudentViewProblemList problems={problems} contestId={contestId} />
     </div>
   );
 }

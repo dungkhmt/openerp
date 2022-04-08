@@ -13,11 +13,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.PrimitiveIterator.OfInt;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
+import java.util.Date;
 
 @Configuration
 public class TempDir {
@@ -64,8 +66,15 @@ public class TempDir {
     }
 
     public String createRandomScriptFileName(String startName){
-        int generateRandom = r.nextInt();
-        String resp = startName + "-" + generateRandom;
+        //int generateRandom = r.nextInt();
+        //String resp = startName + "-" + generateRandom;
+        Date date = new Date();
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String s = formatter.format(date);
+        String[] dt = s.split(" ");
+        String[] d = dt[0].split("-");
+        String[] t = dt[1].split(":");
+        String resp = startName + "-" + d[0] + d[1] + d[2] + t[0] + t[1] + t[2];
         resp = resp.replaceAll("\n", " ");
         resp = resp.replaceAll("&","");
         return resp.replaceAll("( +)", "-").trim();
@@ -143,6 +152,31 @@ public class TempDir {
                 break;
             case GOLANG:
                 sourceSh = golangExecutor.genSubmitScriptFile(testCases, source, tmpName, timeout);
+                break;
+            default:
+                sourceSh = null;
+        }
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(TEMPDIR + tmpName+"/"+tmpName+".sh"));
+        writer.write(sourceSh);
+        writer.close();
+    }
+    public void createScriptSubmissionSolutionOutputFile(ComputerLanguage.Languages languages, String tmpName, String solutionOutput, TestCaseEntity testCase, String sourceChecker, int timeout) throws IOException {
+        File theDir = new File(TEMPDIR+tmpName);
+        theDir.mkdirs();
+        String sourceSh = "";
+        switch (languages){
+            case CPP:
+                sourceSh = gccExecutor.genSubmitScriptFileChecker(sourceChecker,testCase, solutionOutput, tmpName, timeout);
+                break;
+            case JAVA:
+                //sourceSh = javaExecutor.genSubmitScriptFile(testCases, source, tmpName, timeout);
+                break;
+            case PYTHON3:
+                //sourceSh = python3Executor.genSubmitScriptFile(testCases, source, tmpName, timeout);
+                break;
+            case GOLANG:
+                //sourceSh = golangExecutor.genSubmitScriptFile(testCases, source, tmpName, timeout);
                 break;
             default:
                 sourceSh = null;

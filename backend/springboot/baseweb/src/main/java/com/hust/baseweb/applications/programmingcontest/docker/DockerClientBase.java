@@ -177,6 +177,7 @@ public class DockerClientBase {
     }
 
     public String runExecutable(ComputerLanguage.Languages languages, String dirName) throws DockerException, InterruptedException, IOException {
+        log.info("runExecutable, dirName = " + dirName + " language = " + languages);
         String[] runCommand = {"bash", dirName+".sh"};
         String containerId;
         switch (languages){
@@ -197,10 +198,13 @@ public class DockerClientBase {
                 return "err";
         }
         dockerClient.copyToContainer(new java.io.File("./temp_dir/"+dirName).toPath(), containerId, "/workdir/");
+        log.info("runExecutable, dirName = " + dirName + " language = " + languages + " copyToContainer OK");
         ExecCreation runExecCreation = dockerClient.execCreate(
                 containerId, runCommand, ExecCreateParam.attachStdout(),
                 ExecCreateParam.attachStderr());
+        log.info("runExecutable, dirName = " + dirName + " language = " + languages + " copyToContainer OK -> runExecCreation OK");
         LogStream output = dockerClient.execStart(runExecCreation.id());
+        log.info("runExecutable, dirName = " + dirName + " language = " + languages + " copyToContainer OK -> runExecCreation OK -> execStart to get output OK");
         return output.readFully();
     }
 }

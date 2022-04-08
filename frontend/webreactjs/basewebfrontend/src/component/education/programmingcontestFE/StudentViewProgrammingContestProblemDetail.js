@@ -20,7 +20,7 @@ import { Link, useHistory } from "react-router-dom";
 export default function StudentViewProgrammingContestProblemDetail() {
   const params = useParams();
   const problemId = params.problemId;
-  const [contestId, setContestId] = useState(null);
+  const contestId = params.contestId;
   const [testCases, setTestCases] = useState([]);
   function getTestCases() {
     request(
@@ -34,6 +34,8 @@ export default function StudentViewProgrammingContestProblemDetail() {
       {}
     );
   }
+  function getProblemDetail() {}
+
   useEffect(() => {
     getTestCases();
   }, []);
