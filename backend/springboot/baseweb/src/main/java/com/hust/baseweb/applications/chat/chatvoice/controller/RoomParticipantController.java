@@ -7,7 +7,6 @@ import java.util.UUID;
 import com.hust.baseweb.applications.chat.chatvoice.model.Room;
 import com.hust.baseweb.applications.chat.chatvoice.service.RoomParticipantService;
 import com.hust.baseweb.applications.chat.chatvoice.service.RoomService;
-import com.hust.baseweb.entity.UserLogin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

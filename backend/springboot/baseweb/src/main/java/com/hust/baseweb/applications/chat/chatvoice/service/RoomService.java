@@ -1,6 +1,7 @@
 package com.hust.baseweb.applications.chat.chatvoice.service;
 
-import java.util.Optional;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import com.hust.baseweb.entity.UserLogin;
 
 @Service
 public class RoomService {
+  private String unnamedRoom = "Unnamed";
   
   private final RoomRepository roomRepository;
 
@@ -24,14 +26,44 @@ public class RoomService {
     return roomRepository.findById(id);
   }
 
-  public Optional<Room> getAllRoomsOfThisUser(String userId) {
-    return roomRepository.findAllRoomsOfThisUser(userId);
+  public List<?> getAllRoomsOfThisUser(UserLogin host) {
+    return roomRepository.findAllRoomsOfThisUser(host, unnamedRoom);
   }
 
-  public String addNewRoom(UserLogin host, String roomName) {
+  public String addNewRoom(UserLogin host, Room room) {
     UUID id = UUID.randomUUID();
-    Room room = new Room(id, host, roomName);
+    room.setHost(host);
+    room.setId(id);
     roomRepository.save(room);
     return id.toString();
+  }
+
+  public void deleteRoom(UserLogin host, Room room) {
+    UUID id = room.getId();
+    Room r = roomRepository.findById(id);
+    if(r.getHost() == host) {
+      r.setIsDeleted(true);
+      roomRepository.save(r);
+    }
+  }
+
+  public void updateRoom(UserLogin host, Room room) {
+    UUID id = room.getId();
+    Room r = roomRepository.findById(id);
+    if(r.getHost() == host) {
+      Date newOpenIn = room.getOpenIn();
+      Date newCloseIn = room.getCloseIn();
+      String newRoomName = room.getRoomName();
+      if(newOpenIn != null) {
+        r.setOpenIn(newOpenIn);
+      }
+      if(newCloseIn != null) {
+        r.setCloseIn(newCloseIn);
+      }
+      if(newRoomName != null) {
+        r.setRoomName(newRoomName);
+      }
+      roomRepository.save(r);
+    }
   }
 }
