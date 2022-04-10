@@ -1,4 +1,7 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import * as Navigation from '../navigation/Navigation.js';
 
 class AxiosService {
   constructor() {
@@ -28,7 +31,19 @@ class AxiosService {
     return response;
   };
 
-  handleError = error => Promise.reject(error);
+  handleError = error => {
+    if (
+      error.response !== undefined &&
+      error.response !== null &&
+      error.response.status === 401 &&
+      Navigation.navigationRef.current.getCurrentRoute().name !== 'Auth'
+    ) {
+      AsyncStorage.removeItem('user_id');
+      AsyncStorage.removeItem('user_token');
+      Navigation.replace('Auth');
+    }
+    return Promise.reject(error);
+  };
 
   get(url, config = null) {
     return this.instance.get(url, config);
