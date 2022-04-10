@@ -5,6 +5,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import store from './redux-saga/store';
 import {Provider} from 'react-redux';
 
+import {navigationRef} from './navigation/Navigation.js';
 import SplashScreen from './screens/SplashScreen';
 import Tutorial from './screens/Tutorial';
 import LoginScreen from './screens/LoginScreen';
@@ -33,7 +34,7 @@ const Auth = () => {
 const App = () => {
   return (
     <Provider store={store()}>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Stack.Navigator initialRouteName="SplashScreen">
           <Stack.Screen
             name="SplashScreen"
