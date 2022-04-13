@@ -1,12 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import classNames from 'classnames';
 import { displayHostMedia } from "../../../ultis/helpers";
 import { BAR_TYPE } from "../../../ultis/constant";
 
-const Main = (props) => {
+const Main = ({ mediaStream, listParticipant, display, myId }) => {
   const hostRef = useRef();
   const otherPeopleRef = useRef();
-  const listParticipantMedia = props.listParticipant.filter(participant => !!participant.mediaStream && participant.id !== 2);
+  const listParticipantMedia = useMemo(() => listParticipant.filter(participant => !!participant?.mediaStream && participant.id !== myId));
   const renderParticipantMedia = (listParticipantMedia) => {
     return listParticipantMedia.map(() => (
       <video key={listParticipantMedia.id} autoPlay className='other-video' />
@@ -14,13 +14,19 @@ const Main = (props) => {
   }
 
   useEffect(() => {
-    if(props.mediaStream) {
-      hostRef.current.srcObject = props.mediaStream;
+    if (mediaStream) {
+      hostRef.current.srcObject = mediaStream;
     }
-  }, [props.mediaStream]);
+  }, [mediaStream]);
+
+  useEffect(() => {
+    listParticipantMedia.map((participantMedia, index) => {
+      otherPeopleRef.current.children[index].srcObject = participantMedia.mediaStream;
+    });
+  }, [listParticipantMedia])
 
   return (
-    <div className={classNames('main-room', 'transition' ,  { 'mini-main': props.display === BAR_TYPE.CHAT || props.display === BAR_TYPE.PARTICIPANT }, { 'full-main': props.display === BAR_TYPE.NONE })}>
+    <div className={classNames('main-room', 'transition', { 'mini-main': display === BAR_TYPE.CHAT || display === BAR_TYPE.PARTICIPANT }, { 'full-main': display === BAR_TYPE.NONE })}>
       <video className={`host-video-${displayHostMedia(listParticipantMedia)}`} ref={hostRef} autoPlay muted></video>
       <div className={`other-videos other-videos-${listParticipantMedia.length}`} ref={otherPeopleRef}>
         {renderParticipantMedia(listParticipantMedia)}

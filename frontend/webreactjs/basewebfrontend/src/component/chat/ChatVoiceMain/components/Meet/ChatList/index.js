@@ -10,7 +10,7 @@ const Chat = (props) => {
   const renderListMsg = () => {
     const userId = localStorage.getItem('userId');
     return props.listMsg.map((msg, index) => {
-      const msgId = parseInt(msg.id);
+      const msgId = msg.id;
       return (
         <div key={index}>
           {msgId === ADMIN_ID &&  <AdminChat data={msg} />}

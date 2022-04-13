@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Peer from 'peerjs';
 import { request } from '../../../../api';
 import ChatList from '../components/Meet/ChatList';
@@ -18,17 +18,32 @@ const Meet = () => {
     const meetId = location[location.length - 1];
     const [displayBar, setDisplayBar] = useState('chat');
     const [listMsg, setListMsg] = useState([]);
+    const [message, setMessage] = useState();
     const [listParticipant, setListPartcipant] = useState([]);
+    const [remoteStreamInfo, setRemoteStreamInfo] = useState();
     const [unReadMsg, setUnReadMsg] = useState(0);
     const [micro, setMicro] = useState(false);
     const [camera, setCamera] = useState(false);
     const [name, setName] = useState();
     const [peerId, setPeerId] = useState();
     const [mediaStream, setMediaStream] = useState();
-    const [message, setMessage] = useState();
+    const [peer] = useState(() =>
+        new Peer({ config: PEER_CONFIG })
+    );
 
-    // get userLoginId, list of participants in this room 
+    const sendMessage = useCallback((type, content) => {
+        stompClient.send('/app/chat/' + meetId, { 'X-Auth-Token': localStorage.getItem('TOKEN') }, JSON.stringify({ id: name, name, type, content }));
+    }, [name, meetId]);
+    const connect = useCallback(() => {
+        stompClient.connect({
+            'X-Auth-Token': localStorage.getItem('TOKEN'),
+        }, () => {
+            stompClient.subscribe('/topic/chat/' + meetId, (message) => setMessage(JSON.parse(message.body)));
+        });
+    }, []);
+
     useEffect(() => {
+        // get userLoginId, list of participants in this room 
         connect();
         request('get', '/room/name', res => {
             setName(res.data);
@@ -39,9 +54,19 @@ const Meet = () => {
             setListPartcipant(res.data.map(participant => ({ name: participant.participantId, id: participant.participantId, peerId: participant.peerId })));
         }, err => {
             console.log(err)
-        })
-    }, []);
+        });
 
+        // add event disconnect websocket
+        const onClose = () => {
+            stompClient.send("/app/chat/" + meetId, {}, JSON.stringify({ name, type: 'leave' }));
+        }
+        window.addEventListener('close', () => {
+            onClose();
+        });
+        return window.removeEventListener('close', () => {
+            onClose();
+        });
+    }, []);
     // if user open camera, mic or share screen, call to every participant in this room
     useEffect(() => {
         if (mediaStream) {
@@ -53,35 +78,23 @@ const Meet = () => {
         }
     }, [mediaStream]);
 
-    const connect = () => {
-        stompClient.connect({
-            'X-Auth-Token': localStorage.getItem('TOKEN'),
-        }, () => {
-            stompClient.subscribe('/topic/chat/' + meetId, (message) => handleMessage(JSON.parse(message.body)));
-        });
-    }
-
-    // add event disconnect websocket
     useEffect(() => {
-        const onClose = () => {
-            stompClient.send("/app/chat/" + meetId, {}, JSON.stringify({ name, type: 'leave' }));
+        if (name) {
+            peer?.on("open", (peerId) => {
+                setPeerId(peerId);
+                sendMessage('join', peerId);
+                peer.on("call", (call) => {
+                    call.answer();
+                    call?.on("stream", remoteStream => {
+                        setRemoteStreamInfo({ mediaStream: remoteStream, call });
+                    });
+                });
+            });
         }
-        window.addEventListener('close', () => {
-            onClose();
-        });
-        return window.removeEventListener('close', () => {
-            onClose();
-        });
-    }, []);
-
-    // handle messages received from socket
-    const handleMessage = (message) => {
-        setMessage(message);
-        setListMsg(prevList => [...prevList, message]);
-    }
-
+    }, [peer, name]);
     useEffect(() => {
         if (message) {
+            setListMsg(prevList => [...prevList, message]);
             if (message.id === ADMIN_ID) {
                 const content = JSON.parse(message.content);
                 // if join, add this participant to list of participants
@@ -102,39 +115,26 @@ const Meet = () => {
                 }
             }
         }
-    }, [mediaStream, message]);
-
-    const [peer] = useState(() =>
-        new Peer({ config: PEER_CONFIG })
-    );
-
+    }, [message]);
     useEffect(() => {
-        if (name) {
-            peer?.on("open", (peerId) => {
-                setPeerId(peerId);
-                sendMessage('join', peerId);
-                peer.on("call", (call) => {
-                    call.answer();
-                    call?.on("stream", remoteStream => {
-                        console.log(call)
-                        guestVideoRef.current.srcObject = remoteStream;
-                    });
-                });
-            });
+        if (remoteStreamInfo) {
+            const { call, mediaStream } = remoteStreamInfo;
+            setListPartcipant(listParticipant => listParticipant.map(participant => {
+                if (participant?.peerId === call?.peer) {
+                    return {
+                        ...participant,
+                        mediaStream
+                    }
+                }
+                return participant;
+            }));
         }
-    }, [peer, name]);
-
-    const sendMessage = (type, content) => {
-        stompClient.send(
-            '/app/chat/' + meetId, {
-            'X-Auth-Token': localStorage.getItem('TOKEN'),
-        }, JSON.stringify({ id: '111', name, type, content })
-        );
-    }
+    }, [remoteStreamInfo]);
 
     return (
         <div className='room'>
             <Main
+                myId={name}
                 display={displayBar}
                 mediaStream={mediaStream}
                 listParticipant={listParticipant}

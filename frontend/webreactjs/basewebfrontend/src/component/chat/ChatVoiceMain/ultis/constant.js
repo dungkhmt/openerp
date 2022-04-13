@@ -1,6 +1,6 @@
 export const LIST_ICON = ['micro', 'camera', 'shareScreen', 'chat', 'participant', 'end'];
 
-export const ADMIN_ID = 0;
+export const ADMIN_ID = '0';
 
 export const CARD_LIST = ['host', 'join'];
 

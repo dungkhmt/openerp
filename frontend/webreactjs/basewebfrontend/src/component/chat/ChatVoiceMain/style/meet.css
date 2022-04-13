@@ -238,6 +238,7 @@
   right: 0;
   bottom: 0;
   border: 2px solid rgba(0, 0, 0, 0.3);
+  object-fit: cover;
 }
 
 .other-video {
