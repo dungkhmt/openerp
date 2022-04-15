@@ -68,6 +68,7 @@ public class GccExecutor {
         //for(int i = 0; i < testCaseEntities.size(); i++){
             String testcase = "cat <<EOF >> testcase" + 0 + ".txt \n"
                               + testCase.getTestCase() +"\n"
+                              + testCase.getCorrectAnswer() + "\n"
                               + solutionOutput + "\n"
                               +"EOF" + "\n";
             genTestCase += testcase;

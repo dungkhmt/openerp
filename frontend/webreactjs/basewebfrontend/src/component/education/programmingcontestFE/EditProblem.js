@@ -128,7 +128,12 @@ function EditProblem() {
         setLevelId(res.data.levelId);
         setMemoryLimit(res.data.memoryLimit);
         setCodeSolution(res.data.correctSolutionSourceCode);
-        setCodeChecker(res.data.solutionCheckerSourceCode);
+
+        setCodeChecker(
+          res.data.solutionCheckerSourceCode != null
+            ? res.data.solutionCheckerSourceCode
+            : " "
+        );
         setTimeLimit(res.data.timeLimit);
         setIsPublic(res.data.publicProblem);
         let problemDescriptionHtml = htmlToDraft(res.data.problemDescription);

@@ -47,7 +47,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private UserRegistrationContestPagingAndSortingRepo userRegistrationContestPagingAndSortingRepo;
     private UserSubmissionContestResultNativePagingRepo userSubmissionContestResultNativePagingRepo;
     private ContestSubmissionPagingAndSortingRepo contestSubmissionPagingAndSortingRepo;
-
+    private ContestSubmissionTestCaseEntityRepo contestSubmissionTestCaseEntityRepo;
     @Override
     public void createContestProblem(ModelCreateContestProblem modelCreateContestProblem, String userId) throws MiniLeetCodeException {
         if(problemRepo.findByProblemId(modelCreateContestProblem.getProblemId()) != null){
@@ -563,6 +563,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         List<TestCaseEntity> testCaseEntityList = testCaseRepo.findAllByProblemId(modelContestSubmission.getProblemId());
         String tempName = tempDir.createRandomScriptFileName(userName+"-"+modelContestSubmission.getContestId()+"-"+modelContestSubmission.getProblemId());
+
         String response = submission(modelContestSubmission.getSource(), modelContestSubmission.getLanguage(), tempName, testCaseEntityList, "language not found", problemEntity.getTimeLimit());
 
         List<String> testCaseAns = testCaseEntityList.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
@@ -593,7 +594,103 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .score(problemSubmission.getScore())
                 .build();
     }
+    @Transactional
+    @Override
+    public ModelContestSubmissionResponse submitContestProblemTestCaseByTestCase(ModelContestSubmission modelContestSubmission, String userName) throws Exception {
+        log.info("submitContestProblem");
+        log.info("modelContestSubmission {}", modelContestSubmission);
+        ProblemEntity problemEntity = problemRepo.findByProblemId(modelContestSubmission.getProblemId());
+        UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(modelContestSubmission.getContestId(), userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+        log.info("userRegistrationContest {}", userRegistrationContest);
+        if(userRegistrationContest == null){
+            throw new MiniLeetCodeException("User not register contest");
+        }
+        List<TestCaseEntity> testCaseEntityList = testCaseRepo.findAllByProblemId(modelContestSubmission.getProblemId());
+        String tempName = tempDir.createRandomScriptFileName(userName+"-"+modelContestSubmission.getContestId()+"-"+modelContestSubmission.getProblemId());
 
+        int runtime  = 0;
+        int score = 0;
+        int nbTestCasePass = 0;
+        String totalStatus = "";
+        List<String> statusList = new ArrayList<String>();
+        for(int i = 0; i < testCaseEntityList.size(); i++) {
+            List<TestCaseEntity> L = new ArrayList();
+            L.add(testCaseEntityList.get(i));
+
+            String response = submission(modelContestSubmission.getSource(), modelContestSubmission.getLanguage(), tempName, L, "language not found", problemEntity.getTimeLimit());
+
+            List<String> testCaseAns = L.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
+            List<Integer> points = L.stream().map(TestCaseEntity::getTestCasePoint).collect(Collectors.toList());
+            ProblemSubmission problemSubmission = StringHandler.handleContestResponse(response, testCaseAns, points);
+
+            runtime = runtime + problemSubmission.getRuntime().intValue();
+            score = score + problemSubmission.getScore();
+            nbTestCasePass += problemSubmission.getNbTestCasePass();
+            //status = status + "#" + (i+1) + ": " + problemSubmission.getStatus() + "; ";
+            statusList.add(problemSubmission.getStatus());
+            List<String> output  = problemSubmission.getParticipantAns();
+            String participantAns = "";
+            if(output != null && output.size() > 0)
+                participantAns = output.get(0);
+
+            ContestSubmissionTestCaseEntity cste = ContestSubmissionTestCaseEntity.builder()
+                .contestId(modelContestSubmission.getContestId())
+                                                                                  .problemId(modelContestSubmission.getProblemId())
+                                                                                  .testCaseId(testCaseEntityList.get(i).getTestCaseId())
+                                                                                  .submittedByUserLoginId(userName)
+                                                                                  .point(problemSubmission.getScore())
+                                                                                  .status(problemSubmission.getStatus())
+                                                                                  .testCaseOutput(testCaseEntityList.get(i).getCorrectAnswer())
+                                                                                  .participantSolutionOtput(participantAns)
+                                                                                  .runtime(problemSubmission.getRuntime())
+                                                                                  .createdStamp(new Date())
+                                                                                  .build();
+            cste = contestSubmissionTestCaseEntityRepo.save(cste);
+
+        }
+        boolean accepted = true;
+        for(String s: statusList){
+            if(s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)){
+                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR; accepted = false; break;
+            }else if(s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)){
+                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED; accepted = false; break;
+            }else if(s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_WRONG)){
+                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG; accepted = false; break;
+            }
+        }
+        if(accepted) totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
+        //String response = submission(modelContestSubmission.getSource(), modelContestSubmission.getLanguage(), tempName, testCaseEntityList, "language not found", problemEntity.getTimeLimit());
+
+        //List<String> testCaseAns = testCaseEntityList.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
+        //List<Integer> points = testCaseEntityList.stream().map(TestCaseEntity::getTestCasePoint).collect(Collectors.toList());
+        //ProblemSubmission problemSubmission = StringHandler.handleContestResponse(response, testCaseAns, points);
+        ContestSubmissionEntity c = ContestSubmissionEntity.builder()
+                                                           .contestId(modelContestSubmission.getContestId())
+                                                           .status(totalStatus)
+                                                           .point(score)
+                                                           .problemId(modelContestSubmission.getProblemId())
+                                                           .userId(userName)
+                                                           .testCasePass(nbTestCasePass + "/" + testCaseEntityList.size())
+                                                           .sourceCode(modelContestSubmission.getSource())
+                                                           .sourceCodeLanguage(modelContestSubmission.getLanguage())
+                                                           .runtime(new Long(runtime))
+                                                           .createdAt(new Date())
+                                                           .build();
+        c = contestSubmissionRepo.save(c);
+        log.info("c {}", c.getRuntime());
+        return ModelContestSubmissionResponse.builder()
+                                             .status(totalStatus)
+                                             .testCasePass(c.getTestCasePass())
+                                             .runtime(new Long(runtime))
+                                             .memoryUsage(c.getMemoryUsage())
+                                             .problemName(problemEntity.getProblemName())
+                                             .contestSubmissionID(c.getContestSubmissionId())
+                                             .submittedAt(c.getCreatedAt())
+                                             .score(score)
+                                             .build();
+    }
+
+    @Transactional
     @Override
     public ModelContestSubmissionResponse submitSolutionOutput(
         String solutionOutput,
@@ -614,9 +711,29 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         String response = submissionSolutionOutput(problemEntity.getSolutionCheckerSourceCode(),
                                                    problemEntity.getSolutionCheckerSourceLanguage(), solutionOutput, tempName, testCase,"language not found",1000000);
 
+
         log.info("submitSolutionOutput, response = " + response);
 
         ProblemSubmission problemSubmission = StringHandler.handleContestResponseSubmitSolutionOutputOneTestCase(response,testCase.getTestCasePoint());
+
+        String participantAns = "";
+        if(problemSubmission.getParticipantAns() != null && problemSubmission.getParticipantAns().size() > 0){
+            participantAns = problemSubmission.getParticipantAns().get(0);
+        }
+        ContestSubmissionTestCaseEntity cste = ContestSubmissionTestCaseEntity.builder()
+                                                                              .contestId(contestId)
+                                                                              .problemId(problemId)
+                                                                              .testCaseId(testCase.getTestCaseId())
+                                                                              .submittedByUserLoginId(userName)
+                                                                              .point(problemSubmission.getScore())
+                                                                              .status(problemSubmission.getStatus())
+                                                                              .testCaseOutput(testCase.getCorrectAnswer())
+                                                                              .participantSolutionOtput(participantAns)
+                                                                              .runtime(problemSubmission.getRuntime())
+                                                                              .createdStamp(new Date())
+                                                                              .build();
+        cste = contestSubmissionTestCaseEntityRepo.save(cste);
+
         return ModelContestSubmissionResponse.builder()
                                              .status(problemSubmission.getStatus())
                                              .testCasePass("1/1")

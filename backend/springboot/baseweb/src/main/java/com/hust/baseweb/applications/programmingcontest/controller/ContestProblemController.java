@@ -260,7 +260,10 @@ public class ContestProblemController {
     @PostMapping("/contest-submit-problem")
     public ResponseEntity<?> contestSubmitProblem(@RequestBody ModelContestSubmission request, Principal principal) throws Exception {
         log.info("/contest-submit-problem");
-        ModelContestSubmissionResponse resp = problemTestCaseService.submitContestProblem(request, principal.getName());
+        //ModelContestSubmissionResponse resp = problemTestCaseService.submitContestProblem(request, principal.getName());
+        // modified by PQD, process testcase by testcase
+        ModelContestSubmissionResponse resp = problemTestCaseService.submitContestProblemTestCaseByTestCase(request, principal.getName());
+
         log.info("resp {}", resp);
         return ResponseEntity.status(200).body(resp);
     }
