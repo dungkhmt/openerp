@@ -58,6 +58,12 @@ public class ProblemEntity {
     @Column(name = "correct_solution_language")
     private String correctSolutionLanguage;
 
+    @Column(name = "solution_checker_source_code")
+    private String solutionCheckerSourceCode;
+
+    @Column(name="solution_checker_source_language")
+    private String solutionCheckerSourceLanguage;
+
     @Column(name = "solution")
     private String solution;
 

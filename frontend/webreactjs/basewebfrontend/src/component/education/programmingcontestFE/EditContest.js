@@ -30,12 +30,16 @@ import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { Button, Card, CardActions, TextField } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
-import { makeStyles } from "@material-ui/core/styles";
 import { TableFooter } from "@mui/material";
 import lib, { sleep } from "./lib";
 import { SubmitSuccess } from "./SubmitSuccess";
 import { useHistory, useParams } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
 import { getColorLevel } from "./lib";
+
+import DateTimePicker from "@mui/lab/DateTimePicker";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -230,6 +234,10 @@ export default function EditContest(props) {
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const isSelected = (name) => problemSelected.indexOf(name) !== -1;
   const [isPublic, setIsPublic] = useState(false);
+  const [startDate, setStartDate] = React.useState(
+    new Date("2014-08-18T21:11:54")
+  );
+  const [countDown, setCountDown] = useState(Number(0));
 
   const classes = useStyles();
   const handleClick = (event, name) => {
@@ -261,6 +269,8 @@ export default function EditContest(props) {
       contestSolvingTime: contestTime,
       problemIds: problemSelected,
       isPublic: isPublic,
+      startedAt: startDate,
+      countDownTime: countDown,
     };
     request(
       "post",
@@ -338,6 +348,17 @@ export default function EditContest(props) {
 
               <TextField
                 autoFocus
+                required
+                id="Count Down"
+                label="Count Down"
+                placeholder="Count Down"
+                onChange={(event) => {
+                  setCountDown(Number(event.target.value));
+                }}
+              ></TextField>
+
+              <TextField
+                autoFocus
                 // required
                 select
                 id="Public Contest"
@@ -355,6 +376,16 @@ export default function EditContest(props) {
                   {"false"}
                 </MenuItem>
               </TextField>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DateTimePicker
+                  label="Date&Time picker"
+                  value={startDate}
+                  onChange={(value) => {
+                    setStartDate(value);
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
             </form>
 
             <Box sx={{ width: "100%" }}>

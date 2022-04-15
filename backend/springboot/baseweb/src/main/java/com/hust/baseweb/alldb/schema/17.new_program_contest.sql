@@ -14,6 +14,8 @@ create table contest_problem_new
     level_order int,
     correct_solution_source_code text,
     correct_solution_language varchar(10),
+    solution_checker_source_code text,
+    solution_checker_source_language varchar(10),
     is_public bool,
     constraint pk_contest_problem_new primary key (problem_id),
     constraint fk_contest_problem_new foreign key (created_by_user_login_id) references user_login(user_login_id)
@@ -113,6 +115,26 @@ create table contest_submission_new
     constraint fk_problem_id_contest_submission_new foreign key (problem_id) references contest_problem_new(problem_id),
     constraint fk_user_submission_id_contest_submission_new foreign key (user_submission_id) references user_login(user_login_id)
 --     constraint fk_problem_submission_id_contest_submission_new foreign key(problem_submission_id) references problem_submission_new(problem_submission_id)
+);
+create table contest_submission_testcase_new(
+    contest_submission_testcase_id uuid not null default uuid_generate_v1(),
+    contest_id varchar(100),
+    problem_id varchar(100),
+    submitted_by_user_login_id varchar(100),
+    test_case_id uuid,
+    point int,
+    status text,
+    runtime int,
+    memory_usage int,
+    participant_solution_output text,
+    test_case_output text,
+    last_updated_stamp         date default current_date ,
+    created_stamp              date default current_date ,
+    constraint pk_contest_submission_testcase_new primary key(contest_submission_testcase_id),
+    constraint fk_contest_submission_testcase_new_contest foreign key  (contest_id) references contest_new(contest_id),
+    constraint fk_contest_submission_testcase_new_problem foreign key (problem_id) references contest_problem_new(problem_id),
+    constraint fk_contest_submission_testcase_new_userlogin foreign key (submitted_by_user_login_id) references user_login(user_login_id),
+    constraint fk_contest_submission_testcase_new_testcase foreign key (test_case_id) references test_case_new(test_case_id)
 );
 
 create table user_submission_contest_result_new

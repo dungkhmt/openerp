@@ -5,30 +5,37 @@ import ChatIcon from '../../../icon/Chat';
 import EndIcon from '../../../icon/End';
 import ParticipantIcon from '../../../icon/Participant';
 import ShareScreenIcon from '../../../icon/ShareScreen';
-import { BAR_TYPE, MEDIA_TYPE } from '../../../ultis/constant';
+import ShareMeetIcon from '../../../icon/ShareMeet';
+import CopyIcon from '../../../icon/Copy';
+import { BAR_TYPE, MEDIA_TYPE, styleModal } from '../../../ultis/constant';
 import { getDisplayMedia, getUserMedia } from '../../../ultis/helpers';
+import { Backdrop, Box, Fade, Modal, TextField, Typography } from '@material-ui/core';
+import { useState } from 'react';
 
 const FooterControl = (props) => {
   const history = useHistory();
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   const stopMedia = (type) => {
-    if(props.mediaStream) {
+    if (props.mediaStream) {
       props.setMediaStream(mediaStream => {
         mediaStream.getTracks().forEach(track => {
-          if(track.kind === type) {
+          if (track.kind === type) {
             mediaStream.removeTrack(track);
             track.stop();
           }
         });
-        return mediaStream; 
+        return mediaStream;
       });
     }
   }
   const handleClickMicro = async () => {
     try {
       props.setMicro(!props.micro);
-      if(!props.micro) {
+      if (!props.micro) {
         const srcMicro = await getUserMedia('micro');
-        if(props.mediaStream) {
+        if (props.mediaStream) {
           props.mediaStream.getTracks().forEach(track => srcMicro.addTrack(track));
         }
         props.setMediaStream(srcMicro);
@@ -42,9 +49,9 @@ const FooterControl = (props) => {
   const handleClickCamera = async () => {
     try {
       props.setCamera(!props.camera);
-      if(!props.camera) {
+      if (!props.camera) {
         const srcCamera = await getUserMedia("camera");
-        if(props.mediaStream) {
+        if (props.mediaStream) {
           props.mediaStream.getTracks().forEach(track => srcCamera.addTrack(track));
         }
         stopMedia(MEDIA_TYPE.VIDEO);
@@ -78,6 +85,12 @@ const FooterControl = (props) => {
   const handleClickParticipant = () => {
     props.setDisplayBar(props.displayBar === BAR_TYPE.PARTICIPANT ? BAR_TYPE.NONE : BAR_TYPE.PARTICIPANT);
   }
+  const copyMeetCode = () => {
+    navigator.clipboard.writeText(props.meetId);
+    setTimeout(() => {
+      handleClose();
+    }, 200);
+  }
 
   return (
     <div className='footer-control'>
@@ -96,9 +109,41 @@ const FooterControl = (props) => {
       <div className='element-bottom' onClick={handleClickParticipant} title='Participant'>
         <ParticipantIcon />
       </div>
+      <div className='element-bottom' onClick={handleOpen} title='Share Meet'>
+        <ShareMeetIcon />
+      </div>
       <div id='end-room' onClick={handleClickEnd}>
         <EndIcon />
       </div>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <Box sx={styleModal}>
+            <Typography id="transition-modal-title" className="meet-code-label" variant="h6" component="h2">
+              Meet's code
+            </Typography>
+            <TextField
+              id="standard-read-only-input"
+              defaultValue={props.meetId || ''}
+              variant="standard"
+              className="meet-code-input"
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+            <CopyIcon className='copy-meet-code' onClick={copyMeetCode} />
+          </Box>
+        </Fade>
+      </Modal>
     </div>
   );
 }

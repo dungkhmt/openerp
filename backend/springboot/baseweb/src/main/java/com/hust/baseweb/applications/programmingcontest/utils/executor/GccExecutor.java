@@ -62,6 +62,51 @@ public class GccExecutor {
 
         return sourceSH;
     }
+    public String genSubmitScriptFileChecker(String sourceChecker, TestCaseEntity testCase, String solutionOutput, String tmpName, int timeLimit){
+        System.out.println("genSubmitScriptFileChecker, sourceChecker = " + sourceChecker + " solutionOutput = " + solutionOutput);
+        String genTestCase = "";
+        //for(int i = 0; i < testCaseEntities.size(); i++){
+            String testcase = "cat <<EOF >> testcase" + 0 + ".txt \n"
+                              + testCase.getTestCase() +"\n"
+                              + testCase.getCorrectAnswer() + "\n"
+                              + solutionOutput + "\n"
+                              +"EOF" + "\n";
+            genTestCase += testcase;
+        //}
+
+        String sourceSH = SHFileStart
+                          + "mkdir -p " + tmpName + "\n"
+                          + "cd " + tmpName + "\n"
+                          + "cat <<EOF >> main" + suffixes + "\n"
+                          + sourceChecker + "\n"
+                          + "EOF" + "\n"
+                          + buildCmd + "\n"
+                          + "FILE=main" + "\n"
+                          + "if test -f \"$FILE\"; then" + "\n"
+                          + genTestCase + "\n"
+                          + "n=0\n"
+                          + "start=$(date +%s%N)\n"
+                          + "while [ \"$n\" -lt " + 1 + " ]" + "\n"
+                          + "do\n"
+                          + "f=\"testcase\"$n\".txt\"" + "\n"
+                          + "cat $f | timeout " + timeLimit + "s " + "./main  || echo Time Limit Exceeded" + "\n"
+                          + "echo " + Constants.SPLIT_TEST_CASE + "\n"
+                          + "n=`expr $n + 1`\n"
+                          + "done\n"
+                          + "end=$(date +%s%N)\n"
+                          + "echo \n"
+                          + "echo \"$(($(($end-$start))/1000000))\"\n"
+                          + "echo successful\n"
+                          + "else\n"
+                          + "echo Compile Error\n"
+                          + "fi" + "\n"
+                          + "cd .. \n"
+                          + "rm -rf " + tmpName + " & " + "\n"
+                          + "rm -rf " + tmpName + ".sh" + " & " + "\n";
+        return sourceSH;
+
+    }
+
     public String genSubmitScriptFile(List<TestCaseEntity> testCaseEntities, String source, String tmpName, int timeLimit){
         String genTestCase = "";
         for(int i = 0; i < testCaseEntities.size(); i++){

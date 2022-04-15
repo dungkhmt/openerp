@@ -93,31 +93,46 @@ export default function SolvingContest() {
     });
   }
 
+  function handleClickSubmitSolution(index) {
+    history.push(
+      "/programming-contest/submit-solution-output/" +
+        contestId +
+        "/" +
+        problems[index].problemId
+    );
+  }
+
   useEffect(() => {
-    request("get", "/get-contest-detail-solving/" + contestId, (res) => {
-      console.log("res contest", res);
-      setUnauthorized(res.data.unauthorized);
-      setContestTime(res.data.contestTime);
-      setProblems(res.data.list);
-      setContestName(res.data.contestName);
-      setIsPublic(res.data.isPublic);
-      console.log("res ", res.data);
-      let arr = problems.map(() => false);
-      setSubmitted(arr);
-      for (let i = 0; i < res.data.list.length; i++) {
-        let idSource = contestId + "-" + res.data.list[i].problemId + "-source";
-        let tmpSource = localStorage.getItem(idSource);
-        let idLanguage =
-          contestId + "-" + res.data.list[i].problemId + "-language";
-        let tmpLanguage = localStorage.getItem(idLanguage);
-        if (tmpSource == null) {
-          localStorage.setItem(idSource, "");
+    request(
+      "get",
+      "/get-contest-detail-solving/" + contestId,
+      (res) => {
+        console.log("res contest", res);
+        setUnauthorized(res.data.unauthorized);
+        setContestTime(res.data.contestTime);
+        setProblems(res.data.list);
+        setContestName(res.data.contestName);
+        setIsPublic(res.data.isPublic);
+        console.log("res ", res.data);
+        let arr = problems.map(() => false);
+        setSubmitted(arr);
+        for (let i = 0; i < res.data.list.length; i++) {
+          let idSource =
+            contestId + "-" + res.data.list[i].problemId + "-source";
+          let tmpSource = localStorage.getItem(idSource);
+          let idLanguage =
+            contestId + "-" + res.data.list[i].problemId + "-language";
+          let tmpLanguage = localStorage.getItem(idLanguage);
+          if (tmpSource == null) {
+            localStorage.setItem(idSource, "");
+          }
+          if (tmpLanguage == null) {
+            localStorage.setItem(idLanguage, "CPP");
+          }
         }
-        if (tmpLanguage == null) {
-          localStorage.setItem(idLanguage, "CPP");
-        }
-      }
-    }).then(() => {
+      },
+      {}
+    ).then(() => {
       setWait(false);
     });
   }, []);
@@ -151,9 +166,9 @@ export default function SolvingContest() {
                   {/*<b><span style={{color:"#FFFFFF"}}>{`${timer}`}</span></b>*/}
                   {contestTime !== undefined && !isPublic ? (
                     <Timer
-                      contestId={contestId}
-                      contestTime={contestTime}
-                      timoutSubmit={submitContest}
+                      id={contestId}
+                      time={contestTime}
+                      timeOutHandler={submitContest}
                     />
                   ) : (
                     <b>
@@ -233,6 +248,19 @@ export default function SolvingContest() {
                               style={{ marginLeft: "20px" }}
                             >
                               {submitted[index] ? "Modify" : "Solve"}
+                            </Button>
+
+                            <Button
+                              variant="contained"
+                              color="light"
+                              // style={{marginLeft:"90px"}}
+                              onClick={() => {
+                                handleClickSubmitSolution(index);
+                              }}
+                              // style={{position}}
+                              style={{ marginLeft: "20px" }}
+                            >
+                              {submitted[index] ? "Modify" : "SubmitSolution"}
                             </Button>
                           </StyledTableCell>
                         </StyledTableRow>

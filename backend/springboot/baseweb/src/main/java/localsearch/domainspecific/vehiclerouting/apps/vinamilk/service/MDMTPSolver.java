@@ -13,12 +13,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import com.google.gson.Gson;
@@ -35,16 +33,13 @@ import localsearch.domainspecific.vehiclerouting.apps.vinamilk.model.Utils;
 import localsearch.domainspecific.vehiclerouting.apps.vinamilk.model.Vehicle;
 import localsearch.domainspecific.vehiclerouting.apps.vinamilk.model.VehicleRoute;
 import localsearch.domainspecific.vehiclerouting.vrp.Constants;
-import localsearch.domainspecific.vehiclerouting.vrp.ConstraintSystemVR;
 import localsearch.domainspecific.vehiclerouting.vrp.IFunctionVR;
 import localsearch.domainspecific.vehiclerouting.vrp.VRManager;
 import localsearch.domainspecific.vehiclerouting.vrp.VarRoutesVR;
-import localsearch.domainspecific.vehiclerouting.vrp.constraints.timewindows.CEarliestArrivalTimeVR;
 import localsearch.domainspecific.vehiclerouting.vrp.entities.ArcWeightsManager;
 import localsearch.domainspecific.vehiclerouting.vrp.entities.LexMultiValues;
 import localsearch.domainspecific.vehiclerouting.vrp.entities.Point;
 import localsearch.domainspecific.vehiclerouting.vrp.functions.TotalCostVR;
-import localsearch.domainspecific.vehiclerouting.vrp.invariants.EarliestArrivalTimeVR;
 import localsearch.domainspecific.vehiclerouting.vrp.utils.DateTimeUtils;
 
 public class MDMTPSolver {
@@ -1319,175 +1314,6 @@ public class MDMTPSolver {
 		return null;
 	}
 	
-	public void insertDebug() {
-		Point st = XR.getStartingPointOfRoute(1);
-		System.out.println(getPointByLocationId("3"));
-		System.out.println(getPointByLocationId("28"));
-		System.out.println(getPointByLocationId("12"));
-		System.out.println(getPointByLocationId("23"));
-		System.out.println(getPointByLocationId("26"));
-		System.out.println(getPointByLocationId("21"));
-		System.out.println(getPointByLocationId("8"));
-		System.out.println(getPointByLocationId("22"));
-		System.out.println(getPointByLocationId("7"));
-		
-		System.out.println(getPointByLocationId("11"));
-		System.out.println(getPointByLocationId("13"));
-		System.out.println(getPointByLocationId("16"));
-		System.out.println(getPointByLocationId("19"));
-		System.out.println(getPointByLocationId("24"));
-		System.out.println(getPointByLocationId("6"));
-		System.out.println(getPointByLocationId("5"));
-		System.out.println(getPointByLocationId("2"));
-		System.out.println(getPointByLocationId("27"));
-		System.out.println(getPointByLocationId("9"));
-		System.out.println(getPointByLocationId("15"));
-		System.out.println(getPointByLocationId("4"));
-		System.out.println(getPointByLocationId("10"));
-		System.out.println(getPointByLocationId("17"));
-		System.out.println(getPointByLocationId("25"));
-		System.out.println(getPointByLocationId("14"));
-		System.out.println(getPointByLocationId("18"));
-		System.out.println(getPointByLocationId("20"));
-		
-		Point p = getPointDebug(8);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(34);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(14);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(30);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(36);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(32);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(22);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(31);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(20);
-		mgr.performAddOnePoint(p, st);
-		st = XR.getStartingPointOfRoute(2);
-
-		p = getPointDebug(9);
-		mgr.performAddOnePoint(p, st);
-		
-		p = getPointDebug(15);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(13);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(26);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(21);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(29);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(19);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(18);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(4);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(35);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(24);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(27);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(17);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(16);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(25);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(28);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(12);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(23);
-		mgr.performAddOnePoint(p, st);
-		st = p;
-		p = getPointDebug(33);
-		mgr.performAddOnePoint(p, st);
-//		
-//		for(int r = 1; r < XR.getNbRoutes(); r++) {
-//			if(ctrs.timeWindowConstraint(r) == false
-//				|| ctrs.upperCapacityConstraints(r) == false)
-//				System.out.println("route r = " + r);
-//		}
-	}
-	public void greedyInitSolutionSweepAlgorithm() {
-		BranchAndBoundForTSP tsp = new BranchAndBoundForTSP(this);
-		
-		for(int idx = 0; idx < sortedRoutes.size(); idx++) {
-			System.out.println(idx);
-			int r = sortedRoutes.get(idx);
-			Point st = XR.getStartingPointOfRoute(r);
-			String vhCode = startPoint2vhCode.get(st);
-			Point dp = getNearestAvailablePointFromPoint(st, depotPoints, new ArrayList<Point>());
-			//lay request xa nhat so voi depot
-			Point zeroAngle_customer = getNearestPointFromDepot(dp, st, vhCode, r);
-			if(zeroAngle_customer == null)
-				continue;
-//			System.out.println("r= " + r + ", c = " + zeroAngle_customer.getID() + ", st = " + st.getID());
-//			System.out.println("stindex = " + XR.index(st) + ", en = " + XR.index(XR.getTerminatingPointOfRoute(r)));
-			mgr.performAddOnePoint(zeroAngle_customer, st);
-			int isAdded = 1;
-			int isSorted = 0;
-			int i = 0;
-			while(isAdded == 1) {
-				System.out.println("nb customers " + i++);
-				isAdded = addPointHaveSmallestAngleToRoute(dp, st, vhCode, r, zeroAngle_customer);
-//				tsp.sortCustomerOnRoute(r);
-//				if(isAdded == 0 && isSorted == 1) {
-//					break;
-//				}
-//				if(isAdded == 0) {
-//					isAdded = 1;
-//					isSorted = 1;
-//				}
-			}
-		}
-		
-		System.out.println("insert done");
-		
-		removeViolationPoints();
-		calculateArrivalTimeAtEachPoint();
-		//removeDepotPointAllRoutes();
-		rejectedPoints.clear();
-		for(int i = 0; i < customerPoints.size(); i++){
-			Point pickup = customerPoints.get(i);
-			if(XR.route(pickup) == Constants.NULL_POINT && !rejectedPoints.contains(pickup)){
-				rejectedPoints.add(pickup);
-				point2mark.put(pickup, 0);
-			}
-		}
-	}
 	
 	public Point getWorsePointinRoute(int r, Point cur_p) {
 		Point rs = null;
@@ -1713,133 +1539,6 @@ public class MDMTPSolver {
 			removeDepotPointFromRoute(r);
 	}
 	
-	
-	public void localSearch(String outputFile) {	
-		onePointMoveList = new ArrayList<Point>();
-		twoPointMoveList = new ArrayList<Point>();
-		threePointMoveList = new ArrayList<Point>();
-		twoOptMoveList = new ArrayList<Point>();
-		threeOptMoveList = new ArrayList<Point>();
-		
-		double best_cost = objective.getValue();
-		int best_nbUsedVehicles = getNbUsedVehicles();
-		int best_nbServedReqs = getNbServedCustomers();
-
-		double start_search_time = System.currentTimeMillis();
-		try{
-			
-			FileOutputStream write = new FileOutputStream(outputFile, true);
-			PrintWriter fo = new PrintWriter(write);
-			fo.println("time limit = " + timeLimit + ", nbIters = " + nIter + ", maxStable = " + maxStable);
-			fo.println("#Request = " + nRequest);
-			fo.println("iter=====insertion=====removal=====time=====cost=====nbServedReqs=====nbVehicles");
-			fo.println("0 -1 -1 " + " " + System.currentTimeMillis()/1000 + " " 
-			+ best_cost + " " + best_nbServedReqs + " " + best_nbUsedVehicles);
-			fo.close();
-		}catch(Exception e){
-			System.out.println(e);
-		}
-		
-		int it = 0;
-		
-		while((System.currentTimeMillis()-start_search_time) < timeLimit && it++ < nIter){
-			System.out.println("it = " + it);
-			addDepotToAllRoutes();
-			double current_cost = objective.getValue();
-			int current_nbTrucks = getNbUsedVehicles();
-			int current_nbServedReqs = getNbServedCustomers();
-			MDMTPsolution current_solution = new MDMTPsolution(XR, point2arrivalTime, 
-					current_cost, current_nbTrucks,
-					current_nbServedReqs, rejectedPoints);
-			
-			LocalSearch ls = new LocalSearch(this);
-			ArrayList<String> rs1 = ls.onePointMove(current_nbServedReqs, current_nbTrucks, current_cost);
-			current_solution.copy2XR(XR);
-			ArrayList<String> rs2 = ls.twoPointMove(current_nbServedReqs, current_nbTrucks, current_cost);
-			current_solution.copy2XR(XR);
-			ArrayList<String> rs3 = ls.threePointMove(current_nbServedReqs, current_nbTrucks, current_cost);
-			current_solution.copy2XR(XR);
-			
-			int opt = 0;
-			if(rs1 != null) {
-				int new_nbServedReqs = Integer.parseInt(rs1.get(0));
-				int new_nbTrucks = Integer.parseInt(rs1.get(1));
-				double new_cost = Double.parseDouble(rs1.get(2));
-				if(new_nbServedReqs < best_nbServedReqs
-					|| (new_nbServedReqs == best_nbServedReqs && new_nbTrucks < best_nbUsedVehicles)
-					|| (new_nbServedReqs == best_nbServedReqs && new_nbTrucks == best_nbUsedVehicles && new_cost < best_cost)) {
-					opt = 1;
-					best_nbServedReqs = new_nbServedReqs;
-					best_nbUsedVehicles = new_nbTrucks;
-					best_cost = new_cost;
-				}
-			}
-			if(rs2 != null) {
-				int new_nbServedReqs = Integer.parseInt(rs2.get(0));
-				int new_nbTrucks = Integer.parseInt(rs2.get(1));
-				double new_cost = Double.parseDouble(rs2.get(2));
-				if(new_nbServedReqs < best_nbServedReqs
-					|| (new_nbServedReqs == best_nbServedReqs && new_nbTrucks < best_nbUsedVehicles)
-					|| (new_nbServedReqs == best_nbServedReqs && new_nbTrucks == best_nbUsedVehicles && new_cost < best_cost)) {
-					opt = 2;
-					best_nbServedReqs = new_nbServedReqs;
-					best_nbUsedVehicles = new_nbTrucks;
-					best_cost = new_cost;
-				}
-			}
-			if(rs3 != null) {
-				int new_nbServedReqs = Integer.parseInt(rs3.get(0));
-				int new_nbTrucks = Integer.parseInt(rs3.get(1));
-				double new_cost = Double.parseDouble(rs3.get(2));
-				if(new_nbServedReqs < best_nbServedReqs
-					|| (new_nbServedReqs == best_nbServedReqs && new_nbTrucks < best_nbUsedVehicles)
-					|| (new_nbServedReqs == best_nbServedReqs && new_nbTrucks == best_nbUsedVehicles && new_cost < best_cost)) {
-					opt = 3;
-					best_nbServedReqs = new_nbServedReqs;
-					best_nbUsedVehicles = new_nbTrucks;
-					best_cost = new_cost;
-				}
-			}
-
-			if(opt == 1)
-				mgr.performOnePointMove(onePointMoveList.get(0), onePointMoveList.get(1));
-			else if(opt == 2)
-				mgr.performTwoPointsMove(twoPointMoveList.get(0), twoPointMoveList.get(1));
-			else if(opt == 3)
-				mgr.performThreePointsMove(threePointMoveList.get(0), threePointMoveList.get(1), threePointMoveList.get(2),
-						threePointMoveList.get(3), threePointMoveList.get(4), threePointMoveList.get(5));
-			if(opt != 0) {
-				removeDepotPointAllRoutes();
-				greedyInitSolutionRouteFirstClusterSecond();
-				addDepotToAllRoutes();
-				removeViolationPoints();
-				calculateArrivalTimeAtEachPoint();
-
-				try{
-					FileOutputStream write = new FileOutputStream(outputFile, true);
-					PrintWriter fo = new PrintWriter(write);
-					fo.println(it + " " + -1 
-						+ " " + -1 + " "
-						+ System.currentTimeMillis()/1000 + " "
-						+ best_cost + " " + best_nbServedReqs + " " + best_nbUsedVehicles);
-					fo.close();
-					
-				}catch(Exception e){
-					System.out.println(e);
-				}
-			}
-		}
-		try{
-			FileOutputStream write = new FileOutputStream(outputFile, true);
-			PrintWriter fo = new PrintWriter(write);
-			fo.println(it + " -1 -1 "
-					+ System.currentTimeMillis()/1000 + " "
-					+ objective.getValue() + " " + getNbServedCustomers() + " " + getNbUsedVehicles());
-			fo.close();
-		}catch(Exception e){
-			System.out.println(e);
-		}
-	}
 	
 	public void ALNSsearch(String outputFile) {
 		initParamsForALNS();
@@ -2627,12 +2326,12 @@ public class MDMTPSolver {
 		solver.nIter = 10000;//gioi han so lan lap
 		String dir = "F:\\Project\\OpenERP\\data\\VNM\\";
 		String fileName = "VNM-HCM-orders-2019-09-21";
-		String jsonInFileName = dir + "input\\" + fileName + ".json";
+		String inputFile = dir + "input\\" + fileName + ".json";
 		String outputFileTxT = dir + "output\\" + fileName + "-IT-0.txt";
 		String outputFileJson = dir + "output\\" + fileName + "-IT-0.json";
 		try{
 			BufferedReader in = new BufferedReader(new InputStreamReader(
-	                new FileInputStream(jsonInFileName), "UTF8"));
+	                new FileInputStream(inputFile), "UTF8"));
 			solver.input = g.fromJson(in, MDMTPInput.class);
 			
 			solver.init();

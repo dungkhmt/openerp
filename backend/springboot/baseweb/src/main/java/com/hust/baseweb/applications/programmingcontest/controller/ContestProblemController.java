@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.controller;
 
+import com.google.gson.Gson;
 import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
@@ -17,9 +18,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.security.Principal;
 import java.util.List;
+import java.util.Scanner;
 import java.util.UUID;
 
 @RestController
@@ -163,7 +167,7 @@ public class ContestProblemController {
     }
 
     @GetMapping("/get-contest-detail-solving/{contestId}")
-    public ResponseEntity<?> getContestDetailSolving(@PathVariable("contestId") String contestId, Principal principal){
+    public ResponseEntity<?> getContestDetailSolving(@PathVariable("contestId") String contestId, Principal principal) throws MiniLeetCodeException {
         log.info("getContestDetail constestid {}", contestId);
         ModelGetContestDetailResponse response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
         return ResponseEntity.status(200).body(response);
@@ -256,11 +260,41 @@ public class ContestProblemController {
     @PostMapping("/contest-submit-problem")
     public ResponseEntity<?> contestSubmitProblem(@RequestBody ModelContestSubmission request, Principal principal) throws Exception {
         log.info("/contest-submit-problem");
-        ModelContestSubmissionResponse resp = problemTestCaseService.submitContestProblem(request, principal.getName());
+        //ModelContestSubmissionResponse resp = problemTestCaseService.submitContestProblem(request, principal.getName());
+        // modified by PQD, process testcase by testcase
+        ModelContestSubmissionResponse resp = problemTestCaseService.submitContestProblemTestCaseByTestCase(request, principal.getName());
+
         log.info("resp {}", resp);
         return ResponseEntity.status(200).body(resp);
     }
-
+    @PostMapping("/submit-solution-output")
+    public ResponseEntity<?>  submitSolutionOutput(Principal principale,
+                                                   @RequestParam("inputJson") String inputJson,
+                                                   @RequestParam("file") MultipartFile file){
+        log.info("submitSolutionOutput, inputJson = " + inputJson);
+        Gson gson = new Gson();
+        ModelSubmitSolutionOutput model = gson.fromJson(inputJson, ModelSubmitSolutionOutput.class);
+        try {
+            String solutionOutput = "";
+            InputStream inputStream = file.getInputStream();
+            Scanner in = new Scanner(inputStream);
+            while(in.hasNext()) {
+                String line = in.nextLine();
+                solutionOutput += line + "\n";
+                System.out.println("submitSolutionOutput: read line: " + line);
+            }
+            in.close();
+            ModelContestSubmissionResponse resp = problemTestCaseService.submitSolutionOutput(solutionOutput,
+                                                                                              model.getContestId(),
+                                                                                              model.getProblemId(), model.getTestCaseId(),
+                                                                                              principale.getName());
+            log.info("resp {}", resp);
+            return ResponseEntity.status(200).body(resp);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body("OK");
+    }
     @PostMapping("/contest-submit-all")
     public ResponseEntity<?> contestSubmitAll (@RequestBody ModelContestSubmissionAll request, Principal principal){
         log.info("contestSubmitAll request {}", request);

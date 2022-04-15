@@ -94,6 +94,8 @@ function CreateProblem() {
   );
   const [codeSolution, setCodeSolution] = useState("");
   const [languageSolution, setLanguageSolution] = useState("CPP");
+  const [solutionChecker, setSolutionChecker] = useState("");
+  const [solutionCheckerLanguage, setSolutionCheckerLanguage] = useState("CPP");
   const computerLanguageList = ["CPP", "GOLANG", "JAVA", "PYTHON3"];
   const [showSubmitWarming, setShowSubmitWarming] = useState(false);
   const [showCompile, setShowCompile] = useState(false);
@@ -134,7 +136,7 @@ function CreateProblem() {
 
     request(
       "post",
-       "/check-compile",
+      "/check-compile",
       (res) => {
         console.log("res check compile", res);
         if (res.data.status == "Successful") {
@@ -174,11 +176,13 @@ function CreateProblem() {
       correctSolutionLanguage: languageSolution,
       solution: solution,
       correctSolutionSourceCode: codeSolution,
+      solutionChecker: solutionChecker,
+      solutionCheckerLanguage: solutionCheckerLanguage,
       isPublic: isPublic,
     };
     request(
       "post",
-       "/create-problem",
+      "/create-problem",
       (res) => {
         console.log("res ", res);
         setShowSubmitSuccess(true);
@@ -362,7 +366,40 @@ function CreateProblem() {
               }}
               autoFocus={false}
             />
-            <br/>
+            <br />
+            <Typography>
+              <h2>Checker source code</h2>
+            </Typography>
+            <TextField
+              style={{ width: 0.075 * window.innerWidth, margin: 20 }}
+              variant={"outlined"}
+              size={"small"}
+              autoFocus
+              value={solutionCheckerLanguage}
+              select
+              id="computerLanguage"
+              onChange={(event) => {
+                setSolutionCheckerLanguage(event.target.value);
+              }}
+            >
+              {computerLanguageList.map((item) => (
+                <MenuItem key={item} value={item}>
+                  {item}
+                </MenuItem>
+              ))}
+            </TextField>
+            <CodeMirror
+              value={solutionChecker}
+              height={"500px"}
+              width="100%"
+              extensions={getExtension()}
+              onChange={(value, viewUpdate) => {
+                setSolutionChecker(value);
+              }}
+              autoFocus={false}
+            />
+            <br />
+
             <CompileStatus
               showCompile={showCompile}
               statusSuccessful={statusSuccessful}

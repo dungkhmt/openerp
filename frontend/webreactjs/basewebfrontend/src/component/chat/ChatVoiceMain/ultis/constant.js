@@ -1,6 +1,6 @@
 export const LIST_ICON = ['micro', 'camera', 'shareScreen', 'chat', 'participant', 'end'];
 
-export const ADMIN_ID = 0;
+export const ADMIN_ID = '0';
 
 export const CARD_LIST = ['host', 'join'];
 
@@ -36,3 +36,18 @@ export const PEER_CONFIG = {
         ]
     }]
 }
+
+export const ENTER_KEY = 'Enter';
+
+export const styleModal = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 'fit-content',
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: 5,
+};

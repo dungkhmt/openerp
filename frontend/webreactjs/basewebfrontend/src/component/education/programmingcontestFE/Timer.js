@@ -4,40 +4,37 @@ import {request} from "./Request";
 import PropTypes from "prop-types";
 
 Timer.propTypes = {
-  contestId: PropTypes.string.isRequired,
-  contestTime: PropTypes.number.isRequired,
-  timoutSubmit: PropTypes.func.isRequired
+  id: PropTypes.string.isRequired,
+  time: PropTypes.number.isRequired,
+  timeOutHandler: PropTypes.func.isRequired
 }
 
 export function Timer(props){
-  const contestId = props.contestId;
-  const contestTime = props.contestTime;
-  const timoutSubmit = props.timoutSubmit;
+  const id = props.id;
+  const time = props.time;
+  const timeOutHandler = props.timeOutHandler;
 
   const timeoutSubmisFunction = () =>{
-    timoutSubmit();
+    timeOutHandler();
   }
 
   const [timer, setTimer] = useState('00:00:00');
   const Ref = useRef(null);
 
   useEffect(() =>{
-    // setContestTime(res.data.contestTime);
-    //
-    // console.log("res ", res.data);
-    //
-    let a = "startTime-"+contestTime.toString()+"-"+contestId;
+
+    let a = "startTime-"+time.toString()+"-"+id;
 
     if(localStorage.getItem(a) == null){
       console.log("set start time");
       let now = new Date();
-      now.setMinutes(now.getMinutes()+contestTime%60);
-      now.setHours(now.getHours()+contestTime/60);
+      now.setMinutes(now.getMinutes()+time%60);
+      now.setHours(now.getHours()+time/60);
       localStorage.setItem(a, now);
       clearTimer(now);
     }else{
       let now = new Date();
-      if(localStorage.getItem(a) + contestTime < now.getHours()*60 + now.getMinutes()){
+      if(localStorage.getItem(a) + time < now.getHours()*60 + now.getMinutes()){
         // localStorage.removeItem(a);
       }else{
         clearTimer(new Date(localStorage.getItem(a)));

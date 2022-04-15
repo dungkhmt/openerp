@@ -3067,13 +3067,13 @@ public class TruckContainerSolver {
 		String dir = "F:\\Project\\OpenERP\\data\\TTCRP\\";
 		
 		String fileName = "random-70reqs-RealLoc-0";
-		String dataFileName = dir + "input/" + fileName + ".txt";
+		String inputFile = dir + "input/" + fileName + ".txt";
 		
 		String outputALNSfileTxt = dir + "output/Result-" + fileName + ".txt";
 		String outputALNSfileJson = dir + "output/Result-" + fileName + ".json";
 		
 		
-		solver.readData(dataFileName);
+		solver.readData(inputFile);
 		solver.init();
 		solver.stateModel();
 
@@ -3095,8 +3095,8 @@ public class TruckContainerSolver {
 		solver.nRemovalOperators = 8;
 		solver.nInsertionOperators = 8;
 		
-		solver.lower_removal = (int) 0.01*nRequest;
-		solver.upper_removal = (int) 0.15*nRequest;
+		solver.lower_removal = (int) (0.1*nRequest);
+		solver.upper_removal = (int) (0.25*nRequest);
 		solver.sigma1 = 10;
 		solver.sigma2 = -1;
 		solver.sigma3 = -3;

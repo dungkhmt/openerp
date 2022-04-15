@@ -9,13 +9,16 @@ import { ADMIN_ID, BAR_TYPE } from "../../../ultis/constant";
 const Chat = (props) => {  
   const renderListMsg = () => {
     const userId = localStorage.getItem('userId');
-    return props.listMsg.map((msg, index) => (
-      <div key={index}>
-        {msg.id === ADMIN_ID &&  <AdminChat data={msg} />}
-        {msg.id === userId && <MyChat data={msg} />}
-        {msg.id !== ADMIN_ID && msg.id !== userId && <OthersChat data={msg} />}
-      </div>
-    ));
+    return props.listMsg.map((msg, index) => {
+      const msgId = msg.id;
+      return (
+        <div key={index}>
+          {msgId === ADMIN_ID &&  <AdminChat data={msg} />}
+          {msgId === userId && <MyChat data={msg} />}
+          {msgId !== ADMIN_ID && msg.id !== userId && <OthersChat data={msg} />}
+        </div>
+      );
+    });
   }
   const closeBar = () => {
     props.setDisplay(BAR_TYPE.NONE);

@@ -36,6 +36,9 @@ import { SubmitSuccess } from "./SubmitSuccess";
 import { useHistory } from "react-router-dom";
 import { getColorLevel } from "./lib";
 import { MenuItem } from "@material-ui/core/";
+import DateTimePicker from "@mui/lab/DateTimePicker";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -231,6 +234,9 @@ export default function CreateContest(props) {
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const isSelected = (name) => problemSelected.indexOf(name) !== -1;
   const [isPublic, setIsPublic] = useState(false);
+  const [startDate, setStartDate] = React.useState(new Date());
+
+  const [countDown, setCountDown] = useState(Number(0));
 
   const classes = useStyles();
   const handleClick = (event, name) => {
@@ -263,6 +269,8 @@ export default function CreateContest(props) {
       contestTime: contestTime,
       problemIds: problemSelected,
       isPublic: isPublic,
+      startedAt: startDate,
+      countDownTime: countDown,
     };
     request(
       "post",
@@ -336,6 +344,17 @@ export default function CreateContest(props) {
 
               <TextField
                 autoFocus
+                required
+                id="Count Down"
+                label="Count Down"
+                placeholder="Count Down"
+                onChange={(event) => {
+                  setCountDown(Number(event.target.value));
+                }}
+              ></TextField>
+
+              <TextField
+                autoFocus
                 // required
                 select
                 id="Public Contest"
@@ -353,6 +372,17 @@ export default function CreateContest(props) {
                   {"false"}
                 </MenuItem>
               </TextField>
+
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DateTimePicker
+                  label="Date&Time picker"
+                  value={startDate}
+                  onChange={(value) => {
+                    setStartDate(value);
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
             </form>
 
             <Box sx={{ width: "100%" }}>

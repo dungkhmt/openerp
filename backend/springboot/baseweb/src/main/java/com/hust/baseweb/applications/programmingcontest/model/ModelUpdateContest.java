@@ -2,11 +2,15 @@ package com.hust.baseweb.applications.programmingcontest.model;
 
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
 public class ModelUpdateContest {
     private String contestName;
-    private int contestSolvingTime;
+    private long contestSolvingTime;
     private List<String> problemIds;
+    private Date startedAt;
+    private String isPublic;
+    private long countDownTime;
 }

@@ -7,7 +7,6 @@ import java.util.UUID;
 import com.hust.baseweb.applications.chat.chatvoice.model.Room;
 import com.hust.baseweb.applications.chat.chatvoice.service.RoomParticipantService;
 import com.hust.baseweb.applications.chat.chatvoice.service.RoomService;
-import com.hust.baseweb.entity.UserLogin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +32,6 @@ public class RoomParticipantController {
   public ResponseEntity<?> getAllParticipantsInThisRoom(@RequestParam String roomId) {
     Room room = roomService.findByRoomId(UUID.fromString(roomId));
     List<Map<String, String>>listParticipant = roomParticipantService.getAllParticipantInThisRoom(room);
-    
-    if(listParticipant.size() == 0) {
-      return ResponseEntity.notFound().build();
-    }
     return ResponseEntity.ok().body(listParticipant);
   }
 }

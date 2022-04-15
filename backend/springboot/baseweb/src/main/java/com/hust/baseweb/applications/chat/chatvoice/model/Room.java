@@ -21,15 +21,18 @@ public class Room {
   @ManyToOne(optional = false)
   @JoinColumn(name = "host_id", referencedColumnName = "user_login_id")
   private UserLogin host;
-  
-  @Column(name = "room_name")
-  private String roomName;
+
+  @Column(name = "room_name", columnDefinition = "TEXT default 'Unnamed'")
+  private String roomName = "Unnamed";
 
   @Column(name = "open_in")
   private Date openIn;
 
   @Column(name = "close_in")
   private Date closeIn;
+
+  @Column(name = "is_deleted", columnDefinition = "BOOLEAN default false")
+  private Boolean isDeleted = false;
 
   public Room() {
 
@@ -39,10 +42,19 @@ public class Room {
     this.roomName = roomName;
   }
 
+  public Room(UUID id) {
+    this.id = id;
+  }
+
   public Room(UUID id, UserLogin host, String roomName) {
     this.id = id;
     this.host = host;
     this.roomName = roomName;
+  }
+
+  public Room(UUID id, UserLogin host) {
+    this.id = id;
+    this.host = host;
   }
 
   public Room(UUID id, UserLogin host, String roomName, Date openIn, Date closeIn) {
@@ -51,5 +63,5 @@ public class Room {
     this.roomName = roomName;
     this.openIn = openIn;
     this.closeIn = closeIn;
-  } 
+  }
 }

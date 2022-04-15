@@ -322,52 +322,15 @@ public class DateTimeUtils {
         return zonedDateTimeToString(zonedDateTime, format);
     }
 
-//    public static void main(String[] args) {
-//        String fromDate = "2020-01-01 00:00:00";
-//        String toDate = "2020-03-04 00:00:00";
-//        String effectiveStartDate = "2020-01-10 00:00:00";
-//        List<String> L = getListDateHavingDay(2, fromDate, toDate, effectiveStartDate);
-//        for (String date : L) {
-//            System.out.println(date);
-//        }
-//        if (true) {
-//            return;
-//        }
-//
-//        String DT1 = "2200-10-04 10:30:15";
-//        String DT2 = "2000-01-01 00:00:00";
-//        System.out.println("next 30 days of " + DT1 + " = " + next(DT1, 30));
-//
-//        System.out.println("new date time of " + DT1 + " = " + getRelativeDateTime(DT1) +
-//                ", recover = " + recoverDateTimeFromRelative(getRelativeDateTime(DT1)));
-//        long t1 = DateTimeUtils.dateTime2Int(DT1);
-//        long t2 = DateTimeUtils.dateTime2Int(DT2);
-//        long t = t1 - t2;
-//        String dt1 = DateTimeUtils.unixTimeStamp2DateTime(t1);
-//
-//        System.out.println("t1 = " + t1 + ", t2 = " + t2 + ", t = " + t + ", dt1 = " + dt1);
-//
-//        String dt = "2016-03-10 10:30:03";
-//        System.out.println("hour of " + dt + " is " + DateTimeUtils.getHour(dt));
-//
-//        System.out.println(meanDatetime(DT1, DT2));
-//
-//        System.out.println("MAX DATETIME = " + DateTimeUtils.unixTimeStamp2DateTime(Integer.MAX_VALUE));
-//
-//
-//        DateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd:HH:mm:ss");
-//        Date date = new Date();
-//
-//        //System.out.println(dateFormat.format(date)); //2014/08/06 15:59:48
-//        String DT = dateFormat.format(date);
-//        System.out.println(DT);
-//
-//        System.out.println(DateTimeUtils.currentDate());
-//
-//        System.out.println(DateTimeUtils.distanceDateTime("2018-07-10 12:02:00", "2018-05-10 10:00:30"));
-//
-//        int a = (int) DateTimeUtils.dateTime2Int("2028-07-10 08:00:00");
-//        System.out.println(a);
-//        System.out.println(DateTimeUtils.dateTime2Int("2018-07-10 08:10:00"));
-//    }
+    public static  Date minusMinutesDate(Date date, Long minutes){
+        ZonedDateTime zonedDateTime = dateToZoneDateTime(date);
+        zonedDateTime = zonedDateTime.minusMinutes(minutes);
+        return Date.from(zonedDateTime.toInstant());
+    }
+
+    public static Date addMinutesDate(Date date, Long minutes){
+        ZonedDateTime zonedDateTime = dateToZoneDateTime(date);
+        zonedDateTime = zonedDateTime.plusMinutes(minutes);
+        return Date.from(zonedDateTime.toInstant());
+    }
 }

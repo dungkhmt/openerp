@@ -17,6 +17,8 @@ public class ModelCreateContestProblem {
     private String categoryId;
     private String correctSolutionSourceCode;
     private String correctSolutionLanguage;
+    private String solutionChecker;
+    private String solutionCheckerLanguage;
     private String solution;
     private Boolean isPublic;
 }
