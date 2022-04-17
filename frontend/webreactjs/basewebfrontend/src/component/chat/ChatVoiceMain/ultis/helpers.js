@@ -58,8 +58,8 @@ export const getUserMedia = async (type) => {
 };
 
 export const cardTitle = {
-  [CARD_LIST[0]]: 'Host A Meet',
-  [CARD_LIST[1]]: 'Join A Meet',
+  [CARD_LIST[0]]: 'Tạo một cuộc họp',
+  [CARD_LIST[1]]: 'Tham gia một cuộc họp',
 }
 
 export const displayHostMedia = (listParticipantMedia) => {

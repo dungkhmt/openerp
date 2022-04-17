@@ -63,7 +63,6 @@
 #button-meet-now {
   position: absolute;
   bottom: calc(20vh - 80px);
-  margin-left: 25px;
 }
 
 .meet-code-input {
@@ -84,4 +83,18 @@
 
 .copy-meet-code:hover {
   fill:rgba(109, 109, 109, 0.87);
+}
+
+.home-meet-content {
+  padding: 30px;
+}
+
+#schedule-meet-btn {
+  margin-top: 20px;
+}
+
+.voice-chat-main .Mui-expanded.MuiAccordionSummary-content {
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgb(202, 202, 202);
+  margin-bottom: 10px;
 }
