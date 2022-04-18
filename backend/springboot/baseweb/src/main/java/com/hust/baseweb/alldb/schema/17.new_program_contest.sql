@@ -78,6 +78,9 @@ create table contest_new
     user_create_id varchar (60),
     try_again BOOLEAN,
     public BOOLEAN,
+    count_down numeric NULL,
+	started_count_down_time timestamp NULL,
+	end_time timestamp NULL,
     last_updated_stamp         timestamp DEFAULT current_date ,
     created_stamp              timestamp DEFAULT current_date ,
     constraint pk_contest_id_new primary key (contest_id),
@@ -118,6 +121,7 @@ create table contest_submission_new
 );
 create table contest_submission_testcase_new(
     contest_submission_testcase_id uuid not null default uuid_generate_v1(),
+    contest_submission_id uuid,
     contest_id varchar(100),
     problem_id varchar(100),
     submitted_by_user_login_id varchar(100),
@@ -131,6 +135,7 @@ create table contest_submission_testcase_new(
     last_updated_stamp         date default current_date ,
     created_stamp              date default current_date ,
     constraint pk_contest_submission_testcase_new primary key(contest_submission_testcase_id),
+    constraint fk_contest_submission_testcase_new_submission_id foreign key(contest_submission_id) references contest_submission_new(contest_submission_id),
     constraint fk_contest_submission_testcase_new_contest foreign key  (contest_id) references contest_new(contest_id),
     constraint fk_contest_submission_testcase_new_problem foreign key (problem_id) references contest_problem_new(problem_id),
     constraint fk_contest_submission_testcase_new_userlogin foreign key (submitted_by_user_login_id) references user_login(user_login_id),

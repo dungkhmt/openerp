@@ -509,6 +509,25 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public Page<ModelProblemSubmissionDetailByTestCaseResponse> getContestProblemSubmissionDetailByTestCase(Pageable  page) {
+        Page<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAll(page);
+        Page<ModelProblemSubmissionDetailByTestCaseResponse> retLst = L.map(e ->{
+            return new ModelProblemSubmissionDetailByTestCaseResponse(e.getContestSubmissionTestcaseId(),
+                                                                      e.getContestId(),
+                                                                      e.getProblemId(),
+                                                                      e.getSubmittedByUserLoginId(),
+                                                                      e.getTestCaseId(),
+                                                                      e.getStatus(),
+                                                                      e.getPoint(),
+                                                                      e.getTestCaseOutput(),
+                                                                      e.getParticipantSolutionOtput(),
+                                                                      e.getCreatedStamp()
+                                                                      );
+        });
+        return retLst;
+    }
+
+    @Override
     public ModelContestSubmissionResponse problemDetailSubmission(ModelProblemDetailSubmission modelProblemDetailSubmission, String problemId, String userName) throws Exception {
         log.info("source {} ", modelProblemDetailSubmission.getSource());
         UserLogin userLogin = userLoginRepo.findByUserLoginId(userName);
@@ -613,6 +632,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         int nbTestCasePass = 0;
         String totalStatus = "";
         List<String> statusList = new ArrayList<String>();
+        List<ContestSubmissionTestCaseEntity> LCSTE = new ArrayList();
         for(int i = 0; i < testCaseEntityList.size(); i++) {
             List<TestCaseEntity> L = new ArrayList();
             L.add(testCaseEntityList.get(i));
@@ -646,7 +666,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                                   .createdStamp(new Date())
                                                                                   .build();
             cste = contestSubmissionTestCaseEntityRepo.save(cste);
-
+            LCSTE.add(cste);
         }
         boolean accepted = true;
         for(String s: statusList){
@@ -677,6 +697,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .createdAt(new Date())
                                                            .build();
         c = contestSubmissionRepo.save(c);
+
+        for(ContestSubmissionTestCaseEntity e: LCSTE){
+            e.setContestSubmissionId(c.getContestSubmissionId());
+            e = contestSubmissionTestCaseEntityRepo.save(e);
+        }
+
         log.info("c {}", c.getRuntime());
         return ModelContestSubmissionResponse.builder()
                                              .status(totalStatus)

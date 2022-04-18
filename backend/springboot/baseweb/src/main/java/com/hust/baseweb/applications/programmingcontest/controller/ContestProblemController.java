@@ -267,6 +267,18 @@ public class ContestProblemController {
         log.info("resp {}", resp);
         return ResponseEntity.status(200).body(resp);
     }
+    @GetMapping("/get-contest-problem-submission-detail-by-testcase")
+    public ResponseEntity<?> getContestProblemSubmissionDetailByTestCase(Principal principal,
+                                                                         @RequestParam int page, int size, Pageable pageable){
+        log.info("getContestProblemSubmissionDetailByTestCase, page = " + page + " size = " + size);
+        Pageable sortedByCreatedStampDsc =
+            PageRequest.of(page, size, Sort.by("createdStamp").descending());
+
+        Page<ModelProblemSubmissionDetailByTestCaseResponse> lst = problemTestCaseService
+            .getContestProblemSubmissionDetailByTestCase(sortedByCreatedStampDsc);
+
+        return ResponseEntity.ok().body(lst);
+    }
     @PostMapping("/submit-solution-output")
     public ResponseEntity<?>  submitSolutionOutput(Principal principale,
                                                    @RequestParam("inputJson") String inputJson,
