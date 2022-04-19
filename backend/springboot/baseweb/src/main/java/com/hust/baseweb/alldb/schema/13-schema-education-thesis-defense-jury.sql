@@ -9,7 +9,6 @@ create table training_program(
 create table thesis_defense_plan(
     id varchar(60),
     name varchar(500),
-
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     constraint pk_thesis_defense_plan primary key(id)
@@ -56,13 +55,21 @@ create table thesis(
     constraint fk_thesis_scheduled_jury foreign key(scheduled_jury_id) references defense_jury(id)
 );
 
-
-create table thesis_keyword(
-    keyword varchar(100),
+create table academic_keyword(
+    keyword varchar(256),
     description text,
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    constraint pk_thesis_keyword primary key(keyword)
+    constraint pk_academic_keyword primary key(keyword)
+
+);
+
+create table thesis_keyword(
+    thesis_id uuid,
+    keyword varchar(256),
+    constraint pk_thesis_keyword primary key(thesis_id, keyword),
+    constraint fk_thesis_keyword_thesis foreign key(thesis_id) references thesis(id),
+    constraint fk_thesis_keyword_keyword foreign key (keyword) references academic_keyword(keyword)
 );
 
 create table teacher_thesis_defense_plan(
@@ -83,7 +90,7 @@ create table teacher_keyword(
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     constraint pk_teacher_keyword primary key(teacher_id,keyword),
     constraint fk_teacher_keyword_teacher_id foreign key(teacher_id) references teacher(teacher_id),
-    constraint fk_teacher_keyword_keyword foreign key(keyword) references thesis_keyword(keyword)
+    constraint fk_teacher_keyword_keyword foreign key(keyword) references academic_keyword(keyword)
 );
 
 
