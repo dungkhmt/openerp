@@ -26,8 +26,11 @@ import { Chat } from "./menuconfig/chat";
 import { eduLearningManagement } from "./menuconfig/classmanagement/student";
 import { eduTeachingManagement } from "./menuconfig/classmanagement/teacher";
 import { DataAdministration } from "./menuconfig/dataadmin";
-import { WMS } from "./menuconfig/wms.js";
+//import { WMS } from "./menuconfig/wms.js";
 import { ThesisDefenseJuryManagement } from "./menuconfig/thesis_defense_jury_management";
+import { taskmanagement } from "./menuconfig/taskmanagement";
+import { warehouse } from "./menuconfig/warehouse";
+import { whiteboard } from "./menuconfig/whiteboard";
 import {
   ProgrammingContestMenuTeacher,
   ProgrammingContestMenuStudent,
@@ -44,8 +47,10 @@ MENU_LIST.push(eduTeachingManagement);
 MENU_LIST.push(eduLearningManagement);
 
 MENU_LIST.push(DataAdministration);
-MENU_LIST.push(WMS);
+//MENU_LIST.push(WMS);
 MENU_LIST.push(ThesisDefenseJuryManagement);
+MENU_LIST.push(taskmanagement);
+MENU_LIST.push(whiteboard);
 MENU_LIST.push(Chat);
 MENU_LIST.push(teachingassignment);
 // MENU_LIST.push(schedule);
@@ -60,7 +65,7 @@ MENU_LIST.push(user);
 // MENU_LIST.push(supplier);
 // MENU_LIST.push(purchaseorder);
 // MENU_LIST.push(productpricesupplier);
-// MENU_LIST.push(warehouse);
+MENU_LIST.push(warehouse);
 // MENU_LIST.push(transport);
 // MENU_LIST.push(post);
 // MENU_LIST.push(product);

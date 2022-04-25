@@ -7,7 +7,7 @@ export const warehouse = {
   child: [
     {
       id: "MENU_WAREHOUSE_CREATE",
-      path: "/facility/create",
+      path: "/wms/warehouse/create",
       isPublic: false,
       icon: "StarBorder",
       text: "Tạo mới kho",
@@ -15,7 +15,7 @@ export const warehouse = {
     },
     {
       id: "MENU_WAREHOUSE_VIEW",
-      path: "/facility/list",
+      path: "/wms/warehouse/list",
       isPublic: false,
       icon: "StarBorder",
       text: "Danh sách kho",
@@ -23,7 +23,7 @@ export const warehouse = {
     },
     {
       id: "MENU_WAREHOUSE_IMPORT",
-      path: "/inventory/import",
+      path: "/wms/inventory/import",
       isPublic: false,
       icon: "StarBorder",
       text: "Nhập kho",
@@ -31,7 +31,7 @@ export const warehouse = {
     },
     {
       id: "MENU_WAREHOUSE_EXPORT",
-      path: "/inventory/order",
+      path: "/wms/inventory/order",
       isPublic: false,
       icon: "StarBorder",
       text: "Xuất kho",
@@ -39,10 +39,18 @@ export const warehouse = {
     },
     {
       id: "MENU_WAREHOUSE_INVENTORY_ITEM",
-      path: "/inventory/list",
+      path: "/wms/inventory/list",
       isPublic: false,
       icon: "StarBorder",
       text: "QL tồn kho",
+      child: [],
+    },
+    {
+      id: "MENU_ORDER_PICKUP_PLANNING",
+      path: "/wms/order-pickup-planning/home",
+      isPublic: false,
+      icon: null,
+      text: "Order Pickup Planning",
       child: [],
     },
   ],
