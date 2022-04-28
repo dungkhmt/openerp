@@ -3,7 +3,7 @@ import { request } from "../../../../../../api";
 import PrimaryButton from "../../../../../button/PrimaryButton";
 
 export default function ButtonMeetNow() {
-  
+  const history = useHistory();
   const meetNow = async () => {
     request('post', '/room/create', (res) => {
       history.push({

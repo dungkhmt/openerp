@@ -31,8 +31,11 @@ public class RoomParticipant {
   @Column(name = "is_active")
   private String isActive;
 
+  @Column(name = "is_invited")
+  private Boolean isInvited;
+
   public RoomParticipant() {
-    
+
   }
 
   public RoomParticipant(UUID id, Room room, UserLogin participant, String peerId) {
@@ -41,5 +44,13 @@ public class RoomParticipant {
     this.participant = participant;
     this.peerId = peerId;
     this.isActive = "1";
+    this.isInvited = false;
+  }
+
+  public RoomParticipant(UserLogin participant, Room room) {
+    this.id = UUID.randomUUID();
+    this.room = room;
+    this.participant = participant;
+    this.isActive = "0";
   }
 }
