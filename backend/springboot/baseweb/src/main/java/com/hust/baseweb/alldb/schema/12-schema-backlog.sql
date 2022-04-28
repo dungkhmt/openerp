@@ -46,6 +46,7 @@ create table backlog_task_assignment
     backlog_task_assignment_id uuid not null default uuid_generate_v1(),
     backlog_task_id            uuid not null,
     assigned_to_party_id       uuid not null,
+    assigned_to_user_login_id varchar(60),
     start_date                 timestamp,
     finished_date              timestamp,
     status_id                  varchar(60),

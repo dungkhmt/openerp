@@ -19,6 +19,9 @@ public class ContestSubmissionTestCaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID contestSubmissionTestcaseId;
 
+    @Column(name="contest_submission_id")
+    private UUID contestSubmissionId;
+
     @Column(name="contest_id")
     private String contestId;
 

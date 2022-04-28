@@ -31,11 +31,11 @@ export const eduLearningManagement = {
     },
 
     {
-      id: "MENU_EDUCATION_ASSIGNMENT_EXECUTION",
-      path: "/edu/student/contestprogramming",
+      id: "MENU_EDUCATION_THESIS_DEFENSE_JURY_STUDENT_MANAGEMENT",
+      path: "",
       isPublic: true,
       icon: null,
-      text: "Programming Contest",
+      text: "Đồ án",
       child: [],
     },
   ],

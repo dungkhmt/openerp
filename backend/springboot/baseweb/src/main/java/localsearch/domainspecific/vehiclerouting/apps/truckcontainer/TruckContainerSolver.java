@@ -3064,10 +3064,10 @@ public class TruckContainerSolver {
 		solver.timeLimit = 360000; //gioi han thoi gian chay
 		solver.nIter = 100000; //gioi han so lan lap
 		
-		String dir = "F:\\Project\\OpenERP\\data\\TTCRP\\";
+		String dir = "C:/Temp/";
 		
-		String fileName = "random-70reqs-RealLoc-0";
-		String inputFile = dir + "input/" + fileName + ".txt";
+		String fileName = "ttcrp";
+		String inputFile = dir + "input/" + fileName + ".json.txt";
 		
 		String outputALNSfileTxt = dir + "output/Result-" + fileName + ".txt";
 		String outputALNSfileJson = dir + "output/Result-" + fileName + ".json";

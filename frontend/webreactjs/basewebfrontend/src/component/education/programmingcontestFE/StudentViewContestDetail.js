@@ -18,6 +18,7 @@ import { successNoti } from "../../../utils/notification";
 import { WaitScreen } from "./WaitScreen";
 import LockScreen from "./LockScreen";
 import StudentViewProblemList from "./StudentViewProblemList";
+import StudentViewSubmission from "./StudentViewSubmission";
 
 export default function StudentViewContestDetail() {
   const { contestId } = useParams();
@@ -72,6 +73,7 @@ export default function StudentViewContestDetail() {
   return (
     <div>
       <StudentViewProblemList problems={problems} contestId={contestId} />
+      <StudentViewSubmission />
     </div>
   );
 }
