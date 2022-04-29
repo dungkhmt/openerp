@@ -22,13 +22,11 @@ export default function StudentViewContestDetail() {
       "get",
       "/get-contest-detail-solving/" + contestId,
       (res) => {
-        console.log("res contest", res);
         setUnauthorized(res.data.unauthorized);
         setContestTime(res.data.contestTime);
         setProblems(res.data.list);
         setContestName(res.data.contestName);
         setIsPublic(res.data.isPublic);
-        console.log("res ", res.data);
         let arr = problems.map(() => false);
         setSubmitted(arr);
         for (let i = 0; i < res.data.list.length; i++) {
