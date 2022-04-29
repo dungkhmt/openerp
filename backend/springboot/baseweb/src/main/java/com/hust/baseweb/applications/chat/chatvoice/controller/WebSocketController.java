@@ -27,12 +27,13 @@ public class WebSocketController {
   private final UserService userService;
 
   @Autowired
-  public WebSocketController(RoomParticipantService roomParticipantService, UserService userService, RoomService roomService) {
+  public WebSocketController(RoomParticipantService roomParticipantService, UserService userService,
+      RoomService roomService) {
     this.roomParticipantService = roomParticipantService;
     this.userService = userService;
     this.roomService = roomService;
   }
-  
+
   @Transactional
   @MessageMapping("/{roomId}")
   @SendTo("/topic/chat/{roomId}")
@@ -49,15 +50,17 @@ public class WebSocketController {
         return response;
       }
       case "join": {
-        roomParticipantService.addParticipant(room, participant, message.get("content"));
+        roomParticipantService.addOrUpdateParticipant(room, participant, message.get("content"));
         response.put("id", "0");
-        response.put("content", "{ \"id\": \"" + message.get("id") + "\", \"name\": \"" + message.get("name") + "\", \"type\": \"" + message.get("type") + "\", \"peerId\": \"" + message.get("content") + "\" }");
+        response.put("content", "{ \"id\": \"" + message.get("id") + "\", \"name\": \"" + message.get("name")
+            + "\", \"type\": \"" + message.get("type") + "\", \"peerId\": \"" + message.get("content") + "\" }");
         return response;
       }
       case "leave": {
         roomParticipantService.outMeet(room, participant);
         response.put("id", "0");
-        response.put("content", "{ \"id\": \"" + message.get("id") + "\", \"name\": \"" + message.get("name") + "\", \"type\": \"" + message.get("type") + "\" }");
+        response.put("content", "{ \"id\": \"" + message.get("id") + "\", \"name\": \"" + message.get("name")
+            + "\", \"type\": \"" + message.get("type") + "\" }");
         return response;
       }
       default:
