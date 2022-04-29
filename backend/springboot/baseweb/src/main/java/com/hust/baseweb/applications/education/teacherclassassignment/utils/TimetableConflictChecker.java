@@ -69,7 +69,7 @@ public class TimetableConflictChecker {
         return "TimetableConflictChecker";
     }
     public static String convertEndSlotStr2Code(String s) {
-        System.out.println(name() + "::convertEndSlotStr2Code, s = " + s);
+        //System.out.println(name() + "::convertEndSlotStr2Code, s = " + s);
         String d = getDayOfWeek(s);
         String slots = getSlotStr(s);
         return d + slotMapping.getEndSlot(slots);

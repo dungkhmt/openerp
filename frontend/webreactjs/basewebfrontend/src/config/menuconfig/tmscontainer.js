@@ -6,9 +6,17 @@ export const tmscontainer = {
   text: "Vận chuyển container",
   child: [
     {
+      id: "MENU_TMS_CONTAINER_HOME",
+      path: "/tmscontainer/home",
+      isPublic: false,
+      icon: "StarBorder",
+      text: "QL vận chuyển container",
+      child: [],
+    },
+    {
       id: "",
       path: "/portfunc/create",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Thêm mới bến cảng",
       child: [],
@@ -16,7 +24,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/portfunc/list",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Danh sách bến cảng",
       child: [],
@@ -24,7 +32,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/depottruckfunc/create",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Thêm mới bãi đầu kéo",
       child: [],
@@ -32,7 +40,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/depottruckfunc/list",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "DS bãi đầu kéo",
       child: [],
@@ -40,7 +48,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/depottrailerfunc/create",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Thêm mới bãi mooc",
       child: [],
@@ -48,7 +56,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/depottrailerfunc/list",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "DS bãi rơ mooc",
       child: [],
@@ -56,7 +64,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/depotcontainerfunc/create",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Thêm mới bãi container",
       child: [],
@@ -64,7 +72,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/depotcontainerfunc/list",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "DS bãi container",
       child: [],
@@ -72,7 +80,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/containerfunc/create",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Tạo mới container",
       child: [],
@@ -80,7 +88,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/transport-group/containerfunc/list",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "DS container",
       child: [],
@@ -88,7 +96,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/trailerfunc/create",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Thêm mới rơ mooc",
       child: [],
@@ -96,7 +104,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/trailerfunc/list",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "DS rơ mooc",
       child: [],
@@ -104,7 +112,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/transport-group/create-request-transport-container-empty",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Thêm yêu cầu chuyển container rỗng từ kho về bãi",
       child: [],
@@ -112,7 +120,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/transport-group/list-request-transport-container-empty",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Danh sách đơn vận chuyển container rỗng từ kho đến bãi",
       child: [],
@@ -120,7 +128,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/transport-group/create-request-transport-container-empty-export",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Thêm yêu cầu chuyển container rỗng từ bãi về kho",
       child: [],
@@ -128,7 +136,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/transport-group/list-request-transport-container-empty-export",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Danh sách đơn vận chuyển container rỗng từ bãi đến kho",
       child: [],
@@ -136,7 +144,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/transport-group/create-request-transport-full-export",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Thêm mới yêu cầu chuyển container đầy hàng từ kho ra cảng",
       child: [],
@@ -144,7 +152,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/transport-group/list-request-transport-full-export",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Danh sách đơn vận chuyển container đầy hàng từ kho ra cảng ",
       child: [],
@@ -152,7 +160,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "DS đơn vận chuyển import empty",
       child: [],
@@ -160,7 +168,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/transport-group/create-request-transport-container-to-warehouse",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Thêm mới yêu cầu vận chuyển container đến kho",
       child: [],
@@ -168,7 +176,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "/transport-group/list-request-transport-container-to-warehouse",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Danh sách đơn vận chuyển container đầy đến kho",
       child: [],
@@ -176,7 +184,7 @@ export const tmscontainer = {
     {
       id: "",
       path: "",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "DS đơn chuyển kho",
       child: [],

@@ -152,8 +152,8 @@ public class TruckContainerSolver {
 	HashMap<Point, Integer> nChosed;
 	HashMap<Point, Boolean> removeAllowed;
 	
-	private int nRemovalOperators = 8;
-	private int nInsertionOperators = 8;
+	public int nRemovalOperators = 8;
+	public int nInsertionOperators = 8;
 	
 	//parameters
 	public int lower_removal;
@@ -1303,14 +1303,28 @@ public class TruckContainerSolver {
 			in.close();
 			InputAnalyzer IA = new InputAnalyzer();
 			IA.standardize(input);
-			mapData(fileName);
+			mapData();
 		}
 		catch(Exception e){
 			System.out.println(e);
 		}
 	}
-	
-	public void mapData(String dataFileName) {
+
+	public void input(String inputJson){
+        try{
+            Gson g = new Gson();
+            input = g.fromJson(inputJson, ContainerTruckMoocInput.class);
+            InputAnalyzer IA = new InputAnalyzer();
+            IA.standardize(input);
+            mapData();
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+
+    }
+    public void mapData(){
+	//public void mapData(String dataFileName) {
 
 		// create artificial containers based on import request
 		//Random ran = new Random();
@@ -2862,8 +2876,9 @@ public class TruckContainerSolver {
 					DateTimeUtils.unixTimeStamp2DateTime((long)eat.getEarliestArrivalTime(en)),
 					DateTimeUtils.unixTimeStamp2DateTime((long)(eat.getEarliestArrivalTime(en) + serviceDuration.get(en))), 0);
 			
-			TruckRoute br = new TruckRoute(truck, nb, (int)objective.getValue(), nodes);
+			TruckRoute br = new TruckRoute(r, truck, nb, (int)objective.getValue(), nodes);
 			brArr.add(br);
+			br.setIndex(brArr.size()); // reset the index so that 1, 2, 3, ...
 			nbTrucks++;
 		}
 		
