@@ -1,20 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {request} from "./Request";
-import {Box} from "@mui/material";
+import {Box, Typography} from "@mui/material";
 import {components, localization, theme} from "../../../utils/MaterialTableUtils";
 import MaterialTable, {MTableToolbar} from "material-table";
 import {makeStyles, MuiThemeProvider} from "@material-ui/core/styles";
 
-const useStyles = makeStyles((theme) => ({
-  commandButton: {
-    marginLeft: theme.spacing(2),
-    fontWeight: theme.typography.fontWeightRegular,
-    "&:hover": {
-      color: theme.palette.primary.main,
-    },
-  },
-  tableToolbarHighlight: {backgroundColor: "transparent"},
-}));
+const useStyles = makeStyles((theme) => ({}));
 
 export default function StudentViewSubmission() {
   const classes = useStyles();
@@ -35,12 +26,25 @@ export default function StudentViewSubmission() {
       if (res && res.data)
         setSubmissions(res.data.content);
     });
-  }, [submissions]);
+  }, []);
 
   const columns = [
     {title: "Problem", field: "problemId"},
-    {title: "Status", field: "status"},
+    {
+      title: "Status", field: "status", cellStyle:
+        (status) => {
+          switch (status) {
+            case "Accept":
+              return {color: "green"};
+            case "Wrong Answer":
+              return {color: "gold"};
+            default:
+              return {color: "red"}
+          }
+        }
+    },
     {title: "Language", field: "sourceCodeLanguage"},
+    {title: "Test cases", field: "testCasePass", align: "center"},
     {title: "At", field: "createAt"}
   ];
 
@@ -48,17 +52,15 @@ export default function StudentViewSubmission() {
     <Box>
       <MuiThemeProvider theme={theme}>
         <MaterialTable
-          title={"Danh sách nộp bài"}
+          title={<Typography variant="h4">Submission list</Typography>}
           columns={columns}
           data={submissions}
           localization={{
             ...localization,
-            toolbar: {...localization.toolbar, nRowsSelected: ""},
           }}
           options={{
             pageSize: 20,
             headerStyle: {
-              // backgroundColor: "transparent",
               fontWeight: "700",
             },
           }}
@@ -67,9 +69,6 @@ export default function StudentViewSubmission() {
             Toolbar: (props) => (
               <MTableToolbar
                 {...props}
-                classes={{
-                  highlight: classes.tableToolbarHighlight,
-                }}
                 searchFieldVariant="outlined"
                 searchFieldStyle={{
                   height: 40,

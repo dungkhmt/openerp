@@ -4,6 +4,7 @@ import {request} from "./Request";
 import {useHistory, useParams} from "react-router-dom";
 import StudentViewProblemList from "./StudentViewProblemList";
 import StudentViewSubmission from "./StudentViewSubmission";
+import Box from "@mui/material/Box";
 
 export default function StudentViewContestDetail() {
   const { contestId } = useParams();
@@ -56,6 +57,7 @@ export default function StudentViewContestDetail() {
   return (
     <div>
       <StudentViewProblemList problems={problems} contestId={contestId} />
+      <Box height="30px"/>
       <StudentViewSubmission />
     </div>
   );
