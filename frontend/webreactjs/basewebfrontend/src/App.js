@@ -3,7 +3,7 @@ import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Router } from "react-router-dom";
-// import { BrowserRouter as Router } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { success } from "./action/index.js";
@@ -45,28 +45,39 @@ function App() {
     if (isAuthenticated.get()) dispatch(success(token.get()));
   }, [isAuthenticated.get()]);
 
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+        keepPreviousData: true,
+      }
+    }
+  })
+
   return (
-    <MuiThemeProvider theme={theme}>
-      <CssBaseline />
-      {/* <Router> */}
-      <Router history={history}>
-        <Routes />
-        <ToastContainer
-          position="bottom-center"
-          transition={Slide}
-          autoClose={3000}
-          limit={3}
-          hideProgressBar={true}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
-      </Router>
-      {/* </Router> */}
-    </MuiThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        {/* <Router> */}
+        <Router history={history}>
+          <Routes />
+          <ToastContainer
+            position="bottom-center"
+            transition={Slide}
+            autoClose={3000}
+            limit={3}
+            hideProgressBar={true}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+        </Router>
+        {/* </Router> */}
+      </MuiThemeProvider>
+    </QueryClientProvider>
   );
 }
 

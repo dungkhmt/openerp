@@ -2,9 +2,9 @@ package com.hust.baseweb.applications.chat.chatvoice.controller;
 
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ import com.hust.baseweb.service.UserService;
 @RestController
 @RequestMapping("room")
 public class RoomController {
-  
+
   private final RoomService roomService;
   private final UserService userService;
 
@@ -37,11 +37,10 @@ public class RoomController {
     return ResponseEntity.ok().body(principal.getName());
   }
 
-  @GetMapping("/all")
-  public ResponseEntity<?> getAllRoomsOfThisUser(Principal principal) {
+  @GetMapping(path = "/all")
+  public ResponseEntity<?> getAllRoomsOfThisUser(Principal principal, Pageable page) {
     UserLogin host = userService.findById(principal.getName());
-    List<?> listRoom = roomService.getAllRoomsOfThisUser(host);
-    return ResponseEntity.ok().body(listRoom);
+    return ResponseEntity.ok().body(roomService.getAllRoomsOfThisUser(page, host));
   }
 
   @PostMapping("/create")
@@ -60,6 +59,7 @@ public class RoomController {
     roomService.deleteRoom(host, room);
     return ResponseEntity.ok().build();
   }
+
   @PutMapping("/update")
   public ResponseEntity<?> updateRoom(Principal principal, @RequestBody Room room) {
     UserLogin host = userService.findById(principal.getName());

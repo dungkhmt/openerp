@@ -41,25 +41,22 @@ public class UserLogin {
 
     private int otpResendNumber;
 
-    private String email;
-
 
     @JoinColumn(name = "party_id", referencedColumnName = "party_id")
     @OneToOne(fetch = FetchType.EAGER)
     private Party party;
 
-
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "user_login_security_group",
-        joinColumns = @JoinColumn(name = "user_login_id", referencedColumnName = "user_login_id"),
-        inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "group_id"))
+    @JoinTable(name = "user_login_security_group", joinColumns = @JoinColumn(name = "user_login_id", referencedColumnName = "user_login_id"), inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "group_id"))
     private Set<SecurityGroup> roles;
     private Date disabledDateTime;
 
     public UserLogin() {
     }
 
+    public UserLogin(String userLoginId) {
+        this.userLoginId = userLoginId;
+    }
 
     public UserLogin(String userLoginId, String password, Set<SecurityGroup> roles, boolean enabled) {
         this.userLoginId = userLoginId;
@@ -69,13 +66,11 @@ public class UserLogin {
         this.enabled = enabled;
     }
 
-
     public UserLogin(
-        String password, String passwordHint, boolean isSystem,
-        boolean enabled, boolean hasLoggedOut,
-        boolean requirePasswordChange, int successiveFailedLogins,
-        Date disabledDateTime
-    ) {
+            String password, String passwordHint, boolean isSystem,
+            boolean enabled, boolean hasLoggedOut,
+            boolean requirePasswordChange, int successiveFailedLogins,
+            Date disabledDateTime) {
         super();
         this.password = password;
         this.passwordHint = passwordHint;
@@ -92,4 +87,3 @@ public class UserLogin {
     }
 
 }
-

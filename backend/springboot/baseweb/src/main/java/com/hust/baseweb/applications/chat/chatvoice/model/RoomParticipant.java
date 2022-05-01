@@ -25,7 +25,7 @@ public class RoomParticipant {
   @JoinColumn(name = "participant_id", referencedColumnName = "user_login_id")
   private UserLogin participant;
 
-  @Column(name = "peer_id")
+  @Column(name = "peer_id", nullable = true)
   private String peerId;
 
   @Column(name = "is_active")
@@ -47,10 +47,21 @@ public class RoomParticipant {
     this.isInvited = false;
   }
 
-  public RoomParticipant(UserLogin participant, Room room) {
-    this.id = UUID.randomUUID();
+  public RoomParticipant(UUID id, UserLogin participant, Room room) {
+    this.id = id;
     this.room = room;
     this.participant = participant;
     this.isActive = "0";
+  }
+
+  public RoomParticipant(UserLogin participant, Room room) {
+    this.room = room;
+    this.participant = participant;
+    this.isActive = "0";
+  }
+
+  @Override
+  public String toString() {
+    return room.getId() + "    " + participant.getUserLoginId();
   }
 }

@@ -59,15 +59,15 @@ public class RoomParticipantService {
     return res;
   }
 
-  public void inviteParticipant(Room room, UserLogin userLogin) {
-    UUID id = room.getId();
-    Room r = roomRepository.findById(id);
+  public void inviteParticipant(UUID roomId, UserLogin userLogin) {
+    Room r = roomRepository.findById(roomId);
     Optional<RoomParticipant> rParticipant = roomParticipantRepository.findByParticipant(userLogin);
     if (rParticipant.isPresent()) {
       rParticipant.get().setIsInvited(true);
       roomParticipantRepository.save(rParticipant.get());
     } else {
-      RoomParticipant roomParticipant = new RoomParticipant(userLogin, room);
+      UUID uuid = UUID.randomUUID();
+      RoomParticipant roomParticipant = new RoomParticipant(uuid, userLogin, r);
       roomParticipant.setIsInvited(true);
       roomParticipantRepository.save(roomParticipant);
     }

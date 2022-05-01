@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import Join from '../components/Join';
+import Host from '../components/Host';
 import { CARD_LIST } from '../ultis/constant';
 import { cardTitle } from '../ultis/helpers';
+import { useGetInvitedMeets, useGetOwnedMeets } from '../hooks/chatVoiceHome';
 import '../style/chatVoiceHome.css';
-import ScheduleMeet from '../components/Host/ScheduleMeet.js';
-import ButtonMeetNow from '../components/Host/ButtonMeetNow';
-import ListMeet from '../components/Host/ListMeet';
 
 const MEET_ICON = 'M';
 const MEET_TITLE = 'Meet';
 
 export default function ChatVoiceMain() {
-
   const [selectedCard, setSelectedCard] = useState('host');
+  const { data: listOwnerMeet } = useGetOwnedMeets({ params: null });
+  const { data: listInvitedMeet } = useGetInvitedMeets({ params: null });
 
   const renderListCard = () => {
     return CARD_LIST.map((card, index) => (
@@ -34,11 +34,7 @@ export default function ChatVoiceMain() {
         <div className='card-meet'></div>
       </div>
       <div className='home-meet-content'>
-        {selectedCard === CARD_LIST[0] && <>
-          <ScheduleMeet />
-          <ListMeet />
-          <ButtonMeetNow />
-        </>}
+        {selectedCard === CARD_LIST[0] && <Host />}
         {selectedCard === CARD_LIST[1] && <Join />}
       </div>
     </div>

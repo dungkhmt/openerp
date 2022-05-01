@@ -32,6 +32,6 @@ public interface RoomParticipantRepository extends JpaRepository<RoomParticipant
   @Query("SELECT u.userLoginId from UserLogin u WHERE u.userLoginId LIKE concat('%', :searchString, '%') AND u NOT IN (SELECT r.participant FROM RoomParticipant r WHERE r.isInvited = false AND r.room = :room)")
   Page<String> searchUsersById(Pageable page, String searchString, Room room);
 
-  @Query("SELECT p.room FROM RoomParticipant p WHERE p.participant = :u AND p.isInvited = true")
+  @Query("SELECT p.room.id, p.room.roomName, p.room.openIn, p.room.closeIn FROM RoomParticipant p WHERE p.participant = :u AND p.isInvited = true")
   Page<Room> getListInvitedRoom(Pageable page, UserLogin u);
 }

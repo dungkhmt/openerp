@@ -11,7 +11,6 @@ export default function ScheduleMeet() {
   const [openIn, setOpenIn] = useState(now);
   const [closeIn, setCloseIn] = useState(now);
   const [name, setName] = useState('');
-  const [expandedScheduleMeet, setExpandedScheduleMeet] = useState(false);
   const [displaySuccessMessage, setDisplaySuccessMessage] = useState(false);
   const [displayFailedMessage, setDisplayFailedMessage] = useState(false);
 
@@ -24,9 +23,6 @@ export default function ScheduleMeet() {
   const handleChangeName = useCallback((e) => {
     setName(e.target.value);
   }, []);
-  const handleChangeExpandedScheduleMeet = useCallback(() => {
-    setExpandedScheduleMeet(!expandedScheduleMeet);
-  }, [expandedScheduleMeet])
   const handleCloseSuccessMessage = useCallback(() => {
     setDisplaySuccessMessage(false);
   }, []);
@@ -54,8 +50,6 @@ export default function ScheduleMeet() {
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1a-content"
         id="panel1a-header"
-        expanded={expandedScheduleMeet}
-        onChange={handleChangeExpandedScheduleMeet}
       >
         <Typography>Lên lịch một cuộc họp</Typography>
       </AccordionSummary>

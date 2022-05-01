@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Peer from 'peerjs';
 import { request } from '../../../../api';
 import ChatList from '../components/Meet/ChatList';
@@ -12,8 +12,11 @@ import '../style/meet.css';
 const SOCKET_URL = API_URL + "/chatSocketHandler";
 
 const Meet = () => {
-    const sock = new window.SockJS(SOCKET_URL);
-    const stompClient = window.Stomp.over(sock);
+    const stompClient = useMemo(() => {
+        const sock = new window.SockJS(SOCKET_URL);
+        const stompClient = window.Stomp.over(sock);
+        return stompClient;
+    }, []);
     const location = window.location.pathname.split('/');
     const meetId = location[location.length - 1];
     const [displayBar, setDisplayBar] = useState('chat');
@@ -146,7 +149,7 @@ const Meet = () => {
                 listMsg={listMsg}
                 sendMessage={sendMessage}
             />
-            <Participant display={displayBar} setDisplay={setDisplayBar} listParticipant={listParticipant} />
+            <Participant meetId={meetId} display={displayBar} setDisplay={setDisplayBar} listParticipant={listParticipant} />
             <FooterControl
                 displayBar={displayBar}
                 setDisplayBar={setDisplayBar}
