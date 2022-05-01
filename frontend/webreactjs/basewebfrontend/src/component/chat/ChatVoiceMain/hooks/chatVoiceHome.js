@@ -1,5 +1,5 @@
-import { useQuery } from "react-query"
-import { getInvitedMeets, getOwnedMeets } from "../api";
+import { useMutation, useQuery } from "react-query"
+import { getInvitedMeets, getOwnedMeets, scheduleMeet } from "../api";
 import { QUERY_KEY } from "../ultis/constant"
 
 export const useGetInvitedMeets = ({ params, onSuccess, onError }) => {
@@ -15,5 +15,12 @@ export const useGetOwnedMeets = ({ params, onSuccess, onError }) => {
     onSuccess,
     onError,
     select: (res) => res?.data,
+  });
+}
+
+export const useScheduleMeet = ({ params, onSuccess, onError }) => {
+  return useMutation([QUERY_KEY.SCHEDULE_MEET, params], () => scheduleMeet(params), {
+    onSuccess: onSuccess,
+    onError,
   });
 }

@@ -19,3 +19,7 @@ export const getInvitedMeets = async (params) => {
 export const getOwnedMeets = async (params) => {
   return await request('get', API_URL.OWNED_MEET)
 }
+
+export const scheduleMeet = async (params) => {
+  return await request('post', '/room/create', undefined, undefined, params);
+}

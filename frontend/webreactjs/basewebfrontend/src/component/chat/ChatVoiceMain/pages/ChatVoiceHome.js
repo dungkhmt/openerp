@@ -4,7 +4,6 @@ import Join from '../components/Join';
 import Host from '../components/Host';
 import { CARD_LIST } from '../ultis/constant';
 import { cardTitle } from '../ultis/helpers';
-import { useGetInvitedMeets, useGetOwnedMeets } from '../hooks/chatVoiceHome';
 import '../style/chatVoiceHome.css';
 
 const MEET_ICON = 'M';
@@ -12,8 +11,6 @@ const MEET_TITLE = 'Meet';
 
 export default function ChatVoiceMain() {
   const [selectedCard, setSelectedCard] = useState('host');
-  const { data: listOwnerMeet } = useGetOwnedMeets({ params: null });
-  const { data: listInvitedMeet } = useGetInvitedMeets({ params: null });
 
   const renderListCard = () => {
     return CARD_LIST.map((card, index) => (

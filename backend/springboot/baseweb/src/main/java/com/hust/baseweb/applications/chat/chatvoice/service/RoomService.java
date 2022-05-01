@@ -14,7 +14,7 @@ import com.hust.baseweb.entity.UserLogin;
 
 @Service
 public class RoomService {
-  private String unnamedRoom = "Unnamedaaaa";
+  private String unnamedRoom = "Unnamed";
 
   private final RoomRepository roomRepository;
 

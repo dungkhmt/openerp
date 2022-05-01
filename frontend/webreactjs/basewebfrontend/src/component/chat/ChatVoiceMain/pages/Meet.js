@@ -66,9 +66,11 @@ const Meet = () => {
         window.addEventListener('close', () => {
             onClose();
         });
-        return window.removeEventListener('close', () => {
-            onClose();
-        });
+        return () => {
+            window.removeEventListener('close', () => {
+                onClose();
+            });
+        }
     }, []);
     // if user open camera, mic or share screen, call to every participant in this room
     useEffect(() => {

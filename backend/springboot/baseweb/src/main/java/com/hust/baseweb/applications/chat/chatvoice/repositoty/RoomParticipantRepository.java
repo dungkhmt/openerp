@@ -26,8 +26,8 @@ public interface RoomParticipantRepository extends JpaRepository<RoomParticipant
   @Query("DELETE FROM RoomParticipant r WHERE r.room = ?1 AND r.participant = ?2")
   void outMeet(Room room, UserLogin participant);
 
-  @Query("SELECT r from RoomParticipant r WHERE r.participant = ?1")
-  Optional<RoomParticipant> findByParticipant(UserLogin participant);
+  @Query("SELECT r from RoomParticipant r WHERE r.participant = :participant AND r.room = :room")
+  Optional<RoomParticipant> findByParticipantAndRoom(UserLogin participant, Room room);
 
   @Query("SELECT u.userLoginId from UserLogin u WHERE u.userLoginId LIKE concat('%', :searchString, '%') AND u NOT IN (SELECT r.participant FROM RoomParticipant r WHERE r.isInvited = false AND r.room = :room)")
   Page<String> searchUsersById(Pageable page, String searchString, Room room);

@@ -49,8 +49,9 @@ public class RoomParticipantController {
   public ResponseEntity<?> inviteParticipant(@RequestBody HashMap<String, String> roomParticipant) {
     UUID roomId = UUID.fromString(roomParticipant.get("roomId"));
     String userLoginId = roomParticipant.get("userLoginId");
+    Room r = roomService.findByRoomId(roomId);
     UserLogin userLogin = userService.findById(userLoginId);
-    roomParticipantService.inviteParticipant(roomId, userLogin);
+    roomParticipantService.inviteParticipant(r, userLogin);
     return ResponseEntity.ok().build();
   }
 

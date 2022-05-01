@@ -3,7 +3,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MeetCard from '../MeetCard';
 
 export default function ListMeet({ title, listMeet }) {
-  console.log(listMeet)
   const renderListCard = () => {
     return listMeet.map((meet, index) => <MeetCard key={index} meetId={meet?.id} name={meet?.roomName} openIn={meet?.openIn} closeIn={meet?.closeIn} />)
   }

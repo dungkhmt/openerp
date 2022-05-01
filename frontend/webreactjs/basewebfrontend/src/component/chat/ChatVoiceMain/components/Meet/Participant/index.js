@@ -1,7 +1,6 @@
 import { AiOutlineDoubleRight } from 'react-icons/ai';
 import classNames from 'classnames';
-import { useEffect, useState } from 'react';
-import { getRandomStype } from '../../../ultis/helpers';
+import { useCallback, useEffect, useState } from 'react';
 import { BAR_TYPE } from '../../../ultis/constant';
 import { Autocomplete, TextField } from '@mui/material';
 import { useGetListSearchFriend, useInviteFriend } from '../../../hooks/meet';
@@ -29,15 +28,16 @@ const Participant = ({ meetId, display, setDisplay, listParticipant }) => {
   }
   const inviteFriend = (event, value) => {
     setInvitedFriend(value);
+    // setSearchText('');
   }
   const closeBar = () => {
     setDisplay(BAR_TYPE.NONE);
   }
 
-  const renderListParticipant = () => {
+  const renderListParticipant = useCallback(() => {
     return listParticipant.map((participant, index) => (
       <div className='participant-item' key={index}>
-        <div className='avatar' style={getRandomStype()}>
+        <div className='avatar'>
           {participant.name[0].toUpperCase()}
         </div>
         <div className='participant-name'>
@@ -45,7 +45,7 @@ const Participant = ({ meetId, display, setDisplay, listParticipant }) => {
         </div>
       </div>
     ));
-  }
+  }, [listParticipant]);
 
   return (
     <div className={classNames('room-bar', 'transition', { 'display-bar': display === BAR_TYPE.PARTICIPANT }, { 'hidden-bar': display !== BAR_TYPE.PARTICIPANT })}>
