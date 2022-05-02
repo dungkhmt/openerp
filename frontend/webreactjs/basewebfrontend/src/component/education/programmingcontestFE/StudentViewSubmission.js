@@ -8,12 +8,11 @@ import {makeStyles, MuiThemeProvider} from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({}));
 
 export default function StudentViewSubmission() {
-  const classes = useStyles();
   const [submissions, setSubmissions] = useState([]);
   const getSubmissions = async () => {
     request(
       "get",
-      "/get-contest-submission-paging-of-a-user/" + "admin",
+      "/get-contest-submission-paging-of-a-user/",
       (res) => {
         setSubmissions(res.data.content);
       },
