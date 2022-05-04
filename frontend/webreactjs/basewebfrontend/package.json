@@ -21,7 +21,6 @@
     "@mui/icons-material": "^5.0.3",
     "@mui/lab": "^5.0.0-alpha.75",
     "@mui/material": "^5.0.3",
-    "@mui/styled-engine": "^5.0.1",
     "@uiw/react-codemirror": "^4.3.2",
     "@welldone-software/why-did-you-render": "^6.2.0",
     "axios": "^0.21.1",
@@ -104,9 +103,8 @@
     ]
   },
   "devDependencies": {
-    "@mdi/react": "^1.4.0",
     "babel-plugin-import": "^1.13.3",
-    "compression-webpack-plugin": "^6.0.0",
+    "compression-webpack-plugin": "^6.1.1",
     "prop-types": "^15.7.2",
     "react-hook-form-devtools": "^1.2.0"
   }
