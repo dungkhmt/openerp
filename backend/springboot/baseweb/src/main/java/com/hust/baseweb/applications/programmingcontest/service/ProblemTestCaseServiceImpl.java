@@ -713,6 +713,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                              .contestSubmissionID(c.getContestSubmissionId())
                                              .submittedAt(c.getCreatedAt())
                                              .score(score)
+                                             .numberTestCasePassed(nbTestCasePass)
+                                             .totalNumberTestCase(testCaseEntityList.size())
                                              .build();
     }
 
