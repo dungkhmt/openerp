@@ -6,7 +6,7 @@ RUN rm -rf ./node_module/@uiw/react-codemirror/node_module
 COPY . ./
 RUN npm run build
 
-FROM nginx-with-brotli:latest
+FROM leanhtuan/nginx-with-brotli:latest
 COPY default.conf /etc/nginx/conf.d/default.conf
 COPY --from=react-build /app/build /usr/share/nginx/html
 EXPOSE 80
