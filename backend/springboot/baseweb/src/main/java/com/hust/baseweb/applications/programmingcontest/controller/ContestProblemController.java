@@ -89,6 +89,19 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(problemEntity);
     }
 
+    @GetMapping("/get-problem-detail-view-by-student/{problemId}")
+    public ResponseEntity<?> getProblemDetailViewByStudent(Principal principal,@PathVariable("problemId") String problemId){
+        try {
+            ProblemEntity problemEntity = problemTestCaseService.getContestProblem(problemId);
+            ModelStudentViewProblemDetail model = new ModelStudentViewProblemDetail();
+            model.setProblemStatement(problemEntity.getProblemDescription());
+            model.setProblemName(problemEntity.getProblemName());
+            return ResponseEntity.ok().body(model);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body("NOTFOUND");
+    }
     @PostMapping("/update-problem-detail/{problemId}")
     public ResponseEntity<?> updateProblemDetails(@RequestBody ModelCreateContestProblem modelCreateContestProblem, @PathVariable("problemId") String problemId, Principal principal) throws Exception {
         log.info("updateProblemDetails problemId {}", problemId);
@@ -278,6 +291,35 @@ public class ContestProblemController {
             .getContestProblemSubmissionDetailByTestCase(sortedByCreatedStampDsc);
 
         return ResponseEntity.ok().body(lst);
+    }
+    @PostMapping("/contest-submit-problem-via-upload-file")
+    public ResponseEntity<?> contestSubmitProblemViaUploadFile(Principal principal,
+                                                               @RequestParam("inputJson") String inputJson,
+                                                               @RequestParam("file") MultipartFile file
+                                                               ){
+        log.info("contestSubmitProblemViaUploadFile, inputJson = " + inputJson);
+        Gson gson = new Gson();
+        ModelContestSubmitProgramViaUploadFile model = gson.fromJson(inputJson, ModelContestSubmitProgramViaUploadFile.class);
+        try {
+            String source = "";
+            InputStream inputStream = file.getInputStream();
+            Scanner in = new Scanner(inputStream);
+            while(in.hasNext()) {
+                String line = in.nextLine();
+                source += line + "\n";
+                System.out.println("contestSubmitProblemViaUploadFile: read line: " + line);
+            }
+            in.close();
+
+            ModelContestSubmission request = new ModelContestSubmission(model.getContestId(), model.getProblemId(), source,model.getLanguage());
+            ModelContestSubmissionResponse resp = problemTestCaseService.submitContestProblemTestCaseByTestCase(request, principal.getName());
+
+            log.info("resp {}", resp);
+            return ResponseEntity.status(200).body(resp);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body("OK");
     }
     @PostMapping("/submit-solution-output")
     public ResponseEntity<?>  submitSolutionOutput(Principal principale,
