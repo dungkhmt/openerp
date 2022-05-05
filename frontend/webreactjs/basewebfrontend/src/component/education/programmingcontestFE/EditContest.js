@@ -234,9 +234,7 @@ export default function EditContest(props) {
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const isSelected = (name) => problemSelected.indexOf(name) !== -1;
   const [isPublic, setIsPublic] = useState(false);
-  const [startDate, setStartDate] = React.useState(
-    new Date("2014-08-18T21:11:54")
-  );
+  const [startDate, setStartDate] = React.useState(new Date());
   const [countDown, setCountDown] = useState(Number(0));
 
   const classes = useStyles();
@@ -308,6 +306,7 @@ export default function EditContest(props) {
       setProblemSelected(arr);
       setContestName(res.data.contestName);
       setIsPublic(res.data.isPublic);
+      setStartDate(res.data.startAt);
       console.log("res ", res.data);
     }).then();
   }, [page]);

@@ -45,11 +45,11 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const [problemStatement, setProblemStatement] = useState(null);
   const [testCases, setTestCases] = useState([]);
   const [filename, setFilename] = useState("");
-  const [score, setScore] = React.useState(0);
+  const [score, setScore] = React.useState("");
   const [status, setStatus] = useState("");
-  const [nbTestCasePassed, setNbTestCasePassed] = useState(0);
-  const [nbTotalTestCase, setNbTotalTestCase] = useState(0);
-  const [runTime, setRunTime] = useState(0);
+  const [nbTestCasePassed, setNbTestCasePassed] = useState("");
+  const [nbTotalTestCase, setNbTotalTestCase] = useState("");
+  const [runTime, setRunTime] = useState("");
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const [isProcessing, setIsProcessing] = React.useState(false);
@@ -95,6 +95,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
       .catch((e) => {
         setIsProcessing(false);
         console.error(e);
+        alert("Time Out!!!");
       });
   };
 
@@ -135,17 +136,17 @@ export default function StudentViewProgrammingContestProblemDetail() {
   }
 
   useEffect(() => {
-    getTestCases();
+    //getTestCases();
     getProblemDetail();
   }, []);
   return (
     <div>
       <div>
-        <h3>Problem Name: {problem ? problem.problemName : ""}</h3>
+        <h3>Name: {problem ? problem.problemName : ""}</h3>
       </div>
       <div>
         <Typography>
-          <h2>Problem Description</h2>
+          <h2>Description</h2>
         </Typography>
         <Editor
           editorState={editorStateDescription}
@@ -222,7 +223,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 onChange={onInputChange}
                 width="100%"
               >
-                UPLOAD
+                SUBMIT
               </Button>
             </Grid>
 
@@ -234,19 +235,19 @@ export default function StudentViewProgrammingContestProblemDetail() {
           </Grid>
         </form>
         <div>
-          <h1>Status: {status}</h1>
+          <h2>Status: {status}</h2>
         </div>
         <div>
-          <h1>Score: {score}</h1>
+          <h2>Score: {score}</h2>
         </div>
         <div>
-          <h1>Number TestCases Passed: {nbTestCasePassed}</h1>
+          <h2>Number TestCases Passed: {nbTestCasePassed}</h2>
         </div>
         <div>
-          <h1>Total TestCases : {nbTotalTestCase}</h1>
+          <h2>Total TestCases : {nbTotalTestCase}</h2>
         </div>
         <div>
-          <h1>RunTime : {runTime}(ms)</h1>
+          <h2>RunTime : {runTime}(ms)</h2>
         </div>
       </div>
     </div>

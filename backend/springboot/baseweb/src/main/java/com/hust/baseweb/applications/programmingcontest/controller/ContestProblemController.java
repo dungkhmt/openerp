@@ -5,6 +5,7 @@ import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
 import com.hust.baseweb.applications.programmingcontest.model.ModelCreateContestProblem;
+import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.AllArgsConstructor;
@@ -25,14 +26,14 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
-
+import java.util.Date;
 @RestController
 @CrossOrigin
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class ContestProblemController {
     ProblemTestCaseService problemTestCaseService;
-
+    ContestRepo contestRepo;
     @PostMapping("/create-problem")
     public ResponseEntity<?> createContestProblem(@RequestBody ModelCreateContestProblem modelCreateContestProblem, Principal principal) throws MiniLeetCodeException {
         log.info("create problem {}", modelCreateContestProblem);
@@ -298,8 +299,22 @@ public class ContestProblemController {
                                                                @RequestParam("file") MultipartFile file
                                                                ){
         log.info("contestSubmitProblemViaUploadFile, inputJson = " + inputJson);
+
         Gson gson = new Gson();
         ModelContestSubmitProgramViaUploadFile model = gson.fromJson(inputJson, ModelContestSubmitProgramViaUploadFile.class);
+        ContestEntity contestEntity = contestRepo.findContestByContestId(model.getContestId());
+        Date currentDate = new Date();
+        int timeTest = ((int) (currentDate.getTime() - contestEntity.getStartedAt().getTime())) / (60 * 1000); //minutes
+        //System.out.println(currentDate);
+        //System.out.println(testStartDate);
+        //System.out.println(timeTest);
+        //System.out.println(test.getDuration());
+
+        if (timeTest > contestEntity.getContestSolvingTime()) {
+            //System.out.println("out time~!");
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
+        }
+
         try {
             String source = "";
             InputStream inputStream = file.getInputStream();

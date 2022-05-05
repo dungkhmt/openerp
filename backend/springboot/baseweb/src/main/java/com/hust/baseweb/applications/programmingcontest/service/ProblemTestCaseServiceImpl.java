@@ -482,6 +482,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .contestId(contestId)
                 .contestName(contestEntity.getContestName())
                 .contestTime(contestEntity.getContestSolvingTime())
+                .startAt(contestEntity.getStartedAt())
                 .list(problems)
                 .unauthorized(false)
                 .isPublic(contestEntity.getIsPublic())
