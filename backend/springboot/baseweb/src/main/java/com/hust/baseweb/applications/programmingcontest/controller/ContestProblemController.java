@@ -309,10 +309,29 @@ public class ContestProblemController {
         //System.out.println(testStartDate);
         //System.out.println(timeTest);
         //System.out.println(test.getDuration());
+        log.info("contestSubmitProblemViaUploadFile, currentDate = " + currentDate + ", contest started at" + contestEntity.getStartedAt()
+                 + " timeTest = " + timeTest + " contestSolvingTime = " + contestEntity.getContestSolvingTime());
 
         if (timeTest > contestEntity.getContestSolvingTime()) {
-            //System.out.println("out time~!");
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
+            log.info("contestSubmitProblemViaUploadFile, TIME OUT!!!!! currentDate = " + currentDate + ", contest started at" + contestEntity.getStartedAt()
+                     + " timeTest = " + timeTest + " contestSolvingTime = " +
+                     contestEntity.getContestSolvingTime());
+
+            //return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
+
+            ModelContestSubmissionResponse resp = ModelContestSubmissionResponse.builder()
+                                          .status("TIME_OUT")
+                                          .testCasePass("0")
+                                          .runtime(new Long(0))
+                                          .memoryUsage(new Float(0))
+                                          .problemName("")
+                                          .contestSubmissionID(null)
+                                          .submittedAt(null)
+                                          .score(0)
+                                          .numberTestCasePassed(0)
+                                          .totalNumberTestCase(0)
+                                          .build();
+            return ResponseEntity.ok().body(resp);
         }
 
         try {

@@ -86,16 +86,25 @@ export default function StudentViewProgrammingContestProblemDetail() {
       .then((res) => {
         setIsProcessing(false);
         console.log("result submit = ", res);
-        setScore(res.score);
-        setNbTestCasePassed(res.numberTestCasePassed);
-        setNbTotalTestCase(res.totalNumberTestCase);
-        setRunTime(runTime);
-        set(res.status);
+        if (res.status == "TIME_OUT") {
+          alert("Time Out!!!");
+          setScore("");
+          setNbTestCasePassed("");
+          setNbTotalTestCase("");
+          setRunTime("");
+          setStatus(res.status);
+        } else {
+          setScore(res.score);
+          setNbTestCasePassed(res.numberTestCasePassed);
+          setNbTotalTestCase(res.totalNumberTestCase);
+          setRunTime(runTime);
+          setStatus(res.status);
+        }
       })
       .catch((e) => {
         setIsProcessing(false);
         console.error(e);
-        alert("Time Out!!!");
+        //alert("Time Out!!!");
       });
   };
 
