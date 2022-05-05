@@ -106,7 +106,9 @@ const StudentClassQuizzesTab = ({route}) => {
   } else {
     return (
       <SafeAreaView style={{flex: 1}}>
-        <View />
+        <View style={{flex: 1}}>
+          <Loader loading={loading} />
+        </View>
       </SafeAreaView>
     );
   }

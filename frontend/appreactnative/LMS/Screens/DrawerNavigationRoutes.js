@@ -10,6 +10,7 @@ import CustomSidebarMenu from './Components/CustomSidebarMenu';
 import NavigationDrawerHeader from './Components/NavigationDrawerHeader';
 import StudentQuizTestListScreen from '../screens/Student/StudentQuizTestListScreen';
 import StudentQuizTestDetailScreen from '../screens/Student/StudentQuizTestDetailScreen';
+import StudentQuizTestQuestionListScreen from '../screens/Student/StudentQuizTestQuestionListScreen';
 import StudentRegisterClassScreen from '../screens/Student/StudentRegisterClassScreen';
 import StudentClassListScreen from '../screens/Student/StudentClassListScreen';
 import StudentClassDetailScreen from '../screens/Student/StudentClassDetailScreen';
@@ -193,6 +194,20 @@ const HomeScreenStack = ({navigation}) => {
         component={StudentQuizTestDetailScreen}
         options={{
           title: 'Chi tiết Quiz Test',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentQuizTestQuestionListScreen"
+        component={StudentQuizTestQuestionListScreen}
+        options={{
+          title: 'Question List',
           headerStyle: {
             backgroundColor: Colors.controlBackground,
           },

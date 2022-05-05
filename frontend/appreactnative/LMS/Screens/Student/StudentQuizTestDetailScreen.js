@@ -10,6 +10,7 @@ import {studentGetQuizTestDetailAction} from '../../redux-saga/actions/StudentGe
 const StudentQuizTestDetailScreen = ({route}) => {
   console.log('StudentQuizTestDetailScreen: enter');
 
+  const navigation = useNavigation();
   const {testId} = route.params;
   const dispatch = useDispatch();
   const loading = useSelector(state => state.studentGetQuizTestDetailReducer.isFetching);
@@ -50,7 +51,7 @@ const StudentQuizTestDetailScreen = ({route}) => {
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {
-              // navigation.push('');
+              navigation.push('StudentQuizTestQuestionListScreen', {testId: testId});
             }}>
             <Text style={styles.buttonTextStyle}>View Questions</Text>
           </TouchableOpacity>

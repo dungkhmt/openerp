@@ -1,6 +1,8 @@
 import {combineReducers} from 'redux';
 import getMenuReducer from './GetMenuReducer';
 import studentGetQuizTestListReducer from './StudentGetQuizTestListReducer';
+import studentGetQuizTestQuestionListReducer from './StudentGetQuizTestQuestionListReducer';
+import studentPostQuizTestQuestionReducer from './StudentPostQuizTestQuestionReducer';
 import studentGetQuizTestDetailReducer from './StudentGetQuizTestDetailReducer';
 import studentAttendQuizTestReducer from './StudentAttendQuizTestReducer';
 import studentGetClassListReducer from './StudentGetClassListReducer';
@@ -18,6 +20,8 @@ import studentAttendClassReducer from './StudentAttendClassReducer';
 const rootReducer = combineReducers({
   getMenuReducer,
   studentGetQuizTestListReducer,
+  studentGetQuizTestQuestionListReducer,
+  studentPostQuizTestQuestionReducer,
   studentGetQuizTestDetailReducer,
   studentAttendQuizTestReducer,
   studentGetClassListReducer,
