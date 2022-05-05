@@ -494,9 +494,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 //        UserLogin userLogin = userLoginRepo.findByUserLoginId(userName);
         ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
         Date now = new Date();
-        if(now.before(contestEntity.getStartedAt()) ){
-            throw new MiniLeetCodeException("Wait contest start");
-        }
+        log.info("getContestSolvingDetailByContestId, contestId = " + contestId + " now = " + now + " contest start at " +
+                 contestEntity.getStartedAt());
+
+        //if(now.before(contestEntity.getStartedAt()) ){
+        //    throw new MiniLeetCodeException("Wait contest start");
+        //}
+
         UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
         log.info("contestEntity {}", contestEntity.getIsPublic());
 
