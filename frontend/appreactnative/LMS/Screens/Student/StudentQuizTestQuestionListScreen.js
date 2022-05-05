@@ -1,16 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {
-  View,
-  SafeAreaView,
-  Text,
-  FlatList,
-  Image,
-  StyleSheet,
-  Alert,
-  TouchableOpacity,
-  useWindowDimensions,
-  useColorScheme,
-} from 'react-native';
+import {View, SafeAreaView, Text, TouchableOpacity, Image, Alert, FlatList, StyleSheet, useWindowDimensions, useColorScheme} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import RenderHtml from 'react-native-render-html';
@@ -19,8 +8,8 @@ import PagerView from 'react-native-pager-view';
 
 import {Colors} from '../../styles/index';
 import Loader from '../Components/Loader';
-import {studentGetActiveQuizOfSessionAction} from '../../redux-saga/actions/StudentGetActiveQuizOfSessionAction';
-import {studentPostActiveQuizOfSessionAction} from '../../redux-saga/actions/StudentPostActiveQuizOfSessionAction';
+import {studentGetQuizTestQuestionListAction} from '../../redux-saga/actions/StudentGetQuizTestQuestionListAction';
+import {studentPostQuizTestQuestionAction} from '../../redux-saga/actions/StudentPostQuizTestQuestionAction';
 
 const Answer = ({data}) => {
   // console.log('Answer: enter, choiceAnswerId = ' + data.choiceAnswerId + ', checked = ' + data.checked);
@@ -63,20 +52,16 @@ const Question = ({total, index, data}) => {
     html: data.statement,
   };
   const dispatch = useDispatch();
-  const quiz = useSelector(
-    state => state.studentGetActiveQuizOfSessionReducer.quiz,
+  const quizTestQuestionList = useSelector(
+    state => state.studentGetQuizTestQuestionListReducer.quizTestQuestionList,
   );
   const submitResult = useSelector(
-    state => state.studentPostActiveQuizOfSessionReducer,
+    state => state.studentPostQuizTestQuestionAction,
   );
   const [submitted, setSubmitted] = useState(data.submitted);
 
   const renderItem = ({item}) => {
-    if (submitted) {
-      return <></>;
-    } else {
-      return <Answer data={item} />;
-    }
+    return <Answer data={item} />;
   };
 
   if (submitResult !== undefined && submitResult.status === 406) {
@@ -92,44 +77,36 @@ const Question = ({total, index, data}) => {
   }
 
   const ListFooterComponent = () => {
-    if (submitted) {
-      return (
-        <View style={{alignItems: 'center', justifyContent: 'center'}}>
-          <Text style={styles.submittedStyle}>Bạn đã submit câu trả lời</Text>
-        </View>
-      );
-    } else {
-      return (
-        <View style={styles.buttonStyle}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => {
-              var payload = {
-                testId: quiz.testId,
-                questionId: data.questionId,
-                quizGroupId: quiz.quizGroupId,
-              };
-              var chooseAnsIds = [];
-              quiz.listQuestion.forEach(question => {
-                if (question.questionId === data.questionId) {
-                  data.quizChoiceAnswerList.forEach(answer => {
-                    if (answer.checked) {
-                      chooseAnsIds.push(answer.choiceAnswerId);
-                    }
-                  });
-                }
-              });
-              payload.chooseAnsIds = chooseAnsIds;
-              // console.log(JSON.stringify(payload));
-              dispatch(studentPostActiveQuizOfSessionAction(payload));
-              data.submitted = true;
-              setSubmitted(data.submitted);
-            }}>
-            <Text style={styles.buttonTextStyle}>Chọn</Text>
-          </TouchableOpacity>
-        </View>
-      );
-    }
+    return (
+      <View style={styles.buttonStyle}>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => {
+            var payload = {
+              testId: quizTestQuestionList.testId,
+              questionId: data.questionId,
+              quizGroupId: quizTestQuestionList.quizGroupId,
+            };
+            var chooseAnsIds = [];
+            quizTestQuestionList.listQuestion.forEach(question => {
+              if (question.questionId === data.questionId) {
+                data.quizChoiceAnswerList.forEach(answer => {
+                  if (answer.checked) {
+                    chooseAnsIds.push(answer.choiceAnswerId);
+                  }
+                });
+              }
+            });
+            payload.chooseAnsIds = chooseAnsIds;
+            // console.log(JSON.stringify(payload));
+            dispatch(studentPostQuizTestQuestionAction(payload));
+            data.submitted = true;
+            setSubmitted(data.submitted);
+          }}>
+          <Text style={styles.buttonTextStyle}>{submitted ? 'Đã lưu' : 'Lưu'}</Text>
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   return (
@@ -201,23 +178,23 @@ const Question = ({total, index, data}) => {
   );
 };
 
-const StudentClassSessionDetailScreen = ({route}) => {
-  console.log('StudentClassSessionDetailScreen: enter');
+const StudentQuizTestQuestionListScreen = ({route}) => {
+  console.log('StudentQuizTestQuestionListScreen: enter');
 
-  const {studentClassId, classSessionId} = route.params;
+  const {testId} = route.params;
   // Observer results
   const dispatch = useDispatch();
   const loading = useSelector(
-    state => state.studentGetActiveQuizOfSessionReducer.isFetching,
+    state => state.studentGetQuizTestQuestionListReducer.isFetching,
   );
   const questionList = useSelector(
-    state => state.studentGetActiveQuizOfSessionReducer.quiz.listQuestion,
+    state => state.studentGetQuizTestQuestionListReducer.quizTestQuestionList.listQuestion,
   );
 
   useEffect(() => {
-    console.log('StudentClassSessionDetailScreen.useEffect: enter');
+    console.log('StudentQuizTestQuestionListScreen.useEffect: enter, testId=' + testId);
     dispatch(
-      studentGetActiveQuizOfSessionAction({classSessionId: classSessionId}),
+      studentGetQuizTestQuestionListAction({testId: testId}),
     );
   }, []);
 
@@ -257,7 +234,7 @@ const StudentClassSessionDetailScreen = ({route}) => {
   }
 };
 
-export default StudentClassSessionDetailScreen;
+export default StudentQuizTestQuestionListScreen;
 
 const styles = StyleSheet.create({
   pagerView: {
