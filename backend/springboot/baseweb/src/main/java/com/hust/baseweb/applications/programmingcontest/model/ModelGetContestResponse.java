@@ -14,4 +14,5 @@ public class ModelGetContestResponse {
     private long countDown;
     private Date startAt;
     private Boolean isPublic;
+    private String statusId;
 }

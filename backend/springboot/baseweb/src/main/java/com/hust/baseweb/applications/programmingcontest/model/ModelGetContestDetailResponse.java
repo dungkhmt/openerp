@@ -16,5 +16,7 @@ public class ModelGetContestDetailResponse {
     private List<ModelGetProblemDetailResponse> list;
     private boolean unauthorized;
     private Boolean isPublic;
+    private String statusId;
+    private List<String> listStatusIds;
 
 }

@@ -312,7 +312,8 @@ public class ContestProblemController {
         log.info("contestSubmitProblemViaUploadFile, currentDate = " + currentDate + ", contest started at" + contestEntity.getStartedAt()
                  + " timeTest = " + timeTest + " contestSolvingTime = " + contestEntity.getContestSolvingTime());
 
-        if (timeTest > contestEntity.getContestSolvingTime()) {
+        //if (timeTest > contestEntity.getContestSolvingTime()) {
+        if(!contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)){
             log.info("contestSubmitProblemViaUploadFile, TIME OUT!!!!! currentDate = " + currentDate + ", contest started at" + contestEntity.getStartedAt()
                      + " timeTest = " + timeTest + " contestSolvingTime = " +
                      contestEntity.getContestSolvingTime());

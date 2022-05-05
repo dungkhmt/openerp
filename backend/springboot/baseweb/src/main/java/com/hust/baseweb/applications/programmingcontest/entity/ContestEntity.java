@@ -3,6 +3,7 @@ package com.hust.baseweb.applications.programmingcontest.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,24 @@ import java.util.List;
 //@Table(name = "contest")
 @Table(name = "contest_new")
 public class ContestEntity {
+    public static final String CONTEST_STATUS_CREATED = "CREATED";
+    public static final String CONTEST_STATUS_OPEN = "OPEN";
+    public static final String CONTEST_STATUS_RUNNING = "RUNNING";
+    public static final String CONTEST_STATUS_COMPLETED = "COMPLETED";
+    public static final String CONTEST_STATUS_CLOSED = "CLOSED";
+    public static final String CONTEST_STATUS_DISABLED = "DISABLED";
+
+    public static List<String> getStatusIds(){
+        List<String> L = new ArrayList();
+        L.add(ContestEntity.CONTEST_STATUS_CREATED);
+        L.add(ContestEntity.CONTEST_STATUS_OPEN);
+        L.add(ContestEntity.CONTEST_STATUS_CLOSED);
+        L.add(ContestEntity.CONTEST_STATUS_DISABLED);
+        L.add(ContestEntity.CONTEST_STATUS_RUNNING);
+        L.add(ContestEntity.CONTEST_STATUS_COMPLETED);
+        return L;
+    }
+
     @Id
     @Column(name = "contest_id")
     private String contestId;
@@ -60,5 +79,9 @@ public class ContestEntity {
 
     @Column(name = "end_time")
     private Date endTime;
+
+    @Column(name="status_id")
+    private String statusId;
+
 
 }

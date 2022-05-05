@@ -354,6 +354,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .startedCountDownTime(DateTimeUtils.minusMinutesDate(modelCreateContest.getStartedAt(), modelCreateContest.getCountDownTime()))
                                                            .endTime(DateTimeUtils.addMinutesDate(modelCreateContest.getStartedAt(), modelCreateContest.getContestTime()))
                                                            .userId(userName)
+                                                           .statusId(ContestEntity.CONTEST_STATUS_CREATED)
+                                                           .createdAt(new Date())
                                                            .build();
                 return contestRepo.save(contestEntity);
             }else{
@@ -365,6 +367,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .isPublic(modelCreateContest.isPublic())
                                                            .countDown(modelCreateContest.getCountDownTime())
                                                            .userId(userName)
+                                                           .statusId(ContestEntity.CONTEST_STATUS_CREATED)
+                                                           .createdAt(new Date())
                                                            .build();
                 return contestRepo.save(contestEntity);
             }
@@ -407,6 +411,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .startedCountDownTime(DateTimeUtils.minusMinutesDate(modelUpdateContest.getStartedAt(), modelUpdateContest.getCountDownTime()))
                                                        .endTime(DateTimeUtils.addMinutesDate(modelUpdateContest.getStartedAt(), modelUpdateContest.getContestSolvingTime()))
                                                        .isPublic(isPublic)
+                                                       .statusId(modelUpdateContest.getStatusId())
                                                        .build();
             return contestRepo.save(contestEntity);
 
@@ -418,6 +423,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .problems(problemEntities)
                                                        .userId(userName)
                                                        .countDown(modelUpdateContest.getCountDownTime())
+                                                       .statusId(modelUpdateContest.getStatusId())
                                                        .build();
             return contestRepo.save(contestEntity);
         }
@@ -455,6 +461,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     @Override
     public ModelGetContestDetailResponse getContestDetailByContestIdAndTeacher(String contestId, String userName){
 //        UserLogin userLogin = userLoginRepo.findByUserLoginId(userName);
+
+
         ContestEntity contestEntity = contestRepo.findContestEntityByContestIdAndUserId(contestId, userName);
         log.info("contestEntity {}", contestEntity);
         if(contestEntity == null){
@@ -475,6 +483,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     .problemName(contestProblem.getProblemName())
                     .levelOrder(contestProblem.getLevelOrder())
                     .problemDescription(contestProblem.getProblemDescription())
+
                     .build();
             problems.add(p);
         });
@@ -486,7 +495,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .list(problems)
                 .unauthorized(false)
                 .isPublic(contestEntity.getIsPublic())
-                .build();
+                                            .statusId(contestEntity.getStatusId())
+                                            .listStatusIds(ContestEntity.getStatusIds())
+                                            .build();
     }
 
     @Override
@@ -500,6 +511,20 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         //if(now.before(contestEntity.getStartedAt()) ){
         //    throw new MiniLeetCodeException("Wait contest start");
         //}
+
+        if(!contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)){
+            return ModelGetContestDetailResponse.builder()
+                                                .contestId(contestId)
+                                                .contestName(contestEntity.getContestName())
+                                                .contestTime(contestEntity.getContestSolvingTime())
+                                                .startAt(contestEntity.getStartedAt())
+                                                .list(new ArrayList())
+                                                .unauthorized(false)
+                                                .isPublic(contestEntity.getIsPublic())
+                                                .statusId(contestEntity.getStatusId())
+                                                .listStatusIds(ContestEntity.getStatusIds())
+                                                .build();
+        }
 
         UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
         log.info("contestEntity {}", contestEntity.getIsPublic());
@@ -894,8 +919,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 //        Page<ContestEntity> list = userRegistrationContestPagingAndSortingRepo.getContestByUserAndStatusSuccessful(pageable, userName);
         Date currentDate = new Date();
         log.info("getRegisteredContestByUser, currentDateTime = " + currentDate);
-        Page<ContestEntity> list = userRegistrationContestPagingAndSortingRepo.getContestByUserAndStatusSuccessfulInSolvingTime(pageable, userName, currentDate);
-
+        //Page<ContestEntity> list = userRegistrationContestPagingAndSortingRepo.getContestByUserAndStatusSuccessfulInSolvingTime(pageable, userName, currentDate);
+        Page<ContestEntity> list = userRegistrationContestPagingAndSortingRepo.getContestByUser(pageable, userName);
         return getModelGetContestPageResponse(list);
     }
 
@@ -1130,6 +1155,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                                          .countDown(contest.getCountDown())
                                                                                          .startAt(contest.getStartedAt())
                                                                                          .isPublic(contest.getIsPublic())
+                                                                                         .statusId(contest.getStatusId())
                                                                                          .build();
                 lists.add(modelGetContestResponse);
             });
