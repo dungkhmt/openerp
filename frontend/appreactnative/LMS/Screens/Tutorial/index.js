@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
 import PagerView from 'react-native-pager-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -18,6 +18,10 @@ const TutorialScreen = ({navigation}) => {
           backgroundColor: Colors.controlBackground,
           justifyContent: 'flex-end',
         }}>
+        <Image
+          source={require('../../images/tutorial_1.png')}
+          style={styles.backgroundImage}
+        />
         <View style={styles.card}>
           <Text style={{fontSize: 24, fontWeight: 'bold', color: Colors.controlBackground, textAlign: 'center', margin: 24}}>Welcome to LMS</Text>
           <Text style={{fontSize: 20, color: Colors.text, margin: 20}}>This is an online class that allows you to study as in real class.</Text>
@@ -45,6 +49,10 @@ const TutorialScreen = ({navigation}) => {
           backgroundColor: Colors.controlBackground,
           justifyContent: 'flex-end',
         }}>
+        <Image
+          source={require('../../images/tutorial_2.png')}
+          style={styles.backgroundImage}
+        />
         <View style={styles.card}>
           <Text style={{fontSize: 24, fontWeight: 'bold', color: Colors.controlBackground, textAlign: 'center', margin: 24}}>Study anywhere</Text>
           <Text style={{fontSize: 20, color: Colors.text, margin: 20}}>Enjoy the captivating process of online education in any place. Comfort and convenience.</Text>
@@ -72,6 +80,10 @@ const TutorialScreen = ({navigation}) => {
           backgroundColor: Colors.controlBackground,
           justifyContent: 'flex-end',
         }}>
+        <Image
+          source={require('../../images/tutorial_3.png')}
+          style={styles.backgroundImage}
+        />
         <View style={styles.card}>
           <Text style={{fontSize: 24, fontWeight: 'bold', color: Colors.controlBackground, textAlign: 'center', margin: 24}}>Ready to find a class?</Text>
           <Text style={{fontSize: 20, color: Colors.text, margin: 20}}>Join online class that will help you study knowledge and take examinations to archive graduate certificate.</Text>
@@ -136,5 +148,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    resizeMode: 'contain',
+    alignContent: 'center',
+    margin: 24,
   },
 });

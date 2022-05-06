@@ -53,7 +53,7 @@ const makeMenuModel = menuList => {
   input.forEach(element => {
     var data = [];
     element.child.forEach(child => {
-      data.push({key: child.id, title: child.text});
+      data.push({key: child.id, title: child.text, color: child.color, description: child.description});
     });
     output.push({title: element.text, data: data, key: element.id});
   });
@@ -76,7 +76,13 @@ const MenuItem = ({menuItem}) => {
             navigation.push(routeName);
           }
         }}>
-        <Text style={styles.menuItem}>{menuItem.title}</Text>
+        <View style={{flex: 1, flexDirection: 'row'}}>
+          <View style={{width: 96, height: 96, borderRadius: 4, backgroundColor: menuItem.color}} />
+          <View style={{flex: 1, flexDirection: 'column'}}>
+            <Text style={styles.menuItem}>{menuItem.title}</Text>
+            <Text style={styles.menuDescription}>{menuItem.description}</Text>
+          </View>
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -129,7 +135,7 @@ export default HomeScreen;
 
 const styles = StyleSheet.create({
   sectionHeader: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#ffffff',
     padding: 8,
@@ -155,7 +161,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.text,
-    margin: 8,
-    padding: 8,
+    margin: 4,
+    padding: 4,
+    height: 44,
+  },
+  menuDescription: {
+    fontSize: 14,
+    color: Colors.text,
+    margin: 4,
+    padding: 4,
+    height: 36,
   },
 });

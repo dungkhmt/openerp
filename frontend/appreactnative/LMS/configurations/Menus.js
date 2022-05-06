@@ -13,6 +13,8 @@ export const MenuProgrammingContestTeacher = () => {
         icon: null,
         text: 'Problem',
         child: [],
+        color: '#E57373',
+        description: 'Vấn đề',
       },
       {
         id: 'MENU_PROGRAMMING_CONTEST_MANAGER_CREATE_PROBLEM',
@@ -21,6 +23,8 @@ export const MenuProgrammingContestTeacher = () => {
         icon: null,
         text: 'Create Problem',
         child: [],
+        color: '#F06292',
+        description: 'Tạo vấn đề',
       },
       {
         id: 'MENU_PROGRAMMING_CONTEST_MANAGER_CREATE_CONTEST',
@@ -29,6 +33,8 @@ export const MenuProgrammingContestTeacher = () => {
         icon: null,
         text: 'Create Contest',
         child: [],
+        color: '#BA68C8',
+        description: 'Tạo cuộc thi',
       },
       {
         id: 'MENU_PROGRAMMING_CONTEST_MANAGER_LIST_CONTEST',
@@ -37,6 +43,8 @@ export const MenuProgrammingContestTeacher = () => {
         icon: null,
         text: 'List Contest',
         child: [],
+        color: '#9575CD',
+        description: 'Danh sách cuộc thi',
       },
       {
         id: 'MENU_PROGRAMMING_CONTEST_MANAGER_IDE',
@@ -45,6 +53,8 @@ export const MenuProgrammingContestTeacher = () => {
         icon: null,
         text: 'IDE',
         child: [],
+        color: '#7986CB',
+        description: 'Môi trường phát triển tích hợp',
       },
       {
         id: 'MENU_PROGRAMMING_CONTEST_MANAGER',
@@ -53,6 +63,8 @@ export const MenuProgrammingContestTeacher = () => {
         icon: null,
         text: 'List Contest Manager',
         child: [],
+        color: '#64B5F6',
+        description: 'Quản lý danh sách cuộc thi',
       },
     ],
   };
@@ -73,6 +85,8 @@ export const MenuProgrammingContestStudent = () => {
         icon: null,
         text: 'List Contest Not Registered',
         child: [],
+        color: '#DFFF00',
+        description: 'Các cuộc thi chưa đăng ký',
       },
       {
         id: 'MENU_PROGRAMMING_CONTEST_PARTICIPANT_LIST_REGISTERED_CONTEST',
@@ -81,6 +95,8 @@ export const MenuProgrammingContestStudent = () => {
         icon: null,
         text: 'List Contest Registered',
         child: [],
+        color: '#4FC3F7',
+        description: 'Các cuộc thi đã đăng ký',
       },
       {
         id: 'MENU_PROGRAMMING_CONTEST_PARTICIPANT_IDE',
@@ -89,6 +105,8 @@ export const MenuProgrammingContestStudent = () => {
         icon: null,
         text: 'IDE',
         child: [],
+        color: '#4DD0E1',
+        description: 'Môi trường phát triển tích hợp',
       },
       {
         id: 'MENU_PROGRAMMING_CONTEST_PARTICIPANT_LIST_PUBLIC_PROBLEM',
@@ -97,6 +115,8 @@ export const MenuProgrammingContestStudent = () => {
         icon: null,
         text: 'Practical Problem',
         child: [],
+        color: '#4DB6AC',
+        description: 'Vấn đề thực tế',
       },
     ],
   };
@@ -117,6 +137,8 @@ export const MenuEduLearningManagement = () => {
         icon: null,
         text: 'Đăng ký lớp',
         child: [],
+        color: '#81C784',
+        description: 'Sinh viên đăng ký vào lớp học',
       },
       {
         id: 'MENU_EDUCATION_LEARNING_MANAGEMENT_STUDENT_VIEW_LIST_CLASS',
@@ -125,6 +147,8 @@ export const MenuEduLearningManagement = () => {
         icon: null,
         text: 'Danh sách lớp',
         child: [],
+        color: '#AED581',
+        description: 'Danh sách lớp học',
       },
       {
         id: 'MENU_EDUCATION_TEACHING_MANAGEMENT_STUDENT_QUIZ_TEST_LIST',
@@ -133,6 +157,8 @@ export const MenuEduLearningManagement = () => {
         icon: null,
         text: 'Quiz Test',
         child: [],
+        color: '#DCE775',
+        description: 'Kiểm tra trắc nghiệm',
       },
 
       {
@@ -142,6 +168,8 @@ export const MenuEduLearningManagement = () => {
         icon: null,
         text: 'Programming Contest',
         child: [],
+        color: '#FFF176',
+        description: 'Cuộc thi lập trình',
       },
     ],
   };
@@ -162,6 +190,8 @@ export const MenuEduTeachingManagement = () => {
         icon: null,
         text: 'Môn học',
         child: [],
+        color: '#FFD54F',
+        description: 'Môn học',
       },
       {
         id: 'MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_VIEW_LIST_CLASS',
@@ -170,6 +200,8 @@ export const MenuEduTeachingManagement = () => {
         icon: null,
         text: 'Lớp',
         child: [],
+        color: '#FFB74D',
+        description: 'Lớp',
       },
       {
         id: 'MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_CREATE_CLASS',
@@ -178,6 +210,8 @@ export const MenuEduTeachingManagement = () => {
         icon: null,
         text: 'Tạo lớp',
         child: [],
+        color: '#FF8A65',
+        description: 'Tạo lớp',
       },
       {
         id: 'MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_QUIZ_TEST_LIST',
@@ -186,6 +220,8 @@ export const MenuEduTeachingManagement = () => {
         icon: null,
         text: 'Quiz Test',
         child: [],
+        color: '#A1887F',
+        description: 'Quiz Test',
       },
       {
         id: '',
@@ -194,6 +230,8 @@ export const MenuEduTeachingManagement = () => {
         icon: null,
         text: 'Link hữu ích',
         child: [],
+        color: '#E0E0E0',
+        description: 'Link hữu ích',
       },
       {
         id: 'MENU_EDUCATION_MANAGEMENT_PROGRAMMING_CONTEST',
@@ -202,13 +240,14 @@ export const MenuEduTeachingManagement = () => {
         icon: null,
         text: 'Programming Contest',
         child: [],
+        color: '#90A4AE',
+        description: 'Programming Contest',
       },
     ],
   };
 };
 
-export const getRouteNameByMenuId = (menuId) => {
-
+export const getRouteNameByMenuId = menuId => {
   const RouteMap = [
     {menuId: 'MENU_PROGRAMMING_CONTEST_MANAGER', routeName: null},
     {menuId: 'MENU_PROGRAMMING_CONTEST_MANAGER_LIST_PROBLEM', routeName: 'TeacherProblemListScreen'},
@@ -216,7 +255,7 @@ export const getRouteNameByMenuId = (menuId) => {
     {menuId: 'MENU_PROGRAMMING_CONTEST_MANAGER_CREATE_CONTEST', routeName: 'TeacherCreateContestScreen'},
     {menuId: 'MENU_PROGRAMMING_CONTEST_MANAGER_LIST_CONTEST', routeName: 'TeacherContestListScreen'},
     {menuId: 'MENU_PROGRAMMING_CONTEST_MANAGER_IDE', routeName: 'TeacherIDEScreen'},
-    
+
     {menuId: 'MENU_PROGRAMMING_CONTEST_PARTICIPANT', routeName: null},
     {menuId: 'MENU_PROGRAMMING_CONTEST_PARTICIPANT_LIST_NOT_REGISTERED_CONTEST', routeName: 'StudentNotRegisteredProgrammingContestScreen'},
     {menuId: 'MENU_PROGRAMMING_CONTEST_PARTICIPANT_LIST_REGISTERED_CONTEST', routeName: 'StudentRegisteredProgrammingContestScreen'},

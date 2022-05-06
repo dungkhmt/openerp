@@ -28,7 +28,7 @@ const StudentRegisterClass = ({data}) => {
     <View style={styles.card}>
       <Text style={styles.classCode}>Mã lớp: {data.classCode}</Text>
       <Text style={styles.courseId}>Mã học phần: {data.courseId}</Text>
-      <Text style={styles.name}>Tên học phần: {data.name}</Text>
+      <Text style={styles.courseName}>Tên học phần: {data.courseName}</Text>
       <Text style={styles.classType}>Loại lớp: {data.classType}</Text>
       <Text style={styles.departmentId}>Khoa/Viện: {data.departmentId}</Text>
       {!data.registered ? (
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     color: Colors.text,
     padding: 8,
   },
-  name: {
+  courseName: {
     fontWeight: 'bold',
     padding: 8,
     fontSize: 16,
