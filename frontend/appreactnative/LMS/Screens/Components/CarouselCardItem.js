@@ -1,5 +1,12 @@
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions, Image} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Linking,
+  TouchableOpacity,
+} from 'react-native';
 
 import {Colors} from '../../styles/index';
 
@@ -9,8 +16,19 @@ export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.75);
 const CarouselCardItem = ({item, index}) => {
   return (
     <View style={styles.container} key={index}>
-      <Text style={styles.header}>{item.title}</Text>
-      <Text style={styles.body}>{item.body}</Text>
+      <TouchableOpacity
+        onPress={() => {
+          Linking.canOpenURL(item.link).then(supported => {
+            if (supported) {
+              Linking.openURL(item.link);
+            } else {
+              console.log("Don't know how to open URI: " + item.link);
+            }
+          });
+        }}>
+        <Text style={styles.header}>{item.title}</Text>
+        <Text style={styles.body}>{item.body}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -37,14 +55,14 @@ const styles = StyleSheet.create({
   },
   header: {
     color: 'white',
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
     paddingLeft: 16,
     paddingTop: 16,
   },
   body: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 16,
     paddingLeft: 20,
     paddingRight: 20,
   },
