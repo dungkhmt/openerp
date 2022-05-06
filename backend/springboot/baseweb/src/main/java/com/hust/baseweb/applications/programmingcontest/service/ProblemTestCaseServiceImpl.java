@@ -558,6 +558,29 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public List<ModelProblemSubmissionDetailByTestCaseResponse> getContestProblemSubmissionDetailByTestCaseOfASubmission(
+        UUID submissionId
+    ) {
+        List<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId((submissionId));
+        log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
+        List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = new ArrayList();
+        for(ContestSubmissionTestCaseEntity e: L){
+            retLst.add(new ModelProblemSubmissionDetailByTestCaseResponse(e.getContestSubmissionTestcaseId(),
+                                                                          e.getContestId(),
+                                                                          e.getProblemId(),
+                                                                          e.getSubmittedByUserLoginId(),
+                                                                          e.getTestCaseId(),
+                                                                          e.getStatus(),
+                                                                          e.getPoint(),
+                                                                          e.getTestCaseOutput(),
+                                                                          e.getParticipantSolutionOtput(),
+                                                                          e.getCreatedStamp()
+            ));
+        }
+        return retLst;
+    }
+
+    @Override
     public ModelContestSubmissionResponse problemDetailSubmission(ModelProblemDetailSubmission modelProblemDetailSubmission, String problemId, String userName) throws Exception {
         log.info("source {} ", modelProblemDetailSubmission.getSource());
         UserLogin userLogin = userLoginRepo.findByUserLoginId(userName);

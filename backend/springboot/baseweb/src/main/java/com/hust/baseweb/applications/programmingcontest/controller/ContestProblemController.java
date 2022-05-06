@@ -281,6 +281,12 @@ public class ContestProblemController {
         log.info("resp {}", resp);
         return ResponseEntity.status(200).body(resp);
     }
+    @GetMapping("/get-contest-problem-submission-detail-by-testcase-of-a-submission/{submissionId}")
+    public ResponseEntity<?> getContestProblemSubmissionDetailByTestCaseOfASubmission(Principal principal, @PathVariable UUID submissionId){
+        List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = problemTestCaseService
+            .getContestProblemSubmissionDetailByTestCaseOfASubmission(submissionId);
+        return ResponseEntity.ok().body(retLst);
+    }
     @GetMapping("/get-contest-problem-submission-detail-by-testcase")
     public ResponseEntity<?> getContestProblemSubmissionDetailByTestCase(Principal principal,
                                                                          @RequestParam int page, int size, Pageable pageable){

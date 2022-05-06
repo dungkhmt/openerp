@@ -9,6 +9,7 @@ import {
   MenuItem,
   TableHead,
   Typography,
+  CircularProgress,
 } from "@material-ui/core";
 
 import Paper from "@material-ui/core/Paper";
@@ -68,6 +69,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
+    setIsProcessing(true);
     let body = {
       problemId: problemId,
       contestId: contestId,
@@ -153,6 +155,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
       <div>
         <h3>Name: {problem ? problem.problemName : ""}</h3>
       </div>
+
       <div>
         <Typography>
           <h2>Description</h2>
@@ -241,8 +244,10 @@ export default function StudentViewProgrammingContestProblemDetail() {
               id="selected-upload-file"
               onChange={onFileChange}
             />
+            {isProcessing ? <CircularProgress /> : ""}
           </Grid>
         </form>
+
         <div>
           <h2>Status: {status}</h2>
         </div>
