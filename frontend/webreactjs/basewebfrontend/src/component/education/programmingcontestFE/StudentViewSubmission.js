@@ -4,10 +4,12 @@ import {Box, Typography} from "@mui/material";
 import {components, localization, theme} from "../../../utils/MaterialTableUtils";
 import MaterialTable, {MTableToolbar} from "material-table";
 import {makeStyles, MuiThemeProvider} from "@material-ui/core/styles";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles((theme) => ({}));
 
 export default function StudentViewSubmission() {
+  const { t } = useTranslation("education/programmingcontest/studentViewSubmission");
   const [submissions, setSubmissions] = useState([]);
   const getSubmissions = async () => {
     request(
@@ -28,7 +30,7 @@ export default function StudentViewSubmission() {
   }, []);
 
   const columns = [
-    {title: "Problem", field: "problemId"},
+    {title: t("problem"), field: "problemId"},
     {
       title: "Status", field: "status", cellStyle:
         (status) => {
