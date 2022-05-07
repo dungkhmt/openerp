@@ -1,6 +1,7 @@
 package com.hust.baseweb.applications.chat.chatvoice.controller;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -19,8 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("roomParticipant")
@@ -46,9 +46,12 @@ public class RoomParticipantController {
   }
 
   @PostMapping("/invite")
-  public ResponseEntity<?> inviteParticipant(@RequestBody String userLoginId, @RequestBody Room room) {
-    UserLogin invitedParticipant = userService.findById(userLoginId);
-    roomParticipantService.inviteParticipant(room, invitedParticipant);
+  public ResponseEntity<?> inviteParticipant(@RequestBody HashMap<String, String> roomParticipant) {
+    UUID roomId = UUID.fromString(roomParticipant.get("roomId"));
+    String userLoginId = roomParticipant.get("userLoginId");
+    Room r = roomService.findByRoomId(roomId);
+    UserLogin userLogin = userService.findById(userLoginId);
+    roomParticipantService.inviteParticipant(r, userLogin);
     return ResponseEntity.ok().build();
   }
 

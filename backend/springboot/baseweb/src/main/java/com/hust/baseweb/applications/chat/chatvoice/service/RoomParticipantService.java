@@ -31,9 +31,12 @@ public class RoomParticipantService {
   }
 
   public String addOrUpdateParticipant(Room room, UserLogin participant, String peerId) {
-    Optional<RoomParticipant> rParticipant = roomParticipantRepository.findByParticipant(participant);
+    Optional<RoomParticipant> rParticipant = roomParticipantRepository.findByParticipantAndRoom(participant, room);
     if (rParticipant.isPresent()) {
-      return rParticipant.get().getId().toString();
+      RoomParticipant p = rParticipant.get();
+      p.setPeerId(peerId);
+      roomParticipantRepository.save(p);
+      return p.getId().toString();
     } else {
       UUID id = UUID.randomUUID();
       RoomParticipant roomParticipant = new RoomParticipant(id, room, participant, peerId);
@@ -59,15 +62,15 @@ public class RoomParticipantService {
     return res;
   }
 
-  public void inviteParticipant(Room room, UserLogin userLogin) {
-    UUID id = room.getId();
-    Room r = roomRepository.findById(id);
-    Optional<RoomParticipant> rParticipant = roomParticipantRepository.findByParticipant(userLogin);
+  public void inviteParticipant(Room r, UserLogin userLogin) {
+    Optional<RoomParticipant> rParticipant = roomParticipantRepository.findByParticipantAndRoom(userLogin, r);
     if (rParticipant.isPresent()) {
       rParticipant.get().setIsInvited(true);
       roomParticipantRepository.save(rParticipant.get());
     } else {
-      RoomParticipant roomParticipant = new RoomParticipant(userLogin, room);
+      UUID uuid = UUID.randomUUID();
+      System.out.println(userLogin.getUserLoginId());
+      RoomParticipant roomParticipant = new RoomParticipant(uuid, userLogin, r);
       roomParticipant.setIsInvited(true);
       roomParticipantRepository.save(roomParticipant);
     }

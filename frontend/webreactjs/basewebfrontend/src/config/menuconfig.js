@@ -38,7 +38,7 @@ import {
 import { general } from "./menuconfig/general";
 import { teachingassignment } from "./menuconfig/teachingassignment";
 import { user } from "./menuconfig/user";
-
+import { tmscontainer } from "./menuconfig/tmscontainer";
 export const MENU_LIST = [];
 MENU_LIST.push(general);
 MENU_LIST.push(ProgrammingContestMenuTeacher);
@@ -78,7 +78,7 @@ MENU_LIST.push(warehouse);
 // MENU_LIST.push(salereport);
 // MENU_LIST.push(facilityreport);
 // MENU_LIST.push(tmsreport);
-// MENU_LIST.push(tmscontainer);
+MENU_LIST.push(tmscontainer);
 // MENU_LIST.push(webcam);
 // MENU_LIST.push(backlog);
 // MENU_LIST.push(lake_mgr);

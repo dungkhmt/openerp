@@ -13,4 +13,5 @@ public class ModelUpdateContest {
     private Date startedAt;
     private String isPublic;
     private long countDownTime;
+    private String statusId;
 }

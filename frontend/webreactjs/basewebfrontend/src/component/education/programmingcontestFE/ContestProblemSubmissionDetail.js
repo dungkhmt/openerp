@@ -14,7 +14,7 @@ import { java } from "@codemirror/lang-java";
 import { pythonLanguage } from "@codemirror/lang-python";
 import { javascript } from "@codemirror/lang-javascript";
 import { getStatusColor } from "./lib";
-
+import ParticipantProgramSubmissionDetailTestCaseByTestCase from "./ParticipantProgramSubmissionDetailTestCaseByTestCase";
 export default function ContestProblemSubmissionDetail() {
   const { problemSubmissionId } = useParams();
   const [memoryUsage, setMemoryUsage] = useState();
@@ -46,7 +46,7 @@ export default function ContestProblemSubmissionDetail() {
     console.log("problemSubmissionId ", problemSubmissionId);
     request(
       "get",
-       "/get-contest-problem-submission-detail/" + problemSubmissionId,
+      "/get-contest-problem-submission-detail/" + problemSubmissionId,
       (res) => {
         setMemoryUsage(res.data.memoryUsage);
         setProblemId(res.data.problemId);
@@ -114,6 +114,7 @@ export default function ContestProblemSubmissionDetail() {
       <br />
       <Typography variant={"h5"}>Submitted Code: {submittedAt}</Typography>
       <Typography variant={"h5"}>Language: {submissionLanguage}</Typography>
+      {/*
       <CodeMirror
         height={"400px"}
         width="100%"
@@ -121,6 +122,10 @@ export default function ContestProblemSubmissionDetail() {
         editable={false}
         autoFocus={false}
         value={submissionSource}
+      />
+      */}
+      <ParticipantProgramSubmissionDetailTestCaseByTestCase
+        submissionId={problemSubmissionId}
       />
     </div>
   );

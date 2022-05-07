@@ -5,6 +5,7 @@ import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
 import com.hust.baseweb.applications.programmingcontest.model.ModelCreateContestProblem;
+import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.AllArgsConstructor;
@@ -25,14 +26,14 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
-
+import java.util.Date;
 @RestController
 @CrossOrigin
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class ContestProblemController {
     ProblemTestCaseService problemTestCaseService;
-
+    ContestRepo contestRepo;
     @PostMapping("/create-problem")
     public ResponseEntity<?> createContestProblem(@RequestBody ModelCreateContestProblem modelCreateContestProblem, Principal principal) throws MiniLeetCodeException {
         log.info("create problem {}", modelCreateContestProblem);
@@ -89,6 +90,19 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(problemEntity);
     }
 
+    @GetMapping("/get-problem-detail-view-by-student/{problemId}")
+    public ResponseEntity<?> getProblemDetailViewByStudent(Principal principal,@PathVariable("problemId") String problemId){
+        try {
+            ProblemEntity problemEntity = problemTestCaseService.getContestProblem(problemId);
+            ModelStudentViewProblemDetail model = new ModelStudentViewProblemDetail();
+            model.setProblemStatement(problemEntity.getProblemDescription());
+            model.setProblemName(problemEntity.getProblemName());
+            return ResponseEntity.ok().body(model);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body("NOTFOUND");
+    }
     @PostMapping("/update-problem-detail/{problemId}")
     public ResponseEntity<?> updateProblemDetails(@RequestBody ModelCreateContestProblem modelCreateContestProblem, @PathVariable("problemId") String problemId, Principal principal) throws Exception {
         log.info("updateProblemDetails problemId {}", problemId);
@@ -267,6 +281,12 @@ public class ContestProblemController {
         log.info("resp {}", resp);
         return ResponseEntity.status(200).body(resp);
     }
+    @GetMapping("/get-contest-problem-submission-detail-by-testcase-of-a-submission/{submissionId}")
+    public ResponseEntity<?> getContestProblemSubmissionDetailByTestCaseOfASubmission(Principal principal, @PathVariable UUID submissionId){
+        List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = problemTestCaseService
+            .getContestProblemSubmissionDetailByTestCaseOfASubmission(submissionId);
+        return ResponseEntity.ok().body(retLst);
+    }
     @GetMapping("/get-contest-problem-submission-detail-by-testcase")
     public ResponseEntity<?> getContestProblemSubmissionDetailByTestCase(Principal principal,
                                                                          @RequestParam int page, int size, Pageable pageable){
@@ -278,6 +298,69 @@ public class ContestProblemController {
             .getContestProblemSubmissionDetailByTestCase(sortedByCreatedStampDsc);
 
         return ResponseEntity.ok().body(lst);
+    }
+    @PostMapping("/contest-submit-problem-via-upload-file")
+    public ResponseEntity<?> contestSubmitProblemViaUploadFile(Principal principal,
+                                                               @RequestParam("inputJson") String inputJson,
+                                                               @RequestParam("file") MultipartFile file
+                                                               ){
+        log.info("contestSubmitProblemViaUploadFile, inputJson = " + inputJson);
+
+        Gson gson = new Gson();
+        ModelContestSubmitProgramViaUploadFile model = gson.fromJson(inputJson, ModelContestSubmitProgramViaUploadFile.class);
+        ContestEntity contestEntity = contestRepo.findContestByContestId(model.getContestId());
+        Date currentDate = new Date();
+        int timeTest = ((int) (currentDate.getTime() - contestEntity.getStartedAt().getTime())) / (60 * 1000); //minutes
+        //System.out.println(currentDate);
+        //System.out.println(testStartDate);
+        //System.out.println(timeTest);
+        //System.out.println(test.getDuration());
+        log.info("contestSubmitProblemViaUploadFile, currentDate = " + currentDate + ", contest started at" + contestEntity.getStartedAt()
+                 + " timeTest = " + timeTest + " contestSolvingTime = " + contestEntity.getContestSolvingTime());
+
+        //if (timeTest > contestEntity.getContestSolvingTime()) {
+        if(!contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)){
+            log.info("contestSubmitProblemViaUploadFile, TIME OUT!!!!! currentDate = " + currentDate + ", contest started at" + contestEntity.getStartedAt()
+                     + " timeTest = " + timeTest + " contestSolvingTime = " +
+                     contestEntity.getContestSolvingTime());
+
+            //return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
+
+            ModelContestSubmissionResponse resp = ModelContestSubmissionResponse.builder()
+                                          .status("TIME_OUT")
+                                          .testCasePass("0")
+                                          .runtime(new Long(0))
+                                          .memoryUsage(new Float(0))
+                                          .problemName("")
+                                          .contestSubmissionID(null)
+                                          .submittedAt(null)
+                                          .score(0)
+                                          .numberTestCasePassed(0)
+                                          .totalNumberTestCase(0)
+                                          .build();
+            return ResponseEntity.ok().body(resp);
+        }
+
+        try {
+            String source = "";
+            InputStream inputStream = file.getInputStream();
+            Scanner in = new Scanner(inputStream);
+            while(in.hasNext()) {
+                String line = in.nextLine();
+                source += line + "\n";
+                System.out.println("contestSubmitProblemViaUploadFile: read line: " + line);
+            }
+            in.close();
+
+            ModelContestSubmission request = new ModelContestSubmission(model.getContestId(), model.getProblemId(), source,model.getLanguage());
+            ModelContestSubmissionResponse resp = problemTestCaseService.submitContestProblemTestCaseByTestCase(request, principal.getName());
+
+            log.info("resp {}", resp);
+            return ResponseEntity.status(200).body(resp);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body("OK");
     }
     @PostMapping("/submit-solution-output")
     public ResponseEntity<?>  submitSolutionOutput(Principal principale,

@@ -2,23 +2,27 @@ import { Backdrop, Box, Fade, Grid, Modal, TextField, Typography } from "@materi
 import { useState } from "react";
 import { useHistory } from "react-router";
 import PrimaryButton from "../../../../button/PrimaryButton";
+import { useGetInvitedMeets } from "../../hooks/chatVoiceHome";
 import { ENTER_KEY, styleModal } from "../../ultis/constant";
+import ListMeet from "../ListMeet";
 
 const Join = () => {
   const history = useHistory();
   const [open, setOpen] = useState(false);
   const [inputCode, setInputCode] = useState('');
+
+  const { data } = useGetInvitedMeets({ params: null });
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleChangeInputCode = (e) => {
     setInputCode(e.target.value);
   }
   const joinMeet = async (e) => {
-    if(e.key === ENTER_KEY) {
+    if (e.key === ENTER_KEY) {
       try {
 
         history.push('main/' + inputCode);
-      } catch(e) {
+      } catch (e) {
         console.error(e);
       }
     }
@@ -27,8 +31,9 @@ const Join = () => {
     <>
       <Grid container >
         <Grid item xs={12}>
+          <ListMeet title='Danh sách cuộc gặp mà bạn được mời' listMeet={data?.content || []} />
           <PrimaryButton onClick={handleOpen} id='button-meet-now'>
-            Join Other Meet
+            Tham gia một cuộc gặp khác
           </PrimaryButton>
         </Grid>
       </Grid>

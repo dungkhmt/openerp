@@ -13,11 +13,11 @@ export default function ButtonMeetNow() {
       onError: (e) => {
         console.log('co loi')
       }
-    });
+    }, {});
   }
   return (
     <PrimaryButton onClick={meetNow} id='button-meet-now'>
-        Tạo cuộc họp ngay
-      </PrimaryButton>
+      Tạo cuộc họp ngay
+    </PrimaryButton>
   );
 }

@@ -1,3 +1,19 @@
+export const API_URL = {
+    SEARCH_FRIEND: '/roomParticipant/searchToInviteById',
+    INVITE_FRIEND: '/roomParticipant/invite',
+    INVITED_MEET: '/roomParticipant/getListInvitedRoom',
+    OWNED_MEET: '/room/all',
+    SCHEDULE_MEET: '/room/create',
+}
+
+export const QUERY_KEY = {
+    SEARCH_FRIEND: 'searchFriend',
+    INVITE_FRIEND: 'inviteFriend',
+    INVITED_MEET: 'invitedMeet',
+    OWNED_MEET: 'ownedMeet',
+    SCHEDULE_MEET: 'scheduleMeet',
+}
+
 export const LIST_ICON = ['micro', 'camera', 'shareScreen', 'chat', 'participant', 'end'];
 
 export const ADMIN_ID = '0';

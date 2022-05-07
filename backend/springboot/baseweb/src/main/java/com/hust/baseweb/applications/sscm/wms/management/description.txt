@@ -1,1 +1,1 @@
-this package for managing warehousue 
+this package for managing warehousue

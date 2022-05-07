@@ -24,7 +24,7 @@ export const authPost = (dispatch, token, url, body) => {
           console.log(res);
           try {
             res.json().then((res1) => console.log(res1));
-          } catch (err) {}
+          } catch (err) { }
           throw Error();
         }
         // return null;
@@ -63,7 +63,7 @@ export const authPostMultiPart = (dispatch, token, url, body) => {
           console.log(res);
           try {
             res.json().then((res1) => console.log(res1));
-          } catch (err) {}
+          } catch (err) { }
           throw Error();
         }
         // return null;
@@ -110,7 +110,7 @@ export const authGet = (dispatch, token, url) => {
           console.log(res);
           try {
             res.json().then((res1) => console.log(res1));
-          } catch (err) {}
+          } catch (err) { }
           throw Error();
         }
         // return null;
@@ -140,7 +140,7 @@ export const authDelete = (dispatch, token, url, body) => {
           console.log(res);
           try {
             res.json().then((res1) => console.log(res1));
-          } catch (err) {}
+          } catch (err) { }
           throw Error();
         }
         // return null;
@@ -236,6 +236,7 @@ export async function request(
     if (isFunction(successHandler)) {
       successHandler(res);
     }
+    return res;
   } catch (e) {
     // Handling work to do when encountering all kinds of errors, e.g turn off the loading icon.
     if (isFunction(errorHandlers["onError"])) {
@@ -249,7 +250,7 @@ export async function request(
           if (isFunction(errorHandlers[401])) {
             errorHandlers[401](e);
           } else {
-            history.push({pathname: "/login"});
+            history.push({ pathname: "/login" });
             store.dispatch(logout());
           }
           break;

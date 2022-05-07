@@ -1,15 +1,17 @@
 package localsearch.domainspecific.vehiclerouting.apps.truckcontainer.model;
 
 public class TruckRoute {
+    private int index;
 	private Truck truck;
 	private int nbStops;
 	private int travelTime;
 	private RouteElement[] nodes;
 
-	public TruckRoute(Truck truck, int nbStops,
+	public TruckRoute(int index, Truck truck, int nbStops,
 			int travelTime,
 			RouteElement[] nodes){
 		super();
+		this.index = index;
 		this.truck = truck;
 		this.nbStops = nbStops;
 		this.travelTime = travelTime;
@@ -19,6 +21,8 @@ public class TruckRoute {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	public int getIndex(){return index;}
+    public void setIndex(int index){ this.index = index;}
 	public Truck getTruck() {
 		return truck;
 	}

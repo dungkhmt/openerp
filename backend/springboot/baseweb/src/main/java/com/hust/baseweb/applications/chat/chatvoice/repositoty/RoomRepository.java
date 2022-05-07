@@ -1,8 +1,9 @@
 package com.hust.baseweb.applications.chat.chatvoice.repositoty;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,8 +15,7 @@ import com.hust.baseweb.entity.UserLogin;
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
   public Room findById(UUID id);
-  
-  @Query("SELECT r.roomName, r.openIn, r.closeIn FROM Room r WHERE r.host = ?1 AND r.isDeleted = false AND r.roomName != ?2")
-  List<?> findAllRoomsOfThisUser(UserLogin host, String unnamedRoom);
-}
 
+  @Query("SELECT r.id, r.roomName, r.openIn, r.closeIn FROM Room r WHERE r.host = :host AND r.isDeleted = false AND r.roomName != :unnamedRoom")
+  Page<Room> findAllRoomsOfThisUser(Pageable page, UserLogin host, String unnamedRoom);
+}
