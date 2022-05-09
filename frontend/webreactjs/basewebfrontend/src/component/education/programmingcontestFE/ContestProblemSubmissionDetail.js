@@ -5,7 +5,7 @@ import { API_URL } from "../../../config/config";
 import * as React from "react";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
-import { Grid } from "@material-ui/core";
+import { Grid, TextField } from "@material-ui/core";
 import CodeMirror from "@uiw/react-codemirror";
 import { cppLanguage } from "@codemirror/lang-cpp";
 import { StreamLanguage } from "@codemirror/stream-parser";
@@ -114,6 +114,18 @@ export default function ContestProblemSubmissionDetail() {
       <br />
       <Typography variant={"h5"}>Submitted Code: {submittedAt}</Typography>
       <Typography variant={"h5"}>Language: {submissionLanguage}</Typography>
+      <TextField
+        style={{
+          width: 1.0 * window.innerWidth,
+          margin: 20,
+        }}
+        multiline
+        maxRows={4}
+        value={submissionSource}
+        onChange={(event) => {
+          setSubmissionSource(event.target.value);
+        }}
+      ></TextField>
       {/*
       <CodeMirror
         height={"400px"}

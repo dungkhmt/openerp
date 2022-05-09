@@ -356,6 +356,19 @@ function CreateProblem() {
                 </MenuItem>
               ))}
             </TextField>
+            <TextField
+              style={{
+                width: 1.0 * window.innerWidth,
+                margin: 20,
+              }}
+              multiline
+              maxRows={4}
+              value={codeSolution}
+              onChange={(event) => {
+                setCodeSolution(event.target.value);
+              }}
+            ></TextField>
+            {/*
             <CodeMirror
               value={codeSolution}
               height={"500px"}
@@ -366,6 +379,7 @@ function CreateProblem() {
               }}
               autoFocus={false}
             />
+            */}
             <br />
             <Typography>
               <h2>Checker source code</h2>
@@ -388,16 +402,18 @@ function CreateProblem() {
                 </MenuItem>
               ))}
             </TextField>
-            <CodeMirror
-              value={solutionChecker}
-              height={"500px"}
-              width="100%"
-              extensions={getExtension()}
-              onChange={(value, viewUpdate) => {
-                setSolutionChecker(value);
-              }}
-              autoFocus={false}
-            />
+            {/*
+              <CodeMirror
+                value={solutionChecker}
+                height={"500px"}
+                width="100%"
+                extensions={getExtension()}
+                onChange={(value, viewUpdate) => {
+                  setSolutionChecker(value);
+                }}
+                autoFocus={false}
+              />
+              */}
             <br />
 
             <CompileStatus

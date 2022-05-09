@@ -231,6 +231,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
             <Grid item xs={2}>
               <Button
                 color="primary"
+                variant="contained"
                 type="submit"
                 onChange={onInputChange}
                 width="100%"
