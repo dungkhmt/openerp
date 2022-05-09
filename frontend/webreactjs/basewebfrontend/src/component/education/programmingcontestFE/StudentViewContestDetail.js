@@ -1,24 +1,10 @@
-import { useEffect, useState } from "react";
-import { request } from "./Request";
-import { useHistory, useParams } from "react-router-dom";
-import Box from "@mui/material/Box";
-import PropTypes from "prop-types";
-import { Button, Grid, Tab, TableHead, Tabs } from "@material-ui/core";
 import * as React from "react";
-import Paper from "@material-ui/core/Paper";
-import TableRow from "@material-ui/core/TableRow";
-import { getColorLevel, StyledTableCell, StyledTableRow } from "./lib";
-import TableContainer from "@material-ui/core/TableContainer";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import { TabPanelHorizontal } from "./TabPanel";
-import { Timer } from "./Timer";
-import { ContestProblemComponent } from "./ContestProblemComponent";
-import { successNoti } from "../../../utils/notification";
-import { WaitScreen } from "./WaitScreen";
-import LockScreen from "./LockScreen";
+import {useEffect, useState} from "react";
+import {request} from "./Request";
+import {useHistory, useParams} from "react-router-dom";
 import StudentViewProblemList from "./StudentViewProblemList";
 import StudentViewSubmission from "./StudentViewSubmission";
+import Box from "@mui/material/Box";
 
 export default function StudentViewContestDetail() {
   const { contestId } = useParams();
@@ -37,13 +23,11 @@ export default function StudentViewContestDetail() {
       "get",
       "/get-contest-detail-solving/" + contestId,
       (res) => {
-        console.log("res contest", res);
         setUnauthorized(res.data.unauthorized);
         setContestTime(res.data.contestTime);
         setProblems(res.data.list);
         setContestName(res.data.contestName);
         setIsPublic(res.data.isPublic);
-        console.log("res ", res.data);
         let arr = problems.map(() => false);
         setSubmitted(arr);
         for (let i = 0; i < res.data.list.length; i++) {
@@ -73,6 +57,7 @@ export default function StudentViewContestDetail() {
   return (
     <div>
       <StudentViewProblemList problems={problems} contestId={contestId} />
+      <Box height="30px"/>
       <StudentViewSubmission />
     </div>
   );
