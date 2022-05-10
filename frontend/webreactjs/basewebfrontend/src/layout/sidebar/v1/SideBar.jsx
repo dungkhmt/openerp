@@ -2,7 +2,6 @@ import { Box, Typography } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import classNames from "classnames";
 import PropTypes from "prop-types";
 import React, { useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
@@ -19,17 +18,9 @@ export const drawerWidth = 300;
 export const miniDrawerWidth = 50;
 
 const useStyles = makeStyles((theme) => ({
-  menu: {
-    paddingTop: theme.spacing(10),
-  },
-  largeIcon: {
-    width: 50,
-    height: 50,
-  },
-  nested: {
-    paddingLeft: theme.spacing(4),
-  },
   drawerPaper: {
+    height: "calc(100% - 64px)",
+    marginTop: 64,
     overflowX: "hidden",
     width: drawerWidth,
     flexShrink: 0,
@@ -42,23 +33,6 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
     flexShrink: 0,
     whiteSpace: "nowrap",
-  },
-  drawerOpen: {
-    // width: drawerWidth,
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerClose: {
-    width: theme.spacing(7) + 1,
-    [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(9) + 1,
-    },
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
   },
   signInText: {
     ...menuItemBaseStyle(theme).menuItemText,
@@ -119,24 +93,18 @@ export default function SideBar(props) {
 
   return (
     <Drawer
-      variant="permanent"
+      variant="persistent"
       anchor="left"
       open={open}
-      className={classNames(classes.drawer, {
-        [classes.drawerOpen]: open,
-        [classes.drawerClose]: !open,
-      })}
+      className={classes.drawer}
       classes={{
-        paper: classNames(classes.drawerPaper, {
-          [classes.drawerOpen]: open,
-          [classes.drawerClose]: !open,
-        }),
+        paper: classes.drawerPaper,
       }}
     >
       {/* <div className={classNames(classes.sidebarWrapper)}> */}
       <SimpleBar
         style={{
-          marginTop: 64,
+          // marginTop: 64,
           marginBottom: 16,
           position: "relative",
           height: "100%",

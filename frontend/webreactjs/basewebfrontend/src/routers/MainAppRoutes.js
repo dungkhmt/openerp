@@ -1,4 +1,5 @@
 import { LinearProgress } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { lazy, Suspense, useEffect } from "react";
 import { Route, Switch, useLocation } from "react-router-dom";
 import PrivateRoute from "../common/PrivateRoute";
@@ -9,21 +10,37 @@ import { useNotificationState } from "../state/NotificationState";
 import NotFound from "../views/errors/NotFound";
 import AccountActivationRoute from "./AccountActivationRoute";
 import AdminRoute from "./AdminRoute";
-import ProgrammingContestRoutes from "./ProgrammingContestRoutes";
 import ChatRoute from "./ChatRoute";
-import WMSRoute from "./WMSRoute";
+import ProgrammingContestRoutes from "./ProgrammingContestRoutes";
 import TaskManagementRoute from "./TaskManagementRoute";
-import WhiteBoardRoute from "./WhiteBoardRoute";
 import TMSContainerRoute from "./TMSContainerRoute";
+import WhiteBoardRoute from "./WhiteBoardRoute";
+import WMSRoute from "./WMSRoute";
 
 const EduRoute = lazy(() => import("./EduRoute"));
 const UserLoginRoute = lazy(() => import("./UserLoginRoute"));
 const TestGroupRoute = lazy(() => import("./TestGroupRoute"));
 const UserGroupRoute = lazy(() => import("./UserGroupRoute"));
 
+const useStyles = makeStyles((theme) => ({
+  loadingProgress: {
+    position: "fixed",
+    top: 0,
+    left: -drawerWidth,
+    width: "calc(100% + 300px)",
+    zIndex: 1202,
+    "& div": {
+      top: 0.5,
+    },
+  },
+}));
+
 function MainAppRoute(props) {
   const location = useLocation();
   const notificationState = useNotificationState();
+
+  //
+  const classes = useStyles();
 
   useEffect(() => {
     notificationState.open.set(false);
@@ -49,18 +66,7 @@ function MainAppRoute(props) {
   return (
     <Layout>
       <Suspense
-        fallback={
-          // <BouncingBallsLoader />
-          <LinearProgress
-            style={{
-              position: "absolute",
-              top: 0,
-              left: -drawerWidth,
-              width: "calc(100% + 300px)",
-              zIndex: 1202,
-            }}
-          />
-        }
+        fallback={<LinearProgress className={classes.loadingProgress} />}
       >
         <Switch>
           <Route component={Home} exact path="/" />
