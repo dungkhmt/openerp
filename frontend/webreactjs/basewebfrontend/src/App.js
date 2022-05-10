@@ -1,9 +1,9 @@
 import { CssBaseline } from "@material-ui/core";
 import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import React, { useEffect } from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { useDispatch } from "react-redux";
 import { Router } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from 'react-query';
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { success } from "./action/index.js";
@@ -50,9 +50,9 @@ function App() {
       queries: {
         refetchOnWindowFocus: false,
         keepPreviousData: true,
-      }
-    }
-  })
+      },
+    },
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
