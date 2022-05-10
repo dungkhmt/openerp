@@ -46,6 +46,11 @@ export default function SolvingContest() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  function contestTimeOut() {
+    //submitContest();
+    history.push("/programming-contest/student-list-contest-registered");
+  }
   function submitContest() {
     let contents = [];
     // eslint-disable-next-line array-callback-return
@@ -89,7 +94,7 @@ export default function SolvingContest() {
         "startTime-" + contestTime.toString() + "-" + contestId
       );
       successNoti("You are submit contest");
-      history.push("/programming-contest/student-list-contest-registered");
+      //history.push("/programming-contest/student-list-contest-registered");
     });
   }
 
@@ -168,7 +173,7 @@ export default function SolvingContest() {
                     <Timer
                       id={contestId}
                       time={contestTime}
-                      timeOutHandler={submitContest}
+                      timeOutHandler={contestTimeOut}
                     />
                   ) : (
                     <b>

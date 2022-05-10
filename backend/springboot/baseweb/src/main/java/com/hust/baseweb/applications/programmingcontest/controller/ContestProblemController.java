@@ -5,6 +5,7 @@ import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
 import com.hust.baseweb.applications.programmingcontest.model.ModelCreateContestProblem;
+import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.AllArgsConstructor;
@@ -25,14 +26,14 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
-
+import java.util.Date;
 @RestController
 @CrossOrigin
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class ContestProblemController {
     ProblemTestCaseService problemTestCaseService;
-
+    ContestRepo contestRepo;
     @PostMapping("/create-problem")
     public ResponseEntity<?> createContestProblem(@RequestBody ModelCreateContestProblem modelCreateContestProblem, Principal principal) throws MiniLeetCodeException {
         log.info("create problem {}", modelCreateContestProblem);
@@ -178,6 +179,12 @@ public class ContestProblemController {
         ModelGetContestDetailResponse response = problemTestCaseService.getContestDetailByContestIdAndTeacher(contestId, principal.getName());
         return ResponseEntity.status(200).body(response);
     }
+    @GetMapping("/check-code-similarity/{contestId}")
+    public ResponseEntity<?> checkCodeSimilarity(Principal principal, @PathVariable String contestId){
+        log.info("checkCodeSimilarity, contestId = " + contestId);
+        ModelCodeSimilarityOutput res= problemTestCaseService.checkSimilarity(contestId);
+        return ResponseEntity.ok().body(res);
+    }
 
     @GetMapping("/get-contest-detail-solving/{contestId}")
     public ResponseEntity<?> getContestDetailSolving(@PathVariable("contestId") String contestId, Principal principal) throws MiniLeetCodeException {
@@ -280,6 +287,12 @@ public class ContestProblemController {
         log.info("resp {}", resp);
         return ResponseEntity.status(200).body(resp);
     }
+    @GetMapping("/get-contest-problem-submission-detail-by-testcase-of-a-submission/{submissionId}")
+    public ResponseEntity<?> getContestProblemSubmissionDetailByTestCaseOfASubmission(Principal principal, @PathVariable UUID submissionId){
+        List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = problemTestCaseService
+            .getContestProblemSubmissionDetailByTestCaseOfASubmission(submissionId);
+        return ResponseEntity.ok().body(retLst);
+    }
     @GetMapping("/get-contest-problem-submission-detail-by-testcase")
     public ResponseEntity<?> getContestProblemSubmissionDetailByTestCase(Principal principal,
                                                                          @RequestParam int page, int size, Pageable pageable){
@@ -298,8 +311,42 @@ public class ContestProblemController {
                                                                @RequestParam("file") MultipartFile file
                                                                ){
         log.info("contestSubmitProblemViaUploadFile, inputJson = " + inputJson);
+
         Gson gson = new Gson();
         ModelContestSubmitProgramViaUploadFile model = gson.fromJson(inputJson, ModelContestSubmitProgramViaUploadFile.class);
+        ContestEntity contestEntity = contestRepo.findContestByContestId(model.getContestId());
+        Date currentDate = new Date();
+        int timeTest = ((int) (currentDate.getTime() - contestEntity.getStartedAt().getTime())) / (60 * 1000); //minutes
+        //System.out.println(currentDate);
+        //System.out.println(testStartDate);
+        //System.out.println(timeTest);
+        //System.out.println(test.getDuration());
+        log.info("contestSubmitProblemViaUploadFile, currentDate = " + currentDate + ", contest started at" + contestEntity.getStartedAt()
+                 + " timeTest = " + timeTest + " contestSolvingTime = " + contestEntity.getContestSolvingTime());
+
+        //if (timeTest > contestEntity.getContestSolvingTime()) {
+        if(!contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)){
+            log.info("contestSubmitProblemViaUploadFile, TIME OUT!!!!! currentDate = " + currentDate + ", contest started at" + contestEntity.getStartedAt()
+                     + " timeTest = " + timeTest + " contestSolvingTime = " +
+                     contestEntity.getContestSolvingTime());
+
+            //return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
+
+            ModelContestSubmissionResponse resp = ModelContestSubmissionResponse.builder()
+                                          .status("TIME_OUT")
+                                          .testCasePass("0")
+                                          .runtime(new Long(0))
+                                          .memoryUsage(new Float(0))
+                                          .problemName("")
+                                          .contestSubmissionID(null)
+                                          .submittedAt(null)
+                                          .score(0)
+                                          .numberTestCasePassed(0)
+                                          .totalNumberTestCase(0)
+                                          .build();
+            return ResponseEntity.ok().body(resp);
+        }
+
         try {
             String source = "";
             InputStream inputStream = file.getInputStream();
@@ -421,11 +468,20 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(lst);
     }
 
-        @GetMapping("/get-contest-submission-paging-of-a-user/{userLoginId}")
+    @GetMapping("/get-contest-submission-paging-of-a-user/{userLoginId}")
     public ResponseEntity<?> getContestSubmissionPagingOfAUser( @PathVariable("userLoginId") String userLoginId, Pageable pageable){
         log.info("getContestSubmissionPagingOfAUser, user = " + userLoginId);
         pageable = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), Sort.by("createdAt").descending());
         Page<ContestSubmission> page = problemTestCaseService.findContestSubmissionByUserLoginIdPaging(pageable, userLoginId);
+        log.info("page {}", page);
+        return ResponseEntity.status(200).body(page);
+    }
+
+    @GetMapping("/get-contest-submission-paging-of-a-user")
+    public ResponseEntity<?> getContestSubmissionPagingOfCurrentUser( Principal principal, Pageable pageable){
+        log.info("getContestSubmissionPagingOfCurrentUser, user = " + principal.getName());
+        pageable = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), Sort.by("createdAt").descending());
+        Page<ContestSubmission> page = problemTestCaseService.findContestSubmissionByUserLoginIdPaging(pageable, principal.getName());
         log.info("page {}", page);
         return ResponseEntity.status(200).body(page);
     }

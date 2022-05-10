@@ -53,6 +53,8 @@ public interface ProblemTestCaseService {
 
     Page<ModelProblemSubmissionDetailByTestCaseResponse> getContestProblemSubmissionDetailByTestCase(Pageable  page);
 
+    List<ModelProblemSubmissionDetailByTestCaseResponse> getContestProblemSubmissionDetailByTestCaseOfASubmission(UUID submissionId);
+
     ModelContestSubmissionResponse submitContestProblem(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
     ModelContestSubmissionResponse submitContestProblemTestCaseByTestCase(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
 
@@ -102,4 +104,6 @@ public interface ProblemTestCaseService {
     void deleteContest(String contestId, String userId) throws MiniLeetCodeException;
 
     void deleteTestcase(UUID testcaseId, String userId) throws MiniLeetCodeException;
+
+    ModelCodeSimilarityOutput checkSimilarity(String contestId);
 }

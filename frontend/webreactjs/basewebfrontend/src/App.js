@@ -1,6 +1,7 @@
 import { CssBaseline } from "@material-ui/core";
 import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import React, { useEffect } from "react";
+import { I18nextProvider } from "react-i18next";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useDispatch } from "react-redux";
 import { Router } from "react-router-dom";
@@ -10,6 +11,7 @@ import { success } from "./action/index.js";
 import history from "./history.js";
 import Routes from "./Routes";
 import { useAuthState } from "./state/AuthState.js";
+import i18n from "./translation/i18n";
 
 const theme = createTheme({
   typography: {
@@ -55,29 +57,31 @@ function App() {
   });
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        {/* <Router> */}
-        <Router history={history}>
-          <Routes />
-          <ToastContainer
-            position="bottom-center"
-            transition={Slide}
-            autoClose={3000}
-            limit={3}
-            hideProgressBar={true}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-          />
-        </Router>
-        {/* </Router> */}
-      </MuiThemeProvider>
-    </QueryClientProvider>
+    <I18nextProvider i18n={i18n}>
+      <QueryClientProvider client={queryClient}>
+        <MuiThemeProvider theme={theme}>
+          <CssBaseline />
+          {/* <Router> */}
+          <Router history={history}>
+            <Routes />
+            <ToastContainer
+              position="bottom-center"
+              transition={Slide}
+              autoClose={3000}
+              limit={3}
+              hideProgressBar={true}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
+          </Router>
+          {/* </Router> */}
+        </MuiThemeProvider>
+      </QueryClientProvider>
+    </I18nextProvider>
   );
 }
 

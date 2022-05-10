@@ -417,6 +417,19 @@ function EditProblem() {
                 </MenuItem>
               ))}
             </TextField>
+            <TextField
+              style={{
+                width: 1.0 * window.innerWidth,
+                margin: 20,
+              }}
+              multiline
+              maxRows={4}
+              value={codeSolution}
+              onChange={(event) => {
+                setCodeSolution(event.target.value);
+              }}
+            ></TextField>
+            {/*
             <CodeMirror
               height={"500px"}
               width="100%"
@@ -427,6 +440,8 @@ function EditProblem() {
               autoFocus={false}
               value={codeSolution}
             />
+            */}
+
             <Typography>
               <h2>Solution Checker</h2>
             </Typography>
@@ -448,6 +463,7 @@ function EditProblem() {
                 </MenuItem>
               ))}
             </TextField>
+            {/*
             <CodeMirror
               height={"500px"}
               width="100%"
@@ -458,6 +474,7 @@ function EditProblem() {
               autoFocus={false}
               value={codeChecker}
             />
+            */}
             <br />
 
             <br />

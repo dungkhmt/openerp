@@ -234,11 +234,10 @@ export default function EditContest(props) {
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const isSelected = (name) => problemSelected.indexOf(name) !== -1;
   const [isPublic, setIsPublic] = useState(false);
-  const [startDate, setStartDate] = React.useState(
-    new Date("2014-08-18T21:11:54")
-  );
+  const [startDate, setStartDate] = React.useState(new Date());
   const [countDown, setCountDown] = useState(Number(0));
-
+  const [statusId, setStatusId] = useState(null);
+  const [listStatusIds, setListStatusIds] = useState([]);
   const classes = useStyles();
   const handleClick = (event, name) => {
     const selectedIndex = problemSelected.indexOf(name);
@@ -271,6 +270,7 @@ export default function EditContest(props) {
       isPublic: isPublic,
       startedAt: startDate,
       countDownTime: countDown,
+      statusId: statusId,
     };
     request(
       "post",
@@ -308,6 +308,9 @@ export default function EditContest(props) {
       setProblemSelected(arr);
       setContestName(res.data.contestName);
       setIsPublic(res.data.isPublic);
+      setStartDate(res.data.startAt);
+      setStatusId(res.data.statusId);
+      setListStatusIds(res.data.listStatusIds);
       console.log("res ", res.data);
     }).then();
   }, [page]);
@@ -376,6 +379,25 @@ export default function EditContest(props) {
                   {"false"}
                 </MenuItem>
               </TextField>
+              <TextField
+                autoFocus
+                // required
+                select
+                id="statusId"
+                label="Status"
+                placeholder="Status"
+                onChange={(event) => {
+                  setStatusId(event.target.value);
+                }}
+                value={statusId}
+              >
+                {listStatusIds.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </TextField>
+
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
                   label="Date&Time picker"

@@ -11,6 +11,7 @@ import { ReactComponent as Logo } from "../assets/icons/logo.svg";
 import bgImage from "../assets/img/sidebar-2.webp";
 import { useAuthState } from "../state/AuthState";
 import AccountButton from "./account/AccountButton";
+import LanguageSwitch from "./languageswitcher/LanguageSwitch";
 import NotificationButton from "./notification/NotificationButton";
 import SideBar, { drawerWidth } from "./sidebar/v1/SideBar";
 
@@ -110,6 +111,7 @@ function Layout(props) {
           {/* Use this div tag to push the icons to the right */}
           <div style={{ flexGrow: 1 }} />
           <div className={classes.sectionDesktop}>
+            <LanguageSwitch/>
             {isAuthenticated.get() && (
               <>
                 <NotificationButton />

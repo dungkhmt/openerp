@@ -81,6 +81,7 @@ create table contest_new
     count_down numeric NULL,
 	started_count_down_time timestamp NULL,
 	end_time timestamp NULL,
+	status_id varchar(100),
     last_updated_stamp         timestamp DEFAULT current_date ,
     created_stamp              timestamp DEFAULT current_date ,
     constraint pk_contest_id_new primary key (contest_id),
