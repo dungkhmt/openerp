@@ -39,6 +39,7 @@ import { ScrollBox } from "react-scroll-box";
 import { Markup } from "interweave";
 
 import ViewListContestProblemSubmissionDetailByTestCase from "./ViewListContestProblemSubmissionDetailByTestCase";
+import CodeSimilarityCheck from "./CodeSimilarityCheck";
 
 export function ContestManager() {
   const { contestId } = useParams();
@@ -232,21 +233,26 @@ export function ContestManager() {
         <Tab
           label="Contest Detail"
           {...a11yProps(0)}
-          style={{ width: "15%" }}
+          style={{ width: "10%" }}
         />
-        <Tab label="List User" {...a11yProps(1)} style={{ width: "15%" }} />
-        <Tab label="Register User" {...a11yProps(2)} style={{ width: "15%" }} />
-        <Tab label="Add User" {...a11yProps(3)} style={{ width: "15%" }} />
-        <Tab label="Ranking" {...a11yProps(4)} style={{ width: "15%" }} />
+        <Tab label="List User" {...a11yProps(1)} style={{ width: "10%" }} />
+        <Tab label="Register User" {...a11yProps(2)} style={{ width: "10%" }} />
+        <Tab label="Add User" {...a11yProps(3)} style={{ width: "10%" }} />
+        <Tab label="Ranking" {...a11yProps(4)} style={{ width: "10%" }} />
         <Tab
           label="User Submission"
           {...a11yProps(5)}
-          style={{ width: "15%" }}
+          style={{ width: "10%" }}
         />
         <Tab
           label="Submission Detail by TestCase"
-          {...a11yProps(5)}
-          style={{ width: "15%" }}
+          {...a11yProps(6)}
+          style={{ width: "10%" }}
+        />
+        <Tab
+          label="Check Code Plagiarism"
+          {...a11yProps(7)}
+          style={{ width: "10%" }}
         />
       </Tabs>
 
@@ -1013,6 +1019,18 @@ export function ContestManager() {
           </Typography>
         </section>
         <ViewListContestProblemSubmissionDetailByTestCase />
+      </TabPanelVertical>
+      <TabPanelVertical value={value} index={7}>
+        <section id={"#codesimilaritycheck"}>
+          <Typography
+            variant="h5"
+            component="h2"
+            style={{ marginTop: 10, marginBottom: 10 }}
+          >
+            Check Code Plagiarism
+          </Typography>
+        </section>
+        <CodeSimilarityCheck contestId={contestId} />
       </TabPanelVertical>
     </div>
   );

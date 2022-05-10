@@ -10,6 +10,7 @@ import com.hust.baseweb.applications.programmingcontest.repo.*;
 import com.hust.baseweb.applications.programmingcontest.utils.ComputerLanguage;
 import com.hust.baseweb.applications.programmingcontest.utils.DateTimeUtils;
 import com.hust.baseweb.applications.programmingcontest.utils.TempDir;
+import com.hust.baseweb.applications.programmingcontest.utils.codesimilaritycheckingalgorithms.CodeSimilarityCheck;
 import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.ProblemSubmission;
 import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.StringHandler;
 import com.hust.baseweb.entity.UserLogin;
@@ -1140,6 +1141,47 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             throw new MiniLeetCodeException("permission denied");
         }
         testCaseRepo.deleteTestCaseEntityByTestCaseId(testcaseId);
+    }
+
+    class CodeSimilatiryComparator implements Comparator<CodeSimilarityElement>{
+        @Override
+        public int compare(CodeSimilarityElement e1, CodeSimilarityElement e2){
+            if (e1.getScore() > e2.getScore()) return -1;
+                else if(e1.getScore() < e2.getScore()) return 1;
+                else return 0;
+        }
+    }
+    @Override
+    public ModelCodeSimilarityOutput checkSimilarity(String contestId) {
+        List<CodeSimilarityElement> list = new ArrayList();
+        List<ContestSubmissionEntity> submissions = contestSubmissionPagingAndSortingRepo.findAllByContestId(contestId);
+        for(int i = 0; i < submissions.size(); i++){
+            ContestSubmissionEntity s1 = submissions.get(i);
+            for(int j = i+1; j < submissions.size(); j++){
+                ContestSubmissionEntity s2 = submissions.get(j);
+                if(s1.getUserId().equals(s2.getUserId())) continue;
+
+                double score = CodeSimilarityCheck.check(s1.getSourceCode(), s2.getSourceCode());
+                CodeSimilarityElement e = new CodeSimilarityElement();
+                e.setScore(score);
+                e.setSource1(s1.getSourceCode());
+                e.setUserLoginId1(s1.getUserId());
+                e.setSubmitDate1(s1.getCreatedAt());
+                e.setProblemId1(s1.getProblemId());
+
+                e.setSource2(s2.getSourceCode());
+                e.setUserLoginId2(s2.getUserId());
+                e.setSubmitDate2(s2.getCreatedAt());
+                e.setProblemId2(s2.getProblemId());
+
+                list.add(e);
+            }
+        }
+        Collections.sort(list, new CodeSimilatiryComparator());
+
+        ModelCodeSimilarityOutput model = new ModelCodeSimilarityOutput();
+        model.setCodeSimilarityElementList(list);
+        return model;
     }
 
     private ModelGetTestCase convertToModelGetTestCase(TestCaseEntity testCaseEntity){

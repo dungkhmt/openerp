@@ -179,6 +179,12 @@ public class ContestProblemController {
         ModelGetContestDetailResponse response = problemTestCaseService.getContestDetailByContestIdAndTeacher(contestId, principal.getName());
         return ResponseEntity.status(200).body(response);
     }
+    @GetMapping("/check-code-similarity/{contestId}")
+    public ResponseEntity<?> checkCodeSimilarity(Principal principal, @PathVariable String contestId){
+        log.info("checkCodeSimilarity, contestId = " + contestId);
+        ModelCodeSimilarityOutput res= problemTestCaseService.checkSimilarity(contestId);
+        return ResponseEntity.ok().body(res);
+    }
 
     @GetMapping("/get-contest-detail-solving/{contestId}")
     public ResponseEntity<?> getContestDetailSolving(@PathVariable("contestId") String contestId, Principal principal) throws MiniLeetCodeException {

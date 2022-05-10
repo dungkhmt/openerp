@@ -104,4 +104,6 @@ public interface ProblemTestCaseService {
     void deleteContest(String contestId, String userId) throws MiniLeetCodeException;
 
     void deleteTestcase(UUID testcaseId, String userId) throws MiniLeetCodeException;
+
+    ModelCodeSimilarityOutput checkSimilarity(String contestId);
 }
