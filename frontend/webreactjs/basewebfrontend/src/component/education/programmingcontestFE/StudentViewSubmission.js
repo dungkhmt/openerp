@@ -53,7 +53,7 @@ export default function StudentViewSubmission() {
     <Box>
       <MuiThemeProvider theme={theme}>
         <MaterialTable
-          title={<Typography variant="h4">Submission list</Typography>}
+          title={<h1>Submission list</h1>}
           columns={columns}
           data={submissions}
           localization={{
