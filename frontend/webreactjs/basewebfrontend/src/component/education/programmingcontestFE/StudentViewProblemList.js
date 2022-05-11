@@ -1,10 +1,18 @@
+import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
+import { Box } from "@mui/material";
 import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { request } from "./Request";
 import { useTranslation } from "react-i18next";
+import { Link, useParams } from "react-router-dom";
+import { theme } from "../../../utils/MaterialTableUtils";
+import { request } from "./Request";
+
+const useStyles = makeStyles((theme) => ({}));
+
 export default function StudentViewProblemList() {
-  const { t } = useTranslation("education/programmingcontest/studentviewcontestdetail");
+  const { t } = useTranslation(
+    "education/programmingcontest/studentviewcontestdetail"
+  );
 
   const { contestId } = useParams();
   const [problems, setProblems] = useState([]);
@@ -40,7 +48,7 @@ export default function StudentViewProblemList() {
 
   const columns = [
     {
-      title: t("problemID"),
+      title: t("problemId"),
       field: "problemId",
       render: (rowData) => (
         <Link
@@ -61,9 +69,20 @@ export default function StudentViewProblemList() {
     },
   ];
   return (
-    <div>
-      <h1>Problems List</h1>
-      <MaterialTable columns={columns} data={problems} />
-    </div>
+    <Box>
+      <MuiThemeProvider theme={theme}>
+        <MaterialTable
+          title={<h1>{t("problemList.title")}</h1>}
+          columns={columns}
+          data={problems}
+          options={{
+            pageSize: 20,
+            headerStyle: {
+              fontWeight: "700",
+            },
+          }}
+        />
+      </MuiThemeProvider>
+    </Box>
   );
 }

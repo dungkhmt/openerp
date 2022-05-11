@@ -45,7 +45,7 @@ export default function StudentViewSubmission() {
         }
     },
     {title: t("submissionList.language"), field: "sourceCodeLanguage"},
-    {title: t("submissionList.testCases"), field: "testCasePass", align: "center"},
+    {title: t("submissionList.numTestCases"), field: "testCasePass", align: "center"},
     {title: t("submissionList.at"), field: "createAt"}
   ];
 
@@ -53,7 +53,7 @@ export default function StudentViewSubmission() {
     <Box>
       <MuiThemeProvider theme={theme}>
         <MaterialTable
-          title={<h1>Submission list</h1>}
+          title={<h1>{t("submissionList.title")}</h1>}
           columns={columns}
           data={submissions}
           localization={{
