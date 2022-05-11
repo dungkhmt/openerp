@@ -1,64 +1,64 @@
 import * as React from "react";
-import {useEffect, useState} from "react";
-import {request} from "./Request";
-import {useHistory, useParams} from "react-router-dom";
 import StudentViewProblemList from "./StudentViewProblemList";
 import StudentViewSubmission from "./StudentViewSubmission";
+import PropTypes from "prop-types";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
-export default function StudentViewContestDetail() {
-  const { contestId } = useParams();
-  const [value, setValue] = React.useState(0);
-  const [contestName, setContestName] = useState();
-  const [contestTime, setContestTime] = useState();
-  const [problems, setProblems] = useState([]);
-  const [submitted, setSubmitted] = useState([]);
-  const history = useHistory();
-  const [wait, setWait] = useState(true);
-  const [unauthorized, setUnauthorized] = useState(false);
-  const [isPublic, setIsPublic] = useState(true);
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
 
-  function getContestDetail() {
-    request(
-      "get",
-      "/get-contest-detail-solving/" + contestId,
-      (res) => {
-        setUnauthorized(res.data.unauthorized);
-        setContestTime(res.data.contestTime);
-        setProblems(res.data.list);
-        setContestName(res.data.contestName);
-        setIsPublic(res.data.isPublic);
-        let arr = problems.map(() => false);
-        setSubmitted(arr);
-        for (let i = 0; i < res.data.list.length; i++) {
-          let idSource =
-            contestId + "-" + res.data.list[i].problemId + "-source";
-          let tmpSource = localStorage.getItem(idSource);
-          let idLanguage =
-            contestId + "-" + res.data.list[i].problemId + "-language";
-          let tmpLanguage = localStorage.getItem(idLanguage);
-          if (tmpSource == null) {
-            localStorage.setItem(idSource, "");
-          }
-          if (tmpLanguage == null) {
-            localStorage.setItem(idLanguage, "CPP");
-          }
-        }
-      },
-      {}
-    ).then(() => {
-      setWait(false);
-    });
-  }
-
-  useEffect(() => {
-    getContestDetail();
-  }, []);
   return (
-    <div>
-      <StudentViewProblemList problems={problems} contestId={contestId} />
-      <Box height="30px"/>
-      <StudentViewSubmission />
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
     </div>
+  );
+}
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
+
+export default function StudentViewContestDetail() {
+  const [tab, setTab] = React.useState(0);
+
+  const handleChangeTab = (event, newTabValue) => {
+    setTab(newTabValue);
+  };
+
+  return (
+    <Box sx={{ width: "100%" }}>
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Tabs
+          value={tab}
+          onChange={handleChangeTab}
+          aria-label="basic tabs example"
+        >
+          <Tab label="Problems" {...a11yProps(0)} />
+          <Tab label="Submissions" {...a11yProps(1)} />
+        </Tabs>
+      </Box>
+      <TabPanel value={tab} index={0}>
+        <StudentViewProblemList />
+      </TabPanel>
+      <TabPanel value={tab} index={1}>
+        <StudentViewSubmission />
+      </TabPanel>
+    </Box>
   );
 }
