@@ -1,0 +1,14 @@
+{
+  "problem": "Problem",
+  "problemId": "Problem ID",
+  "problemList": {
+    "title": "Problems"
+  },
+  "submissionList": {
+    "title": "Submissions",
+    "status": "Status",
+    "language": "Language",
+    "at": "At",
+    "numTestCases": "Test cases"
+  }
+}

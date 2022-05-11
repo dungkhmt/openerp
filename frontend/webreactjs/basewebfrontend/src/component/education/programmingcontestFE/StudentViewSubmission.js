@@ -1,15 +1,15 @@
-import React, {useEffect, useState} from "react";
-import {request} from "./Request";
-import {Box, Typography} from "@mui/material";
-import {components, localization, theme} from "../../../utils/MaterialTableUtils";
-import MaterialTable, {MTableToolbar} from "material-table";
-import {makeStyles, MuiThemeProvider} from "@material-ui/core/styles";
+import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
+import { Box } from "@mui/material";
+import MaterialTable, { MTableToolbar } from "material-table";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { components, localization, theme } from "../../../utils/MaterialTableUtils";
+import { request } from "./Request";
 
 const useStyles = makeStyles((theme) => ({}));
 
 export default function StudentViewSubmission() {
-  const { t } = useTranslation("education/programmingcontest/studentViewSubmission");
+  const { t } = useTranslation("education/programmingcontest/studentviewcontestdetail");
   const [submissions, setSubmissions] = useState([]);
   const getSubmissions = async () => {
     request(
@@ -32,7 +32,7 @@ export default function StudentViewSubmission() {
   const columns = [
     {title: t("problem"), field: "problemId"},
     {
-      title: "Status", field: "status", cellStyle:
+      title: t("submissionList.status"), field: "status", cellStyle:
         (status) => {
           switch (status) {
             case "Accept":
@@ -44,16 +44,16 @@ export default function StudentViewSubmission() {
           }
         }
     },
-    {title: "Language", field: "sourceCodeLanguage"},
-    {title: "Test cases", field: "testCasePass", align: "center"},
-    {title: "At", field: "createAt"}
+    {title: t("submissionList.language"), field: "sourceCodeLanguage"},
+    {title: t("submissionList.numTestCases"), field: "testCasePass", align: "center"},
+    {title: t("submissionList.at"), field: "createAt"}
   ];
 
   return (
     <Box>
       <MuiThemeProvider theme={theme}>
         <MaterialTable
-          title={<h1>Submission list</h1>}
+          title={<h1>{t("submissionList.title")}</h1>}
           columns={columns}
           data={submissions}
           localization={{
