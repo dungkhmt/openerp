@@ -2,7 +2,10 @@ import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { request } from "./Request";
+import { useTranslation } from "react-i18next";
 export default function StudentViewProblemList() {
+  const { t } = useTranslation("education/programmingcontest/studentviewcontestdetail");
+
   const { contestId } = useParams();
   const [problems, setProblems] = useState([]);
 
@@ -37,7 +40,7 @@ export default function StudentViewProblemList() {
 
   const columns = [
     {
-      title: "ProblemID",
+      title: t("problemID"),
       field: "problemId",
       render: (rowData) => (
         <Link
@@ -53,7 +56,7 @@ export default function StudentViewProblemList() {
       ),
     },
     {
-      title: "Problem Name",
+      title: t("problem"),
       field: "problemName",
     },
   ];

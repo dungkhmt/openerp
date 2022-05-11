@@ -1,7 +1,10 @@
 {
-    "problem": "Bài",
+  "problem": "Bài tập",
+  "problemId": "Mã bài tập",
+  "submissionList": {
     "status": "Trạng thái",
     "language": "Ngôn ngữ",
     "at": "Thời gian",
     "numTestCases": "Số test case"
+  }
 }
