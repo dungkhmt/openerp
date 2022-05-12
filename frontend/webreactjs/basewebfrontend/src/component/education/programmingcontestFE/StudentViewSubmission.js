@@ -3,13 +3,19 @@ import { Box } from "@mui/material";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { components, localization, theme } from "../../../utils/MaterialTableUtils";
+import {
+  components,
+  localization,
+  theme,
+} from "../../../utils/MaterialTableUtils";
 import { request } from "./Request";
-
+import { Link, useHistory } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({}));
 
 export default function StudentViewSubmission() {
-  const { t } = useTranslation("education/programmingcontest/studentviewcontestdetail");
+  const { t } = useTranslation(
+    "education/programmingcontest/studentviewcontestdetail"
+  );
   const [submissions, setSubmissions] = useState([]);
   const getSubmissions = async () => {
     request(
@@ -20,33 +26,52 @@ export default function StudentViewSubmission() {
       },
       {}
     );
-  }
+  };
 
   useEffect(() => {
     getSubmissions().then((res) => {
-      if (res && res.data)
-        setSubmissions(res.data.content);
+      if (res && res.data) setSubmissions(res.data.content);
     });
   }, []);
 
   const columns = [
-    {title: t("problem"), field: "problemId"},
     {
-      title: t("submissionList.status"), field: "status", cellStyle:
-        (status) => {
-          switch (status) {
-            case "Accept":
-              return {color: "green"};
-            case "Wrong Answer":
-              return {color: "gold"};
-            default:
-              return {color: "red"}
-          }
-        }
+      title: t("ID"),
+      field: "contestSubmissionId",
+      render: (rowData) => (
+        <Link
+          to={{
+            pathname:
+              "/programming-contest/contest-problem-submission-detail/" +
+              rowData["contestSubmissionId"],
+          }}
+        >
+          {rowData["contestSubmissionId"]}
+        </Link>
+      ),
     },
-    {title: t("submissionList.language"), field: "sourceCodeLanguage"},
-    {title: t("submissionList.numTestCases"), field: "testCasePass", align: "center"},
-    {title: t("submissionList.at"), field: "createAt"}
+    { title: t("problem"), field: "problemId" },
+    {
+      title: t("submissionList.status"),
+      field: "status",
+      cellStyle: (status) => {
+        switch (status) {
+          case "Accept":
+            return { color: "green" };
+          case "Wrong Answer":
+            return { color: "gold" };
+          default:
+            return { color: "red" };
+        }
+      },
+    },
+    { title: t("submissionList.language"), field: "sourceCodeLanguage" },
+    {
+      title: t("submissionList.numTestCases"),
+      field: "testCasePass",
+      align: "center",
+    },
+    { title: t("submissionList.at"), field: "createAt" },
   ];
 
   return (

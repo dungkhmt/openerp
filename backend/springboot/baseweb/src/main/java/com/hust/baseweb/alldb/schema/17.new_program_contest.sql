@@ -164,6 +164,7 @@ create table user_registration_contest_new
     user_id varchar (100) not null ,
     contest_id varchar (100) not null ,
     status varchar (20) not null,
+    role_id varchar(100),
     constraint fk_user_id_user_registration_contest_new foreign key (user_id) references user_login(user_login_id),
     constraint fk_contest_id_user_registration_contest_new foreign key (contest_id) references contest_new(contest_id)
 );

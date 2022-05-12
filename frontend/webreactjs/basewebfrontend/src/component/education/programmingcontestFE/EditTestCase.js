@@ -195,6 +195,7 @@ export default function EditTestCase(props) {
             }}
           ></TextField>
           <br /> <br />
+          {/*
           <CodeMirror
             height={"200px"}
             width="100%"
@@ -204,15 +205,32 @@ export default function EditTestCase(props) {
             autoFocus={false}
             value={input}
           />
+          */}
+          <TextField
+            style={{
+              width: 1.0 * window.innerWidth,
+
+              margin: 20,
+            }}
+            multiline
+            maxRows={4}
+            value={input}
+            onChange={(event) => {
+              setInput(event.target.value);
+            }}
+          ></TextField>
           <br />
           <br />
           <Typography variant={"h5"}>Result</Typography>
+          {result}
+          {/*
           <OutputWithLoading
             load={load}
             output={result}
             extension={[]}
             color={"light"}
           />
+          */}
           <Button
             variant="contained"
             color="light"

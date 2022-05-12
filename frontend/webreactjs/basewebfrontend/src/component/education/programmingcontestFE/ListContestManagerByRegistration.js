@@ -16,9 +16,8 @@ import TableRow from "@material-ui/core/TableRow";
 import { StyledTableCell, StyledTableRow } from "./lib";
 import { Link } from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
-import { ListContestManagerByRegistration } from "./ListContestManagerByRegistration";
 
-export function ListContestManager() {
+export function ListContestManagerByRegistration() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPage] = useState(0);
@@ -38,7 +37,7 @@ export function ListContestManager() {
   async function getContestList() {
     request(
       "get",
-      "/get-contest-paging-by-user-create?size=" +
+      "/get-contest-paging-by-user-manager?size=" +
         pageSize +
         "&page=" +
         (page - 1),
@@ -57,6 +56,7 @@ export function ListContestManager() {
 
   return (
     <div>
+      Contests associated
       <div>
         <div>
           <TableContainer component={Paper}>
@@ -95,7 +95,6 @@ export function ListContestManager() {
                     <StyledTableCell align="left">
                       <b>{contest.statusId}</b>
                     </StyledTableCell>
-
                     <StyledTableCell align="left">
                       <Link
                         to={
@@ -192,7 +191,6 @@ export function ListContestManager() {
           </Grid>
         </Grid>
       </div>
-      <ListContestManagerByRegistration />
     </div>
   );
 }

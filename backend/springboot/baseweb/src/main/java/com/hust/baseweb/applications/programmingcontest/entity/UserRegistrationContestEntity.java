@@ -14,6 +14,10 @@ import java.util.UUID;
 //@Table(name = "user_registration_contest")
 @Table(name = "user_registration_contest_new")
 public class UserRegistrationContestEntity {
+    public static final String ROLE_MANAGER = "MANAGER";
+    public static final String ROLE_PARTICIPANT = "PARTICIPANT";
+    public static final String ROLE_OWNER = "OWNER";
+
     @Id
     @Column(name = "user_registration_contest_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -35,4 +39,7 @@ public class UserRegistrationContestEntity {
 
     @Column(name = "status")
     private String status;
+
+    @Column(name="role_id")
+    private String roleId;
 }

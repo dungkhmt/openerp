@@ -912,6 +912,18 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public ModelGetContestPageResponse getContestPagingByUserManagerContest(String userName, Pageable pageable) {
+        List<UserRegistrationContestEntity> L = userRegistrationContestRepo.findAllByUserIdAndRoleId(userName, UserRegistrationContestEntity.ROLE_MANAGER);
+        //Page<ContestEntity> contestPage =  contestPagingAndSortingRepo.findAllByUserIdAndRoleId(pageable, userName, UserRegistrationContestEntity.ROLE_MANAGER);
+        HashSet<String> contestIds = new HashSet();
+        for(UserRegistrationContestEntity e: L){
+            contestIds.add(e.getContestId());
+        }
+        List<ContestEntity> contestEntities = contestPagingAndSortingRepo.findAllByContestIdIn(contestIds);
+        return getModelGetContestPageResponse(contestEntities);
+    }
+
+    @Override
     public ListModelUserRegisteredContestInfo getListUserRegisterContestSuccessfulPaging(Pageable pageable, String contestId) {
 //        ContestEntity contest = contestRepo.findContestByContestId(contestId);
         Page<ModelUserRegisteredClassInfo> list = userRegistrationContestPagingAndSortingRepo.getAllUserRegisteredByContestIdAndStatusInfo(pageable, contestId, Constants.RegistrationType.SUCCESSFUL.getValue());
@@ -1209,6 +1221,27 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .build();
     }
 
+    private ModelGetContestPageResponse getModelGetContestPageResponse(List<ContestEntity> contestPage) {
+        List<ModelGetContestResponse> lists = new ArrayList<>();
+        if(contestPage != null){
+            contestPage.forEach(contest -> {
+                ModelGetContestResponse modelGetContestResponse = ModelGetContestResponse.builder()
+                                                                                         .contestId(contest.getContestId())
+                                                                                         .contestName(contest.getContestName())
+                                                                                         .contestTime(contest.getContestSolvingTime())
+                                                                                         .countDown(contest.getCountDown())
+                                                                                         .startAt(contest.getStartedAt())
+                                                                                         .isPublic(contest.getIsPublic())
+                                                                                         .statusId(contest.getStatusId())
+                                                                                         .build();
+                lists.add(modelGetContestResponse);
+            });
+        }
+
+        return ModelGetContestPageResponse.builder()
+                                          .contents(lists)
+                                          .build();
+    }
     private ModelGetContestPageResponse getModelGetContestPageResponse(Page<ContestEntity> contestPage) {
         List<ModelGetContestResponse> lists = new ArrayList<>();
         if(contestPage != null){

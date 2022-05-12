@@ -120,7 +120,7 @@ export default function ContestProblemSubmissionDetail() {
           margin: 20,
         }}
         multiline
-        maxRows={4}
+        maxRows={30}
         value={submissionSource}
         onChange={(event) => {
           setSubmissionSource(event.target.value);
