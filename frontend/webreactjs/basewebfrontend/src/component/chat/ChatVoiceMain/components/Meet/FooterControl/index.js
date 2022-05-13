@@ -17,7 +17,7 @@ const FooterControl = (props) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const stopMedia = (type) => {
+  const handleMedia = (type, listTracks) => {
     if (props.mediaStream) {
       props.setMediaStream(mediaStream => {
         mediaStream.getTracks().forEach(track => {
@@ -26,6 +26,7 @@ const FooterControl = (props) => {
             track.stop();
           }
         });
+        listTracks?.getTracks().forEach(track => mediaStream.addTrack(track));
         return mediaStream;
       });
     }
@@ -52,10 +53,10 @@ const FooterControl = (props) => {
       if (!props.camera) {
         const srcCamera = await getUserMedia("camera");
         if (props.mediaStream) {
-          props.mediaStream.getTracks().forEach(track => srcCamera.addTrack(track));
+          handleMedia(MEDIA_TYPE.VIDEO, srcCamera);
+        } else {
+          props.setMediaStream(srcCamera);
         }
-        stopMedia(MEDIA_TYPE.VIDEO);
-        props.setMediaStream(srcCamera);
       } else {
         stopMedia(MEDIA_TYPE.VIDEO);
       }
@@ -67,9 +68,7 @@ const FooterControl = (props) => {
     try {
       props.setCamera(false);
       const srcScreen = await getDisplayMedia();
-      stopMedia(MEDIA_TYPE.VIDEO);
-      props.setMediaStream(mediaStream => mediaStream ?
-        srcScreen.getTracks().forEach(track => mediaStream.addTrack(track)) : srcScreen);
+      handleMedia(MEDIA_TYPE.VIDEO, srcScreen);
     } catch (e) {
       console.error(e);
     }
