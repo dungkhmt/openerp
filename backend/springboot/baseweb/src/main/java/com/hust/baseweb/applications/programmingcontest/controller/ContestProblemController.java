@@ -371,8 +371,14 @@ public class ContestProblemController {
             in.close();
 
             ModelContestSubmission request = new ModelContestSubmission(model.getContestId(), model.getProblemId(), source,model.getLanguage());
-            ModelContestSubmissionResponse resp = problemTestCaseService.submitContestProblemTestCaseByTestCase(request, principal.getName());
-
+            ModelContestSubmissionResponse resp = null;
+            if(contestEntity.getSubmissionActionType().equals(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)) {
+                resp = problemTestCaseService.submitContestProblemTestCaseByTestCase(
+                    request,
+                    principal.getName());
+            }else{
+                resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request,principal.getName());
+            }
             log.info("resp {}", resp);
             return ResponseEntity.status(200).body(resp);
         }catch(Exception e){

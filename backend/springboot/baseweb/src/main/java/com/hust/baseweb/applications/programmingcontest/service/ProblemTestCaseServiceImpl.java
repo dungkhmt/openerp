@@ -413,6 +413,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .endTime(DateTimeUtils.addMinutesDate(modelUpdateContest.getStartedAt(), modelUpdateContest.getContestSolvingTime()))
                                                        .isPublic(isPublic)
                                                        .statusId(modelUpdateContest.getStatusId())
+                                                       .submissionActionType(modelUpdateContest.getSubmissionActionType())
+                                                       .maxNumberSubmission(modelUpdateContest.getMaxNumberSubmission())
+                                                       .participantViewResultMode(modelUpdateContest.getParticipantViewResultMode())
                                                        .build();
             return contestRepo.save(contestEntity);
 
@@ -498,6 +501,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .isPublic(contestEntity.getIsPublic())
                                             .statusId(contestEntity.getStatusId())
                                             .listStatusIds(ContestEntity.getStatusIds())
+                                            .listSubmissionActionTypes(ContestEntity.getSubmissionActionTypes())
+                                            .listParticipantViewModes(ContestEntity.getParticipantViewResultModes())
+                                            .listMaxNumberSubmissions(ContestEntity.getListMaxNumberSubmissions())
+                                            .submissionActionType(contestEntity.getSubmissionActionType())
+                                            .maxNumberSubmission(contestEntity.getMaxNumberSubmission())
+                                            .participantViewResultMode(contestEntity.getParticipantViewResultMode())
                                             .build();
     }
 
@@ -769,6 +778,43 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                              .score(score)
                                              .numberTestCasePassed(nbTestCasePass)
                                              .totalNumberTestCase(testCaseEntityList.size())
+                                             .build();
+    }
+
+    @Override
+    public ModelContestSubmissionResponse submitContestProblemStoreOnlyNotExecute(
+        ModelContestSubmission modelContestSubmission,
+        String userName
+    ) throws Exception {
+
+        ContestSubmissionEntity c = ContestSubmissionEntity.builder()
+                                                           .contestId(modelContestSubmission.getContestId())
+                                                           .status("")
+                                                           .point(0)
+                                                           .problemId(modelContestSubmission.getProblemId())
+                                                           .userId(userName)
+                                                           .testCasePass("")
+                                                           .sourceCode(modelContestSubmission.getSource())
+                                                           .sourceCodeLanguage(modelContestSubmission.getLanguage())
+                                                           .runtime(new Long(0))
+                                                           .createdAt(new Date())
+                                                           .build();
+        c = contestSubmissionRepo.save(c);
+
+
+
+        log.info("c {}", c.getRuntime());
+        return ModelContestSubmissionResponse.builder()
+                                             .status("STORED")
+                                             .testCasePass(c.getTestCasePass())
+                                             .runtime(new Long(0))
+                                             .memoryUsage(c.getMemoryUsage())
+                                             .problemName("")
+                                             .contestSubmissionID(c.getContestSubmissionId())
+                                             .submittedAt(c.getCreatedAt())
+                                             .score(0)
+                                             .numberTestCasePassed(0)
+                                             .totalNumberTestCase(0)
                                              .build();
     }
 
