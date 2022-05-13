@@ -2,12 +2,16 @@ import { Paper } from "@mui/material";
 import { format } from "date-fns";
 import { useHistory } from "react-router";
 
-export default function MeetCard({ meetId, name, openIn, closeIn }) {
+export default function MeetCard({ meetId, name, openIn, closeIn, onClick }) {
   const history = useHistory();
   const handleClickMeetCard = () => {
-    history.push({
-      pathname: `main/${meetId}`
-    });
+    if (!onClick) {
+      history.push({
+        pathname: `main/${meetId}`
+      });
+    } else {
+      onClick({ meetId, name, openIn, closeIn });
+    }
   }
   const formatDate = (date) => {
     return date ? format(new Date(date), 'Pp') : 'N/A'

@@ -69,7 +69,6 @@ public class RoomParticipantService {
       roomParticipantRepository.save(rParticipant.get());
     } else {
       UUID uuid = UUID.randomUUID();
-      System.out.println(userLogin.getUserLoginId());
       RoomParticipant roomParticipant = new RoomParticipant(uuid, userLogin, r);
       roomParticipant.setIsInvited(true);
       roomParticipantRepository.save(roomParticipant);
@@ -82,5 +81,9 @@ public class RoomParticipantService {
 
   public Page<Room> getListInvitedRoom(Pageable page, UserLogin u) {
     return roomParticipantRepository.getListInvitedRoom(page, u);
+  }
+
+  public Page<String> getInvitedFriends(Pageable page, Room r) {
+    return roomParticipantRepository.getInvitedFriends(page, r);
   }
 }

@@ -1,39 +1,13 @@
 import { AiOutlineDoubleRight } from 'react-icons/ai';
 import classNames from 'classnames';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
+import InviteFriend from '../../InviteFriend';
 import { BAR_TYPE } from '../../../ultis/constant';
-import { Autocomplete, TextField } from '@mui/material';
-import { useGetListSearchFriend, useInviteFriend } from '../../../hooks/meet';
-
 
 const Participant = ({ meetId, display, setDisplay, listParticipant }) => {
-  const initialParams = {
-    searchString: '',
-    roomId: meetId
-  }
-  const [searchText, setSearchText] = useState('');
-  const [invitedFriend, setInvitedFriend] = useState('');
-  const [params, setParams] = useState(initialParams);
-  const inviteFriendQuery = useInviteFriend({ userId: searchText, meetId });
-  const { data: dataSearch } = useGetListSearchFriend({ params });
-  useEffect(() => {
-    if (invitedFriend) {
-      inviteFriendQuery.mutate();
-    }
-  }, [invitedFriend]);
-
-  const onInputChange = (event, newInputValue) => {
-    setSearchText(newInputValue);
-    setParams({ ...params, searchString: newInputValue });
-  }
-  const inviteFriend = (event, value) => {
-    setInvitedFriend(value);
-    // setSearchText('');
-  }
   const closeBar = () => {
     setDisplay(BAR_TYPE.NONE);
   }
-
   const renderListParticipant = useCallback(() => {
     return listParticipant.map((participant, index) => (
       <div className='participant-item' key={index}>
@@ -58,18 +32,7 @@ const Participant = ({ meetId, display, setDisplay, listParticipant }) => {
       <div className='content-bar participant-bar-content'>
         {renderListParticipant()}
       </div>
-      <div className='invite-friend'>
-        <Autocomplete
-          options={dataSearch?.content || []}
-          isOptionEqualToValue={() => true}
-          value={searchText}
-          onChange={inviteFriend}
-          onInputChange={onInputChange}
-          renderInput={(params) => (
-            <TextField {...params} label="Invite Friend" variant="standard" />
-          )}
-        />
-      </div>
+      <InviteFriend meetId={meetId} />
     </div>
   );
 }
