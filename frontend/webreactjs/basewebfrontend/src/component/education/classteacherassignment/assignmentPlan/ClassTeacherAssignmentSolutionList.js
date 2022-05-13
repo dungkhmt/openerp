@@ -4,8 +4,8 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 import MaterialTable from "material-table";
 import React, { useEffect, useReducer, useState } from "react";
-import { request } from "../../../api";
-import SuggestedTeacherListForSelectedClassModel from "./SuggestedTeacherListForSelectedClassModel";
+import { request } from "../../../../api";
+import SuggestedTeacherListForSelectedClassModel from "../SuggestedTeacherListForSelectedClassModel";
 
 const theme = createMuiTheme({
   palette: {

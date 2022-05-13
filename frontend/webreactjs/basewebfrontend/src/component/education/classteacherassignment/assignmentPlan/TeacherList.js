@@ -2,11 +2,11 @@ import { Button, Checkbox, Tooltip } from "@material-ui/core/";
 import { green } from "@material-ui/core/colors";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
+import { authPostMultiPart, request } from "api";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React, { useEffect, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { authPostMultiPart, request } from "../../../api";
-import UploadExcelTeacherCourseModel from "./UploadExcelTeacherCourseModel";
+import UploadExcelTeacherCourseModel from "../UploadExcelTeacherCourseModel";
 
 const theme = createMuiTheme({
   palette: {

@@ -1,12 +1,14 @@
-import { Button, Card, Checkbox, Tooltip } from "@material-ui/core/";
+import { Button, Checkbox, IconButton, Tooltip } from "@material-ui/core/";
 import { green } from "@material-ui/core/colors";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
-import MaterialTable from "material-table";
+import EditIcon from "@material-ui/icons/Edit";
+import { authPostMultiPart, request } from "api";
+import MaterialTable, { MTableToolbar } from "material-table";
 import React, { useEffect, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { authPostMultiPart, request } from "../../../api";
-import UpdateTeacherForAssignmentModel from "./UpdateTeacherForAssignmentModel";
+import UpdateTeacherCourseModel from "../UpdateTeacherCourseModel";
+import UploadExcelTeacherCourseModel from "../UploadExcelTeacherCourseModel";
 
 const headerProperties = {
   headerStyle: {
@@ -22,35 +24,37 @@ const theme = createMuiTheme({
 });
 let count = 0;
 
-function TeacherForAssignmentPlanList(props) {
+function TeacherCourseList(props) {
   const planId = props.planId;
   const [teacherList, setTeacherList] = useState([]);
-  const [selectedTeacherId, setSelectedTeacherId] = useState(null);
   const [open, setOpen] = React.useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   //const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedTeacherCourse, setSelectedTeacherCourse] = useState(null);
   const [selectedAll, setSelectedAll] = useState(false);
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
+  const [openUpdateTeacherCourse, setOpenUpdateTeacherCourse] =
+    React.useState(false);
 
   const columns = [
-    { title: "Mã Giáo viên", field: "teacherId" },
-    { title: "Tên", field: "teacherName" },
-    { title: "Max GD", field: "maxHourLoad" },
-    { title: "Tối ưu số ngày", field: "minimizeNumberWorkingDays" },
+    { title: "Giáo viên", field: "teacherId" },
+    { title: "Tên môn", field: "courseId" },
+    { title: "Độ ưu tiên", field: "priority" },
+    { title: "Score", field: "score" },
     {
       title: "",
       render: (rowData) => (
-        <Button
-          variant="contained"
+        <IconButton
           color="primary"
+          aria-label="edit"
           onClick={() => {
-            onUpdateTeacher(rowData["teacherId"]);
+            onUpdatePriority(rowData["teacherId"], rowData["courseId"]);
           }}
         >
-          Update
-        </Button>
+          <EditIcon />
+        </IconButton>
       ),
     },
     {
@@ -80,11 +84,6 @@ function TeacherForAssignmentPlanList(props) {
     },
   ];
 
-  function onUpdateTeacher(teacherId) {
-    //alert("suggest teacher for class " + classId);
-    setSelectedTeacherId(teacherId);
-    handleModalOpen();
-  }
   function uploadExcel(selectedFile, choice) {
     setIsProcessing(true);
 
@@ -115,20 +114,35 @@ function TeacherForAssignmentPlanList(props) {
         console.error(e);
       });
   }
-  const customUploadHandle = (hourLoad, minimizeNumberWorkingDays) => {
-    //console.log(filename);
-    //setSearchString(sString);
-    let datasend = {
+  function onUpdatePriority(teacherId, courseId) {
+    //alert("update priority " + teacherId + "-" + courseId);
+    setSelectedTeacherCourse({
       planId: planId,
-      teacherId: selectedTeacherId,
-      hourLoad: hourLoad,
-      minimizeNumberWorkingDays: minimizeNumberWorkingDays,
+      teacherId: teacherId,
+      courseId: courseId,
+    });
+    handleModalUpdateTeacherCourseOpen();
+  }
+  const handleModalUpdateTeacherCourseOpen = () => {
+    setOpenUpdateTeacherCourse(true);
+  };
+  const handleModalUpdateTeacherCourseClose = () => {
+    setOpenUpdateTeacherCourse(false);
+  };
+  const customUpdateHandle = (priority, score) => {
+    //alert("update  class " + selectedClassId + " with ourload = " + hourLoad);
+    let datasend = {
+      planId: selectedTeacherCourse.planId,
+      teacherId: selectedTeacherCourse.teacherId,
+      courseId: selectedTeacherCourse.courseId,
+      priority: priority,
+      score: score,
     };
     request(
       // token,
       // history,
       "post",
-      "update-teacher-for-assignment",
+      "update-teacher-course",
       (res) => {
         console.log(res);
         alert("Cập nhật " + "  OK");
@@ -137,6 +151,14 @@ function TeacherForAssignmentPlanList(props) {
       datasend
     );
 
+    handleModalUpdateTeacherCourseClose();
+  };
+
+  const customUploadHandle = (selectedFile, choice) => {
+    //console.log(filename);
+    //setSearchString(sString);
+    //alert("upload " + filename);
+    uploadExcel(selectedFile, choice);
     handleModalClose();
   };
 
@@ -145,13 +167,15 @@ function TeacherForAssignmentPlanList(props) {
       // token,
       // history,
       "GET",
-      "/get-teacher-for-assignment/" + planId,
+      "/get-all-teacher-course",
       (res) => {
         let temp = [];
         res.data.map((elm, index) => {
           temp.push({
             teacherId: elm.teacherId,
-            maxHourLoad: elm.maxHourLoad,
+            courseId: elm.courseId,
+            priority: elm.priority,
+            score: elm.score,
             selected: false,
           });
         });
@@ -170,12 +194,17 @@ function TeacherForAssignmentPlanList(props) {
     setOpen(false);
   };
 
-  const handleRemoveTeacherFromAssignmentPlan = (e) => {
+  const handleAddTeacherCourseToAssignmentPlan = (e) => {
     let acceptList = [];
     teacherList.map((v, i) => {
       if (v.selected == true) {
         acceptList.push(
-          JSON.stringify({ teacherId: v.teacherId, maxHourLoad: 0 })
+          JSON.stringify({
+            teacherId: v.teacherId,
+            courseId: v.courseId,
+            priority: v.priority,
+            score: v.score,
+          })
         );
       }
     });
@@ -184,12 +213,12 @@ function TeacherForAssignmentPlanList(props) {
       let result = -1;
       let formData = new FormData();
       formData.append("planId", planId);
-      formData.append("teacherList", acceptList.join(";"));
+      formData.append("teacherCourseList", acceptList.join(";"));
       request(
         // token,
         // history,
         "POST",
-        "/remove-teacher-from-assign-plan",
+        "/add-teacher-course-to-assign-plan",
         (res) => {
           result = res.data;
 
@@ -210,12 +239,24 @@ function TeacherForAssignmentPlanList(props) {
   useEffect(() => {
     getTeacherForAssignmentList();
   }, []);
+
   return (
-    <Card>
+    <>
       <MaterialTable
         title={"Danh sách giáo viên"}
         columns={columns}
         data={teacherList}
+        components={{
+          Toolbar: (props) => (
+            <div style={{ position: "relative" }}>
+              <MTableToolbar {...props} />
+
+              <Button onClick={handleModalOpen} color="primary">
+                Upload excel
+              </Button>
+            </div>
+          ),
+        }}
         actions={[
           {
             icon: () => {
@@ -230,7 +271,7 @@ function TeacherForAssignmentPlanList(props) {
                       variant="contained"
                       color="primary"
                       onClick={(e) => {
-                        handleRemoveTeacherFromAssignmentPlan(e);
+                        handleAddTeacherCourseToAssignmentPlan(e);
                       }}
                       style={{ color: "white" }}
                     >
@@ -238,7 +279,7 @@ function TeacherForAssignmentPlanList(props) {
                         style={{ color: "white" }}
                         fontSize="default"
                       />
-                      &nbsp;&nbsp;&nbsp;Loại bỏ&nbsp;&nbsp;
+                      &nbsp;&nbsp;&nbsp;Thêm&nbsp;&nbsp;
                     </Button>
                   </ThemeProvider>
                 </Tooltip>
@@ -278,14 +319,19 @@ function TeacherForAssignmentPlanList(props) {
         ]}
       />
 
-      <UpdateTeacherForAssignmentModel
+      <UploadExcelTeacherCourseModel
         open={open}
         onClose={handleModalClose}
-        onUpdateInfo={customUploadHandle}
-        selectedTeacherId={selectedTeacherId}
+        onUpload={customUploadHandle}
       />
-    </Card>
+      <UpdateTeacherCourseModel
+        open={openUpdateTeacherCourse}
+        onClose={handleModalUpdateTeacherCourseClose}
+        onUpdateInfo={customUpdateHandle}
+        selectedTeacherCourse={selectedTeacherCourse}
+      />
+    </>
   );
 }
 
-export default TeacherForAssignmentPlanList;
+export default TeacherCourseList;

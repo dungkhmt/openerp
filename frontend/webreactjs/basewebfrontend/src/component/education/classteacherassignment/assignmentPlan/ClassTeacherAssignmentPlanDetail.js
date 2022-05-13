@@ -1,41 +1,73 @@
 import { Box, CircularProgress, Typography } from "@material-ui/core/";
 import { teal } from "@material-ui/core/colors";
+import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
 import { Skeleton } from "@material-ui/lab";
-import React, { useEffect, useState } from "react";
+import { request } from "api";
+import PrimaryButton from "component/button/PrimaryButton";
+import { a11yProps, AntTab, AntTabs, TabPanel } from "component/tab";
+import React, { lazy, useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { request } from "../../../api";
-import PrimaryButton from "../../button/PrimaryButton";
-import { a11yProps, AntTab, AntTabs, TabPanel } from "../../tab";
-import ClassesAssignToATeacherList from "./ClassesAssignToATeacherList";
 import ClassForAssignmentList from "./ClassForAssignmentList";
-import ClassTeacherAssignmentSolutionList from "./ClassTeacherAssignmentSolutionList";
-import ConflictClassesAssignedToTeacherInSolution from "./ConflictClassesAssignedToTeacherInSolution";
-import NotAssignedClassInSolutionList from "./NotAssignedClassInSolutionList";
 import PairConflictTimetableClass from "./PairConflictTimetableClass";
-import TeacherBasedTimeTableAssignmentInSolution from "./TeacherBasedTimeTableAssignmentInSolution";
-import TeacherCourseForAssignmentList from "./TeacherCourseForAssignmentList";
-import TeacherCourseList from "./TeacherCourseList";
-import TeacherForAssignmentPlanList from "./TeacherForAssignmentPlanList";
-import TeacherList from "./TeacherList";
+
+const ClassesAssignToATeacherList = lazy(() =>
+  import("./ClassesAssignToATeacherList")
+);
+
+const ClassTeacherAssignmentSolutionList = lazy(() =>
+  import("./ClassTeacherAssignmentSolutionList")
+);
+const ConflictClassesAssignedToTeacherInSolution = lazy(() =>
+  import("./ConflictClassesAssignedToTeacherInSolution")
+);
+const NotAssignedClassInSolutionList = lazy(() =>
+  import("./NotAssignedClassInSolutionList")
+);
+
+const TeacherBasedTimeTableAssignmentInSolution = lazy(() =>
+  import("./TeacherBasedTimeTableAssignmentInSolution")
+);
+const TeacherCourseForAssignmentList = lazy(() =>
+  import("./TeacherCourseForAssignmentList")
+);
+const TeacherCourseList = lazy(() => import("./TeacherCourseList"));
+const TeacherForAssignmentPlanList = lazy(() =>
+  import("./TeacherForAssignmentPlanList")
+);
+const TeacherList = lazy(() => import("./TeacherList"));
 
 const useStyles = makeStyles((theme) => ({
-  btn: {
-    // width: 180,
-    marginLeft: theme.spacing(1),
-  },
   courseName: { fontWeight: theme.typography.fontWeightMedium },
-  // editBtn: {
-  //   margin: theme.spacing(2),
-  //   width: 100,
-  //   fontWeight: theme.typography.fontWeightRegular,
-  // },
-  testName: { fontSize: "1.25rem", paddingTop: theme.spacing(1) },
   time: {
     paddingLeft: 6,
     color: teal[800],
     fontWeight: theme.typography.fontWeightMedium,
     fontSize: "1rem",
+  },
+  selectMode: {
+    minWidth: 300,
+    marginRight: 16,
+  },
+  popoverPaper: {
+    minWidth: 300,
+    borderRadius: 8,
+    boxShadow:
+      "0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5)",
+  },
+  modeList: {
+    paddingLeft: 8,
+    paddingRight: 8,
+    "& .MuiListItem-root": {
+      paddingLeft: 8,
+      paddingRight: 8,
+      borderRadius: 6,
+    },
+    "& .Mui-selected, .Mui-selected:hover": {
+      color: "#ffffff",
+      backgroundColor: "#1976d2", // updated backgroundColor
+    },
   },
 }));
 
@@ -49,48 +81,67 @@ const tabsLabel = [
   "Lớp chưa được phân công",
 ];
 
-export default function ClassTeacherAssignmentPlanDetail() {
-  let param = useParams();
-  let planId = param.planId;
-  const classes = useStyles();
+const assignmentModes = [
+  {
+    value: "SCORES",
+    label: "Tối ưu thói quen",
+  },
+  {
+    value: "PRIORITY",
+    label: "Tối ưu độ ưu tiên",
+  },
+  {
+    value: "WORKDAYS",
+    label: "Tối ưu ngày dạy",
+  },
+  {
+    value: "LOAD_BALANCING_DURATION_CONSIDERATION",
+    label: "Cân bằng tải tính đến thời lượng",
+  },
+];
 
-  const [plan, setPlan] = useState([]);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedTab, setSelectedTab] = useState(0);
+export default function ClassTeacherAssignmentPlanDetail() {
+  let planId = useParams().planId;
+  const classes = useStyles();
   const theme = useTheme();
 
   //
-  const handleChangeTab = (event, newValue) => {
-    setSelectedTab(newValue);
+  const [plan, setPlan] = useState();
+  const [mode, setMode] = React.useState("SCORES");
+
+  //
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  //
+  const handleChangeMode = (event) => {
+    setMode(event.target.value);
   };
 
-  async function handleAssignTeacher2Class(solver) {
-    //alert("handleAssignTeacher2Class, solver = " + solver);
+  const handleChangeTab = (event, mode) => {
+    setSelectedTab(mode);
+  };
 
+  const assignTeacher2Class = (solver) => {
     setIsProcessing(true);
 
     let data = { planId: planId, solver: solver };
     // console.log(data);
 
     request(
-      // token,
-      // history,
       "post",
       "auto-assign-teacher-2-class",
       (res) => {
-        //alert("assign teacher to class " + res.data);
         setIsProcessing(false);
       },
       { 401: () => {} },
       data
     );
-  }
+  };
 
   useEffect(() => {
     function getClassTeacherAssignmentPlanDetail() {
       request(
-        // token,
-        // history,
         "get",
         "get-class-teacher-assignment-plan/detail/" + planId,
         (res) => {
@@ -107,30 +158,33 @@ export default function ClassTeacherAssignmentPlanDetail() {
     <>
       <Typography variant="h5">{`${plan.planName}`}</Typography>
 
-      <Box display="flex" justifyContent="flex-end">
-        <PrimaryButton
-          // className={classes.btn}
-          onClick={(e) => {
-            handleAssignTeacher2Class("SCORES");
+      <Box display="flex" justifyContent="flex-end" alignItems="center">
+        <TextField
+          id="outlined-select-assignment-mode"
+          select
+          className={classes.selectMode}
+          label="Mục tiêu phân công"
+          value={mode}
+          onChange={handleChangeMode}
+          variant="outlined"
+          size="small"
+          SelectProps={{
+            MenuProps: {
+              classes: { list: classes.modeList },
+              PopoverClasses: {
+                paper: classes.popoverPaper,
+              },
+            },
           }}
         >
-          Phân công tối ưu thói quen
-        </PrimaryButton>
-        <PrimaryButton
-          // className={classes.btn}
-          onClick={(e) => {
-            handleAssignTeacher2Class("PRIORITY");
-          }}
-        >
-          Phân công tối ưu độ ưu tiên
-        </PrimaryButton>
-        <PrimaryButton
-          // className={classes.btn}
-          onClick={(e) => {
-            handleAssignTeacher2Class("WORKDAYS");
-          }}
-        >
-          Phân công tối ưu ngày dạy
+          {assignmentModes.map((mode) => (
+            <MenuItem key={mode.value} value={mode.value}>
+              {mode.label}
+            </MenuItem>
+          ))}
+        </TextField>
+        <PrimaryButton onClick={() => assignTeacher2Class(mode)}>
+          Phân công
         </PrimaryButton>
       </Box>
 

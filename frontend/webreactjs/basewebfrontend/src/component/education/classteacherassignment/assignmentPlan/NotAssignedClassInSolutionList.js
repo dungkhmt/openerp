@@ -1,10 +1,9 @@
 import { Button, Card } from "@material-ui/core/";
-import React, { useState, useEffect } from "react";
-import MaterialTable, { MTableToolbar } from "material-table";
-import { request } from "../../../api";
-import { authGet, authPostMultiPart } from "../../../api";
+import { request } from "api";
+import MaterialTable from "material-table";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import SuggestTeachersForClassModel from "./SuggestTeachersForClassModel";
+import SuggestTeachersForClassModel from "../SuggestTeachersForClassModel";
 
 function NotAssignedClassInSolutionList(props) {
   const planId = props.planId;

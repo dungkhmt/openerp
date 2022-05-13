@@ -1,11 +1,11 @@
 import { Card } from "@material-ui/core/";
 import Box from "@material-ui/core/Box";
 import { makeStyles } from "@material-ui/core/styles";
+import { request } from "api";
+import PrimaryButton from "component/button/PrimaryButton";
 import map from "lodash/map";
 import range from "lodash/range";
 import React, { useEffect, useState } from "react";
-import { request } from "../../../api";
-import PrimaryButton from "../../button/PrimaryButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {

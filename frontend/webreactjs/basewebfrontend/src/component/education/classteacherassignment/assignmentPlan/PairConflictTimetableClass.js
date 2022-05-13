@@ -1,20 +1,12 @@
-import { Button, Card, Checkbox, Tooltip } from "@material-ui/core/";
-import React, { useEffect, useReducer, useState } from "react";
-import MaterialTable, { MTableToolbar } from "material-table";
-import { request } from "../../../api";
-import UploadExcelTeacherCourseModel from "./UploadExcelTeacherCourseModel";
-import { authPostMultiPart } from "../../../api";
-import { useDispatch, useSelector } from "react-redux";
-import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import { green } from "@material-ui/core/colors";
-
+import { Card } from "@material-ui/core/";
+import MaterialTable from "material-table";
+import React, { useEffect, useState } from "react";
+import { request } from "../../../../api";
 
 function PairConflictTimetableClass(props) {
   const planId = props.planId;
   const [conflictList, setConflictList] = useState([]);
-  
-  
+
   const columns = [
     { title: "class 1", field: "classId1" },
     { title: "course 1", field: "courseId1" },
@@ -24,22 +16,12 @@ function PairConflictTimetableClass(props) {
     { title: "course 2", field: "courseId2" },
     { title: "timetable 2", field: "timetable2" },
     { title: "timetableCode 2", field: "timetableCode2" },
-    
   ];
 
   async function getConflictTimetableClassList() {
-    request(
-      // token,
-      // history,
-      "GET",
-      "/get-pair-of-conflict-timetable-class/" + planId,
-      (res) => {
-        
-        setConflictList(res.data);
-
-        
-      }
-    );
+    request("GET", "/get-pair-of-conflict-timetable-class/" + planId, (res) => {
+      setConflictList(res.data);
+    });
   }
 
   useEffect(() => {
