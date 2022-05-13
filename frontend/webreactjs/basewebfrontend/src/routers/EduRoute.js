@@ -1,8 +1,11 @@
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router";
 import AssignmentList from "../component/education/AssignmentList";
+import BCASolver from "../component/education/BCASolver";
 import ClassCreate from "../component/education/class/ClassCreate";
 import ClassesList from "../component/education/class/ClassesList";
+import ClassTeacherAssignmentPlanDetail from "../component/education/classteacherassignment/assignmentPlan/ClassTeacherAssignmentPlanDetail";
+import ClassTeacherAssignmentPlanList from "../component/education/classteacherassignment/ClassTeacherAssignmentPlanList";
 import AddNewCourse from "../component/education/course/AddNewCourse";
 import CourseDetail from "../component/education/course/CourseDetail";
 import CourseList from "../component/education/course/CourseList";
@@ -28,6 +31,11 @@ import QuizTestEdit from "../component/education/quiztest/QuizTestEdit";
 import QuizTestList from "../component/education/quiztest/QuizTestList";
 import StudentQuizDetail from "../component/education/quiztest/StudentQuizDetail";
 import StudentQuizList from "../component/education/quiztest/StudentQuizTestList";
+import ResourceCreate from "../component/education/resourcelink/ResourceCreate";
+import ResourceDomainCreate from "../component/education/resourcelink/ResourceDomainCreate";
+import ResourceDomainEdit from "../component/education/resourcelink/ResourceDomainEdit";
+import ResourceDomainList from "../component/education/resourcelink/ResourceDomainList";
+import ResourceList from "../component/education/resourcelink/ResourceList";
 import AddTeacher from "../component/education/teacher/AddTeacher";
 import TeacherDetail from "../component/education/teacher/TeacherDetail";
 import TeacherList from "../component/education/teacher/TeacherList";
@@ -35,22 +43,14 @@ import ClassRegistration from "../views/Education/ClassManagement/Student/ClassR
 import SAssignmentDetail from "../views/Education/ClassManagement/Student/SAssignmentDetail";
 import SClassDetail from "../views/Education/ClassManagement/Student/SClassDetail";
 import SClassList from "../views/Education/ClassManagement/Student/SClassList";
+import StudentViewLearningSessionDetail from "../views/Education/ClassManagement/Student/StudentViewLearningSessionDetail";
 import CreateAssignment from "../views/Education/ClassManagement/Teacher/CreateAssignment";
+import StudentLearningProgressDetail from "../views/Education/ClassManagement/Teacher/StudentLearningProgressDetail";
 import TAssignmentDetail from "../views/Education/ClassManagement/Teacher/TAssignmentDetail";
 import TClassDetail from "../views/Education/ClassManagement/Teacher/TClassDetail";
 import TClassList from "../views/Education/ClassManagement/Teacher/TClassList";
 import TeacherViewDetailClass from "../views/Education/ClassManagement/Teacher/TeacherViewDetailClass";
 import TeacherViewLearningSessionDetail from "../views/Education/ClassManagement/Teacher/TeacherViewLearningSessionDetail";
-import StudentViewLearningSessionDetail from "../views/Education/ClassManagement/Student/StudentViewLearningSessionDetail";
-import ResourceDomainList from "../component/education/resourcelink/ResourceDomainList";
-import ResourceList from "../component/education/resourcelink/ResourceList";
-import ResourceDomainCreate from "../component/education/resourcelink/ResourceDomainCreate";
-import ResourceCreate from "../component/education/resourcelink/ResourceCreate";
-import ResourceDomainEdit from "../component/education/resourcelink/ResourceDomainEdit";
-import ClassTeacherAssignmentPlanDetail from "../component/education/classteacherassignment/ClassTeacherAssignmentPlanDetail";
-import ClassTeacherAssignmentPlanList from "../component/education/classteacherassignment/ClassTeacherAssignmentPlanList";
-import BCASolver from "../component/education/BCASolver";
-import StudentLearningProgressDetail from "../views/Education/ClassManagement/Teacher/StudentLearningProgressDetail";
 import NotFound from "../views/errors/NotFound";
 
 export default function EduRoute() {

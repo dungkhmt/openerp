@@ -7,22 +7,24 @@ import { Home } from "../component";
 import { Layout } from "../layout";
 import { drawerWidth } from "../layout/sidebar/v1/SideBar";
 import { useNotificationState } from "../state/NotificationState";
-import NotFound from "../views/errors/NotFound";
-import AccountActivationRoute from "./AccountActivationRoute";
-import AdminRoute from "./AdminRoute";
-import ChatRoute from "./ChatRoute";
-import ProgrammingContestRoutes from "./ProgrammingContestRoutes";
-import TaskManagementRoute from "./TaskManagementRoute";
-import TMSContainerRoute from "./TMSContainerRoute";
-import WhiteBoardRoute from "./WhiteBoardRoute";
-import WMSRoute from "./WMSRoute";
 
+const NotFound = lazy(() => import("../views/errors/NotFound"));
+const AccountActivationRoute = lazy(() => import("./AccountActivationRoute"));
+const AdminRoute = lazy(() => import("./AdminRoute"));
+const ChatRoute = lazy(() => import("./ChatRoute"));
+const ProgrammingContestRoutes = lazy(() =>
+  import("./ProgrammingContestRoutes")
+);
+const TaskManagementRoute = lazy(() => import("./TaskManagementRoute"));
+const TMSContainerRoute = lazy(() => import("./TMSContainerRoute"));
+const WhiteBoardRoute = lazy(() => import("./WhiteBoardRoute"));
+const WMSRoute = lazy(() => import("./WMSRoute"));
 const EduRoute = lazy(() => import("./EduRoute"));
 const UserLoginRoute = lazy(() => import("./UserLoginRoute"));
 const TestGroupRoute = lazy(() => import("./TestGroupRoute"));
 const UserGroupRoute = lazy(() => import("./UserGroupRoute"));
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   loadingProgress: {
     position: "fixed",
     top: 0,
@@ -45,23 +47,6 @@ function MainAppRoute(props) {
   useEffect(() => {
     notificationState.open.set(false);
   }, [location.pathname]);
-
-  // const dispatch = useDispatch();
-
-  // /**
-  //  * This func has a bug, it only display properly when access menu in order, if access by random URL, it failed.
-  //  */
-  // useEffect(() => {
-  //   if (location.pathname === "/" || location.pathname === "") {
-  //     dispatch(updateSelectedFuction(null));
-  //   }
-
-  //   let selectedFunction = mapPathMenu.get(location.pathname);
-
-  //   if (selectedFunction) {
-  //     dispatch(updateSelectedFuction(selectedFunction));
-  //   }
-  // }, [location]);
 
   return (
     <Layout>
