@@ -9,8 +9,10 @@ import { Button } from "@material-ui/core";
 import {
   Card,
   CardActions,
-  CardContent, MenuItem, TextField,
-  Typography
+  CardContent,
+  MenuItem,
+  TextField,
+  Typography,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -351,12 +353,14 @@ function CreateProblem() {
               ))}
             </TextField>
             <TextField
+              variant="outlined"
               style={{
-                width: 1.0 * window.innerWidth,
+                width: 0.9 * window.innerWidth,
                 margin: 20,
               }}
               multiline
-              maxRows={4}
+              rows={12}
+              maxRows={12}
               value={codeSolution}
               onChange={(event) => {
                 setCodeSolution(event.target.value);
