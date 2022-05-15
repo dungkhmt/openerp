@@ -61,13 +61,27 @@ export const components = {
   ),
 };
 
-export const theme = createTheme({
+export const themeTable = createTheme({
   palette: {
     primary: {
       main: "#3f51b5",
     },
     secondary: {
       main: green[900],
+    },
+  },
+  overrides: {
+    MuiTableRow: {
+      root: {
+        "&:hover": {
+          backgroundColor: "#ebebeb !important",
+        },
+      },
+      head: {
+        "&:hover": {
+          backgroundColor: "transparent !important",
+        },
+      },
     },
   },
 });

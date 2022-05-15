@@ -3,13 +3,13 @@ import { Box } from "@mui/material";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import {
   components,
   localization,
-  theme,
+  themeTable,
 } from "../../../utils/MaterialTableUtils";
 import { request } from "./Request";
-import { Link, useHistory } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({}));
 
 export default function StudentViewSubmission() {
@@ -76,7 +76,7 @@ export default function StudentViewSubmission() {
 
   return (
     <Box>
-      <MuiThemeProvider theme={theme}>
+      <MuiThemeProvider theme={themeTable}>
         <MaterialTable
           title={<h1>{t("submissionList.title")}</h1>}
           columns={columns}

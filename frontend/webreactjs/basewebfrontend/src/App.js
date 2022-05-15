@@ -39,6 +39,15 @@ console.log(
   "font-family:monospace;color:#1976d2;font-size:12px;"
 );
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      keepPreviousData: true,
+    },
+  },
+});
+
 function App() {
   const dispatch = useDispatch();
   const { isAuthenticated, token } = useAuthState();
@@ -47,14 +56,12 @@ function App() {
     if (isAuthenticated.get()) dispatch(success(token.get()));
   }, [isAuthenticated.get()]);
 
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnWindowFocus: false,
-        keepPreviousData: true,
-      },
-    },
-  });
+  // Fix the bug is described here: https://github.com/facebook/create-react-app/issues/11773
+  useEffect(() => {
+    window.process = {
+      ...window.process,
+    };
+  }, []);
 
   return (
     <I18nextProvider i18n={i18n}>

@@ -1,26 +1,28 @@
+import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router";
-import ListProblem from "../component/education/programmingcontestFE/ListProblem";
-import CreateProblem from "../component/education/programmingcontestFE/CreateProblem";
-import IDE from "../component/education/programmingcontestFE/IDE";
-import ProblemDetail from "../component/education/programmingcontestFE/ProblemDetail";
-import CreateTestCase from "../component/education/programmingcontestFE/CreateTestCase";
-import EditProblem from "../component/education/programmingcontestFE/EditProblem";
-import ProblemSubmissionDetail from "../component/education/programmingcontestFE/ProblemSubmissionDetail";
-import CreateContest from "../component/education/programmingcontestFE/CreateContest";
-import ListContest from "../component/education/programmingcontestFE/ListContest";
-import SolvingContest from "../component/education/programmingcontestFE/SolvingContest";
-import SubmitSolutionOutput from "../component/education/programmingcontestFE/SubmitSolutionOutput";
-import { StudentContestNotRegistered } from "../component/education/programmingcontestFE/StudentContestNotRegistered";
-import { ListContestManager } from "../component/education/programmingcontestFE/ListContestManager";
 import { ContestManager } from "../component/education/programmingcontestFE/ContestManager";
+import ContestProblemSubmissionDetail from "../component/education/programmingcontestFE/ContestProblemSubmissionDetail";
+import CreateContest from "../component/education/programmingcontestFE/CreateContest";
+import CreateProblem from "../component/education/programmingcontestFE/CreateProblem";
+import CreateTestCase from "../component/education/programmingcontestFE/CreateTestCase";
+import EditContest from "../component/education/programmingcontestFE/EditContest";
+import EditProblem from "../component/education/programmingcontestFE/EditProblem";
+import EditTestCase from "../component/education/programmingcontestFE/EditTestCase";
+import IDE from "../component/education/programmingcontestFE/IDE";
+import ListContest from "../component/education/programmingcontestFE/ListContest";
+import { ListContestManager } from "../component/education/programmingcontestFE/ListContestManager";
+import ListPracticalProblem from "../component/education/programmingcontestFE/ListPracticalProblem";
+import ListProblem from "../component/education/programmingcontestFE/ListProblem";
+import ProblemDetail from "../component/education/programmingcontestFE/ProblemDetail";
+import ProblemSubmissionDetail from "../component/education/programmingcontestFE/ProblemSubmissionDetail";
+import SolvingContest from "../component/education/programmingcontestFE/SolvingContest";
+import { StudentContestNotRegistered } from "../component/education/programmingcontestFE/StudentContestNotRegistered";
 import { StudentContestRegistered } from "../component/education/programmingcontestFE/StudentContestRegistered";
 import StudentViewContestDetail from "../component/education/programmingcontestFE/StudentViewContestDetail";
-import { Test } from "../component/education/programmingcontestFE/Test";
-import EditContest from "../component/education/programmingcontestFE/EditContest";
-import ListPracticalProblem from "../component/education/programmingcontestFE/ListPracticalProblem";
-import EditTestCase from "../component/education/programmingcontestFE/EditTestCase";
-import ContestProblemSubmissionDetail from "../component/education/programmingcontestFE/ContestProblemSubmissionDetail";
 import StudentViewProgrammingContestProblemDetail from "../component/education/programmingcontestFE/StudentViewProgrammingContestProblemDetail";
+import SubmitSolutionOutput from "../component/education/programmingcontestFE/SubmitSolutionOutput";
+import { Test } from "../component/education/programmingcontestFE/Test";
+
 export default function ProgrammingContestRoutes() {
   let { path } = useRouteMatch();
   return (

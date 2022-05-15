@@ -1,17 +1,12 @@
-import { Button, Grid, Modal, TextField, MenuItem } from "@material-ui/core";
-import { useDispatch, useSelector } from "react-redux";
-import { authPostMultiPart, request } from "../../api";
-import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
-import MaterialTable, { MTableToolbar } from "material-table";
-import RouteDetail from "./RouteDetail";
-import {
-  components,
-  localization,
-  theme,
-} from "../../utils/MaterialTableUtils";
+import { Button, Grid } from "@material-ui/core";
+import { IconButton } from "@material-ui/core/";
 import { grey } from "@material-ui/core/colors";
-import { Box, IconButton, Typography } from "@material-ui/core/";
+import MaterialTable from "material-table";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { authPostMultiPart } from "../../api";
+import { localization } from "../../utils/MaterialTableUtils";
+import RouteDetail from "./RouteDetail";
 const cellStyles = { headerStyle: { padding: 8 }, cellStyle: { padding: 8 } };
 export default function TMSContainerHome() {
   const [filename, setFilename] = React.useState("");

@@ -3,21 +3,20 @@ import {
   Container,
   IconButton,
   InputAdornment,
-  makeStyles,
   Paper,
   TextField,
   Tooltip,
   Typography,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { DataGrid } from "@material-ui/data-grid";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import SearchIcon from "@material-ui/icons/Search";
+import { axiosPost, request } from "api";
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import SearchIcon from "@material-ui/icons/Search";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
-import AddTeacherModal from "./AddTeacherModal";
-import { axiosPost, request } from "../../../api";
-import UploadButton from "../UploadButton";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import XLSX from "xlsx";
 import {
   errorNoti,
   processingNoti,
@@ -25,9 +24,10 @@ import {
   updateErrorNoti,
   updateSuccessNoti,
   warningNoti,
-} from "../../../utils/notification";
-import { Link } from "react-router-dom";
-import { DataGrid } from "@material-ui/data-grid";
+} from "utils/notification";
+import XLSX from "xlsx";
+import UploadButton from "../UploadButton";
+import AddTeacherModal from "./AddTeacherModal";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {

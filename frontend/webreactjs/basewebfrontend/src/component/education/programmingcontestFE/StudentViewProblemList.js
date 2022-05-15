@@ -4,7 +4,7 @@ import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
-import { theme } from "../../../utils/MaterialTableUtils";
+import { themeTable } from "../../../utils/MaterialTableUtils";
 import { request } from "./Request";
 
 const useStyles = makeStyles((theme) => ({}));
@@ -70,7 +70,7 @@ export default function StudentViewProblemList() {
   ];
   return (
     <Box>
-      <MuiThemeProvider theme={theme}>
+      <MuiThemeProvider theme={themeTable}>
         <MaterialTable
           title={<h1>{t("problemList.title")}</h1>}
           columns={columns}

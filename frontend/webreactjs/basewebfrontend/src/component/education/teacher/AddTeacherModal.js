@@ -7,14 +7,15 @@ import {
   CardContent,
   CardHeader,
   Fade,
-  makeStyles,
   Modal,
   TextField,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { request } from "api";
 import React, { useEffect, useState } from "react";
+import { infoNoti } from "utils/notification";
 import * as yup from "yup";
-import { request } from "../../../api";
-import { infoNoti } from "../../../utils/notification";
+
 const useStyles = makeStyles((theme) => ({
   modal: {
     display: "flex",
