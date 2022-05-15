@@ -1,12 +1,11 @@
 import { Box, Typography } from "@material-ui/core/";
-import { grey } from "@material-ui/core/colors";
 import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import TertiaryButton from "component/button/TertiaryButton";
 import MaterialTable, { MTableToolbar } from "material-table";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
-import { components, localization, theme } from "utils/MaterialTableUtils";
+import { components, localization, themeTable } from "utils/MaterialTableUtils";
 
 const useStyles = makeStyles((theme) => ({
   commandButton: {
@@ -19,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   tableToolbarHighlight: { backgroundColor: "transparent" },
 }));
 
-function CustomizeTable(props) {
+function StandardTable(props) {
   const classes = useStyles();
 
   // Command delete button
@@ -58,7 +57,7 @@ function CustomizeTable(props) {
           </>
         )}
       </Box>
-      <MuiThemeProvider theme={theme}>
+      <MuiThemeProvider theme={themeTable}>
         <MaterialTable
           {...props}
           localization={{
@@ -74,8 +73,8 @@ function CustomizeTable(props) {
             },
             rowStyle: (rowData) => ({
               backgroundColor: rowData.tableData.checked
-                ? grey[200]
-                : "#FFFFFF",
+                ? "#e0e0e0"
+                : "#ffffff",
             }),
             ...props.options,
           }}
@@ -105,7 +104,7 @@ function CustomizeTable(props) {
   );
 }
 // options can xem ky hon
-CustomizeTable.propTypes = {
+StandardTable.propTypes = {
   onDeleteRow: PropTypes.func,
   localization: PropTypes.object,
   options: PropTypes.object,
@@ -116,4 +115,4 @@ CustomizeTable.propTypes = {
   data: PropTypes.array,
 };
 
-export default CustomizeTable;
+export default StandardTable;

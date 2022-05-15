@@ -1,16 +1,16 @@
-import React from "react";
-import { Button, Grid, Modal, TextField, MenuItem } from "@material-ui/core";
-import { useDispatch, useSelector } from "react-redux";
-import { authPostMultiPart, request } from "../../../../api";
+import { Button, Grid } from "@material-ui/core";
+import { IconButton } from "@material-ui/core/";
+import { grey } from "@material-ui/core/colors";
 import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
 import MaterialTable, { MTableToolbar } from "material-table";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { authPostMultiPart } from "../../../../api";
 import {
   components,
   localization,
-  theme,
+  themeTable,
 } from "../../../../utils/MaterialTableUtils";
-import { grey } from "@material-ui/core/colors";
-import { Box, IconButton, Typography } from "@material-ui/core/";
 import RouteDetail from "./RouteDetail";
 
 const cellStyles = { headerStyle: { padding: 8 }, cellStyle: { padding: 8 } };
@@ -129,7 +129,7 @@ function OrderPickupPlanning() {
         </form>
       </div>
       <div>
-        <MuiThemeProvider theme={theme}>
+        <MuiThemeProvider theme={themeTable}>
           <MaterialTable
             title={"Danh sách routes"}
             columns={columns}
