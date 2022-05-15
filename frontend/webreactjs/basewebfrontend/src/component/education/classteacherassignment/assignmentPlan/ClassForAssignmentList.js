@@ -2,7 +2,7 @@ import { IconButton } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
 import EditIcon from "@material-ui/icons/Edit";
 import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
-import CustomizeTable from "component/table/CustomizeTable";
+import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { authPostMultiPart, request } from "../../../../api";
@@ -217,25 +217,23 @@ function ClassForAssignmentList(props) {
     getClassTeacherAssignmentClassInfoList();
   }, []);
 
-  const commandBarComponents = (
-    <TertiaryButton
-      className={classes.commandButton}
-      color="default"
-      startIcon={<PublishRoundedIcon />}
-      onClick={handleModalOpenModelExcel}
-    >
-      Tải lên Excel
-    </TertiaryButton>
-  );
-
   return (
     <>
-      <CustomizeTable
+      <StandardTable
         title={"Danh sách lớp chưa phân công"}
         columns={columns}
         data={classList}
         onDeleteRow={removeClassesFromAssignmentPlan}
-        commandBarComponents={commandBarComponents}
+        commandBarComponents={
+          <TertiaryButton
+            className={classes.commandButton}
+            color="default"
+            startIcon={<PublishRoundedIcon />}
+            onClick={handleModalOpenModelExcel}
+          >
+            Tải lên Excel
+          </TertiaryButton>
+        }
       />
 
       <UploadExcelClassForTeacherAssignmentModel
