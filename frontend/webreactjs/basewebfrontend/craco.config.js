@@ -1,4 +1,4 @@
-const BabelRcPlugin = require("@jackwilsdon/craco-use-babelrc");
+// const BabelRcPlugin = require("@jackwilsdon/craco-use-babelrc");
 const CompressionPlugin = require("compression-webpack-plugin");
 const zlib = require("zlib");
 
@@ -76,5 +76,5 @@ module.exports = {
           : "react-redux",
     },
   },
-  plugins: [{ plugin: BabelRcPlugin }],
+  // plugins: [{ plugin: BabelRcPlugin }],
 };
