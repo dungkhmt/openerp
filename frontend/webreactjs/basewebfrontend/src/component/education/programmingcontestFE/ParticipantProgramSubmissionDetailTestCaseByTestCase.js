@@ -1,13 +1,13 @@
-import { React, useEffect, useState } from "react";
-import { request } from "../../../api";
-import MaterialTable from "material-table";
-import { toFormattedDateTime } from "../../../utils/dateutils";
-import { IconButton, TextField } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
+import { IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import Typography from "@mui/material/Typography";
+import MaterialTable from "material-table";
+import { React, useEffect, useState } from "react";
+import { CopyBlock, dracula } from "react-code-blocks";
+import { request } from "../../../api";
+import { toFormattedDateTime } from "../../../utils/dateutils";
 
 export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
   props
@@ -107,60 +107,23 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
           }}
         >
           <Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography variant="h6">Input</Typography>
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    chosenTestcase?.chosenTestcase?.testCase
-                  );
-                }}
-              >
-                <ContentCopyIcon />
-              </IconButton>
-            </Box>
-            <TextField
-              disabled
-              multiline
-              maxRows={12}
-              fullWidth
-              value={chosenTestcase?.chosenTestcase?.testCase}
+            <Typography variant="h6">Input</Typography>
+            <CopyBlock
+              text={chosenTestcase?.chosenTestcase?.testCase}
+              showLineNumbers={false}
+              theme={dracula}
+              wrapLines={true}
+              codeBlock
             />
           </Box>
-          <Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                mt: 4,
-              }}
-            >
-              <Typography variant="h6">Output</Typography>
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    chosenTestcase?.chosenTestcase?.correctAns
-                  );
-                }}
-              >
-                <ContentCopyIcon />
-              </IconButton>
-            </Box>
-            <TextField
-              disabled
-              multiline
-              maxRows={12}
-              fullWidth
-              value={chosenTestcase?.chosenTestcase?.correctAns}
+          <Box sx={{mt: 2}}>
+            <Typography variant="h6">Output</Typography>
+            <CopyBlock
+              text={chosenTestcase?.chosenTestcase?.correctAns}
+              showLineNumbers={false}
+              theme={dracula}
+              wrapLines={true}
+              codeBlock
             />
           </Box>
         </Box>
