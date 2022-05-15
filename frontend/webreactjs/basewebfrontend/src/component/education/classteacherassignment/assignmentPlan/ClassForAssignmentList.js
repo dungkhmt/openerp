@@ -1,14 +1,12 @@
-import { Box, IconButton, Typography } from "@material-ui/core/";
-import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
+import { IconButton } from "@material-ui/core/";
+import { makeStyles } from "@material-ui/core/styles";
 import EditIcon from "@material-ui/icons/Edit";
 import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
 import { authPostMultiPart, request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
-import MaterialTable, { MTableToolbar } from "material-table";
+import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { components, localization, themeTable } from "utils/MaterialTableUtils";
 import UpdateClassForAssignmentModel from "../UpdateClassForAssignmentModel";
 import UploadExcelClassForTeacherAssignmentModel from "../UploadExcelClassForTeacherAssignmentModel";
 
@@ -25,9 +23,6 @@ const useStyles = makeStyles((theme) => ({
 
 function ClassForAssignmentList(props) {
   const classes = useStyles();
-
-  // Command delete button
-  const [selectedRows, setSelectedRows] = useState([]);
 
   //
   const planId = props.planId;
@@ -157,7 +152,7 @@ function ClassForAssignmentList(props) {
     handleModalClose();
   };
 
-  async function getClassTeacherAssignmentClassInfoList() {
+  function getClassTeacherAssignmentClassInfoList() {
     request(
       "GET",
       "/get-class-list-for-assignment-2-teacher/" + planId,
@@ -183,7 +178,7 @@ function ClassForAssignmentList(props) {
     setOpenModelExcel(false);
   };
 
-  const removeClassesFromAssignmentPlan = () => {
+  const removeClassesFromAssignmentPlan = (selectedRows) => {
     if (selectedRows.length > 0) {
       let data = selectedRows.map((row) =>
         JSON.stringify({
@@ -224,83 +219,22 @@ function ClassForAssignmentList(props) {
 
   return (
     <>
-      <Box
-        width="100%"
-        height={40}
-        display="flex"
-        justifyContent="flex-start"
-        alignItems="center"
-        borderBottom={1}
-        mt={-3}
-        mb={3}
-        style={{ borderColor: "#e8e8e8" }}
-      >
-        <TertiaryButton
-          className={classes.commandButton}
-          color="default"
-          startIcon={<PublishRoundedIcon />}
-          onClick={handleModalOpenModelExcel}
-        >
-          Tải lên Excel
-        </TertiaryButton>
-        {selectedRows.length > 0 && (
-          <>
-            <TertiaryButton
-              className={classes.commandButton}
-              color="default"
-              startIcon={<DeleteRoundedIcon />}
-              onClick={removeClassesFromAssignmentPlan}
-            >
-              Xoá
-            </TertiaryButton>
-            <Typography
-              component="span"
-              style={{ marginLeft: "auto", marginRight: 32 }}
-            >{`Đã chọn ${selectedRows.length} mục`}</Typography>
-          </>
-        )}
-      </Box>
-      <MuiThemeProvider theme={themeTable}>
-        <MaterialTable
-          title={"Danh sách lớp chưa phân công"}
-          columns={columns}
-          data={classList}
-          localization={{
-            ...localization,
-            toolbar: { ...localization.toolbar, nRowsSelected: "" },
-          }}
-          options={{
-            selection: true,
-            pageSize: 20,
-            headerStyle: {
-              backgroundColor: "transparent",
-            },
-            rowStyle: (rowData) => ({
-              backgroundColor: rowData.tableData.checked
-                ? "#e0e0e0"
-                : "#ffffff",
-            }),
-          }}
-          onSelectionChange={(rows) => {
-            setSelectedRows(rows);
-          }}
-          components={{
-            ...components,
-            Toolbar: (props) => (
-              <MTableToolbar
-                {...props}
-                classes={{
-                  highlight: classes.tableToolbarHighlight,
-                }}
-                searchFieldVariant="outlined"
-                searchFieldStyle={{
-                  height: 40,
-                }}
-              />
-            ),
-          }}
-        />
-      </MuiThemeProvider>
+      <StandardTable
+        title={"Danh sách lớp chưa phân công"}
+        columns={columns}
+        data={classList}
+        onDeleteRow={removeClassesFromAssignmentPlan}
+        commandBarComponents={
+          <TertiaryButton
+            className={classes.commandButton}
+            color="default"
+            startIcon={<PublishRoundedIcon />}
+            onClick={handleModalOpenModelExcel}
+          >
+            Tải lên Excel
+          </TertiaryButton>
+        }
+      />
 
       <UploadExcelClassForTeacherAssignmentModel
         open={openModelExcel}
