@@ -55,6 +55,13 @@ public class RoomParticipantController {
     return ResponseEntity.ok().build();
   }
 
+  @GetMapping("/invitedFriends")
+  public ResponseEntity<?> getInvitedFriends(Pageable page, @RequestParam String roomId) {
+    UUID _roomId = UUID.fromString(roomId);
+    Room r = roomService.findByRoomId(_roomId);
+    return ResponseEntity.ok().body(roomParticipantService.getInvitedFriends(page, r));
+  }
+
   @GetMapping(path = "/searchToInviteById")
   public ResponseEntity<?> searchUsersById(Pageable page, @RequestParam String searchString,
       @RequestParam String roomId) {

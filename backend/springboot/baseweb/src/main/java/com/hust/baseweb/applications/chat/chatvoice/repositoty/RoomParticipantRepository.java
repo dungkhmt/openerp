@@ -34,4 +34,7 @@ public interface RoomParticipantRepository extends JpaRepository<RoomParticipant
 
   @Query("SELECT p.room.id, p.room.roomName, p.room.openIn, p.room.closeIn FROM RoomParticipant p WHERE p.participant = :u AND p.isInvited = true")
   Page<Room> getListInvitedRoom(Pageable page, UserLogin u);
+
+  @Query("SELECT r.participant.userLoginId FROM RoomParticipant r WHERE r.room = :r AND isInvited = true")
+  Page<String> getInvitedFriends(Pageable page, Room r);
 }

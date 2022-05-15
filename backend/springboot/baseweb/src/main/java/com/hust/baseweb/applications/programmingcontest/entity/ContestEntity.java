@@ -23,6 +23,12 @@ public class ContestEntity {
     public static final String CONTEST_STATUS_CLOSED = "CLOSED";
     public static final String CONTEST_STATUS_DISABLED = "DISABLED";
 
+    public static final String CONTEST_SUBMISSION_ACTION_TYPE_STORE_ONLY = "STORE_ONLY";
+    public static final String CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE = "STORE_AND_EXECUTE";
+
+    public static final String CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER = "SEE_CORRECT_ANSWER";
+    public static final String CONTEST_PARTICIPANT_VIEW_MODE_NOT_SEE_CORRECT_ANSWER = "NOT_SEE_CORRECT_ANSWER";
+
     public static List<String> getStatusIds(){
         List<String> L = new ArrayList();
         L.add(ContestEntity.CONTEST_STATUS_CREATED);
@@ -33,7 +39,24 @@ public class ContestEntity {
         L.add(ContestEntity.CONTEST_STATUS_COMPLETED);
         return L;
     }
+    public static List<String> getSubmissionActionTypes(){
+        List<String> L = new ArrayList();
+        L.add(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE);
+        L.add(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_ONLY);
+        return L;
+    }
 
+    public static List<String> getParticipantViewResultModes(){
+        List<String> L = new ArrayList();
+        L.add(CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER);
+        L.add(CONTEST_PARTICIPANT_VIEW_MODE_NOT_SEE_CORRECT_ANSWER);
+        return L;
+    }
+    public static List<Integer> getListMaxNumberSubmissions(){
+        List<Integer> L = new ArrayList();
+        for(int i = 0; i <= 200; i++) L.add(i);
+        return L;
+    }
     @Id
     @Column(name = "contest_id")
     private String contestId;
@@ -83,5 +106,13 @@ public class ContestEntity {
     @Column(name="status_id")
     private String statusId;
 
+    @Column(name="submission_action_type")
+    private String submissionActionType;
+
+    @Column(name="max_number_submission")
+    private int maxNumberSubmission;
+
+    @Column(name="participant_view_result_mode")
+    private String participantViewResultMode;
 
 }

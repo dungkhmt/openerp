@@ -17,6 +17,12 @@ public class ModelGetContestDetailResponse {
     private boolean unauthorized;
     private Boolean isPublic;
     private String statusId;
+    private String submissionActionType;
+    private int maxNumberSubmission;
+    private String participantViewResultMode;
     private List<String> listStatusIds;
+    private List<String> listSubmissionActionTypes;
+    private List<String> listParticipantViewModes;
+    private List<Integer> listMaxNumberSubmissions;
 
 }

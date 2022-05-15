@@ -238,6 +238,15 @@ export default function EditContest(props) {
   const [countDown, setCountDown] = useState(Number(0));
   const [statusId, setStatusId] = useState(null);
   const [listStatusIds, setListStatusIds] = useState([]);
+  const [submissionActionType, setSubmissionActionType] = useState(null);
+  const [listSubmissionActionType, setListSubmissionActionType] = useState([]);
+  const [maxNumberSubmission, setMaxNumberSubmission] = useState(10);
+  const [listMaxNumberSubmissions, setListMaxNumberSubmissions] = useState([]);
+  const [participantViewResultMode, setParticipantViewResultMode] =
+    useState(null);
+  const [listParticipantViewResultModes, setListParticipantViewResultModes] =
+    useState([]);
+
   const classes = useStyles();
   const handleClick = (event, name) => {
     const selectedIndex = problemSelected.indexOf(name);
@@ -271,6 +280,9 @@ export default function EditContest(props) {
       startedAt: startDate,
       countDownTime: countDown,
       statusId: statusId,
+      submissionActionType: submissionActionType,
+      maxNumberSubmission: maxNumberSubmission,
+      participantViewResultMode: participantViewResultMode,
     };
     request(
       "post",
@@ -304,13 +316,20 @@ export default function EditContest(props) {
       res.data.list.map((p) => {
         arr.push(p.problemId);
       });
-      console.log("arr ", arr);
+      console.log("res.data = ", res.data);
       setProblemSelected(arr);
       setContestName(res.data.contestName);
       setIsPublic(res.data.isPublic);
       setStartDate(res.data.startAt);
       setStatusId(res.data.statusId);
       setListStatusIds(res.data.listStatusIds);
+      setSubmissionActionType(res.data.submissionActionType);
+      setListSubmissionActionType(res.data.listSubmissionActionTypes);
+      setParticipantViewResultMode(res.data.participantViewResultMode);
+      setListParticipantViewResultModes(res.data.listParticipantViewModes);
+      setMaxNumberSubmission(res.data.maxNumberSubmission);
+      setListMaxNumberSubmissions(res.data.listMaxNumberSubmissions);
+
       console.log("res ", res.data);
     }).then();
   }, [page]);
@@ -392,6 +411,61 @@ export default function EditContest(props) {
                 value={statusId}
               >
                 {listStatusIds.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                autoFocus
+                // required
+                select
+                id="submissionActionType"
+                label="SubmissionActionType"
+                placeholder="SubmissionActionType"
+                onChange={(event) => {
+                  setSubmissionActionType(event.target.value);
+                }}
+                value={submissionActionType}
+              >
+                {listSubmissionActionType.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                autoFocus
+                // required
+                select
+                id="maxNumberSubmission"
+                label="MaxNumberSubmission"
+                placeholder="MaxNumberSubmission"
+                onChange={(event) => {
+                  setMaxNumberSubmission(event.target.value);
+                }}
+                value={maxNumberSubmission}
+              >
+                {listMaxNumberSubmissions.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                autoFocus
+                // required
+                select
+                id="participantViewResultMode"
+                label="ParticipantViewResultMode"
+                placeholder="ParticipantViewResultMode"
+                onChange={(event) => {
+                  setParticipantViewResultMode(event.target.value);
+                }}
+                value={participantViewResultMode}
+              >
+                {listParticipantViewResultModes.map((item) => (
                   <MenuItem key={item} value={item}>
                     {item}
                   </MenuItem>

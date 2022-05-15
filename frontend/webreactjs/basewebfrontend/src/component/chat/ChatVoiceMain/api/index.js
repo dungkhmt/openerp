@@ -23,3 +23,9 @@ export const getOwnedMeets = async (params) => {
 export const scheduleMeet = async (params) => {
   return await request('post', '/room/create', undefined, undefined, params);
 }
+
+export const getInvitedFriends = async (meetId) => {
+  if (meetId) {
+    return await request('get', API_URL.INVITED_FRIENDS, undefined, undefined, undefined, { params: { roomId: meetId } });
+  }
+}

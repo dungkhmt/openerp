@@ -1,6 +1,7 @@
 export const API_URL = {
     SEARCH_FRIEND: '/roomParticipant/searchToInviteById',
     INVITE_FRIEND: '/roomParticipant/invite',
+    INVITED_FRIENDS: '/roomParticipant/invitedFriends',
     INVITED_MEET: '/roomParticipant/getListInvitedRoom',
     OWNED_MEET: '/room/all',
     SCHEDULE_MEET: '/room/create',
@@ -9,6 +10,7 @@ export const API_URL = {
 export const QUERY_KEY = {
     SEARCH_FRIEND: 'searchFriend',
     INVITE_FRIEND: 'inviteFriend',
+    INVITED_FRIENDS: 'invitedFriend',
     INVITED_MEET: 'invitedMeet',
     OWNED_MEET: 'ownedMeet',
     SCHEDULE_MEET: 'scheduleMeet',

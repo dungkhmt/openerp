@@ -14,4 +14,7 @@ public class ModelUpdateContest {
     private String isPublic;
     private long countDownTime;
     private String statusId;
+    private String submissionActionType;
+    private int maxNumberSubmission;
+    private String participantViewResultMode;
 }
