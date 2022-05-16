@@ -1,28 +1,25 @@
-import { Box, Typography } from "@material-ui/core/";
-import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import TertiaryButton from "component/button/TertiaryButton";
+import { Box } from "@material-ui/core/";
+import { makeStyles, MuiThemeProvider, styled } from "@material-ui/core/styles";
 import MaterialTable, { MTableToolbar } from "material-table";
 import PropTypes from "prop-types";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { components, localization, themeTable } from "utils/MaterialTableUtils";
 
-const useStyles = makeStyles((theme) => ({
-  commandButton: {
-    marginLeft: theme.spacing(2),
-    fontWeight: theme.typography.fontWeightRegular,
-    "&:hover": {
-      color: theme.palette.primary.main,
-    },
-  },
+const Offset = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+  justifyContent: "flex-end",
+}));
+
+const useStyles = makeStyles(() => ({
   tableToolbarHighlight: { backgroundColor: "transparent" },
 }));
 
 function StandardTable(props) {
   const classes = useStyles();
-
-  // Command delete button
-  const [selectedRows, setSelectedRows] = useState([]);
 
   const rowStyle = useCallback(
     (rowData) => ({
@@ -33,37 +30,24 @@ function StandardTable(props) {
 
   return (
     <>
-      <Box
-        width="100%"
-        height={40}
-        display="flex"
-        justifyContent="flex-start"
-        alignItems="center"
-        borderBottom={1}
-        mt={-3}
-        mb={3}
-        style={{ borderColor: "#e8e8e8" }}
-      >
-        {props.commandBarComponents}
-        {selectedRows.length > 0 && (
-          <>
-            <TertiaryButton
-              className={classes.commandButton}
-              color="default"
-              startIcon={<DeleteRoundedIcon />}
-              onClick={() => {
-                if (props.onDeleteRow) props.onDeleteRow(selectedRows);
-              }}
-            >
-              Xoá
-            </TertiaryButton>
-            <Typography
-              component="span"
-              style={{ marginLeft: "auto", marginRight: 32 }}
-            >{`Đã chọn ${selectedRows.length} mục`}</Typography>
-          </>
-        )}
-      </Box>
+      {!props.hideCommandBar && (
+        <>
+          <Box
+            className={props.classNames?.commandBar}
+            width="100%"
+            height={40}
+            display="flex"
+            justifyContent="flex-start"
+            alignItems="center"
+            borderBottom={"1px solid rgb(224, 224, 224)"}
+            pl={2}
+            style={{ backgroundColor: "#f5f5f5" }}
+          >
+            {props.commandBarComponents}
+          </Box>
+          {/* <Offset /> */}
+        </>
+      )}
       <MuiThemeProvider theme={themeTable}>
         <MaterialTable
           {...props}
@@ -82,8 +66,7 @@ function StandardTable(props) {
             ...props.options,
           }}
           onSelectionChange={(rows) => {
-            setSelectedRows(rows);
-            if (props.onSelectionChange) props.onSelectionChange(rows);
+            props.onSelectionChange(rows);
           }}
           components={{
             ...components,
@@ -106,16 +89,18 @@ function StandardTable(props) {
     </>
   );
 }
-// options can xem ky hon
+
 StandardTable.propTypes = {
-  onDeleteRow: PropTypes.func,
+  hideCommandBar: PropTypes.bool,
+  classNames: PropTypes.object,
   localization: PropTypes.object,
   options: PropTypes.object,
   onSelectionChange: PropTypes.func,
   components: PropTypes.object,
   title: PropTypes.string,
-  columns: PropTypes.array,
+  columns: PropTypes.array.isRequired,
   data: PropTypes.array,
+  commandBarComponents: PropTypes.element,
 };
 
 export default StandardTable;

@@ -1,5 +1,6 @@
-import { IconButton } from "@material-ui/core/";
+import { IconButton, Typography } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
+import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import EditIcon from "@material-ui/icons/Edit";
 import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
 import { authPostMultiPart, request } from "api";
@@ -11,21 +12,34 @@ import UpdateClassForAssignmentModel from "../UpdateClassForAssignmentModel";
 import UploadExcelClassForTeacherAssignmentModel from "../UploadExcelClassForTeacherAssignmentModel";
 
 const useStyles = makeStyles((theme) => ({
-  commandButton: {
-    marginLeft: theme.spacing(2),
+  uploadExcelBtn: {
     fontWeight: theme.typography.fontWeightRegular,
     "&:hover": {
       color: theme.palette.primary.main,
     },
   },
-  tableToolbarHighlight: { backgroundColor: "transparent" },
+  commandBar: {
+    position: "sticky",
+    top: 112,
+    zIndex: 11,
+    marginTop: -theme.spacing(3),
+    marginBottom: theme.spacing(3),
+  },
 }));
 
-function ClassForAssignmentList(props) {
+const cellStyles = { headerStyle: { padding: 8 }, cellStyle: { padding: 8 } };
+const alignRightCellStyles = {
+  headerStyle: { padding: 8, textAlign: "right" },
+  cellStyle: { padding: 8, textAlign: "right" },
+};
+
+function ClassForAssignmentList({ planId }) {
   const classes = useStyles();
 
+  // Command delete button
+  const [selectedRows, setSelectedRows] = useState([]);
+
   //
-  const planId = props.planId;
   const [classList, setClassList] = useState([]);
 
   const [selectedClassId, setSelectedClassId] = useState(null);
@@ -37,11 +51,6 @@ function ClassForAssignmentList(props) {
   //const [selectedFile, setSelectedFile] = useState(null);
 
   // Table
-  const cellStyles = { headerStyle: { padding: 8 }, cellStyle: { padding: 8 } };
-  const alignRightCellStyles = {
-    headerStyle: { padding: 8, textAlign: "right" },
-    cellStyle: { padding: 8, textAlign: "right" },
-  };
   const columns = [
     { title: "Mã lớp", field: "classId", ...cellStyles },
     { title: "Lớp", field: "className", ...cellStyles },
@@ -152,16 +161,6 @@ function ClassForAssignmentList(props) {
     handleModalClose();
   };
 
-  function getClassTeacherAssignmentClassInfoList() {
-    request(
-      "GET",
-      "/get-class-list-for-assignment-2-teacher/" + planId,
-      (res) => {
-        setClassList(res.data);
-      }
-    );
-  }
-
   const handleModalOpen = () => {
     setOpen(true);
   };
@@ -178,7 +177,7 @@ function ClassForAssignmentList(props) {
     setOpenModelExcel(false);
   };
 
-  const removeClassesFromAssignmentPlan = (selectedRows) => {
+  const removeClassesFromAssignmentPlan = () => {
     if (selectedRows.length > 0) {
       let data = selectedRows.map((row) =>
         JSON.stringify({
@@ -214,7 +213,13 @@ function ClassForAssignmentList(props) {
   };
 
   useEffect(() => {
-    getClassTeacherAssignmentClassInfoList();
+    request(
+      "GET",
+      "/get-class-list-for-assignment-2-teacher/" + planId,
+      (res) => {
+        setClassList(res.data);
+      }
+    );
   }, []);
 
   return (
@@ -223,16 +228,38 @@ function ClassForAssignmentList(props) {
         title={"Danh sách lớp chưa phân công"}
         columns={columns}
         data={classList}
-        onDeleteRow={removeClassesFromAssignmentPlan}
+        classNames={{ commandBar: classes.commandBar }}
+        onSelectionChange={(selectedRows) => setSelectedRows(selectedRows)}
         commandBarComponents={
-          <TertiaryButton
-            className={classes.commandButton}
-            color="default"
-            startIcon={<PublishRoundedIcon />}
-            onClick={handleModalOpenModelExcel}
-          >
-            Tải lên Excel
-          </TertiaryButton>
+          <>
+            {selectedRows.length === 0 ? (
+              <>
+                <TertiaryButton
+                  className={classes.uploadExcelBtn}
+                  color="default"
+                  startIcon={<PublishRoundedIcon />}
+                  onClick={handleModalOpenModelExcel}
+                >
+                  Tải lên Excel
+                </TertiaryButton>
+              </>
+            ) : (
+              <>
+                <TertiaryButton
+                  className={classes.uploadExcelBtn}
+                  color="default"
+                  startIcon={<DeleteRoundedIcon />}
+                  onClick={removeClassesFromAssignmentPlan}
+                >
+                  Xoá
+                </TertiaryButton>
+                <Typography
+                  component="span"
+                  style={{ marginLeft: "auto", marginRight: 32 }}
+                >{`Đã chọn ${selectedRows.length} mục`}</Typography>
+              </>
+            )}
+          </>
         }
       />
 
