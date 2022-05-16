@@ -58,16 +58,19 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   content: {
+    flexShrink: 1,
     flexGrow: 1,
+    maxWidth: "100%",
     padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
+    transition: theme.transitions.create(["maxWidth", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
     marginLeft: -drawerWidth,
   },
   contentShift: {
-    transition: theme.transitions.create("margin", {
+    maxWidth: "calc(100% - 300px)",
+    transition: theme.transitions.create(["maxWidth", "margin"], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -75,8 +78,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Layout(props) {
-  const { children } = props;
+function Layout({ children }) {
   const classes = useStyles();
 
   //
@@ -111,7 +113,7 @@ function Layout(props) {
           {/* Use this div tag to push the icons to the right */}
           <div style={{ flexGrow: 1 }} />
           <div className={classes.sectionDesktop}>
-            <LanguageSwitch/>
+            <LanguageSwitch />
             {isAuthenticated.get() && (
               <>
                 <NotificationButton />
