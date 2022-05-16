@@ -4,7 +4,7 @@ import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import TertiaryButton from "component/button/TertiaryButton";
 import MaterialTable, { MTableToolbar } from "material-table";
 import PropTypes from "prop-types";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { components, localization, themeTable } from "utils/MaterialTableUtils";
 
 const useStyles = makeStyles((theme) => ({
@@ -23,6 +23,13 @@ function StandardTable(props) {
 
   // Command delete button
   const [selectedRows, setSelectedRows] = useState([]);
+
+  const rowStyle = useCallback(
+    (rowData) => ({
+      backgroundColor: rowData.tableData.checked ? "#e0e0e0" : "#ffffff",
+    }),
+    []
+  );
 
   return (
     <>
@@ -71,11 +78,7 @@ function StandardTable(props) {
             headerStyle: {
               backgroundColor: "transparent",
             },
-            rowStyle: (rowData) => ({
-              backgroundColor: rowData.tableData.checked
-                ? "#e0e0e0"
-                : "#ffffff",
-            }),
+            rowStyle: rowStyle,
             ...props.options,
           }}
           onSelectionChange={(rows) => {
