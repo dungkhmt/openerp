@@ -1,24 +1,23 @@
-import { Card } from "@material-ui/core/";
-import MaterialTable from "material-table";
+import { request } from "api";
+import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
-import { request } from "../../../../api";
 
-function PairConflictTimetableClass(props) {
-  const planId = props.planId;
+const columns = [
+  { title: "class 1", field: "classId1" },
+  { title: "course 1", field: "courseId1" },
+  { title: "timetable 1", field: "timetable1" },
+  { title: "timetableCode 1", field: "timetableCode1" },
+  { title: "class 2", field: "classId2" },
+  { title: "course 2", field: "courseId2" },
+  { title: "timetable 2", field: "timetable2" },
+  { title: "timetableCode 2", field: "timetableCode2" },
+];
+
+function PairConflictTimetableClass({ planId }) {
   const [conflictList, setConflictList] = useState([]);
 
-  const columns = [
-    { title: "class 1", field: "classId1" },
-    { title: "course 1", field: "courseId1" },
-    { title: "timetable 1", field: "timetable1" },
-    { title: "timetableCode 1", field: "timetableCode1" },
-    { title: "class 2", field: "classId2" },
-    { title: "course 2", field: "courseId2" },
-    { title: "timetable 2", field: "timetable2" },
-    { title: "timetableCode 2", field: "timetableCode2" },
-  ];
-
-  async function getConflictTimetableClassList() {
+  //
+  function getConflictTimetableClassList() {
     request("GET", "/get-pair-of-conflict-timetable-class/" + planId, (res) => {
       setConflictList(res.data);
     });
@@ -27,14 +26,16 @@ function PairConflictTimetableClass(props) {
   useEffect(() => {
     getConflictTimetableClassList();
   }, []);
+
   return (
-    <Card>
-      <MaterialTable
-        title={"Danh sách lớp trùng giờ"}
-        columns={columns}
-        data={conflictList}
-      />
-    </Card>
+    <StandardTable
+      title={"Danh sách lớp trùng giờ"}
+      columns={columns}
+      data={conflictList}
+      options={{
+        selection: false,
+      }}
+    />
   );
 }
 

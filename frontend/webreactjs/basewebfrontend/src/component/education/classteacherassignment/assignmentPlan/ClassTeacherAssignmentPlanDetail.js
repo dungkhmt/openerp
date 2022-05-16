@@ -69,6 +69,12 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#1976d2", // updated backgroundColor
     },
   },
+  tabs: {
+    position: "sticky",
+    top: 64,
+    zIndex: 11,
+    backgroundColor: "#fafafa",
+  },
 }));
 
 const tabsLabel = [
@@ -190,6 +196,7 @@ export default function ClassTeacherAssignmentPlanDetail() {
 
       {isProcessing ? <CircularProgress /> : ""}
       <AntTabs
+        className={classes.tabs}
         value={selectedTab}
         onChange={handleChangeTab}
         aria-label="ant example"
