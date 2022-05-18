@@ -15,20 +15,24 @@ import { useState } from 'react';
 const FooterControl = (props) => {
   const history = useHistory();
   const [open, setOpen] = useState(false);
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const handleMedia = (type, listTracks) => {
+  const handleMedia = (type, media) => {
     if (props.mediaStream) {
       props.setMediaStream(mediaStream => {
         mediaStream.getTracks().forEach(track => {
           if (track.kind === type) {
             mediaStream.removeTrack(track);
             track.stop();
+          } else {
+            media?.addTrack(track);
           }
         });
-        listTracks?.getTracks().forEach(track => mediaStream.addTrack(track));
-        return mediaStream;
+        return media;
       });
+    } else {
+      props.setMediaStream(media);
     }
   }
   const handleClickMicro = async () => {
@@ -36,12 +40,9 @@ const FooterControl = (props) => {
       props.setMicro(!props.micro);
       if (!props.micro) {
         const srcMicro = await getUserMedia('micro');
-        if (props.mediaStream) {
-          props.mediaStream.getTracks().forEach(track => srcMicro.addTrack(track));
-        }
-        props.setMediaStream(srcMicro);
+        handleMedia(MEDIA_TYPE.AUDIO, srcMicro);
       } else {
-        stopMedia(MEDIA_TYPE.AUDIO);
+        handleMedia(MEDIA_TYPE.AUDIO);
       }
     } catch (e) {
       console.error(e);
@@ -52,13 +53,9 @@ const FooterControl = (props) => {
       props.setCamera(!props.camera);
       if (!props.camera) {
         const srcCamera = await getUserMedia("camera");
-        if (props.mediaStream) {
-          handleMedia(MEDIA_TYPE.VIDEO, srcCamera);
-        } else {
-          props.setMediaStream(srcCamera);
-        }
+        handleMedia(MEDIA_TYPE.VIDEO, srcCamera);
       } else {
-        stopMedia(MEDIA_TYPE.VIDEO);
+        handleMedia(MEDIA_TYPE.VIDEO);
       }
     } catch (e) {
       console.error(e);

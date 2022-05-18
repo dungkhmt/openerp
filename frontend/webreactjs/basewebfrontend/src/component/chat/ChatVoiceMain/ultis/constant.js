@@ -69,3 +69,14 @@ export const styleModal = {
     p: 4,
     borderRadius: 5,
 };
+
+export const DISPLAY_TYPE = {
+    HIGHLIGHT: 'highlight',
+    NORMAL: 'normal',
+}
+
+export const DISPLAY_HOST = {
+    FULL: 'full',
+    PART: 'part',
+    SMALL: 'small',
+}

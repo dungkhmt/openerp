@@ -1,16 +1,25 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import classNames from 'classnames';
+import ParticipantVideo from "../ParticipantVideo";
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { displayHostMedia } from "../../../ultis/helpers";
-import { BAR_TYPE } from "../../../ultis/constant";
+import { BAR_TYPE, DISPLAY_TYPE } from "../../../ultis/constant";
 
 const Main = ({ mediaStream, listParticipant, display, myId }) => {
   const hostRef = useRef();
-  const otherPeopleRef = useRef();
+  const [displayType, setDisplayType] = useState(DISPLAY_TYPE.NORMAL);
+  const [mediaHightLight, setMediaHighlight] = useState();
+  const [hideHostVideo, setHideHostVideo] = useState(false);
   const listParticipantMedia = useMemo(() => listParticipant.filter(participant => !!participant?.mediaStream && participant.id !== myId));
+  // const listParticipantMedia = useMemo(() => listParticipant.filter(participant => !!participant?.mediaStream), [listParticipant]);
+
   const renderParticipantMedia = (listParticipantMedia) => {
-    return listParticipantMedia.map(() => (
-      <video key={listParticipantMedia.id} autoPlay className='other-video' />
+    return listParticipantMedia.map((participant, index) => (
+      <ParticipantVideo key={index} data={participant} displayType={displayType} setDisplayType={setDisplayType} setMediaHighlight={setMediaHighlight} />
     ));
+  }
+  const changeDisplayHostVideo = () => {
+    setHideHostVideo(hideHostVideo => !hideHostVideo);
   }
 
   useEffect(() => {
@@ -19,18 +28,24 @@ const Main = ({ mediaStream, listParticipant, display, myId }) => {
     }
   }, [mediaStream]);
 
-  useEffect(() => {
-    listParticipantMedia.map((participantMedia, index) => {
-      otherPeopleRef.current.children[index].srcObject = participantMedia.mediaStream;
-    });
-  }, [listParticipantMedia])
-
   return (
     <div className={classNames('main-room', 'transition', { 'mini-main': display === BAR_TYPE.CHAT || display === BAR_TYPE.PARTICIPANT }, { 'full-main': display === BAR_TYPE.NONE })}>
-      <video className={`host-video-${displayHostMedia(listParticipantMedia)}`} ref={hostRef} autoPlay muted></video>
-      <div className={`other-videos other-videos-${listParticipantMedia.length}`} ref={otherPeopleRef}>
-        {renderParticipantMedia(listParticipantMedia)}
+      <div className={classNames(`host-video-${displayHostMedia(listParticipantMedia, displayType)}`, { hide: hideHostVideo })} onClick={changeDisplayHostVideo}>
+        {(listParticipantMedia?.length > 1 || displayType === DISPLAY_TYPE.HIGHLIGHT) &&
+          <div className='control-host-video' >
+            <KeyboardDoubleArrowLeftIcon />
+          </div>
+        }
+        <video className={classNames('other-video', { cover: listParticipantMedia?.length > 1 || displayType === DISPLAY_TYPE.HIGHLIGHT })} ref={hostRef} autoPlay muted></video>
       </div>
+      {displayType === DISPLAY_TYPE.NORMAL &&
+        <div className={`other-videos other-videos-${listParticipantMedia.length}`}>
+          {renderParticipantMedia(listParticipantMedia)}
+        </div>
+      }
+      {displayType === DISPLAY_TYPE.HIGHLIGHT &&
+        <ParticipantVideo data={mediaHightLight} displayType={displayType} setDisplayType={setDisplayType} setMediaHighlight={setMediaHighlight} />
+      }
     </div>
   );
 }

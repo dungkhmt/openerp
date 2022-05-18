@@ -68,18 +68,18 @@
 .main-room {
   position: fixed;
   top: 65px;
-  left: 73px;
+  left: 0;
   background-color: rgb(70, 70, 70);
   height: calc(100vh - 125px);
   display: flex;
 }
 
 .mini-main {
-  width: calc(100vw - 403px);
+  width: calc(100vw - 330px);
 }
 
 .full-main {
-  width: calc(100vw - 73px);
+  width: 100vw;
 }
 
 .title-bar {
@@ -258,11 +258,54 @@
   bottom: 0;
   border: 2px solid rgba(0, 0, 0, 0.3);
   object-fit: cover;
+  z-index: 1000;
+  transition: 1s;
+}
+
+.host-video-small.hide {
+  width: 0;
+}
+
+.control-host-video {
+  position: absolute;
+  margin-left: -25px;
+  height: 100%;
+  padding-top: 67px;
+  background: #dfdfdf;
+  cursor: pointer;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.control-host-video svg {
+  transform: rotate(0deg);
+}
+
+.control-host-video:hover {
+  background: #b4b4b4;
+}
+
+.host-video-small.hide .control-host-video {
+  background-color: rgb(223, 223, 223, 0.4);
+}
+
+.host-video-small.hide svg {
+  transform: rotate(180deg);
+  transition: 1s;
 }
 
 .other-video {
   height: 100%;
   width: 100%;
+}
+
+.other-video.cover {
+  object-fit: cover;
+}
+
+.other-video.active {
+  border-radius: 5x;
+  border: 2px solid rgb(49, 160, 211);
 }
 
 .other-videos {
@@ -289,4 +332,30 @@
   display: grid;
   height: 100%;
   grid-template-columns: 33.33% 33.33% 33.34%;
+}
+
+.extend-part {
+  background-color: rgba(0, 0, 0, 0.3);
+  height: 40px;
+  min-width: 100px;
+  text-align: center;
+  display: flex;
+  position: absolute;
+  bottom: 20px;
+  margin-left: 20px;
+  width: fit-content;
+  border-radius: 50px;
+  color: white;
+  font-size: 16px;
+  padding: 9px 20px;
+  visibility: hidden;
+}
+
+.extend-part.active {
+  visibility: visible;
+}
+
+.extend-zoom-icon {
+  cursor: pointer;
+  margin-left: 10px;
 }

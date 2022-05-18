@@ -1,4 +1,4 @@
-import { CARD_LIST } from "./constant";
+import { CARD_LIST, DISPLAY_HOST, DISPLAY_TYPE } from "./constant";
 
 const MILISECOND_IN_ONE_DAY = 86400000;
 const MILISECOND_IN_ONE_HOUR = 3600000;
@@ -18,7 +18,7 @@ export const handleTime = (time) => {
   else return 'Vừa xong';
 }
 
-export const getRandomStype = () => { 
+export const getRandomStype = () => {
   return { backgroundColor: `rgb(${150 + Math.floor(Math.random() * 100)}, ${150 + Math.floor(Math.random() * 100)}, ${150 + Math.floor(Math.random() * 100)})` }
 };
 
@@ -62,11 +62,12 @@ export const cardTitle = {
   [CARD_LIST[1]]: 'Tham gia một cuộc họp',
 }
 
-export const displayHostMedia = (listParticipantMedia) => {
+export const displayHostMedia = (listParticipantMedia, displayType) => {
+  if (displayType === DISPLAY_TYPE.HIGHLIGHT) return DISPLAY_HOST.SMALL;
   const numberOfMedia = listParticipantMedia.length;
-  switch(numberOfMedia) {
-    case 0: return 'full';
-    case 1: return 'part';
-    default: return 'small'
+  switch (numberOfMedia) {
+    case 0: return DISPLAY_HOST.FULL;
+    case 1: return DISPLAY_HOST.PART;
+    default: return DISPLAY_HOST.SMALL;
   }
 }

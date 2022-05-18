@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface RoomParticipantRepository extends JpaRepository<RoomParticipant, Long> {
 
-  @Query("SELECT r.participant, r.peerId FROM RoomParticipant r WHERE r.room = ?1")
+  @Query("SELECT r.participant, r.peerId FROM RoomParticipant r WHERE r.room = ?1 AND r.isActive = '1'")
   List<Object[]> getAllParticipantInThisRoom(Room room);
 
   @Transactional
