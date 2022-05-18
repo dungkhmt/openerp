@@ -156,7 +156,7 @@ export default function QuizTestGroupList(props) {
   let testId = props.testId;
 
   const [groupList, setGroupList] = useState([]);
-  const [numberGroups, setNumberGroups] = useState(null);
+  const [numberGroups, setNumberGroups] = useState(1);
 
   const onOpenDialog = () => {
     setOpen(true);

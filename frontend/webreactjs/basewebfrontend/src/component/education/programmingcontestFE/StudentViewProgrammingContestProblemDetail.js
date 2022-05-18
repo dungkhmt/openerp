@@ -46,6 +46,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const [problemStatement, setProblemStatement] = useState(null);
   const [testCases, setTestCases] = useState([]);
   const [filename, setFilename] = useState("");
+  const [language, setLanguage] = useState("CPP");
   const [score, setScore] = React.useState("");
   const [status, setStatus] = useState("");
   const [nbTestCasePassed, setNbTestCasePassed] = useState("");
@@ -73,7 +74,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
     let body = {
       problemId: problemId,
       contestId: contestId,
-      language: "CPP",
+      language: language,
     };
     let formData = new FormData();
     formData.append("inputJson", JSON.stringify(body));
@@ -228,6 +229,35 @@ export default function StudentViewProgrammingContestProblemDetail() {
       <div>
         <form onSubmit={handleFormSubmit}>
           <Grid container spacing={1} alignItems="flex-end">
+            <Grid item xs={3}>
+              <input
+                type="file"
+                id="selected-upload-file"
+                onChange={onFileChange}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                autoFocus
+                // required
+                select
+                id="language"
+                label="Language"
+                placeholder="Language"
+                onChange={(event) => {
+                  setLanguage(event.target.value);
+                }}
+                value={language}
+              >
+                <MenuItem key={"CPP"} value="CPP">
+                  {"CPP"}
+                </MenuItem>
+                <MenuItem key={"JAVA"} value="JAVA">
+                  {"JAVA"}
+                </MenuItem>
+              </TextField>
+            </Grid>
+
             <Grid item xs={2}>
               <Button
                 color="primary"
@@ -240,11 +270,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
               </Button>
             </Grid>
 
-            <input
-              type="file"
-              id="selected-upload-file"
-              onChange={onFileChange}
-            />
             {isProcessing ? <CircularProgress /> : ""}
           </Grid>
         </form>

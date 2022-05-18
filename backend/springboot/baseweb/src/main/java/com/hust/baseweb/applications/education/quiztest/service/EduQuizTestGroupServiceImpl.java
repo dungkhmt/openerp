@@ -46,7 +46,7 @@ public class EduQuizTestGroupServiceImpl implements EduQuizTestGroupService {
             codes[i] = eduTestQuizGroups.get(i).getGroupCode();
         }
         String[] newCodes = CommonUtils.generateNextSeqId(codes, input.getNumberOfQuizTestGroups());
-
+        log.info("generateQuizTestGroups, number of groups = " + input.getNumberOfQuizTestGroups() + " newCodes.length = "+ newCodes.length);
         for (int i = 0; i < newCodes.length; i++) {
             log.info("generateQuizTestGroups, gen newCode " + newCodes[i]);
             EduTestQuizGroup eduTestQuizGroup = new EduTestQuizGroup();
