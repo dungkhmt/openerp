@@ -748,10 +748,16 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             }else if(s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)){
                 totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED; accepted = false; break;
             }else if(s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_WRONG)){
-                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG; accepted = false; break;
+                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG; accepted = false; //break;
             }
         }
         if(accepted) totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
+        if(compileError){
+            // keep compile error message above
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
+        }else{
+            message = "Successful";
+        }
         //String response = submission(modelContestSubmission.getSource(), modelContestSubmission.getLanguage(), tempName, testCaseEntityList, "language not found", problemEntity.getTimeLimit());
 
         //List<String> testCaseAns = testCaseEntityList.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
@@ -777,11 +783,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
 
         log.info("c {}", c.getRuntime());
-        if(compileError){
-            // keep compile error message above
-        }else{
-            message = "Successful";
-        }
+
         return ModelContestSubmissionResponse.builder()
                                              .status(totalStatus)
                                              .message(message)
