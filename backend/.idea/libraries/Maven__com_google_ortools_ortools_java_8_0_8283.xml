@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.google.ortools:ortools-java:8.0.8283">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/ortools/ortools-java/8.0.8283/ortools-java-8.0.8283.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/ortools/ortools-java/8.0.8283/ortools-java-8.0.8283-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/ortools/ortools-java/8.0.8283/ortools-java-8.0.8283-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

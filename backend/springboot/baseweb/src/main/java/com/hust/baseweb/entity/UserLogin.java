@@ -1,5 +1,7 @@
 package com.hust.baseweb.entity;
 
+import com.hust.baseweb.applications.whiteboard.entity.UserWhiteboard;
+import com.hust.baseweb.applications.whiteboard.entity.Whiteboard;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -55,6 +57,9 @@ public class UserLogin {
         joinColumns = @JoinColumn(name = "user_login_id", referencedColumnName = "user_login_id"),
         inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "group_id"))
     private Set<SecurityGroup> roles;
+
+    @OneToMany(mappedBy = "userLogin")
+    Set<UserWhiteboard> userWhiteboards;
     private Date disabledDateTime;
 
     public UserLogin() {
