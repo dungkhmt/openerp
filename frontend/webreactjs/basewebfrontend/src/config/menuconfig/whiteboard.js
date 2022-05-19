@@ -15,7 +15,7 @@ export const whiteboard = {
     },
     {
       id: "MENU_WHITE_BOARD_LIST",
-      path: "/whiteboard/board/create",
+      path: "/whiteboard/board",
       isPublic: false,
       icon: "StarBorder",
       text: "Tạo mới bảng viết",
