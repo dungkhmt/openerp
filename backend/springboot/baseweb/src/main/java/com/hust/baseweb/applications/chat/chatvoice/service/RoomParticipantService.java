@@ -22,20 +22,17 @@ import org.springframework.stereotype.Service;
 public class RoomParticipantService {
 
   private final RoomParticipantRepository roomParticipantRepository;
-  private final RoomRepository roomRepository;
 
   @Autowired
-  public RoomParticipantService(RoomParticipantRepository roomParticipantRepository, RoomRepository roomRepository) {
+  public RoomParticipantService(RoomParticipantRepository roomParticipantRepository) {
     this.roomParticipantRepository = roomParticipantRepository;
-    this.roomRepository = roomRepository;
   }
 
   public String addOrUpdateParticipant(Room room, UserLogin participant, String peerId) {
     Optional<RoomParticipant> rParticipant = roomParticipantRepository.findByParticipantAndRoom(participant, room);
     if (rParticipant.isPresent()) {
       RoomParticipant p = rParticipant.get();
-      p.setPeerId(peerId);
-      roomParticipantRepository.save(p);
+      roomParticipantRepository.updatePeer(p, peerId);
       return p.getId().toString();
     } else {
       UUID id = UUID.randomUUID();

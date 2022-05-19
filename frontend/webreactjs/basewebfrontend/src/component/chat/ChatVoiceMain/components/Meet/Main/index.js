@@ -5,13 +5,12 @@ import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrow
 import { displayHostMedia } from "../../../ultis/helpers";
 import { BAR_TYPE, DISPLAY_TYPE } from "../../../ultis/constant";
 
-const Main = ({ mediaStream, listParticipant, display, myId }) => {
+const Main = ({ mediaStream, listParticipant, display }) => {
   const hostRef = useRef();
   const [displayType, setDisplayType] = useState(DISPLAY_TYPE.NORMAL);
   const [mediaHightLight, setMediaHighlight] = useState();
   const [hideHostVideo, setHideHostVideo] = useState(false);
-  const listParticipantMedia = useMemo(() => listParticipant.filter(participant => !!participant?.mediaStream && participant.id !== myId), [listParticipant]);
-  // const listParticipantMedia = useMemo(() => listParticipant.filter(participant => !!participant?.mediaStream), [listParticipant]);
+  const listParticipantMedia = useMemo(() => listParticipant.filter(participant => !!participant?.mediaStream), [listParticipant]);
   console.log("listParticipant: ", listParticipant)
   console.log("listParticipantMedia: ", listParticipantMedia);
   const renderParticipantMedia = (listParticipantMedia) => {

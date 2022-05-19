@@ -124,7 +124,7 @@ const Meet = () => {
     useEffect(() => {
         if (remoteStreamInfo) {
             const { call, mediaStream } = remoteStreamInfo;
-            setListPartcipant(listParticipant => listParticipant.map(participant => {
+            setListPartcipant((listParticipant) => listParticipant.map(participant => {
                 if (participant?.peerId === call?.peer) {
                     return {
                         ...participant,
@@ -146,7 +146,6 @@ const Meet = () => {
     return (
         <div className='room'>
             <Main
-                myId={name}
                 display={displayBar}
                 mediaStream={mediaStream}
                 listParticipant={listParticipant}

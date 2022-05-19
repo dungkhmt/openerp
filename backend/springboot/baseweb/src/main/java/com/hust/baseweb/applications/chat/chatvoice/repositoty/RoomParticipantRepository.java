@@ -23,8 +23,13 @@ public interface RoomParticipantRepository extends JpaRepository<RoomParticipant
 
   @Transactional
   @Modifying
-  @Query("UPDATE RoomParticipant r SET r.isActive = 0 WHERE r.room = ?1 AND r.participant = ?2")
+  @Query("UPDATE RoomParticipant r SET r.isActive = '0' WHERE r.room = ?1 AND r.participant = ?2")
   void outMeet(Room room, UserLogin participant);
+
+  @Transactional
+  @Modifying
+  @Query("UPDATE RoomParticipant r SET r.isActive = '1', r.peerId = ?2 WHERE r = ?1")
+  void updatePeer(RoomParticipant p, String peerId);
 
   @Query("SELECT r from RoomParticipant r WHERE r.participant = :participant AND r.room = :room")
   Optional<RoomParticipant> findByParticipantAndRoom(UserLogin participant, Room room);
