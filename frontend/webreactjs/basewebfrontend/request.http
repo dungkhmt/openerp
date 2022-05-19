@@ -1,0 +1,7 @@
+###
+POST http://localhost:8080/api/whiteboard/create
+Content-Type: application/json
+
+{
+  "whiteboardId": 1,
+}
