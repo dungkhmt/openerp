@@ -16,6 +16,7 @@ public class ContestSubmission {
     private String problemId;
     private String contestId;
     private String userId;
+    private String fullname;
     private String testCasePass;
     private String sourceCodeLanguage;
     private Integer point;

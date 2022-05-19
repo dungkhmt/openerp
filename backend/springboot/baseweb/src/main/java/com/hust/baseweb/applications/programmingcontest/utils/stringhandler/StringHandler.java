@@ -45,6 +45,7 @@ public class StringHandler {
     }
     public static ProblemSubmission handleContestResponse(String response, List<String> testCaseAns, List<Integer> points){
         log.info("handleContestResponse, response {}", response);
+        String orignalMessage = response;
         response = response.substring(0, response.length()-1);
         int lastIndex = response.lastIndexOf("\n");
         String status = response.substring(lastIndex);
@@ -55,6 +56,7 @@ public class StringHandler {
                                     .runtime(0L)
                                     .testCasePass(0+"/"+testCaseAns.size())
                                     .status("Compile Error")
+                                    .message(orignalMessage)
                                     .build();
         }
         response = response.substring(0, lastIndex);
@@ -95,6 +97,7 @@ public class StringHandler {
                                 .runtime(runtime)
                                 .score(score)
                                 .status(status)
+                                .message(orignalMessage)
                                 .testCasePass(cnt+"/"+testCaseAns.size())
                                 .nbTestCasePass(cnt)
                                 .testCaseAns(testCaseAns)

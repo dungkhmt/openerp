@@ -49,6 +49,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const [language, setLanguage] = useState("CPP");
   const [score, setScore] = React.useState("");
   const [status, setStatus] = useState("");
+  const [message, setMessage] = useState("");
   const [nbTestCasePassed, setNbTestCasePassed] = useState("");
   const [nbTotalTestCase, setNbTotalTestCase] = useState("");
   const [runTime, setRunTime] = useState("");
@@ -96,12 +97,14 @@ export default function StudentViewProgrammingContestProblemDetail() {
           setNbTotalTestCase("");
           setRunTime("");
           setStatus(res.status);
+          setMessage(res.message);
         } else {
           setScore(res.score);
           setNbTestCasePassed(res.numberTestCasePassed);
           setNbTotalTestCase(res.totalNumberTestCase);
           setRunTime(runTime);
           setStatus(res.status);
+          setMessage(res.message);
         }
       })
       .catch((e) => {
@@ -276,6 +279,9 @@ export default function StudentViewProgrammingContestProblemDetail() {
 
         <div>
           <h2>Status: {status}</h2>
+        </div>
+        <div>
+          <h2>Message: </h2> {message}
         </div>
         <div>
           <h2>Score: {score}</h2>

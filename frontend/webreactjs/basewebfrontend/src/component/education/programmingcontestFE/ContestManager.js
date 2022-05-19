@@ -911,7 +911,8 @@ export function ContestManager() {
             <TableHead>
               <TableRow>
                 <StyledTableCell align="center">Submission Id</StyledTableCell>
-                <StyledTableCell align="center">User</StyledTableCell>
+                <StyledTableCell align="center">UserID</StyledTableCell>
+                <StyledTableCell align="center">FullName</StyledTableCell>
                 <StyledTableCell align="center">Problem Id</StyledTableCell>
                 <StyledTableCell align="center">Test Case Pass</StyledTableCell>
                 <StyledTableCell align="center">Lang</StyledTableCell>
@@ -942,6 +943,10 @@ export function ContestManager() {
                   <StyledTableCell align="center">
                     <b>{s.userId}</b>
                   </StyledTableCell>
+                  <StyledTableCell align="center">
+                    <b>{s.fullname}</b>
+                  </StyledTableCell>
+
                   <StyledTableCell align="center">
                     <b>{s.problemId}</b>
                   </StyledTableCell>

@@ -33,4 +33,8 @@ public class PersonModel {
     private Date birthDate;
 
     private String affiliations;
+
+    public String getFullName(){
+        return lastName + " " + middleName + " " + firstName;
+    }
 }

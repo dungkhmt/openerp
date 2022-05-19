@@ -20,5 +20,6 @@ public class ModelContestSubmissionResponse {
     int totalNumberTestCase;
     Float memoryUsage;
     String status;
+    String message;
     long runtime;
 }

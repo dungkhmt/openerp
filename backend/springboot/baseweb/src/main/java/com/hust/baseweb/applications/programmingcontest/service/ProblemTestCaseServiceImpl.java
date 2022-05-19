@@ -15,6 +15,7 @@ import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.Prob
 import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.StringHandler;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.repo.UserLoginRepo;
+import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private UserSubmissionContestResultNativePagingRepo userSubmissionContestResultNativePagingRepo;
     private ContestSubmissionPagingAndSortingRepo contestSubmissionPagingAndSortingRepo;
     private ContestSubmissionTestCaseEntityRepo contestSubmissionTestCaseEntityRepo;
+    private UserService userService;
     @Override
     public void createContestProblem(ModelCreateContestProblem modelCreateContestProblem, String userId) throws MiniLeetCodeException {
         if(problemRepo.findByProblemId(modelCreateContestProblem.getProblemId()) != null){
@@ -696,6 +698,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         String totalStatus = "";
         List<String> statusList = new ArrayList<String>();
         List<ContestSubmissionTestCaseEntity> LCSTE = new ArrayList();
+        String message = "";
+        boolean compileError = false;
         for(int i = 0; i < testCaseEntityList.size(); i++) {
             List<TestCaseEntity> L = new ArrayList();
             L.add(testCaseEntityList.get(i));
@@ -705,6 +709,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             List<String> testCaseAns = L.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
             List<Integer> points = L.stream().map(TestCaseEntity::getTestCasePoint).collect(Collectors.toList());
             ProblemSubmission problemSubmission = StringHandler.handleContestResponse(response, testCaseAns, points);
+
+            log.info("submitContestProblemTestCaseByTestCase, run tesecase " + (i+1) + " message = " + problemSubmission.getMessage());
+            // check if there is error compile
+            if(problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")){
+                message = problemSubmission.getMessage(); compileError = true; break;
+            }
 
             runtime = runtime + problemSubmission.getRuntime().intValue();
             score = score + problemSubmission.getScore();
@@ -767,8 +777,14 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
 
         log.info("c {}", c.getRuntime());
+        if(compileError){
+            // keep compile error message above
+        }else{
+            message = "Successful";
+        }
         return ModelContestSubmissionResponse.builder()
                                              .status(totalStatus)
+                                             .message(message)
                                              .testCasePass(c.getTestCasePass())
                                              .runtime(new Long(runtime))
                                              .memoryUsage(c.getMemoryUsage())
@@ -1171,6 +1187,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .testCasePass(contestSubmissionEntity.getTestCasePass())
                 .status(contestSubmissionEntity.getStatus())
                 .userId(contestSubmissionEntity.getUserId())
+                .fullname(userService.findPersonByUserLoginId(contestSubmissionEntity.getUserId()).getFullName())
                 .build());
     }
 
