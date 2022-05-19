@@ -135,6 +135,13 @@ const Meet = () => {
             }));
         }
     }, [remoteStreamInfo]);
+    useEffect(() => {
+        return () => {
+            setMediaStream((mediaStream) => {
+                mediaStream?.getTracks()?.forEach(track => track.stop());
+            })
+        }
+    }, []);
 
     return (
         <div className='room'>

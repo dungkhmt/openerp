@@ -10,9 +10,10 @@ const Main = ({ mediaStream, listParticipant, display, myId }) => {
   const [displayType, setDisplayType] = useState(DISPLAY_TYPE.NORMAL);
   const [mediaHightLight, setMediaHighlight] = useState();
   const [hideHostVideo, setHideHostVideo] = useState(false);
-  const listParticipantMedia = useMemo(() => listParticipant.filter(participant => !!participant?.mediaStream && participant.id !== myId));
+  const listParticipantMedia = useMemo(() => listParticipant.filter(participant => !!participant?.mediaStream && participant.id !== myId), [listParticipant]);
   // const listParticipantMedia = useMemo(() => listParticipant.filter(participant => !!participant?.mediaStream), [listParticipant]);
-
+  console.log("listParticipant: ", listParticipant)
+  console.log("listParticipantMedia: ", listParticipantMedia);
   const renderParticipantMedia = (listParticipantMedia) => {
     return listParticipantMedia.map((participant, index) => (
       <ParticipantVideo key={index} data={participant} displayType={displayType} setDisplayType={setDisplayType} setMediaHighlight={setMediaHighlight} />

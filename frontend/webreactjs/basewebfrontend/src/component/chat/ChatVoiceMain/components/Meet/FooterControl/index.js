@@ -21,9 +21,9 @@ const FooterControl = (props) => {
   const handleMedia = (type, media) => {
     if (props.mediaStream) {
       props.setMediaStream(mediaStream => {
-        mediaStream.getTracks().forEach(track => {
+        mediaStream?.getTracks()?.forEach(track => {
           if (track.kind === type) {
-            mediaStream.removeTrack(track);
+            mediaStream?.removeTrack(track);
             track.stop();
           } else {
             media?.addTrack(track);

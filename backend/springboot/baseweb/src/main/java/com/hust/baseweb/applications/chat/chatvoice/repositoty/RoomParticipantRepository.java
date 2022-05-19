@@ -23,7 +23,7 @@ public interface RoomParticipantRepository extends JpaRepository<RoomParticipant
 
   @Transactional
   @Modifying
-  @Query("DELETE FROM RoomParticipant r WHERE r.room = ?1 AND r.participant = ?2")
+  @Query("UPDATE RoomParticipant r SET r.isActive = 0 WHERE r.room = ?1 AND r.participant = ?2")
   void outMeet(Room room, UserLogin participant);
 
   @Query("SELECT r from RoomParticipant r WHERE r.participant = :participant AND r.room = :room")
