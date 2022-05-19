@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   components,
   localization,
@@ -16,11 +16,12 @@ export default function StudentViewSubmission() {
   const { t } = useTranslation(
     "education/programmingcontest/studentviewcontestdetail"
   );
+  const { contestId } = useParams();
   const [submissions, setSubmissions] = useState([]);
   const getSubmissions = async () => {
     request(
       "get",
-      "/get-contest-submission-paging-of-a-user/",
+      "/get-contest-submission-paging-of-a-user-and-contest/" + contestId,
       (res) => {
         setSubmissions(res.data.content);
       },
@@ -77,6 +78,7 @@ export default function StudentViewSubmission() {
   return (
     <Box>
       <MuiThemeProvider theme={themeTable}>
+        CONTEST: {contestId}
         <MaterialTable
           title={<h1>{t("submissionList.title")}</h1>}
           columns={columns}

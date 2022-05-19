@@ -495,18 +495,18 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(page);
     }
 
-    @GetMapping("/get-contest-submission-paging-of-a-user")
-    public ResponseEntity<?> getContestSubmissionPagingOfCurrentUser( Principal principal, Pageable pageable){
-        log.info("getContestSubmissionPagingOfCurrentUser, user = " + principal.getName());
+    @GetMapping("/get-contest-submission-paging-of-a-user-and-contest/{contestId}")
+    public ResponseEntity<?> getContestSubmissionPagingOfCurrentUser( Principal principal, @PathVariable String contestId, Pageable pageable){
+        log.info("getContestSubmissionPagingOfCurrentUser, user = " + principal.getName() + " contestId = " + contestId);
         pageable = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), Sort.by("createdAt").descending());
-        Page<ContestSubmission> page = problemTestCaseService.findContestSubmissionByUserLoginIdPaging(pageable, principal.getName());
+        Page<ContestSubmission> page = problemTestCaseService.findContestSubmissionByUserLoginIdAndContestIdPaging(pageable, principal.getName(), contestId);
         log.info("page {}", page);
         return ResponseEntity.status(200).body(page);
     }
 
     @GetMapping("/get-contest-submission-paging/{contestId}")
     public ResponseEntity<?> getContestSubmissionPaging(@PathVariable("contestId") String contestId, Pageable pageable){
-        log.info("getContestSubmissionPaging");
+        log.info("getContestSubmissionPaging, contestId = " + contestId);
         pageable = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), Sort.by("createdAt").descending());
         Page<ContestSubmission> page = problemTestCaseService.findContestSubmissionByContestIdPaging(pageable, contestId);
         log.info("page {}", page);

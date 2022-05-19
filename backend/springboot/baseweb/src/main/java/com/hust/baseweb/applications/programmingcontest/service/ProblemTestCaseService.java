@@ -98,6 +98,7 @@ public interface ProblemTestCaseService {
 
     Page<ContestSubmission> findContestSubmissionByContestIdPaging(Pageable pageable, String contestId);
     Page<ContestSubmission> findContestSubmissionByUserLoginIdPaging(Pageable pageable, String userLoginId);
+    Page<ContestSubmission> findContestSubmissionByUserLoginIdAndContestIdPaging(Pageable pageable, String userLoginId, String contestId);
     List<ContestSubmission> getNewestSubmissionResults(String userLoginId);
 
 
