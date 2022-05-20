@@ -1252,6 +1252,69 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     @Override
     public ModelCodeSimilarityOutput checkSimilarity(String contestId) {
         List<CodeSimilarityElement> list = new ArrayList();
+
+        List<UserRegistrationContestEntity> participants = userRegistrationContestRepo
+            .findAllByContestIdAndStatus(contestId, UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+
+        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+        List<ProblemEntity> problems = contestEntity.getProblems();
+
+        for(ProblemEntity p: problems) {
+            String problemId = p.getProblemId();
+            log.info("checkSimilarity, consider problem " + problemId);
+            List<ContestSubmissionEntity> listSubmissions = new ArrayList();
+            for (UserRegistrationContestEntity participant : participants) {
+                String userLoginId = participant.getUserId();
+                log.info("checkSimilarity, consider problem " + problemId + " participant " + userLoginId);
+                List<ContestSubmissionEntity> submissions = contestSubmissionRepo.findAllByContestIdAndUserIdAndProblemId(
+                    contestId,
+                    userLoginId,
+                    problemId);
+                log.info("checkSimilarity, consider problem " + problemId + " participant " + userLoginId
+                         + " submissions.sz = " +
+                         submissions.size() +
+                         "");
+
+                if (submissions != null && submissions.size() > 0) {// take the last submission in the sorted list
+                    ContestSubmissionEntity sub = submissions.get(0);
+                    listSubmissions.add(sub);
+                }
+            }
+
+            log.info("checkSimilarity, consider problem " + problemId + " listSubmissions = " + listSubmissions.size());
+
+            // check similarity of submissions to the current problemId
+            for(int i = 0; i < listSubmissions.size(); i++){
+                ContestSubmissionEntity s1 = listSubmissions.get(i);
+                for(int j = i+1; j < listSubmissions.size(); j++){
+                    ContestSubmissionEntity s2 = listSubmissions.get(j);
+                    if(s1.getUserId().equals(s2.getUserId())) continue;
+
+                    double score = CodeSimilarityCheck.check(s1.getSourceCode(), s2.getSourceCode());
+                    log.info("checkSimilarity, consider problem " + problemId + " listSubmissions = " + listSubmissions.size()
+                    + " score between codes " + i + " and " + j + " = " + score);
+
+                    if(score <= 0.0001) continue;
+
+                    CodeSimilarityElement e = new CodeSimilarityElement();
+                    e.setScore(score);
+                    e.setSource1(s1.getSourceCode());
+                    e.setUserLoginId1(s1.getUserId());
+                    e.setSubmitDate1(s1.getCreatedAt());
+                    e.setProblemId1(s1.getProblemId());
+
+                    e.setSource2(s2.getSourceCode());
+                    e.setUserLoginId2(s2.getUserId());
+                    e.setSubmitDate2(s2.getCreatedAt());
+                    e.setProblemId2(s2.getProblemId());
+
+                    list.add(e);
+                }
+            }
+        }
+
+
+        /*
         List<ContestSubmissionEntity> submissions = contestSubmissionPagingAndSortingRepo.findAllByContestId(contestId);
         for(int i = 0; i < submissions.size(); i++){
             ContestSubmissionEntity s1 = submissions.get(i);
@@ -1275,6 +1338,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 list.add(e);
             }
         }
+        */
+
         Collections.sort(list, new CodeSimilatiryComparator());
 
         ModelCodeSimilarityOutput model = new ModelCodeSimilarityOutput();
