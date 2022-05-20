@@ -18,6 +18,9 @@ public class UserRegistrationContestEntity {
     public static final String ROLE_PARTICIPANT = "PARTICIPANT";
     public static final String ROLE_OWNER = "OWNER";
 
+    public static final String STATUS_SUCCESSFUL = "SUCCESSFUL";
+    public static final String STATUS_PENDING = "PENDING";
+
     @Id
     @Column(name = "user_registration_contest_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

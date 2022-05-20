@@ -111,4 +111,6 @@ public interface ProblemTestCaseService {
     void deleteTestcase(UUID testcaseId, String userId) throws MiniLeetCodeException;
 
     ModelCodeSimilarityOutput checkSimilarity(String contestId);
+
+    ModelEvaluateBatchSubmissionResponse evaluateBatchSubmissionContest(String contestId);
 }

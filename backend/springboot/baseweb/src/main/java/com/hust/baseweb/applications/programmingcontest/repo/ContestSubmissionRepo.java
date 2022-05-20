@@ -30,6 +30,13 @@ public interface ContestSubmissionRepo extends JpaRepository<ContestSubmissionEn
 
     ContestSubmissionEntity findContestSubmissionEntityByContestSubmissionId(UUID contestSubmissionId);
 
+    @Query(value = "select * from contest_submission_new csn where csn.contest_id = :cid and csn.user_submission_id=:uid and csn.problem_id=:pid" +
+                   " order by created_stamp desc "
+        ,
+           nativeQuery = true
+    )
+    List<ContestSubmissionEntity> findAllByContestIdAndUserIdAndProblemId(@Param("cid")String cid, @Param("uid")String uid, @Param("pid")String pid);
+
     void deleteAllByContestId(String contestId);
 
 }

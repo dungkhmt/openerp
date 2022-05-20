@@ -15,6 +15,7 @@ import {
   TableHead,
   Tabs,
   TextField,
+  CircularProgress,
 } from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
 import {
@@ -72,7 +73,7 @@ export function ContestManager() {
   const [pageSubmissionSize, setPageSubmissionSize] = useState(10);
   const [totalPageSubmission, setTotalPageSubmission] = useState(0);
   const [pageSubmission, setPageSubmission] = useState(1);
-
+  const [isProcessing, setIsProcessing] = useState(false);
   const [value, setValue] = useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -213,6 +214,22 @@ export function ContestManager() {
     getSubmission(pageSubmissionSize, 1);
   }, []);
 
+  function handleRejudgeContest(event) {
+    //alert("Rejudge");
+    event.preventDefault();
+    setIsProcessing(true);
+    request(
+      "get",
+      "/evaluate-batch-submission-of-contest/" + contestId,
+      (res) => {
+        console.log("handleRejudgeContest", res.data);
+        //alert("Rejudge DONE!!!");
+        setIsProcessing(false);
+        //setSuccessful(res.data.contents.content);
+        //setTotalPageSuccessful(res.data.contents.totalPages);
+      }
+    ).then();
+  }
   return (
     <div>
       <Tabs
@@ -263,6 +280,18 @@ export function ContestManager() {
         <Typography variant="h5" component="h2">
           Time Limit: {timeLimit} minutes
         </Typography>
+        <Typography variant="h5" component="h2">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleRejudgeContest}
+          >
+            {" "}
+            Rejudge
+          </Button>
+          {isProcessing ? <CircularProgress /> : ""}
+        </Typography>
+
         <Typography
           variant="h5"
           component="h2"

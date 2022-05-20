@@ -386,6 +386,12 @@ public class ContestProblemController {
         }
         return ResponseEntity.ok().body("OK");
     }
+    @GetMapping("/evaluate-batch-submission-of-contest/{contestId}")
+    public ResponseEntity<?> evaluateBatchSubmissionContest(Principal principal, @PathVariable String contestId){
+        log.info("evaluateBatchSubmissionContest, contestId = " + contestId);
+        ModelEvaluateBatchSubmissionResponse res = problemTestCaseService.evaluateBatchSubmissionContest(contestId);
+        return ResponseEntity.ok().body(res);
+    }
     @PostMapping("/submit-solution-output")
     public ResponseEntity<?>  submitSolutionOutput(Principal principale,
                                                    @RequestParam("inputJson") String inputJson,
