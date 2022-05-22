@@ -8,6 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Teacher information.
+ */
 @Getter
 @Setter
 @Entity
@@ -24,6 +27,6 @@ public class EduTeacher {
     @Column(name = "user_login_id")
     private String userLoginId;
 
-    @Column(name="max_credit")
+    @Column(name = "max_credit") // Khong can nua
     private double maxCredit;
 }

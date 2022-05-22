@@ -7,6 +7,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.UUID;
 
+/**
+ * Limits courses assigned to a teacher in an assignment plan.
+ */
 @Getter
 @Setter
 @Entity

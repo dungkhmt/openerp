@@ -6,5 +6,5 @@ import com.hust.baseweb.applications.education.teacherclassassignment.model.Teac
 
 public interface TeacherClassAssignmentAlgoService {
 
-    public TeacherClassAssignmentOM computeTeacherClassAssignment(AlgoTeacherAssignmentIM input);
+    TeacherClassAssignmentOM computeTeacherClassAssignment(AlgoTeacherAssignmentIM input);
 }

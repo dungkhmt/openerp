@@ -10,6 +10,9 @@ import javax.persistence.Table;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Class information in an assignment plan.
+ */
 @Getter
 @Setter
 @Entity
@@ -22,7 +25,6 @@ public class ClassTeacherAssignmentClassInfo {
 
     @Column(name = "plan_id")
     private UUID planId;
-
 
     @Column(name = "school_name")
     private String schoolName;

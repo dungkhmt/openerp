@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+/**
+ * Course that teacher can teach.
+ */
 @Getter
 @Setter
 @Entity
