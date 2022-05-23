@@ -18,47 +18,27 @@ const io = new Server(httpServer, {
 
 app.use(cors())
 
-let connections = []
-
-io.on('connect', (socket) => {
-  connections.push(socket)
+io.on("connection", (socket) => {
   console.log(`${socket.id} has connected`)
 
   socket.on(SOCKET_IO_EVENTS.DRAW_LINE_END, (data) => {
-    connections.forEach((connection) => {
-      if (connection.id !== socket.id) {
-        connection.emit(SOCKET_IO_EVENTS.ON_DRAW_LINE_END, data)
-      }
-    })
+    socket.broadcast.emit(SOCKET_IO_EVENTS.ON_DRAW_LINE_END, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.DRAW_RECT_END, (data) => {
-    connections.forEach((connection) => {
-      if (connection.id !== socket.id) {
-        connection.emit(SOCKET_IO_EVENTS.ON_DRAW_RECT_END, data)
-      }
-    })
+    socket.broadcast.emit(SOCKET_IO_EVENTS.ON_DRAW_RECT_END, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.DRAW_CIRCLE_END, (data) => {
-    connections.forEach((connection) => {
-      if (connection.id !== socket.id) {
-        connection.emit(SOCKET_IO_EVENTS.ON_DRAW_CIRCLE_END, data)
-      }
-    })
+    socket.broadcast.emit(SOCKET_IO_EVENTS.ON_DRAW_CIRCLE_END, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.ADD_TEXT, (data) => {
-    connections.forEach((connection) => {
-      if (connection.id !== socket.id) {
-        connection.emit(SOCKET_IO_EVENTS.ON_ADD_TEXT_END, data)
-      }
-    })
+    socket.broadcast.emit(SOCKET_IO_EVENTS.ON_ADD_TEXT_END, data)
   })
 
   socket.on('disconnect', () => {
     console.log(`${socket.id} is disconnected`)
-    connections = connections.filter((connection) => connection.id !== socket.id)
   })
 })
 
