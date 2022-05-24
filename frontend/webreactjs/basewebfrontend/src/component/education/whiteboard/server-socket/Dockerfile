@@ -1,9 +1,18 @@
 # syntax=docker/dockerfile:1
 
-FROM node:12.18.1-alpine
+FROM node:14.19.3-alpine
+
+# see section 5: https://snyk.io/blog/10-best-practices-to-containerize-nodejs-web-applications-with-docker/
 RUN apk add dumb-init
+
+# see section 3: https://snyk.io/blog/10-best-practices-to-containerize-nodejs-web-applications-with-docker/
 ENV NODE_ENV=production
+
+# This app will run on this port
 ENV PORT 3000
+
+# Uncomment to enable logging and debug mode of socket.io
+# ENV DEBUG='*'
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -18,7 +27,7 @@ RUN npm ci --only=production
 # Bundle app source
 COPY --chown=node:node . .
 
-EXPOSE 3000
+EXPOSE ${PORT}
 
 USER node
 
