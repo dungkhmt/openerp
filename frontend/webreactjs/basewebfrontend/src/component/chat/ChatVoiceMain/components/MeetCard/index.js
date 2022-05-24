@@ -7,15 +7,15 @@ export default function MeetCard({ meetId, name, openIn, closeIn, onClick }) {
   const handleClickMeetCard = () => {
     if (!onClick) {
       history.push({
-        pathname: `main/${meetId}`
+        pathname: `/chat/voice/main/${meetId}`,
       });
     } else {
       onClick({ meetId, name, openIn, closeIn });
     }
-  }
+  };
   const formatDate = (date) => {
-    return date ? format(new Date(date), 'Pp') : 'N/A'
-  }
+    return date ? format(new Date(date), "Pp") : "N/A";
+  };
 
   return (
     <div onClick={handleClickMeetCard}>
@@ -23,7 +23,9 @@ export default function MeetCard({ meetId, name, openIn, closeIn, onClick }) {
         <div className="meet-card-content__name">{name}</div>
         <div>
           <span>Open In: {formatDate(openIn)}</span>
-          <span className="meet-card-content__close-in">Close In: {formatDate(closeIn)}</span>
+          <span className="meet-card-content__close-in">
+            Close In: {formatDate(closeIn)}
+          </span>
         </div>
       </Paper>
     </div>

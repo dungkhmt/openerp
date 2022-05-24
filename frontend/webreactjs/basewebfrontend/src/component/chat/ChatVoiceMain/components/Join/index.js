@@ -1,4 +1,12 @@
-import { Backdrop, Box, Fade, Grid, Modal, TextField, Typography } from "@material-ui/core";
+import {
+  Backdrop,
+  Box,
+  Fade,
+  Grid,
+  Modal,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import { useState } from "react";
 import { useHistory } from "react-router";
 import PrimaryButton from "../../../../button/PrimaryButton";
@@ -9,30 +17,32 @@ import ListMeet from "../ListMeet";
 const Join = () => {
   const history = useHistory();
   const [open, setOpen] = useState(false);
-  const [inputCode, setInputCode] = useState('');
+  const [inputCode, setInputCode] = useState("");
 
   const { data } = useGetInvitedMeets({ params: null });
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleChangeInputCode = (e) => {
     setInputCode(e.target.value);
-  }
+  };
   const joinMeet = async (e) => {
     if (e.key === ENTER_KEY) {
       try {
-
-        history.push('main/' + inputCode);
+        history.push("/chat/voice/main/" + inputCode);
       } catch (e) {
         console.error(e);
       }
     }
-  }
+  };
   return (
     <>
-      <Grid container >
+      <Grid container>
         <Grid item xs={12}>
-          <ListMeet title='Danh sách cuộc gặp mà bạn được mời' listMeet={data?.content || []} />
-          <PrimaryButton onClick={handleOpen} id='button-meet-now'>
+          <ListMeet
+            title="Danh sách cuộc gặp mà bạn được mời"
+            listMeet={data?.content || []}
+          />
+          <PrimaryButton onClick={handleOpen} id="button-meet-now">
             Tham gia một cuộc gặp khác
           </PrimaryButton>
         </Grid>
@@ -50,7 +60,12 @@ const Join = () => {
       >
         <Fade in={open}>
           <Box sx={styleModal}>
-            <Typography id="transition-modal-title" className="meet-code-label" variant="h6" component="h2">
+            <Typography
+              id="transition-modal-title"
+              className="meet-code-label"
+              variant="h6"
+              component="h2"
+            >
               Please type meet's code here
             </Typography>
             <TextField
@@ -69,6 +84,6 @@ const Join = () => {
       </Modal>
     </>
   );
-}
+};
 
 export default Join;
