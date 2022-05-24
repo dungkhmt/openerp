@@ -21,7 +21,7 @@ public class AlgoTeacherIM {
     private List<Course4Teacher> courses;
 
     // So gio da duoc phan cong boi nhiem vu giang day khac
-    private double preSpecifiedHourLoad;
+    private double prespecifiedHourLoad;
 
     private boolean minimizeNumberWorkingDays;
 
