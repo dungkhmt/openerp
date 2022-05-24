@@ -21,5 +21,21 @@ export const taskmanagement = {
       text: "Tạo mới dự án",
       child: [],
     },
+    {
+      id: "MENU_BACKLOG_CREATE_TASK_PROJECT",
+      path: "/taskmanagement/project/tasks/create",
+      isPublic: true,
+      icon: "StarBorder",
+      text: "Tạo mới nhiệm vụ",
+      child: [],
+    },
+    {
+      id: "MENU_BACKLOG_ADD_MEMBER_TO_PROJECT",
+      path: "/taskmanagement/project/members/add",
+      isPublic: true,
+      icon: "StarBorder",
+      text: "Thêm thành viên dự án",
+      child: [],
+    }
   ],
 };
