@@ -6,6 +6,7 @@ import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
 import com.hust.baseweb.applications.programmingcontest.model.ModelCreateContestProblem;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
+import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,8 @@ import java.util.Date;
 public class ContestProblemController {
     ProblemTestCaseService problemTestCaseService;
     ContestRepo contestRepo;
+    ContestSubmissionRepo contestSubmissionRepo;
+
     @PostMapping("/create-problem")
     public ResponseEntity<?> createContestProblem(@RequestBody ModelCreateContestProblem modelCreateContestProblem, Principal principal) throws MiniLeetCodeException {
         log.info("create problem {}", modelCreateContestProblem);
@@ -356,6 +359,26 @@ public class ContestProblemController {
                                           .numberTestCasePassed(0)
                                           .totalNumberTestCase(0)
                                           .build();
+            return ResponseEntity.ok().body(resp);
+        }
+
+        List<ContestSubmissionEntity> submissions = contestSubmissionRepo
+            .findAllByContestIdAndUserIdAndProblemId(model.getContestId(), principal.getName(), model.getProblemId());
+        if(submissions.size() >= contestEntity.getMaxNumberSubmission()){
+            ModelContestSubmissionResponse resp = ModelContestSubmissionResponse.builder()
+                                                                                .status("MAX_NUMBER_SUBMISSIONS_REACHED")
+                                                                                .message("Maximum Number of Submissions " + contestEntity.getMaxNumberSubmission() + " Reached! Cannot submit more")
+                                                                                .testCasePass("0")
+                                                                                .runtime(new Long(0))
+                                                                                .memoryUsage(new Float(0))
+                                                                                .problemName("")
+                                                                                .contestSubmissionID(null)
+                                                                                .submittedAt(null)
+                                                                                .score(0)
+                                                                                .numberTestCasePassed(0)
+                                                                                .totalNumberTestCase(0)
+                                                                                .build();
+            log.info("contestSubmitProblemViaUploadFile: Maximum Number of Submissions " + contestEntity.getMaxNumberSubmission() + " Reached! Cannot submit more");
             return ResponseEntity.ok().body(resp);
         }
 

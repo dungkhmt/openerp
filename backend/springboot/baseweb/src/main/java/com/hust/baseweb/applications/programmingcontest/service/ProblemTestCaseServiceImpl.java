@@ -298,6 +298,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .testCasePoint(modelSaveTestcase.getPoint())
 //                .problem(problemEntity)
                 .problemId(problemId)
+            .isPublic(modelSaveTestcase.getIsPublic())
                 .build();
         return testCaseRepo.save(testCaseEntity);
     }
@@ -358,6 +359,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .endTime(DateTimeUtils.addMinutesDate(modelCreateContest.getStartedAt(), modelCreateContest.getContestTime()))
                                                            .userId(userName)
                                                            .statusId(ContestEntity.CONTEST_STATUS_CREATED)
+                                                           .maxNumberSubmissions(modelCreateContest.getMaxNumberSubmissions())
                                                            .createdAt(new Date())
                                                            .build();
                 return contestRepo.save(contestEntity);
@@ -371,6 +373,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .countDown(modelCreateContest.getCountDownTime())
                                                            .userId(userName)
                                                            .statusId(ContestEntity.CONTEST_STATUS_CREATED)
+                                                           .maxNumberSubmissions(modelCreateContest.getMaxNumberSubmissions())
                                                            .createdAt(new Date())
                                                            .build();
                 return contestRepo.save(contestEntity);
@@ -416,7 +419,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .isPublic(isPublic)
                                                        .statusId(modelUpdateContest.getStatusId())
                                                        .submissionActionType(modelUpdateContest.getSubmissionActionType())
-                                                       .maxNumberSubmission(modelUpdateContest.getMaxNumberSubmission())
+                                                       .maxNumberSubmissions(modelUpdateContest.getMaxNumberSubmission())
                                                        .participantViewResultMode(modelUpdateContest.getParticipantViewResultMode())
                                                        .build();
             return contestRepo.save(contestEntity);
@@ -507,7 +510,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                             .listParticipantViewModes(ContestEntity.getParticipantViewResultModes())
                                             .listMaxNumberSubmissions(ContestEntity.getListMaxNumberSubmissions())
                                             .submissionActionType(contestEntity.getSubmissionActionType())
-                                            .maxNumberSubmission(contestEntity.getMaxNumberSubmission())
+                                            .maxNumberSubmission(contestEntity.getMaxNumberSubmissions())
                                             .participantViewResultMode(contestEntity.getParticipantViewResultMode())
                                             .build();
     }
@@ -1059,7 +1062,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .testCaseId(testCaseId)
                 .correctAns(testCase.getCorrectAnswer())
                 .testCase(testCase.getTestCase())
-                .point(testCase.getTestCasePoint())
+                .point(testCase.getTestCasePoint()).isPublic(testCase.getIsPublic())
                 .problemSolution(problem.getSolution())
                 .problemDescription(problem.getProblemDescription())
                 .build();
@@ -1075,6 +1078,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         testCase.setTestCase(modelSaveTestcase.getInput());
         testCase.setCorrectAnswer(modelSaveTestcase.getResult());
         testCase.setTestCasePoint(modelSaveTestcase.getPoint());
+        testCase.setIsPublic(modelSaveTestcase.getIsPublic());
         testCaseRepo.save(testCase);
     }
 
@@ -1517,6 +1521,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .correctAns(correctAns)
                 .testCase(testCase)
                 .point(point)
+                .isPublic(testCaseEntity.getIsPublic())
                 .viewMore(viewMore)
                 .testCaseId(testCaseEntity.getTestCaseId())
                 .build();

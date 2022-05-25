@@ -110,7 +110,7 @@ public class ContestEntity {
     private String submissionActionType;
 
     @Column(name="max_number_submission")
-    private int maxNumberSubmission;
+    private int maxNumberSubmissions;
 
     @Column(name="participant_view_result_mode")
     private String participantViewResultMode;

@@ -41,6 +41,7 @@ export default function CreateTestCase(props) {
   const [checkTestcaseResult, setCheckTestcaseResult] = useState(false);
   const [showSubmitWarming, setShowSubmitWarming] = useState(false);
   const [point, setPoint] = useState(0);
+  const [isPublic, setIsPublic] = useState("N");
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -81,6 +82,7 @@ export default function CreateTestCase(props) {
       input: input,
       result: result,
       point: point,
+      isPublic: isPublic,
     };
 
     request(
@@ -123,6 +125,26 @@ export default function CreateTestCase(props) {
         }}
       ></TextField>
       <br /> <br />
+      <TextField
+        autoFocus
+        // required
+        select
+        id="Public TestCase"
+        label="Public TestCase"
+        placeholder="Public TestCase"
+        onChange={(event) => {
+          setIsPublic(event.target.value);
+        }}
+        value={isPublic}
+      >
+        <MenuItem key={"Y"} value={"Y"}>
+          {"Y"}
+        </MenuItem>
+        <MenuItem key={"N"} value={"N"}>
+          {"N"}
+        </MenuItem>
+      </TextField>
+      <br />
       <TextField
         style={{
           width: 1.0 * window.innerWidth,

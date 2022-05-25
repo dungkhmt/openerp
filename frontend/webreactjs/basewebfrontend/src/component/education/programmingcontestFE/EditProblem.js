@@ -511,6 +511,7 @@ function EditProblem() {
                   <StyledTableCell align="left">TestCase</StyledTableCell>
                   <StyledTableCell align="left">Correct Answer</StyledTableCell>
                   <StyledTableCell align="left">Point</StyledTableCell>
+                  <StyledTableCell align="left">Public</StyledTableCell>
                   <StyledTableCell align="left">Edit</StyledTableCell>
                   <StyledTableCell align="left">Delete</StyledTableCell>
                 </TableRow>
@@ -531,6 +532,10 @@ function EditProblem() {
                     <StyledTableCell align="left">
                       {testCase.point}
                     </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {testCase.isPublic}
+                    </StyledTableCell>
+
                     <StyledTableCell align="left">
                       <Link
                         to={
