@@ -7,6 +7,9 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Meta data for assignment plan.
+ */
 @Getter
 @Setter
 @Entity

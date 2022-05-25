@@ -1,0 +1,329 @@
+2022-05-06 02:28:03.820  WARN 18968 --- [l-1 housekeeper]  com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3h27s71ms229µs460ns).
+2022-05-06 02:28:08.798  INFO 18968 --- [localhost:27018]  org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27018, type=REPLICA_SET_SECONDARY, state=CONNECTED, ok=true, version=ServerVersion{versionList=[5, 0, 6]}, minWireVersion=0, maxWireVersion=13, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=510985, setName='rs0', canonicalAddress=localhost:27018, hosts=[localhost:27018, localhost:27017, localhost:27019], passives=[], arbiters=[], primary='null', tagSet=TagSet{[]}, electionId=null, setVersion=5, lastWriteDate=Thu May 05 23:28:05 ICT 2022, lastUpdateTimeNanos=48074700634083}
+2022-05-06 02:28:08.934  INFO 18968 --- [localhost:27019]  org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27019, type=REPLICA_SET_SECONDARY, state=CONNECTED, ok=true, version=ServerVersion{versionList=[5, 0, 6]}, minWireVersion=0, maxWireVersion=13, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=457232, setName='rs0', canonicalAddress=localhost:27019, hosts=[localhost:27018, localhost:27017, localhost:27019], passives=[], arbiters=[], primary='null', tagSet=TagSet{[]}, electionId=null, setVersion=5, lastWriteDate=Thu May 05 23:28:05 ICT 2022, lastUpdateTimeNanos=48074847204365}
+2022-05-06 02:28:09.065  INFO 18968 --- [MessageBroker-5]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 1, completed tasks = 180]
+2022-05-06 08:53:17.051  INFO 18968 --- [localhost:27018]  org.mongodb.driver.cluster               : Adding discovered server localhost:27017 to client view of cluster
+2022-05-06 08:53:17.055  INFO 18968 --- [localhost:27017]  org.mongodb.driver.connection            : Opened connection [connectionId{localValue:532, serverValue:2750}] to localhost:27017
+2022-05-06 08:53:17.057  INFO 18968 --- [localhost:27017]  org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[5, 0, 6]}, minWireVersion=0, maxWireVersion=13, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=909084}
+2022-05-06 08:53:17.057 ERROR 18968 --- [localhost:27017]  org.mongodb.driver.cluster               : Expecting replica set member, but found a STANDALONE.  Removing localhost:27017 from client view of cluster.
+2022-05-06 08:53:27.054  INFO 18968 --- [localhost:27018]  org.mongodb.driver.cluster               : Adding discovered server localhost:27017 to client view of cluster
+2022-05-06 08:53:27.057  INFO 18968 --- [localhost:27017]  org.mongodb.driver.connection            : Opened connection [connectionId{localValue:533, serverValue:2751}] to localhost:27017
+2022-05-06 08:53:27.057  INFO 18968 --- [localhost:27017]  org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[5, 0, 6]}, minWireVersion=0, maxWireVersion=13, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=244053}
+2022-05-06 08:53:27.057 ERROR 18968 --- [localhost:27017]  org.mongodb.driver.cluster               : Expecting replica set member, but found a STANDALONE.  Removing localhost:27017 from client view of cluster.
+2022-05-06 08:53:30.486  WARN 18968 --- [l-1 housekeeper]  com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=6h25m35s941ms798µs668ns).
+2022-05-06 08:53:36.194  INFO 18968 --- [ioEventLoop-6-1]  io.lettuce.core.protocol.CommandHandler  : null Unexpected exception during request: java.net.SocketException: Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:367)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:398)
+	at io.netty.buffer.PooledByteBuf.setBytes(PooledByteBuf.java:247)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1147)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:347)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:148)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:700)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:635)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:552)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:514)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$6.run(SingleThreadEventExecutor.java:1044)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+2022-05-06 08:53:36.323  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/127.0.0.1:6379
+2022-05-06 08:53:37.075  INFO 18968 --- [localhost:27018]  org.mongodb.driver.cluster               : Exception in monitor thread while connecting to server localhost:27018
+com.mongodb.MongoNodeIsRecoveringException: Command failed with error 91 (ShutdownInProgress): 'The server is in quiesce mode and will shut down' on server localhost:27018. The full response is {"topologyVersion": {"processId": {"$oid": "62736cf0917686fe51a31c41"}, "counter": {"$numberLong": "19"}}, "ok": 0.0, "errmsg": "The server is in quiesce mode and will shut down", "code": 91, "codeName": "ShutdownInProgress", "remainingQuiesceTimeMillis": {"$numberLong": "12362"}, "$clusterTime": {"clusterTime": {"$timestamp": {"t": 1651802007, "i": 2}}, "signature": {"hash": {"$binary": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=", "$type": "00"}, "keyId": {"$numberLong": "0"}}}, "operationTime": {"$timestamp": {"t": 1651802007, "i": 2}}}
+	at com.mongodb.internal.connection.ProtocolHelper.createSpecialException(ProtocolHelper.java:242)
+	at com.mongodb.internal.connection.ProtocolHelper.getCommandFailureException(ProtocolHelper.java:171)
+	at com.mongodb.internal.connection.InternalStreamConnection.receiveCommandMessageResponse(InternalStreamConnection.java:303)
+	at com.mongodb.internal.connection.InternalStreamConnection.sendAndReceive(InternalStreamConnection.java:259)
+	at com.mongodb.internal.connection.CommandHelper.sendAndReceive(CommandHelper.java:83)
+	at com.mongodb.internal.connection.CommandHelper.executeCommand(CommandHelper.java:38)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.lookupServerDescription(DefaultServerMonitor.java:180)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:124)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+2022-05-06 08:53:37.075  INFO 18968 --- [localhost:27019]  org.mongodb.driver.cluster               : Exception in monitor thread while connecting to server localhost:27019
+com.mongodb.MongoNodeIsRecoveringException: Command failed with error 91 (ShutdownInProgress): 'The server is in quiesce mode and will shut down' on server localhost:27019. The full response is {"topologyVersion": {"processId": {"$oid": "62736cf0e55c6f8f3b51d0d5"}, "counter": {"$numberLong": "15"}}, "ok": 0.0, "errmsg": "The server is in quiesce mode and will shut down", "code": 91, "codeName": "ShutdownInProgress", "remainingQuiesceTimeMillis": {"$numberLong": "12367"}, "$clusterTime": {"clusterTime": {"$timestamp": {"t": 1651802007, "i": 2}}, "signature": {"hash": {"$binary": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=", "$type": "00"}, "keyId": {"$numberLong": "0"}}}, "operationTime": {"$timestamp": {"t": 1651802007, "i": 2}}}
+	at com.mongodb.internal.connection.ProtocolHelper.createSpecialException(ProtocolHelper.java:242)
+	at com.mongodb.internal.connection.ProtocolHelper.getCommandFailureException(ProtocolHelper.java:171)
+	at com.mongodb.internal.connection.InternalStreamConnection.receiveCommandMessageResponse(InternalStreamConnection.java:303)
+	at com.mongodb.internal.connection.InternalStreamConnection.sendAndReceive(InternalStreamConnection.java:259)
+	at com.mongodb.internal.connection.CommandHelper.sendAndReceive(CommandHelper.java:83)
+	at com.mongodb.internal.connection.CommandHelper.executeCommand(CommandHelper.java:38)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.lookupServerDescription(DefaultServerMonitor.java:180)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:124)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+2022-05-06 08:53:37.358  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:53:41.819  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:53:42.830  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:53:47.020  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:53:48.022  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:53:48.087  INFO 18968 --- [localhost:27018]  org.mongodb.driver.cluster               : Exception in monitor thread while connecting to server localhost:27018
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:70)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:128)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:131)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+Caused by: java.net.ConnectException: Connection refused: no further information
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:660)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:597)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:333)
+	at java.base/java.net.Socket.connect(Socket.java:648)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:64)
+	at com.mongodb.internal.connection.SocketStream.initializeSocket(SocketStream.java:79)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:65)
+	... 3 common frames omitted
+2022-05-06 08:53:48.087  INFO 18968 --- [localhost:27019]  org.mongodb.driver.cluster               : Exception in monitor thread while connecting to server localhost:27019
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:70)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:128)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:131)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+Caused by: java.net.ConnectException: Connection refused: no further information
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:660)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:597)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:333)
+	at java.base/java.net.Socket.connect(Socket.java:648)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:64)
+	at com.mongodb.internal.connection.SocketStream.initializeSocket(SocketStream.java:79)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:65)
+	... 3 common frames omitted
+2022-05-06 08:53:52.217  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:53:53.220  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:53:57.318  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:53:58.322  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:54:06.520  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:54:07.531  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:54:23.918  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:54:25.212  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:54:55.218  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:54:56.221  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:55:26.319  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:55:27.322  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:55:57.417  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:55:58.421  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:56:28.518  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:56:29.522  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:56:59.618  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:57:00.624  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:57:30.720  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:57:31.722  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:58:01.819  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:58:02.821  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:58:32.920  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:58:33.922  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:59:04.019  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:59:05.022  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 08:59:35.118  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 08:59:36.121  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:00:06.218  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:00:07.232  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:00:37.319  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:00:38.321  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:01:08.419  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:01:09.421  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:01:39.519  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:01:40.523  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:02:10.619  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:02:11.621  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:02:41.718  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:02:42.731  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:03:12.818  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:03:13.821  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:03:43.920  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:03:44.923  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:04:15.018  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:04:16.031  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:04:46.118  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:04:47.132  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:05:17.219  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:05:18.222  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:05:48.320  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:05:49.336  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:06:19.418  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:06:20.422  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:06:50.519  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:06:51.535  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:07:21.618  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:07:22.620  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:07:52.718  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:07:53.719  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:08:23.820  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:08:24.822  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:08:54.919  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:08:55.921  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:09:26.018  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:09:27.020  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:09:57.120  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:09:58.122  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:10:28.218  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:10:29.220  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:10:59.319  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:11:00.320  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:11:30.419  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:11:31.421  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:12:01.517  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:12:02.521  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:12:32.617  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:12:33.619  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:13:03.718  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:13:04.719  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:13:34.849  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:13:35.857  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:14:05.918  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:14:06.920  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:14:37.019  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:14:38.021  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:15:08.119  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:15:09.121  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:15:39.218  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:15:40.225  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:16:10.318  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:16:11.321  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:16:41.419  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:16:42.424  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:17:12.518  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:17:13.521  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:17:43.618  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:17:44.621  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:18:14.718  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:18:15.720  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:18:45.818  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:18:46.822  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:19:16.919  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:19:17.921  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:19:48.019  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:19:49.022  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:20:19.120  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:20:20.122  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:20:50.219  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:20:51.221  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:21:21.320  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:21:22.321  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:21:52.418  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:21:53.420  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:22:23.519  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:22:24.523  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:22:54.618  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:22:55.621  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:23:07.058  INFO 18968 --- [MessageBroker-1]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 1, completed tasks = 242]
+2022-05-06 09:23:25.720  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:23:26.723  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:23:56.817  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:23:57.821  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:24:27.918  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:24:28.922  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:24:59.018  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:25:00.019  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:25:30.119  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:25:31.122  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:26:01.218  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:26:02.221  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:26:32.319  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:26:33.322  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:27:03.418  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:27:04.421  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:27:34.518  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:27:35.521  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:28:05.619  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:28:06.621  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:28:36.720  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:28:37.733  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:29:07.818  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:29:08.832  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:29:38.919  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:29:39.929  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:30:10.017  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:30:11.021  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:30:41.119  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:30:42.123  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:31:12.218  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:31:13.219  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:31:43.319  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:31:44.336  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:32:14.418  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:32:15.430  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:32:45.519  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:32:46.523  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:33:16.619  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:33:17.622  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:33:47.720  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:33:48.721  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:34:18.818  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:34:19.821  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:34:49.919  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:34:50.921  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:35:21.019  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:35:22.022  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:35:52.118  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:35:53.131  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:36:23.218  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:36:24.220  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:36:54.317  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:36:55.319  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:37:25.418  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:37:26.423  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:37:56.519  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:37:57.522  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:38:27.619  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:38:28.632  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:38:58.718  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:38:59.720  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:39:29.818  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:39:30.820  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:40:00.919  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:40:01.922  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:40:32.019  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:40:33.021  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:41:03.119  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:41:04.129  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:41:34.218  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:41:35.220  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:42:05.318  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:42:06.320  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:42:36.419  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:42:37.429  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:43:07.519  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:43:08.522  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:43:38.618  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:43:39.621  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:44:09.718  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:44:10.721  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:44:40.819  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:44:41.826  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:45:11.920  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:45:12.923  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:45:43.018  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:45:44.020  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:46:14.119  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:46:15.120  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:46:45.219  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:46:46.240  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:47:16.319  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:47:17.337  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:47:47.419  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:47:48.422  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:48:18.519  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:48:19.522  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:48:49.620  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:48:50.623  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:49:20.717  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:49:21.721  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:49:51.818  INFO 18968 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:49:52.845  WARN 18968 --- [ioEventLoop-6-3]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:50:22.917  INFO 18968 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:50:23.920  WARN 18968 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:50:54.019  INFO 18968 --- [xecutorLoop-1-4]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:50:55.021  WARN 18968 --- [ioEventLoop-6-5]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:51:25.119  INFO 18968 --- [xecutorLoop-1-5]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:51:26.122  WARN 18968 --- [ioEventLoop-6-6]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:51:56.219  INFO 18968 --- [xecutorLoop-1-6]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:51:57.232  WARN 18968 --- [ioEventLoop-6-7]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:52:27.318  INFO 18968 --- [xecutorLoop-1-7]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:52:28.320  WARN 18968 --- [ioEventLoop-6-8]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:52:58.419  INFO 18968 --- [xecutorLoop-1-8]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:52:59.432  WARN 18968 --- [ioEventLoop-6-1]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-06 09:53:07.061  INFO 18968 --- [MessageBroker-5]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 1, completed tasks = 303]
+2022-05-06 09:53:29.520  INFO 18968 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/<unresolved>:6379
+2022-05-06 09:53:30.522  WARN 18968 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379

@@ -8,6 +8,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.UUID;
 
+/**
+ * Teacher participating in the assignment plan. Only used for module Teaching assignment.
+ */
 @Getter
 @Setter
 @Entity
@@ -23,6 +26,7 @@ public class TeacherForAssignmentPlan {
     @Column(name = "plan_id")
     private UUID planId;
 
+    // In different assignment plans, this attribute is different
     @Column(name = "max_hour_load")
     private double maxHourLoad;
 
