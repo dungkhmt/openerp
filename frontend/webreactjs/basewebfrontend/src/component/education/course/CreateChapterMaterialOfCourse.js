@@ -17,6 +17,7 @@ import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
 import { authGet, authPostMultiPart } from "../../../api";
 import AlertDialog from "../../common/AlertDialog";
+import { errorNoti, successNoti } from "../../../utils/notification";
 let reDirect = null;
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -83,12 +84,17 @@ function CreateChapterMaterialOfCourse() {
       formData
     ).then((res) => {
       console.log("res = ", res);
+      if (res.error) {
+        errorNoti("Tạo bài giảng thất bại", true);
+      } else {
+        successNoti("Tạo bài giảng thành công");
+        history.push("/edu/teacher/course/chapter/detail/" + chapterId);
+      }
     });
 
     //let chapter = await authPost(dispatch, token, '/edu/class/create-chapter-material-of-course', body);
     console.log("Create chapter success, chapter = ", chapter);
     //history.push("/edu/course/chapter/detail/" + chapterId);
-    history.push("/edu/teacher/course/chapter/detail/" + chapterId);
     //edu/teacher/course/chapter/detail/010a357c-eb5b-49a6-93de-ec1aef3695dd
   }
   async function getCourseChapterMaterialTypeList() {

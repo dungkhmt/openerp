@@ -1,6 +1,9 @@
 package com.hust.baseweb.applications.education.classmanagement.controller;
 
 import com.google.gson.Gson;
+import com.hust.baseweb.applications.contentmanager.model.ContentHeaderModel;
+import com.hust.baseweb.applications.contentmanager.model.ContentModel;
+import com.hust.baseweb.applications.contentmanager.repo.MongoContentService;
 import com.hust.baseweb.applications.education.classmanagement.service.ClassServiceImpl;
 import com.hust.baseweb.applications.education.content.Video;
 import com.hust.baseweb.applications.education.content.VideoService;
@@ -15,31 +18,44 @@ import com.hust.baseweb.applications.education.report.model.courseparticipation.
 import com.hust.baseweb.applications.education.report.model.quizparticipation.StudentQuizParticipationModel;
 import com.hust.baseweb.applications.education.service.*;
 import com.hust.baseweb.applications.notifications.service.NotificationsService;
+import com.hust.baseweb.config.FileSystemStorageProperties;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Log4j2
 @Controller
@@ -60,6 +76,10 @@ public class ClassController {
     private VideoService videoService;
     private NotificationsService notificationsService;
     private ClassRepo classRepo;
+    private FileSystemStorageProperties properties;
+
+    @Autowired
+    private MongoContentService mongoContentService;
 
     @PostMapping
     public ResponseEntity<?> getClassesOfCurrSemester(
@@ -294,12 +314,82 @@ public class ClassController {
                  eduCourseChapterMaterialModelCreate.getMaterialType());
         EduCourseChapterMaterial eduCourseChapterMaterial = null;
         try {
-            Video video = videoService.create(files[0]);
-            log.info("createChapterMaterialOfCourse, videoId = " + video.getId());
-            eduCourseChapterMaterial = eduCourseChapterMaterialService.save(eduCourseChapterMaterialModelCreate, video);
+
+            log.info("file type = " + eduCourseChapterMaterialModelCreate.getMaterialType());
+            if(eduCourseChapterMaterialModelCreate.getMaterialType().equals("EDU_COURSE_MATERIAL_TYPE_SLIDE") ){
+                List<String> attachmentId = new ArrayList<>();
+
+                PDDocument document = PDDocument.load(files[0].getInputStream());
+                List<PDPage> list = document.getDocumentCatalog().getAllPages();
+                log.info("Total files to be converted -> "+ list.size());
+
+                String fileName = files[0].getName().replace(".pdf", "");
+                int pageNumber = 1;
+                for (PDPage page : list) {
+                    BufferedImage image = page.convertToImage();
+                    File outputfile = new File(properties.getFilesystemRoot() + "/slides/" + fileName + "_" + pageNumber + ".png");
+                    log.info("Image Created -> "+ outputfile.getName());
+                    ImageIO.write(image, "png", outputfile);
+                    pageNumber++;
+                    // change type File to type MultipartFile
+                    FileInputStream input = new FileInputStream(outputfile);
+                    MultipartFile multipartFileImage = new MockMultipartFile(
+                        "file",
+                        outputfile.getName(),
+                        "text/plain",
+                        IOUtils.toByteArray(input)
+                    );
+                    //hash image to binary
+                    ObjectId id = null;
+
+                    long imageId = new Date().getTime();
+                    ContentModel model = new ContentModel( String.valueOf(imageId), multipartFileImage);
+
+
+                    try {
+                        id = mongoContentService.storeFileToGridFs(model);
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
+                    // add list id to array attachmentId
+                    if (id != null) {
+                        ContentHeaderModel rs = new ContentHeaderModel(id.toHexString());
+                        attachmentId.add(rs.getId());
+                        log.info("============================================");
+                        log.info("First image id + " + attachmentId.get(pageNumber - 2));
+                    }
+//delete file
+                    try  {
+                        outputfile.delete();
+                    }
+                    catch (Exception e){
+                     e.printStackTrace();
+                    }
+
+
+
+                }
+                String stringIdList = String.join(";", attachmentId);
+
+                eduCourseChapterMaterial = eduCourseChapterMaterialService.saveSlide(eduCourseChapterMaterialModelCreate, stringIdList);
+                document.close();
+            } else if(eduCourseChapterMaterialModelCreate.getMaterialType().equals("EDU_COURSE_MATERIAL_TYPE_VIDEO")){
+                Video video = videoService.create(files[0]);
+                log.info("createChapterMaterialOfCourse, videoId = " + video.getId());
+                eduCourseChapterMaterial = eduCourseChapterMaterialService.save(eduCourseChapterMaterialModelCreate, video);
+
+                log.info("*************************");
+                log.info("slide content mongo db " + eduCourseChapterMaterial.getSlideId());
+
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
+            Map<String,Boolean> temp = new HashMap<>();
+            temp.put("error", true);
+            return ResponseEntity.ok().body(temp);
         }
 
         // push notification
@@ -320,6 +410,7 @@ public class ClassController {
                                         eduCourseChapterMaterial.getEduCourseChapter().getEduCourse().getName(),
                                         "");
         }
+        log.info("create successful");
         return ResponseEntity.ok().body(eduCourseChapterMaterial);
     }
 

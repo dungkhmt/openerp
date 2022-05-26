@@ -33,4 +33,8 @@ public class EduCourseChapterMaterial {
     @Column(name = "source_id")
     private UUID sourceId;
 
+    @Column(name = "slide_id")
+    private String slideId;
+
+
 }
