@@ -325,6 +325,14 @@ public class ClassController {
 
                 String fileName = files[0].getName().replace(".pdf", "");
                 int pageNumber = 1;
+
+                //check if folder slides is existing
+                File slidesDir = new File(properties.getFilesystemRoot() + "/slides/");
+                    if (!slidesDir.exists()){
+                        slidesDir.mkdirs();
+                    }
+
+                //change file pdf to image and hash to save in mongo
                 for (PDPage page : list) {
                     BufferedImage image = page.convertToImage();
                     File outputfile = new File(properties.getFilesystemRoot() + "/slides/" + fileName + "_" + pageNumber + ".png");
