@@ -113,4 +113,6 @@ public interface ProblemTestCaseService {
     ModelCodeSimilarityOutput checkSimilarity(String contestId);
 
     ModelEvaluateBatchSubmissionResponse evaluateBatchSubmissionContest(String contestId);
+
+    List<ModelContestByRoleResponse> getContestsByRoleOfUser(String userLoginId);
 }

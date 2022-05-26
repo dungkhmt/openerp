@@ -164,6 +164,18 @@ public class ContestProblemController {
         problemTestCaseService.updateContest(modelUpdateContest, principal.getName(), contestId);
         return ResponseEntity.status(200).body(null);
     }
+    @GetMapping("/get-list-roles-contest")
+    public ResponseEntity<?> getListRolesContest(){
+        List<String> L = UserRegistrationContestEntity.getListRoles();
+        return ResponseEntity.ok().body(L);
+    }
+    @GetMapping("/get-my-contest-by-role")
+    public ResponseEntity<?> getMyContestByRole(Principal principal){
+        String userLoginId = principal.getName();
+        log.info("getMyContestByRole, userLoginId = " + userLoginId);
+        List<ModelContestByRoleResponse> modelContestByRoleResponses = problemTestCaseService.getContestsByRoleOfUser(userLoginId);
+        return ResponseEntity.ok().body(modelContestByRoleResponses);
+    }
     @GetMapping("/get-contest-paging")
     public ResponseEntity<?> getContestPaging(Pageable pageable, @Param("sortBy") String sortBy){
         log.info("getContestPaging sortBy {} pageable {}", sortBy, pageable);
