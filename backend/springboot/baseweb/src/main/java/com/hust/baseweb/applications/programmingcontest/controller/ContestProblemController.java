@@ -364,10 +364,10 @@ public class ContestProblemController {
 
         List<ContestSubmissionEntity> submissions = contestSubmissionRepo
             .findAllByContestIdAndUserIdAndProblemId(model.getContestId(), principal.getName(), model.getProblemId());
-        if(submissions.size() >= contestEntity.getMaxNumberSubmission()){
+        if(submissions.size() >= contestEntity.getMaxNumberSubmissions()){
             ModelContestSubmissionResponse resp = ModelContestSubmissionResponse.builder()
                                                                                 .status("MAX_NUMBER_SUBMISSIONS_REACHED")
-                                                                                .message("Maximum Number of Submissions " + contestEntity.getMaxNumberSubmission() + " Reached! Cannot submit more")
+                                                                                .message("Maximum Number of Submissions " + contestEntity.getMaxNumberSubmissions() + " Reached! Cannot submit more")
                                                                                 .testCasePass("0")
                                                                                 .runtime(new Long(0))
                                                                                 .memoryUsage(new Float(0))
@@ -378,7 +378,7 @@ public class ContestProblemController {
                                                                                 .numberTestCasePassed(0)
                                                                                 .totalNumberTestCase(0)
                                                                                 .build();
-            log.info("contestSubmitProblemViaUploadFile: Maximum Number of Submissions " + contestEntity.getMaxNumberSubmission() + " Reached! Cannot submit more");
+            log.info("contestSubmitProblemViaUploadFile: Maximum Number of Submissions " + contestEntity.getMaxNumberSubmissions() + " Reached! Cannot submit more");
             return ResponseEntity.ok().body(resp);
         }
 
