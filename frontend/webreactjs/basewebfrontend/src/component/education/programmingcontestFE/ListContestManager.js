@@ -17,6 +17,7 @@ import { StyledTableCell, StyledTableRow } from "./lib";
 import { Link } from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
 import { ListContestManagerByRegistration } from "./ListContestManagerByRegistration";
+import ListContestByRole from "./ListContestByRole";
 
 export function ListContestManager() {
   const [page, setPage] = useState(1);
@@ -193,6 +194,9 @@ export function ListContestManager() {
         </Grid>
       </div>
       <ListContestManagerByRegistration />
+      {/*
+      <ListContestByRole />
+      */}
     </div>
   );
 }

@@ -68,6 +68,7 @@ export function ContestManager() {
   const [totalPageSearch, setTotalPageSearch] = useState(0);
   const [pageSearch, setPageSearch] = useState(1);
   const [keyword, setKeyword] = useState("");
+  const [roles, setRoles] = useState([]);
 
   const [contestSubmissions, setContestSubmissions] = useState([]);
   const [pageSubmissionSize, setPageSubmissionSize] = useState(10);
@@ -199,6 +200,12 @@ export function ContestManager() {
     ).then();
   }
 
+  function getRoles() {
+    request("get", "/get-list-roles-contest", (res) => {
+      console.log("getRoles, res.data = ", res.data);
+      setRoles(res.data);
+    }).then();
+  }
   useEffect(() => {
     request("get", "/get-contest-detail/" + contestId, (res) => {
       setContestTime(res.data.contestTime);
@@ -212,6 +219,7 @@ export function ContestManager() {
     getRanking(pageRankingSize, 1);
     searchUser(keyword, pageSearchSize, 1);
     getSubmission(pageSubmissionSize, 1);
+    getRoles();
   }, []);
 
   function handleRejudgeContest(event) {
@@ -627,6 +635,7 @@ export function ContestManager() {
                   <StyledTableCell align="center">Full Name</StyledTableCell>
                   <StyledTableCell align="center">Email</StyledTableCell>
                   <StyledTableCell align="center">Status</StyledTableCell>
+                  <StyledTableCell align="center">Role</StyledTableCell>
                   <StyledTableCell align="center">Add</StyledTableCell>
                   <StyledTableCell align="center">Delete</StyledTableCell>
                 </TableRow>
@@ -674,6 +683,30 @@ export function ContestManager() {
                       )}
                     </StyledTableCell>
 
+                    <StyledTableCell>
+                      <TextField
+                        autoFocus
+                        // required
+                        select
+                        id="Role"
+                        label="Role"
+                        placeholder="Role"
+                        onChange={(event) => {
+                          //setIsPublic(event.target.value);
+                          let t = [...searchUsers];
+                          t[index].role = event.target.value;
+                          setSearchUsers(t);
+                        }}
+                        value={searchUsers[index].role}
+                      >
+                        {roles.map((role, i) => (
+                          <MenuItem key={role} value={role}>
+                            {role}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </StyledTableCell>
+
                     <StyledTableCell align="center">
                       {s.status === "PENDING" ? (
                         <Button
@@ -715,7 +748,9 @@ export function ContestManager() {
                             let body = {
                               contestId: contestId,
                               userId: s.userName,
+                              role: s.role,
                             };
+                            console.log("body of add user to contest ", body);
                             successful.push(s);
                             request(
                               "POST",
