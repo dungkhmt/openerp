@@ -15,7 +15,8 @@ const scaleBy = 1.05
 const MAX_SCALE = 3.125
 const MIN_SCALE = 0.25
 
-export const MainBoard = React.memo(() => {
+export const MainBoard = React.memo((props) => {
+  console.log(props.history);
   const { whiteboardId } = useParams()
   const { width, height } = useWindowSize()
   const [stageConfig, setStageConfig] = useState({
@@ -48,8 +49,7 @@ export const MainBoard = React.memo(() => {
     const onWindowResize = () => {
       if (parentRef.current) {
         const stageWidth = parentRef.current.offsetWidth;
-        const stageHeight = parentRef.current.offsetHeight
-        console.log(stageWidth, stageHeight);
+        const stageHeight = parentRef.current.offsetHeight;
         setStageConfig((prev) => ({ ...prev, width: stageWidth, height: stageHeight }))
       }
     }
@@ -59,7 +59,7 @@ export const MainBoard = React.memo(() => {
     return () => {
       window.removeEventListener('resize', onWindowResize)
     }
-  }, [width])
+  }, [width, props.history.location.state?.isSibarOpen])
 
   useEffect(() => {
     setEventPointer({ eventType: null, pointerPosition: { x: 0, y: 0 } })
@@ -161,7 +161,7 @@ export const MainBoard = React.memo(() => {
         <option value={TOOL.TEXT}>Text</option>
       </select>
       <button onClick={onSaveWhiteboardData}>Save</button>
-      <div style={{ height: "calc(100vh - 64px)" }} ref={parentRef}>
+      <div style={{ height: "calc(100vh - 138px)" }} ref={parentRef}>
         <Stage
           ref={stageRef}
           width={stageConfig.width}
