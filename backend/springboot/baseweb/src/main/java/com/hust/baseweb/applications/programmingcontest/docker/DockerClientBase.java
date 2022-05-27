@@ -2,6 +2,7 @@ package com.hust.baseweb.applications.programmingcontest.docker;
 
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.utils.ComputerLanguage;
+import com.hust.baseweb.config.FileSystemStorageProperties;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerClient.ExecCreateParam;
@@ -10,17 +11,21 @@ import com.spotify.docker.client.DockerClient.ListImagesParam;
 import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.*;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 
 @Configuration
 @Slf4j
+//@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class DockerClientBase {
 
     @Value("${DOCKER_SERVER_HOST}")
@@ -29,7 +34,7 @@ public class DockerClientBase {
     private static DockerClient dockerClient;
 
     private static final HashMap<String, String> m = new HashMap<>();
-
+    //private FileSystemStorageProperties properties;
     public DockerClientBase() {
     }
 
@@ -205,7 +210,10 @@ public class DockerClientBase {
                 log.info("language err");
                 return "err";
         }
-
+        File slidesDir = new File( "./temp_dir/");
+        if (!slidesDir.exists()){
+            slidesDir.mkdirs();
+        }
         dockerClient.copyToContainer(new java.io.File("./temp_dir/" + dirName).toPath(), containerId, "/workdir/");
 
         log.info("runExecutable, dirName = " + dirName + " language = " + languages + " copyToContainer OK");

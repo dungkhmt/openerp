@@ -2,12 +2,19 @@ import React, { useState, useEffect } from "react";
 import { request } from "../../../api";
 import { toFormattedDateTime } from "../../../utils/dateutils";
 import MaterialTable, { MTableToolbar } from "material-table";
-import { Button, Card, CardActions, TextField } from "@material-ui/core";
+import {
+  Button,
+  Card,
+  CardActions,
+  TextField,
+  CircularProgress,
+} from "@material-ui/core";
 
 export default function CodeSimilarityCheck(props) {
   const contestId = props.contestId;
   const [codeSimilarity, setCodeSimilarity] = useState([]);
   const [threshold, setThreshold] = useState(50);
+  const [isProcessing, setIsProcessing] = useState(false);
   const columns = [
     { title: "Source1", field: "source1" },
     { title: "user1", field: "userLoginId1" },
@@ -41,8 +48,30 @@ export default function CodeSimilarityCheck(props) {
       body
     );
   }
-  function computeSimilarity() {
-    getCodeChecking();
+  function computeSimilarity(event) {
+    event.preventDefault();
+    setIsProcessing(true);
+    let body = {
+      threshold: threshold,
+    };
+    request(
+      "post",
+      "/check-code-similarity/" + contestId,
+
+      (res) => {
+        console.log("getCodeChecking, res = ", res.data);
+        let data = res.data.codeSimilarityElementList.map((c) => ({
+          ...c,
+          date1: toFormattedDateTime(c.submitDate1),
+          date2: toFormattedDateTime(c.submitDate2),
+        }));
+        //setCodeSimilarity(res.data.codeSimilarityElementList);
+        setIsProcessing(true);
+        setCodeSimilarity(data);
+      },
+      {},
+      body
+    );
   }
   useEffect(() => {}, []);
   return (
@@ -62,6 +91,7 @@ export default function CodeSimilarityCheck(props) {
       <Button variant="contained" color="secondary" onClick={computeSimilarity}>
         Compute
       </Button>
+      {isProcessing ? <CircularProgress /> : ""}
       <MaterialTable columns={columns} data={codeSimilarity}></MaterialTable>
     </div>
   );
