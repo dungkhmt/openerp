@@ -184,6 +184,21 @@ export default function StudentViewProgrammingContestProblemDetail() {
   //   XLSX.writeFile(wb, "TestCasesProblem.xlsx", wb_opts);
   // };
 
+  const copyAllHandler = () => {
+    let allTestCases = "";
+    allTestCases += "--TEST CASES-- \n"
+    for (const testCase_ith of testCases) {
+      allTestCases +=
+        "------------- \nInput: \n" 
+        + testCase_ith.testCase 
+        + "\n\nOutput: \n" 
+        + testCase_ith.correctAns 
+        + "\n\n";
+    }
+    allTestCases += "--END TEST CASES-- \n"
+    navigator.clipboard.writeText(allTestCases);
+  };
+
   const ModalPreview = (chosenTestcase) => {
     return (
       <HustModal
@@ -192,7 +207,10 @@ export default function StudentViewProgrammingContestProblemDetail() {
         isNotShowCloseButton
         showCloseBtnTitle={false}
       >
-        <HustCopyCodeBlock title="Input" text={chosenTestcase?.chosenTestcase?.testCase} />
+        <HustCopyCodeBlock
+          title="Input"
+          text={chosenTestcase?.chosenTestcase?.testCase}
+        />
         <HustCopyCodeBlock
           title="Output"
           text={chosenTestcase?.chosenTestcase?.correctAns}
@@ -230,7 +248,11 @@ export default function StudentViewProgrammingContestProblemDetail() {
               <StyledTableCell align="left">Correct answer</StyledTableCell>
               <StyledTableCell align="left">Point</StyledTableCell>
               <StyledTableCell align="left">Submit Output</StyledTableCell>
-              <StyledTableCell align="left">Detail</StyledTableCell>
+              <StyledTableCell align="left">
+                <Button variant="contained" onClick={copyAllHandler}>
+                  Copy all Testcases
+                </Button>
+              </StyledTableCell>
               {/* <StyledTableCell align="center">
                 <Button variant="contained" onClick={downloadHandler}>
                   Download all
