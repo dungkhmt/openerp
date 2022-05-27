@@ -41,6 +41,23 @@ public class EduCourseChapterMaterialServiceImpl implements EduCourseChapterMate
     }
 
     @Override
+    public EduCourseChapterMaterial saveSlide(
+        EduCourseChapterMaterialModelCreate eduCourseChapterMaterialModelCreate,
+        String stringIdList
+    ){
+        EduCourseChapterMaterial eduCourseChapterMaterial = new EduCourseChapterMaterial();
+        EduCourseChapter eduCourseChapter = eduCourseChapterRepo
+            .findById(eduCourseChapterMaterialModelCreate.getChapterId())
+            .orElse(null);
+        eduCourseChapterMaterial.setEduCourseChapter(eduCourseChapter);
+        eduCourseChapterMaterial.setEduCourseMaterialName(eduCourseChapterMaterialModelCreate.getMaterialName());
+        eduCourseChapterMaterial.setEduCourseMaterialType(eduCourseChapterMaterialModelCreate.getMaterialType());
+        eduCourseChapterMaterial.setSlideId(stringIdList);
+        eduCourseChapterMaterial = eduCourseChapterMaterialRepo.save(eduCourseChapterMaterial);
+        return eduCourseChapterMaterial;
+    }
+
+    @Override
     public List<EduCourseChapterMaterial> findAll() {
         return eduCourseChapterMaterialRepo.findAll();
     }

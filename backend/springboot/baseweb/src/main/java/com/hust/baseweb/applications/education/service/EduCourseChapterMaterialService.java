@@ -14,6 +14,11 @@ public interface EduCourseChapterMaterialService {
         Video video
     );
 
+    public EduCourseChapterMaterial saveSlide(
+        EduCourseChapterMaterialModelCreate eduCourseChapterMaterialModelCreate,
+        String stringIdList
+    );
+
     public List<EduCourseChapterMaterial> findAll();
 
     public List<EduCourseChapterMaterial> findAllByChapterId(UUID chapterId);
