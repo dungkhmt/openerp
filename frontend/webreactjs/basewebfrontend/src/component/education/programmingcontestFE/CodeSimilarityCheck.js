@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { request } from "../../../api";
 import { toFormattedDateTime } from "../../../utils/dateutils";
-import MaterialTable, { MTableToolbar } from "material-table";
-import {
-  Button,
-  Card,
-  CardActions,
-  TextField,
-  CircularProgress,
-} from "@material-ui/core";
+import MaterialTable from "material-table";
+import { Button, TextField, CircularProgress } from "@material-ui/core";
 
 export default function CodeSimilarityCheck(props) {
   const contestId = props.contestId;
@@ -66,7 +60,7 @@ export default function CodeSimilarityCheck(props) {
           date2: toFormattedDateTime(c.submitDate2),
         }));
         //setCodeSimilarity(res.data.codeSimilarityElementList);
-        setIsProcessing(true);
+        setIsProcessing(false);
         setCodeSimilarity(data);
       },
       {},
