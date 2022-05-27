@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { request } from "../../../api";
 import { toFormattedDateTime } from "../../../utils/dateutils";
 import MaterialTable, { MTableToolbar } from "material-table";
+import { Button, Card, CardActions, TextField } from "@material-ui/core";
+
 export default function CodeSimilarityCheck(props) {
   const contestId = props.contestId;
   const [codeSimilarity, setCodeSimilarity] = useState([]);
-
+  const [threshold, setThreshold] = useState(50);
   const columns = [
     { title: "Source1", field: "source1" },
     { title: "user1", field: "userLoginId1" },
@@ -18,8 +20,11 @@ export default function CodeSimilarityCheck(props) {
     { title: "Score", field: "score" },
   ];
   function getCodeChecking() {
+    let body = {
+      threshold: threshold,
+    };
     request(
-      "get",
+      "post",
       "/check-code-similarity/" + contestId,
 
       (res) => {
@@ -32,15 +37,31 @@ export default function CodeSimilarityCheck(props) {
         //setCodeSimilarity(res.data.codeSimilarityElementList);
         setCodeSimilarity(data);
       },
-      {}
+      {},
+      body
     );
   }
-  useEffect(() => {
+  function computeSimilarity() {
     getCodeChecking();
-  }, []);
+  }
+  useEffect(() => {}, []);
   return (
     <div>
-      CodeSimilarityCheck {contestId}
+      <TextField
+        autoFocus
+        required
+        id="Threshold"
+        label="Threshold"
+        placeholder="Threshold"
+        value={threshold}
+        onChange={(event) => {
+          setThreshold(event.target.value);
+        }}
+      ></TextField>
+      (%)
+      <Button variant="contained" color="secondary" onClick={computeSimilarity}>
+        Compute
+      </Button>
       <MaterialTable columns={columns} data={codeSimilarity}></MaterialTable>
     </div>
   );

@@ -194,10 +194,10 @@ public class ContestProblemController {
         ModelGetContestDetailResponse response = problemTestCaseService.getContestDetailByContestIdAndTeacher(contestId, principal.getName());
         return ResponseEntity.status(200).body(response);
     }
-    @GetMapping("/check-code-similarity/{contestId}")
-    public ResponseEntity<?> checkCodeSimilarity(Principal principal, @PathVariable String contestId){
+    @PostMapping("/check-code-similarity/{contestId}")
+    public ResponseEntity<?> checkCodeSimilarity(Principal principal, @RequestBody ModelCheckSimilarityInput I, @PathVariable String contestId){
         log.info("checkCodeSimilarity, contestId = " + contestId);
-        ModelCodeSimilarityOutput res= problemTestCaseService.checkSimilarity(contestId);
+        ModelCodeSimilarityOutput res= problemTestCaseService.checkSimilarity(contestId, I);
         return ResponseEntity.ok().body(res);
     }
 
