@@ -132,19 +132,18 @@
             <version>2.3.7</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>com.google.ortools</groupId>
-            <artifactId>ortools-java</artifactId>
-            <version>9.0.9048</version>
-        </dependency>
-
-
         <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
             <version>1.26</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.ortools/ortools-java -->
+        <dependency>
+            <groupId>com.google.ortools</groupId>
+            <artifactId>ortools-java</artifactId>
+            <version>9.3.10497</version>
         </dependency>
 
         <!--Swagger - 2 dependencies-->
