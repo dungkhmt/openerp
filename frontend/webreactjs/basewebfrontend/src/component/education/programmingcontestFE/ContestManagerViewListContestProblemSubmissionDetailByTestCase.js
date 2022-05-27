@@ -4,7 +4,7 @@ import { request } from "../../../api";
 import { toFormattedDateTime } from "../../../utils/dateutils";
 //import withScreenSecurity from "../withScreenSecurity";
 
-export default function ViewListContestProblemSubmissionDetailByTestCase() {
+export default function ContestManagerViewListContestProblemSubmissionDetailByTestCase() {
   const columns = [
     { title: "Contest", field: "contestId" },
     { title: "Problem", field: "problemId" },
@@ -16,7 +16,7 @@ export default function ViewListContestProblemSubmissionDetailByTestCase() {
 
   return (
     <div>
-      <h1>View Course Video</h1>
+      <h1>View Submission Detail By Testcase</h1>
       <MaterialTable
         columns={columns}
         data={(query) =>
