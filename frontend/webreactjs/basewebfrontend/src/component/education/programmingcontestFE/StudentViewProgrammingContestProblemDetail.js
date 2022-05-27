@@ -27,6 +27,7 @@ import { request } from "./Request";
 import XLSX from "xlsx";
 import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
+import FileSaver from "file-saver";
 
 const editorStyle = {
   toolbar: {
@@ -186,17 +187,30 @@ export default function StudentViewProgrammingContestProblemDetail() {
 
   const copyAllHandler = () => {
     let allTestCases = "";
-    allTestCases += "--TEST CASES-- \n"
     for (const testCase_ith of testCases) {
       allTestCases +=
-        "------------- \nInput: \n" 
-        + testCase_ith.testCase 
-        + "\n\nOutput: \n" 
-        + testCase_ith.correctAns 
-        + "\n\n";
+        "------------- \nINPUT: \n" +
+        testCase_ith.testCase +
+        "\n\nOUTPUT: \n" +
+        testCase_ith.correctAns +
+        "\n\n";
     }
-    allTestCases += "--END TEST CASES-- \n"
     navigator.clipboard.writeText(allTestCases);
+  };
+  const downloadAllHandler = () => {
+    for (let i = 0; i < testCases.length; i++) {
+      var testCase_ith = testCases[i];
+      var blob = new Blob(
+        [
+          "INPUT: \n" +
+            testCase_ith.testCase +
+            "\n\nOUTPUT: \n" +
+            testCase_ith.correctAns,
+        ],
+        { type: "text/plain;charset=utf-8" }
+      );
+      FileSaver.saveAs(blob, "Testcase_" + (i + 1) + ".txt");
+    }
   };
 
   const ModalPreview = (chosenTestcase) => {
@@ -250,7 +264,12 @@ export default function StudentViewProgrammingContestProblemDetail() {
               <StyledTableCell align="left">Submit Output</StyledTableCell>
               <StyledTableCell align="left">
                 <Button variant="contained" onClick={copyAllHandler}>
-                  Copy all Testcases
+                  Copy Tests
+                </Button>
+              </StyledTableCell>
+              <StyledTableCell align="left">
+                <Button variant="contained" onClick={downloadAllHandler}>
+                  Download Tests
                 </Button>
               </StyledTableCell>
               {/* <StyledTableCell align="center">
@@ -326,6 +345,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
                         <InfoIcon />
                       </IconButton>
                     </StyledTableCell>
+                    <StyledTableCell align="left"></StyledTableCell>
                   </StyledTableRow>
                 )
               );
