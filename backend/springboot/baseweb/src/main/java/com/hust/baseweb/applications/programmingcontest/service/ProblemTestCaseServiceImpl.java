@@ -1133,12 +1133,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public List<ModelGetTestCase> getPublicTestCaseByProblem(String problemId) {
-        List<TestCaseEntity> testCases = testCaseRepo.findAllPublicByProblemId(problemId);
-        return testCases.stream().map(this::convertToModelGetTestCase).collect(Collectors.toList());
-    }
-
-    @Override
     public ModelGetTestCaseDetail getTestCaseDetail(UUID testCaseId) throws MiniLeetCodeException {
         TestCaseEntity testCase = testCaseRepo.findTestCaseByTestCaseId(testCaseId);
         ProblemEntity problem = problemRepo.findByProblemId(testCase.getProblemId());
@@ -1609,16 +1603,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         String testCase = testCaseEntity.getTestCase();
         int point = testCaseEntity.getTestCasePoint();
 
-        // if(correctAns.length() > 20){
-        //     viewMore = true;
-        //     correctAns = correctAns.substring(0,17);
-        //     correctAns += "...";
-        // }
-        // if(testCase.length() > 20){
-        //     viewMore = true;
-        //     testCase = testCase.substring(0,17);
-        //     testCase += "...";
-        // }
         return ModelGetTestCase.builder()
                 .correctAns(correctAns)
                 .testCase(testCase)
