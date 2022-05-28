@@ -20,7 +20,6 @@ import {
 } from "@material-ui/core";
 
 const FooterControl = (props) => {
-  const history = useHistory();
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -30,11 +29,7 @@ const FooterControl = (props) => {
       props.displayBar === BAR_TYPE.CHAT ? BAR_TYPE.NONE : BAR_TYPE.CHAT
     );
   };
-  const handleClickEnd = () => {
-    props.sendMessage("leave");
-    props.stompClient.disconnect();
-    history.push("/chat/voice/main");
-  };
+
   const handleClickParticipant = () => {
     props.setDisplayBar(
       props.displayBar === BAR_TYPE.PARTICIPANT
@@ -85,7 +80,7 @@ const FooterControl = (props) => {
       <div className="element-bottom" onClick={handleOpen} title="Share Meet">
         <ShareMeetIcon />
       </div>
-      <div id="end-room" onClick={handleClickEnd}>
+      <div id="end-room" onClick={props.leaveMeet}>
         <EndIcon />
       </div>
       <Modal

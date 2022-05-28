@@ -15,6 +15,7 @@ import {
   stopMediaStream,
 } from "../ultis/helpers";
 import useGetMediaStream from "../hooks/useGetMediaStream";
+import { useHistory } from "react-router";
 
 const SOCKET_URL = API_URL + "/chatSocketHandler";
 
@@ -24,6 +25,7 @@ const Meet = () => {
     const stompClient = window.Stomp.over(sock);
     return stompClient;
   }, []);
+  const history = useHistory();
   const location = window.location.pathname.split("/");
   const meetId = location[location.length - 1];
   const [displayBar, setDisplayBar] = useState("chat");
@@ -41,7 +43,7 @@ const Meet = () => {
   const [screenStream, setScreenStream] = useState();
   const [peer] = useState(() => new Peer({ config: PEER_CONFIG }));
   const mediaStream = useGetMediaStream([
-    mediaStream,
+    microStream,
     cameraStream,
     screenStream,
   ]);
@@ -54,8 +56,13 @@ const Meet = () => {
         JSON.stringify({ id: name, name, type, content })
       );
     },
-    [name, meetId]
+    [name, meetId, stompClient]
   );
+  const leaveMeet = useCallback(() => {
+    sendMessage("leave");
+    stompClient.disconnect();
+    history.push("/chat/voice/main");
+  }, [history, stompClient, sendMessage]);
   const connect = useCallback(() => {
     stompClient.connect(
       {
@@ -73,7 +80,7 @@ const Meet = () => {
       setMicro(!micro);
       if (!micro) {
         const srcMicro = await getUserMedia("micro");
-        setMicro(srcMicro);
+        setMicroStream(srcMicro);
       } else {
         stopAndSetMediaStream(setMicroStream);
       }
@@ -156,9 +163,6 @@ const Meet = () => {
       window.removeEventListener("close", () => {
         onClose();
       });
-      stopMediaStream(microStream);
-      stopMediaStream(cameraStream);
-      stopMediaStream(screenStream);
     };
   }, []);
   useEffect(() => {
@@ -169,7 +173,7 @@ const Meet = () => {
         }
       });
     }
-  }, [mediaStream]);
+  }, [microStream, cameraStream, screenStream]);
   useEffect(() => {
     if (name) {
       peer?.on("open", (peerId) => {
@@ -254,17 +258,14 @@ const Meet = () => {
         displayBar={displayBar}
         setDisplayBar={setDisplayBar}
         unReadMsg={unReadMsg}
-        stompClient={stompClient}
-        sendMessage={sendMessage}
         camera={camera}
         micro={micro}
-        setCamera={setCamera}
-        setMicro={setMicro}
         mediaStream={mediaStream}
         meetId={meetId}
         handleClickCamera={handleClickCamera}
         handleClickMicro={handleClickMicro}
         handleClickShareScreen={handleClickShareScreen}
+        leaveMeet={leaveMeet}
       />
     </div>
   );

@@ -1,18 +1,29 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { stopMediaStream } from "../ultis/helpers";
 
 export default function useGetMediaStream(listStream) {
   const mediaStream = useMemo(() => {
-    const mediaStream = new MediaStream();
+    return new MediaStream();
+  }, []);
+
+  useEffect(() => {
+    mediaStream.getTracks().forEach((track) => mediaStream.removeTrack(track));
     listStream.forEach((stream) => {
       try {
         if (stream) {
-          stream?.getTracks()?.forEach((track) => listStream.addTrack(track));
+          stream?.getTracks()?.forEach((track) => mediaStream.addTrack(track));
         }
       } catch (e) {
         console.error(e);
       }
     });
-    return mediaStream;
-  }, [listStream]);
+  }, [listStream, mediaStream]);
+
+  useEffect(() => {
+    return () => {
+      stopMediaStream(mediaStream);
+    };
+  }, []);
+
   return mediaStream;
 }
