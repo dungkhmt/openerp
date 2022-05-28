@@ -14,8 +14,6 @@ const Main = ({ mediaStream, listParticipant, display }) => {
     () => listParticipant.filter((participant) => !!participant?.mediaStream),
     [listParticipant]
   );
-  console.log("listParticipant: ", listParticipant);
-  console.log("listParticipantMedia: ", listParticipantMedia);
   const renderParticipantMedia = (listParticipantMedia) => {
     return listParticipantMedia.map((participant, index) => (
       <ParticipantVideo
