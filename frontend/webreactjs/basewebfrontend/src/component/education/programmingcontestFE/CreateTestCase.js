@@ -1,27 +1,10 @@
-import {
-  Box,
-  Button,
-  Grid,
-  MenuItem,
-  Tab,
-  Tabs,
-  TextField,
-  Toolbar,
-} from "@material-ui/core";
+import { Box, Button, MenuItem, TextField } from "@material-ui/core";
+import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import Typography from "@mui/material/Typography";
-import { ScrollBox } from "react-scroll-box";
-import { a11yProps, TabPanelVertical } from "./TabPanel";
+import { useSelector } from "react-redux";
 //import CodeMirror from "@uiw/react-codemirror";
 import { useHistory, useParams } from "react-router-dom";
-import { authGet, authPost } from "../../../api";
-import { useDispatch, useSelector } from "react-redux";
-import { Markup } from "interweave";
-import { OutputWithLoading } from "./OutputWithLoading";
-import { API_URL } from "../../../config/config";
-import { SubmitWarming } from "./SubmitWarming";
-import { SubmitSuccess } from "./SubmitSuccess";
 import { successNoti, warningNoti } from "../../../utils/notification";
 import { request } from "./Request";
 
@@ -30,9 +13,6 @@ export default function CreateTestCase(props) {
   const [value, setValue] = useState(0);
   const [input, setInput] = useState("");
   const [result, setResult] = useState("");
-  const [screenHeight, setScreenHeight] = useState(
-    (window.innerHeight - 300) / 2 + "px"
-  );
   const { problemId } = useParams();
   const token = useSelector((state) => state.auth.token);
   const [description, setDescription] = useState();
@@ -112,44 +92,52 @@ export default function CreateTestCase(props) {
   }, []);
 
   return (
-    <div>
-      <Typography variant={"h5"}>Testcase</Typography>
-      <TextField
-        autoFocus
-        required
-        id="point"
-        label="Point"
-        placeholder="Point"
-        onChange={(event) => {
-          setPoint(event.target.value);
+    <Box>
+      <Typography variant={"h4"}>Create new Test case</Typography>
+      <Box
+        style={{
+          width: "400px",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
-      ></TextField>
-      <br /> <br />
-      <TextField
-        autoFocus
-        // required
-        select
-        id="Public TestCase"
-        label="Public TestCase"
-        placeholder="Public TestCase"
-        onChange={(event) => {
-          setIsPublic(event.target.value);
-        }}
-        value={isPublic}
       >
-        <MenuItem key={"Y"} value={"Y"}>
-          {"Y"}
-        </MenuItem>
-        <MenuItem key={"N"} value={"N"}>
-          {"N"}
-        </MenuItem>
-      </TextField>
+        <TextField
+          autoFocus
+          required
+          id="point"
+          label="Point"
+          placeholder="Point"
+          onChange={(event) => {
+            setPoint(event.target.value);
+          }}
+        ></TextField>
+        <TextField
+          autoFocus
+          // required
+          select
+          id="Public TestCase"
+          label="Public TestCase"
+          onChange={(event) => {
+            setIsPublic(event.target.value);
+          }}
+          value={isPublic}
+          style={{ width: "140px" }}
+        >
+          <MenuItem key={"Y"} value={"Y"}>
+            {"Y"}
+          </MenuItem>
+          <MenuItem key={"N"} value={"N"}>
+            {"N"}
+          </MenuItem>
+        </TextField>
+      </Box>
       <br />
       <TextField
+        fullWidth
         style={{
-          width: 1.0 * window.innerWidth,
-
-          margin: 20,
+          marginTop: "10px",
+          marginBottom: "24px",
         }}
         multiline
         maxRows={4}
@@ -162,20 +150,20 @@ export default function CreateTestCase(props) {
         variant="contained"
         color="light"
         onClick={getTestCaseResult}
-        style={{ marginTop: "10px", marginLeft: "50px" }}
       >
         get testcase result
       </Button>
+      <Box fullWidth style={{ height: "20px" }} />
       <Typography variant={"h5"}>Result</Typography>
-      RESULT: {result}
+      <Box fullWidth>{result}</Box>
       <Button
         variant="contained"
         color="light"
-        style={{ marginLeft: "50px", marginTop: "10px" }}
+        style={{ marginTop: "10px" }}
         onClick={saveTestCase}
       >
         save test case
       </Button>
-    </div>
+    </Box>
   );
 }
