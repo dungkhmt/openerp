@@ -123,7 +123,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
 
       (res) => {
         console.log("res", res.data);
-        setTestCases(res.data);
+        setTestCases(res.data.filter(item => item.isPublic === "Y"));
       },
       {}
     );
