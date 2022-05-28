@@ -4,46 +4,68 @@ import AndroidIcon from '@mui/icons-material/Android';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import { Box, Grid } from "@material-ui/core";
+import {
+  Button,
+  Typography
+} from "@mui/material";
+import {
+  boxComponentStyle,
+  boxChildComponent,
+  centerBox
+} from "./ultis/constant";
+import { request } from "../../api";
 
 export default function ListProject() {
   const [projects, setProjects] = useState(null);
   const [loading, setLoading] = useState(true);
   const domain = "http://localhost:8080";
   useEffect(() => {
-    axios.get("http://localhost:8080/api/projects", {
-      auth: {
-        username: "admin",
-        password: "sscm@123456"
-      }
-    })
-      .then(res => {
-        setProjects(res.data);
-        setLoading(false);
-      })
+    request('get', '/projects', res => {
+      console.log(res.data);
+      setLoading(false);
+      setProjects(res.data);
+    }, err => {
+      console.log(err);
+    });
   }, []);
   return (
     <>
-      <div className="pt-3 px-2">
-        <div className="p-3" style={{ backgroundColor: "#FFF", boxShadow: "0 4px 8px rgba(0,0,0,0.07)" }}>
-          <h3 className="mb-4">Danh sách dự án</h3>
-          {loading && <p>Loading...</p>}
-          {projects && projects.map((item) => (
-            <div className="d-flex border rounder p-2 mb-4" style={{ borderRadius: "15px 15px", backgroundColor: "#EEE", boxShadow: "0 0 5px 0px" }} key={item.id}>
-              <div className="fs-3 d-flex align-items-center p-3">
+      <Box sx={boxComponentStyle}>
+        <Grid container >
+          <Grid item={true} xs={8}>
+            <Typography variant="h4" mb={4} component={'h4'}>
+              Danh sách dự án mới
+            </Typography>
+          </Grid>
+          <Grid item={true} xs={4}>
+            <Link to="/taskmanagement/project/create" style={{ textDecoration: "none" }} ><Button variant="contained" color="primary" sx={{ mr: 3 }}>Thêm mới dự án</Button></Link>
+            <Link to="/taskmanagement/project/members/add" style={{ textDecoration: "none" }} ><Button variant="contained" color="primary">Thêm thành viên dự án</Button></Link>
+          </Grid>
+        </Grid>
+        {loading && <p>Loading...</p>}
+        {projects && projects.map((item) => (
+          <Box sx={boxChildComponent} key={item.id}>
+            <Box sx={{ display: 'flex' }}>
+              <Box sx={centerBox}>
                 <AccountTreeIcon />
-              </div>
-              <div className="d-flex flex-column flex-justify-content p-0">
-                <Link to={`/taskmanagement/project/${item.id}/tasks`} className="text-decoration-none text-dark" ><h6>{item.name != null ? item.name : "Dự án chưa được đặt tên"}</h6></Link>
-                <div>
-                  <Link to="/taskmanagement/project/tasks/create" className="text-decoration-none me-3">Add issues</Link>
-                  <Link to="#" className="text-decoration-none me-3">List Issues</Link>
-                  <Link to="#" className="text-decoration-none me-3">Boards</Link>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+              </Box>
+              <Box px={3}>
+                <Link to={`/taskmanagement/project/${item.id}/tasks`} style={{ textDecoration: 'none', color: "#000" }}>
+                  <Typography variant="h6" component={'h6'}>
+                    {item.name}
+                  </Typography>
+                </Link>
+                <Box>
+                  <Link to="/taskmanagement/project/tasks/create" style={{ textDecoration: 'none', marginRight: "15px" }}>Add issues</Link>
+                  <Link to="#" style={{ textDecoration: 'none', marginRight: "15px" }}>List Issues</Link>
+                  <Link to="#" style={{ textDecoration: 'none', marginRight: "15px" }}>Boards</Link>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        ))}
+      </Box>
     </>
   );
 }
