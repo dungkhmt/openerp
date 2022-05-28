@@ -167,6 +167,7 @@ const Meet = () => {
   }, []);
   useEffect(() => {
     if (mediaStream) {
+      console.log("myMediaStream: ", mediaStream.getTracks());
       listParticipant.forEach((participant) => {
         if (participant.peerId !== peerId) {
           peer.call(participant.peerId, mediaStream);
@@ -182,6 +183,7 @@ const Meet = () => {
         peer.on("call", (call) => {
           call.answer();
           call?.on("stream", (remoteStream) => {
+            console.log("remoteStream: ", remoteStream.getTracks());
             setRemoteStreamInfo({ mediaStream: remoteStream, call });
           });
         });
