@@ -35,6 +35,8 @@ const HustModal = (props) => {
           border: "2px solid gray",
           width: "600px",
           maxWidth: "600px",
+          maxHeight: "500px",
+          overflowY: "auto",
           boxShadow: 24,
           p: "16px 28px 20px 28px",
           borderRadius: 3,
