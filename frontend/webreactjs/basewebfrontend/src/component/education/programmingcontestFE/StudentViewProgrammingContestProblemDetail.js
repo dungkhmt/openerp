@@ -24,7 +24,6 @@ import { Link } from "react-router-dom";
 import { authPostMultiPart } from "../../../api";
 import { StyledTableCell, StyledTableRow } from "./lib";
 import { request } from "./Request";
-import XLSX from "xlsx";
 import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import FileSaver from "file-saver";
@@ -64,7 +63,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
 
   function onFileChange(event) {
     setFilename(event.target.files[0]);
-    console.log(event.target.files[0].name);
   }
   const onInputChange = (event) => {
     let name = event.target.value;
@@ -91,7 +89,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
     )
       .then((res) => {
         setIsProcessing(false);
-        console.log("result submit = ", res);
         if (res.status == "TIME_OUT") {
           alert("Time Out!!!");
           setScore("");
@@ -122,7 +119,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
       "/get-test-case-list-by-problem/" + problemId,
 
       (res) => {
-        console.log("res", res.data);
         setTestCases(res.data.filter(item => item.isPublic === "Y"));
       },
       {}
@@ -135,7 +131,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
       "/get-problem-detail-view-by-student/" + problemId,
 
       (res) => {
-        console.log("getProblemDetail, res = ", res.data);
         setProblem(res.data);
         //setProblemStatement(res.data.problemStatement);
         let problemDescriptionHtml = htmlToDraft(res.data.problemStatement);
