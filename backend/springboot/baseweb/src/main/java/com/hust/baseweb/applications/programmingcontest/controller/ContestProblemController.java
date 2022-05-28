@@ -164,6 +164,18 @@ public class ContestProblemController {
         problemTestCaseService.updateContest(modelUpdateContest, principal.getName(), contestId);
         return ResponseEntity.status(200).body(null);
     }
+    @GetMapping("/get-list-roles-contest")
+    public ResponseEntity<?> getListRolesContest(){
+        List<String> L = UserRegistrationContestEntity.getListRoles();
+        return ResponseEntity.ok().body(L);
+    }
+    @GetMapping("/get-my-contest-by-role")
+    public ResponseEntity<?> getMyContestByRole(Principal principal){
+        String userLoginId = principal.getName();
+        log.info("getMyContestByRole, userLoginId = " + userLoginId);
+        List<ModelContestByRoleResponse> modelContestByRoleResponses = problemTestCaseService.getContestsByRoleOfUser(userLoginId);
+        return ResponseEntity.ok().body(modelContestByRoleResponses);
+    }
     @GetMapping("/get-contest-paging")
     public ResponseEntity<?> getContestPaging(Pageable pageable, @Param("sortBy") String sortBy){
         log.info("getContestPaging sortBy {} pageable {}", sortBy, pageable);
@@ -182,10 +194,10 @@ public class ContestProblemController {
         ModelGetContestDetailResponse response = problemTestCaseService.getContestDetailByContestIdAndTeacher(contestId, principal.getName());
         return ResponseEntity.status(200).body(response);
     }
-    @GetMapping("/check-code-similarity/{contestId}")
-    public ResponseEntity<?> checkCodeSimilarity(Principal principal, @PathVariable String contestId){
+    @PostMapping("/check-code-similarity/{contestId}")
+    public ResponseEntity<?> checkCodeSimilarity(Principal principal, @RequestBody ModelCheckSimilarityInput I, @PathVariable String contestId){
         log.info("checkCodeSimilarity, contestId = " + contestId);
-        ModelCodeSimilarityOutput res= problemTestCaseService.checkSimilarity(contestId);
+        ModelCodeSimilarityOutput res= problemTestCaseService.checkSimilarity(contestId, I);
         return ResponseEntity.ok().body(res);
     }
 

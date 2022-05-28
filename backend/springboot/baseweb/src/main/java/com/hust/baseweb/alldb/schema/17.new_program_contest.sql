@@ -172,3 +172,17 @@ create table user_registration_contest_new
     constraint fk_user_id_user_registration_contest_new foreign key (user_id) references user_login(user_login_id),
     constraint fk_contest_id_user_registration_contest_new foreign key (contest_id) references contest_new(contest_id)
 );
+
+create table contest_role(
+    contest_id varchar(100),
+    user_login_id varchar(60),
+    role_id varchar(100),
+    from_date timestamp,
+    thru_date timestamp,
+    last_updated_stamp         timestamp default current_date ,
+    created_stamp              timestamp default current_date ,
+    constraint pk_contest_role primary key (contest_id, user_login_id, role_id, from_date),
+    constraint fk_contest_role_contest_id foreign key(contest_id) references contest_new(contest_id),
+    constraint fk_contest_role_user_login_id foreign key(user_login_id) references user_login(user_login_id)
+
+);

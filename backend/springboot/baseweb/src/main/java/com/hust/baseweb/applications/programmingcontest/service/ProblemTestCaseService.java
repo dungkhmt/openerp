@@ -48,6 +48,7 @@ public interface ProblemTestCaseService {
     ModelGetContestPageResponse getContestPaging(Pageable pageable);
 
     ModelGetContestDetailResponse getContestDetailByContestIdAndTeacher(String contestId, String userName);
+    ModelGetContestDetailResponse getContestDetailByContestId(String contestId);
 
     ModelGetContestDetailResponse getContestSolvingDetailByContestId(String contestId, String userName) throws MiniLeetCodeException;
 
@@ -110,7 +111,10 @@ public interface ProblemTestCaseService {
 
     void deleteTestcase(UUID testcaseId, String userId) throws MiniLeetCodeException;
 
-    ModelCodeSimilarityOutput checkSimilarity(String contestId);
+    ModelCodeSimilarityOutput checkSimilarity(String contestId, ModelCheckSimilarityInput I);
 
     ModelEvaluateBatchSubmissionResponse evaluateBatchSubmissionContest(String contestId);
+
+    List<ModelContestByRoleResponse> getContestsByRoleOfUser(String userLoginId);
+
 }

@@ -51,6 +51,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private ContestSubmissionPagingAndSortingRepo contestSubmissionPagingAndSortingRepo;
     private ContestSubmissionTestCaseEntityRepo contestSubmissionTestCaseEntityRepo;
     private UserService userService;
+    private ContestRoleRepo contestRoleRepo;
+
     @Override
     public void createContestProblem(ModelCreateContestProblem modelCreateContestProblem, String userId) throws MiniLeetCodeException {
         if(problemRepo.findByProblemId(modelCreateContestProblem.getProblemId()) != null){
@@ -338,6 +340,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .build();
     }
 
+    @Transactional
     @Override
     public ContestEntity createContest(ModelCreateContest modelCreateContest, String userName) throws Exception {
         try {
@@ -345,9 +348,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             if(contestEntityExist != null){
                 throw new MiniLeetCodeException("Contest is already exist");
             }
+            ContestEntity contestEntity = null;
             List<ProblemEntity> problemEntities = getContestProblemsFromListContestId(modelCreateContest.getProblemIds());
             if(modelCreateContest.getStartedAt() != null){
-                ContestEntity contestEntity = ContestEntity.builder()
+                contestEntity = ContestEntity.builder()
                                                            .contestId(modelCreateContest.getContestId())
                                                            .contestName(modelCreateContest.getContestName())
                                                            .contestSolvingTime(modelCreateContest.getContestTime())
@@ -362,9 +366,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .maxNumberSubmissions(modelCreateContest.getMaxNumberSubmissions())
                                                            .createdAt(new Date())
                                                            .build();
-                return contestRepo.save(contestEntity);
+                contestEntity = contestRepo.save(contestEntity);
             }else{
-                ContestEntity contestEntity = ContestEntity.builder()
+                contestEntity = ContestEntity.builder()
                                                            .contestId(modelCreateContest.getContestId())
                                                            .contestName(modelCreateContest.getContestName())
                                                            .contestSolvingTime(modelCreateContest.getContestTime())
@@ -376,9 +380,55 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .maxNumberSubmissions(modelCreateContest.getMaxNumberSubmissions())
                                                            .createdAt(new Date())
                                                            .build();
-                return contestRepo.save(contestEntity);
+                contestEntity = contestRepo.save(contestEntity);
             }
 
+            // create corresponding entities in ContestRole
+            ContestRole contestRole = new ContestRole();
+            contestRole.setContestId(modelCreateContest.getContestId());
+            contestRole.setUserLoginId(userName);
+            Date fromDate = new Date();
+            contestRole.setRoleId(ContestRole.CONTEST_ROLE_OWNER);
+            contestRole.setFromDate(fromDate);
+            contestRole = contestRoleRepo.save(contestRole);
+
+            contestRole = new ContestRole();
+            contestRole.setContestId(modelCreateContest.getContestId());
+            contestRole.setUserLoginId(userName);
+            contestRole.setRoleId(ContestRole.CONTEST_ROLE_MANAGER);
+            contestRole.setFromDate(fromDate);
+            contestRole = contestRoleRepo.save(contestRole);
+
+            contestRole = new ContestRole();
+            contestRole.setContestId(modelCreateContest.getContestId());
+            contestRole.setUserLoginId(userName);
+            contestRole.setRoleId(ContestRole.CONTEST_ROLE_PARTICIPANT);
+            contestRole.setFromDate(fromDate);
+            contestRole = contestRoleRepo.save(contestRole);
+
+            // create correspoding entities in UserRegistrationContestEntity
+            UserRegistrationContestEntity urc = new UserRegistrationContestEntity();
+            urc.setContestId(modelCreateContest.getContestId());
+            urc.setRoleId(UserRegistrationContestEntity.ROLE_OWNER);
+            urc.setUserId(userName);
+            urc.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+            urc = userRegistrationContestRepo.save(urc);
+
+            urc = new UserRegistrationContestEntity();
+            urc.setContestId(modelCreateContest.getContestId());
+            urc.setRoleId(UserRegistrationContestEntity.ROLE_MANAGER);
+            urc.setUserId(userName);
+            urc.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+            urc = userRegistrationContestRepo.save(urc);
+
+            urc = new UserRegistrationContestEntity();
+            urc.setContestId(modelCreateContest.getContestId());
+            urc.setRoleId(UserRegistrationContestEntity.ROLE_PARTICIPANT);
+            urc.setUserId(userName);
+            urc.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+            urc = userRegistrationContestRepo.save(urc);
+
+            return contestEntity;
         }catch (Exception e){
             throw new Exception(e.getMessage());
         }
@@ -472,13 +522,44 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 //        UserLogin userLogin = userLoginRepo.findByUserLoginId(userName);
 
 
-        ContestEntity contestEntity = contestRepo.findContestEntityByContestIdAndUserId(contestId, userName);
+        //ContestEntity contestEntity = contestRepo.findContestEntityByContestIdAndUserId(contestId, userName);
+        boolean ok = false;
+        // check role of teacher
+        UserRegistrationContestEntity c = userRegistrationContestRepo
+            .findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+        ok = c != null;
+
+        /*
+        List<ModelContestByRoleResponse> L = getContestsByRoleOfUser(userName);
+        for(UserRegistrationContestEntity c: L){
+            log.info("getContestDetailByContestIdAndTeacher, user " + userName + " contest "
+                     + c.getContestId() + " role = " + c.getRoleId());
+            if(c.getContestId().equals(contestId) && (c.getRoleId().equals(UserRegistrationContestEntity.ROLE_MANAGER)
+                                                      || c.getRoleId().equals(UserRegistrationContestEntity.ROLE_OWNER))){
+                ok = true; break;
+            }
+        }
+        */
+        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
         log.info("contestEntity {}", contestEntity);
-        if(contestEntity == null){
+        if(!ok || contestEntity == null){
             log.info("user does not create contest");
             return ModelGetContestDetailResponse.builder()
                     .unauthorized(true)
                     .build();
+        }
+        return getModelGetContestDetailResponse(contestId, contestEntity);
+    }
+
+    @Override
+    public ModelGetContestDetailResponse getContestDetailByContestId(String contestId) {
+        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+        log.info("contestEntity {}", contestEntity);
+        if(contestEntity == null){
+            log.info("user does not create contest");
+            return ModelGetContestDetailResponse.builder()
+                                                .unauthorized(true)
+                                                .build();
         }
         return getModelGetContestDetailResponse(contestId, contestEntity);
     }
@@ -1090,6 +1171,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     .contestId(modelAddUserToContest.getContestId())
                     .userId(modelAddUserToContest.getUserId())
                     .status(Constants.RegistrationType.SUCCESSFUL.getValue())
+                                                                          .roleId(modelAddUserToContest.getRole())
                     .build());
         }else{
             userRegistrationContest.setStatus(Constants.RegistrationType.SUCCESSFUL.getValue());
@@ -1254,7 +1336,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
     }
     @Override
-    public ModelCodeSimilarityOutput checkSimilarity(String contestId) {
+    public ModelCodeSimilarityOutput checkSimilarity(String contestId, ModelCheckSimilarityInput I) {
         List<CodeSimilarityElement> list = new ArrayList();
 
         List<UserRegistrationContestEntity> participants = userRegistrationContestRepo
@@ -1265,19 +1347,19 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
         for(ProblemEntity p: problems) {
             String problemId = p.getProblemId();
-            log.info("checkSimilarity, consider problem " + problemId);
+            log.info("checkSimilarity, consider problem " + problemId + " threshold  = " + I.getThreshold());
             List<ContestSubmissionEntity> listSubmissions = new ArrayList();
             for (UserRegistrationContestEntity participant : participants) {
                 String userLoginId = participant.getUserId();
-                log.info("checkSimilarity, consider problem " + problemId + " participant " + userLoginId);
+                //log.info("checkSimilarity, consider problem " + problemId + " participant " + userLoginId);
                 List<ContestSubmissionEntity> submissions = contestSubmissionRepo.findAllByContestIdAndUserIdAndProblemId(
                     contestId,
                     userLoginId,
                     problemId);
-                log.info("checkSimilarity, consider problem " + problemId + " participant " + userLoginId
-                         + " submissions.sz = " +
-                         submissions.size() +
-                         "");
+                //log.info("checkSimilarity, consider problem " + problemId + " participant " + userLoginId
+                //         + " submissions.sz = " +
+                //         submissions.size() +
+                //         "");
 
                 if (submissions != null && submissions.size() > 0) {// take the last submission in the sorted list
                     ContestSubmissionEntity sub = submissions.get(0);
@@ -1296,9 +1378,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
                     double score = CodeSimilarityCheck.check(s1.getSourceCode(), s2.getSourceCode());
                     log.info("checkSimilarity, consider problem " + problemId + " listSubmissions = " + listSubmissions.size()
-                    + " score between codes " + i + " and " + j + " = " + score);
+                    + " score between codes " + i + " and " + j + " = " + score + " threshold = " + I.getThreshold());
 
-                    if(score <= 0.0001) continue;
+                    //if(score <= 0.0001) continue;
+                    if(score <= I.getThreshold()*0.01) continue;
 
                     CodeSimilarityElement e = new CodeSimilarityElement();
                     e.setScore(score);
@@ -1499,6 +1582,19 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             }
         }
         return null;
+    }
+
+    @Override
+    public List<ModelContestByRoleResponse> getContestsByRoleOfUser(String userLoginId) {
+        List<ContestRole> contestRoles = contestRoleRepo.findAllByUserLoginIdAndThruDate(userLoginId, null);
+        List<ModelContestByRoleResponse> modelContestByRoleResponses = new ArrayList();
+        for(ContestRole cr: contestRoles){
+            ModelContestByRoleResponse m = new ModelContestByRoleResponse();
+            m.setContestId(cr.getContestId());
+            m.setRoleId(cr.getRoleId());
+            modelContestByRoleResponses.add(m);
+        }
+        return modelContestByRoleResponses;
     }
 
     private ModelGetTestCase convertToModelGetTestCase(TestCaseEntity testCaseEntity){

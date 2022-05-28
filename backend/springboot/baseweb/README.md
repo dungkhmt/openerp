@@ -130,24 +130,31 @@ rs.add(“localhost:27019”)
   động mongo replica set (lưu ý: nếu phiên bản MongoDB được cài đặt khác 4.2 thì cần thay thế tất cả 4.2 trong nội dung
   file này thành phiên bản đươc cài, ví dụ: 4.4)
 
-### 3.2. Cài đặt Google-ORTools
+[comment]: <> (### 3.2. Cài đặt Google-ORTools)
 
-Đối với hệ điều hành Windows:
+[comment]: <> (Đối với hệ điều hành Windows:)
 
-* Mở Git Bash tại thư mục project - <b>baseweb</b> (hoặc mở Git Bash tại thư mục khác và `cd` đến thư mục project)
-* Chạy lệnh: `mvn clean`
-* Mở Git Bash tại thư mục <b>libs\ortools\Windows</b> (hoặc mở Git Bash tại thư mục khác và `cd` đến thư mục này)
-* Chạy lần lượt 2 lệnh: <br/>
+[comment]: <> (* Mở Git Bash tại thư mục project - <b>baseweb</b> &#40;hoặc mở Git Bash tại thư mục khác và `cd` đến thư mục project&#41;)
 
-```
-mvn install:install-file -Dfile=ortools-win32-x86-64-8.0.8283.jar -DpomFile=pom-runtime.xml
-```
+[comment]: <> (* Chạy lệnh: `mvn clean`)
 
-```
-mvn install:install-file -Dfile=ortools-java-8.0.8283.jar -DpomFile=pom-local.xml
-```
+[comment]: <> (* Mở Git Bash tại thư mục <b>libs\ortools\Windows</b> &#40;hoặc mở Git Bash tại thư mục khác và `cd` đến thư mục này&#41;)
 
-### 3.3. Build
+[comment]: <> (* Chạy lần lượt 2 lệnh: <br/>)
+
+[comment]: <> (```)
+
+[comment]: <> (mvn install:install-file -Dfile=ortools-win32-x86-64-8.0.8283.jar -DpomFile=pom-runtime.xml)
+
+[comment]: <> (```)
+
+[comment]: <> (```)
+
+[comment]: <> (mvn install:install-file -Dfile=ortools-java-8.0.8283.jar -DpomFile=pom-local.xml)
+
+[comment]: <> (```)
+
+### 3.2. Build
 
 * Mở Git Bash tại thư mục project - <b>baseweb</b> (hoặc mở Git Bash tại thư mục khác và `cd` đến thư mục project)
 * Chạy lệnh: `mvn package`
