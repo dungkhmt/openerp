@@ -46,20 +46,24 @@ export const MEDIA_TYPE = {
 };
 
 export const PEER_CONFIG = {
-  iceServers: {
-    username:
-      "MSsnbHHeJoWkaT6p1QpCMnC-Gp0iqCO23If_LuqjYWLCRtxJCihldO6AVo1TBuMfAAAAAGKUI-luZ3V5ZW5iYWhvYW5nMzkyMTEwNA==",
-    urls: [
-      "stun:hk-turn1.xirsys.com",
-      "turn:hk-turn1.xirsys.com:80?transport=udp",
-      "turn:hk-turn1.xirsys.com:3478?transport=udp",
-      "turn:hk-turn1.xirsys.com:80?transport=tcp",
-      "turn:hk-turn1.xirsys.com:3478?transport=tcp",
-      "turns:hk-turn1.xirsys.com:443?transport=tcp",
-      "turns:hk-turn1.xirsys.com:5349?transport=tcp",
-    ],
-    credential: "7d0e92e4-dfbb-11ec-841f-0242ac120004",
-  },
+  iceServers: [
+    {
+      urls: ["stun:hk-turn1.xirsys.com"],
+    },
+    {
+      username:
+        "lL-EpB1zZ9uedAe-7RQdbceOOC1VDHoe9Hk7WcB-SjMf-uMbVBwoZvsTDW-lz6gBAAAAAGJBxihuZ3V5ZW5iYWhvYW5nMzkyMTEwNA==",
+      credential: "666906da-aea3-11ec-ab69-0242ac120004",
+      urls: [
+        "turn:hk-turn1.xirsys.com:80?transport=udp",
+        "turn:hk-turn1.xirsys.com:3478?transport=udp",
+        "turn:hk-turn1.xirsys.com:80?transport=tcp",
+        "turn:hk-turn1.xirsys.com:3478?transport=tcp",
+        "turns:hk-turn1.xirsys.com:443?transport=tcp",
+        "turns:hk-turn1.xirsys.com:5349?transport=tcp",
+      ],
+    },
+  ],
 };
 
 export const ENTER_KEY = "Enter";
