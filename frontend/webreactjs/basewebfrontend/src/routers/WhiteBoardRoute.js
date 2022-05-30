@@ -8,7 +8,6 @@ import SocketContextProvider from "../utils/whiteboard/context/SocketContext";
 export default function WhiteBoardRoute() {
   let { path } = useRouteMatch();
   return (
-    <div>
       <SocketContextProvider>
         <Switch>
           <Route
@@ -28,6 +27,5 @@ export default function WhiteBoardRoute() {
           />
       </Switch>
       </SocketContextProvider>
-    </div>
   );
 }

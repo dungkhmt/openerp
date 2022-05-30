@@ -1,50 +1,71 @@
-import { Button } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { request } from "../../api";
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-
-const Alert = React.forwardRef(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import {
+    Box,
+    Grid,
+    Typography,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    Button,
+    FormHelperText
+} from "@mui/material";
+import {
+    boxComponentStyle,
+    boxChildComponent
+} from "./ultis/constant";
+import { useHistory } from "react-router";
+import BasicAlert from "./alert/BasicAlert";
+import { useForm } from "react-hook-form";
 
 const AddUserToProject = () => {
+
+    const history = useHistory();
+    const { register, errors, handleSubmit, watch, setValue } = useForm();
 
     const [members, setMembers] = useState([]);
     const [projects, setProjects] = useState([]);
 
-    const [personIdForm, setPersonIdForm] = useState("");
-    const [projectIdForm, setProjectIdForm] = useState("");
+    // const [personIdForm, setPersonIdForm] = useState("");
+    // const [projectIdForm, setProjectIdForm] = useState("");
+
+    const [typeAlert, setTypeAlert] = useState("success");
+    const [message, setMessage] = useState("Đã thêm mới thành công");
 
     useEffect(() => {
-        request('get', 'http://localhost:8080/api/task-persons', res => {
+        request('get', '/task-persons', res => {
             setMembers(res.data);
         }, err => {
             console.log(err);
         });
 
-        request('get', 'http://localhost:8080/api/projects', res => {
+        request('get', '/projects', res => {
             setProjects(res.data);
         }, err => {
             console.log(err);
         });
     }, []);
 
-    const handleSubmit = () => {
-        const data = {
-            "projectId": projectIdForm,
-            "partyId": personIdForm
-        };
-
-
+    const onSubmit = (data) => {
         request(
             "post",
-            `http://localhost:8080/api/projects/${projectIdForm}/members`,
+            `/projects/${data.projectId}/members`,
             (res) => {
                 console.log(res.data);
                 setOpen(true);
+                setTypeAlert("success");
+                setMessage("Đã thêm mới thành công");
+                setTimeout(() => {
+                    history.push(`/taskmanagement/project/${data.projectId}/tasks`);
+                }, 1000);
             },
-            {},
+            (err) => {
+                console.log(err);
+                setOpen(true);
+                setTypeAlert("error");
+                setMessage(err);
+            },
             data
         );
     }
@@ -61,48 +82,90 @@ const AddUserToProject = () => {
 
     return (
         <>
-            <div className="pt-3 px-2">
-                <div className="p-3" style={{ backgroundColor: "#FFF", boxShadow: "0 4px 8px rgba(0,0,0,0.07)" }}>
-                    <h3 className="mb-4">Thêm thành viên cho dự án</h3>
-                    <div className="p-3">
-                        <div className="row">
-                            <div className="col-12 p-3" style={{ borderRadius: "15px 15px", backgroundColor: "#EEE", boxShadow: "0 0 5px 0px" }}>
-                                <div className="row mb-3">
-                                    <div className="col-4">Chọn thành viên</div>
-                                    <div className="col-4">Chọn dự án</div>
-                                </div>
-                                <div className="row mb-3">
-                                    <div className="col-4">
-                                        <select className="form-select" value={personIdForm} onChange={(e) => setPersonIdForm(e.target.value)}>
-                                            {members.map((item) => (
-                                                <option value={item.partyId} key={item.partyId}>{item.fullName}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="col-4">
-                                        <select className="form-select" value={projectIdForm} onChange={(e) => setProjectIdForm(e.target.value)}>
-                                            {projects.map((item) => (
-                                                <option value={item.id} key={item.id}>{item.name}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="mb-3 d-flex align-items-center">
-                                    <Button className="btn btn-primary me-3" variant="contained" onClick={handleSubmit}>Submit</Button>
-                                    <div className="text-danger">Invited users will be added to these teams
-                                        nghiatitan All Members</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-                    Đã thêm mới thành công
-                </Alert>
-            </Snackbar>
+            <Box sx={boxComponentStyle}>
+                <Typography variant="h4" mb={4}>
+                    Thêm thành viên cho dự án
+                </Typography>
+                <Box sx={boxChildComponent}>
+                    {/* <Grid container spacing={2}>
+                        <Grid item={true} xs={4}>
+                            <Typography variant="h6">
+                                Danh sách thành viên
+                            </Typography>
+                        </Grid>
+                        <Grid item={true} xs={4}>
+                            <Typography variant="h6">
+                                Danh sách dự án
+                            </Typography>
+                        </Grid>
+                    </Grid> */}
+                    <Grid container spacing={2} mb={3}>
+                        <Grid item={true} xs={4}>
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label" sx={{ fontSize: "16px" }} >Danh sách thành viên</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    label="Danh sách thành viên"
+                                    ref={register("partyId", {
+                                        required: "Trường này được yêu cầu"
+                                    })}
+                                    defaultValue=""
+                                    onChange={(e) => setValue('partyId', e.target.value)}
+                                    error={!!errors.partyId}
+                                >
+                                    {members.map((item) => (
+                                        <MenuItem key={item.partyId} value={item.partyId}>{item.fullName}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            {errors.partyId?.message && (
+                                <FormHelperText error={true}>
+                                    {errors.partyId.message}
+                                </FormHelperText>
+                            )}
+                        </Grid>
+                        <Grid item={true} xs={4}>
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label" sx={{ fontSize: "16px" }} >Danh sách dự án</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    label="Danh sách dự án"
+                                    ref={register("projectId", {
+                                        required: "Trường này được yêu cầu"
+                                    })}
+                                    defaultValue=""
+                                    onChange={(e) => setValue('projectId', e.target.value)}
+                                    error={!!errors.projectId}
+                                >
+                                    {projects.map(item => (
+                                        <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            {errors.projectId?.message && (
+                                <FormHelperText error={true}>
+                                    {errors.projectId.message}
+                                </FormHelperText>
+                            )}
+                        </Grid>
+                    </Grid>
+                    <Box mb={2}>
+                        <Button variant="contained" color="primary" onClick={handleSubmit(onSubmit)}>Submit</Button>
+                        <Typography variant="caption" color="success" px={3}>
+                            Invited users will be added to these teams
+                            nghiatitan All Members
+                        </Typography>
+                    </Box>
+                </Box>
+            </Box>
+            <BasicAlert
+                openModal={open}
+                handleClose={handleClose}
+                typeAlert={typeAlert}
+                message={message}
+            />
         </>
     );
 }

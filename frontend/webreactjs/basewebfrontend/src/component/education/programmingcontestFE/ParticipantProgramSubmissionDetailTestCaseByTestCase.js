@@ -1,11 +1,9 @@
 import InfoIcon from "@mui/icons-material/Info";
 import { IconButton } from "@mui/material";
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
+import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
+import HustModal from "component/common/HustModal";
 import MaterialTable from "material-table";
 import { React, useEffect, useState } from "react";
-import { CopyBlock, dracula } from "react-code-blocks";
 import { request } from "../../../api";
 import { toFormattedDateTime } from "../../../utils/dateutils";
 
@@ -88,46 +86,22 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
 
   const ModalPreview = (chosenTestcase) => {
     return (
-      <Modal open={openModal} onClose={() => setOpenModal(false)}>
-        <Box
-          style={{
-            position: "absolute",
-            padding: "20px",
-            top: "50%",
-            left: "50%",
-            maxHeight: "500px",
-            transform: "translate(-50%, -50%)",
-            width: 800,
-            backgroundColor: "whitesmoke",
-            border: "1px solid #000",
-            borderRadius: "6px",
-            boxShadow: 24,
-            p: 4,
-            overflowY: "auto",
-          }}
-        >
-          <Box>
-            <Typography variant="h6">Input</Typography>
-            <CopyBlock
-              text={chosenTestcase?.chosenTestcase?.testCase}
-              showLineNumbers={false}
-              theme={dracula}
-              wrapLines={true}
-              codeBlock
-            />
-          </Box>
-          <Box sx={{mt: 2}}>
-            <Typography variant="h6">Output</Typography>
-            <CopyBlock
-              text={chosenTestcase?.chosenTestcase?.correctAns}
-              showLineNumbers={false}
-              theme={dracula}
-              wrapLines={true}
-              codeBlock
-            />
-          </Box>
-        </Box>
-      </Modal>
+      <HustModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        isNotShowCloseButton
+        showCloseBtnTitle={false}
+      >
+        <HustCopyCodeBlock
+          title="Input"
+          text={chosenTestcase?.chosenTestcase?.testCase}
+        />
+        <HustCopyCodeBlock
+          title="Output"
+          text={chosenTestcase?.chosenTestcase?.correctAns}
+          mt={2}
+        />
+      </HustModal>
     );
   };
 

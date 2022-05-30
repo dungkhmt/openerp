@@ -1603,16 +1603,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         String testCase = testCaseEntity.getTestCase();
         int point = testCaseEntity.getTestCasePoint();
 
-        if(correctAns.length() > 20){
-            viewMore = true;
-            correctAns = correctAns.substring(0,17);
-            correctAns += "...";
-        }
-        if(testCase.length() > 20){
-            viewMore = true;
-            testCase = testCase.substring(0,17);
-            testCase += "...";
-        }
         return ModelGetTestCase.builder()
                 .correctAns(correctAns)
                 .testCase(testCase)

@@ -5,6 +5,7 @@ import ListProject from "../component/taskmanagement/ListProject";
 import CreateTask from "../component/taskmanagement/CreateTasks";
 import AddUserToProject from "../component/taskmanagement/AddUserToProject";
 import ListTasks from "../component/taskmanagement/ListTasks";
+import ListAssignedTasks from "component/taskmanagement/assignedtasks/ListAssignedTasks";
 
 export default function TaskManagementRoute() {
   let { path } = useRouteMatch();
@@ -35,6 +36,11 @@ export default function TaskManagementRoute() {
           component={ListTasks}
           exact
           path={`${path}/project/:projectId/tasks`}
+        ></Route>
+        <Route
+          component={ListAssignedTasks}
+          exact
+          path={`${path}/tasks/members/assigned`}
         ></Route>
       </Switch>
     </div>
