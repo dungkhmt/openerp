@@ -75,14 +75,13 @@ export default function CreateProject() {
               </Typography>
               <TextField
                 fullWidth={true}
+                autoFocus
                 placeholder="Điền tên dự án ..."
                 variant="standard"
-                ref={register("name", { required: "Thiếu tên dự án!" })}
-                onChange={(e) => { setValue('name', e.target.value) }}
+                name="name"
+                inputRef={register({ required: "Thiếu tên dự án!" })}
+                helperText={errors.name?.message}
               />
-              <Typography variant="inherit" color="textSecondary">
-                {errors.name?.message}
-              </Typography>
             </Box>
             <Box mb={3}>
               <Typography variant="h6" component={"h6"}>
@@ -92,14 +91,12 @@ export default function CreateProject() {
                 fullWidth={true}
                 placeholder="Điền mã dự án ..."
                 variant="standard"
-                ref={register("code", {
+                name="code"
+                inputRef={register({
                   required: "Thiếu mã dự án!"
                 })}
-                onChange={(e) => { setValue('code', e.target.value) }}
+                helperText={errors.code?.message}
               />
-              <Typography variant="inherit" color="textSecondary">
-                {errors.code?.message}
-              </Typography>
             </Box>
             <Box mb={3} backgroundColor={"#EEE"}>
               <Typography paragraph={true} px={2}>

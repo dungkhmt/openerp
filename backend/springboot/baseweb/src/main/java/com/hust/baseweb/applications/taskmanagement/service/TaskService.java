@@ -18,4 +18,8 @@ public interface TaskService {
     List<Object[]> getTaskStaticsInProject(UUID projectId);
 
     StatusItem getStatusItemByStatusId(String statusId);
+
+    Task getTask(UUID taskId);
+
+    Task updateTask(Task task);
 }

@@ -45,7 +45,7 @@ export default function ListProject() {
         </Grid>
         {loading && <p>Loading...</p>}
         {projects && projects.map((item) => (
-          <Box sx={boxChildComponent} key={item.id}>
+          <Box sx={boxChildComponent} key={item.id} mb={3}>
             <Box sx={{ display: 'flex' }}>
               <Box sx={centerBox}>
                 <AccountTreeIcon />

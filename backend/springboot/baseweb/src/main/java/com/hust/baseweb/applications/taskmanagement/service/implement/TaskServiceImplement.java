@@ -42,4 +42,14 @@ public class TaskServiceImplement implements TaskService {
     public StatusItem getStatusItemByStatusId(String statusId) {
         return statusItemRepo.findByStatusId(statusId);
     }
+
+    @Override
+    public Task getTask(UUID taskId) {
+        return taskRepository.getOne(taskId);
+    }
+
+    @Override
+    public Task updateTask(Task task) {
+        return taskRepository.save(task);
+    }
 }

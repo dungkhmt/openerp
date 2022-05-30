@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,7 +15,7 @@ public class TaskForm {
 
     private String name;
     private String description;
-    private String dueDate;
+    private Date dueDate;
     private String attachmentPaths;
     private String projectId;
     private String statusId;

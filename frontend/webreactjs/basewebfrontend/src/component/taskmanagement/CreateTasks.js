@@ -6,21 +6,40 @@ import {
     boxChildComponent,
     Header
 } from "./ultis/constant";
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import {
     Box,
     Grid,
-
+    Typography,
+    TextField,
+    FormHelperText,
+    Button,
+    MenuItem
 } from '@mui/material';
 
+import BasicAlert from "./alert/BasicAlert";
 import { useForm } from "react-hook-form";
+import DateTimePickerBasic from "./datetimepicker/DateTimePickerBasic";
+import { useHistory } from "react-router";
 
 export default function CreateTask() {
+    const history = useHistory();
+
     const [categories, setCategories] = useState([]);
     const [priorities, setPriorities] = useState([]);
     const [persons, setPersons] = useState([]);
     const [projects, setProjects] = useState([]);
 
-    const { register, errors, handleSubmit, watch, setValue } = useForm();
+    const { register, errors, handleSubmit, watch } = useForm();
+
+    const [categoryId, setCategoryId] = useState("");
+    const [priorityId, setPriorityId] = useState("");
+    const [partyId, setPartyId] = useState("");
+    const [projectId, setProjectId] = useState("");
+    const [dueDate, setDueDate] = useState(new Date());
+
+    const [typeAlert, setTypeAlert] = useState("success");
+    const [message, setMessage] = useState("Đã thêm mới thành công");
 
     useEffect(() => {
         request('get', '/task-categories', res => {
@@ -48,29 +67,39 @@ export default function CreateTask() {
         });
     }, []);
 
-    const onSubmit = () => {
-        const data = {
-            "name": taskNameForm,
-            "description": taskDescriptionForm,
-            "dueDate": dateForm,
-            "attachmentPaths": "20210120233740-SoICT-PPT-template-hoi-thao-online.pptx",
-            "projectId": projectForm,
-            "statusId": "TASK_INPROGRESS",
-            "priorityId": priorityForm,
-            "categoryId": categoryForm,
-            "partyId": assignedForm
+    const onSubmit = (data) => {
+        console.log(data);
+        const dataForm = {
+            ...data,
+            partyId,
+            categoryId,
+            dueDate,
+            priorityId,
+            attachmentPaths: "",
+            statusId: "TASK_INPROGRESS",
+            projectId: "c7ee3679-167a-49fa-a7ab-0b8764e1bf89"
         };
 
 
         request(
             "post",
-            `/projects/${projectForm}/tasks`,
+            `/projects/${projectId}/tasks`,
             (res) => {
                 console.log(res.data);
                 setOpen(true);
+                setTypeAlert("success");
+                setMessage("Đã thêm mới thành công");
+                setTimeout(() => {
+                    history.push(`/taskmanagement/project/${projectId}/tasks`);
+                }, 1000);
             },
-            {},
-            data
+            (err) => {
+                console.log(err);
+                setOpen(true);
+                setTypeAlert("error");
+                setMessage("Đã thêm mới bị lỗi");
+            },
+            dataForm
         );
     }
 
@@ -91,32 +120,189 @@ export default function CreateTask() {
     return (
         <>
             <Box sx={boxComponentStyle}>
-                <Header>
-                    Thêm mới nhiệm vụ
-                </Header>
-                <Grid container>
-                    <Grid item={true} xs={3}>
-                        {/* <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label" sx={{ fontSize: "16px" }} >Danh sách thành viên</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                label="Danh mục"
-                                ref={register("cate", {
-                                    required: "Trường này được yêu cầu"
-                                })}
+                <Typography variant="h4" mb={4} component={'h4'}>
+                    Thêm nhiệm vụ mới
+                </Typography>
+                <form>
+                    <Grid container mb={3}>
+                        <Grid item={true} xs={3}>
+                            <TextField
+                                select
+                                fullWidth
+                                label={"Danh mục"}
                                 defaultValue=""
-                                onChange={(e) => setValue('partyId', e.target.value)}
-                                error={!!errors.partyId}
+                                value={categoryId}
+                                onChange={(e) => setCategoryId(e.target.value)}
+                                required
                             >
-                                {members.map((item) => (
-                                    <MenuItem key={item.partyId} value={item.partyId}>{item.fullName}</MenuItem>
+                                {categories.map((item) => (
+                                    <MenuItem key={item.categoryId} value={item.categoryId}>{item.categoryName}</MenuItem>
                                 ))}
-                            </Select>
-                        </FormControl> */}
+                            </TextField>
+                        </Grid>
                     </Grid>
-                </Grid>
+                    <Box mb={3}>
+                        <TextField
+                            fullWidth={true}
+                            label="Tên nhiệm vụ"
+                            variant="outlined"
+                            name="name"
+                            inputRef={register({ required: "Thiếu tên nhiệm vụ!" })}
+                            error={!!errors.name}
+                            helperText={errors.name?.message}
+                        />
+                    </Box>
+                    <Box sx={boxChildComponent} mb={3}>
+                        <TextField
+                            label="Mô tả nhiệm vụ"
+                            multiline
+                            fullWidth={true}
+                            rows={5}
+                            name="description"
+                            inputRef={register}
+                            sx={{ mb: 3 }}
+                        />
+                        <Grid container spacing={2}>
+                            <Grid item={true} xs={6} p={2}>
+                                <Grid container>
+                                    <Grid item={true} xs={4}>
+                                        <Typography variant="body1">
+                                            Trạng thái
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item={true} xs={8}>
+                                        <Typography variant="body1" color={"InfoText"}>
+                                            Open
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item={true} xs={6} p={2}>
+                                <Grid container>
+                                    <Grid item={true} xs={4}>
+                                        <Typography variant="body1">
+                                            Mức ưu tiên
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item={true} xs={8}>
+                                        <TextField
+                                            select
+                                            fullWidth
+                                            label={"Độ ưu tiên"}
+                                            defaultValue=""
+                                            value={priorityId}
+                                            onChange={(e) => setPriorityId(e.target.value)}
+                                            required
+                                        >
+                                            {priorities.map((item) => (
+                                                <MenuItem key={item.priorityId} value={item.priorityId}>{item.priorityName}</MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item={true} xs={6} p={2}>
+                                <Grid container>
+                                    <Grid item={true} xs={4}>
+                                        <Typography variant="body1">
+                                            Gán cho
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item={true} xs={8}>
+                                        <TextField
+                                            select
+                                            fullWidth
+                                            label={"Danh mục"}
+                                            defaultValue=""
+                                            value={partyId}
+                                            onChange={(e) => setPartyId(e.target.value)}
+                                            required
+                                        >
+                                            {persons.map((item) => (
+                                                <MenuItem key={item.partyId} value={item.partyId}>{item.fullName}</MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item={true} xs={6}>
+                                <Grid container>
+                                    <Grid item={true} xs={4}>
+                                        <Typography variant="body1">
+                                            Thời hạn
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item={true} xs={8}>
+                                        <DateTimePickerBasic
+                                            label={"Chọn thời hạn"}
+                                            onChange={(date) => {
+                                                setDueDate(date)
+                                            }}
+                                            value={dueDate}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item={true} xs={6} p={2}>
+                                <Grid container>
+                                    <Grid item={true} xs={4}>
+                                        <Typography variant="body1">
+                                            Dự án
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item={true} xs={8}>
+                                        <TextField
+                                            select
+                                            fullWidth
+                                            label={"Danh sách dự án"}
+                                            defaultValue=""
+                                            value={projectId}
+                                            onChange={(e) => setProjectId(e.target.value)}
+                                            required
+                                        >
+                                            {projects.map((item) => (
+                                                <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                    <Box sx={boxChildComponent} mb={3}>
+                        <Grid container>
+                            <Grid item={true} xs={2}>
+                                <Typography variant="body1">
+                                    Tài liệu đính kèm
+                                </Typography>
+                            </Grid>
+                            <Grid item={true} xs={5}>
+                                <Button
+                                    component="label"
+                                    variant="contained"
+                                    startIcon={<UploadFileIcon />}
+                                    sx={{ marginRight: "1rem" }}
+                                    color="primary"
+                                >
+                                    Upload file
+                                    <input type="file" hidden onChange={() => console.log("upload file")} />
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'end' }}>
+                        <Button variant="contained" color="success" onClick={handleSubmit(onSubmit)}>
+                            Thêm nhiệm vụ
+                        </Button>
+                    </Box>
+                </form>
             </Box>
+            <BasicAlert
+                openModal={open}
+                handleClose={handleClose}
+                typeAlert={typeAlert}
+                message={message}
+            />
         </>
     );
 }

@@ -2,6 +2,7 @@ package com.hust.baseweb.applications.taskmanagement.controller;
 
 import com.hust.baseweb.applications.taskmanagement.dto.dao.PersonDao;
 import com.hust.baseweb.applications.taskmanagement.dto.dao.ProjectDao;
+import com.hust.baseweb.applications.taskmanagement.dto.dao.TaskDao;
 import com.hust.baseweb.applications.taskmanagement.dto.form.ProjectMemberForm;
 import com.hust.baseweb.applications.taskmanagement.dto.form.TaskForm;
 import com.hust.baseweb.applications.taskmanagement.entity.*;
@@ -13,6 +14,7 @@ import com.hust.baseweb.service.PartyService;
 import com.hust.baseweb.service.UserService;
 import com.hust.baseweb.service.PersonService;
 import lombok.AllArgsConstructor;
+import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +50,8 @@ public class NghiaLMController {
 
     private final UserService userService;
 
+    private final TaskStatusService taskStatusService;
+
     @GetMapping("/nghialm")
     public ResponseEntity<?> testController() {
         String bodyResponse = "Hello Nghia Le Minh, test spring boot api";
@@ -58,7 +62,7 @@ public class NghiaLMController {
     public ResponseEntity<Object> getListProjects() {
         List<Project> listProject = projectService.getListProject();
         List<ProjectDao> projectDaos = new ArrayList<>();
-        for(Project project: listProject){
+        for (Project project : listProject) {
             projectDaos.add(new ProjectDao(project));
         }
         return ResponseEntity.ok().body(projectDaos);
@@ -70,7 +74,7 @@ public class NghiaLMController {
     }
 
     @GetMapping("/projects/{projectId}")
-    public ResponseEntity<Object> getProject(@PathVariable("projectId") UUID projectId){
+    public ResponseEntity<Object> getProject(@PathVariable("projectId") UUID projectId) {
         return ResponseEntity.ok(new ProjectDao(projectService.getProjectById(projectId)));
     }
 
@@ -78,7 +82,7 @@ public class NghiaLMController {
     public ResponseEntity<Object> getMembersJoinedProject(@PathVariable("projectId") UUID projectId) {
         List<PersonDao> personDaos = new ArrayList<>();
         List<Person> persons = projectMemberService.getMemberIdJoinedProject(projectId);
-        for(Person person: persons){
+        for (Person person : persons) {
             personDaos.add(new PersonDao(person));
         }
         return ResponseEntity.ok(personDaos);
@@ -109,8 +113,12 @@ public class NghiaLMController {
     @GetMapping("/projects/{projectId}/tasks")
     public ResponseEntity<Object> getAllTasksInProject(@PathVariable("projectId") UUID projectId) {
         List<Task> tasks = taskService.getAllTaskInProject(projectId);
+        List<TaskDao> taskDaoList = new ArrayList<>();
+        for (Task task : tasks) {
+            taskDaoList.add(new TaskDao(task));
+        }
 
-        return ResponseEntity.ok(tasks);
+        return ResponseEntity.ok(taskDaoList);
     }
 
     @PostMapping("/projects/{projectId}/tasks")
@@ -123,7 +131,7 @@ public class NghiaLMController {
         task.setName(taskForm.getName());
         task.setDescription(taskForm.getDescription());
         task.setAttachmentPaths(taskForm.getAttachmentPaths());
-        task.setDueDate(new SimpleDateFormat("yyyy-MM-dd").parse(taskForm.getDueDate()));
+        task.setDueDate(taskForm.getDueDate());
         task.setProject(projectService.getProjectById(projectId));
         task.setStatusItem(taskService.getStatusItemByStatusId(taskForm.getStatusId()));
         task.setTaskCategory(taskCategoryService.getTaskCategory(taskForm.getCategoryId()));
@@ -160,11 +168,11 @@ public class NghiaLMController {
         UserLogin userLogin = userService.findById(userLoginId);
         UUID partyId = userLogin.getParty().getPartyId();
         List<TaskAssignable> taskAssignableList = taskAssignableService.getByPartyId(partyId);
-        List<Task> taskList = new ArrayList<>();
+        List<TaskDao> taskDaoList = new ArrayList<>();
         for (TaskAssignable taskAssignable : taskAssignableList) {
-            taskList.add(taskAssignable.getTask());
+            taskDaoList.add(new TaskDao(taskAssignable.getTask()));
         }
-        return ResponseEntity.ok(taskList);
+        return ResponseEntity.ok(taskDaoList);
     }
 
     @GetMapping("/projects/{projectId}/statics")
@@ -188,5 +196,15 @@ public class NghiaLMController {
 
         return ResponseEntity.ok(result);
     }
+    @GetMapping("/task-status-list")
+    public ResponseEntity<Object> getListTaskStatus(){
+        return ResponseEntity.ok(taskStatusService.getAllTaskStatus());
+    }
 
+    @GetMapping("/tasks/{taskId}/status/{statusId}")
+    public ResponseEntity<Object> updateStatusTask(@PathVariable("taskId") UUID taskId, @PathVariable("statusId") String statusId){
+        Task task = taskService.getTask(taskId);
+        task.setStatusItem(taskService.getStatusItemByStatusId(statusId));
+        return ResponseEntity.ok(taskService.updateTask(task));
+    }
 }
