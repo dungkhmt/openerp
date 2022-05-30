@@ -4,27 +4,28 @@ import { request } from "../../api";
 import { toFormattedDateTime } from "../../utils/dateutils";
 import withScreenSecurity from "../withScreenSecurity";
 
-function ViewCourseVideo() {
+export default function ViewProgrammingContestSubmission() {
   const columns = [
-    { title: "UserName", field: "userLoginId" },
+    { title: "UserName", field: "userId" },
     { title: "FullName", field: "fullname" },
-    { title: "Affiliations", field: "affiliations" },
-    { title: "ClassId", field: "classId" },
-    { title: "CourseId", field: "courseId" },
-    { title: "CourseName", field: "courseName" },
-    { title: "Chapter", field: "chapterName" },
-    { title: "Material", field: "materialName" },
+    { title: "Affiliations", field: "affiliation" },
+    { title: "ContestId", field: "contestId" },
+    { title: "ProblemId", field: "problemId" },
+    { title: "Point", field: "point" },
+    { title: "Status", field: "status" },
+    { title: "Testcase Passes", field: "testCasePass" },
     { title: "Date", field: "date" },
   ];
+
   return (
     <div>
-      <h1>View Course Video</h1>
+      ViewProgrammingContestSubmission
       <MaterialTable
         columns={columns}
         data={(query) =>
           new Promise((resolve, reject) => {
             let url =
-              "/admin/data/view-course-video?page=" +
+              "/admin/data/view-contest-submission?page=" +
               `${query.page}` +
               "&size=" +
               `${query.pageSize}`;
@@ -37,7 +38,7 @@ function ViewCourseVideo() {
                 const data = res.data;
                 const content = data.content.map((c) => ({
                   ...c,
-                  date: toFormattedDateTime(c.date),
+                  date: toFormattedDateTime(c.submissionDate),
                 }));
 
                 resolve({
@@ -82,6 +83,3 @@ function ViewCourseVideo() {
     </div>
   );
 }
-
-const screenName = "SCREEN_DATA_ADMIN_VIEW_COURSE_VIDEO";
-export default withScreenSecurity(ViewCourseVideo, screenName, true);

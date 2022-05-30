@@ -31,6 +31,14 @@ export const DataAdministration = {
       child: [],
     },
     {
+      id: "MENU_DATA_ADMIN_VIEW_COURSE_VIDEO",
+      path: "/admin/data/view-programming-contest-submission/list",
+      isPublic: false,
+      icon: null,
+      text: "Contest Submission",
+      child: [],
+    },
+    {
       id: "MENU_DATA_ADMIN_VIEW_LOG_USER_DO_PRATICE_QUIZ",
       path: "/admin/data/view-log-user-do-pratice-quiz/list",
       isPublic: false,
