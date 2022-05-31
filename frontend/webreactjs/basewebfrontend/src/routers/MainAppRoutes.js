@@ -10,6 +10,7 @@ import NotFound from "../views/errors/NotFound";
 import AccountActivationRoute from "./AccountActivationRoute";
 import AdminRoute from "./AdminRoute";
 import ProgrammingContestRoutes from "./ProgrammingContestRoutes";
+import ThesisRoutes from "./ThesisRoutes";
 import ChatRoute from "./ChatRoute";
 import WMSRoute from "./WMSRoute";
 import TaskManagementRoute from "./TaskManagementRoute";
@@ -80,6 +81,10 @@ function MainAppRoute(props) {
           <PrivateRoute
             component={ProgrammingContestRoutes}
             path="/programming-contest"
+          />
+          <PrivateRoute
+            component={ThesisRoutes}
+            path="/thesis"
           />
           <PrivateRoute
             component={TestGroupRoute}
