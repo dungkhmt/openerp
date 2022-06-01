@@ -8,6 +8,9 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Chua xem xet
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,6 +21,6 @@ public class TeacherClassAssignmentOM {
 
     private ClassesAssigned2TeacherModel[] classesAssigned2TeacherModels;
 
-    private List<AlgoClassIM> notAssigned = new ArrayList<>();
+    private List<AlgoClassIM> notAssignedClasses = new ArrayList<>();
 }
 

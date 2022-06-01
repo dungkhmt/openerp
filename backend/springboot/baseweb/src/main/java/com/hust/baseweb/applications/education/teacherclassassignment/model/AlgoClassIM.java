@@ -1,15 +1,19 @@
 package com.hust.baseweb.applications.education.teacherclassassignment.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class AlgoClassIM {
 
-    private int id;
+    // TODO: xem xet loai bo cac truong khong can thiet
 
-    private String classCode;
+    private int id; // used for ???
+
+    private String classId;
 
     private String classType;
 
@@ -20,4 +24,20 @@ public class AlgoClassIM {
     private String timetable; // example 1,41730,411145,7,8,9,11,12,13,B1-201;
 
     private double hourLoad; // gio quy doi cua lop (cd: 3 hours)
+
+    public AlgoClassIM(
+        String classId,
+        String classType,
+        String courseId,
+        String courseName,
+        String timetable,
+        double hourLoad
+    ) {
+        this.classId = classId;
+        this.classType = classType;
+        this.courseId = courseId;
+        this.courseName = courseName;
+        this.timetable = timetable;
+        this.hourLoad = hourLoad;
+    }
 }

@@ -7,12 +7,16 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * Chua xem xet nhung co ve on
+ */
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClassesAssigned2TeacherModel {
 
-    private AlgoTeacherIM teacherIM;
+    private AlgoTeacherIM teacher;
+
     private List<AlgoClassIM> classes;
 }

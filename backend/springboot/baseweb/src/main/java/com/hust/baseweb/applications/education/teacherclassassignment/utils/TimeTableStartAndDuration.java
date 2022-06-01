@@ -5,16 +5,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Refactoring done
+ */
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class TimeTableStartAndDuration {
-    private int day;// Mon = 2, Tue = 3,...
+
+    // Mon = 2, Tue = 3,...
+    private int day;
+
     private int startSlot;
+
     private int endSlot;
+
     private int duration;
-    public String toString(){
+
+    public String toString() {
         return startSlot + "-" + endSlot + "-" + duration;
     }
 }
