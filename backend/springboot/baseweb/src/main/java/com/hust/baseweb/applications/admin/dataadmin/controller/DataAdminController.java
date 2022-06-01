@@ -12,6 +12,9 @@ import com.hust.baseweb.applications.education.repo.EduCourseChapterRepo;
 import com.hust.baseweb.applications.education.report.model.quizparticipation.StudentQuizParticipationModel;
 import com.hust.baseweb.applications.education.service.LogUserLoginQuizQuestionService;
 import com.hust.baseweb.applications.notifications.entity.Notifications;
+import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionEntity;
+import com.hust.baseweb.applications.programmingcontest.model.ContestSubmission;
+import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
@@ -49,6 +52,9 @@ public class DataAdminController {
     @Autowired
     private LogUserLoginQuizQuestionService logUserLoginQuizQuestionService;
 
+    @Autowired
+    private ContestSubmissionRepo contestSubmissionRepo;
+
     @GetMapping("/admin/data/notifications")
     public ResponseEntity<?> getPageNotifications(Principal principal, @RequestParam int page, @RequestParam int size,
                                 Pageable pageable ) {
@@ -85,7 +91,37 @@ public class DataAdminController {
 
     }
 
-    @GetMapping("/admin/data/view-course-video")
+    @GetMapping("/admin/data/view-contest-submission")
+    public ResponseEntity<?> getPageContestSubmission(
+        Principal principal, @RequestParam int page, int size, Pageable pageable
+    ) {
+        Pageable sortedByCreatedStampDsc =
+            PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<ContestSubmissionEntity> lst = contestSubmissionRepo.findAll(sortedByCreatedStampDsc);
+        List<ContestSubmission> L = new ArrayList<ContestSubmission>();
+        for(ContestSubmissionEntity e: lst){
+            ContestSubmission cs = new ContestSubmission();
+            cs.setContestId(e.getContestId());
+            cs.setProblemId(e.getProblemId());
+            cs.setUserId(e.getUserId());
+            PersonModel person= userService.findPersonByUserLoginId(e.getUserId());
+            if(person != null){
+                cs.setFullname(person.getLastName() + " " + person.getMiddleName() + " " + person.getFirstName());
+                cs.setAffiliation(person.getAffiliations());
+            }
+
+            cs.setPoint(e.getPoint());
+            cs.setStatus(e.getStatus());
+            cs.setSubmissionDate(e.getCreatedAt());
+            cs.setTestCasePass(e.getTestCasePass());
+            L.add(cs);
+        }
+        int count = contestSubmissionRepo.countTotal();
+        Page<ContestSubmission> aPage = new PageImpl<>(L, pageable, count);
+        return ResponseEntity.ok().body(aPage);
+
+    }
+        @GetMapping("/admin/data/view-course-video")
     public ResponseEntity<?> getPageLogUserLoginCourseChapterMaterial(
         Principal principal, @RequestParam int page, int size, Pageable pageable
     ){

@@ -10,15 +10,7 @@ export const taskmanagement = {
       path: "/taskmanagement/project/list",
       isPublic: false,
       icon: "StarBorder",
-      text: "DS dự án",
-      child: [],
-    },
-    {
-      id: "MENU_BACKLOG_CREATE_PROJECT",
-      path: "/taskmanagement/project/create",
-      isPublic: false,
-      icon: "StarBorder",
-      text: "Tạo mới dự án",
+      text: "Danh sách dự án",
       child: [],
     },
     {
@@ -35,6 +27,14 @@ export const taskmanagement = {
       isPublic: true,
       icon: "StarBorder",
       text: "Thêm thành viên dự án",
+      child: [],
+    },
+    {
+      id: "MENU_BACKLOG_MEMBER_ASSIGNED_TO_TASKs",
+      path: "/taskmanagement/tasks/members/assigned",
+      isPublic: true,
+      icon: "StarBorder",
+      text: "Danh sách nhiệm vụ được giao",
       child: [],
     }
   ],

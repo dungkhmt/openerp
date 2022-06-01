@@ -14,4 +14,12 @@ public interface TaskRepository extends JpaRepository<Task, UUID>, CrudRepositor
     List<Task> findAllTasksByProjectId(@Param("projectId") UUID projectId);
 
     Task save(Task task);
+
+    @Query(value = "Select c.backlog_task_category_id, c.backlog_task_category_name, count(e.backlog_task_id)\\:\\:int \n" +
+                   "from backlog_task_category c \n" +
+                   "left join backlog_task e on e.backlog_task_category_id = c.backlog_task_category_id\n" +
+                   "where e.backlog_project_id = :projectId or e.backlog_project_id is null \n" +
+                   "group by c.backlog_task_category_id",
+           nativeQuery = true)
+    List<Object[]> getTaskStaticsInProject(@Param("projectId") UUID projectId);
 }

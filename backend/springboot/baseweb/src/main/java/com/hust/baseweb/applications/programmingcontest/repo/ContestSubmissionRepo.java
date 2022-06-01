@@ -39,4 +39,6 @@ public interface ContestSubmissionRepo extends JpaRepository<ContestSubmissionEn
 
     void deleteAllByContestId(String contestId);
 
+    @Query(value="select count(*) from contest_submission_new",nativeQuery=true)
+    int countTotal();
 }

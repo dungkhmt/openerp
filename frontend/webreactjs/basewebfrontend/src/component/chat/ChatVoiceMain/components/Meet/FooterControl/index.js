@@ -1,114 +1,86 @@
-import { useHistory } from 'react-router';
-import MicroIcon from '../../../icon/Micro';
-import CameraIcon from '../../../icon/Camera';
-import ChatIcon from '../../../icon/Chat';
-import EndIcon from '../../../icon/End';
-import ParticipantIcon from '../../../icon/Participant';
-import ShareScreenIcon from '../../../icon/ShareScreen';
-import ShareMeetIcon from '../../../icon/ShareMeet';
-import CopyIcon from '../../../icon/Copy';
-import { BAR_TYPE, MEDIA_TYPE, styleModal } from '../../../ultis/constant';
-import { getDisplayMedia, getUserMedia } from '../../../ultis/helpers';
-import { Backdrop, Box, Fade, Modal, TextField, Typography } from '@material-ui/core';
-import { useState } from 'react';
+import { useState } from "react";
+import { useHistory } from "react-router";
+import MicroIcon from "../../../icon/Micro";
+import CameraIcon from "../../../icon/Camera";
+import ChatIcon from "../../../icon/Chat";
+import EndIcon from "../../../icon/End";
+import ParticipantIcon from "../../../icon/Participant";
+import ShareScreenIcon from "../../../icon/ShareScreen";
+import ShareMeetIcon from "../../../icon/ShareMeet";
+import CopyIcon from "../../../icon/Copy";
+import { BAR_TYPE, MEDIA_TYPE, styleModal } from "../../../ultis/constant";
+import { getDisplayMedia, getUserMedia } from "../../../ultis/helpers";
+import {
+  Backdrop,
+  Box,
+  Fade,
+  Modal,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 
 const FooterControl = (props) => {
-  const history = useHistory();
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const handleMedia = (type, media) => {
-    if (props.mediaStream) {
-      props.setMediaStream(mediaStream => {
-        mediaStream?.getTracks()?.forEach(track => {
-          if (track.kind === type) {
-            mediaStream?.removeTrack(track);
-            track.stop();
-          } else {
-            media?.addTrack(track);
-          }
-        });
-        return media;
-      });
-    } else {
-      props.setMediaStream(media);
-    }
-  }
-  const handleClickMicro = async () => {
-    try {
-      props.setMicro(!props.micro);
-      if (!props.micro) {
-        const srcMicro = await getUserMedia('micro');
-        handleMedia(MEDIA_TYPE.AUDIO, srcMicro);
-      } else {
-        handleMedia(MEDIA_TYPE.AUDIO);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-  const handleClickCamera = async () => {
-    try {
-      props.setCamera(!props.camera);
-      if (!props.camera) {
-        const srcCamera = await getUserMedia("camera");
-        handleMedia(MEDIA_TYPE.VIDEO, srcCamera);
-      } else {
-        handleMedia(MEDIA_TYPE.VIDEO);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }
-  const handleClickShareScreen = async () => {
-    try {
-      props.setCamera(false);
-      const srcScreen = await getDisplayMedia();
-      handleMedia(MEDIA_TYPE.VIDEO, srcScreen);
-    } catch (e) {
-      console.error(e);
-    }
-  }
   const handleClickChat = () => {
-    props.setDisplayBar(props.displayBar === BAR_TYPE.CHAT ? BAR_TYPE.NONE : BAR_TYPE.CHAT);
-  }
-  const handleClickEnd = () => {
-    props.sendMessage('leave');
-    props.stompClient.disconnect();
-    history.push('/chat/voice/main');
-  }
+    props.setDisplayBar(
+      props.displayBar === BAR_TYPE.CHAT ? BAR_TYPE.NONE : BAR_TYPE.CHAT
+    );
+  };
+
   const handleClickParticipant = () => {
-    props.setDisplayBar(props.displayBar === BAR_TYPE.PARTICIPANT ? BAR_TYPE.NONE : BAR_TYPE.PARTICIPANT);
-  }
+    props.setDisplayBar(
+      props.displayBar === BAR_TYPE.PARTICIPANT
+        ? BAR_TYPE.NONE
+        : BAR_TYPE.PARTICIPANT
+    );
+  };
   const copyMeetCode = () => {
     navigator.clipboard.writeText(props.meetId);
     setTimeout(() => {
       handleClose();
     }, 200);
-  }
+  };
 
   return (
-    <div className='footer-control'>
-      <div className='element-bottom' onClick={handleClickMicro} title='Micro'>
+    <div className="footer-control">
+      <div
+        className="element-bottom"
+        onClick={props.handleClickMicro}
+        title="Micro"
+      >
         <MicroIcon micro={props.micro} />
       </div>
-      <div className='element-bottom' onClick={handleClickCamera} title='Camera'>
+      <div
+        className="element-bottom"
+        onClick={props.handleClickCamera}
+        title="Camera"
+      >
         <CameraIcon camera={props.camera} />
       </div>
-      <div className='element-bottom share-screen-icon' onClick={handleClickShareScreen} title='Share Screen'>
+      <div
+        className="element-bottom share-screen-icon"
+        onClick={props.handleClickShareScreen}
+        title="Share Screen"
+      >
         <ShareScreenIcon />
       </div>
-      <div className='element-bottom' onClick={handleClickChat} title='Chat'>
+      <div className="element-bottom" onClick={handleClickChat} title="Chat">
         <ChatIcon />
       </div>
-      <div className='element-bottom' onClick={handleClickParticipant} title='Participant'>
+      <div
+        className="element-bottom"
+        onClick={handleClickParticipant}
+        title="Participant"
+      >
         <ParticipantIcon />
       </div>
-      <div className='element-bottom' onClick={handleOpen} title='Share Meet'>
+      <div className="element-bottom" onClick={handleOpen} title="Share Meet">
         <ShareMeetIcon />
       </div>
-      <div id='end-room' onClick={handleClickEnd}>
+      <div id="end-room" onClick={props.leaveMeet}>
         <EndIcon />
       </div>
       <Modal
@@ -124,24 +96,29 @@ const FooterControl = (props) => {
       >
         <Fade in={open}>
           <Box sx={styleModal}>
-            <Typography id="transition-modal-title" className="meet-code-label" variant="h6" component="h2">
+            <Typography
+              id="transition-modal-title"
+              className="meet-code-label"
+              variant="h6"
+              component="h2"
+            >
               Meet's code
             </Typography>
             <TextField
               id="standard-read-only-input"
-              defaultValue={props.meetId || ''}
+              defaultValue={props.meetId || ""}
               variant="standard"
               className="meet-code-input"
               InputProps={{
                 readOnly: true,
               }}
             />
-            <CopyIcon className='copy-meet-code' onClick={copyMeetCode} />
+            <CopyIcon className="copy-meet-code" onClick={copyMeetCode} />
           </Box>
         </Fade>
       </Modal>
     </div>
   );
-}
+};
 
 export default FooterControl;

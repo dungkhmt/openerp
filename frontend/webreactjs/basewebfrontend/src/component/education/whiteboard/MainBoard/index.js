@@ -15,9 +15,14 @@ const scaleBy = 1.05
 const MAX_SCALE = 3.125
 const MIN_SCALE = 0.25
 
-export const MainBoard = React.memo(() => {
+export const MainBoard = React.memo((props) => {
+  console.log(props.history);
   const { whiteboardId } = useParams()
   const { width, height } = useWindowSize()
+  const [stageConfig, setStageConfig] = useState({
+    width,
+    height,
+  })
   const [tool, setTool] = useState(TOOL.RECTANGLE)
   const [scale, setScale] = useState(1)
   const [eventPointer, setEventPointer] = useState({ eventType: null, pointerPosition: { x: 0, y: 0 } })
@@ -25,6 +30,7 @@ export const MainBoard = React.memo(() => {
   const isDrawing = useRef(false)
   const gridLayerRef = useRef(null)
   const stageRef = useRef(null)
+  const parentRef = useRef(null)
 
   useEffect(() => {
     // add user to whiteboard here
@@ -40,7 +46,20 @@ export const MainBoard = React.memo(() => {
     if (gridLayerRef && gridLayerRef.current && stageRef.current) {
       drawLines(gridLayerRef, stageRef.current, width, height)
     }
-  }, [width])
+    const onWindowResize = () => {
+      if (parentRef.current) {
+        const stageWidth = parentRef.current.offsetWidth;
+        const stageHeight = parentRef.current.offsetHeight;
+        setStageConfig((prev) => ({ ...prev, width: stageWidth, height: stageHeight }))
+      }
+    }
+    onWindowResize()
+    window.addEventListener('resize', onWindowResize)
+
+    return () => {
+      window.removeEventListener('resize', onWindowResize)
+    }
+  }, [width, props.history.location.state?.isSibarOpen])
 
   useEffect(() => {
     setEventPointer({ eventType: null, pointerPosition: { x: 0, y: 0 } })
@@ -142,11 +161,11 @@ export const MainBoard = React.memo(() => {
         <option value={TOOL.TEXT}>Text</option>
       </select>
       <button onClick={onSaveWhiteboardData}>Save</button>
-      <div>
+      <div style={{ height: "calc(100vh - 138px)" }} ref={parentRef}>
         <Stage
           ref={stageRef}
-          width={width}
-          height={height}
+          width={stageConfig.width}
+          height={stageConfig.height}
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
           onMouseup={handleMouseUp}

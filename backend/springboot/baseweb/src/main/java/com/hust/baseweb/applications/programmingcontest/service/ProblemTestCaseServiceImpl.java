@@ -525,9 +525,11 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         //ContestEntity contestEntity = contestRepo.findContestEntityByContestIdAndUserId(contestId, userName);
         boolean ok = false;
         // check role of teacher
-        UserRegistrationContestEntity c = userRegistrationContestRepo
+        //UserRegistrationContestEntity c = userRegistrationContestRepo
+        //    .findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+        List<UserRegistrationContestEntity> lc = userRegistrationContestRepo
             .findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
-        ok = c != null;
+        ok = (lc != null && lc.size() > 0);
 
         /*
         List<ModelContestByRoleResponse> L = getContestsByRoleOfUser(userName);
@@ -622,7 +624,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                 .build();
         }
 
-        UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+        //UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+        UserRegistrationContestEntity userRegistrationContest = null;
+        List<UserRegistrationContestEntity> userRegistrationContests = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+        if(userRegistrationContests != null && userRegistrationContests.size() > 0)
+            userRegistrationContest = userRegistrationContests.get(0);
+
         log.info("contestEntity {}", contestEntity.getIsPublic());
 
         if(userRegistrationContest == null){
@@ -724,7 +731,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         log.info("submitContestProblem");
         log.info("modelContestSubmission {}", modelContestSubmission);
         ProblemEntity problemEntity = problemRepo.findByProblemId(modelContestSubmission.getProblemId());
-        UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(modelContestSubmission.getContestId(), userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+
+        //UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(modelContestSubmission.getContestId(), userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+        List<UserRegistrationContestEntity> userRegistrationContests = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(modelContestSubmission.getContestId(), userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+        UserRegistrationContestEntity userRegistrationContest = null;
+        if(userRegistrationContests != null && userRegistrationContests.size() > 0)
+            userRegistrationContest = userRegistrationContests.get(0);
+
         log.info("userRegistrationContest {}", userRegistrationContest);
         if(userRegistrationContest == null){
             throw new MiniLeetCodeException("User not register contest");
@@ -768,7 +781,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         log.info("submitContestProblem");
         log.info("modelContestSubmission {}", modelContestSubmission);
         ProblemEntity problemEntity = problemRepo.findByProblemId(modelContestSubmission.getProblemId());
-        UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(modelContestSubmission.getContestId(), userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+
+        //UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(modelContestSubmission.getContestId(), userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+        UserRegistrationContestEntity userRegistrationContest = null;
+        List<UserRegistrationContestEntity> userRegistrationContests = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(modelContestSubmission.getContestId(), userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+        if(userRegistrationContests != null && userRegistrationContests.size() > 0)
+            userRegistrationContest = userRegistrationContests.get(0);
+
         log.info("userRegistrationContest {}", userRegistrationContest);
         if(userRegistrationContest == null){
             throw new MiniLeetCodeException("User not register contest");
@@ -930,8 +949,15 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         String userName
     ) throws Exception {
         ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
-        UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(
+        //UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(
+        //    contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+
+        UserRegistrationContestEntity userRegistrationContest = null;
+        List<UserRegistrationContestEntity> userRegistrationContests = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(
             contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+        if(userRegistrationContests != null && userRegistrationContests.size() > 0)
+            userRegistrationContest   = userRegistrationContests.get(0);
+
         log.info("submitSolutionOutput, userRegistrationContest {}", userRegistrationContest);
         if(userRegistrationContest == null){
             throw new MiniLeetCodeException("User not register contest");
@@ -1603,16 +1629,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         String testCase = testCaseEntity.getTestCase();
         int point = testCaseEntity.getTestCasePoint();
 
-        if(correctAns.length() > 20){
-            viewMore = true;
-            correctAns = correctAns.substring(0,17);
-            correctAns += "...";
-        }
-        if(testCase.length() > 20){
-            viewMore = true;
-            testCase = testCase.substring(0,17);
-            testCase += "...";
-        }
         return ModelGetTestCase.builder()
                 .correctAns(correctAns)
                 .testCase(testCase)

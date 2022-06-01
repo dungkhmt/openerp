@@ -1,79 +1,105 @@
 import React, { useEffect, useState } from "react";
-// import Grid from '@mui/material/Grid';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import { Button } from "@mui/material";
-import { request } from "../../api";
 
-const Alert = React.forwardRef(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-  });
+import { request } from "../../api";
+import {
+    boxComponentStyle,
+    boxChildComponent,
+    Header
+} from "./ultis/constant";
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import {
+    Box,
+    Grid,
+    Typography,
+    TextField,
+    FormHelperText,
+    Button,
+    MenuItem
+} from '@mui/material';
+
+import BasicAlert from "./alert/BasicAlert";
+import { useForm } from "react-hook-form";
+import DateTimePickerBasic from "./datetimepicker/DateTimePickerBasic";
+import { useHistory } from "react-router";
 
 export default function CreateTask() {
+    const history = useHistory();
+
     const [categories, setCategories] = useState([]);
     const [priorities, setPriorities] = useState([]);
     const [persons, setPersons] = useState([]);
     const [projects, setProjects] = useState([]);
 
-    const [categoryForm, setCategoryForm] = useState("");
-    const [taskNameForm, setTaskNameForm] = useState("");
-    const [taskDescriptionForm, setTaskDescriptionForm] = useState("");
-    const [assignedForm, setAssignedForm] = useState("");
-    const [priorityForm, setPriorityForm] = useState("");
-    const [dateForm, setDateForm] = useState("");
-    const [fileForm, setFileForm] = useState(null);
-    const [projectForm, setProjectForm] = useState("");
+    const { register, errors, handleSubmit, watch } = useForm();
 
+    const [categoryId, setCategoryId] = useState("");
+    const [priorityId, setPriorityId] = useState("");
+    const [partyId, setPartyId] = useState("");
+    const [projectId, setProjectId] = useState("");
+    const [dueDate, setDueDate] = useState(new Date());
+
+    const [typeAlert, setTypeAlert] = useState("success");
+    const [message, setMessage] = useState("Đã thêm mới thành công");
 
     useEffect(() => {
-        request('get', 'http://localhost:8080/api/task-categories', res => {
+        request('get', '/task-categories', res => {
             setCategories(res.data);
         }, err => {
             console.log(err);
         });
 
-        request('get', 'http://localhost:8080/api/task-priorities', res => {
+        request('get', '/task-priorities', res => {
             setPriorities(res.data);
         }, err => {
             console.log(err);
         });
 
-        request('get', 'http://localhost:8080/api/task-persons', res => {
+        request('get', '/task-persons', res => {
             setPersons(res.data);
         }, err => {
             console.log(err);
         });
 
-        request('get', 'http://localhost:8080/api/projects', res => {
+        request('get', '/projects', res => {
             setProjects(res.data);
         }, err => {
             console.log(err);
         });
     }, []);
 
-    const handleSubmit = () => {
-        const data = {
-            "name": taskNameForm,
-            "description": taskDescriptionForm,
-            "dueDate": dateForm,
-            "attachmentPaths": "20210120233740-SoICT-PPT-template-hoi-thao-online.pptx",
-            "projectId": projectForm,
-            "statusId": "TASK_INPROGRESS",
-            "priorityId": priorityForm,
-            "categoryId": categoryForm,
-            "partyId": assignedForm
+    const onSubmit = (data) => {
+        console.log(data);
+        const dataForm = {
+            ...data,
+            partyId,
+            categoryId,
+            dueDate,
+            priorityId,
+            attachmentPaths: "",
+            statusId: "TASK_INPROGRESS",
+            projectId: "c7ee3679-167a-49fa-a7ab-0b8764e1bf89"
         };
-        
+
 
         request(
             "post",
-            `http://localhost:8080/api/projects/${projectForm}/tasks`,
+            `/projects/${projectId}/tasks`,
             (res) => {
                 console.log(res.data);
                 setOpen(true);
+                setTypeAlert("success");
+                setMessage("Đã thêm mới thành công");
+                setTimeout(() => {
+                    history.push(`/taskmanagement/project/${projectId}/tasks`);
+                }, 1000);
             },
-            {},
-            data
+            (err) => {
+                console.log(err);
+                setOpen(true);
+                setTypeAlert("error");
+                setMessage("Đã thêm mới bị lỗi");
+            },
+            dataForm
         );
     }
 
@@ -93,96 +119,190 @@ export default function CreateTask() {
 
     return (
         <>
-            <div className="pt-3 px-2">
-                <div className="p-3" style={{ backgroundColor: "#FFF", boxShadow: "0 4px 8px rgba(0,0,0,0.07)" }}>
-                    <h3>Tạo mới nhiệm vụ</h3>
-
-                    <div className="mb-4 row" >
-                        <div className="col-3">
-                            <select className="form-select" style={{ backgroundColor: "#eee" }} value={categoryForm} onChange={(e) => setCategoryForm(e.target.value)}>
-                                <option defaultChecked>Choose...</option>
+            <Box sx={boxComponentStyle}>
+                <Typography variant="h4" mb={4} component={'h4'}>
+                    Thêm nhiệm vụ mới
+                </Typography>
+                <form>
+                    <Grid container mb={3}>
+                        <Grid item={true} xs={3}>
+                            <TextField
+                                select
+                                fullWidth
+                                label={"Danh mục"}
+                                defaultValue=""
+                                value={categoryId}
+                                onChange={(e) => setCategoryId(e.target.value)}
+                                required
+                            >
                                 {categories.map((item) => (
-                                    <option value={item.categoryId} key={item.categoryId}>{item.categoryName}</option>
+                                    <MenuItem key={item.categoryId} value={item.categoryId}>{item.categoryName}</MenuItem>
                                 ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="form-group mb-4">
-                        <input type="text" className="form-control" placeholder="Tên nhiệm vụ..." style={{ backgroundColor: "#eee" }} value={taskNameForm} onChange={(e) => setTaskNameForm(e.target.value)} />
-                    </div>
-
-                    <div className="p-3 mb-4" style={{ borderRadius: "15px 15px", backgroundColor: "#EEE", boxShadow: "0 0 5px 0px" }}>
-                        <div className="form-floating mb-3">
-                            <textarea className="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style={{ height: "100px" }} value={taskDescriptionForm} onChange={(e) => setTaskDescriptionForm(e.target.value)}></textarea>
-                            <label for="floatingTextarea2">Mô tả</label>
-                        </div>
-                        <div className="row mb-3">
-                            <div className="col-5 me-3 row">
-                                <div className="col-4">Status</div>
-                                <div className="col-8">Open</div>
-                            </div>
-                            <div className="col-5 row">
-                                <div className="col-4">Assignee</div>
-                                <div className="col-8">
-                                    <select className="form-select" value={assignedForm} onChange={(e) => setAssignedForm(e.target.value)}>
-                                        <option defaultChecked>Choose...</option>
-                                        {persons.map((item) => (
-                                            <option value={item.partyId} key={item.partyId}>{item.fullName}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <div className="col-5 me-3 row">
-                                <div className="col-4">Priority</div>
-                                <div className="col-8">
-                                    <select className="form-select" value={priorityForm} onChange={(e) => setPriorityForm(e.target.value)}>
-                                        <option defaultChecked>Choose...</option>
-                                        {priorities.map((item) => (
-                                            <option value={item.priorityId} key={item.priorityId}>{item.priorityName}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="col-5 row mb-3">
-                                <div className="col-4">Due Date</div>
-                                <div className="col-8">
-                                    <input type="date" className="form-control" name="due-date" value={dateForm} onChange={(e) => setDateForm(e.target.value)} />
-                                </div>
-                            </div>
-                            <div className="col-5 row">
-                                <div className="col-4">Project</div>
-                                <div className="col-8">
-                                    <select className="form-select" value={projectForm} onChange={(e) => setProjectForm(e.target.value)}>
-                                        <option defaultChecked>Choose...</option>
-                                        {projects.map((item) => (
-                                            <option value={item.id} key={item.id}>{item.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="p-3 mb-4" style={{ borderRadius: "15px 15px", backgroundColor: "#EEE", boxShadow: "0 0 5px 0px" }}>
-                        <div className="form-group row">
-                            <div className="form-label col-2">Thêm tệp đính kèm</div>
-                            <input type="file" name="file_attack" className="col-5" />
-                        </div>
-                    </div>
-                    <div className="d-flex justify-content-end">
-                        <Button className="btn btn-primary" variant="contained" onClick={handleSubmit}>Submit</Button>
-                    </div>
-                </div>
-            </div>
-
-            <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-                    Đã thêm mới thành công
-                </Alert>
-            </Snackbar>
+                            </TextField>
+                        </Grid>
+                    </Grid>
+                    <Box mb={3}>
+                        <TextField
+                            fullWidth={true}
+                            label="Tên nhiệm vụ"
+                            variant="outlined"
+                            name="name"
+                            inputRef={register({ required: "Thiếu tên nhiệm vụ!" })}
+                            error={!!errors.name}
+                            helperText={errors.name?.message}
+                        />
+                    </Box>
+                    <Box sx={boxChildComponent} mb={3}>
+                        <TextField
+                            label="Mô tả nhiệm vụ"
+                            multiline
+                            fullWidth={true}
+                            rows={5}
+                            name="description"
+                            inputRef={register}
+                            sx={{ mb: 3 }}
+                        />
+                        <Grid container spacing={2}>
+                            <Grid item={true} xs={6} p={2}>
+                                <Grid container>
+                                    <Grid item={true} xs={4}>
+                                        <Typography variant="body1">
+                                            Trạng thái
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item={true} xs={8}>
+                                        <Typography variant="body1" color={"InfoText"}>
+                                            Open
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item={true} xs={6} p={2}>
+                                <Grid container>
+                                    <Grid item={true} xs={4}>
+                                        <Typography variant="body1">
+                                            Mức ưu tiên
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item={true} xs={8}>
+                                        <TextField
+                                            select
+                                            fullWidth
+                                            label={"Độ ưu tiên"}
+                                            defaultValue=""
+                                            value={priorityId}
+                                            onChange={(e) => setPriorityId(e.target.value)}
+                                            required
+                                        >
+                                            {priorities.map((item) => (
+                                                <MenuItem key={item.priorityId} value={item.priorityId}>{item.priorityName}</MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item={true} xs={6} p={2}>
+                                <Grid container>
+                                    <Grid item={true} xs={4}>
+                                        <Typography variant="body1">
+                                            Gán cho
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item={true} xs={8}>
+                                        <TextField
+                                            select
+                                            fullWidth
+                                            label={"Danh mục"}
+                                            defaultValue=""
+                                            value={partyId}
+                                            onChange={(e) => setPartyId(e.target.value)}
+                                            required
+                                        >
+                                            {persons.map((item) => (
+                                                <MenuItem key={item.partyId} value={item.partyId}>{item.fullName}</MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item={true} xs={6}>
+                                <Grid container>
+                                    <Grid item={true} xs={4}>
+                                        <Typography variant="body1">
+                                            Thời hạn
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item={true} xs={8}>
+                                        <DateTimePickerBasic
+                                            label={"Chọn thời hạn"}
+                                            onChange={(date) => {
+                                                setDueDate(date)
+                                            }}
+                                            value={dueDate}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item={true} xs={6} p={2}>
+                                <Grid container>
+                                    <Grid item={true} xs={4}>
+                                        <Typography variant="body1">
+                                            Dự án
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item={true} xs={8}>
+                                        <TextField
+                                            select
+                                            fullWidth
+                                            label={"Danh sách dự án"}
+                                            defaultValue=""
+                                            value={projectId}
+                                            onChange={(e) => setProjectId(e.target.value)}
+                                            required
+                                        >
+                                            {projects.map((item) => (
+                                                <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                    <Box sx={boxChildComponent} mb={3}>
+                        <Grid container>
+                            <Grid item={true} xs={2}>
+                                <Typography variant="body1">
+                                    Tài liệu đính kèm
+                                </Typography>
+                            </Grid>
+                            <Grid item={true} xs={5}>
+                                <Button
+                                    component="label"
+                                    variant="contained"
+                                    startIcon={<UploadFileIcon />}
+                                    sx={{ marginRight: "1rem" }}
+                                    color="primary"
+                                >
+                                    Upload file
+                                    <input type="file" hidden onChange={() => console.log("upload file")} />
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'end' }}>
+                        <Button variant="contained" color="success" onClick={handleSubmit(onSubmit)}>
+                            Thêm nhiệm vụ
+                        </Button>
+                    </Box>
+                </form>
+            </Box>
+            <BasicAlert
+                openModal={open}
+                handleClose={handleClose}
+                typeAlert={typeAlert}
+                message={message}
+            />
         </>
     );
 }

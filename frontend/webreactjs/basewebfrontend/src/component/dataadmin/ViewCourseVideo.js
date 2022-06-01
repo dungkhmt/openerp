@@ -1,6 +1,5 @@
 import MaterialTable from "material-table";
 import React from "react";
-import axios from "axios";
 import { request } from "../../api";
 import { toFormattedDateTime } from "../../utils/dateutils";
 import withScreenSecurity from "../withScreenSecurity";

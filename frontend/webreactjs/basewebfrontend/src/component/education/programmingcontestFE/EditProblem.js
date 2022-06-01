@@ -523,10 +523,26 @@ function EditProblem() {
                     <StyledTableCell component="th" scope="row">
                       {idx}
                     </StyledTableCell>
-                    <StyledTableCell align="left">
+                    <StyledTableCell
+                      align="left"
+                      sx={{
+                        maxWidth: "120px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {testCase.testCase}
                     </StyledTableCell>
-                    <StyledTableCell align="left">
+                    <StyledTableCell
+                      align="left"
+                      sx={{
+                        maxWidth: "120px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {testCase.correctAns}
                     </StyledTableCell>
                     <StyledTableCell align="left">
