@@ -10,6 +10,7 @@ import java.util.UUID;
 public interface TestCaseRepo extends JpaRepository<TestCaseEntity, UUID> {
     TestCaseEntity findTestCaseByTestCaseId(UUID uuid);
     List<TestCaseEntity> findAllByProblemId(String problemId);
+    List<TestCaseEntity> findAllByProblemIdAndIsPublic(String problemId, String isPublic);
 
 //    @Query("delete from TestCaseEntity t where t.problemId = :problemId")
 //    void deleteAllTestCasesByProblemId(@PathVariable("problemId") String problemId);
