@@ -792,7 +792,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         if(userRegistrationContest == null){
             throw new MiniLeetCodeException("User not register contest");
         }
-        List<TestCaseEntity> testCaseEntityList = testCaseRepo.findAllByProblemId(modelContestSubmission.getProblemId());
+        //List<TestCaseEntity> testCaseEntityList = testCaseRepo.findAllByProblemId(modelContestSubmission.getProblemId());
+        List<TestCaseEntity> testCaseEntityList = testCaseRepo
+            .findAllByProblemIdAndIsPublic(modelContestSubmission.getProblemId(),"N");
         String tempName = tempDir.createRandomScriptFileName(userName+"-"+modelContestSubmission.getContestId()+"-"+modelContestSubmission.getProblemId());
 
         int runtime  = 0;
