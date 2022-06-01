@@ -159,20 +159,20 @@
             <version>3.0.0</version>
         </dependency>
 
-<!--        &lt;!&ndash;OpenAPI 3 - 2 dependencies &ndash;&gt;-->
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springdoc</groupId>-->
-<!--            <artifactId>springdoc-openapi-ui</artifactId>-->
-<!--            <version>1.5.9</version>-->
-<!--        </dependency>-->
+        <!--        &lt;!&ndash;OpenAPI 3 - 2 dependencies &ndash;&gt;-->
+        <!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springdoc</groupId>-->
+        <!--            <artifactId>springdoc-openapi-ui</artifactId>-->
+        <!--            <version>1.5.9</version>-->
+        <!--        </dependency>-->
 
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-data-rest &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springdoc</groupId>-->
-<!--            <artifactId>springdoc-openapi-data-rest</artifactId>-->
-<!--            <version>1.5.9</version>-->
-<!--        </dependency>-->
+        <!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-data-rest &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springdoc</groupId>-->
+        <!--            <artifactId>springdoc-openapi-data-rest</artifactId>-->
+        <!--            <version>1.5.9</version>-->
+        <!--        </dependency>-->
 
         <!--Apache common - 2 dependencies-->
         <dependency>
@@ -277,7 +277,7 @@
             <artifactId>assertj-core</artifactId>
         </dependency>
 
-<!--        docker client -->
+        <!--        docker client -->
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>

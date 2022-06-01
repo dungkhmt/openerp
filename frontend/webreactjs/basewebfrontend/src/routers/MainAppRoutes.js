@@ -7,18 +7,27 @@ import { Home } from "../component";
 import { Layout } from "../layout";
 import { drawerWidth } from "../layout/sidebar/v1/SideBar";
 import { useNotificationState } from "../state/NotificationState";
+import NotFound from "../views/errors/NotFound";
+import AccountActivationRoute from "./AccountActivationRoute";
+import AdminRoute from "./AdminRoute";
+import ProgrammingContestRoutes from "./ProgrammingContestRoutes";
+import ThesisRoutes from "./ThesisRoutes";
+import ChatRoute from "./ChatRoute";
+import WMSRoute from "./WMSRoute";
+import TaskManagementRoute from "./TaskManagementRoute";
+import WhiteBoardRoute from "./WhiteBoardRoute";
 
-const NotFound = lazy(() => import("../views/errors/NotFound"));
-const AccountActivationRoute = lazy(() => import("./AccountActivationRoute"));
-const AdminRoute = lazy(() => import("./AdminRoute"));
-const ChatRoute = lazy(() => import("./ChatRoute"));
-const ProgrammingContestRoutes = lazy(() =>
-  import("./ProgrammingContestRoutes")
-);
-const TaskManagementRoute = lazy(() => import("./TaskManagementRoute"));
+// const NotFound = lazy(() => import("../views/errors/NotFound"));
+// const AccountActivationRoute = lazy(() => import("./AccountActivationRoute"));
+// const AdminRoute = lazy(() => import("./AdminRoute"));
+// const ChatRoute = lazy(() => import("./ChatRoute"));
+// const ProgrammingContestRoutes = lazy(() =>
+//   import("./ProgrammingContestRoutes")
+// );
+// const TaskManagementRoute = lazy(() => import("./TaskManagementRoute"));
 const TMSContainerRoute = lazy(() => import("./TMSContainerRoute"));
-const WhiteBoardRoute = lazy(() => import("./WhiteBoardRoute"));
-const WMSRoute = lazy(() => import("./WMSRoute"));
+// const WhiteBoardRoute = lazy(() => import("./WhiteBoardRoute"));
+// const WMSRoute = lazy(() => import("./WMSRoute"));
 const EduRoute = lazy(() => import("./EduRoute"));
 const UserLoginRoute = lazy(() => import("./UserLoginRoute"));
 const TestGroupRoute = lazy(() => import("./TestGroupRoute"));
@@ -73,6 +82,10 @@ function MainAppRoute(props) {
           <PrivateRoute
             component={ProgrammingContestRoutes}
             path="/programming-contest"
+          />
+          <PrivateRoute
+            component={ThesisRoutes}
+            path="/thesis"
           />
           <PrivateRoute
             component={TestGroupRoute}

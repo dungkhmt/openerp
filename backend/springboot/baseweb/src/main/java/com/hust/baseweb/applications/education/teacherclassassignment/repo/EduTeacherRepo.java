@@ -16,5 +16,5 @@ public interface EduTeacherRepo extends JpaRepository<EduTeacher, String> {
     Page<EduTeacher> findAllContain(@Param("keyword") String keyword, Pageable pageable);
     
     Optional<EduTeacher> findByUserLoginId(String userLoginId);
-
+    Optional<EduTeacher> findByTeacherName(String teacherName);
 }
