@@ -7,7 +7,6 @@ import com.hust.baseweb.applications.education.teacherclassassignment.model.teac
 import com.hust.baseweb.applications.education.teacherclassassignment.service.ClassTeacherAssignmentPlanService;
 import com.hust.baseweb.applications.education.teacherclassassignment.service.ClassTeacherAssignmentSolutionExcelExporter;
 import com.hust.baseweb.applications.education.teacherclassassignment.service.TeacherClassAssignmentAlgoService;
-import com.hust.baseweb.applications.education.teacherclassassignment.service.TeacherClassAssignmentService;
 import com.hust.baseweb.applications.education.teacherclassassignment.utils.TimetableConflictChecker;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.service.UserService;
@@ -42,7 +41,7 @@ public class TeacherClassAssignmentController {
 
     private TeacherClassAssignmentAlgoService algoService;
 
-    private TeacherClassAssignmentService assignmentService;
+//    private TeacherClassAssignmentService assignmentService;
 
     private UserService userService;
     private ClassTeacherAssignmentPlanService classTeacherAssignmentPlanService;
@@ -529,8 +528,11 @@ public class TeacherClassAssignmentController {
         return ResponseEntity.ok().body(teacherClassAssignmentOM);
     }
 
-    @PostMapping("/teacher-class-assignment/mip")
-    public ResponseEntity<?> assign(@RequestBody AlgoTeacherAssignmentIM input) {
-        return ResponseEntity.ok().body(assignmentService.assign(input));
-    }
+    /**
+     * Old API, consider removing this API
+     */
+//    @PostMapping("/teacher-class-assignment/mip")
+//    public ResponseEntity<?> assign(@RequestBody AlgoTeacherAssignmentIM input) {
+//        return ResponseEntity.ok().body(assignmentService.assign(input));
+//    }
 }
