@@ -7,4 +7,6 @@ public class ModelSaveTestcase {
     private String input;
     private String result;
     private int point;
+
+    private String isPublic;
 }

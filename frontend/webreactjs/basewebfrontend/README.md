@@ -56,9 +56,12 @@ Thực hiện lần lượt theo các bước sau:
 
 ### 4. Một số component
 
-- <b>Tab:</b> src/component/tab
+- <b>Tab:</b> src/component/tab <br/>
+  👉 Ví dụ: src/component/education/classteacherassignment/assignmentPlan/ClassTeacherAssignmentPlanDetail.js
 - <b>Button:</b> src/component/button
 - <b>Dialog:</b> src/component/dialog
+- <b>Table:</b> src/component/table <br/>
+  👉 Ví dụ: src/component/education/classteacherassignment/assignmentPlan/ClassForAssignmentList.js
 
 ### 5. Tips cấu hình IDEs
 

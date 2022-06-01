@@ -63,7 +63,6 @@
 #button-meet-now {
   position: absolute;
   bottom: calc(20vh - 80px);
-  margin-left: 25px;
 }
 
 .meet-code-input {
@@ -83,5 +82,88 @@
 }
 
 .copy-meet-code:hover {
-  fill:rgba(109, 109, 109, 0.87);
+  fill: rgba(109, 109, 109, 0.87);
+}
+
+.home-meet-content {
+  padding: 30px;
+  height: calc(100% - 210px);
+  overflow-y: auto;
+  scrollbar-width: 5px;
+  scrollbar-color: #999999 #d3d3d3;
+}
+
+.home-meet-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.home-meet-content::-webkit-scrollbar-track {
+  background-color: #d3d3d3;
+  border-radius: 8px;
+}
+
+.home-meet-content::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #999999;
+}
+
+#schedule-meet-btn {
+  margin-top: 20px;
+}
+
+.voice-chat-main .Mui-expanded.MuiAccordionSummary-content {
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgb(202, 202, 202);
+  margin-bottom: 10px;
+}
+
+.meet-card-content {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.meet-card-content__name {
+  font-size: 16px;
+}
+
+.meet-card-content__close-in {
+  margin-left: 20px;
+}
+
+.host-modal {
+  width: 50%;
+  max-width: 600px;
+}
+
+.host-modal .MuiButton-root {
+  width: 100%;
+}
+
+.host-modal .MuiButton-textPrimary {
+  border: 1px solid rgb(92, 92, 92);
+}
+
+.host-modal .invite-friend {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.host-modal-title {
+  text-align: center;
+}
+
+.host-modal-invited-friends-title {
+  font-size: 16px;
+}
+
+.host-modal-invited-friends {
+  max-height: 300px;
+  border: 1px solid black;
+  border-radius: 8px;
+  margin: 5px 0 20px;
+}
+
+.host-modal-no-invite {
+  text-align: center;
+  padding: 30px 0 !important;
 }

@@ -11,6 +11,7 @@ public class ModelCreateContest {
     private String contestName;
     private long contestTime;
     private boolean isPublic;
+    private int maxNumberSubmissions;
     private List<String> problemIds;
     private Date startedAt;
     private long countDownTime;

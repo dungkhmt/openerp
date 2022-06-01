@@ -1,28 +1,28 @@
 import { AiOutlineDoubleRight } from 'react-icons/ai';
-import classNames from 'classnames'
-import { getRandomStype } from '../../../ultis/helpers';
+import classNames from 'classnames';
+import { useCallback } from 'react';
+import InviteFriend from '../../InviteFriend';
 import { BAR_TYPE } from '../../../ultis/constant';
 
-const Participant = (props) => {
-  const renderListParticipant = () => {
-    return props.listParticipant.map((participant, index) => (
+const Participant = ({ meetId, display, setDisplay, listParticipant }) => {
+  const closeBar = () => {
+    setDisplay(BAR_TYPE.NONE);
+  }
+  const renderListParticipant = useCallback(() => {
+    return listParticipant.map((participant, index) => (
       <div className='participant-item' key={index}>
-        <div className='avatar' style={getRandomStype()}>
+        <div className='avatar'>
           {participant.name[0].toUpperCase()}
         </div>
         <div className='participant-name'>
           {participant.name}
         </div>
-    </div>
+      </div>
     ));
-  }
+  }, [listParticipant]);
 
-  const closeBar = () => {
-    props.setDisplay(BAR_TYPE.NONE);
-  }
-
-  return (    
-    <div className={classNames('room-bar', 'transition', { 'display-bar': props.display === BAR_TYPE.PARTICIPANT }, { 'hidden-bar': props.display !== BAR_TYPE.PARTICIPANT })}>
+  return (
+    <div className={classNames('room-bar', 'transition', { 'display-bar': display === BAR_TYPE.PARTICIPANT }, { 'hidden-bar': display !== BAR_TYPE.PARTICIPANT })}>
       <div className='close-bar' onClick={closeBar}>
         <AiOutlineDoubleRight />
       </div>
@@ -32,6 +32,7 @@ const Participant = (props) => {
       <div className='content-bar participant-bar-content'>
         {renderListParticipant()}
       </div>
+      <InviteFriend meetId={meetId} />
     </div>
   );
 }

@@ -19,5 +19,6 @@ public class ModelGetTestCaseDetail {
     private String problemDescription;
     private String problemSolution;
     private int point;
+    private String isPublic;
 
 }

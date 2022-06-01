@@ -1,5 +1,6 @@
 // const BabelRcPlugin = require("@jackwilsdon/craco-use-babelrc");
 const CompressionPlugin = require("compression-webpack-plugin");
+const zlib = require("zlib");
 
 module.exports = {
   eslint: {
@@ -51,15 +52,18 @@ module.exports = {
         algorithm: "brotliCompress",
         test: /\.(js|css|html|svg)$/,
         compressionOptions: {
-          level: 11,
+          params: {
+            [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+          },
         },
         threshold: 10240,
         minRatio: 0.8,
+        deleteOriginalAssets: false,
       }),
       new CompressionPlugin({
         filename: "[path][base].gz",
         algorithm: "gzip",
-        test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg?.+$/,
+        test: /\.js$|\.css$|\.html$|\.svg$/,
         threshold: 10240,
         minRatio: 0.8,
       }),

@@ -235,7 +235,7 @@ export default function CreateContest(props) {
   const isSelected = (name) => problemSelected.indexOf(name) !== -1;
   const [isPublic, setIsPublic] = useState(false);
   const [startDate, setStartDate] = React.useState(new Date());
-
+  const [maxNumberSubmissions, setMaxNumberSubmissions] = useState(10);
   const [countDown, setCountDown] = useState(Number(0));
 
   const classes = useStyles();
@@ -269,6 +269,7 @@ export default function CreateContest(props) {
       contestTime: contestTime,
       problemIds: problemSelected,
       isPublic: isPublic,
+      maxNumberSubmissions: maxNumberSubmissions,
       startedAt: startDate,
       countDownTime: countDown,
     };
@@ -351,6 +352,19 @@ export default function CreateContest(props) {
                 onChange={(event) => {
                   setCountDown(Number(event.target.value));
                 }}
+              ></TextField>
+
+              <TextField
+                autoFocus
+                // required
+                //select
+                id="Max Number Submissions"
+                label="Max Number Submissions"
+                placeholder="Max Number Submissions"
+                onChange={(event) => {
+                  setMaxNumberSubmissions(event.target.value);
+                }}
+                value={maxNumberSubmissions}
               ></TextField>
 
               <TextField

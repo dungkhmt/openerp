@@ -1,5 +1,5 @@
 create table training_program(
-    id varchar(200),
+    id uuid not null default uuid_generate_v1(),
     name varchar(500),
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

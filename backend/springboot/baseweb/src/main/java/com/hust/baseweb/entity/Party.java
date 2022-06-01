@@ -1,6 +1,8 @@
 package com.hust.baseweb.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.hust.baseweb.applications.taskmanagement.entity.ProjectMember;
+import com.hust.baseweb.applications.taskmanagement.entity.TaskAssignable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -71,6 +74,12 @@ public class Party {
 
     @Transient
     Person person;
+
+//    @OneToMany(mappedBy = "partyMember")
+//    private List<ProjectMember> projectMembers;
+//
+//    @OneToMany(mappedBy = "party")
+//    private List<TaskAssignable> taskAssignables;
 
     public Party(String partyCode, PartyType type, String description, Status partyStatus, boolean isUnread) {
         super();

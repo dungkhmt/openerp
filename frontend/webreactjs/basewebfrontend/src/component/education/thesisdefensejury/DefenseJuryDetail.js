@@ -1,6 +1,6 @@
 import { Box, IconButton, Typography } from "@material-ui/core/";
 import { grey } from "@material-ui/core/colors";
-import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
+import { makeStyles, MuiThemeProvider,createMuiTheme } from "@material-ui/core/styles";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import EditIcon from "@material-ui/icons/Edit";
 import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
@@ -16,49 +16,49 @@ import ElementDeleteThesis from  './ElementDeleteThesis';
 import ElementAddThesis from  './ElementAddThesis';
 import ElementAddTeacher from  './ElementAddTeacher';
 import ElementDeleteTeacher from  './ElementDeleteTeacher';
-import {
-  components,
-  localization,
-  theme,
-} from "../../../utils/MaterialTableUtils";
-import TertiaryButton from "../../button/TertiaryButton";
-import { GiNuclearPlant } from "react-icons/gi";
+// import {
+//   components,
+//   localization,
+//   themeTable,
+// } from "../../../utils/MaterialTableUtils";
+// import TertiaryButton from "../../button/TertiaryButton";
+// import { GiNuclearPlant } from "react-icons/gi";
 
-const useStyles = makeStyles((theme) => ({
-  commandButton: {
-    marginLeft: theme.spacing(2),
-    fontWeight: theme.typography.fontWeightRegular,
-    "&:hover": {
-      color: theme.palette.primary.main,
-    },
-  },
-  tableToolbarHighlight: { backgroundColor: "transparent" },
-}));
+// const useStyles = makeStyles((theme) => ({
+//   commandButton: {
+//     marginLeft: theme.spacing(2),
+//     fontWeight: theme.typography.fontWeightRegular,
+//     "&:hover": {
+//       color: theme.palette.primary.main,
+//     },
+//   },
+//   tableToolbarHighlight: { backgroundColor: "transparent" },
+// }));
 
-const headerProperties = {
-  headerStyle: {
-    fontSize: 16,
-    backgroundColor: "rgb(63, 81, 181)",
-    color: "white",
-  },
-};
+// const headerProperties = {
+//   headerStyle: {
+//     fontSize: 16,
+//     backgroundColor: "rgb(63, 81, 181)",
+//     color: "white",
+//   },
+// };
 // const theme = createMuiTheme({
 //   palette: {
 //     primary: green,
 //   },
 // });
 
-let count = 0;
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-}));
+// let count = 0;
+// const Item = styled(Paper)(({ theme }) => ({
+//   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+//   ...theme.typography.body2,
+//   padding: theme.spacing(1),
+//   textAlign: 'center',
+//   color: theme.palette.text.secondary,
+// }));
 
 function DefenseJuryDetail(props) {
-  const classes = useStyles();
+  // const classes = useStyles();
 
   // Command delete button
   const [selectedRows, setSelectedRows] = useState([]);
@@ -279,7 +279,7 @@ function DefenseJuryDetail(props) {
           </>
         )} */}
       </Box>
-      <MuiThemeProvider theme={theme}>
+      <MuiThemeProvider >
         {/* <MaterialTable
           title={"Chi tiết HĐ Bảo vệ"}
           columns={columns}

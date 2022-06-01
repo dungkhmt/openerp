@@ -1,9 +1,7 @@
-import {Box, Link} from "@material-ui/core";
+import { Box, Link } from "@material-ui/core";
+import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
-import styled from 'styled-components';
-
-
 
 export function TabPanelVertical(props) {
   const { children, value, index, ...other } = props;
@@ -25,8 +23,6 @@ export function TabPanelVertical(props) {
   );
 }
 
-
-
 export function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
@@ -35,11 +31,15 @@ export function a11yProps(index) {
 }
 
 const StyledLink = styled(Link)`
-    text-decoration: none;
+  text-decoration: none;
 
-    &:focus, &:hover, &:visited, &:link, &:active {
-        text-decoration: none;
-    }
+  &:focus,
+  &:hover,
+  &:visited,
+  &:link,
+  &:active {
+    text-decoration: none;
+  }
 `;
 
 export function TabPanelHorizontal(props) {
@@ -54,7 +54,7 @@ export function TabPanelHorizontal(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{marginLeft: 2 }}>
+        <Box sx={{ marginLeft: 2 }}>
           <Typography>{children}</Typography>
         </Box>
       )}

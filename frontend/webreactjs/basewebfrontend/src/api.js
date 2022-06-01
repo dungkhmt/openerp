@@ -24,7 +24,7 @@ export const authPost = (dispatch, token, url, body) => {
           console.log(res);
           try {
             res.json().then((res1) => console.log(res1));
-          } catch (err) {}
+          } catch (err) { }
           throw Error();
         }
         // return null;
@@ -63,7 +63,7 @@ export const authPostMultiPart = (dispatch, token, url, body) => {
           console.log(res);
           try {
             res.json().then((res1) => console.log(res1));
-          } catch (err) {}
+          } catch (err) { }
           throw Error();
         }
         // return null;
@@ -90,6 +90,7 @@ export const authGetImg = (dispatch, token, url) => {
     method: "GET",
     headers: {
       "X-Auth-Token": token,
+      "content-type": "application/octet-stream",
     },
   });
 };
@@ -100,6 +101,38 @@ export const authGet = (dispatch, token, url) => {
       "content-type": "application/json",
       "X-Auth-Token": token,
     },
+  }).then(
+    (res) => {
+      if (!res.ok) {
+        if (res.status === 401) {
+          dispatch(failed());
+          throw Error("Unauthorized");
+        } else {
+          console.log(res);
+          try {
+            res.json().then((res1) => console.log(res1));
+          } catch (err) { }
+          throw Error();
+        }
+        // return null;
+      }
+      return res.json();
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
+
+export const authGetBody = (dispatch, token, url, body) => {
+  debugger;
+  return fetch(API_URL + url, {
+    method: "GET",
+    headers: {
+      "content-type": "application/json",
+      "X-Auth-Token": token,
+    },
+    body: body,
   }).then(
     (res) => {
       if (!res.ok) {
@@ -140,7 +173,7 @@ export const authDelete = (dispatch, token, url, body) => {
           console.log(res);
           try {
             res.json().then((res1) => console.log(res1));
-          } catch (err) {}
+          } catch (err) { }
           throw Error();
         }
         // return null;
@@ -236,6 +269,7 @@ export async function request(
     if (isFunction(successHandler)) {
       successHandler(res);
     }
+    return res;
   } catch (e) {
     // Handling work to do when encountering all kinds of errors, e.g turn off the loading icon.
     if (isFunction(errorHandlers["onError"])) {
@@ -249,7 +283,7 @@ export async function request(
           if (isFunction(errorHandlers[401])) {
             errorHandlers[401](e);
           } else {
-            history.push({pathname: "/login"});
+            history.push({ pathname: "/login" });
             store.dispatch(logout());
           }
           break;

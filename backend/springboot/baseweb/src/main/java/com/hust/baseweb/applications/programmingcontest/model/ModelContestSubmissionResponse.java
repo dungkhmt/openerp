@@ -16,7 +16,10 @@ public class ModelContestSubmissionResponse {
     Date submittedAt;
     Integer score;
     String testCasePass;
+    int numberTestCasePassed;
+    int totalNumberTestCase;
     Float memoryUsage;
     String status;
+    String message;
     long runtime;
 }

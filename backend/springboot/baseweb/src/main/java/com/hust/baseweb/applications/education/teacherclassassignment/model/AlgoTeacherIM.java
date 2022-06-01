@@ -17,9 +17,11 @@ public class AlgoTeacherIM {
 
     private String name;
 
-    private List<Course4Teacher> courses;// danh sach ma cac mon hoc ma giao vien co the day (file excel course4teacher)
+    // Danh sach cac mon hoc ma giao vien co the day trong dot phan cong
+    private List<Course4Teacher> courses;
 
-    private double prespecifiedHourLoad; // so gio da duoc phan cong boi nhiem vu giang day khac
+    // So gio da duoc phan cong boi nhiem vu giang day khac
+    private double prespecifiedHourLoad;
 
     private boolean minimizeNumberWorkingDays;
 

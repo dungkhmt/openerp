@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProblemSubmission {
     private String status;
+    private String message;
     private Long runtime;
     private String testCasePass;
     private int nbTestCasePass;

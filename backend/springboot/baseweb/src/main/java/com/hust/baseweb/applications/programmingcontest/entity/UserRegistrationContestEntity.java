@@ -3,6 +3,8 @@ package com.hust.baseweb.applications.programmingcontest.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -14,6 +16,20 @@ import java.util.UUID;
 //@Table(name = "user_registration_contest")
 @Table(name = "user_registration_contest_new")
 public class UserRegistrationContestEntity {
+    public static final String ROLE_MANAGER = "MANAGER";
+    public static final String ROLE_PARTICIPANT = "PARTICIPANT";
+    public static final String ROLE_OWNER = "OWNER";
+
+    public static final String STATUS_SUCCESSFUL = "SUCCESSFUL";
+    public static final String STATUS_PENDING = "PENDING";
+
+    public static List<String> getListRoles(){
+        List<String> L = new ArrayList();
+        L.add(ROLE_MANAGER);
+        L.add(ROLE_PARTICIPANT);
+        L.add(ROLE_OWNER);
+        return L;
+    }
     @Id
     @Column(name = "user_registration_contest_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -35,4 +51,7 @@ public class UserRegistrationContestEntity {
 
     @Column(name = "status")
     private String status;
+
+    @Column(name="role_id")
+    private String roleId;
 }

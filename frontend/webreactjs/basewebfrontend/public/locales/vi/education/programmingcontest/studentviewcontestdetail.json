@@ -1,0 +1,15 @@
+{
+  "ID": "ID",
+  "problem": "Bài tập",
+  "problemId": "Mã bài tập",
+  "problemList": {
+    "title": "Danh sách bài tập"
+  },
+  "submissionList": {
+    "title": "Danh sách nộp bài",
+    "status": "Trạng thái",
+    "language": "Ngôn ngữ",
+    "at": "Thời gian",
+    "numTestCases": "Số test case"
+  }
+}

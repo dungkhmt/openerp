@@ -48,13 +48,18 @@ public interface ProblemTestCaseService {
     ModelGetContestPageResponse getContestPaging(Pageable pageable);
 
     ModelGetContestDetailResponse getContestDetailByContestIdAndTeacher(String contestId, String userName);
+    ModelGetContestDetailResponse getContestDetailByContestId(String contestId);
 
     ModelGetContestDetailResponse getContestSolvingDetailByContestId(String contestId, String userName) throws MiniLeetCodeException;
 
     Page<ModelProblemSubmissionDetailByTestCaseResponse> getContestProblemSubmissionDetailByTestCase(Pageable  page);
 
+    List<ModelProblemSubmissionDetailByTestCaseResponse> getContestProblemSubmissionDetailByTestCaseOfASubmission(UUID submissionId);
+
     ModelContestSubmissionResponse submitContestProblem(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
     ModelContestSubmissionResponse submitContestProblemTestCaseByTestCase(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
+    ModelContestSubmissionResponse submitContestProblemStoreOnlyNotExecute(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
+
 
     ModelContestSubmissionResponse submitSolutionOutput(String solutionOutput, String contestId, String problemId, UUID testCaseId, String userName) throws Exception;
 
@@ -65,6 +70,8 @@ public interface ProblemTestCaseService {
     void calculateContestResult(String contestId);
 
     ModelGetContestPageResponse getContestPagingByUserCreatedContest(String userName, Pageable pageable);
+
+    ModelGetContestPageResponse getContestPagingByUserManagerContest(String userName, Pageable pageable);
 
     ListModelUserRegisteredContestInfo getListUserRegisterContestSuccessfulPaging(Pageable pageable, String contestId);
 
@@ -92,6 +99,7 @@ public interface ProblemTestCaseService {
 
     Page<ContestSubmission> findContestSubmissionByContestIdPaging(Pageable pageable, String contestId);
     Page<ContestSubmission> findContestSubmissionByUserLoginIdPaging(Pageable pageable, String userLoginId);
+    Page<ContestSubmission> findContestSubmissionByUserLoginIdAndContestIdPaging(Pageable pageable, String userLoginId, String contestId);
     List<ContestSubmission> getNewestSubmissionResults(String userLoginId);
 
 
@@ -102,4 +110,11 @@ public interface ProblemTestCaseService {
     void deleteContest(String contestId, String userId) throws MiniLeetCodeException;
 
     void deleteTestcase(UUID testcaseId, String userId) throws MiniLeetCodeException;
+
+    ModelCodeSimilarityOutput checkSimilarity(String contestId, ModelCheckSimilarityInput I);
+
+    ModelEvaluateBatchSubmissionResponse evaluateBatchSubmissionContest(String contestId);
+
+    List<ModelContestByRoleResponse> getContestsByRoleOfUser(String userLoginId);
+
 }

@@ -1,36 +1,32 @@
+import { cppLanguage } from "@codemirror/lang-cpp";
+import { java } from "@codemirror/lang-java";
+import { javascript } from "@codemirror/lang-javascript";
+import { pythonLanguage } from "@codemirror/lang-python";
+import { go } from "@codemirror/legacy-modes/mode/go";
+import { StreamLanguage } from "@codemirror/stream-parser";
 import DateFnsUtils from "@date-io/date-fns";
+import { Button } from "@material-ui/core";
 import {
   Card,
   CardActions,
   CardContent,
+  MenuItem,
   TextField,
   Typography,
-  MenuItem,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Editor } from "react-draft-wysiwyg";
-import { ContentState, convertToRaw, EditorState } from "draft-js";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { Button } from "@material-ui/core";
+import { convertToRaw, EditorState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
-import { API_URL } from "../../../config/config";
-import { cpp, cppLanguage } from "@codemirror/lang-cpp";
-import { java } from "@codemirror/lang-java";
-import { pythonLanguage } from "@codemirror/lang-python";
-import { go } from "@codemirror/legacy-modes/mode/go";
-import { javascript } from "@codemirror/lang-javascript";
-import { StreamLanguage } from "@codemirror/stream-parser";
-import CodeMirror from "@uiw/react-codemirror";
-import { SubmitWarming } from "./SubmitWarming";
+import React, { useState } from "react";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { useHistory } from "react-router-dom";
 import { CompileStatus } from "./CompileStatus";
-import { SubmitSuccess } from "./SubmitSuccess";
-import { errorNoti, successNoti } from "../../../utils/notification";
+import { sleep } from "./lib";
 import { request } from "./Request";
-import lib, { sleep } from "./lib";
+import { SubmitSuccess } from "./SubmitSuccess";
+import { SubmitWarming } from "./SubmitWarming";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -356,6 +352,21 @@ function CreateProblem() {
                 </MenuItem>
               ))}
             </TextField>
+            <TextField
+              variant="outlined"
+              style={{
+                width: 0.9 * window.innerWidth,
+                margin: 20,
+              }}
+              multiline
+              rows={12}
+              maxRows={12}
+              value={codeSolution}
+              onChange={(event) => {
+                setCodeSolution(event.target.value);
+              }}
+            ></TextField>
+            {/*
             <CodeMirror
               value={codeSolution}
               height={"500px"}
@@ -366,6 +377,7 @@ function CreateProblem() {
               }}
               autoFocus={false}
             />
+            */}
             <br />
             <Typography>
               <h2>Checker source code</h2>
@@ -388,16 +400,18 @@ function CreateProblem() {
                 </MenuItem>
               ))}
             </TextField>
-            <CodeMirror
-              value={solutionChecker}
-              height={"500px"}
-              width="100%"
-              extensions={getExtension()}
-              onChange={(value, viewUpdate) => {
-                setSolutionChecker(value);
-              }}
-              autoFocus={false}
-            />
+            {/*
+              <CodeMirror
+                value={solutionChecker}
+                height={"500px"}
+                width="100%"
+                extensions={getExtension()}
+                onChange={(value, viewUpdate) => {
+                  setSolutionChecker(value);
+                }}
+                autoFocus={false}
+              />
+              */}
             <br />
 
             <CompileStatus

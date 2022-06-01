@@ -1,6 +1,6 @@
 import AppBar from "@material-ui/core/AppBar";
 import IconButton from "@material-ui/core/IconButton";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, styled } from "@material-ui/core/styles";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -11,20 +11,34 @@ import { ReactComponent as Logo } from "../assets/icons/logo.svg";
 import bgImage from "../assets/img/sidebar-2.webp";
 import { useAuthState } from "../state/AuthState";
 import AccountButton from "./account/AccountButton";
+import LanguageSwitch from "./languageswitcher/LanguageSwitch";
 import NotificationButton from "./notification/NotificationButton";
-import SideBar, { drawerWidth, miniDrawerWidth } from "./sidebar/v1/SideBar";
+import SideBar, { drawerWidth } from "./sidebar/v1/SideBar";
+
+/**
+ * https://mui.com/material-ui/react-app-bar/#fixed-placement
+ */
+const Offset = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+  justifyContent: "flex-end",
+}));
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
   },
   appBar: {
+    // position: "sticky", // sticky is not supported by IE11.
+    top: 0,
+    transition: theme.transitions.create("top"),
+    backdropFilter: "blur(20px)",
+    boxShadow: `inset 0px -1px 1px ${theme.palette.grey[100]}`,
+    backgroundColor: "rgba(255,255,255,0.72)",
     zIndex: theme.zIndex.drawer + 1,
-    boxShadow: theme.shadows[1],
-    // transition: theme.transitions.create(["width", "margin"], {
-    //   easing: theme.transitions.easing.sharp,
-    //   duration: theme.transitions.duration.leavingScreen,
-    // }),
   },
   menuButton: {
     marginRight: 24,
@@ -36,67 +50,35 @@ const useStyles = makeStyles((theme) => ({
       alignItems: "center",
     },
   },
-  title: {
+  appName: {
     paddingLeft: 4,
     display: "none",
     [theme.breakpoints.up("sm")]: {
       display: "block",
     },
   },
-  grow: {
+  content: {
+    flexShrink: 1,
     flexGrow: 1,
-  },
-  toolbar: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-  },
-  maxWidthContent: {
-    maxWidth: `calc(100% - ${miniDrawerWidth}px)`,
-    transition: theme.transitions.create("max-width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  minWidthContent: {
-    maxWidth: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create("max-width", {
+    maxWidth: "100%",
+    padding: theme.spacing(3),
+    transition: theme.transitions.create(["maxWidth", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
+    marginLeft: -drawerWidth,
   },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
+  contentShift: {
+    maxWidth: "calc(100% - 300px)",
+    transition: theme.transitions.create(["maxWidth", "margin"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: 0,
   },
-  // appBarShift: {
-  //   marginLeft: drawerWidth,
-  //   width: `calc(100% - ${drawerWidth}px)`,
-  //   transition: theme.transitions.create(["width", "margin"], {
-  //     easing: theme.transitions.easing.sharp,
-  //     duration: theme.transitions.duration.enteringScreen,
-  //   }),
-  // },
-  // appBarTitle: {
-  //   marginLeft: theme.spacing(2),
-  //   transition: theme.transitions.create(["width", "margin"], {
-  //     easing: theme.transitions.easing.sharp,
-  //     duration: theme.transitions.duration.enteringScreen,
-  //   }),
-  // },
-  // hideButton: {
-  //   marginLeft: drawerWidth / 2 - theme.spacing(6),
-  // },
-  // largeIcon: {
-  //   width: 50,
-  //   height: 50,
-  // },
 }));
 
-function Layout(props) {
-  const { children } = props;
+function Layout({ children }) {
   const classes = useStyles();
 
   //
@@ -109,54 +91,29 @@ function Layout(props) {
 
   return (
     <div className={classes.root}>
-      <AppBar
-        elevation={0}
-        position="fixed"
-        color="inherit"
-        className={clsx(classes.appBar, {
-          // [classes.appBarShift]: open,
-        })}
-      >
+      <AppBar position="fixed" color="inherit" className={classes.appBar}>
         <Toolbar>
-          {/* <IconButton color="inherit" className={clsx(classes.largeIcon, {})}>
-            <Logo fontSize="large" />
-          </IconButton>
-          {open ? (
-            <Typography variant="h6" noWrap>
-              
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawer}
-                edge="start"
-                className={classes.hideButton}
-              >
-                <MenuOpenIcon />
-              </IconButton>
-            </Typography>
-          ) : ( */}
           <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={() => setOpen(!open)}
             edge="start"
-            className={clsx(classes.menuButton, {
-              // [classes.hide]: open,
-            })}
+            className={classes.menuButton}
           >
             <MenuIcon />
           </IconButton>
           <SvgIcon fontSize="large">
             <Logo width={20} height={20} x={2} y={2} />
           </SvgIcon>
-          {/* )} */}
-          <Typography className={classes.title} variant="h6" noWrap>
+
+          <Typography className={classes.appName} variant="h6" noWrap>
             Open ERP
           </Typography>
 
-          {/* use this div tag to push the icons to the right */}
-          <div className={classes.grow}></div>
+          {/* Use this div tag to push the icons to the right */}
+          <div style={{ flexGrow: 1 }} />
           <div className={classes.sectionDesktop}>
+            <LanguageSwitch />
             {isAuthenticated.get() && (
               <>
                 <NotificationButton />
@@ -169,16 +126,12 @@ function Layout(props) {
       <SideBar open={open} image={image} color={color} />
       <main
         className={clsx(classes.content, {
-          [classes.maxWidthContent]: !open,
-          [classes.minWidthContent]: open,
-          // [classes.contentShift]: !open,
+          [classes.contentShift]: open,
         })}
       >
-        <div id="back-to-top-anchor" className={classes.toolbar} />
-        {/* <LayoutBreadcrumbs /> */}
+        <Offset />
         {children}
       </main>
-      {/* <Back2Top /> */}
     </div>
   );
 }

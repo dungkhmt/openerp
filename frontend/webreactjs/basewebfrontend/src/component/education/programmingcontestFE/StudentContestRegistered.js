@@ -106,6 +106,7 @@ export function StudentContestRegistered() {
                         </Button>
                       </Link>
                     </StyledTableCell>
+                    {/*
                     <StyledTableCell align="center">
                       <Link
                         to={
@@ -123,6 +124,7 @@ export function StudentContestRegistered() {
                         </Button>
                       </Link>
                     </StyledTableCell>
+                      */}
                     <StyledTableCell align="left">
                       {isCountDowns[index] ? (
                         <Timer

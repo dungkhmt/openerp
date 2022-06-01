@@ -5,7 +5,7 @@ import { API_URL } from "../../../config/config";
 import * as React from "react";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
-import { Grid } from "@material-ui/core";
+import { Grid, TextField } from "@material-ui/core";
 import CodeMirror from "@uiw/react-codemirror";
 import { cppLanguage } from "@codemirror/lang-cpp";
 import { StreamLanguage } from "@codemirror/stream-parser";
@@ -14,7 +14,7 @@ import { java } from "@codemirror/lang-java";
 import { pythonLanguage } from "@codemirror/lang-python";
 import { javascript } from "@codemirror/lang-javascript";
 import { getStatusColor } from "./lib";
-
+import ParticipantProgramSubmissionDetailTestCaseByTestCase from "./ParticipantProgramSubmissionDetailTestCaseByTestCase";
 export default function ContestProblemSubmissionDetail() {
   const { problemSubmissionId } = useParams();
   const [memoryUsage, setMemoryUsage] = useState();
@@ -46,7 +46,7 @@ export default function ContestProblemSubmissionDetail() {
     console.log("problemSubmissionId ", problemSubmissionId);
     request(
       "get",
-       "/get-contest-problem-submission-detail/" + problemSubmissionId,
+      "/get-contest-problem-submission-detail/" + problemSubmissionId,
       (res) => {
         setMemoryUsage(res.data.memoryUsage);
         setProblemId(res.data.problemId);
@@ -114,6 +114,19 @@ export default function ContestProblemSubmissionDetail() {
       <br />
       <Typography variant={"h5"}>Submitted Code: {submittedAt}</Typography>
       <Typography variant={"h5"}>Language: {submissionLanguage}</Typography>
+      <TextField
+        style={{
+          width: 1.0 * window.innerWidth,
+          margin: 20,
+        }}
+        multiline
+        maxRows={30}
+        value={submissionSource}
+        onChange={(event) => {
+          setSubmissionSource(event.target.value);
+        }}
+      ></TextField>
+      {/*
       <CodeMirror
         height={"400px"}
         width="100%"
@@ -121,6 +134,10 @@ export default function ContestProblemSubmissionDetail() {
         editable={false}
         autoFocus={false}
         value={submissionSource}
+      />
+      */}
+      <ParticipantProgramSubmissionDetailTestCaseByTestCase
+        submissionId={problemSubmissionId}
       />
     </div>
   );

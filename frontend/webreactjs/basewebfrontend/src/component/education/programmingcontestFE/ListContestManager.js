@@ -1,20 +1,30 @@
-import React, {useEffect, useState} from "react";
-import {request} from "./Request";
-import {API_URL} from "../../../config/config";
+import React, { useEffect, useState } from "react";
+import { request } from "./Request";
+import { API_URL } from "../../../config/config";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
-import {Button, Grid, MenuItem, Table, TableBody, TableHead, TextField} from "@material-ui/core";
+import {
+  Button,
+  Grid,
+  MenuItem,
+  Table,
+  TableBody,
+  TableHead,
+  TextField,
+} from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
-import {StyledTableCell, StyledTableRow} from "./lib";
-import {Link} from "react-router-dom";
+import { StyledTableCell, StyledTableRow } from "./lib";
+import { Link } from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
+import { ListContestManagerByRegistration } from "./ListContestManagerByRegistration";
+import ListContestByRole from "./ListContestByRole";
 
-export function ListContestManager(){
+export function ListContestManager() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPage] = useState(0);
-  const pageSizes = [20,50, 100];
-  const [contests, setContests] = useState([])
+  const pageSizes = [20, 50, 100];
+  const [contests, setContests] = useState([]);
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -29,8 +39,11 @@ export function ListContestManager(){
   async function getContestList() {
     request(
       "get",
-      "/get-contest-paging-by-user-create?size="+pageSize+"&page="+(page-1),
-      (res)=>{
+      "/get-contest-paging-by-user-create?size=" +
+        pageSize +
+        "&page=" +
+        (page - 1),
+      (res) => {
         console.log("contest list", res.data);
         setTotalPage(res.data.totalPages);
         setContests(res.data.contents);
@@ -41,9 +54,9 @@ export function ListContestManager(){
   useEffect(() => {
     console.log("use effect");
     getContestList().then();
-  }, [page, pageSize])
+  }, [page, pageSize]);
 
-  return(
+  return (
     <div>
       <div>
         <div>
@@ -53,6 +66,8 @@ export function ListContestManager(){
                 <TableRow>
                   <StyledTableCell></StyledTableCell>
                   <StyledTableCell align="left">Title</StyledTableCell>
+                  <StyledTableCell align="left">Status</StyledTableCell>
+                  <StyledTableCell align="center">Detail</StyledTableCell>
                   <StyledTableCell align="center">Edit</StyledTableCell>
                   {/*<StyledTableCell align="center">Delete</StyledTableCell>*/}
                 </TableRow>
@@ -61,19 +76,58 @@ export function ListContestManager(){
                 {contests.map((contest, index) => (
                   <StyledTableRow>
                     <StyledTableCell component="th" scope="row">
-                      {pageSize*(page-1) + index +1}
+                      {pageSize * (page - 1) + index + 1}
                     </StyledTableCell>
                     <StyledTableCell align="left">
-                      <Link to={"/programming-contest/contest-manager/"+contest.contestId}  style={{ textDecoration: 'none', color:"#000000", hover:{color:"#00D8FF", textPrimary:"#00D8FF"}}} >
+                      <Link
+                        to={
+                          "/programming-contest/contest-manager/" +
+                          contest.contestId
+                        }
+                        style={{
+                          textDecoration: "none",
+                          color: "#000000",
+                          hover: { color: "#00D8FF", textPrimary: "#00D8FF" },
+                        }}
+                      >
                         <b>{contest.contestName}</b>
                       </Link>
                     </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <b>{contest.statusId}</b>
+                    </StyledTableCell>
+
+                    <StyledTableCell align="left">
+                      <Link
+                        to={
+                          "/programming-contest/contest-manager/" +
+                          contest.contestId
+                        }
+                        style={{
+                          textDecoration: "none",
+                          color: "#000000",
+                          hover: { color: "#00D8FF", textPrimary: "#00D8FF" },
+                        }}
+                      >
+                        <Button variant="contained" color="light">
+                          Detail
+                        </Button>
+                      </Link>
+                    </StyledTableCell>
+
                     <StyledTableCell align="center">
-                      <Link to={"/programming-contest/contest-edit/"+contest.contestId}  style={{ textDecoration: 'none', color:"black", cursor:""}} >
-                        <Button
-                          variant="contained"
-                          color="light"
-                        >
+                      <Link
+                        to={
+                          "/programming-contest/contest-edit/" +
+                          contest.contestId
+                        }
+                        style={{
+                          textDecoration: "none",
+                          color: "black",
+                          cursor: "",
+                        }}
+                      >
+                        <Button variant="contained" color="light">
                           Edit
                         </Button>
                       </Link>
@@ -98,7 +152,6 @@ export function ListContestManager(){
                     {/*    Delete*/}
                     {/*  </Button>*/}
                     {/*</StyledTableCell>*/}
-
                   </StyledTableRow>
                 ))}
               </TableBody>
@@ -108,7 +161,6 @@ export function ListContestManager(){
         <br></br>
         <Grid container spacing={12}>
           <Grid item xs={6}>
-
             <TextField
               variant={"outlined"}
               autoFocus
@@ -127,7 +179,7 @@ export function ListContestManager(){
             </TextField>
           </Grid>
 
-          <Grid item >
+          <Grid item>
             <Pagination
               className="my-3"
               count={totalPages}
@@ -140,11 +192,11 @@ export function ListContestManager(){
             />
           </Grid>
         </Grid>
-
-
       </div>
-
-
+      <ListContestManagerByRegistration />
+      {/*
+      <ListContestByRole />
+      */}
     </div>
   );
 }

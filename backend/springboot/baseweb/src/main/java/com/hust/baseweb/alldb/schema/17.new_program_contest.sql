@@ -44,6 +44,7 @@ create table test_case_new
     test_case text,
     correct_answer text,
     contest_problem_id varchar(60),
+    is_public varchar(1),
     last_updated_stamp         timestamp DEFAULT current_date ,
     created_stamp              timestamp DEFAULT current_date ,
     constraint pk_contest_problem_test_case_new primary key (test_case_id),
@@ -62,7 +63,7 @@ create table problem_submission_new
     runtime varchar(10),
     memory_usage float ,
     test_case_pass varchar (10),
-    created_stamp              varchar (25),
+    created_stamp              timestamp (25),
     constraint fk_problem_submission_id_new primary key(problem_submission_id),
     constraint fk_problem_id_new foreign key (problem_id) references contest_problem_new(problem_id),
     constraint fk_user_login_id_new foreign key (submitted_by_user_login_id) references user_login(user_login_id)
@@ -81,6 +82,10 @@ create table contest_new
     count_down numeric NULL,
 	started_count_down_time timestamp NULL,
 	end_time timestamp NULL,
+	status_id varchar(100),
+	submission_action_type varchar(200),
+	max_number_submission int,
+    participant_view_result_mode varchar(200),
     last_updated_stamp         timestamp DEFAULT current_date ,
     created_stamp              timestamp DEFAULT current_date ,
     constraint pk_contest_id_new primary key (contest_id),
@@ -111,8 +116,8 @@ create table contest_submission_new
     source_code_language varchar (10),
     runtime bigint ,
     memory_usage float ,
-    last_updated_stamp         date default current_date ,
-    created_stamp              date default current_date ,
+    last_updated_stamp         timestamp default current_date ,
+    created_stamp              timestamp default current_date ,
     constraint pk_contest_submission_id_contest_submission_new primary key (contest_submission_id),
     constraint fk_contest_id_contest_submission_new foreign key (contest_id) references contest_new(contest_id),
     constraint fk_problem_id_contest_submission_new foreign key (problem_id) references contest_problem_new(problem_id),
@@ -132,8 +137,8 @@ create table contest_submission_testcase_new(
     memory_usage int,
     participant_solution_output text,
     test_case_output text,
-    last_updated_stamp         date default current_date ,
-    created_stamp              date default current_date ,
+    last_updated_stamp         timestamp default current_date ,
+    created_stamp              timestamp default current_date ,
     constraint pk_contest_submission_testcase_new primary key(contest_submission_testcase_id),
     constraint fk_contest_submission_testcase_new_submission_id foreign key(contest_submission_id) references contest_submission_new(contest_submission_id),
     constraint fk_contest_submission_testcase_new_contest foreign key  (contest_id) references contest_new(contest_id),
@@ -150,8 +155,8 @@ create table user_submission_contest_result_new
     point int not null,
     email varchar(20),
     full_name varchar(50),
-    last_updated_stamp         date default current_date ,
-    created_stamp              date default current_date ,
+    last_updated_stamp         timestamp default current_date ,
+    created_stamp              timestamp default current_date ,
     constraint pk_user_submission_result_id_user_submission_result_new primary key (contest_id, user_id),
     constraint fk_contest_id_user_submission_result_new foreign key (contest_id) references contest_new(contest_id),
     constraint fk_user_id_user_submission_result_new foreign key (user_id) references user_login(user_login_id)
@@ -163,6 +168,21 @@ create table user_registration_contest_new
     user_id varchar (100) not null ,
     contest_id varchar (100) not null ,
     status varchar (20) not null,
+    role_id varchar(100),
     constraint fk_user_id_user_registration_contest_new foreign key (user_id) references user_login(user_login_id),
     constraint fk_contest_id_user_registration_contest_new foreign key (contest_id) references contest_new(contest_id)
+);
+
+create table contest_role(
+    contest_id varchar(100),
+    user_login_id varchar(60),
+    role_id varchar(100),
+    from_date timestamp,
+    thru_date timestamp,
+    last_updated_stamp         timestamp default current_date ,
+    created_stamp              timestamp default current_date ,
+    constraint pk_contest_role primary key (contest_id, user_login_id, role_id, from_date),
+    constraint fk_contest_role_contest_id foreign key(contest_id) references contest_new(contest_id),
+    constraint fk_contest_role_user_login_id foreign key(user_login_id) references user_login(user_login_id)
+
 );

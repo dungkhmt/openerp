@@ -49,4 +49,5 @@ function TeacherCourseList() {
 }
 
 const screenName = "SCREEN_EDUCATION_TEACHING_MANAGEMENT_TEACHER";
-export default withScreenSecurity(TeacherCourseList, screenName, true);
+//export default withScreenSecurity(TeacherCourseList, screenName, true);
+export default TeacherCourseList;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import Host from '../components/Host';
 import Join from '../components/Join';
+import Host from '../components/Host';
 import { CARD_LIST } from '../ultis/constant';
 import { cardTitle } from '../ultis/helpers';
 import '../style/chatVoiceHome.css';
@@ -10,7 +10,6 @@ const MEET_ICON = 'M';
 const MEET_TITLE = 'Meet';
 
 export default function ChatVoiceMain() {
-
   const [selectedCard, setSelectedCard] = useState('host');
 
   const renderListCard = () => {

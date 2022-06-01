@@ -8,6 +8,7 @@ import {API_URL} from "../../../config/config";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import {getColorLevel, StyledTableCell, StyledTableRow} from "./lib";
+import { useTranslation } from "react-i18next";
 
 function ListProblem(){
   const [page, setPage] = useState(1);
@@ -16,7 +17,7 @@ function ListProblem(){
   const pageSizes = [20,50, 100];
   const [contestProblems, setContestProblems] = useState([])
 
-
+  const { t } = useTranslation("education/programmingcontest/listproblem");
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -53,12 +54,12 @@ function ListProblem(){
           <Table sx={{ minWidth: 750 }} aria-label="customized table">
             <TableHead>
               <TableRow>
-                <StyledTableCell>Status</StyledTableCell>
-                <StyledTableCell align="left">Title</StyledTableCell>
-                <StyledTableCell align="left">Solution</StyledTableCell>
-                <StyledTableCell align="left">Difficulty</StyledTableCell>
-                <StyledTableCell align="left">Add Testcase</StyledTableCell>
-                <StyledTableCell align="left">Edit</StyledTableCell>
+                <StyledTableCell>{t("status")}</StyledTableCell>
+                <StyledTableCell align="left">{t("title")}</StyledTableCell>
+                <StyledTableCell align="left">{t("solution")}</StyledTableCell>
+                <StyledTableCell align="left">{t("difficulty")}</StyledTableCell>
+                <StyledTableCell align="left">{t("addTestCase")}</StyledTableCell>
+                <StyledTableCell align="left">{t("edit")}</StyledTableCell>
                 {/*<StyledTableCell align="left">Delete</StyledTableCell>*/}
               </TableRow>
             </TableHead>

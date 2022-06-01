@@ -417,6 +417,19 @@ function EditProblem() {
                 </MenuItem>
               ))}
             </TextField>
+            <TextField
+              style={{
+                width: 1.0 * window.innerWidth,
+                margin: 20,
+              }}
+              multiline
+              maxRows={4}
+              value={codeSolution}
+              onChange={(event) => {
+                setCodeSolution(event.target.value);
+              }}
+            ></TextField>
+            {/*
             <CodeMirror
               height={"500px"}
               width="100%"
@@ -427,6 +440,8 @@ function EditProblem() {
               autoFocus={false}
               value={codeSolution}
             />
+            */}
+
             <Typography>
               <h2>Solution Checker</h2>
             </Typography>
@@ -448,6 +463,7 @@ function EditProblem() {
                 </MenuItem>
               ))}
             </TextField>
+            {/*
             <CodeMirror
               height={"500px"}
               width="100%"
@@ -458,6 +474,7 @@ function EditProblem() {
               autoFocus={false}
               value={codeChecker}
             />
+            */}
             <br />
 
             <br />
@@ -494,6 +511,7 @@ function EditProblem() {
                   <StyledTableCell align="left">TestCase</StyledTableCell>
                   <StyledTableCell align="left">Correct Answer</StyledTableCell>
                   <StyledTableCell align="left">Point</StyledTableCell>
+                  <StyledTableCell align="left">Public</StyledTableCell>
                   <StyledTableCell align="left">Edit</StyledTableCell>
                   <StyledTableCell align="left">Delete</StyledTableCell>
                 </TableRow>
@@ -505,15 +523,35 @@ function EditProblem() {
                     <StyledTableCell component="th" scope="row">
                       {idx}
                     </StyledTableCell>
-                    <StyledTableCell align="left">
+                    <StyledTableCell
+                      align="left"
+                      sx={{
+                        maxWidth: "120px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {testCase.testCase}
                     </StyledTableCell>
-                    <StyledTableCell align="left">
+                    <StyledTableCell
+                      align="left"
+                      sx={{
+                        maxWidth: "120px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {testCase.correctAns}
                     </StyledTableCell>
                     <StyledTableCell align="left">
                       {testCase.point}
                     </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {testCase.isPublic}
+                    </StyledTableCell>
+
                     <StyledTableCell align="left">
                       <Link
                         to={

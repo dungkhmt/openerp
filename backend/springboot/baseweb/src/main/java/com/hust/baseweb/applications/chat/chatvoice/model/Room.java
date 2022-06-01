@@ -57,6 +57,13 @@ public class Room {
     this.host = host;
   }
 
+  public Room(UUID id, String roomName, Date openIn, Date closeIn) {
+    this.id = id;
+    this.roomName = roomName;
+    this.openIn = openIn;
+    this.closeIn = closeIn;
+  }
+
   public Room(UUID id, UserLogin host, String roomName, Date openIn, Date closeIn) {
     this.id = id;
     this.host = host;

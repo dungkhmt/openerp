@@ -7,6 +7,9 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Assigns a class to a teacher in an assignment plan.
+ */
 @Getter
 @Setter
 @Entity
