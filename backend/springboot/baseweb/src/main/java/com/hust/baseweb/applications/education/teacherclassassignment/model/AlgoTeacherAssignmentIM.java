@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.education.teacherclassassignment.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@AllArgsConstructor
 public class AlgoTeacherAssignmentIM {
 
     private AlgoTeacherIM[] teachers;

@@ -293,7 +293,7 @@ public class BaseMIPSolver implements ISolver {
         for (int i = 0; i < optimalClassesOfTeacher.length; i++) {
             ClassesAssigned2TeacherModel assignmentModel = new ClassesAssigned2TeacherModel();
 
-            assignmentModel.setTeacherIM(teachers[i]);
+            assignmentModel.setTeacher(teachers[i]);
             assignmentModel.setClasses(optimalClassesOfTeacher[i].stream().map(cls -> classes.get(cls)).collect(
                 Collectors.toList()));
 
@@ -303,7 +303,7 @@ public class BaseMIPSolver implements ISolver {
         om.setClassesAssigned2TeacherModels(models);
 
         // Classes not assigned.
-        om.setNotAssigned(infeasibleClasses.stream().map(cls -> classes.get(cls)).collect(Collectors.toList()));
+        om.setNotAssignedClasses(infeasibleClasses.stream().map(cls -> classes.get(cls)).collect(Collectors.toList()));
         return om;
     }
 
