@@ -26,6 +26,9 @@ public class Whiteboard {
     @Column(name = "data")
     private String data;
 
+    @Column(name = "total_page")
+    private Integer totalPage;
+
     @OneToMany(mappedBy = "whiteboard")
     private Set<UserWhiteboard> userWhiteboards;
 

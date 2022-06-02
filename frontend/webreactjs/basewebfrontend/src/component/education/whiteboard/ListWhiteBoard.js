@@ -1,7 +1,7 @@
 import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { Link, useRouteMatch } from "react-router-dom";
-import { request } from "../programmingcontestFE/Request";
+import { request } from "../../../api";
 
 export default function ListWhiteBoard() {
   const { path } = useRouteMatch();
@@ -12,11 +12,14 @@ export default function ListWhiteBoard() {
       title: "WhiteboardId",
       field: "id",
       render: (rowData) => (
-        <Link to={`${path.replace('/list', '')}/${rowData["id"]}`}>{rowData["id"]}</Link>
+        <Link to={`${path.replace('/list', '')}/${rowData["id"]}?page=1`}>{rowData["id"]}</Link>
       ),
     },
     { title: "Name", field: "name", render: (rowData) => (
-      <p>{rowData["name"] ?? `Whiteboard ${rowData["id"]}`}</p>
+      <p>{rowData["name"] || `Whiteboard ${rowData["id"]}`}</p>
+    ) },
+    { title: "Total page", field: "page", render: (rowData) => (
+      <p>{rowData["totalPage"]}</p>
     ) },
     { title: "Created user", field: "createdUser", render: (rowData) => (
       <p>{rowData["createdBy"]}</p>

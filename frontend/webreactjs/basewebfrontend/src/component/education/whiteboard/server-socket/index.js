@@ -37,6 +37,14 @@ io.on("connection", (socket) => {
     socket.broadcast.emit(SOCKET_IO_EVENTS.ON_ADD_TEXT_END, data)
   })
 
+  socket.on(SOCKET_IO_EVENTS.ADD_NEW_PAGE, (data) => {
+    socket.broadcast.emit(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE, data)
+  })
+
+  socket.on(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE, (data) => {
+    socket.emit(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, data)
+  })
+
   socket.on('disconnect', () => {
     console.log(`${socket.id} is disconnected`)
   })

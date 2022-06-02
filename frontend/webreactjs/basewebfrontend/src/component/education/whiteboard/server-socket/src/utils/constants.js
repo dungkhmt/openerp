@@ -1,4 +1,4 @@
-export const SOCKET_IO_EVENTS =  {
+export const SOCKET_IO_EVENTS = {
   DRAW_LINE_END: 'drawEnd',
   DRAW_RECT_END: 'drawRectEnd',
   DRAW_CIRCLE_END: 'drawCircleEnd',
@@ -7,4 +7,9 @@ export const SOCKET_IO_EVENTS =  {
   ON_DRAW_RECT_END: 'onDrawRectEnd',
   ON_DRAW_CIRCLE_END: 'onDrawCircleEnd',
   ON_ADD_TEXT_END: 'onAddText',
+  ADD_NEW_PAGE: 'addNewPage',
+  ON_ADD_NEW_PAGE: 'onAddNewPage',
+
+  CHECK_LOCAL_STORAGE: 'checkLocalStorage',
+  ON_CHECK_LOCAL_STORAGE: 'onCheckLocalStorage',
 }

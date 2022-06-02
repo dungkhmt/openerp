@@ -10,7 +10,7 @@ export default function CreateWhiteBoard() {
   const onCreateNewWhiteboard = async () => {
     // create new whiteboard
     await request("post", "/whiteboards", () => {
-      history.push(`/whiteboard/board/${whiteboardId}`)
+      history.push(`/whiteboard/board/${whiteboardId}?page=1`)
     }, {}, { whiteboardId });
   }
 

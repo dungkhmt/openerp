@@ -1,9 +1,8 @@
 package com.hust.baseweb.applications.whiteboard.service;
 
 import com.hust.baseweb.applications.whiteboard.entity.UserWhiteboard;
-import com.hust.baseweb.applications.whiteboard.entity.WhiteBoardData;
 import com.hust.baseweb.applications.whiteboard.entity.Whiteboard;
-import com.hust.baseweb.applications.whiteboard.model.GetListWhiteboard;
+import com.hust.baseweb.applications.whiteboard.model.GetListWhiteboardModel;
 import com.hust.baseweb.applications.whiteboard.model.SaveWhiteboardDataModel;
 import com.hust.baseweb.applications.whiteboard.model.WhiteboardDetailModel;
 import com.hust.baseweb.applications.whiteboard.repo.UserWhiteboardRepo;
@@ -34,29 +33,31 @@ public class WhiteboardServiceImpl implements  WhiteboardService {
         Whiteboard whiteboard = new Whiteboard();
         whiteboard.setId(whiteboardId);
         whiteboard.setName("Whiteboard" + whiteboardId);
+        whiteboard.setTotalPage(1);
         whiteboard.setCreatedBy(userId);
         whiteboard.setCreatedDate(new Date());
         whiteboardRepo.save(whiteboard);
     }
 
     @Override
-    public List<GetListWhiteboard> getWhiteboards(UserLogin userLogin) {
+    public List<GetListWhiteboardModel> getWhiteboards(UserLogin userLogin) {
         List<UserWhiteboard> userWhiteboardList = userWhiteboardRepo.findAllByUserLogin(userLogin);
-        List<GetListWhiteboard> getListWhiteboards = new ArrayList<>();
+        List<GetListWhiteboardModel> getListWhiteboardModels = new ArrayList<>();
         for (UserWhiteboard userWhiteboard: userWhiteboardList) {
             Whiteboard whiteboard = userWhiteboard.getWhiteboard();
             if (whiteboard != null) {
-                GetListWhiteboard getListWhiteboard = new GetListWhiteboard();
-                getListWhiteboard.setId(whiteboard.getId());
-                getListWhiteboard.setName(whiteboard.getName());
-                getListWhiteboard.setCreatedBy(whiteboard.getCreatedBy());
-                getListWhiteboard.setCreatedDate(whiteboard.getCreatedDate());
+                GetListWhiteboardModel getListWhiteboardModel = new GetListWhiteboardModel();
+                getListWhiteboardModel.setId(whiteboard.getId());
+                getListWhiteboardModel.setName(whiteboard.getName());
+                getListWhiteboardModel.setTotalPage(whiteboard.getTotalPage());
+                getListWhiteboardModel.setCreatedBy(whiteboard.getCreatedBy());
+                getListWhiteboardModel.setCreatedDate(whiteboard.getCreatedDate());
 
-                getListWhiteboards.add(getListWhiteboard);
+                getListWhiteboardModels.add(getListWhiteboardModel);
             }
         }
 
-        return getListWhiteboards;
+        return getListWhiteboardModels;
     }
 
     @Override
@@ -65,6 +66,7 @@ public class WhiteboardServiceImpl implements  WhiteboardService {
         whiteboard.setLastModifiedDate(new Date());
         whiteboard.setLastModifiedBy(userId);
         whiteboard.setData(input.getData());
+        whiteboard.setTotalPage(input.getTotalPage());
 
         whiteboardRepo.save(whiteboard);
     }
@@ -78,7 +80,7 @@ public class WhiteboardServiceImpl implements  WhiteboardService {
             return null;
         }
         whiteboardDetailModel.setName(whiteboard.getName());
-
+        whiteboardDetailModel.setTotalPage(whiteboard.getTotalPage());
         whiteboardDetailModel.setData((whiteboard.getData()));
 
         return whiteboardDetailModel;

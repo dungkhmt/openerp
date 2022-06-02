@@ -11,9 +11,10 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetListWhiteboard {
+public class GetListWhiteboardModel {
     private String id;
     private String name;
+    private Integer totalPage;
     private Date createdDate;
     private String createdBy;
 }

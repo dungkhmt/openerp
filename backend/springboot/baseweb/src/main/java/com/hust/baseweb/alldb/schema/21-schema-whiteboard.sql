@@ -3,6 +3,7 @@ CREATE TABLE whiteboard
     id    VARCHAR(60) NOT NULL,
     name     VARCHAR(60),
     data                  text,
+    total_page         integer,
     created_date       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_modified_date TIMESTAMP,
     created_by      VARCHAR(60),

@@ -27,6 +27,7 @@ public class WhiteBoardData {
     @Column(name = "data")
     private String data;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "whiteboard_id", referencedColumnName = "id")
     private Whiteboard whiteboard;

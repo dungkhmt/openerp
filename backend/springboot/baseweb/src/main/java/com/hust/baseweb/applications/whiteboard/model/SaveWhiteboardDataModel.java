@@ -12,5 +12,6 @@ import lombok.Setter;
 public class SaveWhiteboardDataModel {
     private String whiteboardId;
     private String data;
+    private Integer totalPage;
 }
 

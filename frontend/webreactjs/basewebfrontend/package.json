@@ -79,6 +79,7 @@
     "react-router-hash-link": "^2.4.3",
     "react-scripts": "^4.0.1",
     "react-scroll-box": "^0.3.5",
+    "react-slick": "^0.29.0",
     "react-split-pane": "^2.0.3",
     "react-text-mask": "^5.4.3",
     "react-toastify": "^6.2.0",
@@ -88,6 +89,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "simplebar-react": "^2.3.6",
+    "slick-carousel": "^1.8.1",
     "socket.io-client": "^4.5.0",
     "xlsx": "^0.14.5",
     "yup": "^0.29.3"

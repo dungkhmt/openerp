@@ -69,7 +69,7 @@ export const TransformerText = React.memo(({ value, offset, tool, onUpdateText }
       y: (offset?.top) + textPosition.y,
     }
     const textarea = document.createElement('textarea')
-    document.body.appendChild(textarea)
+    document.body.querySelector('#slider-grand').appendChild(textarea)
     textarea.value = value.text
     textarea.style.position = 'absolute'
     textarea.style.top = `${areaPosition.y}px`

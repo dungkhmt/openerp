@@ -1,38 +1,48 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Group, Layer, Line, Text } from 'react-konva'
-import { SOCKET_IO_EVENTS, EVENT_TYPE, TOOL, KEYS, POLLING_INTERVAL } from '../../../../utils/whiteboard/constants'
+import { updateLocalStorageData } from '../../../../utils/whiteboard/localStorage'
+import { SOCKET_IO_EVENTS, EVENT_TYPE, TOOL, KEYS } from '../../../../utils/whiteboard/constants'
 import { SocketContext } from '../../../../utils/whiteboard/context/SocketContext'
 
-export const DrawLine = React.memo(({ eventPointer, scale, tool }) => {
+export const DrawLine = React.memo(({ eventPointer, scale, tool, currentPage }) => {
   const { socket } = useContext(SocketContext)
   const [lines, setLines] = useState([])
   const linesRef = useRef([])
-  const intervalRef = useRef(null)
 
   useEffect(() => {
-    socket.on(SOCKET_IO_EVENTS.ON_DRAW_LINE_END, (pointsToAdd) => {
-      setLines(pointsToAdd)
-      linesRef.current = pointsToAdd
-      const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) ?? '{}')
-      drawData.lines = pointsToAdd
+    socket.on(SOCKET_IO_EVENTS.ON_DRAW_LINE_END, ({ data, currentDrawPage }) => {
+      if (currentDrawPage === Number(currentPage)) {
+        setLines(data)
+        linesRef.current = data
+      }
+      const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
+      if (typeof drawData.lines !== 'undefined') {
+        drawData.lines = updateLocalStorageData(drawData.lines, data, currentPage)
+      } else {
+        drawData.lines = [{ data, currentPage }]
+      }
       localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(drawData))
     })
 
-    intervalRef.current = setInterval(() => {
-      const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) ?? '{}')
+    socket.on(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, () => {
+      const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
       if (typeof drawData.lines !== 'undefined') {
-        setLines(drawData.lines)
-        linesRef.current = drawData.lines
+        const foundDrawData = drawData.lines.find((item) => Number(item.currentPage) === Number(currentPage))
+        if (typeof foundDrawData !== 'undefined') {
+          setLines(foundDrawData.data)
+          linesRef.current = foundDrawData.data
+        } else {
+          setLines([])
+          linesRef.current = []
+        }
       }
-    }, POLLING_INTERVAL)
+    })
 
     return () => {
       socket.off(SOCKET_IO_EVENTS.ON_DRAW_LINE_END)
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
+      socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
     }
-  }, [])
+  }, [currentPage])
 
   useEffect(() => {
     if (eventPointer.eventType === null || tool !== TOOL.PEN) {
@@ -41,11 +51,9 @@ export const DrawLine = React.memo(({ eventPointer, scale, tool }) => {
 
     if (eventPointer.eventType === EVENT_TYPE.MOUSE_DOWN) {
       const { x, y } = eventPointer.pointerPosition
+      linesRef.current = [...linesRef.current, { tool, points: [x, y] }]
       setLines([...lines, { tool, points: [x, y] }])
     } else if (eventPointer.eventType === EVENT_TYPE.MOUSE_MOVE) {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
       const { x, y } = eventPointer.pointerPosition
       const lastLine = lines[lines.length - 1]
       // add point
@@ -54,13 +62,18 @@ export const DrawLine = React.memo(({ eventPointer, scale, tool }) => {
 
       // replace last
       lines.splice(lines.length - 1, 1, lastLine)
-      setLines([...lines.slice(0, lines.length - 1), lastLine])
+      linesRef.current = [...linesRef.current.slice(0, linesRef.current.length - 1), lastLine]
+      setLines(lines.concat())
     } else {
-      const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) ?? '{}')
+      const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
       linesRef.current = [...linesRef.current, { tool, points: lines[lines.length - 1].points }]
-      drawData.lines = linesRef.current
+      if (typeof drawData.lines !== 'undefined') {
+        drawData.lines = updateLocalStorageData(drawData.lines, linesRef.current, currentPage)
+      } else {
+        drawData.lines = [{ data: linesRef.current, currentPage }]
+      }
       localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(drawData))
-      socket.emit(SOCKET_IO_EVENTS.DRAW_LINE_END, linesRef.current)
+      socket.emit(SOCKET_IO_EVENTS.DRAW_LINE_END, { data: linesRef.current, currentDrawPage: Number(currentPage) })
     }
 
   }, [eventPointer])

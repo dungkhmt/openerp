@@ -1,9 +1,7 @@
 package com.hust.baseweb.applications.whiteboard.controller;
 
-import com.hust.baseweb.applications.whiteboard.entity.WhiteBoardData;
-import com.hust.baseweb.applications.whiteboard.entity.Whiteboard;
 import com.hust.baseweb.applications.whiteboard.model.CreateWhiteboardModel;
-import com.hust.baseweb.applications.whiteboard.model.GetListWhiteboard;
+import com.hust.baseweb.applications.whiteboard.model.GetListWhiteboardModel;
 import com.hust.baseweb.applications.whiteboard.model.SaveWhiteboardDataModel;
 import com.hust.baseweb.applications.whiteboard.model.WhiteboardDetailModel;
 import com.hust.baseweb.applications.whiteboard.service.WhiteboardServiceImpl;
@@ -33,13 +31,13 @@ public class WhiteBoardController {
     }
 
     @GetMapping("/whiteboards")
-    public ResponseEntity<List<GetListWhiteboard>> getWhiteboards(
+    public ResponseEntity<List<GetListWhiteboardModel>> getWhiteboards(
         Principal principal){
 
         UserLogin u = userService.findById(principal.getName());
-        List<GetListWhiteboard> getListWhiteboards = whiteboardService.getWhiteboards(u);
+        List<GetListWhiteboardModel> getListWhiteboardModels = whiteboardService.getWhiteboards(u);
 
-        return ResponseEntity.ok().body(getListWhiteboards);
+        return ResponseEntity.ok().body(getListWhiteboardModels);
     }
 
     @PostMapping("/whiteboards/save")

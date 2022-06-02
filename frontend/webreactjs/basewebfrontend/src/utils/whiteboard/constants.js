@@ -7,13 +7,19 @@ export const SOCKET_IO_EVENTS = {
   ON_DRAW_RECT_END: 'onDrawRectEnd',
   ON_DRAW_CIRCLE_END: 'onDrawCircleEnd',
   ON_ADD_TEXT_END: 'onAddText',
+  ADD_NEW_PAGE: 'addNewPage',
+  ON_ADD_NEW_PAGE: 'onAddNewPage',
+
+  CHECK_LOCAL_STORAGE: 'checkLocalStorage',
+  ON_CHECK_LOCAL_STORAGE: 'onCheckLocalStorage',
 }
 
 export const KEYS = {
   DRAW_DATA_LOCAL_STORAGE: '@draw_data_local_storage',
+  DRAWING_DATA_LOCAL_STORAGE: '@drawing_data_local_storage',
 }
 
-export const POLLING_INTERVAL = 3000
+export const POLLING_INTERVAL = 500
 
 export const TOOL = {
   PEN: 'PEN',
