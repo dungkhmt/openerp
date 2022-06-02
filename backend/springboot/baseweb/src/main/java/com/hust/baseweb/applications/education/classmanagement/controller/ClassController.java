@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.hust.baseweb.applications.contentmanager.model.ContentHeaderModel;
 import com.hust.baseweb.applications.contentmanager.model.ContentModel;
 import com.hust.baseweb.applications.contentmanager.repo.MongoContentService;
+import com.hust.baseweb.applications.education.classmanagement.model.ModelAddUser2ClassInput;
 import com.hust.baseweb.applications.education.classmanagement.service.ClassServiceImpl;
 import com.hust.baseweb.applications.education.content.Video;
 import com.hust.baseweb.applications.education.content.VideoService;
@@ -170,6 +171,12 @@ public class ClassController {
     @GetMapping("/{id}/students")
     public ResponseEntity<List<GetStudentsOfClassOM>> getStudentsOfClass(@PathVariable UUID id) {
         return ResponseEntity.ok().body(classService.getStudentsOfClass(id));
+    }
+    @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
+    @PostMapping("/add-all-users-to-class")
+    public ResponseEntity<?> addAllUsers2Class(Principal principal, @RequestBody ModelAddUser2ClassInput I){
+        int cnt = classService.addAllUser2Class(I.getClassCode());
+        return ResponseEntity.ok().body(cnt);
     }
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
