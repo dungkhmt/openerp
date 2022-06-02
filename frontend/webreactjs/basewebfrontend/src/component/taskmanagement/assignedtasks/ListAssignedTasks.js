@@ -8,7 +8,8 @@ import { request } from "../../../api";
 import { useState, useEffect } from "react";
 import {
     boxComponentStyle,
-    Header
+    Header,
+    TASK_CATEGORY_COLOR
 } from "../ultis/constant";
 import BasicAlert from "../alert/BasicAlert";
 import { useHistory } from "react-router";

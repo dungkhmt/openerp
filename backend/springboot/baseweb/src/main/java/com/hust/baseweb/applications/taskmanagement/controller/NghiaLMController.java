@@ -3,6 +3,7 @@ package com.hust.baseweb.applications.taskmanagement.controller;
 import com.hust.baseweb.applications.taskmanagement.dto.dao.PersonDao;
 import com.hust.baseweb.applications.taskmanagement.dto.dao.ProjectDao;
 import com.hust.baseweb.applications.taskmanagement.dto.dao.TaskDao;
+import com.hust.baseweb.applications.taskmanagement.dto.form.ProjectForm;
 import com.hust.baseweb.applications.taskmanagement.dto.form.ProjectMemberForm;
 import com.hust.baseweb.applications.taskmanagement.dto.form.TaskForm;
 import com.hust.baseweb.applications.taskmanagement.entity.*;
@@ -15,6 +16,7 @@ import com.hust.baseweb.service.UserService;
 import com.hust.baseweb.service.PersonService;
 import lombok.AllArgsConstructor;
 import okhttp3.Response;
+import org.bouncycastle.cert.ocsp.RespID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -206,5 +208,21 @@ public class NghiaLMController {
         Task task = taskService.getTask(taskId);
         task.setStatusItem(taskService.getStatusItemByStatusId(statusId));
         return ResponseEntity.ok(taskService.updateTask(task));
+    }
+
+    @PutMapping("/projects/{projectId}")
+    public ResponseEntity<Object> updateProject(
+        @PathVariable("projectId") UUID projectId,
+        @RequestBody ProjectForm projectForm){
+        Project project = projectService.getProjectById(projectId);
+        project.setName(projectForm.getName());
+        project.setCode(projectForm.getCode());
+        return ResponseEntity.ok(projectService.save(project));
+    }
+
+    @DeleteMapping("/projects/{projectId}")
+    public ResponseEntity<Object> deleteProject(@PathVariable("projectId") UUID projectId){
+        projectService.deleteProjectById(projectId);
+        return ResponseEntity.ok("delete success!");
     }
 }

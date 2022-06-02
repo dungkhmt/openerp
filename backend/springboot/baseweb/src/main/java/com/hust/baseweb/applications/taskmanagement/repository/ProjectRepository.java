@@ -12,4 +12,7 @@ import java.util.UUID;
 public interface ProjectRepository extends JpaRepository<Project, Integer>, CrudRepository<Project, Integer> {
 
     Project findById(UUID id);
+
+    @Query(value = "DELETE FROM backlog_project e WHERE e.backlog_project_id = :projectId", nativeQuery = true)
+    boolean deleteByProjectId(@Param("projectId") UUID projectId);
 }

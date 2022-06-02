@@ -12,7 +12,8 @@ import {
     Tooltip,
     IconButton,
     TableCell,
-    Avatar
+    Avatar,
+    AvatarGroup
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { request } from "../../api";
@@ -27,6 +28,9 @@ import {
     boxChildComponent,
     centerBox
 } from './ultis/constant';
+import {
+    LimitString
+} from './ultis/helpers';
 import { Link } from 'react-router-dom';
 
 const ListTasks = () => {
@@ -105,7 +109,7 @@ const ListTasks = () => {
                     'id': task.id,
                     'category': task.taskCategory.categoryName,
                     'taskName': task.name,
-                    'description': task.description == '' ? "Không có mô tả" : task.description,
+                    'description': LimitString(30, task.description),
                     'status': task.statusItem === null ? "Không xác định !" : task.statusItem.statusCode,
                     'priority': task.taskPriority.priorityName,
                     'dueDate': task.dueDate
@@ -160,7 +164,12 @@ const ListTasks = () => {
                         </Typography>
                     </Box>
                     <Box mr={3}>
-                        {members.slice().splice(0, 3).map(item => (
+                        <AvatarGroup total={members.length} onClick={handleOpen}>
+                            {members.slice().splice(0, 3).map(item => (
+                                <Avatar>{item.fullName.charAt(0).toUpperCase()}</Avatar>
+                            ))}
+                        </AvatarGroup>
+                        {/* {members.slice().splice(0, 3).map(item => (
                             <Tooltip key={item.partyId} title={item.fullName}>
                                 <Link to={`/${item.partyId}`}>
                                     <IconButton aria-label="user" size="large" sx={{ border: 1, borderColor: "#ccc", mr: 1 }}>
@@ -173,10 +182,10 @@ const ListTasks = () => {
                             <IconButton aria-label="user" size="large" sx={{ border: 1, borderColor: "#ccc", mr: 1 }} onClick={handleOpen}>
                                 <AddOutlinedIcon />
                             </IconButton>
-                        </Tooltip>
+                        </Tooltip> */}
                         <BasicModal open={open} handleClose={handleClose}>
                             {members.map(member => (
-                                <Box sx={boxChildComponent} key={member.partyId}>
+                                <Box sx={boxChildComponent} key={member.partyId} mb={3}>
                                     <Link to={`/${member.partyId}`} style={{ textDecoration: 'none', color: '#000' }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                             <Avatar sx={{ mr: 2, width: 56, height: 56 }}>{member.fullName.charAt(0).toUpperCase()}</Avatar>
@@ -188,9 +197,6 @@ const ListTasks = () => {
                                 </Box>
                             ))}
                         </BasicModal>
-                    </Box>
-                    <Box>
-                        <Button variant='contained' color="success">Thêm thành viên</Button>
                     </Box>
                 </Box>
             </Box>
@@ -213,10 +219,11 @@ const ListTasks = () => {
                 </Grid>
             </Box>
             <Box sx={boxComponentStyle}>
-                <Box sx={{ mb: 3 }}>
+                <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant='h5'>
                         Danh sách các nhiệm vụ
                     </Typography>
+                    <Link to={`/taskmanagement/project/tasks/create/${projectId}`} style={{ textDecoration: 'none', marginRight: '15px' }}><Button variant='outlined' color='primary'>Thêm nhiệm vụ</Button></Link>
                 </Box>
                 <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                     <TableContainer sx={{ maxHeight: 440 }}>

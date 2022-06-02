@@ -33,7 +33,12 @@ public class ProjectServiceImplement implements ProjectService {
     }
 
     @Override
-    public void deleteProjectById(Integer id) {
-        projectRepository.deleteById(id);
+    public void deleteProjectById(UUID id) {
+        projectRepository.deleteByProjectId(id);
+    }
+
+    @Override
+    public Project save(Project project) {
+        return projectRepository.save(project);
     }
 }

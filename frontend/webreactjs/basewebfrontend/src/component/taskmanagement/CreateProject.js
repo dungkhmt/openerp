@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useState, forwardRef } from "react";
 import { useHistory } from "react-router";
+import { useParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -20,6 +21,9 @@ import BasicAlert from "./alert/BasicAlert";
 import { useForm } from "react-hook-form";
 
 export default function CreateProject() {
+
+  const { projectId, type } = useParams();
+
   const [openModal, setOpenModal] = useState(false);
   const [typeAlert, setTypeAlert] = useState("success");
   const [message, setMessage] = useState("Đã thêm mới thành công");
@@ -41,6 +45,19 @@ export default function CreateProject() {
     setOpenModal(false);
   };
 
+  useEffect(() => {
+    request(
+      "get",
+      `/projects/${projectId}`,
+      (res) => {
+        console.log(res.data);
+        setValue('name', res.data.name);
+        setValue('code', res.data.code);
+      },
+      {}
+    );
+  }, []);
+
   const onSubmit = (data) => {
     console.log(data);
     request(
@@ -59,12 +76,30 @@ export default function CreateProject() {
     );
   }
 
+  const onUpdate = (data) => {
+    console.log(data);
+    request(
+      "put",
+      `/projects/${projectId}`,
+      (res) => {
+        setOpenModal(true);
+        setTypeAlert("success");
+        setMessage("Đã cập nhật thành công");
+        setTimeout(() => {
+          history.push('/taskmanagement/project/list');
+        }, 1000);
+      },
+      {},
+      data
+    );
+  }
+
   return (
     <>
       <Box sx={boxComponentStyle}>
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h4" mb={4} component={'h4'}> 
-            Thêm dự án mới
+          <Typography variant="h4" mb={4} component={'h4'}>
+            {type === 'create' ? ("Thêm dự án mới") : ("Chỉnh sửa dự án")}
           </Typography>
         </Box>
         <Box sx={boxChildComponent}>
@@ -100,11 +135,14 @@ export default function CreateProject() {
             </Box>
             <Box mb={3} backgroundColor={"#EEE"}>
               <Typography paragraph={true} px={2}>
-                The project key is a unique identifier for a project. A short, concise key is recommended.
-                (e.g. Project name Backlog has project key BLG_2) Uppercase letters (A-Z), numbers (0-9) and underscore (_) can be used.
+                Mã dự án là một chuỗi kí tự được chỉ định cho dự án đó, vì vậy nó nên là duy nhất!
               </Typography>
             </Box>
-            <Button variant="contained" color="primary" sx={{ mb: 2 }} onClick={handleSubmit(onSubmit)}>Submit</Button>
+            {type === 'create' ?
+              <Button variant="contained" color="primary" sx={{ mb: 2 }} onClick={handleSubmit(onSubmit)}>Submit</Button>
+              :
+              <Button variant="contained" color="primary" sx={{ mb: 2 }} onClick={handleSubmit(onUpdate)}>Update</Button>
+            }
           </Box>
         </Box>
       </Box>

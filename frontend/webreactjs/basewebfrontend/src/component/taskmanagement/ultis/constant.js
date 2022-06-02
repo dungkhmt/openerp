@@ -32,4 +32,17 @@ export const Header = ({children}) => {
     );
 }
 
+export const TASK_STATUS_COLOR = {
+    TASK_INPROGRESS: '#dc9925',
+    TASK_OPEN: '#dc9925',
+    TASK_RESOLVED: '#dc9925',
+    ASSIGNMENT_ACTIVE: '#dc9925',
+    ASSIGNMENT_ACTIVE: '#dc9925'
+}
 
+export const TASK_CATEGORY_COLOR = {
+    OTHER: '#3b9dbd',
+    REQUEST: '#dc9925',
+    TASK: '#a1af2f',
+    BUG: '#ea733b'
+}

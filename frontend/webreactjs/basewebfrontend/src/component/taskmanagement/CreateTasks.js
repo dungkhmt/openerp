@@ -21,15 +21,17 @@ import BasicAlert from "./alert/BasicAlert";
 import { useForm } from "react-hook-form";
 import DateTimePickerBasic from "./datetimepicker/DateTimePickerBasic";
 import { useHistory } from "react-router";
+import { useParams } from "react-router";
+import { Link } from 'react-router-dom';
 
 export default function CreateTask() {
     const history = useHistory();
-
+    const { projectIdUrl } = useParams();
     const [categories, setCategories] = useState([]);
     const [priorities, setPriorities] = useState([]);
     const [persons, setPersons] = useState([]);
     const [projects, setProjects] = useState([]);
-
+    const [projectName, setProjectName] = useState("");
     const { register, errors, handleSubmit, watch } = useForm();
 
     const [categoryId, setCategoryId] = useState("");
@@ -37,6 +39,7 @@ export default function CreateTask() {
     const [partyId, setPartyId] = useState("");
     const [projectId, setProjectId] = useState("");
     const [dueDate, setDueDate] = useState(new Date());
+    const [fileName, setFileName] = useState("");
 
     const [typeAlert, setTypeAlert] = useState("success");
     const [message, setMessage] = useState("Đã thêm mới thành công");
@@ -54,17 +57,31 @@ export default function CreateTask() {
             console.log(err);
         });
 
-        request('get', '/task-persons', res => {
-            setPersons(res.data);
-        }, err => {
-            console.log(err);
-        });
+        if (projectIdUrl) {
+            request('get', `/projects/${projectIdUrl}`, res => {
+                setProjectName(res.data.name);
+            }, err => {
+                console.log(err);
+            });
 
-        request('get', '/projects', res => {
-            setProjects(res.data);
-        }, err => {
-            console.log(err);
-        });
+            request('get', `/projects/${projectIdUrl}/members`, res => {
+                setPersons(res.data);
+            }, err => {
+                console.log(err);
+            });
+        } else {
+            request('get', '/task-persons', res => {
+                setPersons(res.data);
+            }, err => {
+                console.log(err);
+            });
+
+            request('get', '/projects', res => {
+                setProjects(res.data);
+            }, err => {
+                console.log(err);
+            });
+        }
     }, []);
 
     const onSubmit = (data) => {
@@ -80,6 +97,8 @@ export default function CreateTask() {
             projectId: "c7ee3679-167a-49fa-a7ab-0b8764e1bf89"
         };
 
+
+        let projectId = projectIdUrl ? projectIdUrl : projectId;
 
         request(
             "post",
@@ -120,9 +139,18 @@ export default function CreateTask() {
     return (
         <>
             <Box sx={boxComponentStyle}>
-                <Typography variant="h4" mb={4} component={'h4'}>
-                    Thêm nhiệm vụ mới
-                </Typography>
+                <Box mb={4}>
+                    <Typography variant="h4" component={'h4'}>
+                        Thêm nhiệm vụ mới
+                    </Typography>
+                    {projectIdUrl &&
+                        <Link to={`/taskmanagement/project/${projectIdUrl}/tasks`} style={{textDecoration: 'none'}}>
+                            <Typography variant="caption" mb={3} color="primary">
+                                Dự án: {projectName}
+                            </Typography>
+                        </Link>
+                    }
+                </Box>
                 <form>
                     <Grid container mb={3}>
                         <Grid item={true} xs={3}>
@@ -243,30 +271,32 @@ export default function CreateTask() {
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item={true} xs={6} p={2}>
-                                <Grid container>
-                                    <Grid item={true} xs={4}>
-                                        <Typography variant="body1">
-                                            Dự án
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item={true} xs={8}>
-                                        <TextField
-                                            select
-                                            fullWidth
-                                            label={"Danh sách dự án"}
-                                            defaultValue=""
-                                            value={projectId}
-                                            onChange={(e) => setProjectId(e.target.value)}
-                                            required
-                                        >
-                                            {projects.map((item) => (
-                                                <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
-                                            ))}
-                                        </TextField>
+                            {!projectIdUrl &&
+                                <Grid item={true} xs={6} p={2}>
+                                    <Grid container>
+                                        <Grid item={true} xs={4}>
+                                            <Typography variant="body1">
+                                                Dự án
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item={true} xs={8}>
+                                            <TextField
+                                                select
+                                                fullWidth
+                                                label={"Danh sách dự án"}
+                                                defaultValue=""
+                                                value={projectId}
+                                                onChange={(e) => setProjectId(e.target.value)}
+                                                required
+                                            >
+                                                {projects.map((item) => (
+                                                    <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+                                                ))}
+                                            </TextField>
+                                        </Grid>
                                     </Grid>
                                 </Grid>
-                            </Grid>
+                            }
                         </Grid>
                     </Box>
                     <Box sx={boxChildComponent} mb={3}>
@@ -276,7 +306,7 @@ export default function CreateTask() {
                                     Tài liệu đính kèm
                                 </Typography>
                             </Grid>
-                            <Grid item={true} xs={5}>
+                            <Grid item={true} xs={10} sx={{ display: 'flex', alignItem: 'center' }}>
                                 <Button
                                     component="label"
                                     variant="contained"
@@ -285,8 +315,11 @@ export default function CreateTask() {
                                     color="primary"
                                 >
                                     Upload file
-                                    <input type="file" hidden onChange={() => console.log("upload file")} />
+                                    <input type="file" hidden onChange={(e) => { console.log(e.target.files[0].name); setFileName(e.target.files[0]) }} />
                                 </Button>
+                                <Typography variant="inherit" color={"primary"}>
+                                    {fileName.name}
+                                </Typography>
                             </Grid>
                         </Grid>
                     </Box>

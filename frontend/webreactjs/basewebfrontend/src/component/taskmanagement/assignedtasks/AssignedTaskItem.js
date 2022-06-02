@@ -7,7 +7,8 @@ import {
     MenuItem
 } from "@material-ui/core";
 import {
-    boxChildComponent
+    boxChildComponent,
+    TASK_CATEGORY_COLOR
 } from "../ultis/constant";
 import {
     Typography
@@ -33,14 +34,14 @@ const AssignedTaskItem = ({ task, taskStatus, handleUpdateStatus }) => {
                 <Grid container>
                     <Grid item={true} xs={8}>
                         <Box display={'flex'} alignItems={'center'} mb={2}>
-                            <Typography variant="caption" sx={{
+                            <Typography variant="body2" sx={{
                                 border: 1,
-                                borderRadius: "15px",
-                                borderColor: "#1c4ded",
-                                backgroundColor: "#b9defa",
+                                borderRadius: "20px",
+                                borderColor: TASK_CATEGORY_COLOR[task.taskCategory.categoryId],
+                                backgroundColor: TASK_CATEGORY_COLOR[task.taskCategory.categoryId],
                                 px: 2,
-                                py: 1,
-                                mr: 2
+                                mr: 2,
+                                color: "#fff"
                             }}>
                                 {category}
                             </Typography>
@@ -56,6 +57,7 @@ const AssignedTaskItem = ({ task, taskStatus, handleUpdateStatus }) => {
                             defaultValue=""
                             value={statusId}
                             onChange={(e) => setStatusId(e.target.value)}
+                            sx={{backgroundColor: "#eee"}}
                         >
                             {taskStatus.map((item) => (
                                 <MenuItem key={item.statusId} value={item.statusId}>{item.statusCode}</MenuItem>

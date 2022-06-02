@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router";
 import CreateProject from "../component/taskmanagement/CreateProject";
-import ListProject from "../component/taskmanagement/ListProject";
+import ListProject from "../component/taskmanagement/projects/ListProject";
 import CreateTask from "../component/taskmanagement/CreateTasks";
 import AddUserToProject from "../component/taskmanagement/AddUserToProject";
 import ListTasks from "../component/taskmanagement/ListTasks";
@@ -15,7 +15,7 @@ export default function TaskManagementRoute() {
         <Route
           component={CreateProject}
           exacts
-          path={`${path}/project/create`}
+          path={`${path}/project/type/:type/:projectId?`}
         ></Route>
         <Route
           component={ListProject}
@@ -25,7 +25,7 @@ export default function TaskManagementRoute() {
         <Route
           component={CreateTask}
           exact
-          path={`${path}/project/tasks/create`}
+          path={`${path}/project/tasks/create/:projectIdUrl?`}
         ></Route>
         <Route
           component={AddUserToProject}

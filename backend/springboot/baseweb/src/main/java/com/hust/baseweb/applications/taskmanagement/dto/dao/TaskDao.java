@@ -44,7 +44,7 @@ public class TaskDao {
         this.setName(task.getName());
         this.setProject(task.getProject());
         this.setTaskCategory(task.getTaskCategory());
-        this.setDescription(task.getDescription() != null ? "Không có mô tả" : task.getDescription());
+        this.setDescription(task.getDescription() != null ? task.getDescription() : "Không có mô tả");
         this.setStatusItem(task.getStatusItem());
         this.setTaskPriority(task.getTaskPriority());
         this.setDueDate(sdf.format(task.getDueDate()));
