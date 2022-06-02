@@ -19,11 +19,9 @@ import {
 
 import BasicAlert from "./alert/BasicAlert";
 import { useForm } from "react-hook-form";
-import DateTimePickerBasic from "./datetimepicker/DateTimePickerBasic";
 import { useHistory } from "react-router";
 import { useParams } from "react-router";
 import { Link } from 'react-router-dom';
-
 export default function CreateTask() {
     const history = useHistory();
     const { projectIdUrl } = useParams();
@@ -144,7 +142,7 @@ export default function CreateTask() {
                         Thêm nhiệm vụ mới
                     </Typography>
                     {projectIdUrl &&
-                        <Link to={`/taskmanagement/project/${projectIdUrl}/tasks`} style={{textDecoration: 'none'}}>
+                        <Link to={`/taskmanagement/project/${projectIdUrl}/tasks`} style={{ textDecoration: 'none' }}>
                             <Typography variant="caption" mb={3} color="primary">
                                 Dự án: {projectName}
                             </Typography>
