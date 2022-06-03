@@ -2,6 +2,7 @@
   "ID": "ID",
   "problem": "Problem",
   "problemId": "Problem ID",
+  "level": "Level",
   "problemList": {
     "title": "Problems"
   },
