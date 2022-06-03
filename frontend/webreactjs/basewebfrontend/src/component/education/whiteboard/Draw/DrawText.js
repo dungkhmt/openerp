@@ -24,7 +24,7 @@ export const DrawText = React.memo(({ eventPointer, offset, tool, currentPage, o
       localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(drawData))
     })
 
-    socket.on(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, () => {
+    const onChangePage = () => {
       const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
       if (typeof drawData.text !== 'undefined') {
         const foundDrawData = drawData.text.find((item) => Number(item.currentPage) === Number(currentPage))
@@ -36,7 +36,11 @@ export const DrawText = React.memo(({ eventPointer, offset, tool, currentPage, o
           annotationsRef.current = []
         }
       }
-    })
+    }
+
+    setTimeout(() => onChangePage(), 150)
+
+    socket.on(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, onChangePage)
 
     return () => {
       socket.off(SOCKET_IO_EVENTS.ON_ADD_TEXT_END)

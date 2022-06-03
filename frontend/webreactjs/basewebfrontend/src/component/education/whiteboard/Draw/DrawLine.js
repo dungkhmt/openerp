@@ -24,7 +24,7 @@ export const DrawLine = React.memo(({ eventPointer, scale, tool, currentPage }) 
       localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(drawData))
     })
 
-    socket.on(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, () => {
+    const onChangePage = () => {
       const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
       if (typeof drawData.lines !== 'undefined') {
         const foundDrawData = drawData.lines.find((item) => Number(item.currentPage) === Number(currentPage))
@@ -36,7 +36,11 @@ export const DrawLine = React.memo(({ eventPointer, scale, tool, currentPage }) 
           linesRef.current = []
         }
       }
-    })
+    }
+
+    setTimeout(() => onChangePage(), 150)
+
+    socket.on(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, onChangePage)
 
     return () => {
       socket.off(SOCKET_IO_EVENTS.ON_DRAW_LINE_END)

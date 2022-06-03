@@ -99,7 +99,6 @@ export const MainBoard = React.memo(() => {
           return
         }
         const totalData = JSON.parse(res?.data?.data) || { lines: [], rectangle: [], circle: [], text: [] }
-        console.log('totalData1', totalData);
         totalData.whiteboardId = whiteboardId
         totalData.lines = mergeDrawData(drawingData.lines || [], totalData.lines || [])
         totalData.rectangle = mergeDrawData(drawingData.rectangle || [], totalData.rectangle || [])
@@ -290,11 +289,11 @@ export const MainBoard = React.memo(() => {
       <div id='slider-grand' style={{ width: "calc(100% - 5px)", height: "calc(100vh - 155px)", position: 'relative' }} ref={parentRef}>
         <Slider ref={slideRef} {...settings}>
           {pages.map((page) => (
-            <div key={page}>
+            <div key={page} style={{ width: "calc(100% - 5px)", height: "calc(100vh - 155px)", position: 'relative' }}>
               <Stage
                 ref={stageRef}
-                width={stageConfig.width}
-                height={stageConfig.height}
+                width={stageConfig.width === 0 ? width - 300 : stageConfig.width}
+                height={stageConfig.height === 0 ? height - 120 : stageConfig.height}
                 onMouseDown={handleMouseDown}
                 onMousemove={handleMouseMove}
                 onMouseup={handleMouseUp}
