@@ -508,6 +508,11 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(null);
     }
 
+    @PostMapping("/add-all-users-to-contest")
+    public ResponseEntity<?> addAllUsersToContest(Principal principal, @RequestBody ModelAddUserToContest modelAddUserToContest){
+        int cnt = problemTestCaseService.addAllUsersToContest(modelAddUserToContest);
+        return ResponseEntity.ok().body(cnt);
+    }
     @PostMapping("/add-user-to-contest")
     public ResponseEntity<?> addUserContest(@RequestBody ModelAddUserToContest modelAddUserToContest){
         problemTestCaseService.addUserToContest(modelAddUserToContest);

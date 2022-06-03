@@ -93,7 +93,8 @@ public interface ProblemTestCaseService {
 
     void editTestCase(UUID testCaseId, ModelSaveTestcase modelSaveTestcase) throws MiniLeetCodeException;
 
-    void addUserToContest(ModelAddUserToContest modelAddUserToContest);
+    int addUserToContest(ModelAddUserToContest modelAddUserToContest);
+    int addAllUsersToContest(ModelAddUserToContest modelAddUserToContest);
 
     void deleteUserContest(ModelAddUserToContest modelAddUserToContest) throws MiniLeetCodeException;
 

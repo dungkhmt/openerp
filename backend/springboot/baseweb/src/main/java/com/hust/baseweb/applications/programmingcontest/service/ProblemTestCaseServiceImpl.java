@@ -1192,7 +1192,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public void addUserToContest(ModelAddUserToContest modelAddUserToContest) {
+    public int addUserToContest(ModelAddUserToContest modelAddUserToContest) {
         UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserId(modelAddUserToContest.getContestId(), modelAddUserToContest.getUserId());
         if(userRegistrationContest == null) {
             userRegistrationContestRepo.save(UserRegistrationContestEntity.builder()
@@ -1201,11 +1201,24 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     .status(Constants.RegistrationType.SUCCESSFUL.getValue())
                                                                           .roleId(modelAddUserToContest.getRole())
                     .build());
+            return 1;
         }else{
             userRegistrationContest.setStatus(Constants.RegistrationType.SUCCESSFUL.getValue());
             userRegistrationContestRepo.save(userRegistrationContest);
+            return 0;
         }
 
+    }
+
+    @Override
+    public int addAllUsersToContest(ModelAddUserToContest model) {
+        List<UserLogin> users = userService.getAllUserLogins();
+        int cnt = 0;
+        for(UserLogin u: users){
+            model.setUserId(u.getUserLoginId());
+            cnt += addUserToContest(model);
+        }
+        return cnt;
     }
 
     @Override
