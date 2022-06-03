@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,6 +51,15 @@ public class VideoService {
     @Transactional
     public void delete(UUID id) {
         filesRepo.updateDeleted(id, true);
+    }
+
+    public void deleteVideo(UUID id) {
+        File deleteFile = new File(videoPath +"/" +id);
+        try {
+            deleteFile.delete();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Transactional

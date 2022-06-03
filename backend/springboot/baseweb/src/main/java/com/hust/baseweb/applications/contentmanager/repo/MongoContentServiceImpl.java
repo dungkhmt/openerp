@@ -33,4 +33,8 @@ public class MongoContentServiceImpl implements MongoContentService {
     return operations.getResource(fID);
   }
 
+  public  void deleteFilesById(String id){
+      operations.delete(Query.query(Criteria.where("_id").is(id)));
+  }
+
 }

@@ -5,7 +5,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from "@material-ui/icons";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link, useHistory } from "react-router-dom";
@@ -15,6 +15,8 @@ import InputComment from "./comment/InputComment";
 import CommentItem from "./comment/CommentItem";
 import { makeStyles } from "@material-ui/core/styles";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
+import { number } from "prop-types";
+import Loading from "../../common/Loading";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,28 +50,36 @@ function StudentCourseChapterMaterialDetail() {
   const [listImage, setListImage] = useState([]);
   const [displayImage, setDisplayImage] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [pageNumberValue, setPageNumberValue] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const escFunction = useCallback((event) => {
-    if (event.keyCode === 27) {
-      setIsFullScreen(false);
+  //handle change page number
+  const onHandleChangePageNumber = (event) => {
+    setPageNumberValue(event.target.value);
+  };
+
+  //handle press enter numberpage
+  const onPressEnter = (event) => {
+    if (event.key === "Enter") {
+      if (pageNumberValue !== "") {
+        if (pageNumberValue >= 1 && pageNumberValue <= listImage.length) {
+          setDisplayImage(pageNumberValue - 1);
+        }
+      }
     }
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener("keydown", escFunction);
-
-    return () => {
-      document.removeEventListener("keydown", escFunction);
-    };
-  }, [escFunction]);
+  };
 
   async function getImages(slideId) {
+    setIsLoading(true);
     let res = await authPost(dispatch, token, "/file", {
       // fileId: "62829f1693445a31606162b6;62829f1793445a31606162b8",
       fileId: slideId,
+    }).then((res) => {
+      console.log("listImg: ", res);
+      setListImage(res);
+      setIsLoading(false);
     });
     //let res = authGet(dispatch, token, '/edu/class/get-course-chapter-material-detail/' + chapterMaterialId);
-    setListImage(res);
   }
 
   async function getCourseChapterMaterialDetail() {
@@ -96,12 +106,14 @@ function StudentCourseChapterMaterialDetail() {
 
   const prevImage = () => {
     if (displayImage > 0) {
+      setPageNumberValue(displayImage);
       setDisplayImage(displayImage - 1);
     }
   };
 
   const nextImage = () => {
     if (displayImage < listImage.length) {
+      setPageNumberValue(displayImage + 2);
       setDisplayImage(displayImage + 1);
     }
   };
@@ -210,22 +222,27 @@ function StudentCourseChapterMaterialDetail() {
           <Link to={"/edu/teacher/course/chapter/detail/" + chapterId}>
             {chapterName}
           </Link>
-          {sourceId !== null ? (
-            <Player id={sourceId} />
-          ) : (
+          {chapterMaterial?.eduCourseMaterialType ===
+            "EDU_COURSE_MATERIAL_TYPE_VIDEO" && <Player id={sourceId} />}
+          {chapterMaterial?.eduCourseMaterialType ===
+            "EDU_COURSE_MATERIAL_TYPE_SLIDE" && (
             <>
               {listImage && (
                 <>
                   <div style={{ textAlign: "center", padding: "20px" }}>
-                    <img
-                      src={`data:image/png;base64,${listImage[displayImage]}`}
-                      alt="img"
-                      style={{
-                        border: "1px solid #000",
-                        maxWidth: "80%",
-                        maxHeight: "85vh",
-                      }}
-                    />
+                    {isLoading ? (
+                      <Loading />
+                    ) : (
+                      <img
+                        src={`data:image/png;base64,${listImage[displayImage]}`}
+                        alt="img"
+                        style={{
+                          border: "1px solid #000",
+                          maxWidth: "80%",
+                          maxHeight: "85vh",
+                        }}
+                      />
+                    )}
                     <FullScreen
                       onChange={(isFullScreen, handleSeeFullScreen) => {
                         setIsFullScreen(isFullScreen);
@@ -253,10 +270,10 @@ function StudentCourseChapterMaterialDetail() {
                               padding: "10px",
                               background: "rgb(33 28 28 / 50%)",
                               position: "fixed",
-                              width: "300px",
+                              width: "350px",
                               bottom: "10px",
                               left: "50%",
-                              marginLeft: "-150px",
+                              marginLeft: "-175px",
                               borderRadius: "5px",
                               color: "white",
                             }}
@@ -273,9 +290,25 @@ function StudentCourseChapterMaterialDetail() {
                                 maxWidth: "120px",
                                 textAlign: "center",
                               }}
-                            >{`Page ${displayImage + 1}/${
-                              listImage.length
-                            }`}</span>
+                            >
+                              Page{" "}
+                              <input
+                                type={number}
+                                value={pageNumberValue}
+                                onKeyUp={onPressEnter}
+                                onChange={onHandleChangePageNumber}
+                                style={{
+                                  width: "40px",
+                                  height: "25px",
+                                  background: "#a09c9c96",
+                                  border: "none",
+                                  color: "#fff",
+                                  borderRadius: "5px",
+                                  marginRight: "3px",
+                                }}
+                              />
+                              /{listImage.length}
+                            </span>
                             <Button
                               onClick={nextImage}
                               disabled={
@@ -322,7 +355,17 @@ function StudentCourseChapterMaterialDetail() {
                         maxWidth: "120px",
                         textAlign: "center",
                       }}
-                    >{`Page ${displayImage + 1}/${listImage.length}`}</span>
+                    >
+                      Page{" "}
+                      <input
+                        type={number}
+                        value={pageNumberValue}
+                        onKeyUp={onPressEnter}
+                        onChange={onHandleChangePageNumber}
+                        style={{ width: "40px", height: "25px" }}
+                      />
+                      /{listImage.length}
+                    </span>
                     <Button
                       variant="contained"
                       onClick={nextImage}
@@ -348,6 +391,19 @@ function StudentCourseChapterMaterialDetail() {
                 </>
               )}
             </>
+          )}
+          {chapterMaterial?.eduCourseMaterialType === null && (
+            <div
+              style={{
+                height: "300px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              Bài giảng không có tài liệu
+            </div>
           )}
         </CardContent>
       </Card>

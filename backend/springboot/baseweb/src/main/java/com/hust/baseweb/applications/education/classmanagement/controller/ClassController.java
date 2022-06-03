@@ -23,20 +23,17 @@ import com.hust.baseweb.config.FileSystemStorageProperties;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.gridfs.GridFsResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.access.annotation.Secured;
@@ -54,7 +51,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.Principal;
 import java.util.*;
 
@@ -327,30 +323,32 @@ public class ClassController {
                 List<String> attachmentId = new ArrayList<>();
 
                 PDDocument document = PDDocument.load(files[0].getInputStream());
-                List<PDPage> list = document.getDocumentCatalog().getAllPages();
-                log.info("Total files to be converted -> "+ list.size());
-
-                String fileName = files[0].getName().replace(".pdf", "");
-                int pageNumber = 1;
+                PDFRenderer pdfRenderer = new PDFRenderer(document);
 
                 //check if folder slides is existing
                 File slidesDir = new File(properties.getFilesystemRoot() + "/slides/");
-                    if (!slidesDir.exists()){
-                        slidesDir.mkdirs();
-                    }
+                if (!slidesDir.exists()){
+                    slidesDir.mkdirs();
+                }
 
-                //change file pdf to image and hash to save in mongo
-                for (PDPage page : list) {
-                    BufferedImage image = page.convertToImage();
-                    File outputfile = new File(properties.getFilesystemRoot() + "/slides/" + fileName + "_" + pageNumber + ".png");
-                    log.info("Image Created -> "+ outputfile.getName());
-                    ImageIO.write(image, "png", outputfile);
-                    pageNumber++;
+                //change pdf format to png and hash image
+                int numberOfPages = document.getNumberOfPages();
+                System.out.println("Total files to be converting -> "+ numberOfPages);
+
+                String fileName = files[0].getName().replace(".pdf", "");
+                String fileExtension= "png";
+
+                int dpi = 150;  //for less store hard disk
+                for (int i = 0; i < numberOfPages; ++i) {
+                    File outPutFile = new File(properties.getFilesystemRoot() + "/slides/" + fileName +"_"+ (i+1) +"."+ fileExtension);
+                    BufferedImage bImage = pdfRenderer.renderImageWithDPI(i, dpi, ImageType.RGB);
+                    ImageIO.write(bImage, fileExtension, outPutFile);
+
                     // change type File to type MultipartFile
-                    FileInputStream input = new FileInputStream(outputfile);
+                    FileInputStream input = new FileInputStream(outPutFile);
                     MultipartFile multipartFileImage = new MockMultipartFile(
                         "file",
-                        outputfile.getName(),
+                        outPutFile.getName(),
                         "text/plain",
                         IOUtils.toByteArray(input)
                     );
@@ -360,7 +358,7 @@ public class ClassController {
                     long imageId = new Date().getTime();
                     ContentModel model = new ContentModel( String.valueOf(imageId), multipartFileImage);
 
-
+                    //store image to mongodb
                     try {
                         id = mongoContentService.storeFileToGridFs(model);
                     } catch (IOException e) {
@@ -372,25 +370,21 @@ public class ClassController {
                     if (id != null) {
                         ContentHeaderModel rs = new ContentHeaderModel(id.toHexString());
                         attachmentId.add(rs.getId());
-                        log.info("============================================");
-                        log.info("First image id + " + attachmentId.get(pageNumber - 2));
                     }
-//delete file
+
+                    //delete file image
                     try  {
-                        outputfile.delete();
+                        outPutFile.delete();
                     }
                     catch (Exception e){
                      e.printStackTrace();
                     }
-
-
-
                 }
                 String stringIdList = String.join(";", attachmentId);
 
                 eduCourseChapterMaterial = eduCourseChapterMaterialService.saveSlide(eduCourseChapterMaterialModelCreate, stringIdList);
-                document.close();
-            } else if(eduCourseChapterMaterialModelCreate.getMaterialType().equals("EDU_COURSE_MATERIAL_TYPE_VIDEO")){
+            } else
+                if(eduCourseChapterMaterialModelCreate.getMaterialType().equals("EDU_COURSE_MATERIAL_TYPE_VIDEO")){
                 Video video = videoService.create(files[0]);
                 log.info("createChapterMaterialOfCourse, videoId = " + video.getId());
                 eduCourseChapterMaterial = eduCourseChapterMaterialService.save(eduCourseChapterMaterialModelCreate, video);
@@ -401,6 +395,7 @@ public class ClassController {
             }
 
         } catch (Exception e) {
+            //return error to frontend
             e.printStackTrace();
             Map<String,Boolean> temp = new HashMap<>();
             temp.put("error", true);
@@ -426,6 +421,240 @@ public class ClassController {
                                         "");
         }
         log.info("create successful");
+        return ResponseEntity.ok().body(eduCourseChapterMaterial);
+    }
+
+    @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
+    @DeleteMapping("/delete-course-chapter-material-detail-slide-video/{chapterMarialId}")
+    public ResponseEntity<?>deleteCourseChapterMaterialSlideOrVideo(Principal principal, @PathVariable UUID chapterMarialId){
+        log.info("run here");
+        EduCourseChapterMaterial eduCourseChapterMaterial = null;
+        try{
+            eduCourseChapterMaterial = eduCourseChapterMaterialService.findById(chapterMarialId);
+            log.info("find successs");
+
+            String materialType = eduCourseChapterMaterial.getEduCourseMaterialType();
+            if(materialType.equals("EDU_COURSE_MATERIAL_TYPE_SLIDE")){
+                log.info("delete slide");
+
+                String[] fileIds = eduCourseChapterMaterial.getSlideId().split(";");
+                if (fileIds.length != 0) {
+                    for (String fileId : fileIds) {
+                        try{
+                            mongoContentService.deleteFilesById(fileId);
+                            log.info(fileId);
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                log.info("delete slide successful");
+                eduCourseChapterMaterialService.updateMaterial(
+                    eduCourseChapterMaterial.getEduCourseMaterialId(),
+                    eduCourseChapterMaterial.getEduCourseMaterialName(),
+                    null,
+                    null,
+                    eduCourseChapterMaterial.getSourceId()
+                );
+            } else if (materialType.equals("EDU_COURSE_MATERIAL_TYPE_VIDEO")) {
+                videoService.deleteVideo(eduCourseChapterMaterial.getSourceId());
+                eduCourseChapterMaterialService.updateMaterial(
+                    eduCourseChapterMaterial.getEduCourseMaterialId(),
+                    eduCourseChapterMaterial.getEduCourseMaterialName(),
+                    null,
+                    null,
+                    null
+                );
+                log.info("delete video");
+            } else {
+
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+            Map<String,Boolean> temp = new HashMap<>();
+            temp.put("error", true);
+            ResponseEntity.ok().body(eduCourseChapterMaterial);
+        }
+
+        return ResponseEntity.ok().body(eduCourseChapterMaterial);
+    }
+
+    @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
+    @PutMapping("/update-course-chapter-material-detail/{chapterMarialId}")
+    public ResponseEntity<?>updateCourseChapterMaterial(
+        Principal principal,
+        @PathVariable UUID chapterMarialId,
+        @RequestBody EduCourseChapterMaterial eduCourseChapterMaterial
+    ){
+        log.info(eduCourseChapterMaterial);
+        try{
+            eduCourseChapterMaterial = eduCourseChapterMaterialService.findById(chapterMarialId);
+            log.info("find successs");
+
+            eduCourseChapterMaterialService.updateMaterial(
+                eduCourseChapterMaterial.getEduCourseMaterialId(),
+                eduCourseChapterMaterial.getEduCourseMaterialName(),
+                eduCourseChapterMaterial.getEduCourseMaterialType(),
+                eduCourseChapterMaterial.getSlideId(),
+                eduCourseChapterMaterial.getSourceId()
+            );
+        } catch(Exception e) {
+            e.printStackTrace();
+            Map<String,Boolean> temp = new HashMap<>();
+            temp.put("error", true);
+            ResponseEntity.ok().body(eduCourseChapterMaterial);
+        }
+
+        return ResponseEntity.ok().body(eduCourseChapterMaterial);
+    }
+
+    @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
+    @PostMapping("/update-chapter-material-of-course")
+    //public ResponseEntity<?> createChapterMaterialOfCourse(Principal principal, @RequestBody
+    //  EduCourseChapterMaterialModelCreate eduCourseChapterMaterialModelCreate){
+    public ResponseEntity<?> updateChapterMaterialOfCourse(
+        Principal principal, @RequestParam("inputJson") String inputJson,
+        @RequestParam("files") MultipartFile[] files
+    ) {
+        UserLogin u = userService.findById(principal.getName());
+
+        Gson gson = new Gson();
+
+
+        EduCourseChapterMaterial eduCourseChapterMaterial = gson.fromJson(
+            inputJson,
+            EduCourseChapterMaterial.class);
+
+        EduCourseChapterMaterial oldEduCourseChapterMaterial = eduCourseChapterMaterialService.findById(eduCourseChapterMaterial.getEduCourseMaterialId());
+        String oldListStringId = oldEduCourseChapterMaterial.getSlideId();
+        UUID oldSourceId = oldEduCourseChapterMaterial.getSourceId();
+        try {
+
+            log.info("file type = " + eduCourseChapterMaterial.getEduCourseMaterialType());
+            if(eduCourseChapterMaterial.getEduCourseMaterialType().equals("EDU_COURSE_MATERIAL_TYPE_SLIDE") ){
+                List<String> attachmentId = new ArrayList<>();
+
+                PDDocument document = PDDocument.load(files[0].getInputStream());
+                PDFRenderer pdfRenderer = new PDFRenderer(document);
+
+                //check if folder slides is existing
+                File slidesDir = new File(properties.getFilesystemRoot() + "/slides/");
+                if (!slidesDir.exists()){
+                    slidesDir.mkdirs();
+                }
+
+                //change pdf format to png and hash image
+                int numberOfPages = document.getNumberOfPages();
+                System.out.println("Total files to be converting -> "+ numberOfPages);
+
+                String fileName = files[0].getName().replace(".pdf", "");
+                String fileExtension= "png";
+
+                int dpi = 150;  //for less store hard disk
+                for (int i = 0; i < numberOfPages; ++i) {
+                    File outPutFile = new File(properties.getFilesystemRoot() + "/slides/" + fileName +"_"+ (i+1) +"."+ fileExtension);
+                    BufferedImage bImage = pdfRenderer.renderImageWithDPI(i, dpi, ImageType.RGB);
+                    ImageIO.write(bImage, fileExtension, outPutFile);
+
+                    // change type File to type MultipartFile
+                    FileInputStream input = new FileInputStream(outPutFile);
+                    MultipartFile multipartFileImage = new MockMultipartFile(
+                        "file",
+                        outPutFile.getName(),
+                        "text/plain",
+                        IOUtils.toByteArray(input)
+                    );
+                    //hash image to binary
+                    ObjectId id = null;
+
+                    long imageId = new Date().getTime();
+                    ContentModel model = new ContentModel( String.valueOf(imageId), multipartFileImage);
+
+                    //store image to mongodb
+                    try {
+                        id = mongoContentService.storeFileToGridFs(model);
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
+                    // add list id to array attachmentId
+                    if (id != null) {
+                        ContentHeaderModel rs = new ContentHeaderModel(id.toHexString());
+                        attachmentId.add(rs.getId());
+                    }
+
+                    //delete file image
+                    try  {
+                        outPutFile.delete();
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                String stringIdList = String.join(";", attachmentId);
+
+                EduCourseChapterMaterial newEduCourseChapterMaterial = eduCourseChapterMaterialService.updateMaterial(
+                    eduCourseChapterMaterial.getEduCourseMaterialId(),
+                    eduCourseChapterMaterial.getEduCourseMaterialName(),
+                    eduCourseChapterMaterial.getEduCourseMaterialType(),
+                    stringIdList,
+                    null
+                );
+                document.close();
+            } else
+            if(eduCourseChapterMaterial.getEduCourseMaterialType().equals("EDU_COURSE_MATERIAL_TYPE_VIDEO")){
+                Video video = videoService.create(files[0]);
+                log.info("createChapterMaterialOfCourse, videoId = " + video.getId());
+
+                EduCourseChapterMaterial newEduCourseChapterMaterial = eduCourseChapterMaterialService.updateMaterial(
+                    eduCourseChapterMaterial.getEduCourseMaterialId(),
+                    eduCourseChapterMaterial.getEduCourseMaterialName(),
+                    eduCourseChapterMaterial.getEduCourseMaterialType(),
+                    null,
+                    video.getId()
+                );
+                log.info("*************************");
+                log.info("slide content mongo db " + eduCourseChapterMaterial.getSlideId());
+
+            }
+
+            //delete old file
+            //delete slide
+            if(oldListStringId != null){
+                String[] fileIds = oldListStringId.split(";");
+                if (fileIds.length != 0) {
+                    for (String fileId : fileIds) {
+                        try{
+                            mongoContentService.deleteFilesById(fileId);
+                            log.info(fileId);
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                log.info("delete old slide successful");
+            }
+            //delete video
+            if(oldSourceId != null) {
+                videoService.deleteVideo(oldSourceId);
+                log.info("delete old video successful");
+            }
+            //delete video
+
+        } catch (Exception e) {
+            //return error to frontend
+            e.printStackTrace();
+            Map<String,Boolean> temp = new HashMap<>();
+            temp.put("error", true);
+            return ResponseEntity.ok().body(temp);
+        }
+
+        log.info("change successful");
         return ResponseEntity.ok().body(eduCourseChapterMaterial);
     }
 
