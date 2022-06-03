@@ -11,4 +11,6 @@ public interface MongoContentService {
     public ObjectId storeFileToGridFs(ContentModel contentModel) throws IOException;
 
     public GridFsResource getById(String id);
+
+    public void deleteFilesById(String id);
 }

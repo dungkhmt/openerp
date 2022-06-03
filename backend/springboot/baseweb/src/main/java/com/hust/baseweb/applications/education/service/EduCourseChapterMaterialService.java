@@ -24,4 +24,6 @@ public interface EduCourseChapterMaterialService {
     public List<EduCourseChapterMaterial> findAllByChapterId(UUID chapterId);
 
     public EduCourseChapterMaterial findById(UUID eduCourseChapterMaterialId);
+
+    public EduCourseChapterMaterial updateMaterial(UUID eduCourseChapterMaterialId, String eduCourseMaterialName, String eduCourseMaterialType, String slideId, UUID sourceId);
 }

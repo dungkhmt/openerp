@@ -222,9 +222,10 @@ function StudentCourseChapterMaterialDetail() {
           <Link to={"/edu/teacher/course/chapter/detail/" + chapterId}>
             {chapterName}
           </Link>
-          {sourceId !== null ? (
-            <Player id={sourceId} />
-          ) : (
+          {chapterMaterial?.eduCourseMaterialType ===
+            "EDU_COURSE_MATERIAL_TYPE_VIDEO" && <Player id={sourceId} />}
+          {chapterMaterial?.eduCourseMaterialType ===
+            "EDU_COURSE_MATERIAL_TYPE_SLIDE" && (
             <>
               {listImage && (
                 <>
@@ -390,6 +391,19 @@ function StudentCourseChapterMaterialDetail() {
                 </>
               )}
             </>
+          )}
+          {chapterMaterial?.eduCourseMaterialType === null && (
+            <div
+              style={{
+                height: "300px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              Bài giảng không có tài liệu
+            </div>
           )}
         </CardContent>
       </Card>
