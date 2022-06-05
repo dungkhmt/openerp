@@ -13,7 +13,7 @@ import { toast } from 'react-toastify'
 import Slider from "react-slick";
 import { useQueryString } from 'utils/whiteboard/hooks/useQueryString'
 import { SocketContext } from '../../../../utils/whiteboard/context/SocketContext'
-import { mergeDrawData } from '../../../../utils/whiteboard/localStorage'
+import { mergeDrawData, removeData } from '../../../../utils/whiteboard/localStorage'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -55,7 +55,7 @@ export const MainBoard = React.memo(() => {
     width,
     height,
   })
-  const [tool, setTool] = useState(TOOL.RECTANGLE)
+  const [tool, setTool] = useState(TOOL.PEN)
   const [scale, setScale] = useState(1)
   const [eventPointer, setEventPointer] = useState({
     [TOOL.PEN]: { eventType: null, pointerPosition: { x: 0, y: 0 } },
@@ -63,6 +63,7 @@ export const MainBoard = React.memo(() => {
     [TOOL.CIRCLE]: { eventType: null, pointerPosition: { x: 0, y: 0 } },
     [TOOL.TEXT]: { eventType: null, pointerPosition: { x: 0, y: 0 } },
   })
+  const [stageContainer, setStageContainer] = useState(null)
   const [offset, setOffset] = useState()
   const isDrawing = useRef(false)
   const gridLayerRef = useRef(null)
@@ -78,6 +79,28 @@ export const MainBoard = React.memo(() => {
         slideRef.current.slickGoTo(newPage.id)
       }
     })
+    socket.on(SOCKET_IO_EVENTS.ON_DELETE_PAGE, ({ pageId }) => {
+      setPages((prev) => prev.reduce((acc, item) => {
+        if (item.id < Number(pageId)) {
+          acc.push(item)
+        } else {
+          if (item.id === Number(pageId)) { 
+            return acc
+          }
+          acc.push({ id: item.id - 1 })
+        }
+        return acc
+      }, []))
+
+      history.push(`?page=${pageId === 1 ? 1 : pageId - 1}`)
+      if (slideRef.current) {
+        slideRef.current.slickGoTo(pageId === 1 ? 1 : pageId - 1)
+      }
+    })
+
+    if (stageRef && stageRef.current) {
+      setStageContainer(stageRef.current.container())
+    }
     // add user to whiteboard here
     void (async () => {
       await request("put", `/whiteboards/add-user/${whiteboardId}`, () => {}, {}, {});
@@ -155,7 +178,11 @@ export const MainBoard = React.memo(() => {
     if (scale !== 1) {
       pos = e.currentTarget.getRelativePointerPosition()
     }
-    setEventPointer(prev => ({ ...prev, [tool]: { eventType: EVENT_TYPE.MOUSE_DOWN, pointerPosition: { x: pos?.x, y: pos?.y } }}))
+    if (tool === TOOL.ERASER) {
+      setEventPointer(prev => ({ ...prev, [TOOL.PEN]: { eventType: EVENT_TYPE.MOUSE_DOWN, pointerPosition: { x: pos?.x, y: pos?.y } }}))
+    } else {
+      setEventPointer(prev => ({ ...prev, [tool]: { eventType: EVENT_TYPE.MOUSE_DOWN, pointerPosition: { x: pos?.x, y: pos?.y } }}))
+    }
     setOffset({
       top: stageRef.current?.container().offsetTop,
       left: stageRef.current?.container().offsetLeft,
@@ -172,7 +199,11 @@ export const MainBoard = React.memo(() => {
     if (scale !== 1) {
       point = e.currentTarget.getRelativePointerPosition()
     }
-    setEventPointer(prev => ({ ...prev, [tool]: { eventType: EVENT_TYPE.MOUSE_MOVE, pointerPosition: { x: point?.x, y: point?.y } }}))
+    if (tool === TOOL.ERASER) {
+      setEventPointer(prev => ({ ...prev, [TOOL.PEN]: { eventType: EVENT_TYPE.MOUSE_MOVE, pointerPosition: { x: point?.x, y: point?.y } }}))
+    } else {
+      setEventPointer(prev => ({ ...prev, [tool]: { eventType: EVENT_TYPE.MOUSE_MOVE, pointerPosition: { x: point?.x, y: point?.y } }}))
+    }
   }
 
   const handleMouseUp = (e) => {
@@ -181,7 +212,12 @@ export const MainBoard = React.memo(() => {
     if (scale !== 1) {
       point = e.currentTarget.getRelativePointerPosition()
     }
-    setEventPointer(prev => ({ ...prev, [tool]: { eventType: EVENT_TYPE.MOUSE_MOUSE_UPMOVE, pointerPosition: { x: point?.x, y: point?.y } }}))
+    if (tool === TOOL.ERASER) {
+      setEventPointer(prev => ({ ...prev, [TOOL.PEN]: { eventType: EVENT_TYPE.MOUSE_UP, pointerPosition: { x: point?.x, y: point?.y } }}))
+    } else {
+      setEventPointer(prev => ({ ...prev, [tool]: { eventType: EVENT_TYPE.MOUSE_UP, pointerPosition: { x: point?.x, y: point?.y } }}))
+    }
+    
   }
 
   const handleWheel = (e) => {
@@ -226,7 +262,7 @@ export const MainBoard = React.memo(() => {
     const requestBody = {
       whiteboardId,
       data: JSON.stringify(drawData),
-      totalPage: queryString.get("page"),
+      totalPage: pages.length,
     }
     await request("post", "/whiteboards/save", () => {
       toast.success('Save whiteboard content successfully.', {
@@ -248,17 +284,44 @@ export const MainBoard = React.memo(() => {
     history.push(`?page=${currentPagesLength + 1}`)
   }
 
+  const onDeletePage = () => {
+    const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
+    const currentPage = queryString.get('page')
+    
+    const newDrawData = { lines: [], rectangle: [], circle: [], text: [] }
+    newDrawData.lines = removeData(drawData.lines || [], currentPage)
+    newDrawData.rectangle = removeData(drawData.rectangle || [], currentPage)
+    newDrawData.circle = removeData(drawData.circle || [], currentPage)
+    newDrawData.text = removeData(drawData.text || [], currentPage)
+
+    if (Number(currentPage) === 1) {
+      history.push(`?page=2`)
+    } else {
+      history.push(`?page=${Number(currentPage) - 1}`)
+    }
+    localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(newDrawData))
+    const newPages = pages.reduce((acc, item) => {
+      if (item.id < Number(currentPage)) {
+        acc.push(item)
+      } else {
+        if (item.id === Number(currentPage)) {
+          return acc
+        }
+        acc.push({ id: item.id - 1 })
+      }
+      return acc
+    }, [])
+    setPages(newPages)
+    if (slideRef.current) {
+      slideRef.current.slickGoTo(Number(currentPage) === 1 ? 1 : Number(currentPage) - 1)
+    }
+    socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE)
+    socket.emit(SOCKET_IO_EVENTS.DELETE_PAGE, { pageId: Number(currentPage) })
+  }
+
   const onBeforeChange = useCallback((current, next) => {
     history.push(`?page=${next + 1}`)
   }, [])
-
-  // const onAfterChange = () => {
-  //   const currentPage = queryString.get('page')
-  //   console.log('currentPage', currentPage);
-  //   if (Number(currentPage) !== pages.length) {
-  //     history.push(`?page=${Number(currentPage) + 1}`)
-  //   }
-  // }
 
   const settings = useMemo(() => ({
     className: "slider-parent",
@@ -286,10 +349,11 @@ export const MainBoard = React.memo(() => {
       </select>
       <button type="button" onClick={onSaveWhiteboardData}>Save</button>
       <button type="button" onClick={onAddNewPage}>Add new page</button>
+      {pages.length >= 2 && <button type="button" onClick={onDeletePage}>Delete page {queryString.get('page')}</button>}
       <div id='slider-grand' style={{ width: "calc(100% - 5px)", height: "calc(100vh - 155px)", position: 'relative' }} ref={parentRef}>
         <Slider ref={slideRef} {...settings}>
           {pages.map((page) => (
-            <div key={page} style={{ width: "calc(100% - 5px)", height: "calc(100vh - 155px)", position: 'relative' }}>
+            <div key={page}>
               <Stage
                 ref={stageRef}
                 width={stageConfig.width === 0 ? width - 300 : stageConfig.width}
@@ -304,8 +368,8 @@ export const MainBoard = React.memo(() => {
               >
                 <Layer ref={gridLayerRef} draggable={false} x={0} y={0} />
                 <DrawLine eventPointer={eventPointer[TOOL.PEN]} scale={scale} tool={tool} currentPage={queryString.get('page')} />
-                <DrawRectangle eventPointer={eventPointer[TOOL.RECTANGLE]} scale={scale} tool={tool} currentPage={queryString.get('page')} />
-                <DrawCircle eventPointer={eventPointer[TOOL.CIRCLE]} scale={scale} tool={tool} currentPage={queryString.get('page')} />
+                <DrawRectangle eventPointer={eventPointer[TOOL.RECTANGLE]} scale={scale} tool={tool} currentPage={queryString.get('page')} stageContainer={stageContainer} />
+                <DrawCircle eventPointer={eventPointer[TOOL.CIRCLE]} scale={scale} tool={tool} currentPage={queryString.get('page')} stageContainer={stageContainer} />
                 <DrawText eventPointer={eventPointer[TOOL.TEXT]} offset={offset} tool={tool} currentPage={queryString.get('page')} onUpdateTool={onSetDefaultTool} />
               </Stage>
             </div>

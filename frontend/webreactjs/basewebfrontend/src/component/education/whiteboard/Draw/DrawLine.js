@@ -49,7 +49,7 @@ export const DrawLine = React.memo(({ eventPointer, scale, tool, currentPage }) 
   }, [currentPage])
 
   useEffect(() => {
-    if (eventPointer.eventType === null || tool !== TOOL.PEN) {
+    if (eventPointer.eventType === null || (tool !== TOOL.PEN && tool !== TOOL.ERASER)) {
       return
     }
 
@@ -70,7 +70,6 @@ export const DrawLine = React.memo(({ eventPointer, scale, tool, currentPage }) 
       setLines(lines.concat())
     } else {
       const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-      linesRef.current = [...linesRef.current, { tool, points: lines[lines.length - 1].points }]
       if (typeof drawData.lines !== 'undefined') {
         drawData.lines = updateLocalStorageData(drawData.lines, linesRef.current, currentPage)
       } else {

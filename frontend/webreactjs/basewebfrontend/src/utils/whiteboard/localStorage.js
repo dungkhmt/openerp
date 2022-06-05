@@ -40,3 +40,38 @@ export const mergeDrawData = (oldData, newData) => {
 
   return result
 }
+
+export const removeData = (data, page) => {
+  //  data: [{ currentPage: 1, data: []}, { currentPage: 2, data: []}]
+  let newData = []
+  const index = data.findIndex(item => Number(item.currentPage) === Number(page))
+  if (index === -1) {
+    if (data.some(item => Number(item.currentPage) > Number(page))) {
+      // decrease currentPage by 1
+      data.forEach((item) => {
+        if (Number(item.currentPage) < Number(page)) {
+          newData.push(item)
+        } else {
+          newData.push({ ...item, currentPage: Number(item.currentPage) - 1 })
+        }
+      })
+    } else {
+      // abort
+      newData = data
+    }
+  } else {
+    // remove data in currentPage & decrease currentPage by 1
+    for (let i = 0; i < data.length; ++i) {
+      if (i === index) {
+        continue
+      }
+      if (Number(data[i].currentPage) < Number(page)) {
+        newData.push(data[i])
+      } else {
+        newData.push({ ...data[i], currentPage: Number(data[i].currentPage) - 1 })
+      }
+    }
+  }
+
+  return newData
+}

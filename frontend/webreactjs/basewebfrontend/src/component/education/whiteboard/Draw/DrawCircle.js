@@ -4,10 +4,11 @@ import { updateLocalStorageData } from '../../../../utils/whiteboard/localStorag
 import { SOCKET_IO_EVENTS, EVENT_TYPE, TOOL, KEYS } from '../../../../utils/whiteboard/constants'
 import { SocketContext } from '../../../../utils/whiteboard/context/SocketContext'
 
-export const DrawCircle = React.memo(({ eventPointer, scale, tool, currentPage }) => {
+export const DrawCircle = React.memo(({ eventPointer, scale, tool, currentPage, stageContainer }) => {
   const { socket } = useContext(SocketContext)
   const [annotations, setAnnotations] = useState([])
   const [newAnnotation, setNewAnnotation] = useState([])
+  const [currentAnnotation, setCurrentAnnotation] = useState(null)
   const annotationsRef = useRef([])
 
   useEffect(() => {
@@ -96,6 +97,40 @@ export const DrawCircle = React.memo(({ eventPointer, scale, tool, currentPage }
     }
   }, [eventPointer])
 
+  useEffect(() => {
+    if (stageContainer === null) {
+      return
+    }
+    stageContainer.tabIndex = 1
+    stageContainer.focus()
+
+    const listener = (e) => {
+      if (e.key === 'Delete' && currentAnnotation !== null) {
+        const newAnnotations = annotations.filter((annotation) => annotation.key !== currentAnnotation.key)
+        setAnnotations(newAnnotations)
+        annotationsRef.current = newAnnotations
+        const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
+        if (typeof drawData.rectangle !== 'undefined') {
+          drawData.rectangle = updateLocalStorageData(drawData.rectangle, annotationsRef.current, currentPage)
+        } else {
+          drawData.rectangle = [{ data: annotationsRef.current, currentPage }]
+        }
+        localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(drawData))
+        socket.emit(SOCKET_IO_EVENTS.DRAW_RECT_END, { data: annotationsRef.current, currentDrawPage: Number(currentPage)})
+      }
+    }
+
+    stageContainer.addEventListener('keydown', listener)
+
+    return () => {
+      stageContainer.removeEventListener('keydown', listener)
+    }
+  }, [stageContainer, currentAnnotation, annotations])
+
+  const onClickCircle = (key) => {
+    setCurrentAnnotation(annotations.find((item) => item.key === key))
+  }
+
   const annotationsToDraw = [...annotations, ...newAnnotation]
 
   return (
@@ -106,12 +141,13 @@ export const DrawCircle = React.memo(({ eventPointer, scale, tool, currentPage }
           x={value.x}
           y={value.y}
           radius={value.radius}
-          stroke="#df4b26"
+          stroke={currentAnnotation !== null && currentAnnotation.key === value.key ? 'red' : '#df4b26'}
           strokeWidth={5 * scale}
           tension={0.5}
           lineCap="round"
           lineJoin="round"
-          globalCompositeOperation={value.tool === TOOL.ERASER ? 'destination-out' : 'source-over'}
+          onClick={() => onClickCircle(value.key)}
+          globalCompositeOperation="source-over"
         />
       ))}
     </Layer>
