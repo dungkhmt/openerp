@@ -184,6 +184,7 @@ create table edu_class_user_login_role(
 create TABLE edu_class_registration (
 	class_id uuid NOT NULL,
 	student_id varchar(255) NOT NULL,
+	role_id varchar(100) NOT NULL,
 	status varchar(20) NOT NULL,
 	last_updated_stamp timestamp NULL,
 	created_stamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

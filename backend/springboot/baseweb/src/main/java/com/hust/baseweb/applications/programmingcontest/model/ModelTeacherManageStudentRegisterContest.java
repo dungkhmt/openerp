@@ -7,4 +7,5 @@ public class ModelTeacherManageStudentRegisterContest {
     private String contestId;
     private String userId;
     private String status;
+    private String role;
 }

@@ -8,6 +8,8 @@ import com.hust.baseweb.applications.programmingcontest.model.ModelCreateContest
 import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
+import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.service.UserService;
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,7 @@ public class ContestProblemController {
     ProblemTestCaseService problemTestCaseService;
     ContestRepo contestRepo;
     ContestSubmissionRepo contestSubmissionRepo;
+    UserService userService;
 
     @PostMapping("/create-problem")
     public ResponseEntity<?> createContestProblem(@RequestBody ModelCreateContestProblem modelCreateContestProblem, Principal principal) throws MiniLeetCodeException {
@@ -277,6 +280,21 @@ public class ContestProblemController {
         log.info("teacherManagerStudentRegisterContest");
         problemTestCaseService.teacherManageStudentRegisterContest(principal.getName(), request);
         return ResponseEntity.status(200).body(null);
+    }
+    @Secured("ROLE_TEACHER")
+    @PostMapping("/teacher-manager-all-student-register-contest")
+    public ResponseEntity<?> teacherManagerAllStudentRegisterContest(Principal principal, @RequestBody ModelTeacherManageStudentRegisterContest request) throws MiniLeetCodeException {
+        log.info("teacherManagerAllStudentRegisterContest");
+        List<UserLogin> users = userService.getAllUserLogins();
+        int cnt = 0;
+        int i = 0;
+        for(UserLogin u: users) {
+            i++;
+            request.setUserId(u.getUserLoginId());
+            cnt += problemTestCaseService.teacherManageStudentRegisterContest(principal.getName(), request);
+            log.info("teacherManagerAllStudentRegisterContest finished " + i + "/" + users.size() + " processed " + cnt);
+        }
+        return ResponseEntity.status(200).body(cnt);
     }
 
 
