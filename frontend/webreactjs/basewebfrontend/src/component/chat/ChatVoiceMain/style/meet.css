@@ -236,6 +236,15 @@
   bottom: 0px;
   height: 48px;
   width: 100%;
+  display: flex;
+}
+
+.invite-button {
+  width: 45px !important;
+  margin-left: 15px !important;
+  height: 30px !important;
+  background-color:rgb(255, 126, 21) !important;
+  margin-top: 18px !important;
 }
 
 .invite-friend .MuiInputLabel-standard.MuiFormLabel-root.MuiFormLabel-colorPrimary {
@@ -244,6 +253,10 @@
 
 .invite-friend input {
   margin-left: 5px;
+}
+
+.invite-friend .MuiAutocomplete-root {
+  width: calc(100% - 80px);
 }
 
 .main-video {
