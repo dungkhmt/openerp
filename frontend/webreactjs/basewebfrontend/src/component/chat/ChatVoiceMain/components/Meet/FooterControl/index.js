@@ -46,39 +46,43 @@ const FooterControl = (props) => {
 
   return (
     <div className="footer-control">
-      <div
-        className="element-bottom"
-        onClick={props.handleClickMicro}
-        title="Micro"
-      >
-        <MicroIcon micro={props.micro} />
+      <div id="footer-control-1">
+        <div
+          className="element-bottom"
+          onClick={props.handleClickMicro}
+          title="Micro"
+        >
+          <MicroIcon micro={props.micro} />
+        </div>
+        <div
+          className="element-bottom"
+          onClick={props.handleClickCamera}
+          title="Camera"
+        >
+          <CameraIcon camera={props.camera} />
+        </div>
       </div>
-      <div
-        className="element-bottom"
-        onClick={props.handleClickCamera}
-        title="Camera"
-      >
-        <CameraIcon camera={props.camera} />
-      </div>
-      <div
-        className="element-bottom share-screen-icon"
-        onClick={props.handleClickShareScreen}
-        title="Share Screen"
-      >
-        <ShareScreenIcon />
-      </div>
-      <div className="element-bottom" onClick={handleClickChat} title="Chat">
-        <ChatIcon />
-      </div>
-      <div
-        className="element-bottom"
-        onClick={handleClickParticipant}
-        title="Participant"
-      >
-        <ParticipantIcon />
-      </div>
-      <div className="element-bottom" onClick={handleOpen} title="Share Meet">
-        <ShareMeetIcon />
+      <div id="footer-control-2">
+        <div
+          className="element-bottom"
+          onClick={props.handleClickShareScreen}
+          title="Share Screen"
+        >
+          <ShareScreenIcon />
+        </div>
+        <div className="element-bottom" onClick={handleClickChat} title="Chat">
+          <ChatIcon />
+        </div>
+        <div
+          className="element-bottom"
+          onClick={handleClickParticipant}
+          title="Participant"
+        >
+          <ParticipantIcon />
+        </div>
+        <div className="element-bottom" onClick={handleOpen} title="Share Meet">
+          <ShareMeetIcon />
+        </div>
       </div>
       <div id="end-room" onClick={props.leaveMeet}>
         <EndIcon />
