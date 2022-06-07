@@ -5,18 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Can dung de mo hinh khoa hoc ma giang vien co the day khi chay thuat toan.
+ * Currently OK. Can dung de mo hinh khoa hoc ma giang vien co the day khi chay thuat toan.
  */
 @Getter
 @Setter
 @AllArgsConstructor
 public class Course4Teacher {
 
-    private String courseId;
+    private String id;
 
-    private String courseName;
+    private String name;
 
     private int priority;
 
-    private String type;
+    private String classType;
 }

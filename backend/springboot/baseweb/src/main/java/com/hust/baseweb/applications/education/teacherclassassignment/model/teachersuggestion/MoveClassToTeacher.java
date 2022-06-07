@@ -7,12 +7,18 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * OK
+ */
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClassToListTeacher{
+public class MoveClassToTeacher {
+
     private String classCode;
+
     private List<TeacherCandidate> teachers;
+
     private String infoNewTeachers;
 }

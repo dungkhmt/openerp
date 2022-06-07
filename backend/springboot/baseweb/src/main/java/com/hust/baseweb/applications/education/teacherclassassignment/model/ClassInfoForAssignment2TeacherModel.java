@@ -9,6 +9,9 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Temporarily OK
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,26 +19,46 @@ import java.util.UUID;
 public class ClassInfoForAssignment2TeacherModel {
 
     private UUID planId;
+
     private String classId;
+
     private String schoolName;
+
     private String semesterId;
+
     private String courseId;
+
     private String className;
+
     private String creditInfo;
+
     private String classNote;
+
     private String program;
+
     private String semesterType;
+
     private int enrollment;
+
     private int maxEnrollment;
+
     private String classType;
+
     private String timeTable;
+
     private String lesson;
+
     private String departmentId;
+
     private String createdByUserLoginId;
+
     private Date createdStamp;
+
     private double hourLoad;
-    private int numberPosibleTeachers;
-    private int numberPosibleTeachersInPlan;
+
+    private int numberPossibleTeachers;
+
+    private int numberPossibleTeachersInPlan;
 
     public ClassInfoForAssignment2TeacherModel(ClassTeacherAssignmentClassInfo c) {
         this.planId = c.getPlanId();

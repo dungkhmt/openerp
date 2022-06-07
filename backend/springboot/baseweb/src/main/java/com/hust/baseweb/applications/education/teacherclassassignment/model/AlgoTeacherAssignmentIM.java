@@ -5,18 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Du lieu da duoc xu ly va chuyen doi thanh dau vao thuat toan.
+ * OK. Du lieu da duoc xu ly va chuyen doi thanh dau vao thuat toan
  */
 @Getter
 @Setter
 @AllArgsConstructor
 public class AlgoTeacherAssignmentIM {
 
-    private AlgoTeacherIM[] teachers;
+    private AlgoTeacherIM[] teachers; // Only teacher in the plan
 
-    private AlgoClassIM[] classes;
+    private AlgoClassIM[] classes; // All classes in plan
 
-    private TeacherClassAssignmentModel[] preAssignments; // mot so lop da duoc phan cong truoc
+    private TeacherClassAssignmentModel[] preAssignments; // Some classes are preassigned
 
     private String solver;
 }

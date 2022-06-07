@@ -17,7 +17,7 @@ public class AlgoClassIM {
 
     private String classType;
 
-    private String courseId;// ma mon hoc, vi du IT3011
+    private String courseId; // ma mon hoc, vi du IT3011
 
     private String courseName;
 
@@ -25,13 +25,16 @@ public class AlgoClassIM {
 
     private double hourLoad; // gio quy doi cua lop (cd: 3 hours)
 
+    private boolean pinned;
+
     public AlgoClassIM(
         String classId,
         String classType,
         String courseId,
         String courseName,
         String timetable,
-        double hourLoad
+        double hourLoad,
+        boolean pinned
     ) {
         this.classId = classId;
         this.classType = classType;
@@ -39,5 +42,6 @@ public class AlgoClassIM {
         this.courseName = courseName;
         this.timetable = timetable;
         this.hourLoad = hourLoad;
+        this.pinned = pinned;
     }
 }

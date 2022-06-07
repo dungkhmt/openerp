@@ -19,7 +19,7 @@ public interface ClassTeacherAssignmentPlanService {
 
     ClassTeacherAssignmentPlanDetailModel getClassTeacherAssignmentPlanDetail(UUID planId);
 
-    List<ClassInfoForAssignment2TeacherModel> findAllClassTeacherAssignmentClassByPlanId(UUID planId);
+    List<ClassInfoForAssignment2TeacherModel> findClassesInPlan(UUID planId);
 
     boolean extractExcelAndStoreDB(UUID planId, MultipartFile file);
 
@@ -31,11 +31,11 @@ public interface ClassTeacherAssignmentPlanService {
 
     List<TeacherForAssignmentPlan> findAllTeacherByPlanId(UUID planId);
 
-    boolean addTeacherToAssignmentPlan(UUID planId, String teacherList);
+    void addTeacherToAssignmentPlan(UUID planId, TeacherForAssignmentPlan[] addedTeachers);
 
-    boolean removeTeacherFromAssignmentPlan(UUID planId, String teacherList);
+    void removeTeacherFromAssignmentPlan(UUID planId, String[] teacherIds);
 
-    boolean removeClassFromAssignmentPlan(UUID planId, String classList);
+    void removeClassFromAssignmentPlan(UUID planId, String[] classIds);
 
     List<TeacherCourse> findAllTeacherCourse();
 
@@ -47,12 +47,14 @@ public interface ClassTeacherAssignmentPlanService {
 
     List<ClassTeacherAssignmentSolutionModel> getNotAssignedClassSolution(UUID planId);
 
-    List<SuggestedTeacherForClass> getSuggestedTeacherForClass(String classId, UUID planId);
+    // Don't use this logic anymore, consider removing in future
+//    List<SuggestedTeacherForClass> getSuggestedTeacherForClass(String classId, UUID planId);
 
     List<SuggestedTeacherAndActionForClass> getSuggestedTeacherAndActionForClass(String classId, UUID planId);
 
     List<ClassesAssignedToATeacherModel> getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable(UUID planId);
-    public TeacherClassAssignmentSolution reAssignTeacherToClass(UserLogin u, AssignTeacherToClassInputModel input);
+
+    void assignTeacherToClass(String userId, UUID planId, AssignTeacherToClassInputModel input);
 
     TeacherClassAssignmentSolution assignTeacherToClass(UserLogin u, AssignTeacherToClassInputModel input);
 
@@ -61,28 +63,35 @@ public interface ClassTeacherAssignmentPlanService {
         RemoveClassTeacherAssignmentSolutionInputModel input
     );
 
-    boolean removeClassTeacherAssignmentSolutionList(UUID planId, String solutionItemList);
+    void removeClassTeacherAssignmentSolutionList(UUID planId, UUID[] solutionItemIds);
 
     List<ClassesAssignedToATeacherModel> getClassesAssignedToATeacherSolution(UUID planId);
 
     List<ClassTeacherAssignmentSolutionModel> getClassTeacherAssignmentSolution(UUID planId);
 
-    boolean addTeacherCourseToAssignmentPlan(UUID planId, String teacherCourseList);
+    void addTeacherCourseToAssignmentPlan(UUID planId, AddTeacherCourse2PlanIM[] teacherCourses);
 
-    boolean removeTeacherCourseFromAssignmentPlan(UUID planId, String teacherCourseList);
+    void removeTeacherCourseFromAssignmentPlan(UUID planId, TeacherCourseForAssignmentPlan[] teacherCourses);
 
     List<PairOfConflictTimetableClassModel> getPairOfConflictTimetableClass(UUID planId);
 
-    ClassTeacherAssignmentClassInfo updateClassForAssignment(
+    void updateClassForAssignment(
         UserLogin u,
+        UUID planId,
+        String classId,
         UpdateClassForAssignmentInputModel input
     );
 
-
-    TeacherForAssignmentPlan updateTeacherForAssignment(UserLogin u, UpdateTeacherForAssignmentInputModel input);
-
-    TeacherCourseForAssignmentPlan updateTeacherCourseForAssignmentPlan(
-        UserLogin u,
-        UpdateTeacherCoursePriorityForAssignmentPlanInputModel input
+    void updateTeacherForAssignment(
+        UUID planId,
+        String teacherId,
+        UpdateTeacherForAssignmentInputModel input
     );
+
+    void updateTeacherCourseForAssignmentPlan(
+        UserLogin u,
+        TeacherCourseForAssignmentPlan teacherCourse
+    );
+
+    List<ConflictClassAssignedToTeacherModel> getConflictClassesInSolution(UUID planId);
 }

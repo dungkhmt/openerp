@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+/**
+ * OK
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,6 +19,8 @@ public class ClassTeacherAssignmentSolutionModel {
     private UUID solutionItemId;
 
     private String classCode;
+
+    private String classType;
 
     private String courseId;
 
@@ -29,49 +34,87 @@ public class ClassTeacherAssignmentSolutionModel {
 
     private double hourLoad;
 
-    // data structures for viewing under grid
+    private boolean pinned;
+
+    // Data structures for viewing under grid
     private int startSlot;
+
     private int endSlot;
+
     private int startIndexFromPrevious; // so tiet trong ke tu tiet cuoi cung cua lop truoc
+
     private int duration; // so tiet
 
-    public ClassTeacherAssignmentSolutionModel clone(){
-        ClassTeacherAssignmentSolutionModel o = new ClassTeacherAssignmentSolutionModel();
-        o.setDuration(this.getDuration());
-        o.setEndSlot(this.getEndSlot());
-        o.setStartSlot(this.getStartSlot());
-        o.setTimetable(this.getTimetable());
-        o.setTeacherName(this.getTeacherName());
-        o.setTeacherId(this.getTeacherId());
-        o.setCourseName(this.getCourseName());
-        o.setCourseId(this.getCourseId());
-        o.setClassCode(this.getClassCode());
-        o.setStartIndexFromPrevious(this.getStartIndexFromPrevious());
-        o.setHourLoad(this.getHourLoad());
-        o.setSolutionItemId(this.getSolutionItemId());
-        return o;
+    /**
+     * OK
+     *
+     * @return
+     */
+    private ClassTeacherAssignmentSolutionModel duplicate() {
+        ClassTeacherAssignmentSolutionModel model = new ClassTeacherAssignmentSolutionModel();
+
+        model.setSolutionItemId(this.getSolutionItemId());
+        model.setClassCode(this.getClassCode());
+        model.setCourseId(this.getCourseId());
+        model.setCourseName(this.getCourseName());
+        model.setTeacherId(this.getTeacherId());
+        model.setTeacherName(this.getTeacherName());
+        model.setTimetable(this.getTimetable());
+        model.setHourLoad(this.getHourLoad());
+        model.setPinned(this.isPinned());
+        model.setEndSlot(this.getEndSlot());
+        model.setStartSlot(this.getStartSlot());
+        model.setDuration(this.getDuration());
+        model.setStartIndexFromPrevious(this.getStartIndexFromPrevious());
+
+        return model;
     }
-    public boolean checkMultipleFragments(){
+
+    /**
+     * OK
+     *
+     * @return
+     */
+    public boolean isMultipleFragments() {
         String[] s = timetable.split(";");
-        if(s == null || s.length == 0) return false;
-        int cnt = 0;
-        for(int i = 0; i < s.length; i++){
-            if(s[i].trim().length() > 3) cnt++;
+        if (s.length == 0) {
+            return false;
         }
+
+        int cnt = 0;
+        for (String value : s) {
+            if (value.trim().length() > 3) {
+                cnt++;
+            }
+        }
+
         return cnt > 1;
     }
-    public ClassTeacherAssignmentSolutionModel[] checkMultipleFragmentsAndDuplicate(){
+
+    /**
+     * OK
+     *
+     * @return
+     */
+    public ClassTeacherAssignmentSolutionModel[] checkMultipleFragmentsAndDuplicate() {
         String[] s = timetable.split(";");
-        if(s == null || s.length == 0) return null;
+        if (s.length == 0) {
+            return null;
+        }
+
         int cnt = 0;
-        for(int i = 0; i < s.length; i++){
-            if(s[i].trim().length() > 3) cnt++;
+        for (String value : s) {
+            if (value.trim().length() > 3) {
+                cnt++;
+            }
         }
-        ClassTeacherAssignmentSolutionModel[] list = new ClassTeacherAssignmentSolutionModel[cnt];
-        for(int i = 0; i < list.length; i++){
-            list[i] = this.clone();
-            list[i].setTimetable(s[i]);
+
+        ClassTeacherAssignmentSolutionModel[] models = new ClassTeacherAssignmentSolutionModel[cnt];
+        for (int i = 0; i < models.length; i++) {
+            models[i] = this.duplicate();
+            models[i].setTimetable(s[i]);
         }
-        return list;
+
+        return models;
     }
 }

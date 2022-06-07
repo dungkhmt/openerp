@@ -65,21 +65,21 @@ public class TeacherClassAssignmentAlgoServiceImpl implements TeacherClassAssign
         AlgoTeacherIM[] algoTeachers = input.getTeachers();
         TeacherClassAssignmentModel[] preAssignments = input.getPreAssignments();
 
-        int n = algoClasses.length; // number of classes;
+        int n = algoClasses.length; // number of classes after preprocessing;
         int m = algoTeachers.length; // number of teachers;
         double[] hourClass; // hourClass[i] is the number of hours of class i
         double[] maxHourTeacher; // maxHourTeacher[i] is the upper bound of the total hourLoad of classes assigned to teacher i
 
         // Encode data
         //// Encode teacher.
-        HashMap<String, Integer> mTeacher2Index = new HashMap<>();
-        HashSet<Integer> teacherWantToMinimizeWorkingDays = new HashSet<>();
+        HashMap<String, Integer> mTeacherId2Index = new HashMap<>();
+        HashSet<Integer> teachersWantToMinimizeWorkingDays = new HashSet<>();
         for (int i = 0; i < m; i++) {
             AlgoTeacherIM teacher = algoTeachers[i];
-            mTeacher2Index.put(teacher.getId(), i);
+            mTeacherId2Index.put(teacher.getId(), i);
 
             if (teacher.isMinimizeNumberWorkingDays()) {
-                teacherWantToMinimizeWorkingDays.add(i);
+                teachersWantToMinimizeWorkingDays.add(i);
             }
 
 //            log.info("map: teacher[" + i + "] = " + teacher.getId());
@@ -93,13 +93,16 @@ public class TeacherClassAssignmentAlgoServiceImpl implements TeacherClassAssign
 //            log.info("map: class[" + i + "] = " + algoClasses[i].getClassId());
         }
 
-        //// Map course's id with list of index of classes opened for that course in assignment plan
-        HashMap<String, List<Integer>> mCourseId2ClassIndex = new HashMap<>();
+        //// Map course with list of index of classes opened for that course in assignment plan
+        //// based on courseId and classType
+        HashMap<String, List<Integer>> mCourseIdCombineClassType2ClassIndex = new HashMap<>();
         for (int i = 0; i < n; i++) {
             String courseId = algoClasses[i].getCourseId();
+            String classType = algoClasses[i].getClassType();
+            String key = courseId + classType;
 
-            mCourseId2ClassIndex.computeIfAbsent(courseId, k -> new ArrayList<>());
-            mCourseId2ClassIndex.get(courseId).add(i);
+            mCourseIdCombineClassType2ClassIndex.computeIfAbsent(key, k -> new ArrayList<>());
+            mCourseIdCombineClassType2ClassIndex.get(key).add(i);
         }
 
         //// Init
@@ -107,34 +110,36 @@ public class TeacherClassAssignmentAlgoServiceImpl implements TeacherClassAssign
         Arrays.stream(priorityMatrix).forEach(row -> Arrays.fill(row, Integer.MAX_VALUE));
 
         hourClass = new double[n];
-        var mClass2Teachers = new HashSet[n]; // mClass2Teachers[i]: danh sach cac gv co the day lop i.
+        var mClassIdx2TeacherIndexes = new HashSet[n]; // mClassIdx2TeacherIndexes[i]: danh sach cac gv co the day lop i.
         for (int i = 0; i < n; i++) {
-            mClass2Teachers[i] = new HashSet<Integer>();
+            mClassIdx2TeacherIndexes[i] = new HashSet<Integer>();
             hourClass[i] = algoClasses[i].getHourLoad();
         }
 
         maxHourTeacher = new double[m];
-        for (int i = 0; i < m; i++) {
-            AlgoTeacherIM teacher = algoTeachers[i];
-            maxHourTeacher[i] = teacher.getPrespecifiedHourLoad(); // xem ki cho nay
+        for (int teacherIdx = 0; teacherIdx < m; teacherIdx++) {
+            AlgoTeacherIM teacher = algoTeachers[teacherIdx];
+            maxHourTeacher[teacherIdx] = teacher.getPrespecifiedHourLoad(); // xem ki cho nay
 
-            if (null != teacher.getCourses()) {
-                for (int j = 0; j < teacher.getCourses().size(); j++) {
-                    Course4Teacher course4Teacher = teacher.getCourses().get(j);
-                    int priority = course4Teacher.getPriority();
+            List<Course4Teacher> courses = teacher.getCourses();
+            if (null != courses) {
+                for (Course4Teacher course : courses) {
+                    int priority = course.getPriority();
 
-                    if (null != mCourseId2ClassIndex.get(course4Teacher.getCourseId())) {
-                        for (int clazz : mCourseId2ClassIndex.get(course4Teacher.getCourseId())) {
-                            //mClass2Teachers[clazz].add(new AlgoTeacherClassPriorityModel(i,clazz,priority));
-                            mClass2Teachers[clazz].add(i);
-                            priorityMatrix[clazz][i] = priority;
+                    String key = course.getId() + course.getClassType();
+                    List<Integer> classIndexes = mCourseIdCombineClassType2ClassIndex.get(key);
+                    if (null != classIndexes) {
+                        for (int classIdx : classIndexes) {
+                            //mClassIdx2TeacherIndexes[classIdx].add(new AlgoTeacherClassPriorityModel(teacherIdx,classIdx,priority));
+                            mClassIdx2TeacherIndexes[classIdx].add(teacherIdx);
+                            priorityMatrix[classIdx][teacherIdx] = priority;
                         }
                     }
                     // Testing and debugging only
 //                    else {
 //                        // This is normal case because TeacherCourseForAssignmentPlan may contain courses that not have in assignment plan
 //                        // No problem
-//                        log.info(name() + "::no class for course " + course4Teacher.getCourseId());
+//                        log.info(name() + "::no class for course " + course.getCourseId());
 //                    }
                 }
             }
@@ -148,19 +153,19 @@ public class TeacherClassAssignmentAlgoServiceImpl implements TeacherClassAssign
             for (int i = 0; i < preAssignments.length; i++) {
                 AlgoClassIM algoClass = preAssignments[i].getAlgoClassIM();
                 AlgoTeacherIM algoTeacher = preAssignments[i].getAlgoTeacherIM();
-                int clazz = mClassId2Index.get(algoClass.getClassId());
-                int teacher = mTeacher2Index.get(algoTeacher.getId());
+                int classIndex = mClassId2Index.get(algoClass.getClassId());
+                int teacherIndex = mTeacherId2Index.get(algoTeacher.getId());
 
-                mClass2Teachers[clazz].clear();
-                mClass2Teachers[clazz].add(teacher);
+                mClassIdx2TeacherIndexes[classIndex].clear();
+                mClassIdx2TeacherIndexes[classIndex].add(teacherIndex);
 
-                log.info(thisMethodName + "preAssign class[" + clazz + "] = " + algoClass.getClassId()
-                         + " - teacher[" + teacher + "] = " + algoTeacher.getId());
+                log.info(thisMethodName + "preAssign class[" + classIndex + "] = " + algoClass.getClassId()
+                         + " - teacherIndex[" + teacherIndex + "] = " + algoTeacher.getId());
 
-                //mClass2Teachers[clazz].add(new AlgoTeacherClassPriorityModel(teacher,clazz,1));
+                //mClassIdx2TeacherIndexes[classIndex].add(new AlgoTeacherClassPriorityModel(teacherIndex,classIndex,1));
 
-                pa[i][0] = clazz;
-                pa[i][1] = teacher;
+                pa[i][0] = classIndex;
+                pa[i][1] = teacherIndex;
             }
         }
 
@@ -175,7 +180,7 @@ public class TeacherClassAssignmentAlgoServiceImpl implements TeacherClassAssign
 //                               ": ");
 //
 //
-//            for (int j : mClass2Teachers[i]) {
+//            for (int j : mClassIdx2TeacherIndexes[i]) {
 //                if (algoTeachers[j].getId().equals("bang.banha@hust.edu.vn")) {
 //                    System.out.println("teacher " + j + ": " + algoTeachers[j].getId());
 //                    System.out.println("Class " +
@@ -190,12 +195,15 @@ public class TeacherClassAssignmentAlgoServiceImpl implements TeacherClassAssign
 //            }
 //        }
 
-        // Todo: consider j = i+1 not j = 0
         boolean[][] conflict = new boolean[n][n];
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                conflict[i][j] = TimetableConflictChecker
-                    .conflictMultiTimeTable(algoClasses[i].getTimetable(), algoClasses[j].getTimetable());
+            for (int j = i + 1; j < n; j++) {
+                boolean isConflict = TimetableConflictChecker.conflictMultiTimeTable(
+                    algoClasses[i].getTimetable(),
+                    algoClasses[j].getTimetable());
+
+                conflict[i][j] = isConflict;
+                conflict[j][i] = isConflict;
 
                 // Testing and debugging only
 //                if (conflict[i][j]) {
@@ -206,8 +214,8 @@ public class TeacherClassAssignmentAlgoServiceImpl implements TeacherClassAssign
             }
         }
 
-        //// Chưa quan tâm đến tuần học
-        boolean[][] classDays = new boolean[n][7]; // Luu cac ngay trong tuan ma lop hoc dien ra.
+        //// Note: Not pay attention to the school week
+        boolean[][] classDays = new boolean[n][7]; // Store the days of the week on which the class take place
         Arrays.stream(classDays).forEach(row -> Arrays.fill(row, false));
 
         for (int i = 0; i < n; i++) {
@@ -216,20 +224,29 @@ public class TeacherClassAssignmentAlgoServiceImpl implements TeacherClassAssign
             }
         }
 
-        MapDataInput mapDataInput = new MapDataInput(n, m, mClass2Teachers, conflict, priorityMatrix, hourClass,
-                                                     maxHourTeacher, pa, classDays, teacherWantToMinimizeWorkingDays);
+        MapDataInput mapDataInput = new MapDataInput(
+            n,
+            m,
+            mClassIdx2TeacherIndexes,
+            conflict,
+            priorityMatrix,
+            hourClass,
+            maxHourTeacher,
+            pa,
+            classDays,
+            teachersWantToMinimizeWorkingDays);
 
-        //mapDataInput.savePlainTextFile("mClass2Teachers:/tmp/data-bca/1.txt");
+        //mapDataInput.savePlainTextFile("mClassIdx2TeacherIndexes:/tmp/data-bca/1.txt");
         //MaxLoadConstraintORToolMIPSolver mipSolver =
-        //    new MaxLoadConstraintORToolMIPSolver(n, m, mClass2Teachers, priorityMatrix, conflict, hourClass, maxHourTeacher);
+        //    new MaxLoadConstraintORToolMIPSolver(n, m, mClassIdx2TeacherIndexes, priorityMatrix, conflict, hourClass, maxHourTeacher);
 
         // Solve
         ORToolMIPSolver mipSolver = new ORToolMIPSolver(mapDataInput);
         boolean solved = mipSolver.solve(input.getSolver());
-        int[] assignments;
+        int[] algoAssignments;
 
         if (solved) {
-            assignments = mipSolver.getAssignment();
+            algoAssignments = mipSolver.getAssignment();
             log.info(thisMethodName + "MIP found optimal solution!!");
             log.info(thisMethodName + "numNotAssignClasses = " + mipSolver.getNotAssignedClasses().size());
         } else {
@@ -238,42 +255,42 @@ public class TeacherClassAssignmentAlgoServiceImpl implements TeacherClassAssign
         /*
         else {
             log.info("computeTeacherClassAssignment, MIP cannot find optimal solution, Apply CBLS");
-            CBLSSolver solver = new CBLSSolver(n, m, mClass2Teachers, priorityMatrix, conflict, hourClass, maxHourTeacher);
+            CBLSSolver solver = new CBLSSolver(n, m, mClassIdx2TeacherIndexes, priorityMatrix, conflict, hourClass, maxHourTeacher);
             solver.solve();
-            assignments = solver.getSolution();
+            algoAssignments = solver.getSolution();
         }
         */
 
         // Decoding
         ////
         HashMap<AlgoTeacherIM, List<AlgoClassIM>> mTeacher2AssignedClasses = new HashMap<>();
-        TeacherClassAssignmentModel[] assignmentModels = new TeacherClassAssignmentModel[algoClasses.length];
+        TeacherClassAssignmentModel[] assignments = new TeacherClassAssignmentModel[algoClasses.length];
         for (int i = 0; i < algoClasses.length; i++) {
-            AlgoClassIM clazz = algoClasses[i];
+            AlgoClassIM algoClass = algoClasses[i];
 
-            if (assignments[i] > -1) {
-                AlgoTeacherIM teacher = algoTeachers[assignments[i]];
-                assignmentModels[i] = new TeacherClassAssignmentModel(clazz, teacher);
+            if (algoAssignments[i] > -1) {
+                AlgoTeacherIM algoTeacher = algoTeachers[algoAssignments[i]];
+                assignments[i] = new TeacherClassAssignmentModel(algoClass, algoTeacher);
 
-                mTeacher2AssignedClasses.computeIfAbsent(teacher, k -> new ArrayList<>());
-                mTeacher2AssignedClasses.get(teacher).add(clazz);
+                mTeacher2AssignedClasses.computeIfAbsent(algoTeacher, k -> new ArrayList<>());
+                mTeacher2AssignedClasses.get(algoTeacher).add(algoClass);
             } else {
-                notAssignedClasses.add(clazz);
+                notAssignedClasses.add(algoClass);
             }
         }
 
         ////
-        ClassesAssigned2TeacherModel[] classesAssigned2TeacherModels = new ClassesAssigned2TeacherModel[algoTeachers.length];
+        ClassesAssigned2TeacherModel[] classesAssigned2Teacher = new ClassesAssigned2TeacherModel[algoTeachers.length];
         for (int i = 0; i < algoTeachers.length; i++) {
-            classesAssigned2TeacherModels[i] = new ClassesAssigned2TeacherModel(
+            classesAssigned2Teacher[i] = new ClassesAssigned2TeacherModel(
                 algoTeachers[i],
                 mTeacher2AssignedClasses.get(algoTeachers[i]));
         }
 
-        //// Currently do nothing with this
+        //// Currently, do nothing with this
         int numEmpty = 0;
         for (int i = 0; i < n; i++) {
-            if (mClass2Teachers[i].size() == 0) {
+            if (mClassIdx2TeacherIndexes[i].size() == 0) {
                 log.info(thisMethodName + "empty domain course "
 //                         + algoClasses[i].getCourseId()
 //                         + " - "
@@ -286,8 +303,8 @@ public class TeacherClassAssignmentAlgoServiceImpl implements TeacherClassAssign
 
         ////
         TeacherClassAssignmentOM teacherClassAssignmentOM = new TeacherClassAssignmentOM(
-            assignmentModels,
-            classesAssigned2TeacherModels,
+            assignments,
+            classesAssigned2Teacher,
             notAssignedClasses);
 
         ////
@@ -295,28 +312,21 @@ public class TeacherClassAssignmentAlgoServiceImpl implements TeacherClassAssign
         Arrays.fill(numClassesOfTeacher, 0);
 
         for (int i = 0; i < n; i++) {
-            if (assignments[i] > -1) {
-                numClassesOfTeacher[assignments[i]]++;
+            if (algoAssignments[i] > -1) {
+                numClassesOfTeacher[algoAssignments[i]]++;
             }
         }
 
         // Verify solution
         for (int t = 0; t < m; t++) {
-            log.info(thisMethodName +
-                     "teacher[" +
-                     t +
-                     "] - " +
-                     algoTeachers[t].getId() +
-                     " has " +
-                     numClassesOfTeacher[t]);
+            log.info(thisMethodName + "teacher[" + t + "] - " + algoTeachers[t].getId() +
+                     " has " + numClassesOfTeacher[t]);
 
             for (int i = 0; i < n; i++) {
                 for (int j = i + 1; j < n; j++) {
-                    if (assignments[i] == t && assignments[j] == t && conflict[i][j]) {
+                    if (algoAssignments[i] == t && algoAssignments[j] == t && conflict[i][j]) {
                         log.error(thisMethodName + "BUG with class " + i + " and " + j + " of teacher " + t + ": " +
-                                  algoClasses[i].getTimetable() +
-                                  " <-> " +
-                                  algoClasses[j].getTimetable());
+                                  algoClasses[i].getTimetable() + " <-> " + algoClasses[j].getTimetable());
                     }
                 }
             }

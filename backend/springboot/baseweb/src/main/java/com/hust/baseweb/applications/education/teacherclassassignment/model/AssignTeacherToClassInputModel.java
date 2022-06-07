@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+/**
+ * OK
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,6 +17,10 @@ import java.util.UUID;
 public class AssignTeacherToClassInputModel {
 
     private UUID planId;
+
     private String classId;
+
     private String teacherId;
+
+    private boolean pinned;
 }
