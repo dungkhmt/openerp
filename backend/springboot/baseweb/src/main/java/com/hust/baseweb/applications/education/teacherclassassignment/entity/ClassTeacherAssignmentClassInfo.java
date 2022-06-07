@@ -1,12 +1,10 @@
 package com.hust.baseweb.applications.education.teacherclassassignment.entity;
 
+import com.hust.baseweb.applications.education.teacherclassassignment.entity.compositeid.ClassId;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
@@ -17,12 +15,14 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "class_teacher_assignment_class_info")
+@IdClass(ClassId.class)
 public class ClassTeacherAssignmentClassInfo {
 
     @Id
     @Column(name = "class_id")
     private String classId;
 
+    @Id
     @Column(name = "plan_id")
     private UUID planId;
 
