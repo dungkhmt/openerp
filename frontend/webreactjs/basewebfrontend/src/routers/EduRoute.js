@@ -1,9 +1,8 @@
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router";
 import AssignmentList from "../component/education/AssignmentList";
-import BCASolver from "../component/education/BCASolver";
 import ClassCreate from "../component/education/class/ClassCreate";
-import ClassesList from "../component/education/class/ClassesList";
+// import ClassesList from "../component/education/class/ClassesList";
 import ClassTeacherAssignmentPlanDetail from "../component/education/classteacherassignment/assignmentPlan/ClassTeacherAssignmentPlanDetail";
 import ClassTeacherAssignmentPlanList from "../component/education/classteacherassignment/ClassTeacherAssignmentPlanList";
 import AddNewCourse from "../component/education/course/AddNewCourse";
@@ -24,7 +23,7 @@ import TeacherCourseQuizChoiceAnswerDetail from "../component/education/course/T
 import TeacherCourseQuizDetail from "../component/education/course/TeacherCourseQuizDetail";
 import TeacherCourseTopicDetail from "../component/education/course/TeacherCourseTopicDetail";
 import TeacherViewCourseQuizDetail from "../component/education/course/TeacherViewCourseQuizDetail";
-import CreateSemester from "../component/education/CreateSemester";
+// import CreateSemester from "../component/education/CreateSemester";
 import CreateQuizTest from "../component/education/quiztest/CreateQuizTest";
 import QuizTestDetail from "../component/education/quiztest/QuizTestDetail";
 import QuizTestEdit from "../component/education/quiztest/QuizTestEdit";
@@ -38,7 +37,7 @@ import ResourceDomainList from "../component/education/resourcelink/ResourceDoma
 import ResourceList from "../component/education/resourcelink/ResourceList";
 import AddTeacher from "../component/education/teacher/AddTeacher";
 import TeacherDetail from "../component/education/teacher/TeacherDetail";
-import TeacherList from "../component/education/teacher/TeacherList";
+// import TeacherList from "../component/education/teacher/TeacherList";
 import ClassRegistration from "../views/Education/ClassManagement/Student/ClassRegistration";
 import SAssignmentDetail from "../views/Education/ClassManagement/Student/SAssignmentDetail";
 import SClassDetail from "../views/Education/ClassManagement/Student/SClassDetail";
@@ -172,10 +171,6 @@ export default function EduRoute() {
           path={`${path}/class-teacher-assignment-plan/detail/:planId`}
         />
 
-        <Route component={BCASolver} path={`${path}/solve`} />
-
-        <Route component={CreateSemester} path={`${path}/semester`} />
-
         <Route component={ClassCreate} path={`${path}/class/add`} />
 
         <Route
@@ -184,23 +179,26 @@ export default function EduRoute() {
           exact
         />
 
-        <Route component={CourseList} path={`${path}/courses/list`} />
+        <Route
+          component={CourseList}
+          path={`${path}/teaching-assignment/courses`}
+        />
 
         <Route component={CourseDetail} path={`${path}/course/detail`} />
 
         <Route component={AddNewCourse} path={`${path}/course/create`} />
 
-        <Route component={TeacherList} path={`${path}/teachers/list`} />
+        {/* <Route component={TeacherList} path={`${path}/teachers/list`} /> */}
 
         <Route component={TeacherDetail} path={`${path}/teacher/detail`} />
 
         <Route component={AddTeacher} path={`${path}/teacher/create`} />
 
-        <Route component={ClassesList} path={`${path}/classes-list`} />
+        {/* <Route component={ClassesList} path={`${path}/classes-list`} /> */}
 
         <Route component={AssignmentList} path={`${path}/assignment`} />
 
-        <Route component={CreateSemester} path={`${path}/semester`} />
+        {/* <Route component={CreateSemester} path={`${path}/semester`} /> */}
 
         <Route component={ClassCreate} path={`${path}/class/add`} />
 
