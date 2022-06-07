@@ -1,11 +1,11 @@
-name: Docker Image CI
+name: Socket Server Image CI
 
 on:
   push:
     branches:
       - master
     paths:
-      - "frontend/webreactjs/basewebfrontend/**"
+      - "backend/nodejs/baseweb/server-socket/**"
 
 env:
   NODE_OPTIONS: "--max-old-space-size=4096"
@@ -18,15 +18,15 @@ jobs:
       - uses: actions/checkout@v2
         name: Check out code
       #     - name: Build the Docker image
-      #       run: docker build . --file Dockerfile --tag baseweb:$(date +%s)
+      #       run: docker build . --file Dockerfile --tag socket-server:$(date +%s)
       - name: Build & push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
-          image: leanhtuan/basewebfrontend
+          image: leanhtuan/socket-server
           #         tags: v1, latest
-          directory: "frontend/webreactjs/basewebfrontend/"
+          directory: "backend/nodejs/baseweb/server-socket/"
           registry: docker.io
-          dockerfile: "frontend/webreactjs/basewebfrontend/Dockerfile"
+          dockerfile: "backend/nodejs/baseweb/server-socket/Dockerfile"
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           addLatest: true
