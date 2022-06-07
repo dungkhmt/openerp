@@ -67,6 +67,10 @@ export default function StudentViewProblemList() {
       title: t("problem"),
       field: "problemName",
     },
+    {
+      title: t("level"),
+      field: "levelId",
+    },
   ];
   return (
     <Box>

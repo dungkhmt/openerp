@@ -9,6 +9,8 @@ export const SOCKET_IO_EVENTS = {
   ON_ADD_TEXT_END: 'onAddText',
   ADD_NEW_PAGE: 'addNewPage',
   ON_ADD_NEW_PAGE: 'onAddNewPage',
+  DELETE_PAGE: 'deletePage',
+  ON_DELETE_PAGE: 'onDeletePage',
 
   CHECK_LOCAL_STORAGE: 'checkLocalStorage',
   ON_CHECK_LOCAL_STORAGE: 'onCheckLocalStorage',

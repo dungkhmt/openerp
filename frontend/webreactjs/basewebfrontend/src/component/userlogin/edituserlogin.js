@@ -237,7 +237,7 @@ function EditUser(props) {
                 >
                   {securityGroups.map((s) => (
                     <MenuItem key={s.groupId} value={s.groupId}>
-                      {s.description}
+                      {s.name}
                     </MenuItem>
                   ))}
                 </Select>

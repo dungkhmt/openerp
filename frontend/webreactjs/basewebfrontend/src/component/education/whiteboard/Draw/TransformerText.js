@@ -65,8 +65,8 @@ export const TransformerText = React.memo(({ value, offset, tool, onUpdateText }
     // Create text area
     const textPosition = e.target.absolutePosition()
     const areaPosition = {
-      x: (offset?.left) + textPosition.x,
-      y: (offset?.top) + textPosition.y,
+      x: textPosition.x,
+      y: textPosition.y,
     }
     const textarea = document.createElement('textarea')
     document.body.querySelector('#slider-grand').appendChild(textarea)

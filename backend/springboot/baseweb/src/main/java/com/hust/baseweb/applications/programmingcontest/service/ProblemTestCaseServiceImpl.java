@@ -1040,11 +1040,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public void teacherManageStudentRegisterContest(String teacherId, ModelTeacherManageStudentRegisterContest modelTeacherManageStudentRegisterContest) throws MiniLeetCodeException {
+    public int teacherManageStudentRegisterContest(String teacherId, ModelTeacherManageStudentRegisterContest modelTeacherManageStudentRegisterContest) throws MiniLeetCodeException {
         ContestEntity contestEntity = contestRepo.findContestByContestId(modelTeacherManageStudentRegisterContest.getContestId());
 //        UserLogin student = userLoginRepo.findByUserLoginId(modelTeacherManageStudentRegisterContest.getUserId());
         log.info("teacherid {}", teacherId);
         log.info("created contest {}", contestEntity.getUserId());
+        int cnt = 0;
         if( contestEntity.getUserId() == null || !contestEntity.getUserId().equals(teacherId)){
             throw new MiniLeetCodeException(teacherId +" does not have privilege to manage contest " + modelTeacherManageStudentRegisterContest.getContestId());
         }
@@ -1052,17 +1053,37 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
         if(Constants.RegisterCourseStatus.SUCCESSES.getValue().equals(modelTeacherManageStudentRegisterContest.getStatus())){
             log.info("approve");
-            userRegistrationContestEntity.setStatus(Constants.RegistrationType.SUCCESSFUL.getValue());
-            userRegistrationContestRepo.save(userRegistrationContestEntity);
-            notificationsService.create(teacherId, modelTeacherManageStudentRegisterContest.getUserId(), "Your register contest " + modelTeacherManageStudentRegisterContest.getContestId() +" is approved ", null);
+            if(!userRegistrationContestEntity.getStatus().equals(Constants.RegistrationType.SUCCESSFUL.getValue())) {
+                userRegistrationContestEntity.setStatus(Constants.RegistrationType.SUCCESSFUL.getValue());
+                userRegistrationContestRepo.save(userRegistrationContestEntity);
+                notificationsService.create(
+                    teacherId,
+                    modelTeacherManageStudentRegisterContest.getUserId(),
+                    "Your register contest " +
+                    modelTeacherManageStudentRegisterContest.getContestId() +
+                    " is approved ",
+                    null);
+                cnt += 1;
+            }
         }else if(Constants.RegisterCourseStatus.FAILED.getValue().equals(modelTeacherManageStudentRegisterContest.getStatus())){
+
             log.info("reject");
-            userRegistrationContestEntity.setStatus(Constants.RegistrationType.FAILED.getValue());
-            userRegistrationContestRepo.save(userRegistrationContestEntity);
-            notificationsService.create(teacherId, modelTeacherManageStudentRegisterContest.getUserId(), "Your register contest " + modelTeacherManageStudentRegisterContest.getContestId() +" is rejected ", null);
+            if(!userRegistrationContestEntity.getStatus().equals(Constants.RegistrationType.FAILED.getValue())) {
+                userRegistrationContestEntity.setStatus(Constants.RegistrationType.FAILED.getValue());
+                userRegistrationContestRepo.save(userRegistrationContestEntity);
+                notificationsService.create(
+                    teacherId,
+                    modelTeacherManageStudentRegisterContest.getUserId(),
+                    "Your register contest " +
+                    modelTeacherManageStudentRegisterContest.getContestId() +
+                    " is rejected ",
+                    null);
+                cnt += 1;
+            }
         }else{
             throw new MiniLeetCodeException("Status not found");
         }
+        return cnt;
     }
 
     @Override
@@ -1192,7 +1213,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public void addUserToContest(ModelAddUserToContest modelAddUserToContest) {
+    public int addUserToContest(ModelAddUserToContest modelAddUserToContest) {
         UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserId(modelAddUserToContest.getContestId(), modelAddUserToContest.getUserId());
         if(userRegistrationContest == null) {
             userRegistrationContestRepo.save(UserRegistrationContestEntity.builder()
@@ -1201,11 +1222,24 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     .status(Constants.RegistrationType.SUCCESSFUL.getValue())
                                                                           .roleId(modelAddUserToContest.getRole())
                     .build());
+            return 1;
         }else{
             userRegistrationContest.setStatus(Constants.RegistrationType.SUCCESSFUL.getValue());
             userRegistrationContestRepo.save(userRegistrationContest);
+            return 0;
         }
 
+    }
+
+    @Override
+    public int addAllUsersToContest(ModelAddUserToContest model) {
+        List<UserLogin> users = userService.getAllUserLogins();
+        int cnt = 0;
+        for(UserLogin u: users){
+            model.setUserId(u.getUserLoginId());
+            cnt += addUserToContest(model);
+        }
+        return cnt;
     }
 
     @Override

@@ -14,11 +14,11 @@ export const useGetListSearchFriend = ({ params, onSuccess, onError }) => {
   );
 };
 
-export const useInviteFriend = ({ userId, meetId }) => {
+export const useInviteFriend = ({ meetId, onSuccess, onError }) => {
   const queryClient = useQueryClient();
   return useMutation(
-    [QUERY_KEY.INVITE_FRIEND, userId, meetId],
-    () => inviteFriend({ userId, meetId }),
+    [QUERY_KEY.INVITE_FRIEND, meetId],
+    ({ userId }) => inviteFriend({ userId, meetId, onSuccess, onError }),
     {
       onSuccess: () => {
         queryClient.refetchQueries([QUERY_KEY.INVITED_FRIENDS]);
