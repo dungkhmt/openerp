@@ -30,6 +30,9 @@ public class TeacherClassAssignmentSolution {
     @Column(name = "teacher_id")
     private String teacherId;
 
+    @Column(name = "pinned")
+    private boolean pinned;
+
     @Column(name = "created_by_user_login_id")
     private String createdByUserLoginId;
 
