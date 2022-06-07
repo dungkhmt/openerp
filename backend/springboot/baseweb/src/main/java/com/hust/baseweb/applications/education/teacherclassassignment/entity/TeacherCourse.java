@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 /**
  * Course that teacher can teach.
@@ -23,6 +24,15 @@ public class TeacherCourse {
     @Id
     @Column(name = "course_id")
     private String courseId;
+
+    @Id
+    @Column(name = "classType")
+    private String classType;
+
+    // For referencing only
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID refId;
 
     @Column(name = "priority")
     private int priority;
