@@ -1,118 +1,162 @@
-import { Button, Card } from "@material-ui/core/";
+import { IconButton } from "@material-ui/core/";
+import EditIcon from "@material-ui/icons/Edit";
 import { request } from "api";
-import MaterialTable from "material-table";
+import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import SuggestTeachersForClassModel from "../SuggestTeachersForClassModel";
+import SuggestedTeacherListForSelectedClassModel from "../SuggestedTeacherListForSelectedClassModel";
 
-function NotAssignedClassInSolutionList(props) {
-  const planId = props.planId;
-  const [selectedClassId, setSelectedClassId] = useState(null);
-  const [classList, setClassList] = useState([]);
-  const [open, setOpen] = React.useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
-  //const [selectedFile, setSelectedFile] = useState(null);
+function NotAssignedClassInSolutionList({ planId }) {
+  //
+  const [classes, setClasses] = useState([]);
+  const [open, setOpen] = useState(false);
 
+  //
+  const [selectedClass, setSelectedClass] = useState({});
+  const [suggestionData, setSuggestionData] = useState();
+
+  // Table
   const columns = [
     { title: "Mã lớp", field: "classCode" },
     { title: "Mã học phần", field: "courseId" },
-    { title: "Tên môn", field: "courseName" },
-    { title: "Timetable", field: "timetable" },
+    { title: "Tên học phần", field: "courseName" },
+    { title: "Loại lớp", field: "classType" },
+    { title: "Thời khoá biểu", field: "timetable", sorting: false },
     {
       title: "",
+      sorting: false,
       render: (rowData) => (
-        <Button
-          variant="contained"
+        <IconButton
           color="primary"
+          aria-label="edit"
           onClick={() => {
-            onSuggestTeacher(rowData["classCode"]);
+            onSuggestTeacher({
+              classId: rowData["classCode"],
+            });
           }}
         >
-          Gợi ý GV
-        </Button>
+          <EditIcon />
+        </IconButton>
       ),
     },
   ];
 
-  const customUploadHandle = (selectedTeacherId) => {
-    //console.log(filename);
-    //setSearchString(sString);
-    //alert("upload " + filename);
-    //uploadExcel(selectedFile, choice);
-    //perform API to assign teacher here
-    //alert("call API to assign teacher " + selectedTeacherId);
-    let datasend = {
-      classId: selectedClassId,
-      teacherId: selectedTeacherId,
-      planId: planId,
-    };
-    request(
-      // token,
-      // history,
-      "post",
-      "manual-assign-teacher-to-class",
-      (res) => {
-        console.log(res);
-        alert(
-          "phân giảng viên " +
-            selectedTeacherId +
-            " cho lớp " +
-            selectedClassId +
-            "  OK"
-        );
-      },
-      { 401: () => {} },
-      datasend
-    );
-
-    handleModalClose();
+  // Funcs
+  const openModal = () => {
+    setOpen(true);
   };
 
-  function onSuggestTeacher(classId) {
-    //alert("suggest teacher for class " + classId);
-    setSelectedClassId(classId);
-    handleModalOpen();
-  }
-  async function getNotAssignedClassInSolutionList() {
+  const closeModal = () => {
+    setOpen(false);
+    setSuggestionData(undefined);
+  };
+
+  const onAssign = (teacherId) => {
+    const { classId } = selectedClass;
+
+    let data = {
+      planId: planId,
+      classId: classId,
+      teacherId: teacherId,
+      pinned: true,
+    };
+
     request(
-      // token,
-      // history,
-      "GET",
-      "/get-not-assigned-class-solution/" + planId,
+      "PUT",
+      `edu/teaching-assignment/plan/${planId}/solution`,
       (res) => {
-        setClassList(res.data);
+        const restClasses = classes.filter((c) => c.classCode !== classId);
+        setClasses(restClasses);
+      },
+      { 401: () => {} },
+      data
+    );
+
+    closeModal();
+  };
+
+  // const customUploadHandle = (selectedTeacherId) => {
+  //   //console.log(filename);
+  //   //setSearchString(sString);
+  //   //alert("upload " + filename);
+  //   //uploadExcel(selectedFile, choice);
+  //   //perform API to assign teacher here
+  //   //alert("call API to assign teacher " + selectedTeacherId);
+  //   let data = {
+  //     classId: selectedClassId,
+  //     teacherId: selectedTeacherId,
+  //     planId: planId,
+  //   };
+  //   request(
+  //     "post",
+  //     "manual-assign-teacher-to-class",
+  //     (res) => {
+  //       console.log(res);
+  //       alert(
+  //         "phân giảng viên " +
+  //           selectedTeacherId +
+  //           " cho lớp " +
+  //           selectedClassId +
+  //           "  OK"
+  //       );
+  //     },
+  //     { 401: () => {} },
+  //     data
+  //   );
+
+  //   handleModalClose();
+  // };
+
+  const onSuggestTeacher = (selectedAssignment) => {
+    setSelectedClass(selectedAssignment);
+    openModal();
+
+    request(
+      "GET",
+      `edu/teaching-assignment/plan/${planId}/class/${selectedAssignment.classId}/suggested-teacher-and-actions`,
+      (res) => {
+        setSuggestionData(res.data);
+        console.log("SUGGEST TEACHERS ", res.data);
+      },
+      { 401: () => {} }
+    );
+  };
+
+  function getNotAssignedClassInSolutionList() {
+    request(
+      "GET",
+      `edu/teaching-assignment/plan/${planId}/class/not-assigned-class`,
+      (res) => {
+        setClasses(res.data);
       }
     );
   }
 
-  const handleModalOpen = () => {
-    setOpen(true);
-  };
+  // const handleModalClose = () => {
+  //   setOpen(false);
+  // };
 
-  const handleModalClose = () => {
-    setOpen(false);
-  };
   useEffect(() => {
     getNotAssignedClassInSolutionList();
   }, []);
+
   return (
-    <Card>
-      <MaterialTable
+    <>
+      <StandardTable
         title={"Danh sách lớp chưa được phân công"}
         columns={columns}
-        data={classList}
+        data={classes}
+        hideCommandBar
+        options={{ selection: false, pageSize: 10 }}
       />
 
-      <SuggestTeachersForClassModel
+      <SuggestedTeacherListForSelectedClassModel
         open={open}
-        onClose={handleModalClose}
-        onSelectAssign={customUploadHandle}
-        selectedClassId={selectedClassId}
-        planId={planId}
+        handleClose={closeModal}
+        onReassign={onAssign}
+        classId={selectedClass.classId}
+        suggestions={suggestionData}
       />
-    </Card>
+    </>
   );
 }
 

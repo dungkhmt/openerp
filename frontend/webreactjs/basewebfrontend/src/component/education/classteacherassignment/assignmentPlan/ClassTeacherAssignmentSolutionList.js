@@ -1,149 +1,117 @@
-import { Button, Card, Checkbox } from "@material-ui/core/";
-import { green } from "@material-ui/core/colors";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
-import MaterialTable from "material-table";
-import React, { useEffect, useReducer, useState } from "react";
-import { request } from "../../../../api";
+import { Typography } from "@material-ui/core";
+import { IconButton } from "@material-ui/core/";
+import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
+import EditIcon from "@material-ui/icons/Edit";
+import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
+import PushPinIcon from "@mui/icons-material/PushPin";
+import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
+import { request } from "api";
+import TertiaryButton from "component/button/TertiaryButton";
+import StandardTable from "component/table/StandardTable";
+import React, { useEffect, useState } from "react";
 import SuggestedTeacherListForSelectedClassModel from "../SuggestedTeacherListForSelectedClassModel";
-
-const theme = createMuiTheme({
-  palette: {
-    primary: green,
-  },
-});
-let count = 0;
+import { useStyles } from "./ClassForAssignmentList";
 
 function ClassTeacherAssignmentSolutionList(props) {
+  const classes = useStyles();
   const { planId, planName } = props;
-  const [classList, setClassList] = useState([]);
-  const [open, setOpen] = React.useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
 
-  const [selectedAll, setSelectedAll] = useState(false);
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
-  const [selectedClassId, setSelectedClassId] = useState(null);
+  // Command delete button
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  //
+  const [assignments, setAssignments] = useState([]);
+  const [teachers, setTeachers] = useState({});
+  const [open, setOpen] = React.useState(false);
+
+  const [selectedAssignment, setSelectedAssignment] = useState({});
   const [suggestionData, setSuggestionData] = useState();
 
+  // Table
   const columns = [
     { title: "Mã lớp", field: "classCode" },
     { title: "Mã học phần", field: "courseId" },
-    { title: "Tên môn", field: "courseName" },
-    { title: "Mã GV", field: "teacherId" },
-    { title: "Tên GV", field: "teacherName" },
-    { title: "Timetable", field: "timetable" },
+    { title: "Tên học phần", field: "courseName" },
+    { title: "Loại lớp", field: "classType" },
+    { title: "Mã giảng viên", field: "teacherId" },
+    { title: "Tên giảng viên", field: "teacherName" },
+    { title: "Thời khoá biểu", field: "timetable", sorting: false },
     {
       title: "",
+      field: "pinned",
       render: (rowData) => (
-        <Button
-          variant="contained"
+        <IconButton
           color="primary"
+          aria-label="pin"
           onClick={() => {
-            onSuggestTeacher(rowData["classCode"]);
+            onChangePin({
+              classId: rowData["classCode"],
+              pinned: rowData["pinned"],
+              teacherId: rowData["teacherId"],
+            });
           }}
         >
-          Gợi ý GV
-        </Button>
+          {rowData["pinned"] ? <PushPinIcon /> : <PushPinOutlinedIcon />}
+        </IconButton>
       ),
     },
-    /*
     {
       title: "",
+      sorting: false,
       render: (rowData) => (
-        <Button
-          variant="contained"
+        <IconButton
           color="primary"
+          aria-label="edit"
           onClick={() => {
-            onRemoveTeacher(rowData["solutionItemId"]);
+            onSuggestTeacher({
+              classId: rowData["classCode"],
+            });
           }}
         >
-          Xóa
-        </Button>
-      ),
-    },
-    */
-    {
-      field: "selected",
-      title: "Chọn",
-
-      width: "10%",
-      type: "numeric",
-      render: (rowData) => (
-        <Checkbox
-          checked={rowData.selected}
-          onChange={(e) => {
-            rowData.selected = e.target.checked;
-            if (rowData.selected == false) {
-              count--;
-              setSelectedAll(false);
-            } else {
-              count++;
-            }
-            if (count == classList.length) {
-              setSelectedAll(true);
-            }
-            forceUpdate();
-          }}
-        />
+          <EditIcon />
+        </IconButton>
       ),
     },
   ];
 
-  const customAssignHandle = (selectedTeacherId) => {
-    let datasend = {
-      classId: selectedClassId,
-      teacherId: selectedTeacherId,
+  // Funcs
+  const onChangePin = (row) => {
+    const { classId, pinned, teacherId } = row;
+    console.log(pinned);
+    let data = {
       planId: planId,
+      classId: classId,
+      teacherId: teacherId,
+      pinned: !pinned, // Only this attribute change
     };
+
     request(
-      // token,
-      // history,
-      "post",
-      "manual-assign-teacher-to-class",
+      "PUT",
+      `edu/teaching-assignment/plan/${planId}/solution`,
       (res) => {
-        console.log(res);
-        alert(
-          "phân giảng viên " +
-            selectedTeacherId +
-            " cho lớp " +
-            selectedClassId +
-            "  OK"
-        );
+        const index = assignments.findIndex((s) => s.classCode === classId);
+
+        const updatedClassList = assignments.map((s, i) => {
+          if (i === index) {
+            s.pinned = !pinned;
+          }
+          return s;
+        });
+
+        setAssignments(updatedClassList);
       },
       { 401: () => {} },
-      datasend
+      data
     );
-
-    handleClose();
   };
 
-  async function getClassTeacherAssignmentSolutionList() {
-    request(
-      // token,
-      // history,
-      "GET",
-      "/get-class-teacher-assignment-solution/" + planId,
-      (res) => {
-        let temp = [];
-        res.data.map((elm, index) => {
-          temp.push({
-            solutionItemId: elm.solutionItemId,
-            classCode: elm.classCode,
-            courseId: elm.courseId,
-            courseName: elm.courseName,
-            teacherId: elm.teacherId,
-            teacherName: elm.teacherName,
-            timetable: elm.timetable,
-            hourLoad: elm.hourLoad,
-            selected: false,
-          });
-        });
-        setClassList(temp);
-        //setClassList(res.data);
-      }
-    );
-  }
+  const getClassTeacherAssignmentSolutionList = () => {
+    request("GET", `edu/teaching-assignment/plan/${planId}/solution`, (res) => {
+      setAssignments(res.data);
+    });
+  };
 
+  // Modal
   const handleModalOpen = () => {
     setOpen(true);
   };
@@ -153,85 +121,108 @@ function ClassTeacherAssignmentSolutionList(props) {
     setSuggestionData(undefined);
   };
 
-  function onSuggestTeacher(classId) {
-    setSelectedClassId(classId);
+  const onSuggestTeacher = (selectedAssignment) => {
+    setSelectedAssignment(selectedAssignment);
     handleModalOpen();
 
-    let datasend = { classId: classId, planId: planId };
     request(
-      // token,
-      // history,
-      "get",
-      "get-suggested-teacher-and-actions-for-class/" + classId + "/" + planId,
+      "GET",
+      `edu/teaching-assignment/plan/${planId}/class/${selectedAssignment.classId}/suggested-teacher-and-actions`,
       (res) => {
         setSuggestionData(res.data);
         console.log("SUGGEST TEACHERS ", res.data);
-        setIsProcessing(false);
       },
-      { 401: () => {} },
-      datasend
+      { 401: () => {} }
     );
-  }
-  function onRemoveTeacher(solutionItemId) {
-    setIsProcessing(true);
-    let datasend = { solutionItemId: solutionItemId };
+  };
+
+  const onReassign = (teacherId) => {
+    console.log(teacherId);
+    const { classId } = selectedAssignment;
+    let data = {
+      planId: planId,
+      classId: classId,
+      teacherId: teacherId,
+      pinned: true,
+    };
+
     request(
-      // token,
-      // history,
-      "post",
-      "manual-remove-class-teacher-assignment-solution",
+      "PUT",
+      `edu/teaching-assignment/plan/${planId}/solution`,
       (res) => {
-        console.log(res);
-        alert("Huy phân giảng viên " + " cho lớp " + "  OK");
-        setIsProcessing(false);
-        getClassTeacherAssignmentSolutionList();
+        const index = assignments.findIndex((s) => s.classCode === classId);
+
+        const updatedClassList = assignments.map((s, i) => {
+          if (i === index) {
+            s.teacherId = teacherId;
+            s.teacherName = teachers[teacherId];
+            s.pinned = true;
+          }
+          return s;
+        });
+
+        setAssignments(updatedClassList);
       },
       { 401: () => {} },
-      datasend
+      data
     );
-  }
 
-  function handleRemoveClassTeacherAssignmentSolution(e) {
-    let acceptList = [];
-    classList.map((v, i) => {
-      if (v.selected == true) {
-        acceptList.push(
-          JSON.stringify({
-            solutionItemId: v.solutionItemId,
-          })
-        );
-      }
-    });
+    handleClose();
+  };
 
-    if (acceptList.length != 0) {
-      let result = -1;
-      let formData = new FormData();
-      formData.append("planId", planId);
-      formData.append("solutionItemList", acceptList.join(";"));
+  // function onRemoveTeacher(solutionItemId) {
+  //   setIsProcessing(true);
+  //   let datasend = { solutionItemId: solutionItemId };
+  //   request(
+  //     // token,
+  //     // history,
+  //     "post",
+  //     "manual-remove-class-teacher-assignment-solution",
+  //     (res) => {
+  //       console.log(res);
+  //       alert("Huy phân giảng viên " + " cho lớp " + "  OK");
+  //       setIsProcessing(false);
+  //       getClassTeacherAssignmentSolutionList();
+  //     },
+  //     { 401: () => {} },
+  //     datasend
+  //   );
+  // }
+
+  const removeAssignmentSolution = () => {
+    if (selectedRows.length > 0) {
+      let data = selectedRows.map((row) => row.solutionItemId);
+
       request(
-        // token,
-        // history,
-        "POST",
-        "/remove-class-teacher-assign-solution-list",
+        "DELETE",
+        `edu/teaching-assignment/plan/${planId}/solution`,
         (res) => {
-          /*
-          result = res.data;
+          const toRemove = new Set(
+            selectedRows.map((row) => row.solutionItemId)
+          );
+          const difference = assignments.filter(
+            (row) => !toRemove.has(row.solutionItemId)
+          );
 
-          if (result >= 0) {
-            let temp = classList.filter(
-              (el) => !acceptList.includes(el.userLoginId)
-            );
-            setClassList(temp);
-            count = 0;
-          }
-          */
-          getClassTeacherAssignmentSolutionList();
-          count = 0;
+          setAssignments(difference);
         },
         {},
-        formData
+        data
       );
     }
+  };
+
+  function exportExcel() {
+    request(
+      "GET",
+      `/edu/teaching-assignment/plan/${planId}/solution/export-excel`,
+      (res) => {
+        saveFile(planName + ".xlsx", res.data);
+      },
+      {},
+      {},
+      { responseType: "blob" }
+    );
   }
 
   const saveFile = (fileName, data) => {
@@ -258,120 +249,83 @@ function ClassTeacherAssignmentSolutionList(props) {
     }
   };
 
-  function handleExportExcel() {
-    request(
-      "GET",
-      "/export-excel-class-teacher-assignment-solution/" + planId,
-      (res) => {
-        saveFile(planName + ".xlsx", res.data);
-      },
-      {},
-      {},
-      { responseType: "blob" }
-    );
-  }
   useEffect(() => {
     getClassTeacherAssignmentSolutionList();
+
+    // Get teacher info for update assignment
+    request("GET", "edu/teaching-assignment/teacher", (res) => {
+      const teachers = {};
+      res.data.forEach((t) => {
+        teachers[t.teacherId] = t.teacherName;
+      });
+
+      setTeachers(teachers);
+    });
   }, []);
 
   return (
-    <Card>
-      <MaterialTable
+    <>
+      {/* <Box
+        position="relative"
+        top={64}
+        borderWidth={1}
+        borderRadius={10}
+        borderColor="#0000001a"
+        bgcolor={blue[200]}
+        style={{ backgroundColor: blue[200] }}
+      >
+        <Typography component="span">
+          Các phương án phân công được ghim sẽ không thay đổi khi chạy thuật
+          toán phân công
+        </Typography>
+      </Box> */}
+      <StandardTable
         title={"Danh sách lớp được phân công"}
         columns={columns}
-        data={classList}
-        components={{
-          Action: (props) => {
-            if (props.action.icon === "exportExcel") {
-              return (
-                <Button
-                  onClick={(event) => props.action.onClick(event, props.data)}
-                  color="primary"
+        data={assignments}
+        classNames={{ commandBar: classes.commandBar }}
+        onSelectionChange={(selectedRows) => setSelectedRows(selectedRows)}
+        commandBarComponents={
+          <>
+            {selectedRows.length === 0 ? (
+              <>
+                <TertiaryButton
+                  className={classes.uploadExcelBtn}
+                  color="default"
+                  startIcon={<PublishRoundedIcon />}
+                  onClick={exportExcel}
                 >
                   Xuất excel
-                </Button>
-              );
-            } else if (props.action.icon === "removeSolution") {
-              return (
-                <ThemeProvider theme={theme}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={
-                      <CheckCircleOutlineIcon
-                        style={{ color: "white" }}
-                        fontSize="default"
-                      />
-                    }
-                    onClick={(event) => props.action.onClick(event, props.data)}
-                    style={{ color: "white" }}
-                  >
-                    Loại bỏ
-                  </Button>
-                </ThemeProvider>
-              );
-            } else if (props.action.icon === "selectAll") {
-              return (
-                <>
-                  <Checkbox
-                    checked={selectedAll}
-                    onChange={(event) =>
-                      props.action.onClick(event, props.data)
-                    }
-                  />
-                  {/* <div>&nbsp;&nbsp;&nbsp;Chọn tất cả&nbsp;&nbsp;</div> */}
-                </>
-              );
-            }
-
-            return "default button";
-          },
-        }}
-        actions={[
-          {
-            isFreeAction: true,
-            icon: "exportExcel",
-            onClick: (e, rowData) => {
-              handleExportExcel();
-            },
-          },
-          {
-            isFreeAction: true,
-            icon: "removeSolution",
-            tooltip: "Loại thí sinh khỏi kì thi",
-            onClick: (e, rowData) => {
-              handleRemoveClassTeacherAssignmentSolution(e);
-            },
-          },
-          {
-            isFreeAction: true,
-            icon: "selectAll",
-            tooltip: "Chọn tất cả",
-            onClick: (e, rowData) => {
-              //alert('checkAll = ' + selectedAll);
-              let tempS = e.target.checked;
-              setSelectedAll(e.target.checked);
-
-              if (tempS) count = classList.length;
-              else count = 0;
-
-              classList.map((value, index) => {
-                value.selected = tempS;
-              });
-            },
-          },
-        ]}
+                </TertiaryButton>
+              </>
+            ) : (
+              <>
+                <TertiaryButton
+                  className={classes.uploadExcelBtn}
+                  color="default"
+                  startIcon={<DeleteRoundedIcon />}
+                  onClick={removeAssignmentSolution}
+                >
+                  Xoá
+                </TertiaryButton>
+                <Typography
+                  component="span"
+                  style={{ marginLeft: "auto", marginRight: 32 }}
+                >{`Đã chọn ${selectedRows.length} mục`}</Typography>
+              </>
+            )}
+          </>
+        }
       />
 
       <SuggestedTeacherListForSelectedClassModel
         open={open}
         handleClose={handleClose}
-        onSelectAssign={customAssignHandle}
-        classId={selectedClassId}
-        suggestionData={suggestionData}
-        planId={planId}
+        onReassign={onReassign}
+        classId={selectedAssignment.classId}
+        suggestions={suggestionData}
       />
-    </Card>
+    </>
   );
 }
 

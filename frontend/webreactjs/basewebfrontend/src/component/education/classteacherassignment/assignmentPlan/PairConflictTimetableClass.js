@@ -3,24 +3,28 @@ import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
 
 const columns = [
-  { title: "class 1", field: "classId1" },
-  { title: "course 1", field: "courseId1" },
-  { title: "timetable 1", field: "timetable1" },
-  { title: "timetableCode 1", field: "timetableCode1" },
-  { title: "class 2", field: "classId2" },
-  { title: "course 2", field: "courseId2" },
-  { title: "timetable 2", field: "timetable2" },
-  { title: "timetableCode 2", field: "timetableCode2" },
+  { title: "Mã lớp 1", field: "classId1" },
+  { title: "Mã học phần", field: "courseId1" },
+  { title: "Thời khoá biểu", field: "timetable1", sorting: false },
+  { title: "Mã thời khoá biểu", field: "timetableCode1", sorting: false },
+  { title: "Mã lớp 2", field: "classId2" },
+  { title: "Mã học phần", field: "courseId2" },
+  { title: "Thời khoá biểu", field: "timetable2", sorting: false },
+  { title: "Mã thời khoá biểu", field: "timetableCode2", sorting: false },
 ];
 
 function PairConflictTimetableClass({ planId }) {
   const [conflictList, setConflictList] = useState([]);
 
-  //
+  // Funcs
   function getConflictTimetableClassList() {
-    request("GET", "/get-pair-of-conflict-timetable-class/" + planId, (res) => {
-      setConflictList(res.data);
-    });
+    request(
+      "GET",
+      `/edu/teaching-assignment/plan/${planId}/class/pair-of-conflict-timetable-class`,
+      (res) => {
+        setConflictList(res.data);
+      }
+    );
   }
 
   useEffect(() => {
@@ -28,14 +32,17 @@ function PairConflictTimetableClass({ planId }) {
   }, []);
 
   return (
-    <StandardTable
-      title={"Danh sách lớp trùng giờ"}
-      columns={columns}
-      data={conflictList}
-      options={{
-        selection: false,
-      }}
-    />
+    <div style={{ marginTop: 64 }}>
+      <StandardTable
+        title={"Danh sách lớp trùng giờ"}
+        columns={columns}
+        data={conflictList}
+        hideCommandBar
+        options={{
+          selection: false,
+        }}
+      />
+    </div>
   );
 }
 

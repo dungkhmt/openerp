@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import UpdateClassForAssignmentModel from "../UpdateClassForAssignmentModel";
 import UploadExcelClassForTeacherAssignmentModel from "../UploadExcelClassForTeacherAssignmentModel";
 
-const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
   uploadExcelBtn: {
     fontWeight: theme.typography.fontWeightRegular,
     "&:hover": {
@@ -42,20 +42,21 @@ function ClassForAssignmentList({ planId }) {
   //
   const [classList, setClassList] = useState([]);
 
+  //
   const [selectedClassId, setSelectedClassId] = useState(null);
   const [open, setOpen] = React.useState(false);
   const [openModelExcel, setOpenModelExcel] = React.useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
-  //const [selectedFile, setSelectedFile] = useState(null);
 
   // Table
   const columns = [
     { title: "Mã lớp", field: "classId", ...cellStyles },
-    { title: "Lớp", field: "className", ...cellStyles },
-    { title: "Học phần", field: "courseId", ...cellStyles },
-    { title: "Thời khoá biểu", field: "lesson", ...cellStyles },
+    { title: "Mã học phần", field: "courseId", ...cellStyles },
+    { title: "Tên học phần", field: "className", ...cellStyles },
+    { title: "Loại lớp", field: "classType", ...cellStyles },
+    { title: "Thời khoá biểu", field: "lesson", sorting: false, ...cellStyles },
     { title: "Chương trình", field: "program", ...cellStyles },
     {
       sorting: false,
@@ -66,17 +67,18 @@ function ClassForAssignmentList({ planId }) {
     {
       sorting: false,
       title: "Số GV",
-      field: "numberPosibleTeachers",
+      field: "numberPossibleTeachers",
       ...alignRightCellStyles,
     },
     {
       sorting: false,
       title: "Số GV trong KH",
-      field: "numberPosibleTeachersInPlan",
+      field: "numberPossibleTeachersInPlan",
       ...alignRightCellStyles,
     },
     {
       title: "",
+      sorting: false,
       render: (rowData) => (
         <IconButton
           color="primary"
@@ -92,12 +94,13 @@ function ClassForAssignmentList({ planId }) {
     },
   ];
 
+  // Funcs
   function onUpdateHourLoad(classId) {
-    //alert("suggest teacher for class " + classId);
     setSelectedClassId(classId);
     handleModalOpen();
   }
 
+  // TODO: fix this func
   function uploadExcel(selectedFile) {
     setIsProcessing(true);
 
@@ -134,28 +137,31 @@ function ClassForAssignmentList({ planId }) {
   }
 
   const customUploadHandle = (selectedFile) => {
-    //console.log(filename);
-    //setSearchString(sString);
-    //alert("upload " + filename);
     uploadExcel(selectedFile);
     handleModalCloseModelExcel();
   };
 
+  // OK
   const customUpdateHandle = (hourLoad) => {
-    //alert("update  class " + selectedClassId + " with ourload = " + hourLoad);
-    let datasend = {
-      classId: selectedClassId,
+    let data = {
       hourLoad: hourLoad,
     };
+
     request(
-      "post",
-      "update-class-for-assignment",
+      "PUT",
+      `/edu/teaching-assignment/plan/${planId}/class/${selectedClassId}`,
       (res) => {
-        console.log(res);
-        alert("Cập nhật " + "  OK");
+        const index = classList.findIndex((c) => c.classId === selectedClassId);
+
+        const updatedClassList = classList.map((c, i) => {
+          if (i === index) c.hourLoad = hourLoad;
+          return c;
+        });
+
+        setClassList(updatedClassList);
       },
       { 401: () => {} },
-      datasend
+      data
     );
 
     handleModalClose();
@@ -177,55 +183,39 @@ function ClassForAssignmentList({ planId }) {
     setOpenModelExcel(false);
   };
 
+  // OK
   const removeClassesFromAssignmentPlan = () => {
     if (selectedRows.length > 0) {
-      let data = selectedRows.map((row) =>
-        JSON.stringify({
-          classId: row.classId,
-        })
-      );
-
-      let formData = new FormData();
-
-      formData.append("planId", planId);
-      formData.append("classList", data.join(";"));
+      let data = selectedRows.map((row) => row.classId);
 
       request(
-        "POST",
-        "/remove-class-from-assign-plan",
+        "DELETE",
+        `edu/teaching-assignment/plan/${planId}/class`,
         (res) => {
-          const toRemoveMap = selectedRows.reduce(
-            (memo, clazz) => ({
-              ...memo,
-              [clazz.classId]: true,
-            }),
-            {}
+          const toRemove = new Set(selectedRows.map((row) => row.classId));
+          const difference = classList.filter(
+            (row) => !toRemove.has(row.classId)
           );
 
-          setClassList(
-            classList.filter((clazz) => !toRemoveMap[clazz.classId])
-          );
+          setClassList(difference);
         },
         {},
-        formData
+        data
       );
     }
   };
 
+  // OK
   useEffect(() => {
-    request(
-      "GET",
-      "/get-class-list-for-assignment-2-teacher/" + planId,
-      (res) => {
-        setClassList(res.data);
-      }
-    );
+    request("GET", `edu/teaching-assignment/plan/${planId}/class`, (res) => {
+      setClassList(res.data);
+    });
   }, []);
 
   return (
     <>
       <StandardTable
-        title={"Danh sách lớp chưa phân công"}
+        title={"Danh sách lớp trong kế hoạch"}
         columns={columns}
         data={classList}
         classNames={{ commandBar: classes.commandBar }}

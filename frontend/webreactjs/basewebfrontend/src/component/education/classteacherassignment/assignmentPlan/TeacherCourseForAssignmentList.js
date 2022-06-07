@@ -1,123 +1,101 @@
-import { Button, Checkbox, IconButton, Tooltip } from "@material-ui/core/";
-import { green } from "@material-ui/core/colors";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
-import EditIcon from "@material-ui/icons/Edit";
+import { Typography } from "@material-ui/core/";
+import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
+// import EditIcon from "@material-ui/icons/Edit";
+import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
 import { authPostMultiPart, request } from "api";
-import MaterialTable, { MTableToolbar } from "material-table";
-import React, { useEffect, useReducer, useState } from "react";
+import TertiaryButton from "component/button/TertiaryButton";
+import StandardTable from "component/table/StandardTable";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import UpdateTeacherCourseForAssignmentModel from "../UpdateTeacherCourseForAssignmentModel";
+// import UpdateTeacherCourseForAssignmentModel from "../UpdateTeacherCourseForAssignmentModel";
 import UploadExcelTeacherCourseModel from "../UploadExcelTeacherCourseModel";
-
-const theme = createMuiTheme({
-  palette: {
-    primary: green,
-  },
-});
-let count = 0;
+import { useStyles } from "./ClassForAssignmentList";
 
 function TeacherCourseForAssignmentList(props) {
   const planId = props.planId;
-  const [teacherList, setTeacherList] = useState([]);
+  const classes = useStyles();
+
+  // Command delete button
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [teacherCourses, setTeacherCourses] = useState([]);
+
   const [open, setOpen] = React.useState(false);
-  const [openUpdateTeacherCourse, setOpenUpdateTeacherCourse] =
-    React.useState(false);
-  const [selectedTeacherCourse, setSelectedTeacherCourse] = useState(null);
+  // const [openUpdateTeacherCourse, setOpenUpdateTeacherCourse] = useState(false);
+  // const [selectedTeacherCourse, setSelectedTeacherCourse] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
-  //const [selectedFile, setSelectedFile] = useState(null);
-  const [selectedAll, setSelectedAll] = useState(false);
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
+  // Table
   const columns = [
     { title: "Giáo viên", field: "teacherId" },
-    { title: "Tên môn", field: "courseId" },
-    { title: "Độ ưu tiên", field: "priority" },
-    { title: "Score", field: "score" },
-    {
-      title: "",
-      render: (rowData) => (
-        <IconButton
-          color="primary"
-          aria-label="edit"
-          onClick={() => {
-            onUpdatePriority(rowData["teacherId"], rowData["courseId"]);
-          }}
-        >
-          <EditIcon />
-        </IconButton>
-      ),
-    },
-    {
-      field: "selected",
-      title: "Chọn",
-
-      width: "10%",
-      type: "numeric",
-      render: (rowData) => (
-        <Checkbox
-          checked={rowData.selected}
-          onChange={(e) => {
-            rowData.selected = e.target.checked;
-            if (rowData.selected == false) {
-              count--;
-              setSelectedAll(false);
-            } else {
-              count++;
-            }
-            if (count == teacherList.length) {
-              setSelectedAll(true);
-            }
-            forceUpdate();
-          }}
-        />
-      ),
-    },
+    { title: "Mã học phần", field: "courseId" },
+    { title: "Loại lớp", field: "classType" },
+    // { title: "Độ ưu tiên", field: "priority" },
+    // { title: "Score", field: "score" },
+    // {
+    //   title: "",
+    //   render: (rowData) => (
+    //     <IconButton
+    //       color="primary"
+    //       aria-label="edit"
+    //       onClick={() => {
+    //         onUpdatePriority(rowData);
+    //       }}
+    //     >
+    //       <EditIcon />
+    //     </IconButton>
+    //   ),
+    // },
   ];
 
-  function onUpdatePriority(teacherId, courseId) {
-    //alert("update priority " + teacherId + "-" + courseId);
-    setSelectedTeacherCourse({
-      planId: planId,
-      teacherId: teacherId,
-      courseId: courseId,
-    });
-    handleModalUpdateTeacherCourseOpen();
-  }
-  const handleModalUpdateTeacherCourseOpen = () => {
-    setOpenUpdateTeacherCourse(true);
-  };
-  const handleModalUpdateTeacherCourseClose = () => {
-    setOpenUpdateTeacherCourse(false);
-  };
-  const customUpdateHandle = (priority, score) => {
-    //alert("update  class " + selectedClassId + " with ourload = " + hourLoad);
-    let datasend = {
-      planId: selectedTeacherCourse.planId,
-      teacherId: selectedTeacherCourse.teacherId,
-      courseId: selectedTeacherCourse.courseId,
-      priority: priority,
-      score: score,
-    };
-    request(
-      // token,
-      // history,
-      "post",
-      "update-teacher-course-for-assignment-plan",
-      (res) => {
-        console.log(res);
-        alert("Cập nhật " + "  OK");
-      },
-      { 401: () => {} },
-      datasend
-    );
+  // function onUpdatePriority(rowData) {
+  //   setSelectedTeacherCourse({ ...rowData });
 
-    handleModalUpdateTeacherCourseClose();
-  };
+  //   handleModalUpdateTeacherCourseOpen();
+  // }
 
-  function uploadExcel(selectedFile, choice) {
+  // const handleModalUpdateTeacherCourseOpen = () => {
+  //   setOpenUpdateTeacherCourse(true);
+  // };
+
+  // const handleModalUpdateTeacherCourseClose = () => {
+  //   setOpenUpdateTeacherCourse(false);
+  // };
+
+  // const customUpdateHandle = (priority, score) => {
+  //   delete selectedTeacherCourse["table"];
+  //   const data = {
+  //     ...selectedTeacherCourse,
+  //     priority: priority,
+  //     // score: score,
+  //   };
+
+  //   request(
+  //     "PUT",
+  //     `edu/teaching-assignment/plan/${planId}/teacher-course`,
+  //     (res) => {
+  //       const index = teacherCourses.findIndex(
+  //         (tc) => tc.teacherCourseId === data.teacherCourseId
+  //       );
+
+  //       const updatedTeacherCourses = teacherCourses.map((tc, i) => {
+  //         if (i !== index) return tc;
+  //         return data;
+  //       });
+
+  //       setTeacherCourses(updatedTeacherCourses);
+  //     },
+  //     { 401: () => {} },
+  //     data
+  //   );
+
+  //   handleModalUpdateTeacherCourseClose();
+  // };
+
+  // TODO: upgrade this func
+  const uploadExcel = (selectedFile, choice) => {
     setIsProcessing(true);
 
     if (selectedFile == null) {
@@ -146,38 +124,22 @@ function TeacherCourseForAssignmentList(props) {
         setIsProcessing(false);
         console.error(e);
       });
-  }
+  };
+
   const customUploadHandle = (selectedFile, choice) => {
-    //console.log(filename);
-    //setSearchString(sString);
-    //alert("upload " + filename);
     uploadExcel(selectedFile, choice);
     handleModalClose();
   };
 
-  async function getTeacherCourseForAssignmentList() {
+  const getTeacherCourseForAssignmentList = () => {
     request(
-      // token,
-      // history,
       "GET",
-      "/get-teacher-course-4-assignment/" + planId,
+      `edu/teaching-assignment/plan/${planId}/teacher-course`,
       (res) => {
-        let temp = [];
-        res.data.map((elm, index) => {
-          temp.push({
-            teacherId: elm.teacherId,
-            courseId: elm.courseId,
-            priority: elm.priority,
-            score: elm.score,
-            selected: false,
-          });
-        });
-        setTeacherList(temp);
-
-        //setTeacherList(res.data);
+        setTeacherCourses(res.data);
       }
     );
-  }
+  };
 
   const handleModalOpen = () => {
     setOpen(true);
@@ -187,43 +149,31 @@ function TeacherCourseForAssignmentList(props) {
     setOpen(false);
   };
 
-  const handleRemoveTeacherCourseFromAssignmentPlan = (e) => {
-    let acceptList = [];
-    teacherList.map((v, i) => {
-      if (v.selected == true) {
-        acceptList.push(
-          JSON.stringify({
-            teacherId: v.teacherId,
-            courseId: v.courseId,
-            priority: v.priority,
-          })
-        );
-      }
-    });
+  const removeTeacherCourseFromAssignmentPlan = () => {
+    if (selectedRows.length > 0) {
+      const data = selectedRows.map((tc) => ({
+        teacherCourseId: tc.teacherCourseId,
+        planId: tc.planId,
+        teacherId: tc.teacherId,
+        courseId: tc.courseId,
+        classType: tc.classType,
+      }));
 
-    if (acceptList.length != 0) {
-      let result = -1;
-      let formData = new FormData();
-      formData.append("planId", planId);
-      formData.append("teacherCourseList", acceptList.join(";"));
       request(
-        // token,
-        // history,
-        "POST",
-        "/remove-teacher-course-from-assign-plan",
+        "DELETE",
+        `edu/teaching-assignment/plan/${planId}/teacher-course`,
         (res) => {
-          result = res.data;
+          const toRemove = new Set(
+            selectedRows.map((tc) => tc.teacherCourseId)
+          );
+          const difference = teacherCourses.filter(
+            (tc) => !toRemove.has(tc.teacherCourseId)
+          );
 
-          if (result >= 0) {
-            let temp = teacherList.filter(
-              (el) => !acceptList.includes(el.userLoginId)
-            );
-            setTeacherList(temp);
-            count = 0;
-          }
+          setTeacherCourses(difference);
         },
         {},
-        formData
+        data
       );
     }
   };
@@ -234,81 +184,43 @@ function TeacherCourseForAssignmentList(props) {
 
   return (
     <>
-      <MaterialTable
+      <StandardTable
         title={"Danh sách giáo viên"}
         columns={columns}
-        data={teacherList}
-        components={{
-          Toolbar: (props) => (
-            <div style={{ position: "relative" }}>
-              <MTableToolbar {...props} />
-
-              <Button onClick={handleModalOpen} color="primary">
-                Upload excel
-              </Button>
-            </div>
-          ),
-        }}
-        actions={[
-          {
-            icon: () => {
-              return (
-                <Tooltip
-                  title="Loại thí sinh khỏi kì thi"
-                  aria-label="Loại thí sinh khỏi kì thi"
-                  placement="top"
+        data={teacherCourses}
+        classNames={{ commandBar: classes.commandBar }}
+        onSelectionChange={(selectedRows) => setSelectedRows(selectedRows)}
+        commandBarComponents={
+          <>
+            {selectedRows.length === 0 ? (
+              <>
+                <TertiaryButton
+                  className={classes.uploadExcelBtn}
+                  color="default"
+                  startIcon={<PublishRoundedIcon />}
+                  onClick={handleModalOpen}
                 >
-                  <ThemeProvider theme={theme} style={{ color: "white" }}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={(e) => {
-                        handleRemoveTeacherCourseFromAssignmentPlan(e);
-                      }}
-                      style={{ color: "white" }}
-                    >
-                      <CheckCircleOutlineIcon
-                        style={{ color: "white" }}
-                        fontSize="default"
-                      />
-                      &nbsp;&nbsp;&nbsp;Loại bỏ&nbsp;&nbsp;
-                    </Button>
-                  </ThemeProvider>
-                </Tooltip>
-              );
-            },
-            isFreeAction: true,
-          },
-          {
-            icon: () => {
-              return (
-                <Tooltip
-                  title="Chọn tất cả"
-                  aria-label="Chọn tất cả"
-                  placement="top"
+                  Tải lên Excel
+                </TertiaryButton>
+              </>
+            ) : (
+              <>
+                <TertiaryButton
+                  className={classes.uploadExcelBtn}
+                  color="default"
+                  startIcon={<DeleteRoundedIcon />}
+                  onClick={removeTeacherCourseFromAssignmentPlan}
                 >
-                  <Checkbox
-                    checked={selectedAll}
-                    onChange={(e) => {
-                      //alert('checkAll = ' + selectedAll);
-                      let tempS = e.target.checked;
-                      setSelectedAll(e.target.checked);
-
-                      if (tempS) count = teacherList.length;
-                      else count = 0;
-
-                      teacherList.map((value, index) => {
-                        value.selected = tempS;
-                      });
-                    }}
-                  />
-                  {/* <div>&nbsp;&nbsp;&nbsp;Chọn tất cả&nbsp;&nbsp;</div> */}
-                </Tooltip>
-              );
-            },
-            isFreeAction: true,
-          },
-        ]}
+                  Xoá
+                </TertiaryButton>
+                <Typography
+                  component="span"
+                  style={{ marginLeft: "auto", marginRight: 32 }}
+                >{`Đã chọn ${selectedRows.length} mục`}</Typography>
+              </>
+            )}
+          </>
+        }
       />
 
       <UploadExcelTeacherCourseModel
@@ -316,12 +228,13 @@ function TeacherCourseForAssignmentList(props) {
         onClose={handleModalClose}
         onUpload={customUploadHandle}
       />
-      <UpdateTeacherCourseForAssignmentModel
+
+      {/* <UpdateTeacherCourseForAssignmentModel
         open={openUpdateTeacherCourse}
         onClose={handleModalUpdateTeacherCourseClose}
         onUpdateInfo={customUpdateHandle}
         selectedTeacherCourse={selectedTeacherCourse}
-      />
+      /> */}
     </>
   );
 }

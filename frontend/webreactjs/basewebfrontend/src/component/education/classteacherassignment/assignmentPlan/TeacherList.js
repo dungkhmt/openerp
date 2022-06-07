@@ -1,61 +1,35 @@
-import { Button, Checkbox, Tooltip } from "@material-ui/core/";
-import { green } from "@material-ui/core/colors";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
+import { Typography } from "@material-ui/core/";
+import AddIcon from "@material-ui/icons/Add";
+import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
 import { authPostMultiPart, request } from "api";
-import MaterialTable, { MTableToolbar } from "material-table";
-import React, { useEffect, useReducer, useState } from "react";
+import TertiaryButton from "component/button/TertiaryButton";
+import StandardTable from "component/table/StandardTable";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UploadExcelTeacherCourseModel from "../UploadExcelTeacherCourseModel";
+import { useStyles } from "./ClassForAssignmentList";
 
-const theme = createMuiTheme({
-  palette: {
-    primary: green,
-  },
-});
-let count = 0;
+const columns = [
+  { title: "Mã Giáo viên", field: "teacherId" },
+  { title: "Tên", field: "teacherName" },
+];
 
 function TeacherList(props) {
   const planId = props.planId;
+  const classes = useStyles();
+
+  // Command delete button
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  //
   const [teacherList, setTeacherList] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
-  //const [selectedFile, setSelectedFile] = useState(null);
-  const [selectedAll, setSelectedAll] = useState(false);
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  const columns = [
-    { title: "Mã Giáo viên", field: "teacherId" },
-    { title: "Tên", field: "teacherName" },
-    {
-      field: "selected",
-      title: "Chọn",
-
-      width: "10%",
-      type: "numeric",
-      render: (rowData) => (
-        <Checkbox
-          checked={rowData.selected}
-          onChange={(e) => {
-            rowData.selected = e.target.checked;
-            if (rowData.selected == false) {
-              count--;
-              setSelectedAll(false);
-            } else {
-              count++;
-            }
-            if (count == teacherList.length) {
-              setSelectedAll(true);
-            }
-            forceUpdate();
-          }}
-        />
-      ),
-    },
-  ];
-
+  // Funcs
+  // TODO: fix this func
   function uploadExcel(selectedFile, choice) {
     setIsProcessing(true);
 
@@ -86,34 +60,16 @@ function TeacherList(props) {
         console.error(e);
       });
   }
+
   const customUploadHandle = (selectedFile, choice) => {
-    //console.log(filename);
-    //setSearchString(sString);
-    //alert("upload " + filename);
     uploadExcel(selectedFile, choice);
     handleModalClose();
   };
 
-  async function getTeacherList() {
-    request(
-      // token,
-      // history,
-      "GET",
-      "/get-all-teachers",
-      (res) => {
-        let temp = [];
-        res.data.map((elm, index) => {
-          temp.push({
-            teacherId: elm.teacherId,
-            teacherName: elm.teacherName,
-            selected: false,
-          });
-        });
-        setTeacherList(temp);
-
-        //setTeacherList(res.data);
-      }
-    );
+  function getTeacherList() {
+    request("GET", "edu/teaching-assignment/teacher", (res) => {
+      setTeacherList(res.data);
+    });
   }
 
   const handleModalOpen = () => {
@@ -124,39 +80,26 @@ function TeacherList(props) {
     setOpen(false);
   };
 
-  const handleAddTeacherToAssignmentPlan = (e) => {
-    let acceptList = [];
-    teacherList.map((v, i) => {
-      if (v.selected == true) {
-        acceptList.push(
-          JSON.stringify({ teacherId: v.teacherId, maxHourLoad: 0 })
-        );
-      }
-    });
+  const addTeacherToAssignmentPlan = () => {
+    if (selectedRows.length > 0) {
+      const data = selectedRows.map((row) => ({
+        teacherId: row.teacherId,
+        maxHourLoad: 0,
+      }));
 
-    if (acceptList.length != 0) {
-      let result = -1;
-      let formData = new FormData();
-      formData.append("planId", planId);
-      formData.append("teacherList", acceptList.join(";"));
       request(
-        // token,
-        // history,
         "POST",
-        "/add-teacher-to-assign-plan",
+        `edu/teaching-assignment/plan/${planId}/teacher`,
         (res) => {
-          result = res.data;
+          const toRemove = new Set(selectedRows.map((row) => row.teacherId));
+          const difference = teacherList.filter(
+            (teacher) => !toRemove.has(teacher.teacherId)
+          );
 
-          if (result >= 0) {
-            let temp = teacherList.filter(
-              (el) => !acceptList.includes(el.userLoginId)
-            );
-            setTeacherList(temp);
-            count = 0;
-          }
+          setTeacherList(difference);
         },
         {},
-        formData
+        data
       );
     }
   };
@@ -164,83 +107,46 @@ function TeacherList(props) {
   useEffect(() => {
     getTeacherList();
   }, []);
+
   return (
     <>
-      <MaterialTable
+      <StandardTable
         title={"Danh sách giáo viên"}
         columns={columns}
         data={teacherList}
-        components={{
-          Toolbar: (props) => (
-            <div style={{ position: "relative" }}>
-              <MTableToolbar {...props} />
-
-              <Button onClick={handleModalOpen} color="primary">
-                Upload excel
-              </Button>
-            </div>
-          ),
-        }}
-        actions={[
-          {
-            icon: () => {
-              return (
-                <Tooltip
-                  title="Loại thí sinh khỏi kì thi"
-                  aria-label="Loại thí sinh khỏi kì thi"
-                  placement="top"
+        classNames={{ commandBar: classes.commandBar }}
+        onSelectionChange={(selectedRows) => setSelectedRows(selectedRows)}
+        commandBarComponents={
+          <>
+            {selectedRows.length === 0 ? (
+              <>
+                <TertiaryButton
+                  className={classes.uploadExcelBtn}
+                  color="default"
+                  startIcon={<PublishRoundedIcon />}
+                  onClick={handleModalOpen}
                 >
-                  <ThemeProvider theme={theme}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={(e) => {
-                        handleAddTeacherToAssignmentPlan(e);
-                      }}
-                      style={{ color: "white" }}
-                    >
-                      <CheckCircleOutlineIcon
-                        style={{ color: "white" }}
-                        fontSize="default"
-                      />
-                      &nbsp;&nbsp;&nbsp;Thêm&nbsp;&nbsp;
-                    </Button>
-                  </ThemeProvider>
-                </Tooltip>
-              );
-            },
-            isFreeAction: true,
-          },
-          {
-            icon: () => {
-              return (
-                <Tooltip
-                  title="Chọn tất cả"
-                  aria-label="Chọn tất cả"
-                  placement="top"
+                  Tải lên Excel
+                </TertiaryButton>
+              </>
+            ) : (
+              <>
+                <TertiaryButton
+                  className={classes.uploadExcelBtn}
+                  color="default"
+                  startIcon={<AddIcon />}
+                  onClick={addTeacherToAssignmentPlan}
                 >
-                  <Checkbox
-                    checked={selectedAll}
-                    onChange={(e) => {
-                      //alert('checkAll = ' + selectedAll);
-                      let tempS = e.target.checked;
-                      setSelectedAll(e.target.checked);
-
-                      if (tempS) count = teacherList.length;
-                      else count = 0;
-
-                      teacherList.map((value, index) => {
-                        value.selected = tempS;
-                      });
-                    }}
-                  />
-                  {/* <div>&nbsp;&nbsp;&nbsp;Chọn tất cả&nbsp;&nbsp;</div> */}
-                </Tooltip>
-              );
-            },
-            isFreeAction: true,
-          },
-        ]}
+                  Thêm vào kế hoạch
+                </TertiaryButton>
+                <Typography
+                  component="span"
+                  style={{ marginLeft: "auto", marginRight: 32 }}
+                >{`Đã chọn ${selectedRows.length} mục`}</Typography>
+              </>
+            )}
+          </>
+        }
       />
 
       <UploadExcelTeacherCourseModel

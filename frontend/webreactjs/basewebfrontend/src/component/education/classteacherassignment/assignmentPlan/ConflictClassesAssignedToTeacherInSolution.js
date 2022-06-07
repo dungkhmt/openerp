@@ -1,55 +1,28 @@
-import { Card } from "@material-ui/core/";
-import { green } from "@material-ui/core/colors";
-import { createMuiTheme } from "@material-ui/core/styles";
-import MaterialTable from "material-table";
+import { request } from "api";
+import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { request } from "../../../../api";
-
-const headerProperties = {
-  headerStyle: {
-    fontSize: 16,
-    backgroundColor: "rgb(63, 81, 181)",
-    color: "white",
-  },
-};
-const theme = createMuiTheme({
-  palette: {
-    primary: green,
-  },
-});
-let count = 0;
 
 function ConflictClassesAssignedToTeacherInSolution(props) {
   const planId = props.planId;
-  const [conflictList, setConflictList] = useState([]);
-  const [open, setOpen] = React.useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
-  //const [selectedFile, setSelectedFile] = useState(null);
+  const [conflictClasses, setConflictClasses] = useState([]);
 
   const columns = [
-    { title: "Mã Giáo viên", field: "teacherId" },
-    { title: "Tên", field: "teacherName" },
+    { title: "Mã giáo viên", field: "teacherId" },
+    { title: "Tên giáo viên", field: "teacherName" },
     { title: "Lớp 1", field: "classCode1" },
-    { title: "Môn 1", field: "courseName1" },
-    { title: "TKB 1", field: "timeTable1" },
+    { title: "Môn", field: "courseName1" },
+    { title: "Thời khoá biểu", field: "timeTable1" },
     { title: "Lớp 2", field: "classCode2" },
-    { title: "Môn 2", field: "courseName2" },
-    { title: "TKB 2", field: "timeTable2" },
+    { title: "Môn", field: "courseName2" },
+    { title: "Thời khoá biểu", field: "timeTable2" },
   ];
 
-  async function getTeacherList() {
+  function getTeacherList() {
     request(
-      // token,
-      // history,
       "GET",
-      "/get-conflict-class-assigned-to-teacher-in-solution/" + planId,
+      `edu/teaching-assignment/plan/${planId}/solution/conflict-classes`,
       (res) => {
-        setConflictList(res.data);
-
-        //setTeacherList(res.data);
+        setConflictClasses(res.data);
       }
     );
   }
@@ -57,14 +30,17 @@ function ConflictClassesAssignedToTeacherInSolution(props) {
   useEffect(() => {
     getTeacherList();
   }, []);
+
   return (
-    <Card>
-      <MaterialTable
+    <div style={{ marginTop: 48 }}>
+      <StandardTable
+        hideCommandBar
         title={"Danh sách lớp xung đột"}
         columns={columns}
-        data={conflictList}
+        data={conflictClasses}
+        options={{ selection: false, pageSize: 5 }}
       />
-    </Card>
+    </div>
   );
 }
 
