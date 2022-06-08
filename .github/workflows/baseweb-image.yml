@@ -17,7 +17,7 @@ jobs:
         uses: timheuer/base64-to-file@v1.1
         with:
           fileName: 'application.yml'
-          fileDir: './src/main/resources/'
+          fileDir: './backend/springboot/baseweb/src/main/resources/'
           encodedString: ${{ secrets.B64_SECRET }}
       - name: Build & push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
