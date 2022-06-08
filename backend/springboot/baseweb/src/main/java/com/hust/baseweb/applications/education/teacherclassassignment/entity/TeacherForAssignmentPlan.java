@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -34,10 +33,10 @@ public class TeacherForAssignmentPlan {
     @Column(name = "minimize_number_working_days")
     private String minimizeNumberWorkingDays;
 
-    @Column(name = "last_updated_stamp")
-    private Date lastUpdatedStamp;
-
-    @Column(name = "created_stamp")
-    private Date createdStamp;
+//    @Column(name = "last_updated_stamp")
+//    private Date lastUpdatedStamp;
+//
+//    @Column(name = "created_stamp")
+//    private Date createdStamp;
 
 }

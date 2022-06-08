@@ -1,14 +1,12 @@
 package com.hust.baseweb.applications.education.thesisdefensejury.service;
 
 
-import com.hust.baseweb.applications.education.entity.mongodb.Teacher;
 import com.hust.baseweb.applications.education.teacherclassassignment.entity.EduTeacher;
 import com.hust.baseweb.applications.education.teacherclassassignment.repo.EduTeacherRepo;
 import com.hust.baseweb.applications.education.thesisdefensejury.entity.DefenseJury;
 import com.hust.baseweb.applications.education.thesisdefensejury.entity.Thesis;
 import com.hust.baseweb.applications.education.thesisdefensejury.entity.ThesisDefensePlan;
 import com.hust.baseweb.applications.education.thesisdefensejury.entity.TraningProgram;
-import com.hust.baseweb.applications.education.thesisdefensejury.models.DefenseJuryIM;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.Response;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.ThesisIM;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.ThesisOM;
@@ -93,10 +91,10 @@ public class ThesisImpl implements ThesisService {
         rs.setProgramId(traningProgram.get().getId());
         rs.setDefensePlanId(thesisDefensePlan.get().getId());
         rs.setStudentName(thesis.getStudent_name());
-        rs.setSupervisor(eduTeacher.get().getTeacherId());
+        rs.setSupervisor(eduTeacher.get().getId());
         rs.setUserLogin(thesis.getUserLoginID());
         rs.setDefenseJury(defenseJury.get(0).getId());
-        rs.setScheduled_reviewer_id(reviewer.get().getTeacherId());
+        rs.setScheduled_reviewer_id(reviewer.get().getId());
         rs.setThesisKeyword(thesis.getKeyword());
         thesisRepo.save(rs);
 
@@ -302,10 +300,10 @@ public class ThesisImpl implements ThesisService {
         rs.setProgramId(traningProgram.get().getId());
         rs.setDefensePlanId(thesisDefensePlan.get().getId());
         rs.setStudentName(thesis.getStudent_name());
-        rs.setSupervisor(eduTeacher.get().getTeacherId());
+        rs.setSupervisor(eduTeacher.get().getId());
         rs.setUserLogin(thesis.getUserLoginID());
         rs.setDefenseJury(defenseJury.get(0).getId());
-        rs.setScheduled_reviewer_id(reviewer.get().getTeacherId());
+        rs.setScheduled_reviewer_id(reviewer.get().getId());
         rs.setThesisKeyword(thesis.getKeyword());
         thesisRepo.save(rs);
 

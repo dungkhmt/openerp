@@ -85,7 +85,7 @@ public class TeacherClassAssignmentController {
     @PostMapping("/add-teacher")
     public ResponseEntity<?> addTeacher(Principal principal, @RequestBody EduTeacher teacher) {
         String result = planService.addTeacher(teacher);
-        log.info("addTeacher, teacherId " + teacher.getTeacherId());
+        log.info("addTeacher, teacherId " + teacher.getId());
         if (result.equals("OK")) {
             return ResponseEntity.ok(result);
         }

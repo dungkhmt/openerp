@@ -20,7 +20,7 @@ public class EduTeacher {
 
     @Id
     @Column(name = "id")
-    private String teacherId;
+    private String id;
 
     @Column(name = "teacher_name")
     private String teacherName;
@@ -29,7 +29,7 @@ public class EduTeacher {
     private String userLoginId;
 
     @Column(name = "max_hour_load")
-    private double maxCredit;
+    private double maxHourLoad;
 
     @Column(name = "created_stamp")
     private Date createdStamp;

@@ -39,10 +39,10 @@ public class ClassTeacherAssignmentClassInfo {
     private String className;
 
     @Column(name = "credit")
-    private String creditInfo;
+    private String credit;
 
     @Column(name = "note")
-    private String classNote;
+    private String note;
 
     @Column(name = "class_program")
     private String program;
@@ -60,7 +60,7 @@ public class ClassTeacherAssignmentClassInfo {
     private String classType;
 
     @Column(name = "timetable")
-    private String timeTable;
+    private String timetable;
 
     @Column(name = "lesson")
     private String lesson;
@@ -72,7 +72,7 @@ public class ClassTeacherAssignmentClassInfo {
 //    private String teacherId;
 
     @Column(name = "created_by")
-    private String createdByUserLoginId;
+    private String createdBy;
 
     @Column(name = "last_updated_stamp")
     private Date lastUpdatedStamp;

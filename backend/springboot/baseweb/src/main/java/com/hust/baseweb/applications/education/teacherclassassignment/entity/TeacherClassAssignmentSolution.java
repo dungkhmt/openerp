@@ -19,7 +19,7 @@ public class TeacherClassAssignmentSolution {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID solutionItemId;
+    private UUID id;
 
     @Column(name = "class_id")
     private String classId;
@@ -34,7 +34,7 @@ public class TeacherClassAssignmentSolution {
     private boolean pinned;
 
     @Column(name = "created_by")
-    private String createdByUserLoginId;
+    private String createdBy;
 
     @Column(name = "created_stamp")
     private Date createdStamp;

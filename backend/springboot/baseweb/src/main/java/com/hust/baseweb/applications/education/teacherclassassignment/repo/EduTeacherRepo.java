@@ -12,7 +12,8 @@ import java.util.Optional;
 
 public interface EduTeacherRepo extends JpaRepository<EduTeacher, String> {
 
-    @Query("Select t from EduTeacher t where t.teacherName like %:keyword% or t.teacherId like %:keyword% or t.userLoginId like %:keyword%")
+    @Query(
+        "Select t from EduTeacher t where t.teacherName like %:keyword% or t.id like %:keyword% or t.userLoginId like %:keyword%")
     Page<EduTeacher> findAllContain(@Param("keyword") String keyword, Pageable pageable);
     
     Optional<EduTeacher> findByUserLoginId(String userLoginId);

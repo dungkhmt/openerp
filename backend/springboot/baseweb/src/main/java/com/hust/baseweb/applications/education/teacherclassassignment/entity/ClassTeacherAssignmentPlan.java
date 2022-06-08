@@ -19,13 +19,13 @@ public class ClassTeacherAssignmentPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private UUID planId;
+    private UUID id;
 
     @Column(name = "plan_name")
     private String planName;
 
     @Column(name = "created_by")
-    private String createdByUserLoginId;
+    private String createdBy;
 
     @Column(name = "created_stamp")
     private Date createdStamp;
