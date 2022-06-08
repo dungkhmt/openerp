@@ -1,23 +1,10 @@
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  TextField,
-  Typography,
-  MenuItem,
-  Checkbox,
-  Tooltip,
-} from "@material-ui/core/";
-import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import { authPost, authGet, authPostMultiPart } from "../../../api";
+import { Button, Card } from "@material-ui/core/";
+import { request } from "api";
+import MaterialTable, { MTableToolbar } from "material-table";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import MaterialTable, { MTableToolbar } from "material-table";
-import { Link } from "react-router-dom";
-import AddIcon from "@material-ui/icons/Add";
-import { request } from "../../../api";
+import { Link, useHistory } from "react-router-dom";
 import CreateClassTeacherAssignmentPlanModal from "./CreateClassTeacherAssignmentPlan";
 
 function ClassTeacherAssignmentPlanList() {
@@ -37,7 +24,7 @@ function ClassTeacherAssignmentPlanList() {
       render: (rowData) => (
         <Link
           to={{
-            pathname: `/edu/class-teacher-assignment-plan/detail/${rowData.planId}`,
+            pathname: `/edu/class-teacher-assignment-plan/detail/${rowData.id}`,
           }}
           style={{
             textDecoration: "none",

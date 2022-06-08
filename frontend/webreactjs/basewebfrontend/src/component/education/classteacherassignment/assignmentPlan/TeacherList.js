@@ -10,7 +10,7 @@ import UploadExcelTeacherCourseModel from "../UploadExcelTeacherCourseModel";
 import { useStyles } from "./ClassForAssignmentList";
 
 const columns = [
-  { title: "Mã Giáo viên", field: "teacherId" },
+  { title: "Mã Giáo viên", field: "id" },
   { title: "Tên", field: "teacherName" },
 ];
 
@@ -83,7 +83,7 @@ function TeacherList(props) {
   const addTeacherToAssignmentPlan = () => {
     if (selectedRows.length > 0) {
       const data = selectedRows.map((row) => ({
-        teacherId: row.teacherId,
+        teacherId: row.id,
         maxHourLoad: 0,
       }));
 
@@ -91,9 +91,9 @@ function TeacherList(props) {
         "POST",
         `edu/teaching-assignment/plan/${planId}/teacher`,
         (res) => {
-          const toRemove = new Set(selectedRows.map((row) => row.teacherId));
+          const toRemove = new Set(selectedRows.map((row) => row.id));
           const difference = teacherList.filter(
-            (teacher) => !toRemove.has(teacher.teacherId)
+            (teacher) => !toRemove.has(teacher.id)
           );
 
           setTeacherList(difference);
