@@ -12,10 +12,12 @@ public class PersonDao {
 
     private UUID partyId;
     private String fullName;
+    private String userLoginId;
 
-    public PersonDao(Person person) {
+    public PersonDao(Person person, String userLoginId) {
         this.partyId = person.getPartyId();
         this.fullName = this.getFullNameRemoveNull(person);
+        this.userLoginId = userLoginId;
     }
 
     private String getFullNameRemoveNull(Person person) {

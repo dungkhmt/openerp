@@ -2,6 +2,7 @@ package com.hust.baseweb.applications.taskmanagement.service;
 
 import com.hust.baseweb.applications.taskmanagement.entity.ProjectMember;
 import com.hust.baseweb.entity.Person;
+import com.hust.baseweb.entity.UserLogin;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,4 +16,8 @@ public interface ProjectMemberService {
     List<Person> getMemberIdJoinedProject(UUID projectId);
 
     ProjectMember setProjectMember(ProjectMember projectMember);
+
+    UserLogin getUserLoginByPartyId(UUID partyId);
+
+    ProjectMember create(ProjectMember projectMember);
 }

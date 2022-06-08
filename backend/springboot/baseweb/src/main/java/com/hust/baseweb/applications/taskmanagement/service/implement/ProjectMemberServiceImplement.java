@@ -4,6 +4,8 @@ import com.hust.baseweb.applications.taskmanagement.entity.ProjectMember;
 import com.hust.baseweb.applications.taskmanagement.repository.ProjectMemberRepository;
 import com.hust.baseweb.applications.taskmanagement.service.ProjectMemberService;
 import com.hust.baseweb.entity.Person;
+import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.repo.UserLoginRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ public class ProjectMemberServiceImplement implements ProjectMemberService {
     private final ProjectMemberRepository projectMemberRepository;
 
     private final PersonRepo personRepo;
+
+    private final UserLoginRepo userLoginRepo;
 
     @Override
     public boolean addMemberToProject() {
@@ -41,5 +45,16 @@ public class ProjectMemberServiceImplement implements ProjectMemberService {
     public ProjectMember setProjectMember(ProjectMember projectMember) {
         return projectMemberRepository.save(projectMember);
     }
+
+    @Override
+    public UserLogin getUserLoginByPartyId(UUID partyId) {
+        return userLoginRepo.finByPartyId(partyId);
+    }
+
+    @Override
+    public ProjectMember create(ProjectMember projectMember) {
+        return projectMemberRepository.save(projectMember);
+    }
+
 
 }

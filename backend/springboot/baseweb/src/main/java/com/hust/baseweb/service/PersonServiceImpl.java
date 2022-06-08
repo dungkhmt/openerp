@@ -23,14 +23,8 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List<PersonDao> getALL() {
-        List<Person> people = personRepo.findAll();
-        List<PersonDao> personDaoLis = new ArrayList<>();
-        for(Person person: people){
-            personDaoLis.add(new PersonDao(person));
-        }
-
-        return personDaoLis;
+    public List<Person> getALL() {
+        return personRepo.findAll();
     }
 
 

@@ -12,7 +12,6 @@ import {
     Menu,
     MenuItem
 } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import { Link } from 'react-router-dom';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
@@ -45,7 +44,7 @@ const ProjectItem = ({ name, id }) => {
                         </Box>
                         <Box>
                             <Link to={`/taskmanagement/project/tasks/create/${id}`} style={{ textDecoration: 'none', marginRight: "15px" }}>Thêm n.vụ</Link>
-                            <Link to="#" style={{ textDecoration: 'none', marginRight: "15px" }}>Danh sách n.vụ</Link>
+                            <Link to={`/taskmanagement/project/${id}/tasks#list-task`} style={{ textDecoration: 'none', marginRight: "15px" }}>Danh sách n.vụ</Link>
                             <Link to="#" style={{ textDecoration: 'none', marginRight: "15px" }}>Boards</Link>
                         </Box>
                     </Box>

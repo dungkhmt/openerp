@@ -24,4 +24,9 @@ public class TaskAssignableServiceImplement implements TaskAssignableService {
     public List<TaskAssignable> getByPartyId(UUID partyId) {
         return taskAssignableRepository.getByPartyId(partyId);
     }
+
+    @Override
+    public TaskAssignable getByTaskId(UUID taskId) {
+        return taskAssignableRepository.getByTaskId(taskId);
+    }
 }

@@ -33,9 +33,15 @@ public class TaskServiceImplement implements TaskService {
     public List<Task> getAllTaskInProject(UUID projectId) {
         return taskRepository.findAllTasksByProjectId(projectId);
     }
+
     @Override
-    public List<Object[]> getTaskStaticsInProject(UUID projectId) {
-        return taskRepository.getTaskStaticsInProject(projectId);
+    public List<Object[]> getTaskStaticsCategoryInProject(UUID projectId) {
+        return taskRepository.getTaskStaticsCategoryInProject(projectId);
+    }
+
+    @Override
+    public List<Object[]> getTaskStaticsStatusInProject(UUID projectId) {
+        return taskRepository.getTaskStaticsStatusInProject(projectId);
     }
 
     @Override

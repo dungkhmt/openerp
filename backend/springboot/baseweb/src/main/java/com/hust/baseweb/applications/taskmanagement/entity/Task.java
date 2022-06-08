@@ -43,7 +43,7 @@ public class Task {
     private Date dueDate;
 
     @Column(name = "created_by_user_login_id")
-    private String userLoginId;
+    private String createdByUserLoginId;
 
     @Column(name = "attachment_paths")
     private String attachmentPaths;
