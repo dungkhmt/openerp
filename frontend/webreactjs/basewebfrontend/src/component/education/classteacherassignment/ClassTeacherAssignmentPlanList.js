@@ -2,20 +2,12 @@ import { Button, Card } from "@material-ui/core/";
 import { request } from "api";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import CreateClassTeacherAssignmentPlanModal from "./CreateClassTeacherAssignmentPlan";
 
 function ClassTeacherAssignmentPlanList() {
-  const params = useParams();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
-  const history = useHistory();
   const [plans, setPlans] = useState([]);
-
   const [open, setOpen] = React.useState(false);
-  const [searchString, setSearchString] = React.useState("");
 
   const columns = [
     {
@@ -24,7 +16,7 @@ function ClassTeacherAssignmentPlanList() {
       render: (rowData) => (
         <Link
           to={{
-            pathname: `/edu/class-teacher-assignment-plan/detail/${rowData.id}`,
+            pathname: `/edu/teaching-assignment/plan/${rowData.id}/?tab=0`,
           }}
           style={{
             textDecoration: "none",
@@ -45,15 +37,9 @@ function ClassTeacherAssignmentPlanList() {
   ];
 
   async function getClassTeacherAssignmentList() {
-    request(
-      // token,
-      // history,
-      "GET",
-      "/get-all-class-teacher-assignment-plan",
-      (res) => {
-        setPlans(res.data);
-      }
-    );
+    request("GET", "/get-all-class-teacher-assignment-plan", (res) => {
+      setPlans(res.data);
+    });
   }
 
   const handleModalOpen = () => {
@@ -63,11 +49,10 @@ function ClassTeacherAssignmentPlanList() {
   const handleModalClose = () => {
     setOpen(false);
   };
-  async function createPlan(planName) {
-    let datasend = { planName: planName };
+
+  function createPlan(planName) {
+    let data = { planName: planName };
     request(
-      // token,
-      // history,
       "post",
       "create-class-teacher-assignment-plan",
       (res) => {
@@ -75,9 +60,10 @@ function ClassTeacherAssignmentPlanList() {
         //alert("create-class-teacher-assignment-plan " + res.data);
       },
       { 401: () => {} },
-      datasend
+      data
     );
   }
+
   const customCreateHandle = (planName) => {
     console.log(planName);
     //setSearchString(sString);

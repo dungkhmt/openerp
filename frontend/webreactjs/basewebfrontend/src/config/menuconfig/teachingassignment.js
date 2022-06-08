@@ -1,6 +1,6 @@
 export const teachingassignment = {
   id: "MENU_EDUCATION_TEACHING_ASSIGNMENT",
-  path: "",
+  path: "/edu/teaching-assignment",
   isPublic: false,
   icon: "Schedule",
   text: "Phân công giảng dạy",
@@ -39,7 +39,7 @@ export const teachingassignment = {
     // },
     {
       id: "MENU_EDUCATION_VIEW_LIST_ASSIGNMENT",
-      path: "/edu/class-teacher-assignment-plan/list",
+      path: "/edu/teaching-assignment/plan",
       isPublic: false,
       icon: "StarBorder",
       text: "Kế hoạch phân công",

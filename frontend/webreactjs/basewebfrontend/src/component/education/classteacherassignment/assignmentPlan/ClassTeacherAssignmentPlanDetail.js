@@ -7,36 +7,20 @@ import { Skeleton } from "@material-ui/lab";
 import { request } from "api";
 import PrimaryButton from "component/button/PrimaryButton";
 import { a11yProps, AntTab, AntTabs, TabPanel } from "component/tab";
-import React, { lazy, useEffect, useState } from "react";
-import { useParams } from "react-router";
+import React, { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router";
+import { Link } from "react-router-dom";
+import ClassesAssignToATeacherList from "./ClassesAssignToATeacherList";
 import ClassForAssignmentList from "./ClassForAssignmentList";
+import ClassTeacherAssignmentSolutionList from "./ClassTeacherAssignmentSolutionList";
+import ConflictClassesAssignedToTeacherInSolution from "./ConflictClassesAssignedToTeacherInSolution";
+import NotAssignedClassInSolutionList from "./NotAssignedClassInSolutionList";
 import PairConflictTimetableClass from "./PairConflictTimetableClass";
-
-const ClassesAssignToATeacherList = lazy(() =>
-  import("./ClassesAssignToATeacherList")
-);
-
-const ClassTeacherAssignmentSolutionList = lazy(() =>
-  import("./ClassTeacherAssignmentSolutionList")
-);
-const ConflictClassesAssignedToTeacherInSolution = lazy(() =>
-  import("./ConflictClassesAssignedToTeacherInSolution")
-);
-const NotAssignedClassInSolutionList = lazy(() =>
-  import("./NotAssignedClassInSolutionList")
-);
-
-const TeacherBasedTimeTableAssignmentInSolution = lazy(() =>
-  import("./TeacherBasedTimeTableAssignmentInSolution")
-);
-const TeacherCourseForAssignmentList = lazy(() =>
-  import("./TeacherCourseForAssignmentList")
-);
-const TeacherCourseList = lazy(() => import("./TeacherCourseList"));
-const TeacherForAssignmentPlanList = lazy(() =>
-  import("./TeacherForAssignmentPlanList")
-);
-const TeacherList = lazy(() => import("./TeacherList"));
+import TeacherBasedTimeTableAssignmentInSolution from "./TeacherBasedTimeTableAssignmentInSolution";
+import TeacherCourseForAssignmentList from "./TeacherCourseForAssignmentList";
+import TeacherCourseList from "./TeacherCourseList";
+import TeacherForAssignmentPlanList from "./TeacherForAssignmentPlanList";
+import TeacherList from "./TeacherList";
 
 const useStyles = makeStyles((theme) => ({
   courseName: { fontWeight: theme.typography.fontWeightMedium },
@@ -106,8 +90,17 @@ const assignmentModes = [
   },
 ];
 
+// A custom hook that builds on useLocation to parse
+// the query string for you.
+function useQuery() {
+  const { search } = useLocation();
+
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
+
 export default function ClassTeacherAssignmentPlanDetail() {
   let planId = useParams().planId;
+  let query = useQuery();
   const classes = useStyles();
   const theme = useTheme();
 
@@ -117,7 +110,9 @@ export default function ClassTeacherAssignmentPlanDetail() {
 
   //
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(
+    query.get("tab") ? parseInt(query.get("tab")) : 0
+  );
 
   //
   const handleChangeMode = (event) => {
@@ -203,8 +198,14 @@ export default function ClassTeacherAssignmentPlanDetail() {
         scrollButtons="auto"
         variant="scrollable"
       >
-        {tabsLabel.map((label, idx) => (
-          <AntTab key={label} label={label} {...a11yProps(idx)} />
+        {tabsLabel.map((label, index) => (
+          <AntTab
+            key={label}
+            label={label}
+            component={Link}
+            to={`/edu/teaching-assignment/plan/${planId}/?tab=${index}`}
+            {...a11yProps(index)}
+          />
         ))}
       </AntTabs>
 

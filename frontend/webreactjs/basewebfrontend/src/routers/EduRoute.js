@@ -162,13 +162,15 @@ export default function EduRoute() {
           component={ResourceList}
           path={`${path}/domains/:id/resources`}
         />
-        <Route
-          component={ClassTeacherAssignmentPlanList}
-          path={`${path}/class-teacher-assignment-plan/list`}
-        />
+
         <Route
           component={ClassTeacherAssignmentPlanDetail}
-          path={`${path}/class-teacher-assignment-plan/detail/:planId`}
+          path={`${path}/teaching-assignment/plan/:planId/`}
+        />
+
+        <Route
+          component={ClassTeacherAssignmentPlanList}
+          path={`${path}/teaching-assignment/plan`}
         />
 
         <Route component={ClassCreate} path={`${path}/class/add`} />
