@@ -32,7 +32,7 @@ import java.util.UUID;
 @Controller
 @Validated
 @AllArgsConstructor(onConstructor__ = @Autowired)
-public class TeacherClassAssignmentController {
+public class TeacherClassAssignmentController { 
 
     private TeacherClassAssignmentAlgoService algoService;
 
