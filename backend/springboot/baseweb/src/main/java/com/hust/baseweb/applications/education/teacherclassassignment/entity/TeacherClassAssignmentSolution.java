@@ -13,11 +13,11 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "class_teacher_assignment_solution")
+@Table(name = "assignment_solution")
 public class TeacherClassAssignmentSolution {
 
     @Id
-    @Column(name = "solution_item_id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID solutionItemId;
 
@@ -33,9 +33,13 @@ public class TeacherClassAssignmentSolution {
     @Column(name = "pinned")
     private boolean pinned;
 
-    @Column(name = "created_by_user_login_id")
+    @Column(name = "created_by")
     private String createdByUserLoginId;
 
     @Column(name = "created_stamp")
     private Date createdStamp;
+
+    @Column(name = "last_updated_stamp")
+    private Date lastUpdatedStamp;
+
 }

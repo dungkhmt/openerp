@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * Teacher information.
@@ -18,7 +19,7 @@ import javax.persistence.Table;
 public class EduTeacher {
 
     @Id
-    @Column(name = "teacher_id")
+    @Column(name = "id")
     private String teacherId;
 
     @Column(name = "teacher_name")
@@ -27,6 +28,13 @@ public class EduTeacher {
     @Column(name = "user_login_id")
     private String userLoginId;
 
-    @Column(name = "max_credit") // Khong can nua
+    @Column(name = "max_hour_load")
     private double maxCredit;
+
+    @Column(name = "created_stamp")
+    private Date createdStamp;
+
+    @Column(name = "last_updated_stamp")
+    private Date lastUpdatedStamp;
+
 }

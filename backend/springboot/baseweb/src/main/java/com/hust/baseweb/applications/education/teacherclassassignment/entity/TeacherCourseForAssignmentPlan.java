@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "teacher_course_for_assignment_plan")
+@Table(name = "teacher_course_in_plan")
 @IdClass(TeacherCoursePlanId.class)
 public class TeacherCourseForAssignmentPlan {
 
@@ -41,5 +41,14 @@ public class TeacherCourseForAssignmentPlan {
 
     @Column(name = "classType")
     private String classType;
+
+//    @Column(name = "score")
+//    private double score;
+//
+//    @Column(name = "last_updated_stamp")
+//    private Date lastUpdatedStamp;
+//
+//    @Column(name = "created_stamp")
+//    private Date createdStamp;
 
 }

@@ -14,12 +14,12 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "class_teacher_assignment_class_info")
+@Table(name = "class_info")
 @IdClass(ClassId.class)
 public class ClassTeacherAssignmentClassInfo {
 
     @Id
-    @Column(name = "class_id")
+    @Column(name = "id")
     private String classId;
 
     @Id
@@ -38,13 +38,13 @@ public class ClassTeacherAssignmentClassInfo {
     @Column(name = "class_name")
     private String className;
 
-    @Column(name = "credit_info")
+    @Column(name = "credit")
     private String creditInfo;
 
-    @Column(name = "class_note")
+    @Column(name = "note")
     private String classNote;
 
-    @Column(name = "program")
+    @Column(name = "class_program")
     private String program;
 
     @Column(name = "semester_type")
@@ -59,7 +59,7 @@ public class ClassTeacherAssignmentClassInfo {
     @Column(name = "class_type")
     private String classType;
 
-    @Column(name = "time_table")
+    @Column(name = "timetable")
     private String timeTable;
 
     @Column(name = "lesson")
@@ -68,11 +68,14 @@ public class ClassTeacherAssignmentClassInfo {
     @Column(name = "department_id")
     private String departmentId;
 
-    @Column(name = "teacher_id")
-    private String teacherId;
+//    @Column(name = "teacher_id")
+//    private String teacherId;
 
-    @Column(name = "created_by_user_login_id")
+    @Column(name = "created_by")
     private String createdByUserLoginId;
+
+    @Column(name = "last_updated_stamp")
+    private Date lastUpdatedStamp;
 
     @Column(name = "created_stamp")
     private Date createdStamp;

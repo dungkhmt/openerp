@@ -13,21 +13,24 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "class_teacher_assignment_plan")
+@Table(name = "plan")
 public class ClassTeacherAssignmentPlan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "plan_id")
+    @Column(name = "id")
     private UUID planId;
 
     @Column(name = "plan_name")
     private String planName;
 
-    @Column(name = "created_by_user_login_id")
+    @Column(name = "created_by")
     private String createdByUserLoginId;
 
     @Column(name = "created_stamp")
     private Date createdStamp;
+
+    @Column(name = "last_updated_stamp")
+    private Date lastUpdatedStamp;
 
 }
