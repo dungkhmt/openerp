@@ -1,3 +1,4 @@
+import { MainBoard } from "../component/education/whiteboard/MainBoard";
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router";
 import AssignmentList from "../component/education/AssignmentList";
@@ -262,6 +263,11 @@ export default function EduRoute() {
           path={`${path}/student/class/session/detail/:sessionId`}
           exact
         />
+        <Route
+          component={MainBoard}
+          path={`${path}/student/class/session/detail/:sessionId/whiteboard/:whiteboardId`}
+          exact
+        />
 
         <Route
           component={TClassList}
@@ -272,6 +278,11 @@ export default function EduRoute() {
         <Route
           component={TeacherViewDetailClass}
           path={`${path}/teacher/class/detail/:classId`}
+          exact
+        />
+        <Route
+          component={MainBoard}
+          path={`${path}/teacher/class/session/detail/:sessionId/whiteboard/:whiteboardId`}
           exact
         />
 

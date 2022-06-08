@@ -1,9 +1,6 @@
 package com.hust.baseweb.applications.whiteboard.controller;
 
-import com.hust.baseweb.applications.whiteboard.model.CreateWhiteboardModel;
-import com.hust.baseweb.applications.whiteboard.model.GetListWhiteboardModel;
-import com.hust.baseweb.applications.whiteboard.model.SaveWhiteboardDataModel;
-import com.hust.baseweb.applications.whiteboard.model.WhiteboardDetailModel;
+import com.hust.baseweb.applications.whiteboard.model.*;
 import com.hust.baseweb.applications.whiteboard.service.WhiteboardServiceImpl;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.service.UserService;
@@ -14,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -27,15 +25,14 @@ public class WhiteBoardController {
         @RequestBody CreateWhiteboardModel input){
 
         UserLogin u = userService.findById(principal.getName());
-        whiteboardService.createWhiteboard(u.getUserLoginId(), input.getWhiteboardId());
+        whiteboardService.createWhiteboard(u.getUserLoginId(), input.getWhiteboardId(), input.getClassSessionId());
     }
 
-    @GetMapping("/whiteboards")
+    @GetMapping("/whiteboards/{sessionId}")
     public ResponseEntity<List<GetListWhiteboardModel>> getWhiteboards(
-        Principal principal){
+        @PathVariable UUID sessionId){
 
-        UserLogin u = userService.findById(principal.getName());
-        List<GetListWhiteboardModel> getListWhiteboardModels = whiteboardService.getWhiteboards(u);
+        List<GetListWhiteboardModel> getListWhiteboardModels = whiteboardService.getWhiteboards(sessionId);
 
         return ResponseEntity.ok().body(getListWhiteboardModels);
     }
