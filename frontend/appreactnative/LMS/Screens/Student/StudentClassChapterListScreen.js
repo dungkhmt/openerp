@@ -1,14 +1,23 @@
 import React, {useEffect} from 'react';
-import {View, SafeAreaView, Text, FlatList, StyleSheet} from 'react-native';
+import {View, SafeAreaView, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
 
 import {Colors} from '../../styles/index';
 import {studentGetClassChapterListAction} from '../../redux-saga/actions/StudentGetClassChapterListAction';
 
 const Chapter = ({data}) => {
+  const navigation = useNavigation();
+
   return (
-    <View style={styles.card}>
-      <Text style={styles.chapterName}>{data.chapterName}</Text>
+    <View style={{...styles.card, backgroundColor: '#ffffff'}}>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        onPress={() => {
+          navigation.push('StudentClassChapterDetailScreen', {chapterId: data.chapterId});
+        }}>
+        <Text style={styles.chapterName}>{data.chapterName}</Text>
+      </TouchableOpacity>
     </View>
   );
 };

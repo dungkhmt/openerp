@@ -12,6 +12,8 @@ import studentGetActiveQuizOfSessionReducer from './StudentGetActiveQuizOfSessio
 import studentGetClassMemberListReducer from './StudentGetClassMemberListReducer';
 import studentGetClassAssignmentListReducer from './StudentGetClassAssignmentListReducer';
 import studentGetClassChapterListReducer from './StudentGetClassChapterListReducer';
+import studentGetClassChapterDetailReducer from './StudentGetClassChapterDetailReducer';
+import studentPostClassChapterDetailSlidesReducer from './StudentPostClassChapterDetailSlidesReducer';
 import studentGetClassQuizListReducer from './StudentGetClassQuizListReducer';
 import studentPostActiveQuizOfSessionReducer from './StudentPostActiveQuizOfSessionReducer';
 import studentGetRegisterClassListReducer from './StudentGetRegisterClassListReducer';
@@ -31,6 +33,8 @@ const rootReducer = combineReducers({
   studentGetClassMemberListReducer,
   studentGetClassAssignmentListReducer,
   studentGetClassChapterListReducer,
+  studentGetClassChapterDetailReducer,
+  studentPostClassChapterDetailSlidesReducer,
   studentGetClassQuizListReducer,
   studentPostActiveQuizOfSessionReducer,
   studentGetRegisterClassListReducer,

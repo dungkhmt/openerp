@@ -49,10 +49,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     elevation: 7,
   },
-  image: {
-    width: ITEM_WIDTH,
-    height: 192,
-  },
   header: {
     color: 'white',
     fontSize: 18,
