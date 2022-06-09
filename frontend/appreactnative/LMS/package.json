@@ -28,6 +28,7 @@
     "react-native-screens": "^3.11.1",
     "react-native-scrollable-tab-view": "^1.0.0",
     "react-native-snap-carousel": "^3.9.1",
+    "react-native-video": "^5.2.0",
     "react-redux": "^7.2.6",
     "redux-saga": "^1.1.3"
   },

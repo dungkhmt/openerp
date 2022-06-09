@@ -5,6 +5,8 @@ import watchStudentAttendQuizTest from './StudentAttendQuizTestSaga';
 import watchStudentGetActiveQuizOfSession from './StudentGetActiveQuizOfSessionSaga';
 import watchStudentGetClassAssignmentList from './StudentGetClassAssignmentListSaga';
 import watchStudentGetClassChapterList from './StudentGetClassChapterListSaga';
+import watchStudentGetClassChapterDetail from './StudentGetClassChapterDetailSaga';
+import watchStudentPostClassChapterDetailSlides from './StudentPostClassChapterDetailSlidesSaga';
 import watchStudentGetClassInformation from './StudentGetClassInformationSaga';
 import watchStudentGetClassList from './StudentGetClassListSaga';
 import watchStudentGetClassMemberList from './StudentGetClassMemberListSaga';
@@ -25,6 +27,8 @@ export default function* rootSaga() {
     watchStudentGetActiveQuizOfSession(),
     watchStudentGetClassAssignmentList(),
     watchStudentGetClassChapterList(),
+    watchStudentGetClassChapterDetail(),
+    watchStudentPostClassChapterDetailSlides(),
     watchStudentGetClassInformation(),
     watchStudentGetClassList(),
     watchStudentGetClassMemberList(),

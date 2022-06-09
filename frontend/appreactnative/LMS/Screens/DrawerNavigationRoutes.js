@@ -15,6 +15,9 @@ import StudentRegisterClassScreen from '../screens/Student/StudentRegisterClassS
 import StudentClassListScreen from '../screens/Student/StudentClassListScreen';
 import StudentClassDetailScreen from '../screens/Student/StudentClassDetailScreen';
 import StudentClassChapterListScreen from '../screens/Student/StudentClassChapterListScreen';
+import StudentClassChapterDetailScreen from '../screens/Student/StudentClassChapterDetailScreen';
+import StudentClassChapterDetailPlayVideoScreen from '../screens/Student/StudentClassChapterDetailPlayVideoScreen';
+import StudentClassChapterDetailShowSlideScreen from '../screens/Student/StudentClassChapterDetailShowSlideScreen';
 import StudentClassQuizListScreen from '../screens/Student/StudentClassQuizListScreen';
 import StudentClassMemberListScreen from '../screens/Student/StudentClassMemberListScreen';
 import StudentClassAssignmentListScreen from '../screens/Student/StudentClassAssignmentListScreen';
@@ -96,6 +99,48 @@ const HomeScreenStack = ({navigation}) => {
         component={StudentClassChapterListScreen}
         options={{
           title: 'Nội dung',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentClassChapterDetailScreen"
+        component={StudentClassChapterDetailScreen}
+        options={{
+          title: 'Material',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentClassChapterDetailPlayVideoScreen"
+        component={StudentClassChapterDetailPlayVideoScreen}
+        options={{
+          title: 'Video Player',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StudentClassChapterDetailShowSlideScreen"
+        component={StudentClassChapterDetailShowSlideScreen}
+        options={{
+          title: 'Presenter',
           headerStyle: {
             backgroundColor: Colors.controlBackground,
           },
