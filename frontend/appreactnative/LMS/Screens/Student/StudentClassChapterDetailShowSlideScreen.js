@@ -1,15 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  Image,
-  ScrollView,
-  Dimensions,
-  StyleSheet,
-} from 'react-native';
+import {SafeAreaView, View, Text, Dimensions, StyleSheet} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import Carousel from 'react-native-snap-carousel';
+import PhotoZoom from 'react-native-photo-zoom';
 
 import {Colors} from '../../styles/index';
 import Loader from '../Components/Loader';
@@ -20,18 +13,17 @@ const CarouselSlideItem = ({item, index}) => {
   const height = Dimensions.get('screen').height;
 
   return (
-    <ScrollView style={styles.container} key={index}>
+    <View style={{flex: 1, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center'}}>
       <Text style={styles.header}>{item.title}</Text>
-      <Image
-        resizeMode="contain"
-        style={{
-          width: width,
-          height: height,
-          alignContent: 'center',
-        }}
+      <PhotoZoom
         source={{uri: 'data:image/png;base64,' + item.data}}
+        minimumZoomScale={0.75}
+        maximumZoomScale={2.5}
+        androidScaleType="center"
+        onLoad={() => console.log('Image loaded!')}
+        style={{width: width, height: height}}
       />
-    </ScrollView>
+    </View>
   );
 };
 

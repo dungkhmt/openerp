@@ -6381,6 +6381,14 @@
   "resolved" "https://registry.npmjs.org/react-native-pager-view/-/react-native-pager-view-5.4.9.tgz"
   "version" "5.4.9"
 
+"react-native-photo-zoom@^1.1.5":
+  "integrity" "sha512-arPYeGGwxLqBPW/ptNHZ1jOkjzyqwAre8o5ufzgpitaGNFOJM4VDhFmULysMZYq3bSB54oYbtbWwDd45BthBRg=="
+  "resolved" "https://registry.npmjs.org/react-native-photo-zoom/-/react-native-photo-zoom-1.1.5.tgz"
+  "version" "1.1.5"
+  dependencies:
+    "react" "*"
+    "react-native" "*"
+
 "react-native-reanimated@^2.4.1", "react-native-reanimated@>= 1.0.0":
   "integrity" "sha512-kvf7ylGlwa5hxMQ+wpPFjQrI2c6eexf53/xRo+dvXBNefGmSYaYR5sFtD0XMMzIPQlkCB9tJ0Pu9+2WCQUY7Cg=="
   "resolved" "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-2.4.1.tgz"
