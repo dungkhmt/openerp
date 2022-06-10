@@ -96,8 +96,8 @@ CREATE TABLE backlog_task_execution
 (
     task_execution_id uuid NOT NULL,
     task_id uuid,
-    created_by_user_login_id character varying(60),
-    execution_tags character varying(200),
+    created_by_user_login_id character(60),
+    execution_tags character(200),
     execution_changed_fields text,
     comment text,
     created_stamp timestamp DEFAULT CURRENT_TIMESTAMP,
