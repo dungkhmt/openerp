@@ -91,3 +91,18 @@ create table backlog_task_assignable
     constraint fk_backlog_task_assignable_backlog_task_id foreign key (backlog_task_id) references backlog_task (backlog_task_id),
     constraint fk_backlog_task_assignable_status_id foreign key (status_id) references status_item (status_id)
 );
+
+CREATE TABLE backlog_task_execution
+(
+    task_execution_id uuid NOT NULL,
+    task_id uuid,
+    created_by_user_login_id character varying(60),
+    execution_tags character varying(200),
+    execution_changed_fields text,
+    comment text,
+    created_stamp timestamp DEFAULT CURRENT_TIMESTAMP,
+    project_id uuid NOT NULL,
+    CONSTRAINT pk_backlog_task_execution_id PRIMARY KEY (task_execution_id),
+    CONSTRAINT fk_backlog_task_execution_created_by_user_login_id FOREIGN KEY (created_by_user_login_id) REFERENCES user_login (user_login_id)
+    CONSTRAINT fk_backlog_task_execution_task_id FOREIGN KEY (task_id) REFERENCES backlog_task (backlog_task_id)
+);

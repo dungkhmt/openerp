@@ -222,7 +222,7 @@ const ListTasks = () => {
                 </Box>
                 {history.length > 0 ?
                     history.map(item =>
-                    (<Box sx={boxChildComponent} px={0}>
+                    (<Box sx={boxChildComponent} px={0} mb={3}>
                         <Box pb={2}>
                             <Typography variant='body1'>
                                 {item.date}
