@@ -1165,8 +1165,47 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public Page<UserSubmissionContestResultNativeEntity> getRankingByContestId(Pageable pageable, String contestId) {
-        return userSubmissionContestResultNativePagingRepo.findAllByContestId(pageable, contestId);
+    public List<ContestSubmissionsByUser> getRankingByContestId(Pageable pageable, String contestId) {
+        ListModelUserRegisteredContestInfo users = this.getListUserRegisterContestSuccessfulPaging(pageable, contestId);
+        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+
+        List<ContestSubmissionsByUser> listContestSubmissionsByUser = new ArrayList<>();
+        for (ModelUserRegisteredClassInfo user: users.getContents()) {
+            List<ContestSubmission> submissionsByUser = contestSubmissionPagingAndSortingRepo.findAllByUserIdAndContestId(user.getUserName(), contestId).stream()
+                .map(contestSubmissionEntity -> ContestSubmission.builder()                                                                                                          .contestSubmissionId(contestSubmissionEntity.getContestSubmissionId())
+                                                                  .contestId(contestSubmissionEntity.getContestId())
+                                                                  .createAt(contestSubmissionEntity.getCreatedAt() != null ? DateTimeUtils.dateToString(contestSubmissionEntity.getCreatedAt(), DateTimeUtils.DateTimeFormat.DATE_TIME_ISO_FORMAT) : null)
+                                                                  .sourceCodeLanguage(contestSubmissionEntity.getSourceCodeLanguage())
+                                                                  .point(contestSubmissionEntity.getPoint())
+                                                                  .problemId(contestSubmissionEntity.getProblemId())
+                                                                  .testCasePass(contestSubmissionEntity.getTestCasePass())
+                                                                  .status(contestSubmissionEntity.getStatus())
+                                                                  .userId(contestSubmissionEntity.getUserId())
+                                                                  .build()
+            ).collect(Collectors.toList());
+
+            ContestSubmissionsByUser contestSubmission = new ContestSubmissionsByUser();
+            contestSubmission.setUserId(user.getUserName());
+
+            // get highest submission score on each problem
+            HashMap<String, Integer> mapProblemToHighestPoint = new HashMap<>();
+            for (ProblemEntity problem : contestEntity.getProblems()) {
+                mapProblemToHighestPoint.put(problem.getProblemId(), 0);
+            }
+            for (ContestSubmission submission : submissionsByUser) {
+                String problemId = submission.getProblemId();
+                if (mapProblemToHighestPoint.containsKey(problemId)){
+                    if (submission.getPoint() > mapProblemToHighestPoint.get(problemId)) {
+                        mapProblemToHighestPoint.put(problemId, submission.getPoint());
+                    }
+                }
+            }
+
+            contestSubmission.setMapProblemsToPoints(mapProblemToHighestPoint);
+            listContestSubmissionsByUser.add(contestSubmission);
+        }
+
+        return listContestSubmissionsByUser;
     }
 
     @Override

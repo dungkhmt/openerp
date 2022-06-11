@@ -489,8 +489,8 @@ public class ContestProblemController {
     @GetMapping("/get-ranking-contest/{contestId}")
     public ResponseEntity<?> getRankingContest(@PathVariable("contestId") String contestId, Pageable pageable){
         log.info("getRankingContest page {}", pageable);
-        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("point").descending());
-        Page<UserSubmissionContestResultNativeEntity> page = problemTestCaseService.getRankingByContestId(pageable, contestId);
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        List<ContestSubmissionsByUser> page = problemTestCaseService.getRankingByContestId(pageable, contestId);
         log.info("ranking page {}", page);
         return ResponseEntity.status(200).body(page);
     }
@@ -542,6 +542,7 @@ public class ContestProblemController {
         problemTestCaseService.deleteUserContest(modelAddUserToContest);
         return ResponseEntity.status(200).body(null);
     }
+
     @GetMapping("/get-contest-result-on-problem-of-a-user/{userLoginId}")
     public ResponseEntity<?> getContestResultOnProblemOfAUser( @PathVariable("userLoginId") String userLoginId, Pageable pageable) {
         log.info("getContestResultOnProblemOfAUser, user = " + userLoginId);
