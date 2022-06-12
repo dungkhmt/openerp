@@ -16,4 +16,7 @@ public interface TaskAssignableRepository
     @Query(value = "SELECT e.* FROM backlog_task_assignable e WHERE e.assigned_to_party_id = :partyId",
            nativeQuery = true)
     List<TaskAssignable> getByPartyId(@Param("partyId") UUID partyId);
+
+    @Query(value = "SELECT e.* FROM backlog_task_assignable e WHERE e.backlog_task_id = :taskId", nativeQuery = true)
+    TaskAssignable getByTaskId(@Param("taskId") UUID taskId);
 }

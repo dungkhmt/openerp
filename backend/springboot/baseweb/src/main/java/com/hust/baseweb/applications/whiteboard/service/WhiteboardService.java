@@ -6,10 +6,11 @@ import com.hust.baseweb.applications.whiteboard.model.WhiteboardDetailModel;
 import com.hust.baseweb.entity.UserLogin;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface WhiteboardService {
-    void createWhiteboard(String userId, String whiteboardId);
-    List<GetListWhiteboardModel> getWhiteboards(UserLogin userLogin);
+    void createWhiteboard(String userId, String whiteboardId, UUID classSessionId);
+    List<GetListWhiteboardModel> getWhiteboards(UUID sessionId);
 
     void saveWhiteboardData(SaveWhiteboardDataModel input, String userId);
 

@@ -15,7 +15,9 @@ public interface TaskService {
 
     List<Task> getAllTaskInProject(UUID projectId);
 
-    List<Object[]> getTaskStaticsInProject(UUID projectId);
+    List<Object[]> getTaskStaticsCategoryInProject(UUID projectId);
+
+    List<Object[]> getTaskStaticsStatusInProject(UUID projectId);
 
     StatusItem getStatusItemByStatusId(String statusId);
 

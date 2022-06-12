@@ -1,12 +1,13 @@
 package com.hust.baseweb.applications.whiteboard.service;
 
+import com.hust.baseweb.applications.education.classmanagement.entity.EduClassSession;
+import com.hust.baseweb.applications.education.classmanagement.repo.EduClassSessionRepo;
 import com.hust.baseweb.applications.whiteboard.entity.UserWhiteboard;
 import com.hust.baseweb.applications.whiteboard.entity.Whiteboard;
 import com.hust.baseweb.applications.whiteboard.model.GetListWhiteboardModel;
 import com.hust.baseweb.applications.whiteboard.model.SaveWhiteboardDataModel;
 import com.hust.baseweb.applications.whiteboard.model.WhiteboardDetailModel;
 import com.hust.baseweb.applications.whiteboard.repo.UserWhiteboardRepo;
-import com.hust.baseweb.applications.whiteboard.repo.WhiteboardDataRepo;
 import com.hust.baseweb.applications.whiteboard.repo.WhiteboardRepo;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.repo.UserLoginRepo;
@@ -15,24 +16,24 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Log4j2
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class WhiteboardServiceImpl implements  WhiteboardService {
     private WhiteboardRepo whiteboardRepo;
-    private WhiteboardDataRepo whiteboardDataRepo;
+    private EduClassSessionRepo eduClassSessionRepo;
     private UserWhiteboardRepo userWhiteboardRepo;
     private UserLoginRepo userLoginRepo;
 
     @Override
-    public void createWhiteboard(String userId, String whiteboardId) {
+    public void createWhiteboard(String userId, String whiteboardId, UUID classSessionId) {
         Whiteboard whiteboard = new Whiteboard();
+        EduClassSession eduClassSession = eduClassSessionRepo.findBySessionId(classSessionId);
         whiteboard.setId(whiteboardId);
         whiteboard.setName("Whiteboard" + whiteboardId);
+        whiteboard.setEduClassSession(eduClassSession);
         whiteboard.setTotalPage(1);
         whiteboard.setCreatedBy(userId);
         whiteboard.setCreatedDate(new Date());
@@ -40,11 +41,11 @@ public class WhiteboardServiceImpl implements  WhiteboardService {
     }
 
     @Override
-    public List<GetListWhiteboardModel> getWhiteboards(UserLogin userLogin) {
-        List<UserWhiteboard> userWhiteboardList = userWhiteboardRepo.findAllByUserLogin(userLogin);
+    public List<GetListWhiteboardModel> getWhiteboards(UUID sessionId) {
+        EduClassSession eduClassSession = eduClassSessionRepo.findBySessionId(sessionId);
+        List<Whiteboard> whiteboardList = whiteboardRepo.findAllByEduClassSession(eduClassSession);
         List<GetListWhiteboardModel> getListWhiteboardModels = new ArrayList<>();
-        for (UserWhiteboard userWhiteboard: userWhiteboardList) {
-            Whiteboard whiteboard = userWhiteboard.getWhiteboard();
+        for (Whiteboard whiteboard: whiteboardList) {
             if (whiteboard != null) {
                 GetListWhiteboardModel getListWhiteboardModel = new GetListWhiteboardModel();
                 getListWhiteboardModel.setId(whiteboard.getId());

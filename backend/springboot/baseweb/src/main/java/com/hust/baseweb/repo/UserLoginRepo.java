@@ -2,11 +2,13 @@ package com.hust.baseweb.repo;
 
 import com.hust.baseweb.entity.Party;
 import com.hust.baseweb.entity.UserLogin;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
+import java.util.UUID;
 
 @RepositoryRestResource(exported = false)
 public interface UserLoginRepo extends JpaRepository<UserLogin, String> {
@@ -41,4 +43,7 @@ public interface UserLoginRepo extends JpaRepository<UserLogin, String> {
                    " on u.user_login_id = ug.user_login_id \n" +
                    "where ug.group_id = ?1", nativeQuery = true)
     List<String> findAllUserLoginOfGroup(String groupId);
+
+    @Query(value = "SELECT ul.* FROM user_login ul WHERE ul.party_id = :partyId", nativeQuery = true)
+    UserLogin finByPartyId(@Param("partyId") UUID partyId);
 }

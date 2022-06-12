@@ -32,14 +32,22 @@ public class TaskDao {
 
     private TaskPriority taskPriority;
 
+    private String createdByUserLoginId;
+
+    private String assignee;
+
+    private String createdStamp;
+
+    private String lastUpdatedStamp;
+
     private String dueDate;
 
     private String timeRemaining;
 
     private boolean outOfDate;
 
-    public TaskDao(Task task) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    public TaskDao(Task task, String assignee) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy H:m:s");
         this.setId(task.getId());
         this.setName(task.getName());
         this.setProject(task.getProject());
@@ -48,7 +56,8 @@ public class TaskDao {
         this.setStatusItem(task.getStatusItem());
         this.setTaskPriority(task.getTaskPriority());
         this.setDueDate(sdf.format(task.getDueDate()));
-
+        this.setCreatedStamp(task.getCreatedStamp() != null ? sdf.format(task.getCreatedStamp()) : null);
+        this.setLastUpdatedStamp(task.getLastUpdatedStamp() != null ? sdf.format(task.getLastUpdatedStamp()) : null);
         try {
             Date d1 = task.getDueDate();
             Date d2 = new Date();
@@ -96,5 +105,8 @@ public class TaskDao {
             this.setOutOfDate(false);
             this.setTimeRemaining("");
         }
+
+        this.setAssignee(assignee);
+        this.setCreatedByUserLoginId(task.getCreatedByUserLoginId());
     }
 }

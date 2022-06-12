@@ -16,22 +16,27 @@ import {
     AvatarGroup
 } from '@mui/material';
 import { useState, useEffect } from 'react';
-import { request } from "../../api";
+import { request } from "../../../api";
 import { useParams } from 'react-router-dom';
 import { Box, Grid } from "@material-ui/core";
-import PieChart from "./chart/PieChart";
+import PieChart from "../chart/PieChart";
 import PersonIcon from '@mui/icons-material/Person';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-import BasicModal from './modal/BasicModal';
+import BasicModal from '../modal/BasicModal';
 import {
     boxComponentStyle,
     boxChildComponent,
-    centerBox
-} from './ultis/constant';
+    centerBox,
+    TASK_CATEGORY_COLOR
+} from '../ultis/constant';
 import {
     LimitString
-} from './ultis/helpers';
+} from '../ultis/helpers';
 import { Link } from 'react-router-dom';
+import { useScroll } from '../customhook/useScroll';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import CategoryElement from '../common/CategoryElement';
+import HistoryStatus from '../common/HistoryStatus';
 
 const ListTasks = () => {
     const [open, setOpen] = useState(false);
@@ -39,10 +44,10 @@ const ListTasks = () => {
     const handleClose = () => setOpen(false);
 
     const [members, setMembers] = useState([]);
-
-    const { projectId } = useParams();
-
+    const { projectId } = useParams()
     const [projectName, setProjectName] = useState("");
+
+    const [executeScroll, elRef] = useScroll();
 
     const columns = [
         {
@@ -54,7 +59,7 @@ const ListTasks = () => {
         {
             id: 'taskName',
             label: 'Tên nhiệm vụ',
-            minWidth: 100,
+            minWidth: 170,
             align: 'center'
         },
         {
@@ -76,6 +81,12 @@ const ListTasks = () => {
             align: 'center'
         },
         {
+            id: 'assignee',
+            label: 'Gán cho',
+            minWidth: 170,
+            align: 'center'
+        },
+        {
             id: 'dueDate',
             label: 'Hạn kết thúc',
             minWidth: 170,
@@ -84,9 +95,13 @@ const ListTasks = () => {
 
     ];
 
-    const [labels, setLabels] = useState([]);
+    const [history, setHistory] = useState([]);
 
-    const [dataChart, setDataChart] = useState([]);
+    const [labelsCategory, setLabelsCategory] = useState([]);
+    const [dataChartCategory, setDataChartCategory] = useState([]);
+
+    const [labelsStatus, setLabelsStatus] = useState([]);
+    const [dataChartStatus, setDataChartStatus] = useState([]);
 
     const [rows, setRows] = useState([]);
 
@@ -103,6 +118,8 @@ const ListTasks = () => {
     };
 
     useEffect(() => {
+        executeScroll;
+
         request('get', `/projects/${projectId}/tasks`, res => {
             let rowsTask = res.data.map(task => {
                 return {
@@ -112,7 +129,10 @@ const ListTasks = () => {
                     'description': LimitString(30, task.description),
                     'status': task.statusItem === null ? "Không xác định !" : task.statusItem.statusCode,
                     'priority': task.taskPriority.priorityName,
-                    'dueDate': task.dueDate
+                    'assignee': task.assignee,
+                    'dueDate': task.dueDate,
+                    'categoryId': task.taskCategory.categoryId,
+                    'outOfDate': task.outOfDate
                 }
             });
             console.log(rowsTask);
@@ -121,9 +141,16 @@ const ListTasks = () => {
             console.log(err);
         });
 
-        request('get', `/projects/${projectId}/statics`, res => {
-            setLabels(res.data.map(item => item.name));
-            setDataChart(res.data.map(item => item.value));
+        request('get', `/projects/${projectId}/statics/category`, res => {
+            setLabelsCategory(res.data.map(item => item.name));
+            setDataChartCategory(res.data.map(item => item.value));
+        }, err => {
+            console.log(err);
+        });
+
+        request('get', `/projects/${projectId}/statics/status`, res => {
+            setLabelsStatus(res.data.map(item => item.name));
+            setDataChartStatus(res.data.map(item => item.value));
         }, err => {
             console.log(err);
         });
@@ -139,6 +166,12 @@ const ListTasks = () => {
         }, err => {
             console.log(err);
         });
+
+        request('get', `/projects/${projectId}/history`, res => {
+            setHistory(res.data);
+        }, err => {
+            console.log(err);
+        });
     }, [])
 
     return (
@@ -148,12 +181,6 @@ const ListTasks = () => {
                     {projectName}
                 </Typography>
             </Box>
-            {/* <Box sx={boxComponentStyle}>
-                <Typography variant='h5' component='h5'>
-                    {projectName}
-                </Typography>
-
-            </Box> */}
             <Box sx={boxComponentStyle}>
                 <Box
                     sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
@@ -169,20 +196,6 @@ const ListTasks = () => {
                                 <Avatar>{item.fullName.charAt(0).toUpperCase()}</Avatar>
                             ))}
                         </AvatarGroup>
-                        {/* {members.slice().splice(0, 3).map(item => (
-                            <Tooltip key={item.partyId} title={item.fullName}>
-                                <Link to={`/${item.partyId}`}>
-                                    <IconButton aria-label="user" size="large" sx={{ border: 1, borderColor: "#ccc", mr: 1 }}>
-                                        <PersonIcon />
-                                    </IconButton>
-                                </Link>
-                            </Tooltip>
-                        ))}
-                        <Tooltip title="Xem thêm">
-                            <IconButton aria-label="user" size="large" sx={{ border: 1, borderColor: "#ccc", mr: 1 }} onClick={handleOpen}>
-                                <AddOutlinedIcon />
-                            </IconButton>
-                        </Tooltip> */}
                         <BasicModal open={open} handleClose={handleClose}>
                             {members.map(member => (
                                 <Box sx={boxChildComponent} key={member.partyId} mb={3}>
@@ -204,21 +217,98 @@ const ListTasks = () => {
             <Box sx={boxComponentStyle}>
                 <Box sx={{ mb: 3 }}>
                     <Typography variant='h5'>
+                        Lịch sử
+                    </Typography>
+                </Box>
+                {history.length > 0 ?
+                    history.map(item =>
+                    (<Box sx={boxChildComponent} px={0} mb={3}>
+                        <Box pb={2}>
+                            <Typography variant='body1'>
+                                {item.date}
+                            </Typography>
+                        </Box>
+                        <Box>
+                            {item.taskExecutionList.map(taskExecution => (
+                                <Box display={'flex'} py={2} borderTop={1} borderColor={"#cdb8b8"}>
+                                    <Box mr={2}>
+                                        <Avatar>{taskExecution.createdByUserLoginId != null ? taskExecution.createdByUserLoginId.charAt(0).toUpperCase() : "N"}</Avatar>
+                                    </Box>
+                                    <Box display={'flex'} flexDirection={'column'}>
+                                        <Box display={'flex'} flexDirection={'row'} mb={2}>
+                                            <Typography variant='body1' sx={{ mr: 1 }}>
+                                                {taskExecution.createdByUserLoginId}
+                                            </Typography>
+                                            <HistoryStatus tag={taskExecution.executionTags} />
+                                        </Box>
+                                        <Box mb={1}>
+                                            <Typography variant='body2' color={"primary"}>
+                                                Nhiệm vụ: {taskExecution.task.name}
+                                            </Typography>
+                                        </Box>
+                                        {taskExecution.comment &&
+                                            <Box>
+                                                <Typography variant='body2' color={"warning"}>
+                                                    Nội dung: {taskExecution.comment}
+                                                </Typography>
+                                            </Box>
+                                        }
+                                        {/* <Box>
+                                            <Typography variant='caption'>
+                                                [ Assignee: mai le minh ]
+                                            </Typography>
+                                        </Box> */}
+                                    </Box>
+                                </Box>
+                            ))}
+                        </Box>
+                    </Box>))
+                    :
+                    <Typography variant='body1'>
+                        Danh sách lịch sử trống ...
+                    </Typography>
+
+                }
+            </Box>
+
+            <Box sx={boxComponentStyle} id="static">
+                <Box sx={{ mb: 3 }}>
+                    <Typography variant='h5'>
                         Thống kê dự án
                     </Typography>
                 </Box>
-                <Grid container justifyContent="center">
-                    <Grid item={true} xs={6}>
-                        <PieChart labels={labels} datasets={[
-                            {
-                                data: dataChart,
-                                backgroundColor: ["#003f5c", "#bc5090", "#ff6361", "#ffa600", "#58508d"]
-                            }
-                        ]} />
+                <Box sx={boxChildComponent} mb={3}>
+                    <Typography variant='body1'>
+                        Danh mục
+                    </Typography>
+                    <Grid container justifyContent="center">
+                        <Grid item={true} xs={6}>
+                            <PieChart labels={labelsCategory} datasets={[
+                                {
+                                    data: dataChartCategory,
+                                    backgroundColor: ["#003f5c", "#bc5090", "#ff6361", "#ffa600", "#58508d"]
+                                }
+                            ]} />
+                        </Grid>
                     </Grid>
-                </Grid>
+                </Box>
+                <Box sx={boxChildComponent}>
+                    <Typography variant='body1'>
+                        Trạng thái
+                    </Typography>
+                    <Grid container justifyContent="center">
+                        <Grid item={true} xs={6}>
+                            <PieChart labels={labelsStatus} datasets={[
+                                {
+                                    data: dataChartStatus,
+                                    backgroundColor: ["#003f5c", "#bc5090", "#ff6361", "#ffa600", "#58508d"]
+                                }
+                            ]} />
+                        </Grid>
+                    </Grid>
+                </Box>
             </Box>
-            <Box sx={boxComponentStyle}>
+            <Box sx={boxComponentStyle} ref={elRef}>
                 <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant='h5'>
                         Danh sách các nhiệm vụ
@@ -249,6 +339,32 @@ const ListTasks = () => {
                                             <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                                                 {columns.map((column) => {
                                                     const value = row[column.id];
+                                                    if (column.id === 'category') {
+                                                        return (
+                                                            <TableCell key={column.id} align={column.align}>
+                                                                <CategoryElement categoryId={row.categoryId} value={value} />
+                                                            </TableCell>
+                                                        );
+                                                    }
+
+                                                    if (column.id === 'dueDate') {
+                                                        return (
+                                                            <TableCell key={column.id} align={column.align}>
+                                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                                    {row.outOfDate && <><LocalFireDepartmentIcon /></>} {value}
+                                                                </Box>
+                                                            </TableCell>
+                                                        );
+                                                    }
+
+                                                    if (column.id === 'taskName') {
+                                                        return (
+                                                            <TableCell key={column.id} align={column.align}>
+                                                                <Link to={`/taskmanagement/tasks/${row.id}`} style={{ textDecoration: 'none' }}>{value}</Link>
+                                                            </TableCell>
+                                                        );
+                                                    }
+
                                                     return (
                                                         <TableCell key={column.id} align={column.align}>
                                                             {value}

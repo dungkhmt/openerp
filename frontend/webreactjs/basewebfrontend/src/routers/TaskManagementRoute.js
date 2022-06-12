@@ -1,11 +1,12 @@
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router";
-import CreateProject from "../component/taskmanagement/CreateProject";
+import CreateProject from "../component/taskmanagement/projects/CreateProject";
 import ListProject from "../component/taskmanagement/projects/ListProject";
-import CreateTask from "../component/taskmanagement/CreateTasks";
-import AddUserToProject from "../component/taskmanagement/AddUserToProject";
-import ListTasks from "../component/taskmanagement/ListTasks";
+import CreateTask from "../component/taskmanagement/task/CreateTasks";
+import AddUserToProject from "../component/taskmanagement/projects/AddUserToProject";
+import ListTasks from "../component/taskmanagement/task/ListTasks";
 import ListAssignedTasks from "component/taskmanagement/assignedtasks/ListAssignedTasks";
+import ShowTask from "component/taskmanagement/task/ShowTask";
 
 export default function TaskManagementRoute() {
   let { path } = useRouteMatch();
@@ -41,6 +42,11 @@ export default function TaskManagementRoute() {
           component={ListAssignedTasks}
           exact
           path={`${path}/tasks/members/assigned`}
+        ></Route>
+        <Route
+          component={ShowTask}
+          exact
+          path={`${path}/tasks/:taskId`}
         ></Route>
       </Switch>
     </div>

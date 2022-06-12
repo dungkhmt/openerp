@@ -15,10 +15,11 @@ import {
 import {
   boxComponentStyle,
   boxChildComponent
-} from './ultis/constant';
-import { request } from "../../api";
-import BasicAlert from "./alert/BasicAlert";
+} from '../ultis/constant';
+import { request } from "../../../api";
+import BasicAlert from "../alert/BasicAlert";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 
 export default function CreateProject() {
 
@@ -138,11 +139,14 @@ export default function CreateProject() {
                 Mã dự án là một chuỗi kí tự được chỉ định cho dự án đó, vì vậy nó nên là duy nhất!
               </Typography>
             </Box>
-            {type === 'create' ?
-              <Button variant="contained" color="primary" sx={{ mb: 2 }} onClick={handleSubmit(onSubmit)}>Submit</Button>
-              :
-              <Button variant="contained" color="primary" sx={{ mb: 2 }} onClick={handleSubmit(onUpdate)}>Update</Button>
-            }
+            <Box>
+              {type === 'create' ?
+                <Button variant="contained" color="primary" sx={{ mr: 2 }} onClick={handleSubmit(onSubmit)}>Thêm mới</Button>
+                :
+                <Button variant="contained" color="primary" sx={{ mr: 2 }} onClick={handleSubmit(onUpdate)}>Cập nhật</Button>
+              }
+              <Button variant="contained" color="success"><Link to={"/taskmanagement/project/list"} style={{textDecoration: 'none', color: '#fff'}}>Hủy</Link></Button>
+            </Box>
           </Box>
         </Box>
       </Box>

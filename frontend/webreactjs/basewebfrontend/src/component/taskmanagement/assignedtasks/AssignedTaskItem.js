@@ -4,7 +4,8 @@ import {
     Grid,
     TextField,
     IconButton,
-    MenuItem
+    MenuItem,
+    Paper
 } from "@material-ui/core";
 import {
     boxChildComponent,
@@ -16,6 +17,7 @@ import {
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import { useState } from "react";
 import SyncSharpIcon from '@mui/icons-material/SyncSharp';
+import CategoryElement from "../common/CategoryElement";
 
 const AssignedTaskItem = ({ task, taskStatus, handleUpdateStatus }) => {
     const [statusId, setStatusId] = useState(task.statusItem?.statusId);
@@ -31,33 +33,32 @@ const AssignedTaskItem = ({ task, taskStatus, handleUpdateStatus }) => {
     return (
         <>
             <Box sx={boxChildComponent} mb={3}>
-                <Grid container>
-                    <Grid item={true} xs={8}>
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '15px',
+                    borderBottom: "2x",
+                    borderColor: '#ccc'
+                }}>
+                    <Box>
                         <Box display={'flex'} alignItems={'center'} mb={2}>
-                            <Typography variant="body2" sx={{
-                                border: 1,
-                                borderRadius: "20px",
-                                borderColor: TASK_CATEGORY_COLOR[task.taskCategory.categoryId],
-                                backgroundColor: TASK_CATEGORY_COLOR[task.taskCategory.categoryId],
-                                px: 2,
-                                mr: 2,
-                                color: "#fff"
-                            }}>
-                                {category}
-                            </Typography>
+                            <Box>
+                                <CategoryElement categoryId={task.taskCategory.categoryId} value={task.taskCategory.categoryName} />
+                            </Box>
                             <Typography variant="body1" >
                                 {taskName}
                             </Typography>
                         </Box>
-                    </Grid>
-                    <Grid item={true} xs={4}>
+                    </Box>
+                    <Box>
                         <TextField
                             select
                             variant="outlined"
                             defaultValue=""
                             value={statusId}
                             onChange={(e) => setStatusId(e.target.value)}
-                            sx={{backgroundColor: "#eee"}}
+                            sx={{ backgroundColor: "#eee" }}
                         >
                             {taskStatus.map((item) => (
                                 <MenuItem key={item.statusId} value={item.statusId}>{item.statusCode}</MenuItem>
@@ -66,22 +67,22 @@ const AssignedTaskItem = ({ task, taskStatus, handleUpdateStatus }) => {
                         <IconButton aria-label="delete" size="medium" onClick={() => handleUpdateStatus(task.id, statusId)}>
                             <SyncSharpIcon fontSize="inherit" />
                         </IconButton>
-                    </Grid>
-                </Grid>
-                <Box>
-                    <Typography paragraph={true}>
+                    </Box>
+                </Box>
+                <Box mb={3}>
+                    <Typography paragraph={true} variant="body2">
                         {description}
                     </Typography>
                 </Box>
                 <Box>
                     <Grid container>
                         <Grid item={true} xs={9}>
-                            <Typography paragraph={true} color={"warning"}>
+                            <Typography color="warning" variant="body2">
                                 Thời hạn: {dueDate} ({outOfDate && <LocalFireDepartmentIcon color="error" />} {timeRemaining})
                             </Typography>
                         </Grid>
                         <Grid item={true} xs={3}>
-                            <Typography paragraph={true}>
+                            <Typography paragraph={true} variant="caption" color="primary">
                                 {project}
                             </Typography>
                         </Grid>

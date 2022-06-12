@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { request } from "../../api";
+import { request } from "../../../api";
 import {
     Box,
     Grid,
@@ -15,9 +15,9 @@ import {
 import {
     boxComponentStyle,
     boxChildComponent
-} from "./ultis/constant";
+} from "../ultis/constant";
 import { useHistory } from "react-router";
-import BasicAlert from "./alert/BasicAlert";
+import BasicAlert from "../alert/BasicAlert";
 
 const AddUserToProject = () => {
 

@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface EduClassSessionRepo extends JpaRepository<EduClassSession, UUID> {
     List<EduClassSession> findAllByClassId(UUID classId);
+
+    EduClassSession findBySessionId(UUID sessionId);
 }
