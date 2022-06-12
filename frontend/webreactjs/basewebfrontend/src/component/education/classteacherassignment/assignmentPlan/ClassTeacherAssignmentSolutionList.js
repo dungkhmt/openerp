@@ -256,7 +256,7 @@ function ClassTeacherAssignmentSolutionList(props) {
     request("GET", "edu/teaching-assignment/teacher", (res) => {
       const teachers = {};
       res.data.forEach((t) => {
-        teachers[t.teacherId] = t.teacherName;
+        teachers[t.id] = t.teacherName;
       });
 
       setTeachers(teachers);
