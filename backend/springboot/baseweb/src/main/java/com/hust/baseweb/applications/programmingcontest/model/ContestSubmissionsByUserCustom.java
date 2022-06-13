@@ -11,8 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContestSubmissionsByUser {
-
-    private List<ContestSubmissionsByUserCustom> mapProblemsToPoints;
-    private String userId;
+public class ContestSubmissionsByUserCustom {
+    private String problemId;
+    private Integer point;
 }

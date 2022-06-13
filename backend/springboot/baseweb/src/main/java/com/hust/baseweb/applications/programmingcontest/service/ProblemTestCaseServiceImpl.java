@@ -1206,7 +1206,15 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 }
             }
 
-            contestSubmission.setMapProblemsToPoints(mapProblemToHighestPoint);
+            List<ContestSubmissionsByUserCustom> mapProblemsToPoints = new ArrayList<>();
+            for(Map.Entry entry : mapProblemToHighestPoint.entrySet()) {
+                ContestSubmissionsByUserCustom tmp = new ContestSubmissionsByUserCustom();
+                tmp.setProblemId(entry.getKey().toString());
+                tmp.setPoint(Integer.valueOf(entry.getValue().toString()));
+                mapProblemsToPoints.add(tmp);
+            }
+
+            contestSubmission.setMapProblemsToPoints(mapProblemsToPoints);
             listContestSubmissionsByUser.add(contestSubmission);
         }
 
