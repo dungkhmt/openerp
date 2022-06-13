@@ -15,5 +15,6 @@ public class RunAutoAssignTeacher2ClassInputModel {
 
     private UUID planId;
 
-    private String solver;
+    private SolverConfig config;
+
 }

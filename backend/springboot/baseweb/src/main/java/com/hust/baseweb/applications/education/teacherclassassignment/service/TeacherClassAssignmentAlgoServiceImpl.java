@@ -1,6 +1,7 @@
 package com.hust.baseweb.applications.education.teacherclassassignment.service;
 
 import com.hust.baseweb.applications.education.teacherclassassignment.model.*;
+import com.hust.baseweb.applications.education.teacherclassassignment.service.algorithm.solver.BaseSolver;
 import com.hust.baseweb.applications.education.teacherclassassignment.utils.TimetableConflictChecker;
 import lombok.extern.log4j.Log4j2;
 import lombok.var;
@@ -241,14 +242,15 @@ public class TeacherClassAssignmentAlgoServiceImpl implements TeacherClassAssign
         //    new MaxLoadConstraintORToolMIPSolver(n, m, mClassIdx2TeacherIndexes, priorityMatrix, conflict, hourClass, maxHourTeacher);
 
         // Solve
-        ORToolMIPSolver mipSolver = new ORToolMIPSolver(mapDataInput);
-        boolean solved = mipSolver.solve(input.getSolver());
-        int[] algoAssignments;
+        BaseSolver baseSolver = new BaseSolver();
+        baseSolver.setInput(mapDataInput);
+        boolean solved = baseSolver.solve(input.getConfig());
 
+        int[] algoAssignments;
         if (solved) {
-            algoAssignments = mipSolver.getAssignment();
-            log.info(thisMethodName + "MIP found optimal solution!!");
-            log.info(thisMethodName + "numNotAssignClasses = " + mipSolver.getNotAssignedClasses().size());
+            algoAssignments = baseSolver.getAssignment();
+            log.info(thisMethodName + "Found optimal solution!!");
+            log.info(thisMethodName + "numNotAssignClasses = " + baseSolver.getNotAssignedClasses().size());
         } else {
             return null;
         }

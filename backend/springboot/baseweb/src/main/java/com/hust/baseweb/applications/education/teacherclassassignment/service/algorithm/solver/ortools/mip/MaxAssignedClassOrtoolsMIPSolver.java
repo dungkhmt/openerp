@@ -1,4 +1,4 @@
-package com.hust.baseweb.applications.education.teacherclassassignment.service.algorithm.solver.ortools;
+package com.hust.baseweb.applications.education.teacherclassassignment.service.algorithm.solver.ortools.mip;
 
 import com.google.ortools.Loader;
 import com.google.ortools.linearsolver.MPConstraint;
@@ -6,33 +6,18 @@ import com.google.ortools.linearsolver.MPObjective;
 import com.google.ortools.linearsolver.MPSolver;
 import com.google.ortools.linearsolver.MPVariable;
 import com.hust.baseweb.applications.education.teacherclassassignment.service.MapDataInput;
+import com.hust.baseweb.applications.education.teacherclassassignment.service.algorithm.solver.MaxAssignedClassBaseSolver;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 /**
- * 500 lop chi phan duoc 460 --> co gang phan nhieu lop nhat co the dươc. Sau do giu ham muc tieu nay va chay them 3 ham toi uu ben duoi
+ * OK. 500 lop chi phan duoc 460 --> co gang phan nhieu lop nhat co the dươc. Sau do giu ham muc tieu nay va chay them 3 ham toi uu ben duoi
  */
 @Log4j2
-public class MaxAssignedClassConstraintORToolMIPSolver {
-
-    // Input
-    final int n;// number of classes
-
-    final int m;// number of teachers
-
-    final HashSet<Integer>[] D; // D[i] is the set of teachers that can be assigned to class i
-
-    final boolean[][] conflict;
+public class MaxAssignedClassOrtoolsMIPSolver extends MaxAssignedClassBaseSolver {
 
 //    private final int[][] priority;
-
-    final double[] hourClass;
-
-    final double[] maxHourTeacher;
-
-    final int[][] preAssignments;
 
     // intermediate data structure
 //    private double totalHourClass;
@@ -43,7 +28,7 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
     // parameters
 //    private int alpha;
 //    private int[] beta;
-    private long timeLimit = 10000;
+//    private long timeLimit = 10000;
 
     // MIP modelling
     MPVariable[][] x; // x[j,i] = 1 indicates that class i is assigned to teacher j, = 0 otherwise
@@ -55,46 +40,8 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
     private MPVariable objectiveMaxNumClassAssigned; // redundant variable
 //    private MPVariable objectiveMaxPriority;
 
-    // Data structures for solution
-    int[] assignment; // assignment[i] is the teacher assigned to class i
-    final HashSet<Integer> notAssignedClasses = new HashSet<>();
-
-    public MaxAssignedClassConstraintORToolMIPSolver(MapDataInput input) {
-        this.n = input.getN();
-        this.m = input.getM();
-        this.D = input.getD();
-//        this.priority = input.priority;
-        this.conflict = input.getConflict();
-        this.hourClass = input.getHourClass();
-        this.maxHourTeacher = input.getMaxHourTeacher();
-        this.preAssignments = input.getPreAssignment();
-    }
-
-    /**
-     * OK
-     *
-     * @param timeLimit
-     */
-    public void setTimeLimit(long timeLimit) {
-        this.timeLimit = timeLimit;
-    }
-
-    /**
-     * OK
-     *
-     * @return
-     */
-    public HashSet<Integer> getNotAssignedClasses() {
-        return notAssignedClasses;
-    }
-
-    /**
-     * OK
-     *
-     * @return
-     */
-    public int[] getAssignment() {
-        return assignment;
+    public MaxAssignedClassOrtoolsMIPSolver(MapDataInput input) {
+        super(input);
     }
 
     /**
@@ -112,7 +59,7 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
      * @return
      */
     public double getObjectiveValue() {
-        return objectiveMaxNumClassAssigned.solutionValue();
+        return solver.objective().value();
     }
 
     /**
@@ -159,7 +106,7 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
     /**
      * Con xem xet. Access modifier OK
      */
-    private void createSolverAndVariables() {
+    void createSolverAndVariables() {
         Loader.loadNativeLibraries();
         // Create the linear solver with the SCIP backend.
         solver = MPSolver.createSolver("SCIP");
@@ -182,11 +129,18 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
             }
         }
 
-        // Todo: xem xet viec toi uu khoi tao z: lop i trong preAssignments --> z[i] = 1
         // Cac lop ngoai preAssignments, D[i].size() == 1 --> z[i] = {0, 1]
         z = new MPVariable[n];
         for (int i = 0; i < n; i++) {
             z[i] = solver.makeIntVar(0, 1, "z[" + i + "]");
+        }
+
+        // Toi uu khoi tao z: lop i trong preAssignments --> z[i] = 1
+        if (null != preAssignments && 0 != preAssignments.length) {
+            for (int[] assignment : preAssignments) {
+                int i = assignment[0]; // class index
+                z[i] = solver.makeIntVar(1, 1, "z[" + i + "]");
+            }
         }
 
         // de lam gi?
@@ -200,8 +154,8 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
 
 //        objectiveMaxPriority = solver.makeIntVar(0, sumBeta, "objectiveMaxPriority");
 
+        // Will be redundant in phase 2 but still declare
         objectiveMaxNumClassAssigned = solver.makeIntVar(0, n, "objectiveMaxNumClassAssigned");
-
 
         // create variables y
 //        y = new MPVariable[n][maxP + 1];
@@ -242,8 +196,8 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
         }
 
         for (int[] assignment : preAssignments) {
-            int i = assignment[0]; // class
-            int j = assignment[1]; // teacher
+            int i = assignment[0]; // class index
+            int j = assignment[1]; // teacher index
 
             createInstantiationConstraint(j, i);
         }
@@ -256,7 +210,7 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
      * @param i class
      */
     private void createInstantiationConstraint(int j, int i) {
-        // create constraint saying that teacher j is assigned to class i: x[j][i] = 1
+        // Create constraint saying that teacher j is assigned to class i: x[j][i] = 1
         MPConstraint c = solver.makeConstraint(1, 1);
         c.setCoefficient(x[j][i], 1);
     }
@@ -279,12 +233,11 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
      * OK. Access modifier OK
      */
     void createConstraintConflictClasses() {
-        // conflict constraint
+        // Conflict constraint
         for (int j = 0; j < m; j++) {
             for (int c1 = 0; c1 < n; c1++) {
                 for (int c2 = c1 + 1; c2 < n; c2++) {
-                    if (conflict[c1][c2]) {
-                        // Todo: xem xet loai bo rang buoc thua: kiem tra giang vien co day duoc ca 2 lop xung dot khong
+                    if (conflict[c1][c2] && D[c1].contains(j) && D[c2].contains(j)) {
                         MPConstraint c = solver.makeConstraint(0, 1);
                         c.setCoefficient(x[j][c1], 1);
                         c.setCoefficient(x[j][c2], 1);
@@ -298,8 +251,8 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
      * OK. Access modifier OK
      */
     void createConstraintChannelXZ() {
-        // constraint between x and z: {0, 1} = z[i] = sum_{j=1..m} x[j,i]
-        // also constraint each class is assigned to at most one teacher
+        // Constraint between x and z: {0, 1} = z[i] = sum_{j=1..m} x[j,i]
+        // Also constraint each class is assigned to at most one teacher
         for (int i = 0; i < n; i++) {
             MPConstraint c = solver.makeConstraint(0, 0);
             c.setCoefficient(z[i], -1);
@@ -393,7 +346,7 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
     /**
      * Con xem xet. Access modifier OK
      */
-    private void createConstraints() {
+    void createConstraints() {
 //        createConstraintAtMostOneTeacherIsAssignedToEachClass(); // OK but redundant
         createConstraintsPreAssignment(); // OK
         createConstraintMaxHourLoadTeacher(); // OK
@@ -411,7 +364,7 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
     /**
      * OK. Access modifier OK
      */
-    private void createObjective() {
+    void createObjective() {
         MPObjective objective = solver.objective();
         objective.setCoefficient(objectiveMaxNumClassAssigned, 1);
         objective.setMaximization();
@@ -429,46 +382,42 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
         createObjective();
 
         // Solves.
-        solver.setTimeLimit(timeLimit);
-
-        log.info("Model created, start solving with time limit = " + timeLimit);
+        log.info("Model created, start solving...");
 
         final MPSolver.ResultStatus resultStatus = solver.solve();
-
-        // Analyse solution.
         if (resultStatus == MPSolver.ResultStatus.OPTIMAL) {
-            log.info("solved --> OPTIMAL SOLVED!!");
+            log.info("Solution status = OPTIMAL");
 
-            assignment = new int[n];
-            Arrays.fill(assignment, -1);
-
-            log.info("solved, n = " + n +
-                     " m = " + m +
-                     ", objective = " + objectiveMaxNumClassAssigned.solutionValue());
-
-//            printSolutionVariables();
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < m; j++) {
-                    if (x[j][i].solutionValue() > 0) { // Todo: consider change to 0.5 instead of 0
-//                        log.info("solver, x[" + i + "," + j + "] = " + x[j][i].solutionValue());
-                        assignment[i] = j;
-                        break;
-                    }
-                }
-            }
-
-            for (int i = 0; i < n; i++) {
-//                log.info("solver z[" + i + "] = " + z[i].solutionValue());
-                if (z[i].solutionValue() <= 0) { // Todo: consider change to 0.5 instead of 0
-                    notAssignedClasses.add(i);
-                }
-            }
-
+            // Analyse solution.
+            extractSolution();
             return true;
         }
 
         log.info("solved, NOT FOUND OPTIMAL??");
         return false;
+    }
+
+    void extractSolution() {
+        assignments = new int[n];
+        Arrays.fill(assignments, -1);
+
+//            printSolutionVariables();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (x[j][i].solutionValue() > 0.9) {
+//                        log.info("solver, x[" + i + "," + j + "] = " + x[j][i].solutionValue());
+                    assignments[i] = j;
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+//                log.info("solver z[" + i + "] = " + z[i].solutionValue());
+            if (z[i].solutionValue() < 0.1) {
+                notAssignedClasses.add(i);
+            }
+        }
     }
 
     /**
@@ -516,14 +465,14 @@ public class MaxAssignedClassConstraintORToolMIPSolver {
     void printSolutionVariables() {
         for (int j = 0; j < m; j++) {
             for (int i = 0; i < n; i++) {
-                if (x[j][i].solutionValue() > 0.9) { // Todo: consider change to 0.9 instead of 0
+                if (x[j][i].solutionValue() > 0.9) {
                     System.out.println("x[" + j + "," + i + "] = " + x[j][i].solutionValue());
                 }
             }
         }
 
         for (int i = 0; i < n; i++) {
-            if (z[i].solutionValue() > 0) { // Todo: consider change to 0.5 instead of 0
+            if (z[i].solutionValue() > 0.9) {
                 System.out.println("z[" + i + "]= " + z[i].solutionValue());
             }
         }
