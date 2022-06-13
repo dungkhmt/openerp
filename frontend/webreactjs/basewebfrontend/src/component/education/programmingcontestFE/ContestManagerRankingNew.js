@@ -7,18 +7,21 @@ import { useEffect, useState } from "react";
 import {
   Button,
   Grid,
-  MenuItem, TableHead, TextField
+  MenuItem,
+  TableHead,
+  TextField,
 } from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
 import Pagination from "@material-ui/lab/Pagination";
 import TableBody from "@mui/material/TableBody";
 import { StyledTableCell, StyledTableRow } from "./lib";
 import { request } from "./Request";
+import { Box } from "@mui/material";
 
 export default function ContestManagerRankingNew(props) {
   const contestId = props.contestId;
   const [pageRanking, setPageRanking] = useState(1);
-  const [ranking, setRanking] = useState([]);
+  const [ranking, setRanking] = useState();
   const [totalPageRanking, setTotalPageRanking] = useState(0);
   const [pageRankingSize, setPageRankingSize] = useState(10);
   const pageSizes = [10, 20, 50, 100, 150];
@@ -28,39 +31,32 @@ export default function ContestManagerRankingNew(props) {
     setPageRanking(1);
     getRanking(event.target.value, 1);
   };
+
   function getRanking(s, p) {
     request(
       "get",
-      "/get-ranking-contest-new/" + contestId + "?size=" + s + "&page=" + (p - 1),
+      "/get-ranking-contest-new/" +
+        contestId +
+        "?size=" +
+        s +
+        "&page=" +
+        (p - 1),
       (res) => {
         console.log("ranking ", res.data);
         setTotalPageRanking(res.data.totalPages);
-        setRanking(res.data.content);
+        setRanking(res.data);
       }
     ).then();
-  }
-  function recalculatedRanking() {
-    request("post", "/recalculate-ranking/" + contestId).then(() => {
-      getRanking(pageRankingSize, pageRanking);
-    });
   }
 
   useEffect(() => {
     getRanking(pageRankingSize, 1);
   }, []);
-  return (
-    <div>
-      <div>
-        <section id={"#ranking"}>
-          <Typography
-            variant="h5"
-            component="h2"
-            style={{ marginTop: 10, marginBottom: 10 }}
-          >
-            Contest Ranking
-          </Typography>
-        </section>
 
+  return (
+    <Box>
+      <Typography variant="h5">Contest Ranking</Typography>
+      <Box>
         <TableContainer component={Paper}>
           <Table
             sx={{ minWidth: window.innerWidth - 500 }}
@@ -69,87 +65,47 @@ export default function ContestManagerRankingNew(props) {
             <TableHead>
               <TableRow>
                 <StyledTableCell align="center"></StyledTableCell>
-                <StyledTableCell align="center">User Name</StyledTableCell>
-                <StyledTableCell align="center">Full Name</StyledTableCell>
-                <StyledTableCell align="center">Email</StyledTableCell>
-                <StyledTableCell align="center">Point</StyledTableCell>
+                <StyledTableCell align="center">Username</StyledTableCell>
+                {ranking && console.log(ranking[0])}
+                {ranking &&
+                  ranking[0].mapProblemsToPoints.map((problem) => {
+                    return (
+                      <StyledTableCell
+                        sx={{ color: "yellow !important" }}
+                        align="center"
+                      >
+                        {problem.problemId}
+                      </StyledTableCell>
+                    );
+                  })}
               </TableRow>
             </TableHead>
             <TableBody>
-              {ranking.map((s, index) => (
+              {ranking.map((element, index) => (
                 <StyledTableRow>
                   <StyledTableCell>
                     <b>{index + 1 + (pageRanking - 1) * pageRankingSize}</b>
                   </StyledTableCell>
 
                   <StyledTableCell align="center">
-                    <b>{s.userId}</b>
+                    {element.userId}
                   </StyledTableCell>
 
-                  <StyledTableCell align="center">
-                    <b>{s.fullName}</b>
-                  </StyledTableCell>
-
-                  <StyledTableCell align="center">
-                    <b>{s.email}</b>
-                  </StyledTableCell>
-
-                  <StyledTableCell align="center">
-                    <b>{s.point}</b>
-                  </StyledTableCell>
+                  {element.mapProblemsToPoints.map((problem) => {
+                    return (
+                      <StyledTableCell
+                        align="center"
+                      >
+                        {problem.point}
+                      </StyledTableCell>
+                    );
+                  })}
                 </StyledTableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
-
-        <br></br>
-        <Grid container spacing={12}>
-          <Grid item xs={6}>
-            <TextField
-              variant={"outlined"}
-              autoFocus
-              size={"small"}
-              required
-              select
-              id="pageSize"
-              value={pageRankingSize}
-              onChange={handlePageRankingSizeChange}
-            >
-              {pageSizes.map((item) => (
-                <MenuItem key={item} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid item>
-            <Pagination
-              className="my-3"
-              count={totalPageRanking}
-              page={pageRanking}
-              siblingCount={1}
-              boundaryCount={1}
-              variant="outlined"
-              shape="rounded"
-              onChange={(event, value) => {
-                setPageRanking(value);
-                getRanking(pageRankingSize, value);
-              }}
-            />
-          </Grid>
-        </Grid>
-
-        <Button
-          variant="contained"
-          color="light"
-          style={{ marginLeft: "45px" }}
-          onClick={recalculatedRanking}
-        >
-          Recalculate Ranking
-        </Button>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
