@@ -12,7 +12,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import PrimaryButton from "component/button/PrimaryButton";
 import TertiaryButton from "component/button/TertiaryButton";
 import CustomizedDialogs from "component/dialog/CustomizedDialogs";
-import React from "react";
 import { FcBusinessman } from "react-icons/fc";
 import SimpleBar from "simplebar-react";
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   applyBtn: { minWidth: 72 },
 }));
 
-function SuggestedTeacherListForSelectedClassModel({
+function SuggestedTeacherListForSelectedClassDialog({
   classId,
   suggestions,
   open,
@@ -151,4 +150,4 @@ function SuggestedTeacherListForSelectedClassModel({
   );
 }
 
-export default SuggestedTeacherListForSelectedClassModel;
+export default SuggestedTeacherListForSelectedClassDialog;

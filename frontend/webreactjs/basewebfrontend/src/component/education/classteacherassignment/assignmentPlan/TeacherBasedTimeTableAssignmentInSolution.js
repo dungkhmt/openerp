@@ -1,10 +1,11 @@
-import { Card, Typography } from "@material-ui/core/";
+import { Card, Tooltip, Typography } from "@material-ui/core/";
 import Box from "@material-ui/core/Box";
 // import { makeStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import { request } from "api";
 import map from "lodash/map";
 import range from "lodash/range";
-import React, { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import SimpleBar from "simplebar-react";
 
 // const useStyles = makeStyles((theme) => ({
@@ -23,25 +24,26 @@ import SimpleBar from "simplebar-react";
 //   style: { width: "5rem", height: "2rem" },
 //   borderColor: "text.primary",
 // };
+
 const listSession = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const WU = 2; // change this for width of cell
 const SU = 8;
 
 function TimeTableHeaderDay({ day, ...rest }) {
-  let w = listSession.length;
+  let width = listSession.length;
 
   return (
     <div>
       <div>
         <Box
           border={1}
-          borderTop={2}
-          width={w * WU + "rem"}
+          borderTop={0}
+          borderRight={0}
+          width={width * WU + "rem"}
           height={"2rem"}
           display="flex"
           justifyContent={"center"}
           alignItems={"center"}
-          // style={{ borderBottomColor: grey[500] }}
           {...rest}
         >
           Thứ {day}
@@ -54,11 +56,9 @@ function TimeTableHeaderDay({ day, ...rest }) {
               <BoxClass
                 sz={1}
                 code={session}
-                // style={{
-                //   borderTopColor: grey[500],
-                //   borderLeftColor: grey[500],
-                //   borderRightColor: grey[500],
-                // }}
+                borderRight={0}
+                borderTop={0}
+                borderBottom={2}
               />
             );
           })}
@@ -68,15 +68,16 @@ function TimeTableHeaderDay({ day, ...rest }) {
   );
 }
 
-function TimeTableHeaderSpaceLeft() {
+function TimeTableHeaderFirstCell() {
   return (
     <div>
       <BoxClass
         code={"Giảng viên"}
         sz={SU}
         height={"4rem"}
-        borderTop={2}
-        borderLeft={2}
+        borderTop={0}
+        borderLeft={0}
+        borderBottom={2}
       />
     </div>
   );
@@ -85,7 +86,7 @@ function TimeTableHeaderSpaceLeft() {
 function TimeTableHeader() {
   return (
     <Box display="flex" border={"none"}>
-      <TimeTableHeaderSpaceLeft />
+      <TimeTableHeaderFirstCell />
       <TimeTableHeaderDay day={2} />
       <TimeTableHeaderDay day={3} />
       <TimeTableHeaderDay day={4} />
@@ -96,7 +97,9 @@ function TimeTableHeader() {
   );
 }
 
-function BoxClass({ code, planId, sz, bgColor, ...rest }) {
+const BoxClass = forwardRef(function BoxClass(props, ref) {
+  const { code, planId, sz, bgColor, ...rest } = props;
+
   // function handleClick() {
   //   alert("Class " + code);
   //   //props.root.suggestTeacherListForClass(code);
@@ -128,6 +131,7 @@ function BoxClass({ code, planId, sz, bgColor, ...rest }) {
       bgcolor={bgColor}
       color={"text.primary"}
       {...rest}
+      ref={ref}
       // onClick={() => {
       //   handleClick();
       // }}
@@ -135,29 +139,97 @@ function BoxClass({ code, planId, sz, bgColor, ...rest }) {
       {code}
     </Box>
   );
-}
+});
 
 function TimeTableSpace({ sz }) {
   return (
     <Box display="flex" justifyContent="center">
       {map(range(sz), (_) => {
-        return <Box border={1} height={"2rem"} width={WU + "rem"} />;
+        return (
+          <Box
+            border={1}
+            borderRight={0}
+            borderTop={0}
+            height={"2rem"}
+            width={WU + "rem"}
+            // borderColor={grey[500]}
+          />
+        );
       })}
     </Box>
   );
 }
 
-function TimeTableElement(props) {
-  const drawClass = (startIndexFromPrevious, classCode, duration, bgColor) => (
+const HtmlTooltip = withStyles((theme) => ({
+  tooltip: {
+    paddingTop: 6,
+    backgroundColor: theme.palette.common.white,
+    color: "rgba(0, 0, 0, 0.87)",
+    borderRadius: 6,
+    boxShadow:
+      "0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5)",
+    // fontSize: theme.typography.pxToRem(12),
+    // border: "1px solid #dadde9",
+    "& .MuiTooltip-arrow": {
+      color: theme.palette.common.white,
+    },
+  },
+}))(Tooltip);
+
+function TimeTableRow(props) {
+  const { planId, root, list, remainEmptySlots, teacherId } = props;
+
+  const drawClass = (
+    startIndexFromPrevious,
+    classCode,
+    duration,
+    bgColor,
+    classes
+  ) => (
     <Box display="flex" justifyContent="center">
       <TimeTableSpace sz={startIndexFromPrevious} />
-      <BoxClass
-        code={classCode}
-        planId={props.planId}
-        sz={duration}
-        bgColor={bgColor}
-        root={props.root}
-      />
+      <HtmlTooltip
+        arrow
+        placement="bottom"
+        title={
+          <>
+            {classes.map((c) => (
+              <>
+                <Typography style={{ fontWeight: "bold" }}>
+                  {c.classCode}
+                  {c?.courseId && " - " + c.courseId}
+                  {c?.classType && " - " + c.classType}
+                </Typography>
+                <Typography variant="body2">{c.courseName}</Typography>
+                <Typography variant="body2">{c.timetable}</Typography>
+                <br />
+              </>
+            ))}
+          </>
+        }
+        PopperProps={{
+          popperOptions: {
+            modifiers: {
+              flip: { enabled: false },
+              offset: {
+                enabled: true,
+                offset: "0, -16px",
+              },
+            },
+          },
+        }}
+      >
+        <BoxClass
+          code={classCode}
+          planId={planId}
+          sz={duration}
+          bgColor={bgColor}
+          root={root}
+          borderRight={0}
+          borderTop={0}
+          // borderColor={grey[500]}
+        />
+      </HtmlTooltip>
     </Box>
   );
 
@@ -176,12 +248,13 @@ function TimeTableElement(props) {
       firstClass.startIndexFromPrevious,
       classCode,
       duration,
-      "error.main"
+      "error.main",
+      classes.slice(fromIndex, toIndex + 1)
     );
   };
 
   const drawClasses = () => {
-    const { list: classes } = props;
+    const classes = list;
     const n = classes.length;
     const result = [];
 
@@ -196,7 +269,8 @@ function TimeTableElement(props) {
                 classes[i].startIndexFromPrevious,
                 classes[i].classCode,
                 classes[i].duration,
-                "info.main"
+                "info.main",
+                classes.slice(i, i + 1)
               )
             );
           } else {
@@ -221,33 +295,52 @@ function TimeTableElement(props) {
             classes[i].startIndexFromPrevious,
             classes[i].classCode,
             classes[i].duration,
-            "info.main"
+            "info.main",
+            classes.slice(i, i + 1)
           )
         );
       }
     }
 
-    result.push(<TimeTableSpace sz={props.remainEmptySlots} />);
+    result.push(
+      <>
+        <TimeTableSpace sz={remainEmptySlots - 1} />
+        <Box
+          border={1}
+          borderRight={2}
+          borderTop={0}
+          height={"2rem"}
+          width={WU + "rem"}
+          // borderColor={grey[500]}
+        />
+      </>
+    );
+
     return result;
   };
 
   return (
     <Box display="flex" justifyContent="left">
-      <BoxClass code={props.teacherId} sz={SU} borderLeft={2} />
+      <BoxClass
+        code={teacherId}
+        sz={SU}
+        borderLeft={0}
+        borderTop={0}
+        justifyContent="flex-start"
+        pl={2}
+      />
       {drawClasses()}
     </Box>
   );
 }
 
-function TimeTable({ data, planId, root }) {
-  // console.log("TimeTable data = " + JSON.stringify(data));
-  //console.log("TimeTable planId (from root) = " + root.planId);
+function TimeTableBody({ data, planId, root }) {
   return (
     <div>
       {data.map((e) => {
         return (
           <Box display="flex" justifyContent="left">
-            <TimeTableElement
+            <TimeTableRow
               list={e.classList}
               planId={planId}
               teacherId={e.teacherId}
@@ -270,31 +363,12 @@ function TeacherBasedTimeTableAssignmentInSolution(props) {
 
   // const [openSuggestion, setOpenSuggestion] = React.useState(false);
 
-  // const data = [
-  //   {
-  //     teacherId: "dung.phamquang@hust.edu.vn",
-  //     classes: [
-  //       { classCode: "110222", startIndexFromPrevious: 2, duration: 4 },
-  //       { classCode: "324593", startIndexFromPrevious: 7, duration: 2 },
-  //     ],
-  //   },
-  //   {
-  //     teacherId: "trung.buiquoc@hust.edu.vn",
-  //     classes: [
-  //       { classCode: "420222", startIndexFromPrevious: 1, duration: 4 },
-  //       { classCode: "324400", startIndexFromPrevious: 2, duration: 4 },
-  //       { classCode: "324900", startIndexFromPrevious: 3, duration: 4 },
-  //     ],
-  //   },
-  // ];
-
   const getDataTimeTableList = () => {
     request(
       "GET",
       //"/get-classes-assigned-to-a-teacher-solution/" + planId,
       `edu/teaching-assignment/plan/${planId}/solution/grid-view`,
       (res) => {
-        // console.log("Gird TimeTable data = " + JSON.stringify(res.data));
         setDataTimeTable(res.data);
       }
     );
@@ -318,18 +392,19 @@ function TeacherBasedTimeTableAssignmentInSolution(props) {
   }, []);
 
   return (
-    <Card
-      style={{
-        maxWidth: "100%",
-        padding: 16,
-        marginTop: 48,
-      }}
-    >
-      <Box display="flex" pt={1} paddingBottom={2}>
-        <Typography component="h6" style={{ fontSize: "1.25rem" }}>
-          Biểu đồ lịch giảng dạy theo tuần
-        </Typography>
-        {/* <PrimaryButton
+    dataTimeTable.length > 0 && (
+      <Card
+        style={{
+          maxWidth: "100%",
+          padding: 16,
+          marginTop: 48,
+        }}
+      >
+        <Box display="flex" pt={1} paddingBottom={2}>
+          <Typography component="h6" style={{ fontSize: "1.25rem" }}>
+            Biểu đồ lịch giảng dạy theo tuần
+          </Typography>
+          {/* <PrimaryButton
           // className={classes.btn}
           onClick={(e) => {
             handleBtnClick(e);
@@ -337,17 +412,20 @@ function TeacherBasedTimeTableAssignmentInSolution(props) {
         >
           Phân công lại
         </PrimaryButton> */}
-      </Box>
-      <SimpleBar
-        style={{
-          maxWidth: "100%",
-          paddingBottom: 16,
-        }}
-      >
-        <TimeTableHeader />
-        <TimeTable data={dataTimeTable} root={this} planId={planId} />
-      </SimpleBar>
-    </Card>
+        </Box>
+        <SimpleBar
+          style={{
+            maxWidth: "100%",
+            paddingBottom: 16,
+          }}
+        >
+          <Box border={2} borderBottom={1} width={160 * 16 + 2 + "px"}>
+            <TimeTableHeader />
+            <TimeTableBody data={dataTimeTable} root={this} planId={planId} />
+          </Box>
+        </SimpleBar>
+      </Card>
+    )
   );
 }
 

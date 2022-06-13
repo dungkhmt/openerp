@@ -43,8 +43,8 @@ public class TaskExecutionServiceImplement implements TaskExecutionService {
     }
 
     @Override
-    public List<TaskExecution> findByTaskId(UUID taskId) {
-        return taskExecutionRepository.findByTaskId(taskId);
+    public List<TaskExecution> getAllCommentsByTaskId(UUID taskId) {
+        return taskExecutionRepository.getAllCommentsByTaskId(taskId);
     }
 
     @Override

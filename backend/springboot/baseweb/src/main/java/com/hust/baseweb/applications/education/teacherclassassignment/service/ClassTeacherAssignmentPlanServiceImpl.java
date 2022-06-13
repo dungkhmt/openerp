@@ -605,7 +605,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
             algoTeachers,
             algoClasses,
             preAssignments,
-            im.getSolver());
+            im.getConfig());
 
         // Testing and debugging only: save input json to file
 //        Gson gson = new Gson();
@@ -646,9 +646,8 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
                 continue;
             }
 
-            log.info("autoAssignTeacher2Class, assign class " + algoClass.getClassId() + " (algoClassId = " +
-//                     assignment.getAlgoClassIM().getId() +
-                     ") of course " + algoClass.getCourseId() +
+            log.info("autoAssignTeacher2Class, assign class " + algoClass.getClassId() +
+                     " of course " + algoClass.getCourseId() +
                      " to teacher " + assignment.getAlgoTeacherIM().getId());
 
             TeacherClassAssignmentSolution solution = new TeacherClassAssignmentSolution();
@@ -1032,19 +1031,19 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
             if (s.isMultipleFragments()) {
                 ClassTeacherAssignmentSolutionModel[] fragments = s.checkMultipleFragmentsAndDuplicate();
 
-                log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class " +
-                         s.getClassCode() + " has multiple timetable fragments.length = " + fragments.length);
+//                log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class " +
+//                         s.getClassCode() + " has multiple timetable fragments.length = " + fragments.length);
 
                 for (ClassTeacherAssignmentSolutionModel fragment : fragments) {
                     mTeacherId2AssignedClasses.get(s.getTeacherId()).add(fragment);
 
-                    log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class " +
-                             s.getClassCode() + " has multiple timetable fragments.length = " +
-                             fragments.length + " ADD fragment " + fragment.getTimetable());
+//                    log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class " +
+//                             s.getClassCode() + " has multiple timetable fragments.length = " +
+//                             fragments.length + " ADD fragment " + fragment.getTimetable());
                 }
             } else {
-                log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class " +
-                         s.getClassCode() + " has ONLY ONE timetable");
+//                log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class " +
+//                         s.getClassCode() + " has ONLY ONE timetable");
 
                 mTeacherId2AssignedClasses.get(s.getTeacherId()).add(s);
             }
@@ -1052,12 +1051,12 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
 
         // Fill in to prevent NULL in the next logic, also debug and test
         for (TeacherForAssignmentPlan t : teachersInPlan) {
-            log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, consider teacher " +
-                     t.getTeacherId());
+//            log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, consider teacher " +
+//                     t.getTeacherId());
 
             if (!teacherHasClasses.contains(t.getTeacherId())) {
-                log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, consider teacher " +
-                         t.getTeacherId() + " DOES NOT have classes assigned");
+//                log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, consider teacher " +
+//                         t.getTeacherId() + " DOES NOT have classes assigned");
 
                 mTeacherId2AssignedClasses.put(t.getTeacherId(), new ArrayList<>());
             }
@@ -1150,6 +1149,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
             }
         }
 
+        gridViewData.sort(Comparator.comparing(ClassesAssignedToATeacherModel::getTeacherId));
         return gridViewData;
     }
 
@@ -1284,6 +1284,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
             assignedModels.add(model);
         }
 
+        assignedModels.sort(Comparator.comparing(ClassesAssignedToATeacherModel::getTeacherId));
         return assignedModels;
     }
 
@@ -1343,6 +1344,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
             solutionModel.setTeacherId(s.getTeacherId());
             solutionModel.setTeacherName(teacher.getTeacherName());
             solutionModel.setTimetable(info.getLesson());
+//            solutionModel.setTimetableCode(info.getTimetable());
             solutionModel.setHourLoad(info.getHourLoad());
 
             solutionModels.add(solutionModel);
@@ -1572,8 +1574,8 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
                         si.getTimetable(),
                         sj.getTimetable());
 
-                    log.info("getConflictClassesAssignedToTeacherInSolution, timetable1 = " +
-                             si.getTimetable() + " timetable2 = " + sj.getTimetable() + " conflict = " + conflict);
+//                    log.info("getConflictClassesAssignedToTeacherInSolution, timetable1 = " +
+//                             si.getTimetable() + " timetable2 = " + sj.getTimetable() + " conflict = " + conflict);
 
                     if (conflict) {
                         ConflictClassAssignedToTeacherModel cm = new ConflictClassAssignedToTeacherModel();

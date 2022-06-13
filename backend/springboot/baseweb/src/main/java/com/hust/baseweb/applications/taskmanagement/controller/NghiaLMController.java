@@ -329,7 +329,7 @@ public class NghiaLMController {
 
     @GetMapping("/tasks/{taskId}/comments")
     public ResponseEntity<Object> getAllComments(@PathVariable("taskId") UUID taskId) {
-        List<TaskExecution> taskExecutions = taskExecutionService.findByTaskId(taskId);
+        List<TaskExecution> taskExecutions = taskExecutionService.getAllCommentsByTaskId(taskId);
         List<CommentDao> commentDaos = new ArrayList<>();
         for (TaskExecution taskExecution : taskExecutions) {
             commentDaos.add(new CommentDao(taskExecution));

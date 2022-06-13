@@ -17,7 +17,7 @@ public interface TaskExecutionService {
 
     TaskExecution save(TaskExecution taskExecution);
 
-    List<TaskExecution> findByTaskId(UUID taskId);
+    List<TaskExecution> getAllCommentsByTaskId(UUID taskId);
 
     List<Object[]> getAllDistinctDay(UUID projectId);
 

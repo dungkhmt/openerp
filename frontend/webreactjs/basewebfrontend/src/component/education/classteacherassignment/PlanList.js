@@ -3,7 +3,7 @@ import { request } from "api";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import CreateClassTeacherAssignmentPlanModal from "./CreateClassTeacherAssignmentPlan";
+import CreatePlanModal from "./CreatePlanModal";
 
 function ClassTeacherAssignmentPlanList() {
   const [plans, setPlans] = useState([]);
@@ -36,7 +36,7 @@ function ClassTeacherAssignmentPlanList() {
     { title: "Ngày tạo", field: "createdStamp" },
   ];
 
-  async function getClassTeacherAssignmentList() {
+  function getClassTeacherAssignmentList() {
     request("GET", "/get-all-class-teacher-assignment-plan", (res) => {
       setPlans(res.data);
     });
@@ -98,7 +98,7 @@ function ClassTeacherAssignmentPlanList() {
         }}
       />
 
-      <CreateClassTeacherAssignmentPlanModal
+      <CreatePlanModal
         open={open}
         onClose={handleModalClose}
         onCreate={customCreateHandle}

@@ -1,6 +1,5 @@
-package com.hust.baseweb.applications.education.teacherclassassignment.service.algorithm.solver.ortools;
+package com.hust.baseweb.applications.education.teacherclassassignment.service.algorithm.solver.ortools.mip;
 
-import com.google.ortools.Loader;
 import com.google.ortools.linearsolver.MPConstraint;
 import com.google.ortools.linearsolver.MPObjective;
 import com.google.ortools.linearsolver.MPSolver;
@@ -8,24 +7,23 @@ import com.google.ortools.linearsolver.MPVariable;
 import com.hust.baseweb.applications.education.teacherclassassignment.service.MapDataInput;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.Arrays;
-
 /**
- *
+ * OK
  */
 @Log4j2
-public class LoadBalancingDurationConsiderationSolver extends MaxAssignedClassConstraintORToolMIPSolver {
+public class LoadBalancingDurationConsiderationOrtoolsMIPSolver extends MaxAssignedClassOrtoolsMIPSolver {
 
     // Additional data parameters
-    private int numAssignedClasses;
+    int numAssignedClasses;
 
     // MIP modelling
-    private MPVariable objectiveLoadBalancing;
-    private MPVariable[] t; // use for linearing constraint
+    MPVariable objectiveLoadBalancing;
+
+    MPVariable[] t; // use for linearing constraint
 //    private MPVariable[] u; // use for linearing constraint
 //    private MPVariable min;
 
-    public LoadBalancingDurationConsiderationSolver(MapDataInput input) {
+    public LoadBalancingDurationConsiderationOrtoolsMIPSolver(MapDataInput input) {
         super(input);
     }
 
@@ -38,43 +36,9 @@ public class LoadBalancingDurationConsiderationSolver extends MaxAssignedClassCo
         this.numAssignedClasses = numAssignedClasses;
     }
 
-    /**
-     * OK. Overriding
-     *
-     * @return
-     */
-    public double getObjectiveValue() {
-        return objectiveLoadBalancing.solutionValue();
-    }
-
-    private void createSolverAndVariables() {
-        Loader.loadNativeLibraries();
-        // Create the linear solver with the SCIP backend.
-        solver = MPSolver.createSolver("SCIP");
-        if (null == solver) {
-            log.error("Could not create solver SCIP");
-            return;
-        }
-
-        log.info("createSolverAndVariables, n = " + n + " m = " + m);
-
-        x = new MPVariable[m][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                if (!D[i].contains(j)) {// teacher j cannot be assigned to class i
-                    x[j][i] = solver.makeIntVar(0, 0, "x[" + j + "," + i + "]");
-                } else {
-                    x[j][i] = solver.makeIntVar(0, 1, "x[" + j + "," + i + "]");
-                }
-            }
-        }
-
-        // Todo: xem xet viec toi uu khoi tao z: lop i trong preAssignments --> z[i] = 1
-        // Cac lop ngoai preAssignments, D[i].size() == 1 --> z[i] = {0, 1]
-        z = new MPVariable[n];
-        for (int i = 0; i < n; i++) {
-            z[i] = solver.makeIntVar(0, 1, "z[" + i + "]");
-        }
+    @Override
+    void createSolverAndVariables() {
+        super.createSolverAndVariables();
 
         //
         t = new MPVariable[m];
@@ -95,7 +59,7 @@ public class LoadBalancingDurationConsiderationSolver extends MaxAssignedClassCo
     /**
      * OK
      */
-    private void createConstraintNumAssignedClassesAtLeast() {
+    private void createConstraintNumAssignedClasses() {
         MPConstraint c = solver.makeConstraint(numAssignedClasses, numAssignedClasses);
         for (int i = 0; i < n; i++) {
             c.setCoefficient(z[i], 1);
@@ -106,7 +70,7 @@ public class LoadBalancingDurationConsiderationSolver extends MaxAssignedClassCo
      * OK
      */
     private void createConstraintObjective() {
-        // constraint on the objective function
+        // Constraint on the objective function
         // Y(j) > 0 --> F >= 1 - Y(j)/q(j) = 1 - sum_{i=1..n}[x(j, i) * hourClass(i) / maxHourTeacher(j)]
         double infinity = java.lang.Double.POSITIVE_INFINITY;
         double M = -1;
@@ -164,20 +128,22 @@ public class LoadBalancingDurationConsiderationSolver extends MaxAssignedClassCo
     /**
      * OK
      */
-    private void createdConstraints() {
+    @Override
+    void createConstraints() {
         super.createConstraintsPreAssignment();
         super.createConstraintMaxHourLoadTeacher();
         super.createConstraintConflictClasses();
         super.createConstraintChannelXZ();
 
-        createConstraintNumAssignedClassesAtLeast();
+        createConstraintNumAssignedClasses();
         createConstraintObjective();
     }
 
     /**
      * OK
      */
-    private void createObjective() {
+    @Override
+    void createObjective() {
         MPObjective objective = solver.objective();
         objective.setCoefficient(objectiveLoadBalancing, 1);
 //        objective.setCoefficient(min, -1);
@@ -189,41 +155,19 @@ public class LoadBalancingDurationConsiderationSolver extends MaxAssignedClassCo
      *
      * @return
      */
+    @Override
     public boolean solve() {
         createSolverAndVariables();
-        createdConstraints();
+        createConstraints();
         createObjective();
 
         // Solves.
         final MPSolver.ResultStatus resultStatus = solver.solve();
-
-        // Analyse solution.
         if (resultStatus == MPSolver.ResultStatus.OPTIMAL) {
-            assignment = new int[n];
-            Arrays.fill(assignment, -1);
+            log.info("Solution status = OPTIMAL");
 
-            log.info("solved, n = " + n + " m = " + m + ", objective = " + objectiveLoadBalancing.solutionValue()
-//                     +", min = " + min.solutionValue()+ ", obj = "+ solver.objective().value()
-            );
-
-//            super.printSolutionVariables();
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < m; j++) {
-                    if (x[j][i].solutionValue() > 0) {
-                        //System.out.println("solver, x[" + i + "," + j + "] = " + x[j][i].solutionValue());
-                        if (x[j][i].solutionValue() > 0) {
-                            assignment[i] = j;
-                        }
-                    }
-                }
-            }
-            for (int i = 0; i < n; i++) {
-                //System.out.println("solver z[" + i + "] = " + z[i].solutionValue());
-                if (z[i].solutionValue() <= 0) {
-                    notAssignedClasses.add(i);
-                }
-            }
-
+            // Analyse solution.
+            super.extractSolution();
             return true;
         }
 
