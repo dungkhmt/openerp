@@ -14,6 +14,7 @@ import ContestManagerListRequestingParticipant from "./ContestManagerListRequest
 import ContestManagerAddMember from "./ContestManagerAddMember";
 import ContestManagerRanking from "./ContestManagerRanking";
 import ContestManagerUserSubmission from "./ContestManagerUserSubmission";
+import ContestManagerRankingNew from "./ContestManagerRankingNew";
 
 export function ContestManager() {
   const { contestId } = useParams();
@@ -243,6 +244,7 @@ export function ContestManager() {
         <Tab label="Register User" {...a11yProps(2)} style={{ width: "10%" }} />
         <Tab label="Add User" {...a11yProps(3)} style={{ width: "10%" }} />
         <Tab label="Ranking" {...a11yProps(4)} style={{ width: "10%" }} />
+        <Tab label="Ranking (New)" {...a11yProps(4)} style={{ width: "10%" }} />
         <Tab
           label="User Submission"
           {...a11yProps(5)}
@@ -281,14 +283,18 @@ export function ContestManager() {
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={5}>
-        <ContestManagerUserSubmission contestId={contestId} />
+        <ContestManagerRankingNew contestId={contestId} />
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={6}>
-        <ContestManagerViewListContestProblemSubmissionDetailByTestCase />
+        <ContestManagerUserSubmission contestId={contestId} />
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={7}>
+        <ContestManagerViewListContestProblemSubmissionDetailByTestCase />
+      </TabPanelVertical>
+
+      <TabPanelVertical value={value} index={8}>
         <CodeSimilarityCheck contestId={contestId} />
       </TabPanelVertical>
     </div>
