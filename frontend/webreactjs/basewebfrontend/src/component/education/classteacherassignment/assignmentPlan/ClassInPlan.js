@@ -33,7 +33,7 @@ const alignRightCellStyles = {
   cellStyle: { padding: 8, textAlign: "right" },
 };
 
-function ClassForAssignmentList({ planId }) {
+function ClassInPlan({ planId }) {
   const classes = useStyles();
 
   // Command delete button
@@ -269,4 +269,4 @@ function ClassForAssignmentList({ planId }) {
   );
 }
 
-export default ClassForAssignmentList;
+export default ClassInPlan;

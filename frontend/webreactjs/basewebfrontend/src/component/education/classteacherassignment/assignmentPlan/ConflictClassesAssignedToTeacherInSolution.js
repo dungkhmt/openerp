@@ -1,6 +1,6 @@
 import { request } from "api";
 import StandardTable from "component/table/StandardTable";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 function ConflictClassesAssignedToTeacherInSolution(props) {
   const planId = props.planId;
@@ -32,15 +32,17 @@ function ConflictClassesAssignedToTeacherInSolution(props) {
   }, []);
 
   return (
-    <div style={{ marginTop: 48 }}>
-      <StandardTable
-        hideCommandBar
-        title={"Danh sách lớp xung đột"}
-        columns={columns}
-        data={conflictClasses}
-        options={{ selection: false, pageSize: 5 }}
-      />
-    </div>
+    conflictClasses.length > 0 && (
+      <div style={{ marginTop: 48 }}>
+        <StandardTable
+          hideCommandBar
+          title={"Danh sách lớp xung đột"}
+          columns={columns}
+          data={conflictClasses}
+          options={{ selection: false, pageSize: 5 }}
+        />
+      </div>
+    )
   );
 }
 

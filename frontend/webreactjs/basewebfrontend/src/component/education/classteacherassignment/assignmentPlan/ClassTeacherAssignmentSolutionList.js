@@ -9,8 +9,8 @@ import { request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
-import SuggestedTeacherListForSelectedClassModel from "../SuggestedTeacherListForSelectedClassModel";
-import { useStyles } from "./ClassForAssignmentList";
+import SuggestedTeacherListForSelectedClassDialog from "../SuggestedTeacherListForSelectedClassDialog";
+import { useStyles } from "./ClassInPlan";
 
 function ClassTeacherAssignmentSolutionList(props) {
   const classes = useStyles();
@@ -318,7 +318,7 @@ function ClassTeacherAssignmentSolutionList(props) {
         }
       />
 
-      <SuggestedTeacherListForSelectedClassModel
+      <SuggestedTeacherListForSelectedClassDialog
         open={open}
         handleClose={handleClose}
         onReassign={onReassign}

@@ -392,18 +392,19 @@ function TeacherBasedTimeTableAssignmentInSolution(props) {
   }, []);
 
   return (
-    <Card
-      style={{
-        maxWidth: "100%",
-        padding: 16,
-        marginTop: 48,
-      }}
-    >
-      <Box display="flex" pt={1} paddingBottom={2}>
-        <Typography component="h6" style={{ fontSize: "1.25rem" }}>
-          Biểu đồ lịch giảng dạy theo tuần
-        </Typography>
-        {/* <PrimaryButton
+    dataTimeTable.length > 0 && (
+      <Card
+        style={{
+          maxWidth: "100%",
+          padding: 16,
+          marginTop: 48,
+        }}
+      >
+        <Box display="flex" pt={1} paddingBottom={2}>
+          <Typography component="h6" style={{ fontSize: "1.25rem" }}>
+            Biểu đồ lịch giảng dạy theo tuần
+          </Typography>
+          {/* <PrimaryButton
           // className={classes.btn}
           onClick={(e) => {
             handleBtnClick(e);
@@ -411,19 +412,20 @@ function TeacherBasedTimeTableAssignmentInSolution(props) {
         >
           Phân công lại
         </PrimaryButton> */}
-      </Box>
-      <SimpleBar
-        style={{
-          maxWidth: "100%",
-          paddingBottom: 16,
-        }}
-      >
-        <Box border={2} borderBottom={1} width={160 * 16 + 2 + "px"}>
-          <TimeTableHeader />
-          <TimeTableBody data={dataTimeTable} root={this} planId={planId} />
         </Box>
-      </SimpleBar>
-    </Card>
+        <SimpleBar
+          style={{
+            maxWidth: "100%",
+            paddingBottom: 16,
+          }}
+        >
+          <Box border={2} borderBottom={1} width={160 * 16 + 2 + "px"}>
+            <TimeTableHeader />
+            <TimeTableBody data={dataTimeTable} root={this} planId={planId} />
+          </Box>
+        </SimpleBar>
+      </Card>
+    )
   );
 }
 
