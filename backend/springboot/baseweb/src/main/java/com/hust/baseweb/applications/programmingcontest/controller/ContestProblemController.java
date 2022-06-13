@@ -486,11 +486,20 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(null);
     }
 
+    @GetMapping("/get-ranking-contest-new/{contestId}")
+    public ResponseEntity<?> getRankingContestNewVersion(@PathVariable("contestId") String contestId, Pageable pageable){
+        log.info("getRankingContest page {}", pageable);
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        List<ContestSubmissionsByUser> page = problemTestCaseService.getRankingByContestIdNew(pageable, contestId);
+        log.info("ranking page {}", page);
+        return ResponseEntity.status(200).body(page);
+    }
+
     @GetMapping("/get-ranking-contest/{contestId}")
     public ResponseEntity<?> getRankingContest(@PathVariable("contestId") String contestId, Pageable pageable){
         log.info("getRankingContest page {}", pageable);
-        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-        List<ContestSubmissionsByUser> page = problemTestCaseService.getRankingByContestId(pageable, contestId);
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("point").descending());
+        Page<UserSubmissionContestResultNativeEntity> page = problemTestCaseService.getRankingByContestId(pageable, contestId);
         log.info("ranking page {}", page);
         return ResponseEntity.status(200).body(page);
     }

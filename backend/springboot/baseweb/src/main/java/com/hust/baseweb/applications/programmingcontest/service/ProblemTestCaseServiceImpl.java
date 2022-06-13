@@ -1165,7 +1165,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public List<ContestSubmissionsByUser> getRankingByContestId(Pageable pageable, String contestId) {
+    public Page<UserSubmissionContestResultNativeEntity> getRankingByContestId(Pageable pageable, String contestId) {
+        return userSubmissionContestResultNativePagingRepo.findAllByContestId(pageable, contestId);
+    }
+
+    @Override
+    public List<ContestSubmissionsByUser> getRankingByContestIdNew(Pageable pageable, String contestId) {
         ListModelUserRegisteredContestInfo users = this.getListUserRegisterContestSuccessfulPaging(pageable, contestId);
         ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
 
