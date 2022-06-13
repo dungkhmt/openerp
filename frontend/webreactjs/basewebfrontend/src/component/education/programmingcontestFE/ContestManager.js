@@ -244,20 +244,20 @@ export function ContestManager() {
         <Tab label="Register User" {...a11yProps(2)} style={{ width: "10%" }} />
         <Tab label="Add User" {...a11yProps(3)} style={{ width: "10%" }} />
         <Tab label="Ranking" {...a11yProps(4)} style={{ width: "10%" }} />
-        <Tab label="Ranking (New)" {...a11yProps(4)} style={{ width: "10%" }} />
+        <Tab label="Ranking (New)" {...a11yProps(5)} style={{ width: "10%" }} />
         <Tab
           label="User Submission"
-          {...a11yProps(5)}
-          style={{ width: "10%" }}
-        />
-        <Tab
-          label="Submission Detail by TestCase"
           {...a11yProps(6)}
           style={{ width: "10%" }}
         />
         <Tab
-          label="Check Code Plagiarism"
+          label="Submission Detail by TestCase"
           {...a11yProps(7)}
+          style={{ width: "10%" }}
+        />
+        <Tab
+          label="Check Code Plagiarism"
+          {...a11yProps(8)}
           style={{ width: "10%" }}
         />
       </Tabs>

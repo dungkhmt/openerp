@@ -21,7 +21,7 @@ import { Box } from "@mui/material";
 export default function ContestManagerRankingNew(props) {
   const contestId = props.contestId;
   const [pageRanking, setPageRanking] = useState(1);
-  const [ranking, setRanking] = useState();
+  const [ranking, setRanking] = useState([]);
   const [totalPageRanking, setTotalPageRanking] = useState(0);
   const [pageRankingSize, setPageRankingSize] = useState(10);
   const pageSizes = [10, 20, 50, 100, 150];
@@ -67,7 +67,7 @@ export default function ContestManagerRankingNew(props) {
                 <StyledTableCell align="center"></StyledTableCell>
                 <StyledTableCell align="center">Username</StyledTableCell>
                 {ranking && console.log(ranking[0])}
-                {ranking &&
+                {ranking.length > 0 &&
                   ranking[0].mapProblemsToPoints.map((problem) => {
                     return (
                       <StyledTableCell
@@ -81,7 +81,7 @@ export default function ContestManagerRankingNew(props) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {ranking.map((element, index) => (
+              {ranking.length > 0 && ranking.map((element, index) => (
                 <StyledTableRow>
                   <StyledTableCell>
                     <b>{index + 1 + (pageRanking - 1) * pageRankingSize}</b>
