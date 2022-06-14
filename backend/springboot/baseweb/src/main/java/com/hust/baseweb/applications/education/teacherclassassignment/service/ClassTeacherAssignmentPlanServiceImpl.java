@@ -15,11 +15,10 @@ import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.repo.UserLoginRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -149,45 +148,47 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
     @Transactional
     @Override
     public boolean extractExcelAndStoreDB(UUID planId, MultipartFile file) {
-        List<ClassTeacherAssignmentClassInfo> lst = new ArrayList();
+        List<ClassTeacherAssignmentClassInfo> classes = new ArrayList<>();
+
         try {
             InputStream inputStream = file.getInputStream();
-            HSSFWorkbook wb = new HSSFWorkbook(inputStream);
-            HSSFSheet sheet = wb.getSheetAt(0);
+            XSSFWorkbook wb = new XSSFWorkbook(inputStream);
+            XSSFSheet sheet = wb.getSheetAt(0);
             int sz = sheet.getLastRowNum();
             for (int i = 1; i <= sz; i++) {
                 Row row = sheet.getRow(i);
-                Cell c = row.getCell(0);
+                Cell c = row.getCell(1);
+
                 String schoolName = c.getStringCellValue();
-                c = row.getCell(1);
+                c = row.getCell(0);
                 String semesterId = c.getStringCellValue();
                 c = row.getCell(2);
                 String classId = c.getStringCellValue();
-                c = row.getCell(3);
-                String courseId = c.getStringCellValue();
                 c = row.getCell(4);
-                String className = c.getStringCellValue();
+                String courseId = c.getStringCellValue();
                 c = row.getCell(5);
-                String creditInfo = c.getStringCellValue();
-                c = row.getCell(6);
-                String classNote = c.getStringCellValue();
-
+                String className = c.getStringCellValue();
                 c = row.getCell(7);
-                String program = c.getStringCellValue();
+                String creditInfo = c.getStringCellValue();
                 c = row.getCell(8);
+                String classNote = c.getStringCellValue();
+                c = row.getCell(23);
+                String program = c.getStringCellValue();
+                c = row.getCell(22);
                 String semesterType = c.getStringCellValue();
-                c = row.getCell(9);
-                int enrollment = Integer.valueOf(c.getStringCellValue());
-                c = row.getCell(10);
-                int maxEnrollment = Integer.valueOf(c.getStringCellValue());
-
-                c = row.getCell(12);
+                c = row.getCell(18);
+                int enrollment = Double.valueOf(c.getStringCellValue()).intValue();
+                c = row.getCell(19);
+                int maxEnrollment = Double.valueOf(c.getStringCellValue()).intValue();
+                c = row.getCell(21);
+                String classType = c.getStringCellValue();
+                c = row.getCell(26);
                 String timeTable = c.getStringCellValue();
-                c = row.getCell(13);
+                c = row.getCell(27);
                 String lesson = c.getStringCellValue();
-                c = row.getCell(14);
-                String department = c.getStringCellValue();
-                c = row.getCell(15);
+                c = row.getCell(28);
+                String department = null == c ? null : c.getStringCellValue();
+                c = row.getCell(29);
                 double hourLoad = c.getNumericCellValue();
 
                 ClassTeacherAssignmentClassInfo cls = new ClassTeacherAssignmentClassInfo();
@@ -203,12 +204,17 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
                 cls.setDepartmentId(department);
                 cls.setEnrollment(enrollment);
                 cls.setMaxEnrollment(maxEnrollment);
+                cls.setClassType(classType);
+                cls.setCredit(creditInfo);
+                cls.setSchoolName(schoolName);
                 cls.setPlanId(planId);
                 cls.setHourLoad(hourLoad);
-                lst.add(cls);
+                cls.setCreatedStamp(new Date());
+                classes.add(cls);
+
                 log.info(classId + "\t" + courseId + "\t" + className + "\t" + timeTable);
-                cls = classInfoRepo.save(cls);
             }
+            classInfoRepo.saveAll(classes);
             inputStream.close();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -373,123 +379,139 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
     public boolean extractExcelAndStoreDBTeacherCourse(UUID planId, String choice, MultipartFile file) {
         try {
             InputStream inputStream = file.getInputStream();
-            HSSFWorkbook wb = new HSSFWorkbook(inputStream);
-            HSSFSheet sheet = wb.getSheetAt(0);
-            int sz = sheet.getLastRowNum();
-            List<TeacherCourse> lst = new ArrayList<>();
-            List<EduTeacher> eduTeachers = new ArrayList<>();
-            List<EduCourse> eduCourses = new ArrayList<>();
-            HashMap<TeacherCourseId, TeacherCourse> mId2TeacherCourse = new HashMap<>();
+            XSSFWorkbook wb = new XSSFWorkbook(inputStream);
+            XSSFSheet sheet = wb.getSheetAt(1);
+
+            List<TeacherCourse> teacherCourses = new ArrayList<>();
+            List<EduTeacher> teachers = new ArrayList<>();
+            List<EduCourse> courses = new ArrayList<>();
+            HashMap<String, TeacherCourse> mTeacherCourseId2TeacherCourse = new HashMap<>();
             HashSet<String> teacherIds = new HashSet<>();
             HashSet<String> courseIds = new HashSet<>();
 
+            int sz = sheet.getLastRowNum();
             for (int i = 1; i <= sz; i++) {
                 Row row = sheet.getRow(i);
-                Cell c = row.getCell(0);
+                Cell c = row.getCell(4);
                 String courseId = c.getStringCellValue();
 
-                c = row.getCell(1);
+                c = row.getCell(5);
                 String courseName = c.getStringCellValue();
 
-                c = row.getCell(3);
+                c = row.getCell(25);
                 String teacherName = c.getStringCellValue();
 
-                c = row.getCell(4);
+                c = row.getCell(26);
                 String teacherId = c.getStringCellValue();
 
-                c = row.getCell(5);
+//                c = row.getCell(5);
                 //int maxCredits = Integer.valueOf(c.getStringCellValue());
 
-                c = row.getCell(6);
-                int priority = 0;
-                if (c.getCellType().equals(CellType.STRING)) {
-                    //System.out.println("line i = " + i + ", column 6, str = " + c.getStringCellValue());
-                    try {
-                        priority = Integer.valueOf(c.getStringCellValue());
-                    } catch (Exception e) {
-                        System.out.println("exception priority convert str to int");
-                        //e.printStackTrace();
-                    }
-                } else if (c.getCellType().equals(CellType.NUMERIC)) {
-                    priority = (int) c.getNumericCellValue();
-                }
+//                c = row.getCell(6);
+//                int priority = 0;
+//                if (c.getCellType().equals(CellType.STRING)) {
+//                    //System.out.println("line i = " + i + ", column 6, str = " + c.getStringCellValue());
+//                    try {
+//                        priority = Integer.parseInt(c.getStringCellValue());
+//                    } catch (Exception e) {
+//                        System.out.println("exception priority convert str to int");
+//                        //e.printStackTrace();
+//                    }
+//                } else if (c.getCellType().equals(CellType.NUMERIC)) {
+//                    priority = (int) c.getNumericCellValue();
+//                }
 
-                // Todo: Adjust to actual data
-                c = row.getCell(7);
+                c = row.getCell(21);
                 String classType = c.getStringCellValue();
+                c = row.getCell(7);
+                String credit = c.getStringCellValue().substring(0, 1);
 
                 TeacherCourse teacherCourse = new TeacherCourse();
                 teacherCourse.setCourseId(courseId);
                 teacherCourse.setTeacherId(teacherId);
-                teacherCourse.setPriority(priority);
+                teacherCourse.setClassType(classType);
+                teacherCourse.setPriority(0);
+                teacherCourse.setCreatedStamp(new Date());
 
-                TeacherCourseId id = new TeacherCourseId(courseId, teacherId, classType);
+//                TeacherCourseId id = new TeacherCourseId(teacherId, courseId, classType);
+                String id = teacherId + courseId + classType;
 
                 if (!teacherIds.contains(teacherId)) {
-                    EduTeacher eduTeacher = new EduTeacher();
-                    eduTeacher.setId(teacherId);
-                    eduTeacher.setTeacherName(teacherName);
+                    EduTeacher teacher = new EduTeacher();
+                    teacher.setId(teacherId);
+                    teacher.setTeacherName(teacherName);
+                    teacher.setMaxHourLoad(30);
+                    teacher.setCreatedStamp(new Date());
 
-                    eduTeachers.add(eduTeacher);
+                    teachers.add(teacher);
                     teacherIds.add(teacherId);
                 }
-                if (!courseIds.contains(courseId)) {
-                    EduCourse eduCourse = new EduCourse();
-                    eduCourse.setId(courseId);
-                    eduCourse.setName(courseName);
-                    eduCourse.setCredit((short) 0);
-                    eduCourse.setCreatedStamp(new Date());
+                if (!courseIds.contains(courseId)) { // OK
+                    EduCourse course = new EduCourse();
+                    course.setId(courseId);
+                    course.setName(courseName);
+                    course.setCredit(Short.parseShort(credit));
+                    course.setCreatedStamp(new Date());
 
-                    eduCourses.add(eduCourse);
+                    courses.add(course);
                     courseIds.add(courseId);
                 }
 
-                if (mId2TeacherCourse.get(id) == null) {
-                    mId2TeacherCourse.put(id, teacherCourse);
-                    lst.add(teacherCourse);
+                if (mTeacherCourseId2TeacherCourse.get(id) == null) {
+                    mTeacherCourseId2TeacherCourse.put(id, teacherCourse);
+                    teacherCourses.add(teacherCourse);
                     //log.info("extractExcelAndStoreDBTeacherCourse, add new " + courseId + ", " + teacherId + ", " + priority);
                 } else {
-                    log.info("extractExcelAndStoreDBTeacherCourse, " + courseId + ", " + teacherId + ", " + priority +
+                    log.info("extractExcelAndStoreDBTeacherCourse, " + courseId + ", " + teacherId + ", " +
+//                             priority +
                              " EXISTS");
                 }
 
                 //teacherCourse  = teacherCourseRepo.save(teacherCourse);
                 //log.info("extractExcelAndStoreDBTeacherCourse, " + courseId + ", " + teacherId + ", " + priority);
             }
-            log.info("extractExcelAndStoreDBTeacherCourse, choice = " + choice + " courses.sz = " + eduCourses.size()
-                     + " teachers.sz = " + eduTeachers.size() + ", teacher-course.sz = " + lst.size());
+
+            log.info("extractExcelAndStoreDBTeacherCourse, choice = " + choice + " courses.sz = " + courses.size()
+                     + " teachers.sz = " + teachers.size() + ", teacher-course.sz = " + teacherCourses.size());
 
 
-            if (choice.equals("UPLOAD_COURSE")) {
-                // check and store courses
-                for (EduCourse c : eduCourses) {
+//            if (choice.equals("UPLOAD_COURSE")) {
+            // check and store courses
+            for (EduCourse c : courses) {
 
-                    EduCourse eduCourse = eduCourseRepo.findById(c.getId()).orElse(null);
-                    if (eduCourse != null) {
-                        // EXISTS, do nothing
-                        log.info("extractExcelAndStoreDBTeacherCourse, course " + c.getId() + " EXISTS");
-                    } else {
-                        c = eduCourseRepo.save(c);
-                        log.info("extractExcelAndStoreDBTeacherCourse, course " + c.getId() + " -> INSERTED");
-                    }
+                EduCourse eduCourse = eduCourseRepo.findById(c.getId()).orElse(null);
+                if (eduCourse != null) {
+                    // EXISTS, do nothing
+                    log.info("extractExcelAndStoreDBTeacherCourse, course " + c.getId() + " EXISTS");
+                } else {
+                    c = eduCourseRepo.save(c);
+                    log.info("extractExcelAndStoreDBTeacherCourse, course " + c.getId() + " -> INSERTED");
                 }
-            } else if (choice.equals("UPLOAD_TEACHER")) {
-
-                // check and store teachers
-                for (EduTeacher t : eduTeachers) {
-                    EduTeacher teacher = eduTeacherRepo.findById(t.getId()).orElse(null);
-                    if (teacher != null) {
-                        // EXISTS do nothing
-                        log.info("extractExcelAndStoreDBTeacherCourse, teacher " + t.getId() + " EXISTS");
-                    } else {
-                        t = eduTeacherRepo.save(t);
-                        log.info("extractExcelAndStoreDBTeacherCourse, teacher " + t.getId() + " INSERTED");
-                    }
-                }
-            } else if (choice.equals("UPLOAD_TEACHER_COURSE")) {
-                log.info("extractExcelAndStoreDBTeacherCourse, saveAll teacher-course");
-                teacherCourseRepo.saveAll(lst);
             }
+//            } else if (choice.equals("UPLOAD_TEACHER")) {
+            // check and store teachers
+            for (EduTeacher t : teachers) {
+                EduTeacher teacher = eduTeacherRepo.findById(t.getId()).orElse(null);
+                if (teacher != null) {
+                    // EXISTS do nothing
+                    log.info("extractExcelAndStoreDBTeacherCourse, teacher " + t.getId() + " EXISTS");
+                } else {
+                    t = eduTeacherRepo.save(t);
+                    log.info("extractExcelAndStoreDBTeacherCourse, teacher " + t.getId() + " INSERTED");
+                }
+            }
+//            } else if (choice.equals("UPLOAD_TEACHER_COURSE")) {
+            log.info("extractExcelAndStoreDBTeacherCourse, saveAll teacher-course");
+            for (TeacherCourse tc : teacherCourses) {
+                TeacherCourse existedTeacherCourse = teacherCourseRepo
+                    .findById(new TeacherCourseId(tc.getTeacherId(), tc.getCourseId(), tc.getClassType()))
+                    .orElse(null);
+                if (null == existedTeacherCourse) {
+                    teacherCourseRepo.save(tc);
+                }
+            }
+//            teacherCourseRepo.saveAll(teacherCourses);
+//            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -1005,6 +1027,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
      * @param planId
      * @return
      */
+    // Todo: optimize
     @Override
     public List<ClassesAssignedToATeacherModel> getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable(
         UUID planId
@@ -1075,14 +1098,14 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
 
             assignedModel.setTeacherId(teacherId);
             assignedModel.setClassList(mTeacherId2AssignedClasses.get(teacherId));
-            assignedModel.setNumberOfClass(assignedModel.getClassList().size());
+//            assignedModel.setNumberOfClass(assignedModel.getClassList().size());
 
-            //
-            double hourLoad = 0;
-            for (ClassTeacherAssignmentSolutionModel solutionModel : assignedModel.getClassList()) {
-                hourLoad += solutionModel.getHourLoad();
-            }
-            assignedModel.setHourLoad(hourLoad);
+            // Not neccessary for grid view
+//            double hourLoad = 0;
+//            for (ClassTeacherAssignmentSolutionModel solutionModel : assignedModel.getClassList()) {
+//                hourLoad += solutionModel.getHourLoad();
+//            }
+//            assignedModel.setHourLoad(hourLoad);
 
             //if(assignedModel.getClassList().size() == 0) continue;
 
@@ -1115,6 +1138,11 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
 
                 // Sorting
                 for (int i = 0; i < orderedAssignments.length; i++) {
+                    // Remove unnecessary field
+                    orderedAssignments[i].setSolutionItemId(null);
+                    orderedAssignments[i].setTeacherId(null);
+                    orderedAssignments[i].setTeacherName(null);
+
                     for (int j = i + 1; j < orderedAssignments.length; j++) {
                         if (orderedAssignments[i].getStartSlot() > orderedAssignments[j].getStartSlot()) {
                             ClassTeacherAssignmentSolutionModel tmp = orderedAssignments[i];
@@ -1141,7 +1169,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
 
                 assignedModel
                     .setRemainEmptySlots(
-                        72 - orderedAssignments[orderedAssignments.length - 1].getEndSlot()); // 72 = 5 * 12 periods
+                        72 - orderedAssignments[orderedAssignments.length - 1].getEndSlot()); // 72 = 6 * 12 periods
             }
 
             if (assignedModel.getClassList().size() > 0) {
