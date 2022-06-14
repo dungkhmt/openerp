@@ -1,56 +1,36 @@
 import Paper from "@material-ui/core/Paper";
 import TableContainer from "@material-ui/core/TableContainer";
 import Table from "@mui/material/Table";
+import TablePagination from "@mui/material/TablePagination";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 
-import {
-  Button,
-  Grid,
-  MenuItem,
-  TableHead,
-  TextField,
-} from "@material-ui/core";
+import { Grid, TableHead } from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
-import Pagination from "@material-ui/lab/Pagination";
+import { Box } from "@mui/material";
 import TableBody from "@mui/material/TableBody";
 import { StyledTableCell, StyledTableRow } from "./lib";
 import { request } from "./Request";
-import { Box } from "@mui/material";
 
 export default function ContestManagerRankingNew(props) {
   const contestId = props.contestId;
-  const [pageRanking, setPageRanking] = useState(1);
   const [ranking, setRanking] = useState([]);
-  const [totalPageRanking, setTotalPageRanking] = useState(0);
-  const [pageRankingSize, setPageRankingSize] = useState(10);
-  const pageSizes = [10, 20, 50, 100, 150];
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handlePageRankingSizeChange = (event) => {
-    setPageRankingSize(event.target.value);
-    setPageRanking(1);
-    getRanking(event.target.value, 1);
+    setRowsPerPage(parseInt(event.target.value));
+    setPage(0);
   };
 
-  function getRanking(s, p) {
-    request(
-      "get",
-      "/get-ranking-contest-new/" +
-        contestId +
-        "?size=" +
-        s +
-        "&page=" +
-        (p - 1),
-      (res) => {
-        console.log("ranking ", res.data);
-        setTotalPageRanking(res.data.totalPages);
-        setRanking(res.data);
-      }
-    ).then();
+  function getRanking() {
+    request("get", "/get-ranking-contest-new/" + contestId, (res) => {
+      setRanking(res.data.sort((a, b) => b.totalPoint - a.totalPoint));
+    }).then();
   }
 
   useEffect(() => {
-    getRanking(pageRankingSize, 1);
+    getRanking();
   }, []);
 
   return (
@@ -66,7 +46,6 @@ export default function ContestManagerRankingNew(props) {
               <TableRow>
                 <StyledTableCell align="center"></StyledTableCell>
                 <StyledTableCell align="center">Username</StyledTableCell>
-                {ranking && console.log(ranking[0])}
                 {ranking.length > 0 &&
                   ranking[0].mapProblemsToPoints.map((problem) => {
                     return (
@@ -78,33 +57,53 @@ export default function ContestManagerRankingNew(props) {
                       </StyledTableCell>
                     );
                   })}
+                  <StyledTableCell align="center"><b>TOTAL</b></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {ranking.length > 0 && ranking.map((element, index) => (
-                <StyledTableRow>
-                  <StyledTableCell>
-                    <b>{index + 1 + (pageRanking - 1) * pageRankingSize}</b>
-                  </StyledTableCell>
+              {ranking.length > 0 &&
+                ranking.map(
+                  (element, index) =>
+                    index < rowsPerPage && (
+                      <StyledTableRow>
+                        <StyledTableCell>
+                          <b>{index + 1 + page * rowsPerPage}</b>
+                        </StyledTableCell>
 
-                  <StyledTableCell align="center">
-                    {element.userId}
-                  </StyledTableCell>
+                        <StyledTableCell align="center">
+                          <b>{element.userId}</b>
+                        </StyledTableCell>
 
-                  {element.mapProblemsToPoints.map((problem) => {
-                    return (
-                      <StyledTableCell
-                        align="center"
-                      >
-                        {problem.point}
-                      </StyledTableCell>
-                    );
-                  })}
-                </StyledTableRow>
-              ))}
+                        {element.mapProblemsToPoints.map((problem) => {
+                          return (
+                            <StyledTableCell align="center">
+                              {problem.point}
+                            </StyledTableCell>
+                          );
+                        })}
+                        <StyledTableCell align="center">
+                          <b>{element.totalPoint}</b>
+                        </StyledTableCell>
+                      </StyledTableRow>
+                    )
+                )}
             </TableBody>
           </Table>
         </TableContainer>
+        <Grid container spacing={12}>
+          <Grid item>
+            <TablePagination
+              shape="rounded"
+              count={ranking.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={(event, value) => {
+                setPage(value);
+              }}
+              onRowsPerPageChange={handlePageRankingSizeChange}
+            />
+          </Grid>
+        </Grid>
       </Box>
     </Box>
   );
