@@ -304,15 +304,17 @@ function TimeTableRow(props) {
 
     result.push(
       <>
-        <TimeTableSpace sz={remainEmptySlots - 1} />
-        <Box
-          border={1}
-          borderRight={2}
-          borderTop={0}
-          height={"2rem"}
-          width={WU + "rem"}
-          // borderColor={grey[500]}
-        />
+        {remainEmptySlots > 1 && <TimeTableSpace sz={remainEmptySlots - 1} />}
+        {remainEmptySlots > 0 && (
+          <Box
+            border={1}
+            borderRight={2}
+            borderTop={0}
+            height={"2rem"}
+            width={WU + "rem"}
+            // borderColor={grey[500]}
+          />
+        )}
       </>
     );
 
