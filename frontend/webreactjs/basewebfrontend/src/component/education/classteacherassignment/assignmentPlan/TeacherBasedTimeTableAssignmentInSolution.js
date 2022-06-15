@@ -5,7 +5,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { request } from "api";
 import map from "lodash/map";
 import range from "lodash/range";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, memo, useEffect, useState } from "react";
 import SimpleBar from "simplebar-react";
 
 // const useStyles = makeStyles((theme) => ({
@@ -29,7 +29,7 @@ const listSession = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const WU = 2; // change this for width of cell
 const SU = 8;
 
-function TimeTableHeaderDay({ day, ...rest }) {
+const TimeTableHeaderDay = memo(({ day, ...rest }) => {
   let width = listSession.length;
 
   return (
@@ -66,9 +66,9 @@ function TimeTableHeaderDay({ day, ...rest }) {
       </div>
     </div>
   );
-}
+});
 
-function TimeTableHeaderFirstCell() {
+const TimeTableHeaderFirstCell = memo(() => {
   return (
     <div>
       <BoxClass
@@ -81,9 +81,9 @@ function TimeTableHeaderFirstCell() {
       />
     </div>
   );
-}
+});
 
-function TimeTableHeader() {
+const TimeTableHeader = memo(() => {
   return (
     <Box display="flex" border={"none"}>
       <TimeTableHeaderFirstCell />
@@ -95,7 +95,7 @@ function TimeTableHeader() {
       <TimeTableHeaderDay day={7} />
     </Box>
   );
-}
+});
 
 const BoxClass = forwardRef(function BoxClass(props, ref) {
   const { code, planId, sz, bgColor, ...rest } = props;
@@ -141,7 +141,7 @@ const BoxClass = forwardRef(function BoxClass(props, ref) {
   );
 });
 
-function TimeTableSpace({ sz }) {
+const TimeTableSpace = memo(({ sz }) => {
   return (
     <Box display="flex" justifyContent="center">
       {map(range(sz), (_) => {
@@ -158,7 +158,7 @@ function TimeTableSpace({ sz }) {
       })}
     </Box>
   );
-}
+});
 
 const HtmlTooltip = withStyles((theme) => ({
   tooltip: {
@@ -176,7 +176,7 @@ const HtmlTooltip = withStyles((theme) => ({
   },
 }))(Tooltip);
 
-function TimeTableRow(props) {
+const TimeTableRow = memo((props) => {
   const { planId, root, list, remainEmptySlots, teacherId } = props;
 
   const drawClass = (
@@ -334,9 +334,9 @@ function TimeTableRow(props) {
       {drawClasses()}
     </Box>
   );
-}
+});
 
-function TimeTableBody({ data, planId, root }) {
+const TimeTableBody = memo(({ data, planId, root }) => {
   return (
     <div>
       {data.map((e) => {
@@ -354,7 +354,7 @@ function TimeTableBody({ data, planId, root }) {
       })}
     </div>
   );
-}
+});
 
 function TeacherBasedTimeTableAssignmentInSolution(props) {
   const planId = props.planId;
@@ -419,6 +419,7 @@ function TeacherBasedTimeTableAssignmentInSolution(props) {
           style={{
             maxWidth: "100%",
             paddingBottom: 16,
+            maxHeight: "25rem",
           }}
         >
           <Box border={2} borderBottom={1} width={160 * 16 + 2 + "px"}>
