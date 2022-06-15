@@ -42,6 +42,7 @@ export default function ListWhiteBoard() {
     await request("post", "/whiteboards", () => {
       history.push(`${url}/whiteboard/${whiteboardId}?page=1`)
     }, {}, { whiteboardId, classSessionId: sessionId });
+    await request("put", `/whiteboards/user/${whiteboardId}`, () => {}, {}, { roleId: 'write', statusId: 'accepted' });
   }
 
   return (

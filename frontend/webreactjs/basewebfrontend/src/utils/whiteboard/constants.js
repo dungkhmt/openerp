@@ -9,6 +9,8 @@ export const SOCKET_IO_EVENTS = {
   ON_ADD_TEXT_END: 'onAddText',
   ADD_NEW_PAGE: 'addNewPage',
   ON_ADD_NEW_PAGE: 'onAddNewPage',
+  TEST: 'test',
+  ON_TEST: 'onTest',
   DELETE_PAGE: 'deletePage',
   ON_DELETE_PAGE: 'onDeletePage',
 
@@ -18,7 +20,8 @@ export const SOCKET_IO_EVENTS = {
 
 export const KEYS = {
   DRAW_DATA_LOCAL_STORAGE: '@draw_data_local_storage',
-  DRAWING_DATA_LOCAL_STORAGE: '@drawing_data_local_storage',
+  CURRENT_PAGE: '@current_page',
+  TOTAL_PAGE: '@total_page',
 }
 
 export const POLLING_INTERVAL = 500
@@ -37,3 +40,11 @@ export const EVENT_TYPE = {
   MOUSE_MOVE: 'MOUSE_MOVE',
 }
 
+export const ROLE_STATUS = {
+  WRITE: 'write',
+  READ: 'read',
+
+  IDLE: 'idle',
+  ACCEPTED: 'accepted',
+  REJECTED: 'rejected',
+}

@@ -1,61 +1,50 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Layer, Stage } from 'react-konva'
 import { useWindowSize } from '../../../../utils/whiteboard/hooks/useWindowSize'
-import { EVENT_TYPE, KEYS, SOCKET_IO_EVENTS, TOOL } from '../../../../utils/whiteboard/constants'
+import { EVENT_TYPE, KEYS, ROLE_STATUS, SOCKET_IO_EVENTS, TOOL } from '../../../../utils/whiteboard/constants'
 import { drawLines } from '../../../../utils/whiteboard/drawGrid'
 import { DrawLine } from '../Draw/DrawLine'
 import { DrawRectangle } from '../Draw/DrawRectangle'
 import { DrawCircle } from '../Draw/DrawCircle'
 import { DrawText } from '../Draw/DrawText'
 import { request } from '../../../../api'
-import { useHistory, useParams } from 'react-router'
+import { useHistory, useParams, useRouteMatch } from 'react-router'
 import { toast } from 'react-toastify'
-import Slider from "react-slick";
+import Slider from 'react-slick'
 import { useQueryString } from 'utils/whiteboard/hooks/useQueryString'
 import { SocketContext } from '../../../../utils/whiteboard/context/SocketContext'
 import { mergeDrawData, removeData } from '../../../../utils/whiteboard/localStorage'
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
+import Konva from 'konva'
 
 const scaleBy = 1.05
 const MAX_SCALE = 3.125
 const MIN_SCALE = 0.25
 
-function SampleNextArrow(props) {
-  const { className, style, onClick } = props;
-  return (
-    <div
-      className={className}
-      style={{ ...style, display: "block", background: "red" }}
-      onClick={onClick}
-    />
-  );
-}
-
-function SamplePrevArrow(props) {
-  const { className, style, onClick } = props;
-  return (
-    <div
-      className={className}
-      style={{ ...style, display: "block", background: "green" }}
-      onClick={onClick}
-    />
-  );
+const generatePages = (totalPage) => {
+  const pages = []
+  for (let i = 0; i < totalPage; ++i) {
+    pages.push({ id: i })
+  }
+  return pages
 }
 
 export const MainBoard = React.memo(() => {
   const { socket } = useContext(SocketContext)
   const { whiteboardId } = useParams()
-  const history = useHistory()
-  const queryString = useQueryString()
+  // const history = useHistory()
+  // const { url } = useRouteMatch()
+  // // const queryString = useQueryString()
+  const [pageNow, setPageNow] = useState(() => Number(localStorage.getItem(KEYS.CURRENT_PAGE) ?? 1))
   const { width, height } = useWindowSize()
 
-  const [pages, setPages] = useState([{ id: 1 }])
+  const [pages, setPages] = useState(() => generatePages(Number(localStorage.getItem(KEYS.TOTAL_PAGE) ?? 1)))
   const [stageConfig, setStageConfig] = useState({
     width,
     height,
   })
-  const [tool, setTool] = useState(TOOL.PEN)
+  const [tool, setTool] = useState(TOOL.POINTER)
   const [scale, setScale] = useState(1)
   const [eventPointer, setEventPointer] = useState({
     [TOOL.PEN]: { eventType: null, pointerPosition: { x: 0, y: 0 } },
@@ -65,87 +54,154 @@ export const MainBoard = React.memo(() => {
   })
   const [stageContainer, setStageContainer] = useState(null)
   const [offset, setOffset] = useState()
+
+  const [roleStatus, setRoleStatus] = useState({
+    roleId: ROLE_STATUS.READ,
+    statusId: ROLE_STATUS.IDLE,
+  })
+
   const isDrawing = useRef(false)
   const gridLayerRef = useRef(null)
-  const stageRef = useRef(null)
+  const stageRef = useRef([])
   const parentRef = useRef(null)
   const slideRef = useRef(null)
 
+  // const isAbleToDraw = roleStatus.roleId === ROLE_STATUS.WRITE && roleStatus.statusId === ROLE_STATUS.ACCEPTED
+
   useEffect(() => {
-    socket.on(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE, ({ newPage }) => {
-      setPages((prev) => [...prev, newPage])
-      history.push(`?page=${newPage.id}`)
+    socket.on(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE, ({ newPage, currentWhiteboardId, changePage, totalPage }) => {
+      if (whiteboardId !== currentWhiteboardId) {
+        return
+      }
+      if (!changePage) {
+        setPages((prev) => [...prev, newPage])
+      }
+      localStorage.setItem(KEYS.CURRENT_PAGE, newPage.id)
+      localStorage.setItem(KEYS.TOTAL_PAGE, totalPage)
+      setPageNow(newPage.id)
       if (slideRef.current) {
-        slideRef.current.slickGoTo(newPage.id)
+        slideRef.current.slickGoTo(newPage.id - 1)
       }
     })
-    socket.on(SOCKET_IO_EVENTS.ON_DELETE_PAGE, ({ pageId }) => {
-      setPages((prev) => prev.reduce((acc, item) => {
-        if (item.id < Number(pageId)) {
-          acc.push(item)
-        } else {
-          if (item.id === Number(pageId)) { 
-            return acc
+
+    socket.on(SOCKET_IO_EVENTS.ON_DELETE_PAGE, ({ pageId, currentWhiteboardId, newDrawData, totalPage }) => {
+      if (whiteboardId !== currentWhiteboardId) {
+        return
+      }
+      setPages((prev) =>
+        prev.reduce((acc, item) => {
+          if (item.id < Number(pageId)) {
+            acc.push(item)
+          } else {
+            if (item.id === Number(pageId)) {
+              return acc
+            }
+            acc.push({ id: item.id - 1 })
           }
-          acc.push({ id: item.id - 1 })
-        }
-        return acc
-      }, []))
+          return acc
+        }, []),
+      )
 
-      history.push(`?page=${pageId === 1 ? 1 : pageId - 1}`)
+      localStorage.setItem(KEYS.CURRENT_PAGE, pageId === 1 ? 1 : pageId - 1)
+      localStorage.setItem(KEYS.TOTAL_PAGE, totalPage)
+      setPageNow(pageId === 1 ? 1 : pageId - 1)
       if (slideRef.current) {
-        slideRef.current.slickGoTo(pageId === 1 ? 1 : pageId - 1)
+        slideRef.current.slickGoTo(pageId === 1 ? 0 : pageId - 2)
       }
+      stageRef.current.splice(Number(pageId) - 1, 1)
+
+      localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(newDrawData))
+      socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE, { currentWhiteboardId: whiteboardId })
     })
 
-    if (stageRef && stageRef.current) {
-      setStageContainer(stageRef.current.container())
+    if (stageRef && stageRef.current.length > 0) {
+      setStageContainer(stageRef.current[Number(pageNow) - 1]?.container())
     }
     // add user to whiteboard here
     void (async () => {
-      await request("put", `/whiteboards/add-user/${whiteboardId}`, () => {}, {}, {});
-      await request("get", `/whiteboards/detail/${whiteboardId}`, (res) => {
-        const currentPage = res?.data?.totalPage || 1
-        const newPages = []
-        for (let i = 1; i <= currentPage; ++i) {
-          newPages.push({ id: i })
-        }
-        setPages(newPages)
-        if (slideRef.current) {
-          slideRef.current.slickGoTo(currentPage)
-        }
+      await request(
+        'put',
+        `/whiteboards/user/${whiteboardId}`,
+        (res) => {
+          if (res.status === 200) {
+            setRoleStatus({
+              roleId: res?.data?.roleId,
+              statusId: res?.data?.statusId,
+            })
+          }
+        },
+        {},
+        { roleId: 'read', statusId: 'idle' },
+      )
 
-        const drawingData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE))
-        if (!drawingData || (typeof drawingData.whiteboardId !== "undefined" && drawingData.whiteboardId !== whiteboardId)) {
-          localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify({ whiteboardId, ...JSON.parse(res?.data?.data || '{}') }))
-          socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE)
-          return
-        }
-        const totalData = JSON.parse(res?.data?.data) || { lines: [], rectangle: [], circle: [], text: [] }
-        totalData.whiteboardId = whiteboardId
-        totalData.lines = mergeDrawData(drawingData.lines || [], totalData.lines || [])
-        totalData.rectangle = mergeDrawData(drawingData.rectangle || [], totalData.rectangle || [])
-        totalData.circle = mergeDrawData(drawingData.circle || [], totalData.circle || [])
-        totalData.text = mergeDrawData(drawingData.text || [], totalData.text || [])
+      await request(
+        'get',
+        `/whiteboards/detail/${whiteboardId}`,
+        (res) => {
+          const currentPage = res?.data?.totalPage || 1
+          // const totalPageLS = Number(localStorage.getItem(KEYS.TOTAL_PAGE) ?? 1)
+          // if (totalPageLS === 1) {
+          //   localStorage.setItem(KEYS.TOTAL_PAGE, currentPage)
+          // }
+          // if (currentPage > totalPageLS) {
+          //   localStorage.setItem(KEYS.TOTAL_PAGE, currentPage)
+          // }
+          localStorage.setItem(KEYS.TOTAL_PAGE, currentPage)
+          localStorage.setItem(KEYS.CURRENT_PAGE, currentPage)
+          setPageNow(currentPage)
+          const newPages = []
+          for (let i = 1; i <= currentPage; ++i) {
+            newPages.push({ id: i })
+          }
+          setPages(newPages)
+          if (slideRef.current) {
+            slideRef.current.slickGoTo(currentPage - 1)
+          }
 
-        localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(totalData))
-        socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE)
-        /* format: {
-         lines: [{ currentPage: 1, data: [{ x: 0, y: 0 }, { x: 0, y: 0 }] }],
-         rectangles: [{ currentPage: 1, data: [{ x: 0, y: 0 }, { x: 0, y: 0 }] }],
-         circles: [{ currentPage: 1, data: [{ x: 0, y: 0 }, { x: 0, y: 0 }] }],
-         texts: [{ currentPage: 1, ] }],
+          const drawingData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE))
+          if (
+            !drawingData ||
+            (typeof drawingData.whiteboardId !== 'undefined' && drawingData.whiteboardId !== whiteboardId)
+          ) {
+            localStorage.removeItem(KEYS.DRAW_DATA_LOCAL_STORAGE)
+            localStorage.setItem(
+              KEYS.DRAW_DATA_LOCAL_STORAGE,
+              JSON.stringify({ whiteboardId, ...JSON.parse(res?.data?.data || '{}') }),
+            )
+            socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE, { currentWhiteboardId: whiteboardId })
+            return
+          }
+          const totalData = JSON.parse(res?.data?.data) || { lines: [], rectangle: [], circle: [], text: [] }
+          totalData.whiteboardId = whiteboardId
+          totalData.lines = mergeDrawData(drawingData.lines || [], totalData.lines || [])
+          totalData.rectangle = mergeDrawData(drawingData.rectangle || [], totalData.rectangle || [])
+          totalData.circle = mergeDrawData(drawingData.circle || [], totalData.circle || [])
+          totalData.text = mergeDrawData(drawingData.text || [], totalData.text || [])
+
+          localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(totalData))
+          socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE, { currentWhiteboardId: whiteboardId })
+          /* format: {
+            whiteboardId: '',
+
         } */
-        // setPages(res?.data?.data?.pages || [])
-      }, {}, {});
+          // setPages(res?.data?.data?.pages || [])
+        },
+        {},
+        {},
+      )
     })()
-  }, []) 
+
+    return () => {
+      socket.off(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE)
+      socket.off(SOCKET_IO_EVENTS.ON_DELETE_PAGE)
+    }
+  }, [whiteboardId, socket])
 
   useEffect(() => {
     const onWindowResize = () => {
       if (parentRef.current) {
-        const stageWidth = parentRef.current.offsetWidth;
-        const stageHeight = parentRef.current.offsetHeight;
+        const stageWidth = parentRef.current.offsetWidth
+        const stageHeight = parentRef.current.offsetHeight
         setStageConfig((prev) => ({ ...prev, width: stageWidth, height: stageHeight }))
       }
     }
@@ -164,13 +220,14 @@ export const MainBoard = React.memo(() => {
       [TOOL.CIRCLE]: { eventType: null, pointerPosition: { x: 0, y: 0 } },
       [TOOL.TEXT]: { eventType: null, pointerPosition: { x: 0, y: 0 } },
     })
-  }, [tool])
+  }, [tool, pageNow])
 
   useEffect(() => {
-    if (gridLayerRef && gridLayerRef.current && stageRef.current) {
-      drawLines(gridLayerRef, stageRef.current, width, height)
+    if (gridLayerRef && gridLayerRef.current && stageRef.current.length > 0) {
+      // drawLines(gridLayerRef, stageRef.current[Number(queryString.get('page')) - 1], width, height)
+      drawLines(gridLayerRef, stageRef.current[pageNow - 1], width, height)
     }
-  }, [pages.length, width, height, scale])
+  }, [pages.length, width, height, scale, pageNow])
 
   const handleMouseDown = (e) => {
     isDrawing.current = true
@@ -179,13 +236,21 @@ export const MainBoard = React.memo(() => {
       pos = e.currentTarget.getRelativePointerPosition()
     }
     if (tool === TOOL.ERASER) {
-      setEventPointer(prev => ({ ...prev, [TOOL.PEN]: { eventType: EVENT_TYPE.MOUSE_DOWN, pointerPosition: { x: pos?.x, y: pos?.y } }}))
+      setEventPointer((prev) => ({
+        ...prev,
+        [TOOL.PEN]: { eventType: EVENT_TYPE.MOUSE_DOWN, pointerPosition: { x: pos?.x, y: pos?.y } },
+      }))
     } else {
-      setEventPointer(prev => ({ ...prev, [tool]: { eventType: EVENT_TYPE.MOUSE_DOWN, pointerPosition: { x: pos?.x, y: pos?.y } }}))
+      setEventPointer((prev) => ({
+        ...prev,
+        [tool]: { eventType: EVENT_TYPE.MOUSE_DOWN, pointerPosition: { x: pos?.x, y: pos?.y } },
+      }))
     }
     setOffset({
-      top: stageRef.current?.container().offsetTop,
-      left: stageRef.current?.container().offsetLeft,
+      // top: stageRef.current[Number(queryString.get('page')) - 1]?.container().offsetTop,
+      // left: stageRef.current[Number(queryString.get('page')) - 1]?.container().offsetLeft,
+      top: stageRef.current[pageNow - 1]?.container().offsetTop,
+      left: stageRef.current[pageNow - 1]?.container().offsetLeft,
     })
   }
 
@@ -200,9 +265,15 @@ export const MainBoard = React.memo(() => {
       point = e.currentTarget.getRelativePointerPosition()
     }
     if (tool === TOOL.ERASER) {
-      setEventPointer(prev => ({ ...prev, [TOOL.PEN]: { eventType: EVENT_TYPE.MOUSE_MOVE, pointerPosition: { x: point?.x, y: point?.y } }}))
+      setEventPointer((prev) => ({
+        ...prev,
+        [TOOL.PEN]: { eventType: EVENT_TYPE.MOUSE_MOVE, pointerPosition: { x: point?.x, y: point?.y } },
+      }))
     } else {
-      setEventPointer(prev => ({ ...prev, [tool]: { eventType: EVENT_TYPE.MOUSE_MOVE, pointerPosition: { x: point?.x, y: point?.y } }}))
+      setEventPointer((prev) => ({
+        ...prev,
+        [tool]: { eventType: EVENT_TYPE.MOUSE_MOVE, pointerPosition: { x: point?.x, y: point?.y } },
+      }))
     }
   }
 
@@ -213,11 +284,16 @@ export const MainBoard = React.memo(() => {
       point = e.currentTarget.getRelativePointerPosition()
     }
     if (tool === TOOL.ERASER) {
-      setEventPointer(prev => ({ ...prev, [TOOL.PEN]: { eventType: EVENT_TYPE.MOUSE_UP, pointerPosition: { x: point?.x, y: point?.y } }}))
+      setEventPointer((prev) => ({
+        ...prev,
+        [TOOL.PEN]: { eventType: EVENT_TYPE.MOUSE_UP, pointerPosition: { x: point?.x, y: point?.y } },
+      }))
     } else {
-      setEventPointer(prev => ({ ...prev, [tool]: { eventType: EVENT_TYPE.MOUSE_UP, pointerPosition: { x: point?.x, y: point?.y } }}))
+      setEventPointer((prev) => ({
+        ...prev,
+        [tool]: { eventType: EVENT_TYPE.MOUSE_UP, pointerPosition: { x: point?.x, y: point?.y } },
+      }))
     }
-    
   }
 
   const handleWheel = (e) => {
@@ -228,8 +304,8 @@ export const MainBoard = React.memo(() => {
     const oldScale = stage?.scaleX()
     const pointer = stage?.getPointerPosition()
     const mousePointTo = {
-      x: ((pointer?.x) - Number(stage?.x())) / Number(oldScale),
-      y: ((pointer?.y) - Number(stage?.y())) / Number(oldScale),
+      x: (pointer?.x - Number(stage?.x())) / Number(oldScale),
+      y: (pointer?.y - Number(stage?.y())) / Number(oldScale),
     }
     // check is zoom in or zoom out
     let direction = e.evt.deltaY > 0 ? 1 : -1
@@ -246,8 +322,8 @@ export const MainBoard = React.memo(() => {
     stage?.scale({ x: newScale, y: newScale })
     setScale(newScale)
     const newPos = {
-      x: (pointer?.x) - mousePointTo.x * newScale,
-      y: (pointer?.y) - mousePointTo.y * newScale,
+      x: pointer?.x - mousePointTo.x * newScale,
+      y: pointer?.y - mousePointTo.y * newScale,
     }
     stage?.position(newPos)
 
@@ -264,11 +340,17 @@ export const MainBoard = React.memo(() => {
       data: JSON.stringify(drawData),
       totalPage: pages.length,
     }
-    await request("post", "/whiteboards/save", () => {
-      toast.success('Save whiteboard content successfully.', {
-        position: 'bottom-right',
-      })
-    }, (error) => console.error(error), requestBody);
+    await request(
+      'post',
+      '/whiteboards/save',
+      () => {
+        toast.success('Save whiteboard content successfully.', {
+          position: 'bottom-right',
+        })
+      },
+      (error) => console.error(error),
+      requestBody,
+    )
   }
 
   const onAddNewPage = () => {
@@ -277,17 +359,24 @@ export const MainBoard = React.memo(() => {
       return
     }
     const currentPagesLength = pages.length
-    slideRef.current.slickGoTo(currentPagesLength + 1)
-    // slideRef.current.
-    socket.emit(SOCKET_IO_EVENTS.ADD_NEW_PAGE, { newPage: { id: currentPagesLength + 1 } })
-    setPages(prev => [...prev, { id: currentPagesLength + 1 }])
-    history.push(`?page=${currentPagesLength + 1}`)
+    setPages((prev) => [...prev, { id: currentPagesLength + 1 }])
+    setPageNow(currentPagesLength + 1)
+    slideRef.current.slickGoTo(currentPagesLength)
+    localStorage.setItem(KEYS.CURRENT_PAGE, currentPagesLength + 1)
+    localStorage.setItem(KEYS.TOTAL_PAGE, currentPagesLength + 1)
+    // window.history.pushState(null, '', `?page=${currentPagesLength + 1}`)
+    socket.emit(SOCKET_IO_EVENTS.ADD_NEW_PAGE, {
+      newPage: { id: currentPagesLength + 1 },
+      currentWhiteboardId: whiteboardId,
+      changePage: false,
+      totalPage: currentPagesLength + 1,
+    })
   }
 
   const onDeletePage = () => {
     const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-    const currentPage = queryString.get('page')
-    
+    const currentPage = localStorage.getItem(KEYS.CURRENT_PAGE)
+
     const newDrawData = { lines: [], rectangle: [], circle: [], text: [] }
     newDrawData.lines = removeData(drawData.lines || [], currentPage)
     newDrawData.rectangle = removeData(drawData.rectangle || [], currentPage)
@@ -295,11 +384,15 @@ export const MainBoard = React.memo(() => {
     newDrawData.text = removeData(drawData.text || [], currentPage)
 
     if (Number(currentPage) === 1) {
-      history.push(`?page=2`)
+      localStorage.setItem(KEYS.CURRENT_PAGE, 1)
+      setPageNow(1)
     } else {
-      history.push(`?page=${Number(currentPage) - 1}`)
+      localStorage.setItem(KEYS.CURRENT_PAGE, Number(currentPage) - 1)
+      setPageNow((prev) => prev - 1)
     }
+    localStorage.setItem(KEYS.TOTAL_PAGE, pages.length - 1)
     localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(newDrawData))
+
     const newPages = pages.reduce((acc, item) => {
       if (item.id < Number(currentPage)) {
         acc.push(item)
@@ -313,29 +406,75 @@ export const MainBoard = React.memo(() => {
     }, [])
     setPages(newPages)
     if (slideRef.current) {
-      slideRef.current.slickGoTo(Number(currentPage) === 1 ? 1 : Number(currentPage) - 1)
+      slideRef.current.slickGoTo(Number(currentPage) === 1 ? 1 : Number(currentPage) - 2)
     }
-    socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE)
-    socket.emit(SOCKET_IO_EVENTS.DELETE_PAGE, { pageId: Number(currentPage) })
+
+    stageRef.current.splice(Number(currentPage) - 1, 1)
+    socket.emit(SOCKET_IO_EVENTS.DELETE_PAGE, {
+      pageId: Number(currentPage),
+      currentWhiteboardId: whiteboardId,
+      newDrawData,
+      totalPage: pages.length - 1,
+    })
+    socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE, { currentWhiteboardId: whiteboardId })
+    toast.success('Delete page successfully.', {
+      position: 'bottom-right',
+    })
   }
 
-  const onBeforeChange = useCallback((current, next) => {
-    history.push(`?page=${next + 1}`)
-  }, [])
+  const onPrevPage = () => {
+    if (Number(pageNow) === 1) {
+      return
+    }
+    localStorage.setItem(KEYS.CURRENT_PAGE, Number(pageNow) - 1)
+    setPageNow((prev) => prev - 1)
+    socket.emit(SOCKET_IO_EVENTS.ADD_NEW_PAGE, {
+      currentWhiteboardId: whiteboardId,
+      newPage: { id: Number(pageNow) - 1 },
+      changePage: true,
+    })
+    if (slideRef.current) {
+      slideRef.current.slickGoTo(Number(pageNow) - 2)
+    }
+    // socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE, { currentWhiteboardId: whiteboardId })
+  }
 
-  const settings = useMemo(() => ({
-    className: "slider-parent",
-    dots: false,
-    slidesToScroll: 1,
-    infinite: false,
-    vertical: true,
-    verticalSwiping: true,
-    draggable: false,
-    nextArrow: <SampleNextArrow />,
-    prevArrow: <SamplePrevArrow />,
-    beforeChange: onBeforeChange,
-    // afterChange: onAfterChange,
-  }), [])
+  const onNextPage = () => {
+    if (Number(pageNow) >= pages.length) {
+      return
+    }
+    setPageNow((prev) => prev + 1)
+    socket.emit(SOCKET_IO_EVENTS.ADD_NEW_PAGE, {
+      currentWhiteboardId: whiteboardId,
+      newPage: { id: Number(pageNow) + 1 },
+      changePage: true,
+    })
+    localStorage.setItem(KEYS.CURRENT_PAGE, Number(pageNow) + 1)
+    if (slideRef.current) {
+      slideRef.current.slickGoTo(Number(pageNow))
+    }
+  }
+
+  const onDrawDone = (tool) =>
+    setEventPointer((prev) => ({ ...prev, [tool]: { eventType: null, pointerPosition: { x: 0, y: 0 } } })) - 1
+
+  // const onRequestDraw = async () => {}
+
+  const settings = useMemo(
+    () => ({
+      arrows: false,
+      className: 'slider-parent',
+      dots: false,
+      slidesToScroll: 1,
+      infinite: false,
+      vertical: true,
+      verticalSwiping: true,
+      draggable: false,
+      // beforeChange: onBeforeChange,
+      // afterChange: onAfterChange,
+    }),
+    [],
+  )
 
   return (
     <>
@@ -347,15 +486,58 @@ export const MainBoard = React.memo(() => {
         <option value={TOOL.ERASER}>Eraser</option>
         <option value={TOOL.TEXT}>Text</option>
       </select>
-      <button type="button" onClick={onSaveWhiteboardData}>Save</button>
-      <button type="button" onClick={onAddNewPage}>Add new page</button>
-      {pages.length >= 2 && <button type="button" onClick={onDeletePage}>Delete page {queryString.get('page')}</button>}
-      <div id='slider-grand' style={{ width: "calc(100% - 5px)", height: "calc(100vh - 155px)", position: 'relative' }} ref={parentRef}>
+      <button type="button" onClick={onPrevPage} disabled={pageNow === 1}>
+        Prev page
+      </button>
+      <button type="button" onClick={onNextPage} disabled={pageNow >= pages.length}>
+        Next page
+      </button>
+      <button type="button" onClick={onSaveWhiteboardData}>
+        Save
+      </button>
+      <button type="button" onClick={onAddNewPage}>
+        Add new page
+      </button>
+      {pages.length >= 2 && (
+        <button type="button" onClick={onDeletePage}>
+          Delete page {pageNow}
+        </button>
+      )}
+      {/* {isAbleToDraw ? (
+        <>
+          <select value={tool} onChange={(e) => setTool(e.target.value)}>
+            <option value={TOOL.POINTER}>Pointer</option>
+            <option value={TOOL.PEN}>Pen</option>
+            <option value={TOOL.RECTANGLE}>Rectangle</option>
+            <option value={TOOL.CIRCLE}>Circle</option>
+            <option value={TOOL.ERASER}>Eraser</option>
+            <option value={TOOL.TEXT}>Text</option>
+          </select>
+          <button type="button" onClick={onSaveWhiteboardData}>
+            Save
+          </button>
+          <button type="button" onClick={onAddNewPage}>
+            Add new page
+          </button>
+          {pages.length >= 2 && (
+            <button type="button" onClick={onDeletePage}>
+              Delete page {queryString.get('page')}
+            </button>
+          )}
+        </>
+      ) : (
+        <button onClick={onRequestDraw}>Request draw</button>
+      )} */}
+      <div
+        id="slider-grand"
+        style={{ width: 'calc(100% - 5px)', height: 'calc(100vh - 155px)', position: 'relative' }}
+        ref={parentRef}
+      >
         <Slider ref={slideRef} {...settings}>
           {pages.map((page) => (
-            <div key={page}>
+            <div id={`konva-${page.id - 1}`} key={page}>
               <Stage
-                ref={stageRef}
+                ref={(el) => (stageRef.current[page.id - 1] = el)}
                 width={stageConfig.width === 0 ? width - 300 : stageConfig.width}
                 height={stageConfig.height === 0 ? height - 120 : stageConfig.height}
                 onMouseDown={handleMouseDown}
@@ -367,10 +549,49 @@ export const MainBoard = React.memo(() => {
                 onWheel={handleWheel}
               >
                 <Layer ref={gridLayerRef} draggable={false} x={0} y={0} />
-                <DrawLine eventPointer={eventPointer[TOOL.PEN]} scale={scale} tool={tool} currentPage={queryString.get('page')} />
-                <DrawRectangle eventPointer={eventPointer[TOOL.RECTANGLE]} scale={scale} tool={tool} currentPage={queryString.get('page')} stageContainer={stageContainer} />
-                <DrawCircle eventPointer={eventPointer[TOOL.CIRCLE]} scale={scale} tool={tool} currentPage={queryString.get('page')} stageContainer={stageContainer} />
-                <DrawText eventPointer={eventPointer[TOOL.TEXT]} offset={offset} tool={tool} currentPage={queryString.get('page')} onUpdateTool={onSetDefaultTool} />
+                <DrawLine
+                  eventPointer={eventPointer[TOOL.PEN]}
+                  scale={scale}
+                  tool={tool}
+                  currentPage={pageNow}
+                  whiteboardId={whiteboardId}
+                  totalPage={pages.length}
+                  onDrawDone={onDrawDone}
+                  ref={stageRef.current[Number(pageNow) - 1]}
+                />
+                <DrawRectangle
+                  eventPointer={eventPointer[TOOL.RECTANGLE]}
+                  scale={scale}
+                  tool={tool}
+                  currentPage={pageNow}
+                  stageContainer={stageContainer}
+                  whiteboardId={whiteboardId}
+                  totalPage={pages.length}
+                  onDrawDone={onDrawDone}
+                  ref={stageRef.current[Number(pageNow) - 1]}
+                />
+                <DrawCircle
+                  eventPointer={eventPointer[TOOL.CIRCLE]}
+                  scale={scale}
+                  tool={tool}
+                  currentPage={pageNow}
+                  stageContainer={stageContainer}
+                  whiteboardId={whiteboardId}
+                  onDrawDone={onDrawDone}
+                  totalPage={pages.length}
+                  ref={stageRef.current[Number(pageNow) - 1]}
+                />
+                <DrawText
+                  eventPointer={eventPointer[TOOL.TEXT]}
+                  offset={offset}
+                  tool={tool}
+                  currentPage={pageNow}
+                  onUpdateTool={onSetDefaultTool}
+                  whiteboardId={whiteboardId}
+                  onDrawDone={onDrawDone}
+                  totalPage={pages.length}
+                  ref={stageRef.current[Number(pageNow) - 1]}
+                />
               </Stage>
             </div>
           ))}
