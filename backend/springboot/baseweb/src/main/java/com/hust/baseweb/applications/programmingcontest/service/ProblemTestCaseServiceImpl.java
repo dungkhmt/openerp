@@ -1170,6 +1170,62 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public List<ContestSubmissionsByUser> getRankingByContestIdNew(Pageable pageable, String contestId) {
+        ListModelUserRegisteredContestInfo users = this.getListUserRegisterContestSuccessfulPaging(pageable, contestId);
+        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+
+        List<ContestSubmissionsByUser> listContestSubmissionsByUser = new ArrayList<>();
+        for (ModelUserRegisteredClassInfo user: users.getContents()) {
+            List<ContestSubmission> submissionsByUser = contestSubmissionPagingAndSortingRepo.findAllByUserIdAndContestId(user.getUserName(), contestId).stream()
+                .map(contestSubmissionEntity -> ContestSubmission.builder()                                                                                                          .contestSubmissionId(contestSubmissionEntity.getContestSubmissionId())
+                                                                  .contestId(contestSubmissionEntity.getContestId())
+                                                                  .createAt(contestSubmissionEntity.getCreatedAt() != null ? DateTimeUtils.dateToString(contestSubmissionEntity.getCreatedAt(), DateTimeUtils.DateTimeFormat.DATE_TIME_ISO_FORMAT) : null)
+                                                                  .sourceCodeLanguage(contestSubmissionEntity.getSourceCodeLanguage())
+                                                                  .point(contestSubmissionEntity.getPoint())
+                                                                  .problemId(contestSubmissionEntity.getProblemId())
+                                                                  .testCasePass(contestSubmissionEntity.getTestCasePass())
+                                                                  .status(contestSubmissionEntity.getStatus())
+                                                                  .userId(contestSubmissionEntity.getUserId())
+                                                                  .build()
+            ).collect(Collectors.toList());
+
+            ContestSubmissionsByUser contestSubmission = new ContestSubmissionsByUser();
+            contestSubmission.setUserId(user.getUserName());
+
+            // get highest submission score on each problem
+            HashMap<String, Integer> mapProblemToHighestPoint = new HashMap<>();
+            for (ProblemEntity problem : contestEntity.getProblems()) {
+                mapProblemToHighestPoint.put(problem.getProblemId(), 0);
+            }
+            for (ContestSubmission submission : submissionsByUser) {
+                String problemId = submission.getProblemId();
+                if (mapProblemToHighestPoint.containsKey(problemId)){
+                    if (submission.getPoint() > mapProblemToHighestPoint.get(problemId)) {
+                        mapProblemToHighestPoint.put(problemId, submission.getPoint());
+                    }
+                }
+            }
+
+            int totalPoint = 0;
+
+            List<ContestSubmissionsByUserCustom> mapProblemsToPoints = new ArrayList<>();
+            for(Map.Entry entry : mapProblemToHighestPoint.entrySet()) {
+                ContestSubmissionsByUserCustom tmp = new ContestSubmissionsByUserCustom();
+                tmp.setProblemId(entry.getKey().toString());
+                tmp.setPoint(Integer.valueOf(entry.getValue().toString()));
+                mapProblemsToPoints.add(tmp);
+                totalPoint += tmp.getPoint();
+            }
+
+            contestSubmission.setMapProblemsToPoints(mapProblemsToPoints);
+            contestSubmission.setTotalPoint(totalPoint);
+            listContestSubmissionsByUser.add(contestSubmission);
+        }
+
+        return listContestSubmissionsByUser;
+    }
+
+    @Override
     public Page<ProblemEntity> getPublicProblemPaging(Pageable pageable) {
         return problemPagingAndSortingRepo.findAllByPublicIs(pageable);
     }

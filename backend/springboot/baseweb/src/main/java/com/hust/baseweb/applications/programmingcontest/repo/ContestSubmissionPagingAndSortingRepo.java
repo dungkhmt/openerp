@@ -13,7 +13,7 @@ public interface ContestSubmissionPagingAndSortingRepo extends PagingAndSortingR
     Page<ContestSubmissionEntity> findAllByContestId(Pageable pageable, String contestId);
     Page<ContestSubmissionEntity> findAllByUserId(Pageable pageable, String userId);
     Page<ContestSubmissionEntity> findAllByUserIdAndContestId(Pageable pageable, String userId, String contestId);
-    List<ContestSubmissionEntity> findAllByContestId(String contestId);
+    List<ContestSubmissionEntity> findAllByUserIdAndContestId(String userId, String contestId);
 
     @Query(value = "select * from contest_submission_new where user_submission_id = ?1 order by created_stamp desc "
         ,
