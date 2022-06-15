@@ -193,7 +193,7 @@ const ListTasks = () => {
                     <Box mr={3}>
                         <AvatarGroup total={members.length} onClick={handleOpen}>
                             {members.slice().splice(0, 3).map(item => (
-                                <Avatar>{item.fullName.charAt(0).toUpperCase()}</Avatar>
+                                <Avatar key={item.id}>{item.fullName.charAt(0).toUpperCase()}</Avatar>
                             ))}
                         </AvatarGroup>
                         <BasicModal open={open} handleClose={handleClose}>
@@ -214,7 +214,7 @@ const ListTasks = () => {
                 </Box>
             </Box>
 
-            <Box sx={boxComponentStyle}>
+            <Box sx={boxComponentStyle} overflow={'auto'} maxHeight={'100vh'}>
                 <Box sx={{ mb: 3 }}>
                     <Typography variant='h5'>
                         Lịch sử
@@ -222,7 +222,7 @@ const ListTasks = () => {
                 </Box>
                 {history.length > 0 ?
                     history.map(item =>
-                    (<Box sx={boxChildComponent} px={0} mb={3}>
+                    (<Box sx={boxChildComponent} key={item.date} px={0} mb={3}>
                         <Box pb={2}>
                             <Typography variant='body1'>
                                 {item.date}
@@ -230,7 +230,7 @@ const ListTasks = () => {
                         </Box>
                         <Box>
                             {item.taskExecutionList.map(taskExecution => (
-                                <Box display={'flex'} py={2} borderTop={1} borderColor={"#cdb8b8"}>
+                                <Box display={'flex'} key={taskExecution.id} py={2} borderTop={1} borderColor={"#cdb8b8"}>
                                     <Box mr={2}>
                                         <Avatar>{taskExecution.createdByUserLoginId != null ? taskExecution.createdByUserLoginId.charAt(0).toUpperCase() : "N"}</Avatar>
                                     </Box>
@@ -248,16 +248,30 @@ const ListTasks = () => {
                                         </Box>
                                         {taskExecution.comment &&
                                             <Box>
-                                                <Typography variant='body2' color={"warning"}>
+                                                <Typography variant='body2'>
                                                     Nội dung: {taskExecution.comment}
                                                 </Typography>
                                             </Box>
                                         }
-                                        {/* <Box>
-                                            <Typography variant='caption'>
-                                                [ Assignee: mai le minh ]
-                                            </Typography>
-                                        </Box> */}
+                                        {taskExecution.comment == "" &&
+                                            <Box>
+                                                <Typography variant='body2' sx={{ color: "red" }}>
+                                                    Bình luận này đã bị xóa !
+                                                </Typography>
+                                            </Box>
+                                        }
+                                        <Box display={'flex'} flexDirection={'column'}>
+                                            {(taskExecution.changes.length == 0 && taskExecution.executionTags == 'updated') &&
+                                                <Typography variant='caption'>
+                                                    Không có thay đổi gì xảy ra!
+                                                </Typography>
+                                            }
+                                            {taskExecution.changes.map((item, index) => (
+                                                <Typography variant='caption' key={index}>
+                                                    [{item.field}: {item.value}]
+                                                </Typography>
+                                            ))}
+                                        </Box>
                                     </Box>
                                 </Box>
                             ))}
@@ -351,7 +365,7 @@ const ListTasks = () => {
                                                         return (
                                                             <TableCell key={column.id} align={column.align}>
                                                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                                    {row.outOfDate && <><LocalFireDepartmentIcon /></>} {value}
+                                                                    {row.outOfDate && <><LocalFireDepartmentIcon color="error"/></>} {value}
                                                                 </Box>
                                                             </TableCell>
                                                         );

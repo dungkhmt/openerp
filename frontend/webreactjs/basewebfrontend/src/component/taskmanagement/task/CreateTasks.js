@@ -23,6 +23,7 @@ import { useHistory } from "react-router";
 import { useParams } from "react-router";
 import { Link } from 'react-router-dom';
 import DateTimePickerBasic from '../datetimepicker/DateTimePickerBasic';
+import { ElevatorSharp } from "@mui/icons-material";
 
 export default function CreateTask() {
     const history = useHistory();
@@ -34,12 +35,13 @@ export default function CreateTask() {
     const [projectName, setProjectName] = useState("");
     const { register, errors, handleSubmit, watch } = useForm();
 
-    const [categoryId, setCategoryId] = useState("");
+    const [categoryId, setCategoryId] = useState("TASK");
     const [priorityId, setPriorityId] = useState("HIGH");
     const [partyId, setPartyId] = useState("");
     const [projectId, setProjectId] = useState("");
     const [dueDate, setDueDate] = useState(new Date());
-    const [fileName, setFileName] = useState("");
+
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const [typeAlert, setTypeAlert] = useState("success");
     const [message, setMessage] = useState("Đã thêm mới thành công");
@@ -84,21 +86,18 @@ export default function CreateTask() {
         }
     }, []);
 
-    const onSubmit = (data) => {
-        console.log(data);
+    const onHandleData = (data, fileId = "") => {
+        let projectIdForm = projectIdUrl ? projectIdUrl : projectId;
         const dataForm = {
             ...data,
             partyId,
             categoryId,
             dueDate,
             priorityId,
-            attachmentPaths: "",
+            attachmentPaths: selectedFile == null ? "Không có tệp đính kèm" : `${selectedFile.name},${fileId}`,
             statusId: "TASK_INPROGRESS",
             projectId: projectId
         };
-
-
-        let projectIdForm = projectIdUrl ? projectIdUrl : projectId;
 
         request(
             "post",
@@ -109,7 +108,7 @@ export default function CreateTask() {
                 setTypeAlert("success");
                 setMessage("Đã thêm mới thành công");
                 setTimeout(() => {
-                    history.push(`/taskmanagement/project/${projectIdForm}/tasks#list-task`);
+                    history.push(`/taskmanagement/tasks/${res.data.id}`);
                 }, 1000);
             },
             (err) => {
@@ -120,6 +119,35 @@ export default function CreateTask() {
             },
             dataForm
         );
+    }
+
+    const onSubmit = (data) => {
+        console.log(data);
+        let body = {
+            id: `myFile_${(new Date).getTime().toString()}`,
+        };
+        let formData = new FormData();
+        formData.append("inputJson", JSON.stringify(body));
+        formData.append("file", selectedFile);
+
+        if(selectedFile != null){
+            request(
+                "post",
+                "/content/create",
+                (res) => {
+                    console.log(res.data.id);
+                    onHandleData(data, res.data.id);
+                },
+                (err) => {
+                    setOpen(true);
+                    setTypeAlert("error");
+                    setMessage("Upload tệp bị lỗi");
+                },
+                formData
+            )
+        }else{
+            onHandleData(data);
+        }
     }
 
     const [open, setOpen] = useState(false);
@@ -158,7 +186,7 @@ export default function CreateTask() {
                                 select
                                 fullWidth
                                 label={"Danh mục"}
-                                defaultValue="Cao"
+                                defaultValue="Nhiệm vụ"
                                 value={categoryId}
                                 onChange={(e) => setCategoryId(e.target.value)}
                                 required
@@ -217,7 +245,7 @@ export default function CreateTask() {
                                             select
                                             fullWidth
                                             label={"Độ ưu tiên"}
-                                            defaultValue=""
+                                            defaultValue="Cao"
                                             value={priorityId}
                                             onChange={(e) => setPriorityId(e.target.value)}
                                             required
@@ -315,16 +343,18 @@ export default function CreateTask() {
                                     color="primary"
                                 >
                                     Upload file
-                                    <input type="file" hidden onChange={(e) => { console.log(e.target.files[0].name); setFileName(e.target.files[0]) }} />
+                                    <input type="file" hidden onChange={(e) => setSelectedFile(e.target.files[0])} />
                                 </Button>
-                                <Typography variant="inherit" color={"primary"}>
-                                    {fileName.name}
-                                </Typography>
+                                {selectedFile &&
+                                    <Typography variant="inherit" color={"primary"}>
+                                        {selectedFile.name}
+                                    </Typography>
+                                }
                             </Grid>
                         </Grid>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'end' }}>
-                        <Button variant="contained" color="primary" onClick={handleSubmit(onSubmit)}  sx={{marginRight: 2}}>
+                        <Button variant="contained" color="primary" onClick={handleSubmit(onSubmit)} sx={{ marginRight: 2 }}>
                             Thêm nhiệm vụ
                         </Button>
                         <Button variant="contained" color="success" onClick={history.goBack}>

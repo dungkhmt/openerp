@@ -18,7 +18,10 @@ import {
     Skeleton,
     Grid,
     TextField,
-    Breadcrumbs
+    Breadcrumbs,
+    Menu,
+    Stack,
+    MenuItem
 } from '@mui/material';
 import BasicAlert from "../alert/BasicAlert";
 import {
@@ -26,20 +29,29 @@ import {
     boxChildComponent
 } from '../ultis/constant';
 import CategoryElement from '../common/CategoryElement';
-import StatusElemnet from '../common/StatusElement';
+import StatusElement from '../common/StatusElement';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { request } from "../../../api";
 import { Link } from 'react-router-dom';
 import CommentItem from './CommentItem';
+import DownloadIcon from '@mui/icons-material/Download';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import ChangeStatusModal from './ChangeStatusModal';
+import { useForm } from "react-hook-form";
+import { useHistory } from 'react-router-dom';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 
 const ShowTask = () => {
     const { taskId } = useParams();
-    const [task, setTask] = useState(null)
+    const [task, setTask] = useState(null);
+    const history = useHistory();
 
-    const [comment, setComment] = useState("");
+    const { register, errors, handleSubmit, watch, setValue } = useForm();
+
     const [listComment, setListComment] = useState([]);
     const [loadComments, setLoadComments] = useState(false);
+    const [isLoadTask, setIsLoadTask] = useState(false);
 
     const [typeAlert, setTypeAlert] = useState("success");
     const [message, setMessage] = useState("Đã thêm mới thành công");
@@ -48,9 +60,34 @@ const ShowTask = () => {
     const [commentDelete, setCommentDelete] = useState("");
     const [commentUpdate, setCommentUpdate] = useState("");
 
-    const onSubmitComment = () => {
+    const [fileName, setFileName] = useState(null);
+    const [fileId, setFileId] = useState(null);
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const openMenu = Boolean(anchorEl);
+    const handleClickMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
+
+
+    const [openModal, setOpenModal] = useState(false);
+    const handleClickOpenModal = () => {
+        setOpenModal(true);
+    };
+    const handleCloseModal = () => {
+        setOpenModal(false);
+    };
+
+    const onLoadTask = () => {
+        setIsLoadTask(!isLoadTask);
+    }
+
+    const onSubmitComment = (data) => {
         let dataForm = {
-            comment: comment,
+            ...data,
             projectId: task.project.id
         };
         request(
@@ -62,8 +99,7 @@ const ShowTask = () => {
                 setTypeAlert("success");
                 setMessage("Đã thêm mới thành công");
                 setLoadComments(!loadComments);
-                setComment("");
-
+                setValue('comment', '');
             },
             (err) => {
                 console.log(err);
@@ -86,6 +122,40 @@ const ShowTask = () => {
         });
     }
 
+    const onUpdateComment = (id) => {
+        
+    }
+
+    const onHandleDownload = () => {
+        request(
+            "GET",
+            `/content/get/${fileId}`,
+            (res) => {
+                saveFile(fileName, res.data);
+            },
+            {},
+            {},
+            { responseType: "blob" }
+        );
+    }
+
+    const saveFile = (fileName, data) => {
+        let blob = new Blob([data]);
+
+        //IE11 support
+        if (window.navigator.msSaveOrOpenBlob) {
+            window.navigator.msSaveBlob(blob, fileName);
+        } else {
+            let link = window.document.createElement("a");
+
+            link.href = window.URL.createObjectURL(blob);
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+
     const handleClick = () => {
         setOpen(true);
     };
@@ -101,11 +171,13 @@ const ShowTask = () => {
     useEffect(() => {
         request('get', `/tasks/${taskId}`, res => {
             setTask(res.data);
+            setFileId(res.data.fileId);
+            setFileName(res.data.fileName);
             console.log(res.data);
         }, err => {
             console.log(err);
         });
-    }, []);
+    }, [isLoadTask]);
 
     useEffect(() => {
         request('get', `tasks/${taskId}/comments`, res => {
@@ -132,10 +204,13 @@ const ShowTask = () => {
                         <Box sx={{
                             display: 'flex',
                             justifyContent: 'space-between',
-                            mb: 3
+                            mb: 2
                         }}>
                             <CategoryElement categoryId={task.taskCategory.categoryId} value={task.taskCategory.categoryName} />
                             <Box display={'flex'} alignItems="center">
+                                <Box>
+                                    {task.outOfDate && <LocalFireDepartmentIcon color="error" />}
+                                </Box>
                                 <Box display={'flex'} mr={2}>
                                     <Typography variant='caption' color="secondary" sx={{ mr: 1 }}>
                                         Thời hạn:
@@ -145,14 +220,17 @@ const ShowTask = () => {
                                     </Typography>
                                 </Box>
                                 <Box>
-                                    <StatusElemnet statusId={task.statusItem?.statusId} value={task.statusItem?.description} />
+                                    <StatusElement statusId={task.statusItem?.statusId} value={task.statusItem?.description} />
                                 </Box>
                             </Box>
                         </Box>
-                        <Box mb={3}>
+                        <Box mb={2} display={'flex'} justifyContent={'space-between'}>
                             <Typography variant='h6' color={"secondary"}>
                                 {task.name}
                             </Typography>
+                            <IconButton aria-label="delete" size="large" onClick={handleClickMenu}>
+                                <SettingsOutlinedIcon />
+                            </IconButton>
                         </Box>
                         <Box mb={3} sx={boxChildComponent}>
                             <Box mb={3}>
@@ -218,18 +296,42 @@ const ShowTask = () => {
                                             </Grid>
                                         </Box>
                                     </Grid>
+                                    <Grid item={true} xs={6}>
+
+                                    </Grid>
+                                    <Grid item={true} xs={6}>
+                                        <Box py={2}>
+                                            <Grid container sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <Grid item={true} xs={5}>
+                                                    Tệp đính kèm
+                                                </Grid>
+                                                <Grid item={true} xs={7} sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <Typography variant="body2">
+                                                        {task.fileName}
+                                                    </Typography>
+                                                    {fileId &&
+                                                        <IconButton color="primary" aria-label="add an alarm" onClick={onHandleDownload}>
+                                                            <DownloadIcon />
+                                                        </IconButton>
+                                                    }
+                                                </Grid>
+                                            </Grid>
+                                        </Box>
+                                    </Grid>
                                 </Grid>
                             </Box>
-                            <Box display={'flex'} justifyContent={'flex-end'}>
-                                <Box display={'flex'} mr={2}>
-                                    <Typography variant='caption' color="secondary" sx={{ mr: 1 }}>
-                                        Thời gian còn lại:
-                                    </Typography>
-                                    <Typography variant='body2'>
-                                        {task.timeRemaining}
-                                    </Typography>
+                            {task.timeRemaining != "" &&
+                                <Box display={'flex'} justifyContent={'flex-end'}>
+                                    <Box display={'flex'} mr={2}>
+                                        <Typography variant='caption' color="secondary" sx={{ mr: 1 }}>
+                                            Thời gian còn lại:
+                                        </Typography>
+                                        <Typography variant='body2'>
+                                            {task.timeRemaining}
+                                        </Typography>
+                                    </Box>
                                 </Box>
-                            </Box>
+                            }
                         </Box>
                         <Box mb={3}>
                             <Box mb={2}>
@@ -254,9 +356,18 @@ const ShowTask = () => {
                             }
                         </Box>
                         <Box>
-                            <TextField variant='standard' label="Thêm bình luận" placeholder='...' fullWidth={true} required={true} value={comment} onChange={(e) => setComment(e.target.value)} />
+                            <TextField
+                                variant='standard'
+                                label="Thêm bình luận"
+                                placeholder='...'
+                                fullWidth={true}
+                                name="comment"
+                                inputRef={register({ required: "Thiếu nội dung!" })}
+                                error={!!errors.comment}
+                                helperText={errors.comment?.message}
+                            />
                             <Box display={'flex'} justifyContent={"flex-end"} mt={2}>
-                                <Button variant="contained" color="primary" onClick={() => onSubmitComment()}>Thêm bình luận</Button>
+                                <Button variant="contained" color="primary" onClick={handleSubmit(onSubmitComment)}>Thêm bình luận</Button>
                             </Box>
                         </Box>
                     </Box>
@@ -266,9 +377,39 @@ const ShowTask = () => {
                         typeAlert={typeAlert}
                         message={message}
                     />
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={openMenu}
+                        onClose={handleCloseMenu}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                    >
+                        <MenuItem onClick={() => { handleCloseMenu(); handleClickOpenModal() }}>Thay đổi trạng thái</MenuItem>
+                        <MenuItem onClick={() => { history.push(`/taskmanagement/tasks/${task.id}/edit`) }}>Chỉnh sửa nhiệm vụ</MenuItem>
+                    </Menu>
+                    <ChangeStatusModal
+                        open={openModal}
+                        handleClose={handleCloseModal}
+                        taskId={task.id}
+                        projectId={task.project.id}
+                        statusIdDf={task.statusItem != null ? task.statusItem.statusId : ""}
+                        dueDateDf={task.dueDateOrigin}
+                        partyIdDf={task.partyId}
+                        onLoadTask={onLoadTask}
+                    />
                 </>
                 :
-                <Skeleton animation="wave" variant="circular" />
+                <Stack spacing={1}>
+                    <Skeleton variant="text" />
+                    <Skeleton variant="circular" width={40} height={40} />
+                    <Skeleton variant="rectangular" height={200} />
+                </Stack>
             }
         </>
     );

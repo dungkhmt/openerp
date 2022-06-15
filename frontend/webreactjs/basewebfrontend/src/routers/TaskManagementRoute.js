@@ -3,6 +3,7 @@ import { Route, Switch, useRouteMatch } from "react-router";
 import CreateProject from "../component/taskmanagement/projects/CreateProject";
 import ListProject from "../component/taskmanagement/projects/ListProject";
 import CreateTask from "../component/taskmanagement/task/CreateTasks";
+import EditTask from "../component/taskmanagement/task/EditTask";
 import AddUserToProject from "../component/taskmanagement/projects/AddUserToProject";
 import ListTasks from "../component/taskmanagement/task/ListTasks";
 import ListAssignedTasks from "component/taskmanagement/assignedtasks/ListAssignedTasks";
@@ -47,7 +48,11 @@ export default function TaskManagementRoute() {
           component={ShowTask}
           exact
           path={`${path}/tasks/:taskId`}
-        ></Route>
+        ></Route><Route
+        component={EditTask}
+        exact
+        path={`${path}/tasks/:taskId/edit`}
+      ></Route>
       </Switch>
     </div>
   );
