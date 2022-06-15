@@ -13,6 +13,7 @@ RUN ./mvnw install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 FROM openjdk:8-jdk-alpine
+RUN apk update && apk add --no-cache gcompat # For ortools
 
 VOLUME /tmp
 ARG DEPENDENCY=/workspace/app/target/dependency

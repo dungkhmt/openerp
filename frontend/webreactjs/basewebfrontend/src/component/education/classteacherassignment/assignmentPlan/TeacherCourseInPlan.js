@@ -9,9 +9,9 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import UpdateTeacherCourseForAssignmentModel from "../UpdateTeacherCourseForAssignmentModel";
 import UploadExcelTeacherCourseModel from "../UploadExcelTeacherCourseModel";
-import { useStyles } from "./ClassForAssignmentList";
+import { useStyles } from "./ClassInPlan";
 
-function TeacherCourseForAssignmentList(props) {
+function TeacherCourseInPlan(props) {
   const planId = props.planId;
   const classes = useStyles();
 
@@ -239,4 +239,4 @@ function TeacherCourseForAssignmentList(props) {
   );
 }
 
-export default TeacherCourseForAssignmentList;
+export default TeacherCourseInPlan;

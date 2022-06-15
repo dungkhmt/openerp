@@ -6,9 +6,9 @@ import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
 import UpdateTeacherForAssignmentModel from "../UpdateTeacherForAssignmentModel";
-import { useStyles } from "./ClassForAssignmentList";
+import { useStyles } from "./ClassInPlan";
 
-function TeacherForAssignmentPlanList(props) {
+function TeacherInPlan(props) {
   const classes = useStyles();
   const planId = props.planId;
 
@@ -156,4 +156,4 @@ function TeacherForAssignmentPlanList(props) {
   );
 }
 
-export default TeacherForAssignmentPlanList;
+export default TeacherInPlan;

@@ -1,11 +1,10 @@
-import { MainBoard } from "../component/education/whiteboard/MainBoard";
-import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router";
 import AssignmentList from "../component/education/AssignmentList";
 import ClassCreate from "../component/education/class/ClassCreate";
+import { MainBoard } from "../component/education/whiteboard/MainBoard";
 // import ClassesList from "../component/education/class/ClassesList";
-import ClassTeacherAssignmentPlanDetail from "../component/education/classteacherassignment/assignmentPlan/ClassTeacherAssignmentPlanDetail";
-import ClassTeacherAssignmentPlanList from "../component/education/classteacherassignment/ClassTeacherAssignmentPlanList";
+import PlanDetail from "../component/education/classteacherassignment/assignmentPlan/PlanDetail";
+import ClassTeacherAssignmentPlanList from "../component/education/classteacherassignment/PlanList";
 import AddNewCourse from "../component/education/course/AddNewCourse";
 import CourseDetail from "../component/education/course/CourseDetail";
 import CourseList from "../component/education/course/CourseList";
@@ -165,7 +164,7 @@ export default function EduRoute() {
         />
 
         <Route
-          component={ClassTeacherAssignmentPlanDetail}
+          component={PlanDetail}
           path={`${path}/teaching-assignment/plan/:planId/`}
         />
 

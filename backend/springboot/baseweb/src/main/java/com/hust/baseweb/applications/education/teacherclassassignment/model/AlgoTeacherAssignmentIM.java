@@ -18,5 +18,5 @@ public class AlgoTeacherAssignmentIM {
 
     private TeacherClassAssignmentModel[] preAssignments; // Some classes are preassigned
 
-    private String solver;
+    private SolverConfig config;
 }

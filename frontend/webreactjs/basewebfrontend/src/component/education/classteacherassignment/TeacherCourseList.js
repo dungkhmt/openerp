@@ -8,8 +8,8 @@ import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import UpdateTeacherCourseModel from "../UpdateTeacherCourseModel";
-import UploadExcelTeacherCourseModel from "../UploadExcelTeacherCourseModel";
-import { useStyles } from "./ClassForAssignmentList";
+import { useStyles } from "./assignmentPlan/ClassInPlan";
+import UploadExcelTeacherCourseModel from "./UploadExcelTeacherCourseModel";
 
 function TeacherCourseList(props) {
   const classes = useStyles();

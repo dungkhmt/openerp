@@ -10,17 +10,17 @@ import { a11yProps, AntTab, AntTabs, TabPanel } from "component/tab";
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";
 import { Link } from "react-router-dom";
-import ClassesAssignToATeacherList from "./ClassesAssignToATeacherList";
-import ClassForAssignmentList from "./ClassForAssignmentList";
+import TeacherCourseList from "../TeacherCourseList";
+import TeacherList from "../TeacherList";
+import AssignmentStatistic from "./AssignmentStatistic";
+import ClassInPlan from "./ClassInPlan";
 import ClassTeacherAssignmentSolutionList from "./ClassTeacherAssignmentSolutionList";
 import ConflictClassesAssignedToTeacherInSolution from "./ConflictClassesAssignedToTeacherInSolution";
 import NotAssignedClassInSolutionList from "./NotAssignedClassInSolutionList";
 import PairConflictTimetableClass from "./PairConflictTimetableClass";
 import TeacherBasedTimeTableAssignmentInSolution from "./TeacherBasedTimeTableAssignmentInSolution";
-import TeacherCourseForAssignmentList from "./TeacherCourseForAssignmentList";
-import TeacherCourseList from "./TeacherCourseList";
-import TeacherForAssignmentPlanList from "./TeacherForAssignmentPlanList";
-import TeacherList from "./TeacherList";
+import TeacherCourseInPlan from "./TeacherCourseInPlan";
+import TeacherInPlan from "./TeacherInPlan";
 
 const useStyles = makeStyles((theme) => ({
   courseName: { fontWeight: theme.typography.fontWeightMedium },
@@ -71,22 +71,44 @@ const tabsLabel = [
   "Lớp chưa được phân công",
 ];
 
-const assignmentModes = [
-  {
-    value: "SCORES",
-    label: "Tối ưu thói quen",
-  },
-  {
-    value: "PRIORITY",
-    label: "Tối ưu độ ưu tiên",
-  },
-  {
-    value: "WORKDAYS",
-    label: "Tối ưu ngày dạy",
-  },
+const objectives = [
+  // {
+  //   value: "SCORES",
+  //   label: "Tối ưu thói quen",
+  // },
+  // {
+  //   value: "PRIORITY",
+  //   label: "Tối ưu độ ưu tiên",
+  // },
+  // {
+  //   value: "WORKDAYS",
+  //   label: "Tối ưu ngày dạy",
+  // },
   {
     value: "LOAD_BALANCING_DURATION_CONSIDERATION",
     label: "Cân bằng tải tính đến thời lượng",
+  },
+];
+
+const models = [
+  {
+    value: "MIP",
+    label: "MIP",
+  },
+  {
+    value: "CP",
+    label: "CP",
+  },
+];
+
+const solvers = [
+  {
+    value: "ORTOOLS",
+    label: "Or-tools",
+  },
+  {
+    value: "CPLEX",
+    label: "Cplex",
   },
 ];
 
@@ -94,11 +116,10 @@ const assignmentModes = [
 // the query string for you.
 function useQuery() {
   const { search } = useLocation();
-
   return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
-export default function ClassTeacherAssignmentPlanDetail() {
+export default function PlanDetail() {
   let planId = useParams().planId;
   let query = useQuery();
   const classes = useStyles();
@@ -106,7 +127,15 @@ export default function ClassTeacherAssignmentPlanDetail() {
 
   //
   const [plan, setPlan] = useState();
-  const [mode, setMode] = React.useState("SCORES");
+  const [objective, setObjective] = React.useState(
+    "LOAD_BALANCING_DURATION_CONSIDERATION"
+  );
+  const [solver, setSolver] = React.useState("ORTOOLS");
+  const [model, setModel] = React.useState("MIP");
+
+  //
+  const configParams = [solver, model, objective];
+  const setter = [setSolver, setModel, setObjective];
 
   //
   const [isProcessing, setIsProcessing] = useState(false);
@@ -115,18 +144,21 @@ export default function ClassTeacherAssignmentPlanDetail() {
   );
 
   //
-  const handleChangeMode = (event) => {
-    setMode(event.target.value);
+  const handleChange = (event, index) => {
+    setter[index](event.target.value);
   };
 
   const handleChangeTab = (event, mode) => {
     setSelectedTab(mode);
   };
 
-  const assignTeacher2Class = (solver) => {
+  const assignTeacher2Class = () => {
     setIsProcessing(true);
 
-    let data = { planId: planId, solver: solver };
+    let data = {
+      planId: planId,
+      config: { solver: solver, model: model, objective: objective },
+    };
     // console.log(data);
 
     request(
@@ -160,31 +192,33 @@ export default function ClassTeacherAssignmentPlanDetail() {
       <Typography variant="h5">{`${plan.planName}`}</Typography>
 
       <Box display="flex" justifyContent="flex-end" alignItems="center">
-        <TextField
-          id="outlined-select-assignment-mode"
-          select
-          className={classes.selectMode}
-          label="Mục tiêu phân công"
-          value={mode}
-          onChange={handleChangeMode}
-          variant="outlined"
-          size="small"
-          SelectProps={{
-            MenuProps: {
-              classes: { list: classes.modeList },
-              PopoverClasses: {
-                paper: classes.popoverPaper,
+        {[solvers, models, objectives].map((config, index) => (
+          <TextField
+            id="outlined-select-assignment-mode"
+            select
+            className={classes.selectMode}
+            label="Mục tiêu phân công"
+            value={configParams[index]}
+            onChange={(e) => handleChange(e, index)}
+            variant="outlined"
+            size="small"
+            SelectProps={{
+              MenuProps: {
+                classes: { list: classes.modeList },
+                PopoverClasses: {
+                  paper: classes.popoverPaper,
+                },
               },
-            },
-          }}
-        >
-          {assignmentModes.map((mode) => (
-            <MenuItem key={mode.value} value={mode.value}>
-              {mode.label}
-            </MenuItem>
-          ))}
-        </TextField>
-        <PrimaryButton onClick={() => assignTeacher2Class(mode)}>
+            }}
+          >
+            {config.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        ))}
+        <PrimaryButton onClick={() => assignTeacher2Class()}>
           Phân công
         </PrimaryButton>
       </Box>
@@ -210,7 +244,7 @@ export default function ClassTeacherAssignmentPlanDetail() {
       </AntTabs>
 
       <TabPanel value={selectedTab} index={0} dir={theme.direction}>
-        <ClassForAssignmentList planId={planId} />
+        <ClassInPlan planId={planId} />
         <PairConflictTimetableClass planId={planId} />
       </TabPanel>
 
@@ -218,14 +252,14 @@ export default function ClassTeacherAssignmentPlanDetail() {
         <TeacherList planId={planId} />
       </TabPanel>
       <TabPanel value={selectedTab} index={2} dir={theme.direction}>
-        <TeacherForAssignmentPlanList planId={planId} />
+        <TeacherInPlan planId={planId} />
       </TabPanel>
 
       <TabPanel value={selectedTab} index={3} dir={theme.direction}>
         <TeacherCourseList planId={planId} />
       </TabPanel>
       <TabPanel value={selectedTab} index={4} dir={theme.direction}>
-        <TeacherCourseForAssignmentList planId={planId} />
+        <TeacherCourseInPlan planId={planId} />
       </TabPanel>
 
       <TabPanel value={selectedTab} index={5} dir={theme.direction}>
@@ -235,7 +269,7 @@ export default function ClassTeacherAssignmentPlanDetail() {
         />
         <TeacherBasedTimeTableAssignmentInSolution planId={planId} />
         <ConflictClassesAssignedToTeacherInSolution planId={planId} />
-        <ClassesAssignToATeacherList planId={planId} />
+        <AssignmentStatistic planId={planId} />
       </TabPanel>
       <TabPanel value={selectedTab} index={6} dir={theme.direction}>
         <NotAssignedClassInSolutionList planId={planId} />

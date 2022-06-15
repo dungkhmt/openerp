@@ -32,6 +32,8 @@ public class ClassTeacherAssignmentSolutionModel {
 
     private String timetable;
 
+//    private String timetableCode;
+
     private double hourLoad;
 
     private boolean pinned;
@@ -60,6 +62,7 @@ public class ClassTeacherAssignmentSolutionModel {
         model.setTeacherId(this.getTeacherId());
         model.setTeacherName(this.getTeacherName());
         model.setTimetable(this.getTimetable());
+//        model.setTimetableCode(this.getTimetableCode());
         model.setHourLoad(this.getHourLoad());
         model.setPinned(this.isPinned());
         model.setEndSlot(this.getEndSlot());

@@ -31,8 +31,7 @@ public class TeacherCourse {
     private String classType;
 
     // For referencing only
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", insertable = false, updatable = false)
     private UUID refId;
 
     @Column(name = "priority")

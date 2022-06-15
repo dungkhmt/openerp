@@ -6,8 +6,8 @@ import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import UploadExcelTeacherCourseModel from "../UploadExcelTeacherCourseModel";
-import { useStyles } from "./ClassForAssignmentList";
+import { useStyles } from "./assignmentPlan/ClassInPlan";
+import UploadExcelTeacherCourseModel from "./UploadExcelTeacherCourseModel";
 
 const columns = [
   { title: "Mã Giáo viên", field: "id" },

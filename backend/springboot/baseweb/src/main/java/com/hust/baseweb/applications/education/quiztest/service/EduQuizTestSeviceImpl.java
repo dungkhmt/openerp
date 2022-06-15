@@ -18,7 +18,6 @@ import com.hust.baseweb.applications.education.quiztest.model.edutestquizpartici
 import com.hust.baseweb.applications.education.quiztest.model.quitestgroupquestion.AutoAssignQuestion2QuizTestGroupInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestgroup.AutoAssignParticipants2QuizTestGroupInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestgroup.QuizTestGroupInfoModel;
-import com.hust.baseweb.applications.education.quiztest.model.quiztestquestion.CreateQuizTestQuestionInputModel;
 import com.hust.baseweb.applications.education.quiztest.repo.*;
 import com.hust.baseweb.applications.education.quiztest.repo.EduQuizTestGroupRepo.QuizTestGroupInfo;
 import com.hust.baseweb.applications.education.quiztest.repo.EduQuizTestRepo.StudentInfo;
@@ -985,9 +984,9 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
 
 
         //find user + group id
-        List<EduTestQuizParticipant> eduTestQuizParticipants = eduTestQuizParticipantRepo.findByTestIdAndStatusId(
-            testId,
-            "STATUS_APPROVED");
+//        List<EduTestQuizParticipant> eduTestQuizParticipants = eduTestQuizParticipantRepo.findByTestIdAndStatusId(
+//            testId,
+//            "STATUS_APPROVED");
 
         List<StudentInfo> list = repo.findAllStudentInTest(testId);
 
@@ -1011,18 +1010,18 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
 
                         // get list choice
                         List<UUID> chooseAnsIds = new ArrayList<>();
-                        List<QuizGroupQuestionParticipationExecutionChoice> quizGroupQuestionParticipationExecutionChoices =
+                        List<QuizGroupQuestionParticipationExecutionChoice> choices =
                             quizGroupQuestionParticipationExecutionChoiceRepo
-                            .findQuizGroupQuestionParticipationExecutionChoicesByParticipationUserLoginIdAndQuizGroupIdAndQuestionId(
-                                studentInfo.getUser_login_id(),
-                                eduTestQuizGroup.getQuizGroupId(),
-                                question.getQuestionId());
+                                .findQuizGroupQuestionParticipationExecutionChoicesByParticipationUserLoginIdAndQuizGroupIdAndQuestionId(
+                                    studentInfo.getUser_login_id(),
+                                    eduTestQuizGroup.getQuizGroupId(),
+                                    question.getQuestionId());
 
-                        //quizGroupQuestionParticipationExecutionChoices.forEach(choice -> {
+                        //choices.forEach(choice -> {
                         //    chooseAnsIds.add(choice.getChoiceAnswerId());
                         //});
                         Date createdStamp = null;
-                        for(QuizGroupQuestionParticipationExecutionChoice choice: quizGroupQuestionParticipationExecutionChoices){
+                        for (QuizGroupQuestionParticipationExecutionChoice choice : choices) {
                             createdStamp = choice.getCreatedStamp();
                             chooseAnsIds.add(choice.getChoiceAnswerId());
                         }
@@ -1030,8 +1029,8 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                         quizTestParticipationExecutionResultOutputModel.setCreatedStamp(createdStamp);
 
                         //get question
-                        //QuizQuestionDetailModel quizQuestionDetail = quizQuestionService.findQuizDetail(question.getQuestionId());
-                        //quizTestParticipationExecutionResultOutputModel.setQuizChoiceAnswerList(quizQuestionDetail.getQuizChoiceAnswerList());
+                        QuizQuestionDetailModel quizQuestionDetail = quizQuestionService.findQuizDetail(question.getQuestionId());
+                        quizTestParticipationExecutionResultOutputModel.setQuizChoiceAnswerList(quizQuestionDetail.getQuizChoiceAnswerList());
                         //quizTestParticipationExecutionResultOutputModel.setQuestionContent(quizQuestionDetail.getStatement());
 
                         QuizQuestion q = quizQuestionRepo.findById(question.getQuestionId()).orElse(null);
@@ -1040,14 +1039,14 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
 
                         //check choice in question
 
-                        boolean ques_ans = true;
+                        boolean ques_ans;
                         List<UUID> correctAns =
                             //quizQuestionDetail.getQuizChoiceAnswerList()
                             ans
-                            .stream()
-                            .filter(answer -> answer.getIsCorrectAnswer() == 'Y')
-                            .map(QuizChoiceAnswer::getChoiceAnswerId)
-                            .collect(Collectors.toList());
+                                .stream()
+                                .filter(answer -> answer.getIsCorrectAnswer() == 'Y')
+                                .map(QuizChoiceAnswer::getChoiceAnswerId)
+                                .collect(Collectors.toList());
 
                         // TRUE if and only if correctAns = chooseAnsIds
                         //if (!correctAns.containsAll(chooseAnsIds)) {

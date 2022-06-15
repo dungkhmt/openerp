@@ -1,8 +1,8 @@
 import { request } from "api";
 import StandardTable from "component/table/StandardTable";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-function ClassesAssignToATeacherList(props) {
+function AssignmentStatistic(props) {
   const planId = props.planId;
   const [teachers, setTeachers] = useState([]);
 
@@ -29,16 +29,18 @@ function ClassesAssignToATeacherList(props) {
   }, []);
 
   return (
-    <div style={{ marginTop: 48 }}>
-      <StandardTable
-        hideCommandBar
-        title={"Danh sách giáo viên"}
-        columns={columns}
-        data={teachers}
-        options={{ selection: false, pageSize: 10 }}
-      />
-    </div>
+    teachers.length > 0 && (
+      <div style={{ marginTop: 48 }}>
+        <StandardTable
+          hideCommandBar
+          title={"Danh sách giáo viên"}
+          columns={columns}
+          data={teachers}
+          options={{ selection: false, pageSize: 10 }}
+        />
+      </div>
+    )
   );
 }
 
-export default ClassesAssignToATeacherList;
+export default AssignmentStatistic;
