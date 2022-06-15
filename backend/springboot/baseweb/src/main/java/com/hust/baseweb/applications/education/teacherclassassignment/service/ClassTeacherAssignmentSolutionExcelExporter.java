@@ -368,7 +368,7 @@ public class ClassTeacherAssignmentSolutionExcelExporter {
 
         // Styling.
         sheet.setColumnWidth(0, 30 * 256);
-        for (short i = 1; i < 61; i++) {
+        for (short i = 1; i < 73; i++) {
             sheet.setColumnWidth(i, 4 * 256);
         }
 
@@ -393,7 +393,7 @@ public class ClassTeacherAssignmentSolutionExcelExporter {
 
         // Create column for weekdays.
         Row sessionRow = sheet.createRow(3);
-        for (short i = 0; i < 5; i++) {
+        for (short i = 0; i < 6; i++) {
             createMergedCell(
                 sheet,
                 new CellRangeAddress(1, 1, 1 + i * 12, 12 + i * 12),
@@ -435,10 +435,10 @@ public class ClassTeacherAssignmentSolutionExcelExporter {
         }
 
         // Draw necessary border
-        CellRangeAddress rangeAddress = new CellRangeAddress(currentRowIndex, currentRowIndex, 0, 60);
+        CellRangeAddress rangeAddress = new CellRangeAddress(currentRowIndex, currentRowIndex, 0, 72);
         RegionUtil.setBorderBottom(BorderStyle.THIN, rangeAddress, sheet);
 
-        for (short i = 0; i < 5; i++) {
+        for (short i = 0; i < 6; i++) {
             rangeAddress = new CellRangeAddress(3, currentRowIndex, 1 + i * 12, 6 + i * 12);
             RegionUtil.setBorderRight(BorderStyle.THIN, rangeAddress, sheet);
 

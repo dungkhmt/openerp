@@ -1,6 +1,6 @@
 import { request } from "api";
 import StandardTable from "component/table/StandardTable";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const columns = [
   { title: "Mã lớp 1", field: "classId1" },
@@ -32,17 +32,19 @@ function PairConflictTimetableClass({ planId }) {
   }, []);
 
   return (
-    <div style={{ marginTop: 64 }}>
-      <StandardTable
-        title={"Danh sách lớp trùng giờ"}
-        columns={columns}
-        data={conflictList}
-        hideCommandBar
-        options={{
-          selection: false,
-        }}
-      />
-    </div>
+    conflictList.length > 0 && (
+      <div style={{ marginTop: 64 }}>
+        <StandardTable
+          title={"Danh sách lớp trùng giờ"}
+          columns={columns}
+          data={conflictList}
+          hideCommandBar
+          options={{
+            selection: false,
+          }}
+        />
+      </div>
+    )
   );
 }
 

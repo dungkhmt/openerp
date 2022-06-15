@@ -282,7 +282,7 @@ export function exportResultListPdf(
   resultExportPDFData,
   testId
 ) {
-  console.log(studentListResult);
+  console.log("export pdf result ", studentListResult);
   studentListResult.sort(function (firstEl, secondEl) {
     if (firstEl.fullName === null || secondEl.fullName === null) return -1;
     if (firstEl.fullName.toLowerCase() < secondEl.fullName.toLowerCase()) {
