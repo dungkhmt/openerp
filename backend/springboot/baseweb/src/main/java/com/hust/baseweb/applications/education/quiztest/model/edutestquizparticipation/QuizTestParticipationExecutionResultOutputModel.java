@@ -1,6 +1,6 @@
 package com.hust.baseweb.applications.education.quiztest.model.edutestquizparticipation;
 
-import com.hust.baseweb.applications.education.quiztest.model.QuizChoiceAnswerHideCorrectAnswer;
+import com.hust.baseweb.applications.education.entity.QuizChoiceAnswer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +30,7 @@ public class QuizTestParticipationExecutionResultOutputModel {
 
     private String questionContent;
 
-    List<QuizChoiceAnswerHideCorrectAnswer> quizChoiceAnswerList;
+    List<QuizChoiceAnswer> quizChoiceAnswerList;
 
     List<UUID> chooseAnsIds;
 
