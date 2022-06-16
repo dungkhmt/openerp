@@ -1045,12 +1045,17 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
 //                        om.setQuestionContent(quizQuestionDetail.getStatement());
 
                         QuizQuestion q = quizQuestionRepo.findById(question.getQuestionId()).orElse(null);
-                        List<QuizChoiceAnswer> ans = quizChoiceAnswerRepo.findAllByQuizQuestion(q);
                         om.setQuestionContent(q.getQuestionContent());
-                        om.setQuizChoiceAnswerList(ans);
+
+                        List<QuizChoiceAnswer> ans = quizChoiceAnswerRepo.findAllByQuizQuestion(q);
+                        om.setQuizChoiceAnswerList(ans.stream()
+                                                      .map(answer -> new QuizTestParticipationExecutionResultOutputModel.QuizChoiceAnswerDTO(
+                                                          answer.getChoiceAnswerId(),
+                                                          answer.getChoiceAnswerContent(),
+                                                          answer.getIsCorrectAnswer()))
+                                                      .collect(Collectors.toList()));
 
                         //check choice in question
-
                         boolean ques_ans;
                         List<UUID> correctAns =
                             //quizQuestionDetail.getQuizChoiceAnswerList()
