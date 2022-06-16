@@ -35,7 +35,11 @@ const questionContentDefaultStyles = {
     fontSize: 16,
   },
   strike: { decoration: "lineThrough", bold: true, fontSize: 16 },
-  p: { margin: [0, 5, 0, 10], bold: true, fontSize: 16 },
+  p: {
+    margin: [0, 5, 10, 10],
+    // bold: true,
+    fontSize: 12,
+  },
   ul: { marginBottom: 5, bold: true, fontSize: 16 },
   li: { marginLeft: 5, bold: true, fontSize: 16 },
   table: { marginBottom: 5, bold: true, fontSize: 16 },
@@ -69,52 +73,45 @@ function resultDetailList(dataPdf) {
   dataPdf.map((resultDetail) => {
     let studentInfo = {
       text:
-        "Họ và tên: " +
+        "Họ và tên          " +
         resultDetail.fullName +
         "\n" +
-        "Điểm     : " +
+        "Điểm                  " +
         resultDetail.totalGrade +
         "\n" +
-        "Nhóm     : " +
+        "Nhóm                " +
         resultDetail.groupId +
         "\n\n" +
         "Chi tiết bài làm:",
-      fontSize: 17,
+      fontSize: 13,
       width: "auto",
       margin: [0, 3, 5, 5],
-    };
-    let divider = {
-      text: "-----------------------------------------------------------------------------------------------------------------------------------------------------------",
-      margin: [0, 15, 0, 0],
-      width: "auto",
+      padding: [0, 0, 8, 0],
     };
 
     let studentResult = [];
-    studentResult.push(divider);
+    studentResult.push(htmlToPdfmake(`<hr/>`));
     studentResult.push(studentInfo);
 
     //
     const { listQuestion } = resultDetail;
     listQuestion.map((question, index) => {
-      let questionNumber = {
-        text: `Câu ${index + 1}:`,
-        style: "itemQuestion",
-      };
-
       const { content, listAnswer, grade, listchooseAns } = question;
       //
-      let questionContent = htmlToPdfmake(content, {
-        defaultStyles: questionContentDefaultStyles,
-      });
+      let questionContent = htmlToPdfmake(
+        `<br/><p>Câu ${index + 1}. ${content.slice(3)}`,
+        {
+          defaultStyles: questionContentDefaultStyles,
+        }
+      );
 
       console.log(questionContent);
 
       let questionDetail = [];
-      questionDetail.push(questionNumber);
       questionDetail.push(questionContent);
 
       //
-      for (const ans of listAnswer) {
+      listAnswer.forEach((ans, index) => {
         let pele = {
           margin: [0, 5, 0, 10],
           bold: true,
@@ -141,7 +138,7 @@ function resultDetailList(dataPdf) {
             defaultStyles: { ...answerDefaultStyles, p: pele },
           })
         );
-      }
+      });
 
       //
       let quesGrade = {
@@ -342,8 +339,9 @@ export function exportResultListPdf(
     footer: function (currentPage, pageCount) {
       return [
         {
-          text: "Page " + currentPage.toString() + " of " + pageCount,
-          alignment: "center",
+          text: "Trang " + currentPage.toString(),
+          alignment: "right",
+          margin: [0, 0, 20, 0],
         },
       ];
     },
