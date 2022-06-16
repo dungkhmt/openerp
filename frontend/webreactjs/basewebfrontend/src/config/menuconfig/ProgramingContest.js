@@ -29,6 +29,7 @@ export const ProgrammingContestMenuTeacher = {
       text: "Create Contest",
       child: [],
     },
+    /*
     {
       id: "MENU_PROGRAMMING_CONTEST_MANAGER_LIST_CONTEST",
       path: "/programming-contest/list-contest",
@@ -45,6 +46,7 @@ export const ProgrammingContestMenuTeacher = {
       text: "IDE",
       child: [],
     },
+    */
     {
       id: "MENU_PROGRAMMING_CONTEST_MANAGER",
       path: "/programming-contest/teacher-list-contest-manager",

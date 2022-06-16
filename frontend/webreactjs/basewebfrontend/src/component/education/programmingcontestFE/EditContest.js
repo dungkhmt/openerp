@@ -291,7 +291,8 @@ export default function EditContest(props) {
         // console.log("problem list", res.data);
         setShowSubmitSuccess(true);
         sleep(1000).then((r) => {
-          history.push("/programming-contest/list-contest");
+          //history.push("/programming-contest/list-contest");
+          history.push("/programming-contest/teacher-list-contest-manager");
         });
       },
       {},

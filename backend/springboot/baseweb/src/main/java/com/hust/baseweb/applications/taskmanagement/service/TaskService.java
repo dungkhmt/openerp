@@ -1,5 +1,7 @@
 package com.hust.baseweb.applications.taskmanagement.service;
 
+import com.hust.baseweb.applications.taskmanagement.dto.form.TaskForm;
+import com.hust.baseweb.applications.taskmanagement.dto.form.TaskStatusForm;
 import com.hust.baseweb.applications.taskmanagement.entity.Task;
 import com.hust.baseweb.entity.StatusItem;
 import org.springframework.stereotype.Service;
@@ -23,5 +25,9 @@ public interface TaskService {
 
     Task getTask(UUID taskId);
 
-    Task updateTask(Task task);
+    Task updateTasks(Task task);
+
+    Task updateStatusTask(UUID taskId, TaskStatusForm taskStatusForm, String userLoginId);
+
+    Task updateTask(UUID taskId, TaskForm taskForm, String createdByUserLoginId);
 }

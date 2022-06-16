@@ -83,6 +83,8 @@ public interface ProblemTestCaseService {
 
     ModelGetContestPageResponse getNotRegisteredContestByUser(Pageable pageable, String userName);
 
+    List<ContestSubmissionsByUser> getRankingByContestIdNew(Pageable pageable, String contestId);
+
     Page<UserSubmissionContestResultNativeEntity> getRankingByContestId(Pageable pageable, String contestId);
 
     Page<ProblemEntity> getPublicProblemPaging(Pageable pageable);

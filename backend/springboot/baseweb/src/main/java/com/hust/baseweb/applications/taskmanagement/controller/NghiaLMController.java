@@ -1,10 +1,8 @@
 package com.hust.baseweb.applications.taskmanagement.controller;
 
+import com.hust.baseweb.applications.contentmanager.model.ContentModel;
 import com.hust.baseweb.applications.taskmanagement.dto.dao.*;
-import com.hust.baseweb.applications.taskmanagement.dto.form.CommentForm;
-import com.hust.baseweb.applications.taskmanagement.dto.form.ProjectForm;
-import com.hust.baseweb.applications.taskmanagement.dto.form.ProjectMemberForm;
-import com.hust.baseweb.applications.taskmanagement.dto.form.TaskForm;
+import com.hust.baseweb.applications.taskmanagement.dto.form.*;
 import com.hust.baseweb.applications.taskmanagement.entity.*;
 import com.hust.baseweb.applications.taskmanagement.repository.ProjectMemberRepository;
 import com.hust.baseweb.applications.taskmanagement.service.*;
@@ -131,14 +129,15 @@ public class NghiaLMController {
         for (Task task : tasks) {
             TaskAssignable taskAssignable = taskAssignableService.getByTaskId(task.getId());
             String userLoginIdTemp = "";
+            UUID partyId = null;
             String fullName = "Không xác định";
             if (taskAssignable != null) {
-                UUID partyId = taskAssignable.getPartyId();
+                partyId = taskAssignable.getPartyId();
                 userLoginIdTemp = projectMemberService.getUserLoginByPartyId(partyId).getUserLoginId();
                 fullName = new PersonDao(personService.findByPartyId(partyId), userLoginIdTemp).getFullName();
             }
 
-            taskDaoList.add(new TaskDao(task, userLoginIdTemp + " (" + fullName + ")"));
+            taskDaoList.add(new TaskDao(task, userLoginIdTemp + " (" + fullName + ")", partyId));
         }
 
         return ResponseEntity.ok(taskDaoList);
@@ -164,7 +163,7 @@ public class NghiaLMController {
 
         TaskAssignable taskAssignable = new TaskAssignable();
         taskAssignable.setTask(task);
-        taskAssignable.setPartyId(UUID.fromString(taskForm.getPartyId()));
+        taskAssignable.setPartyId(taskForm.getPartyId());
         taskAssignableService.create(taskAssignable);
 
         TaskExecution taskExecution = new TaskExecution();
@@ -211,9 +210,12 @@ public class NghiaLMController {
             PersonDao personDao = new PersonDao(
                 personService.findByPartyId(taskAssignable.getPartyId()),
                 userLoginIdTemp);
-            taskDaoList.add(new TaskDao(
-                taskAssignable.getTask(),
-                personDao.getUserLoginId() + " (" + personDao.getFullName() + ")"));
+            taskDaoList.add(
+                new TaskDao(
+                    taskAssignable.getTask(),
+                    personDao.getUserLoginId() + " (" + personDao.getFullName() + ")",
+                    partyId)
+            );
         }
         return ResponseEntity.ok(taskDaoList);
     }
@@ -263,7 +265,7 @@ public class NghiaLMController {
     ) {
         Task task = taskService.getTask(taskId);
         task.setStatusItem(taskService.getStatusItemByStatusId(statusId));
-        return ResponseEntity.ok(taskService.updateTask(task));
+        return ResponseEntity.ok(taskService.updateTasks(task));
     }
 
     @PutMapping("/projects/{projectId}")
@@ -287,12 +289,13 @@ public class NghiaLMController {
     public ResponseEntity<Object> showTask(@PathVariable("taskId") UUID taskId) {
         Task task = taskService.getTask(taskId);
         String assignee = "";
+        UUID partyId = null;
         if (taskAssignableService.getByTaskId(taskId) != null) {
-            UUID partyId = taskAssignableService.getByTaskId(taskId).getPartyId();
+            partyId = taskAssignableService.getByTaskId(taskId).getPartyId();
             assignee = projectMemberService.getUserLoginByPartyId(partyId).getUserLoginId();
         }
 
-        return ResponseEntity.ok(new TaskDao(task, assignee));
+        return ResponseEntity.ok(new TaskDao(task, assignee, partyId));
     }
 
     @PostMapping("/tasks/{taskId}/comment")
@@ -313,7 +316,7 @@ public class NghiaLMController {
 
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Object> deleteComment(@PathVariable("commentId") UUID commentId) {
-        taskExecutionService.delete(commentId);
+        taskExecutionService.deleteComment(commentId);
         return ResponseEntity.ok("success");
     }
 
@@ -341,7 +344,7 @@ public class NghiaLMController {
     public ResponseEntity<Object> getHistory(@PathVariable("projectId") UUID projectId) {
         List<HistoryDao> historyDaos = new ArrayList<>();
         List<Object[]> objects = taskExecutionService.getAllDistinctDay(projectId);
-        for(Object[] object: objects){
+        for (Object[] object : objects) {
             Date date = (Date) object[0];
             String dateStr = new SimpleDateFormat("E, dd MMM yyyy").format(date);
             HistoryDao historyDao = new HistoryDao();
@@ -350,5 +353,26 @@ public class NghiaLMController {
             historyDaos.add(historyDao);
         }
         return ResponseEntity.ok(historyDaos);
+    }
+
+    @PutMapping("/tasks/{taskId}/status")
+    public ResponseEntity<Object> updateStatusTask(
+        @PathVariable("taskId") UUID taskId,
+        @RequestBody TaskStatusForm taskStatusForm,
+        Principal principal
+    ) {
+        String userLoginId = principal.getName();
+        return ResponseEntity.ok(taskService.updateStatusTask(taskId, taskStatusForm, userLoginId));
+    }
+
+    @PutMapping("/tasks/{taskId}")
+    public ResponseEntity<Object> updateTask(
+        @PathVariable("taskId") UUID taskId,
+        @RequestBody TaskForm taskForm,
+        Principal principal
+    ){
+        String createdByUserLoginId = principal.getName();
+        taskService.updateTask(taskId, taskForm, createdByUserLoginId);
+        return ResponseEntity.ok("ok");
     }
 }
