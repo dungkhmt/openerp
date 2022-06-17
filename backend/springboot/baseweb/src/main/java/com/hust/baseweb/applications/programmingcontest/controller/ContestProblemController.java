@@ -1,6 +1,7 @@
 package com.hust.baseweb.applications.programmingcontest.controller;
 
 import com.google.gson.Gson;
+import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
@@ -487,9 +488,9 @@ public class ContestProblemController {
     }
 
     @GetMapping("/get-ranking-contest-new/{contestId}")
-    public ResponseEntity<?> getRankingContestNewVersion(@PathVariable("contestId") String contestId, Pageable pageable){
+    public ResponseEntity<?> getRankingContestNewVersion(@PathVariable("contestId") String contestId, Pageable pageable, @RequestParam Constants.GetPointForRankingType getPointForRankingType){
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-        List<ContestSubmissionsByUser> page = problemTestCaseService.getRankingByContestIdNew(pageable, contestId);
+        List<ContestSubmissionsByUser> page = problemTestCaseService.getRankingByContestIdNew(pageable, contestId, getPointForRankingType);
 //        log.info("ranking page {}", page);
         return ResponseEntity.status(200).body(page);
     }
