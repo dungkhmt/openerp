@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 @Setter
 public class TaskDao {
+
     private static final String STATUS_DONE = "TASK_RESOLVED";
 
     private UUID id;
@@ -36,18 +37,26 @@ public class TaskDao {
 
     private String assignee;
 
+    private UUID PartyId;
+
     private String createdStamp;
 
     private String lastUpdatedStamp;
 
+    private String fileName;
+
+    private String fileId;
+
     private String dueDate;
+
+    private Date dueDateOrigin;
 
     private String timeRemaining;
 
     private boolean outOfDate;
 
-    public TaskDao(Task task, String assignee) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy H:m:s");
+    public TaskDao(Task task, String assignee, UUID partyId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         this.setId(task.getId());
         this.setName(task.getName());
         this.setProject(task.getProject());
@@ -101,12 +110,17 @@ public class TaskDao {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        if(this.getStatusItem() != null && (this.getStatusItem().getStatusId().equals(STATUS_DONE))){
+        if (this.getStatusItem() != null && (this.getStatusItem().getStatusId().equals(STATUS_DONE))) {
             this.setOutOfDate(false);
             this.setTimeRemaining("");
         }
 
+        String[] arrOfStr = task.getAttachmentPaths().split(",");
+        this.setFileName(arrOfStr[0] != "" ? arrOfStr[0] : "Không có tệp đính kèm");
+        this.setFileId(arrOfStr.length > 1 ? (!arrOfStr[1].equals("null") && !arrOfStr[1].equals("undefined") ? arrOfStr[1] : null) : null);
         this.setAssignee(assignee);
+        this.setPartyId(partyId);
+        this.setDueDateOrigin(task.getDueDate());
         this.setCreatedByUserLoginId(task.getCreatedByUserLoginId());
     }
 }

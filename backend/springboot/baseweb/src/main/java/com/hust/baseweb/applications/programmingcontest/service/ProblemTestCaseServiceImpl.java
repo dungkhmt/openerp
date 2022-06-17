@@ -471,6 +471,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .submissionActionType(modelUpdateContest.getSubmissionActionType())
                                                        .maxNumberSubmissions(modelUpdateContest.getMaxNumberSubmission())
                                                        .participantViewResultMode(modelUpdateContest.getParticipantViewResultMode())
+                                                       .problemDescriptionViewType(modelUpdateContest.getProblemDescriptionViewType())
                                                        .build();
             return contestRepo.save(contestEntity);
 
@@ -592,9 +593,11 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                             .listSubmissionActionTypes(ContestEntity.getSubmissionActionTypes())
                                             .listParticipantViewModes(ContestEntity.getParticipantViewResultModes())
                                             .listMaxNumberSubmissions(ContestEntity.getListMaxNumberSubmissions())
+                                            .listProblemDescriptionViewTypes(ContestEntity.getProblemDescriptionViewTypes())
                                             .submissionActionType(contestEntity.getSubmissionActionType())
                                             .maxNumberSubmission(contestEntity.getMaxNumberSubmissions())
                                             .participantViewResultMode(contestEntity.getParticipantViewResultMode())
+                                            .problemDescriptionViewType(contestEntity.getProblemDescriptionViewType())
                                             .build();
     }
 

@@ -71,5 +71,15 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "backlog_task_category_id")
     private TaskCategory taskCategory;
+
+    public Task(Task task){
+        this.setName(task.getName());
+        this.setDescription(task.getDescription());
+        this.setTaskCategory(task.getTaskCategory());
+        this.setTaskPriority(task.getTaskPriority());
+        this.setStatusItem(task.getStatusItem());
+        this.setAttachmentPaths(task.getAttachmentPaths());
+        this.setDueDate(task.getDueDate());
+    }
 }
 

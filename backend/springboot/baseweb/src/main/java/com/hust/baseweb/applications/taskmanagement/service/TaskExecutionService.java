@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.taskmanagement.service;
 
+import com.hust.baseweb.applications.taskmanagement.dto.dao.TaskExecutionDao;
 import com.hust.baseweb.applications.taskmanagement.entity.TaskExecution;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,8 @@ public interface TaskExecutionService {
 
     boolean delete(UUID taskExecutionId);
 
+    void deleteComment(UUID commentId);
+
     TaskExecution findById(UUID taskExecutionId);
 
     TaskExecution save(TaskExecution taskExecution);
@@ -21,5 +24,5 @@ public interface TaskExecutionService {
 
     List<Object[]> getAllDistinctDay(UUID projectId);
 
-    public List<TaskExecution> getAllTaskExecutionByDate(Date date, UUID projectId);
+    public List<TaskExecutionDao> getAllTaskExecutionByDate(Date date, UUID projectId);
 }

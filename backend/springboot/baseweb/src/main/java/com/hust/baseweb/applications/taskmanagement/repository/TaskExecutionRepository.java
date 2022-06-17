@@ -17,7 +17,7 @@ public interface TaskExecutionRepository
            nativeQuery = true)
     TaskExecution findByTaskExecutionId(@Param("taskExecutionId") UUID taskExecutionId);
 
-    @Query(value = "SELECT e.* FROM backlog_task_execution e WHERE e.task_id = :taskId AND e.execution_tags = 'comment'", nativeQuery = true)
+    @Query(value = "SELECT e.* FROM backlog_task_execution e WHERE e.task_id = :taskId AND e.execution_tags = 'comment' AND e.comment <> ''", nativeQuery = true)
     List<TaskExecution> getAllCommentsByTaskId(@Param("taskId") UUID taskId);
 
     @Query(value = "SELECT DISTINCT DATE(e.created_stamp) FROM backlog_task_execution e WHERE e.project_id = :projectId ORDER BY DATE(e.created_stamp) DESC",
