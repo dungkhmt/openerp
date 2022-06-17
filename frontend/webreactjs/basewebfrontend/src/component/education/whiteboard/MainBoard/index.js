@@ -17,6 +17,7 @@ import { mergeDrawData, removeData } from '../../../../utils/whiteboard/localSto
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import Konva from 'konva'
+import { Dropdown } from '../Dropdown'
 
 const scaleBy = 1.05
 const MAX_SCALE = 3.125
@@ -58,7 +59,9 @@ export const MainBoard = React.memo(() => {
   const [roleStatus, setRoleStatus] = useState({
     roleId: ROLE_STATUS.READ,
     statusId: ROLE_STATUS.IDLE,
+    isCreatedUser: false,
   })
+  const [pendingDrawRequestList, setPendingDrawRequestList] = useState([])
 
   const isDrawing = useRef(false)
   const gridLayerRef = useRef(null)
@@ -66,7 +69,7 @@ export const MainBoard = React.memo(() => {
   const parentRef = useRef(null)
   const slideRef = useRef(null)
 
-  // const isAbleToDraw = roleStatus.roleId === ROLE_STATUS.WRITE && roleStatus.statusId === ROLE_STATUS.ACCEPTED
+  const isAbleToDraw = roleStatus.roleId === ROLE_STATUS.WRITE && roleStatus.statusId === ROLE_STATUS.ACCEPTED
 
   useEffect(() => {
     socket.on(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE, ({ newPage, currentWhiteboardId, changePage, totalPage }) => {
@@ -127,11 +130,14 @@ export const MainBoard = React.memo(() => {
             setRoleStatus({
               roleId: res?.data?.roleId,
               statusId: res?.data?.statusId,
+              isCreatedUser: res?.data?.isCreatedUser ?? false,
             })
+            localStorage.setItem(KEYS.USER_ID, res?.data?.userId)
+            socket.emit(SOCKET_IO_EVENTS.CONNECT_TO_WHITEBOARD, { whiteboardId })
           }
         },
         {},
-        { roleId: 'read', statusId: 'idle' },
+        { roleId: ROLE_STATUS.READ, statusId: ROLE_STATUS.IDLE },
       )
 
       await request(
@@ -196,6 +202,72 @@ export const MainBoard = React.memo(() => {
       socket.off(SOCKET_IO_EVENTS.ON_DELETE_PAGE)
     }
   }, [whiteboardId, socket])
+
+  useEffect(() => {
+    socket.on(SOCKET_IO_EVENTS.ON_REQUEST_DRAW, async (data) => {
+      if (roleStatus.isCreatedUser) {
+        await request(
+          'get',
+          `/whiteboards/user/${data.currentWhiteboardId}/list-pending`,
+          (res) => {
+            if (res?.data?.addUserToWhiteboardResultModelList?.length > 0) {
+              setPendingDrawRequestList(res.data.addUserToWhiteboardResultModelList)
+            }
+            toast.info(`${data.userId ?? 'User'} is requesting to draw.`, {
+              position: toast.POSITION.BOTTOM_RIGHT,
+            })
+          },
+          {},
+          {},
+        )
+      } else {
+        if (data?.isSuccess) {
+          toast.success(`${data.userId ?? 'User'} has been requested to draw.`, {
+            position: toast.POSITION.BOTTOM_RIGHT,
+          })
+        } else {
+          toast.error(`${data.userId ?? 'User'}'s draw request has been rejected.`, {
+            position: toast.POSITION.BOTTOM_RIGHT,
+          })
+        }
+        await request(
+          'put',
+          `/whiteboards/user/${whiteboardId}`,
+          (res) => {
+            if (res.status === 200) {
+              setRoleStatus({
+                roleId: res?.data?.roleId,
+                statusId: res?.data?.statusId,
+                isCreatedUser: res?.data?.isCreatedUser ?? false,
+              })
+            }
+          },
+          {},
+          { roleId: ROLE_STATUS.READ, statusId: ROLE_STATUS.IDLE },
+        )
+      }
+    })
+
+    void (async () => {
+      if (roleStatus.isCreatedUser) {
+        await request(
+          'get',
+          `/whiteboards/user/${whiteboardId}/list-pending`,
+          (res) => {
+            if (res?.addUserToWhiteboardResultModelList?.length > 0) {
+              setPendingDrawRequestList(res.addUserToWhiteboardResultModelList)
+            }
+          },
+          {},
+          {},
+        )
+      }
+    })()
+
+    return () => {
+      socket.off(SOCKET_IO_EVENTS.ON_REQUEST_DRAW)
+    }
+  }, [roleStatus.isCreatedUser, socket, whiteboardId])
 
   useEffect(() => {
     const onWindowResize = () => {
@@ -345,7 +417,7 @@ export const MainBoard = React.memo(() => {
       '/whiteboards/save',
       () => {
         toast.success('Save whiteboard content successfully.', {
-          position: 'bottom-right',
+          position: toast.POSITION.BOTTOM_RIGHT,
         })
       },
       (error) => console.error(error),
@@ -418,7 +490,7 @@ export const MainBoard = React.memo(() => {
     })
     socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE, { currentWhiteboardId: whiteboardId })
     toast.success('Delete page successfully.', {
-      position: 'bottom-right',
+      position: toast.POSITION.BOTTOM_RIGHT,
     })
   }
 
@@ -458,7 +530,104 @@ export const MainBoard = React.memo(() => {
   const onDrawDone = (tool) =>
     setEventPointer((prev) => ({ ...prev, [tool]: { eventType: null, pointerPosition: { x: 0, y: 0 } } })) - 1
 
-  // const onRequestDraw = async () => {}
+  const onRequestDraw = async () => {
+    // call API with write-pending
+    const userId = localStorage.getItem(KEYS.USER_ID)
+    if (!userId) {
+      toast.error('Missing userId.', {
+        position: toast.POSITION.BOTTOM_RIGHT,
+      })
+      return
+    }
+
+    await request(
+      'post',
+      `/whiteboards/user/${whiteboardId}`,
+      (res) => {
+        if (res.status === 200) {
+          setRoleStatus({
+            roleId: res?.data?.roleId,
+            statusId: res?.data?.statusId,
+          })
+          toast.success('Send request successfully.', {
+            position: toast.POSITION.BOTTOM_RIGHT,
+          })
+          // TODO: Notify to admin
+          socket.emit(SOCKET_IO_EVENTS.REQUEST_DRAW, { userId, currentWhiteboardId: whiteboardId })
+        }
+      },
+      {},
+      { userId, roleId: ROLE_STATUS.WRITE, statusId: ROLE_STATUS.PENDING },
+    )
+  }
+
+  const approveRequest = async (item) => {
+    // call API with write-accepted
+    await request(
+      'post',
+      `/whiteboards/user/${whiteboardId}`,
+      async (res) => {
+        if (res.status === 200) {
+          toast.info('Request has been accepted.', {
+            position: toast.POSITION.BOTTOM_RIGHT,
+          })
+          // TODO: Notify to this user
+          socket.emit(SOCKET_IO_EVENTS.REQUEST_DRAW, {
+            userId: item.userId,
+            isSuccess: true,
+            currentWhiteboardId: whiteboardId,
+          })
+          await request(
+            'get',
+            `/whiteboards/user/${whiteboardId}/list-pending`,
+            (res) => {
+              if (res?.data?.addUserToWhiteboardResultModelList) {
+                setPendingDrawRequestList(res.data.addUserToWhiteboardResultModelList)
+              }
+            },
+            {},
+            {},
+          )
+        }
+      },
+      {},
+      { userId: item.userId, roleId: ROLE_STATUS.WRITE, statusId: ROLE_STATUS.ACCEPTED },
+    )
+  }
+
+  const rejectRequest = async (item) => {
+    // call API with write-accepted
+    await request(
+      'post',
+      `/whiteboards/user/${whiteboardId}`,
+      async (res) => {
+        if (res.status === 200) {
+          toast.info('Request has been rejected.', {
+            position: toast.POSITION.BOTTOM_RIGHT,
+          })
+          // TODO: Notify to this user
+          socket.emit(SOCKET_IO_EVENTS.REQUEST_DRAW, {
+            userId: item.userId,
+            isSuccess: false,
+            currentWhiteboardId: whiteboardId,
+          })
+          await request(
+            'get',
+            `/whiteboards/user/${whiteboardId}/list-pending`,
+            (res) => {
+              if (res?.data?.addUserToWhiteboardResultModelList) {
+                setPendingDrawRequestList(res.data.addUserToWhiteboardResultModelList)
+              }
+            },
+            {},
+            {},
+          )
+        }
+      },
+      {},
+      { userId: item.userId, roleId: ROLE_STATUS.WRITE, statusId: ROLE_STATUS.REJECTED },
+    )
+  }
 
   const settings = useMemo(
     () => ({
@@ -478,33 +647,14 @@ export const MainBoard = React.memo(() => {
 
   return (
     <>
-      <select value={tool} onChange={(e) => setTool(e.target.value)}>
-        <option value={TOOL.POINTER}>Pointer</option>
-        <option value={TOOL.PEN}>Pen</option>
-        <option value={TOOL.RECTANGLE}>Rectangle</option>
-        <option value={TOOL.CIRCLE}>Circle</option>
-        <option value={TOOL.ERASER}>Eraser</option>
-        <option value={TOOL.TEXT}>Text</option>
-      </select>
-      <button type="button" onClick={onPrevPage} disabled={pageNow === 1}>
-        Prev page
-      </button>
-      <button type="button" onClick={onNextPage} disabled={pageNow >= pages.length}>
-        Next page
-      </button>
-      <button type="button" onClick={onSaveWhiteboardData}>
-        Save
-      </button>
-      <button type="button" onClick={onAddNewPage}>
-        Add new page
-      </button>
-      {pages.length >= 2 && (
-        <button type="button" onClick={onDeletePage}>
-          Delete page {pageNow}
-        </button>
-      )}
-      {/* {isAbleToDraw ? (
+      {isAbleToDraw ? (
         <>
+          <button type="button" onClick={onPrevPage} disabled={pageNow === 1}>
+            Prev page
+          </button>
+          <button type="button" onClick={onNextPage} disabled={pageNow >= pages.length}>
+            Next page
+          </button>
           <select value={tool} onChange={(e) => setTool(e.target.value)}>
             <option value={TOOL.POINTER}>Pointer</option>
             <option value={TOOL.PEN}>Pen</option>
@@ -521,13 +671,26 @@ export const MainBoard = React.memo(() => {
           </button>
           {pages.length >= 2 && (
             <button type="button" onClick={onDeletePage}>
-              Delete page {queryString.get('page')}
+              Delete page {pageNow}
             </button>
           )}
         </>
+      ) : roleStatus.statusId === ROLE_STATUS.PENDING ? (
+        <button type="button" disabled>
+          Request sent. Please wait.
+        </button>
       ) : (
-        <button onClick={onRequestDraw}>Request draw</button>
-      )} */}
+        <button type="button" onClick={onRequestDraw}>
+          Request draw
+        </button>
+      )}
+      {pendingDrawRequestList.length > 0 && (
+        <Dropdown
+          pendingList={pendingDrawRequestList}
+          onApproveRequest={approveRequest}
+          onRejectRequest={rejectRequest}
+        />
+      )}
       <div
         id="slider-grand"
         style={{ width: 'calc(100% - 5px)', height: 'calc(100vh - 155px)', position: 'relative' }}
