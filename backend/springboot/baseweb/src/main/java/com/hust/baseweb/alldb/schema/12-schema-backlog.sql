@@ -109,6 +109,6 @@ CREATE TABLE backlog_task_execution
     execution_due_date varchar(200),
     execution_file_name varchar(200),
     CONSTRAINT pk_backlog_task_execution_id PRIMARY KEY (task_execution_id),
-    CONSTRAINT fk_backlog_task_execution_created_by_user_login_id FOREIGN KEY (created_by_user_login_id) REFERENCES user_login (user_login_id)
+    CONSTRAINT fk_backlog_task_execution_created_by_user_login_id FOREIGN KEY (created_by_user_login_id) REFERENCES user_login (user_login_id),
     CONSTRAINT fk_backlog_task_execution_task_id FOREIGN KEY (task_id) REFERENCES backlog_task (backlog_task_id)
 );

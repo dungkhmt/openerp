@@ -88,12 +88,14 @@ public class TaskServiceImplement implements TaskService {
         task.setDueDate(taskStatusForm.getDueDate());
         Task taskRes = taskRepository.save(task);
 
+        /* fixed by PQD
         TaskAssignable taskAssignable = taskAssignableRepository.getByTaskId(taskId);
         UUID partyIdOld = taskAssignable.getPartyId();
         if(!taskAssignable.getPartyId().toString().equals(taskStatusForm.getPartyId().toString())){
             taskAssignable.setPartyId(taskStatusForm.getPartyId());
         }
         taskAssignableRepository.save(taskAssignable);
+        */
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         String assignee = projectMemberService.getUserLoginByPartyId(taskStatusForm.getPartyId()).getUserLoginId();
@@ -107,9 +109,10 @@ public class TaskServiceImplement implements TaskService {
             taskExecution.setStatus(statusItem.getDescription());
         }
 
-        if(!partyIdOld.toString().equals(taskStatusForm.getPartyId().toString())){
+        // fixed by PQD
+        //if(!partyIdOld.toString().equals(taskStatusForm.getPartyId().toString())){
             taskExecution.setAssignee(assignee);
-        }
+        //}
 
         if(!sdf.format(taskStatusForm.getDueDate()).equals(sdf.format(oldDueDate))){
             taskExecution.setDueDate(dueDate);

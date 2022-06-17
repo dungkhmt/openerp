@@ -4,7 +4,7 @@ import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
-import { authGet } from "../../../api";
+import { authGet, request } from "../../../api";
 
 function TeacherCourseChapterMaterialList(props) {
   const chapterId = props.chapterId;
@@ -29,15 +29,27 @@ function TeacherCourseChapterMaterialList(props) {
       ),
     },
     { title: "Name", field: "eduCourseMaterialName" },
+    { title: "Thể loại", field: "eduCourseMaterialType" },
   ];
 
   async function getChapterMaterialList() {
+    /*
     let lst = await authGet(
       dispatch,
       token,
       "/edu/class/get-chapter-materials-of-course/" + chapterId
     );
     setChapterMaterials(lst);
+      */
+    request(
+      "get",
+      "/edu/class/get-chapter-materials-of-course/" + chapterId,
+      (res) => {
+        console.log("get log user do practice, res = ", res);
+        const data = res.data;
+        setChapterMaterials(data);
+      }
+    );
   }
 
   useEffect(() => {
