@@ -119,7 +119,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
       "/get-test-case-list-by-problem/" + problemId,
 
       (res) => {
-        setTestCases(res.data.filter(item => item.isPublic === "Y"));
+        setTestCases(res.data.filter((item) => item.isPublic === "Y"));
       },
       {}
     );
@@ -128,7 +128,11 @@ export default function StudentViewProgrammingContestProblemDetail() {
   function getProblemDetail() {
     request(
       "GET",
-      "/get-problem-detail-view-by-student/" + problemId,
+      //"/get-problem-detail-view-by-student/" + problemId,
+      "/get-problem-detail-view-by-student-in-contest/" +
+        problemId +
+        "/" +
+        contestId,
 
       (res) => {
         setProblem(res.data);
@@ -256,7 +260,9 @@ export default function StudentViewProgrammingContestProblemDetail() {
               <StyledTableCell align="left">Test case</StyledTableCell>
               <StyledTableCell align="left">Correct answer</StyledTableCell>
               <StyledTableCell align="left">Point</StyledTableCell>
+              {/*
               <StyledTableCell align="left">Submit Output</StyledTableCell>
+              */}
               <StyledTableCell align="left">
                 <Button variant="contained" onClick={copyAllHandler}>
                   Copy Tests
@@ -308,6 +314,8 @@ export default function StudentViewProgrammingContestProblemDetail() {
                     <StyledTableCell align="left">
                       {testCase.point}
                     </StyledTableCell>
+
+                    {/*
                     <StyledTableCell align="left">
                       <Link
                         to={
@@ -329,6 +337,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
                         </Button>
                       </Link>
                     </StyledTableCell>
+                      */}
                     <StyledTableCell align="left">
                       <IconButton
                         color="primary"

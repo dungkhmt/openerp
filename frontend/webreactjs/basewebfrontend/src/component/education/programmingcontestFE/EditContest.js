@@ -247,6 +247,11 @@ export default function EditContest(props) {
   const [listParticipantViewResultModes, setListParticipantViewResultModes] =
     useState([]);
 
+  const [problemDescriptionViewType, setProblemDescriptionViewType] =
+    useState(null);
+  const [listProblemDescriptionViewTypes, setListProblemDescriptionViewTypes] =
+    useState([]);
+
   const classes = useStyles();
   const handleClick = (event, name) => {
     const selectedIndex = problemSelected.indexOf(name);
@@ -283,6 +288,7 @@ export default function EditContest(props) {
       submissionActionType: submissionActionType,
       maxNumberSubmission: maxNumberSubmission,
       participantViewResultMode: participantViewResultMode,
+      problemDescriptionViewType: problemDescriptionViewType,
     };
     request(
       "post",
@@ -330,7 +336,10 @@ export default function EditContest(props) {
       setListParticipantViewResultModes(res.data.listParticipantViewModes);
       setMaxNumberSubmission(res.data.maxNumberSubmission);
       setListMaxNumberSubmissions(res.data.listMaxNumberSubmissions);
-
+      setProblemDescriptionViewType(res.data.problemDescriptionViewType);
+      setListProblemDescriptionViewTypes(
+        res.data.listProblemDescriptionViewTypes
+      );
       console.log("res ", res.data);
     }).then();
   }, [page]);
@@ -467,6 +476,25 @@ export default function EditContest(props) {
                 value={participantViewResultMode}
               >
                 {listParticipantViewResultModes.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                autoFocus
+                // required
+                select
+                id="problemDescriptionViewType"
+                label="problemDescriptionViewType"
+                placeholder="problemDescriptionViewType"
+                onChange={(event) => {
+                  setProblemDescriptionViewType(event.target.value);
+                }}
+                value={problemDescriptionViewType}
+              >
+                {listProblemDescriptionViewTypes.map((item) => (
                   <MenuItem key={item} value={item}>
                     {item}
                   </MenuItem>

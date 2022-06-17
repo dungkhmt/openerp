@@ -109,6 +109,24 @@ public class ContestProblemController {
         }
         return ResponseEntity.ok().body("NOTFOUND");
     }
+    @GetMapping("/get-problem-detail-view-by-student-in-contest/{problemId}/{contestId}")
+    public ResponseEntity<?> getProblemDetailViewByStudent(Principal principal,@PathVariable("problemId") String problemId
+        , @PathVariable("contestId") String contestId){
+        try {
+            ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+            ProblemEntity problemEntity = problemTestCaseService.getContestProblem(problemId);
+            ModelStudentViewProblemDetail model = new ModelStudentViewProblemDetail();
+            if(contestEntity.getProblemDescriptionViewType().equals(ContestEntity.CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_VISIBLE))
+                model.setProblemStatement(problemEntity.getProblemDescription());
+            else model.setProblemStatement(" ");
+
+            model.setProblemName(problemEntity.getProblemName());
+            return ResponseEntity.ok().body(model);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body("NOTFOUND");
+    }
     @PostMapping("/update-problem-detail/{problemId}")
     public ResponseEntity<?> updateProblemDetails(@RequestBody ModelCreateContestProblem modelCreateContestProblem, @PathVariable("problemId") String problemId, Principal principal) throws Exception {
         log.info("updateProblemDetails problemId {}", problemId);
