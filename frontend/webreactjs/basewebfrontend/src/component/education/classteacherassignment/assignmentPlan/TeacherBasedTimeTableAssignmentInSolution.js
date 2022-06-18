@@ -2,6 +2,7 @@ import { Card, Tooltip, Typography } from "@material-ui/core/";
 import Box from "@material-ui/core/Box";
 // import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core/styles";
+import { TablePagination } from "@mui/material";
 import { request } from "api";
 import map from "lodash/map";
 import range from "lodash/range";
@@ -228,7 +229,23 @@ const TimeTableRow = memo((props) => {
           borderRight={0}
           borderTop={0}
           // borderColor={grey[500]}
+          data-tip
+          data-for={classCode}
         />
+        {/* <ReactTooltip id={classCode} place="bottom" type="light" effect="solid">
+        {classes.map((c) => (
+          <>
+            <Typography style={{ fontWeight: "bold" }}>
+              {c.classCode}
+              {c?.courseId && " - " + c.courseId}
+              {c?.classType && " - " + c.classType}
+            </Typography>
+            <Typography variant="body2">{c.courseName}</Typography>
+            <Typography variant="body2">{c.timetable}</Typography>
+            <br />
+          </>
+        ))}
+      </ReactTooltip> */}
       </HtmlTooltip>
     </Box>
   );
@@ -365,6 +382,19 @@ function TeacherBasedTimeTableAssignmentInSolution(props) {
 
   // const [openSuggestion, setOpenSuggestion] = React.useState(false);
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  //
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const getDataTimeTableList = () => {
     request(
       "GET",
@@ -419,14 +449,32 @@ function TeacherBasedTimeTableAssignmentInSolution(props) {
           style={{
             maxWidth: "100%",
             paddingBottom: 16,
-            maxHeight: "25rem",
+            // maxHeight: "25rem",
           }}
         >
           <Box border={2} borderBottom={1} width={160 * 16 + 2 + "px"}>
             <TimeTableHeader />
-            <TimeTableBody data={dataTimeTable} root={this} planId={planId} />
+            <TimeTableBody
+              data={dataTimeTable.slice(
+                page * rowsPerPage,
+                (page + 1) * rowsPerPage - 1
+              )}
+              root={this}
+              planId={planId}
+            />
           </Box>
         </SimpleBar>
+        <TablePagination
+          component="div"
+          count={dataTimeTable.length}
+          page={page}
+          rowsPerPageOptions={[10, 15]}
+          showFirstButton
+          showLastButton
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Card>
     )
   );
