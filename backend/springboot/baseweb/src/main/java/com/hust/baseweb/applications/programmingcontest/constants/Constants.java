@@ -55,6 +55,20 @@ public class Constants {
         }
     }
 
+    public enum GetPointForRankingType{
+        LATEST("LATEST"), HIGHEST("HIGHEST");
+
+        private String value;
+
+        GetPointForRankingType(String value){
+            this.value = value;
+        }
+
+        public String getValue(){
+            return this.value;
+        }
+    }
+
     public enum Languages{
         CPP("CPP"),
         PYTHON3("PYTHON3"),

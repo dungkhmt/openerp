@@ -17,4 +17,5 @@ public class ModelUpdateContest {
     private String submissionActionType;
     private int maxNumberSubmission;
     private String participantViewResultMode;
+    private String problemDescriptionViewType;
 }

@@ -80,6 +80,7 @@ create table contest_new
     try_again BOOLEAN,
     public BOOLEAN,
     count_down numeric NULL,
+    problem_description_view_type varchar(200),
 	started_count_down_time timestamp NULL,
 	end_time timestamp NULL,
 	status_id varchar(100),

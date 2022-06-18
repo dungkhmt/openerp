@@ -92,6 +92,7 @@ create table public.edu_course_chapter_material(
     edu_course_material_name varchar(200),
     edu_course_material_type varchar(200),
     source_id uuid ,
+    slide_id                 varchar(200),
 	last_updated_stamp timestamp NULL,
 	created_stamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     constraint pk_edu_course_chapter_material primary key(edu_course_material_id),

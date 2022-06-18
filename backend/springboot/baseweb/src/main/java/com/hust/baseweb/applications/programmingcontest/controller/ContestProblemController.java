@@ -1,6 +1,7 @@
 package com.hust.baseweb.applications.programmingcontest.controller;
 
 import com.google.gson.Gson;
+import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
@@ -102,6 +103,24 @@ public class ContestProblemController {
             ProblemEntity problemEntity = problemTestCaseService.getContestProblem(problemId);
             ModelStudentViewProblemDetail model = new ModelStudentViewProblemDetail();
             model.setProblemStatement(problemEntity.getProblemDescription());
+            model.setProblemName(problemEntity.getProblemName());
+            return ResponseEntity.ok().body(model);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body("NOTFOUND");
+    }
+    @GetMapping("/get-problem-detail-view-by-student-in-contest/{problemId}/{contestId}")
+    public ResponseEntity<?> getProblemDetailViewByStudent(Principal principal,@PathVariable("problemId") String problemId
+        , @PathVariable("contestId") String contestId){
+        try {
+            ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+            ProblemEntity problemEntity = problemTestCaseService.getContestProblem(problemId);
+            ModelStudentViewProblemDetail model = new ModelStudentViewProblemDetail();
+            if(contestEntity.getProblemDescriptionViewType().equals(ContestEntity.CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_VISIBLE))
+                model.setProblemStatement(problemEntity.getProblemDescription());
+            else model.setProblemStatement(" ");
+
             model.setProblemName(problemEntity.getProblemName());
             return ResponseEntity.ok().body(model);
         }catch(Exception e){
@@ -487,11 +506,10 @@ public class ContestProblemController {
     }
 
     @GetMapping("/get-ranking-contest-new/{contestId}")
-    public ResponseEntity<?> getRankingContestNewVersion(@PathVariable("contestId") String contestId, Pageable pageable){
-        log.info("getRankingContest page {}", pageable);
+    public ResponseEntity<?> getRankingContestNewVersion(@PathVariable("contestId") String contestId, Pageable pageable, @RequestParam Constants.GetPointForRankingType getPointForRankingType){
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-        List<ContestSubmissionsByUser> page = problemTestCaseService.getRankingByContestIdNew(pageable, contestId);
-        log.info("ranking page {}", page);
+        List<ContestSubmissionsByUser> page = problemTestCaseService.getRankingByContestIdNew(pageable, contestId, getPointForRankingType);
+//        log.info("ranking page {}", page);
         return ResponseEntity.status(200).body(page);
     }
 
@@ -500,7 +518,7 @@ public class ContestProblemController {
         log.info("getRankingContest page {}", pageable);
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("point").descending());
         Page<UserSubmissionContestResultNativeEntity> page = problemTestCaseService.getRankingByContestId(pageable, contestId);
-        log.info("ranking page {}", page);
+//        log.info("ranking page {}", page);
         return ResponseEntity.status(200).body(page);
     }
 

@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.service;
 
+import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
 import com.hust.baseweb.applications.programmingcontest.model.*;
@@ -83,7 +84,7 @@ public interface ProblemTestCaseService {
 
     ModelGetContestPageResponse getNotRegisteredContestByUser(Pageable pageable, String userName);
 
-    List<ContestSubmissionsByUser> getRankingByContestIdNew(Pageable pageable, String contestId);
+    List<ContestSubmissionsByUser> getRankingByContestIdNew(Pageable pageable, String contestId, Constants.GetPointForRankingType getPointForRankingType);
 
     Page<UserSubmissionContestResultNativeEntity> getRankingByContestId(Pageable pageable, String contestId);
 

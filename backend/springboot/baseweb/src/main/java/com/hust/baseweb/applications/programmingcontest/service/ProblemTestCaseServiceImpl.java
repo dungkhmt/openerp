@@ -471,6 +471,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .submissionActionType(modelUpdateContest.getSubmissionActionType())
                                                        .maxNumberSubmissions(modelUpdateContest.getMaxNumberSubmission())
                                                        .participantViewResultMode(modelUpdateContest.getParticipantViewResultMode())
+                                                       .problemDescriptionViewType(modelUpdateContest.getProblemDescriptionViewType())
                                                        .build();
             return contestRepo.save(contestEntity);
 
@@ -592,9 +593,11 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                             .listSubmissionActionTypes(ContestEntity.getSubmissionActionTypes())
                                             .listParticipantViewModes(ContestEntity.getParticipantViewResultModes())
                                             .listMaxNumberSubmissions(ContestEntity.getListMaxNumberSubmissions())
+                                            .listProblemDescriptionViewTypes(ContestEntity.getProblemDescriptionViewTypes())
                                             .submissionActionType(contestEntity.getSubmissionActionType())
                                             .maxNumberSubmission(contestEntity.getMaxNumberSubmissions())
                                             .participantViewResultMode(contestEntity.getParticipantViewResultMode())
+                                            .problemDescriptionViewType(contestEntity.getProblemDescriptionViewType())
                                             .build();
     }
 
@@ -1170,7 +1173,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public List<ContestSubmissionsByUser> getRankingByContestIdNew(Pageable pageable, String contestId) {
+    public List<ContestSubmissionsByUser> getRankingByContestIdNew(Pageable pageable, String contestId, Constants.GetPointForRankingType getPointForRankingType) {
         ListModelUserRegisteredContestInfo users = this.getListUserRegisterContestSuccessfulPaging(pageable, contestId);
         ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
 
@@ -1192,24 +1195,53 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             ContestSubmissionsByUser contestSubmission = new ContestSubmissionsByUser();
             contestSubmission.setUserId(user.getUserName());
 
-            // get highest submission score on each problem
-            HashMap<String, Integer> mapProblemToHighestPoint = new HashMap<>();
+            HashMap<String, Integer> mapProblemToPoint = new HashMap<>();
+
             for (ProblemEntity problem : contestEntity.getProblems()) {
-                mapProblemToHighestPoint.put(problem.getProblemId(), 0);
+                mapProblemToPoint.put(problem.getProblemId(), 0);
             }
-            for (ContestSubmission submission : submissionsByUser) {
-                String problemId = submission.getProblemId();
-                if (mapProblemToHighestPoint.containsKey(problemId)){
-                    if (submission.getPoint() > mapProblemToHighestPoint.get(problemId)) {
-                        mapProblemToHighestPoint.put(problemId, submission.getPoint());
+
+            switch (getPointForRankingType) {
+                // get highest submission score on each problem
+                case HIGHEST:
+                    for (ContestSubmission submission : submissionsByUser) {
+                        String problemId = submission.getProblemId();
+                        if (mapProblemToPoint.containsKey(problemId)){
+                            if (submission.getPoint() > mapProblemToPoint.get(problemId)) {
+                                mapProblemToPoint.put(problemId, submission.getPoint());
+                            }
+                        }
                     }
-                }
+                    break;
+
+                // get latest submission score on each problem
+                case LATEST:
+                    HashMap<String, ContestSubmission> mapProblemToLatestSubmission = new HashMap<>();
+
+                    for (ContestSubmission submission : submissionsByUser) {
+                        String problemId = submission.getProblemId();
+                        if (mapProblemToLatestSubmission.containsKey(problemId)){
+                            Date tmpSubmissionTime = DateTimeUtils.convertDateTimeStr2Date(submission.getCreateAt());
+                            Date currentSubmissionTime = DateTimeUtils.convertDateTimeStr2Date(mapProblemToLatestSubmission.get(problemId).getCreateAt());
+                            if (tmpSubmissionTime.compareTo(currentSubmissionTime) >= 0) {
+                                mapProblemToLatestSubmission.put(problemId, submission);
+                            }
+                        }
+                        else mapProblemToLatestSubmission.put(problemId, submission);
+                    }
+
+//                    mapProblemToLatestSubmission.entrySet().stream().map(entry -> mapProblemToPoint.put(entry.getKey(), entry.getValue().getPoint()));
+
+                    for (Map.Entry<String, ContestSubmission> entry : mapProblemToLatestSubmission.entrySet()) {
+                        mapProblemToPoint.put(entry.getKey(), entry.getValue().getPoint());
+                    }
+                    break;
             }
 
             int totalPoint = 0;
 
             List<ContestSubmissionsByUserCustom> mapProblemsToPoints = new ArrayList<>();
-            for(Map.Entry entry : mapProblemToHighestPoint.entrySet()) {
+            for(Map.Entry entry : mapProblemToPoint.entrySet()) {
                 ContestSubmissionsByUserCustom tmp = new ContestSubmissionsByUserCustom();
                 tmp.setProblemId(entry.getKey().toString());
                 tmp.setPoint(Integer.valueOf(entry.getValue().toString()));

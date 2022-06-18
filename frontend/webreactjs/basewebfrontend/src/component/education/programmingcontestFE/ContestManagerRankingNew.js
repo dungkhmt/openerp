@@ -18,6 +18,8 @@ export default function ContestManagerRankingNew(props) {
   const [ranking, setRanking] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [getPointForRankingType, setGetPointForRankingType] =
+    useState("HIGHEST");
 
   const downloadHandler = (event) => {
     if (ranking.length === 0) {
@@ -53,7 +55,7 @@ export default function ContestManagerRankingNew(props) {
     sheet["!cols"] = wbcols;
 
     XLSX.utils.book_append_sheet(wb, sheet, "ranking");
-    XLSX.writeFile(wb, contestId + "-RANKING.xlsx");
+    XLSX.writeFile(wb, contestId + "-RANKING-" + getPointForRankingType + ".xlsx");
   };
 
   const handlePageRankingSizeChange = (event) => {
@@ -62,28 +64,56 @@ export default function ContestManagerRankingNew(props) {
   };
 
   function getRanking() {
-    request("get", "/get-ranking-contest-new/" + contestId, (res) => {
-      setRanking(res.data.sort((a, b) => b.totalPoint - a.totalPoint));
-    }).then();
+    request(
+      "get",
+      "/get-ranking-contest-new/" +
+        contestId +
+        "?getPointForRankingType=" +
+        getPointForRankingType,
+      (res) => {
+        setRanking(res.data.sort((a, b) => b.totalPoint - a.totalPoint));
+      }
+    ).then();
   }
 
   useEffect(() => {
     getRanking();
   }, []);
 
+  useEffect(() => {
+    getRanking();
+  }, [getPointForRankingType]);
+
   return (
     <Box>
       <Box
         sx={{
-          width: "600px",
+          width: "900px",
           marginBottom: "20px",
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
         }}
       >
-        <Typography variant="h5">Contest Ranking</Typography>
-        <Button variant="contained" onClick={downloadHandler}>
+        <Typography variant="h5">
+          Contest Ranking - {getPointForRankingType} Submission
+        </Typography>
+        {getPointForRankingType === "HIGHEST" ? (
+          <Button
+            variant="contained"
+            onClick={() => setGetPointForRankingType("LATEST")}
+          >
+            Switch to Latest Submission Score
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={() => setGetPointForRankingType("HIGHEST")}
+          >
+            Switch to Highest Submission Score
+          </Button>
+        )}
+        <Button variant="contained" onClick={downloadHandler} color="success">
           Export
         </Button>
       </Box>
