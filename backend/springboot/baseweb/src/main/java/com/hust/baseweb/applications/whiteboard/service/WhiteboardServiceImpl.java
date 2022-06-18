@@ -191,7 +191,7 @@ public class WhiteboardServiceImpl implements  WhiteboardService {
 
         for(UserWhiteboard userWhiteboard : userWhiteboardList){
             UsersInWhiteboardModel usersInWhiteboardModel = new UsersInWhiteboardModel();
-            if(userWhiteboard.getWhiteboard().getId().equals(whiteboardId) && userWhiteboard.getStatusId().equals("pending")){
+            if(userWhiteboard.getWhiteboard().getId().equals(whiteboardId)){
                 usersInWhiteboardModel.setRoleId(userWhiteboard.getRoleId());
                 usersInWhiteboardModel.setStatusId(userWhiteboard.getStatusId());
                 usersInWhiteboardModel.setUserId(userWhiteboard.getUserLogin().getUserLoginId());

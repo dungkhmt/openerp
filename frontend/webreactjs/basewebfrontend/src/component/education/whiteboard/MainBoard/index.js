@@ -8,16 +8,15 @@ import { DrawRectangle } from '../Draw/DrawRectangle'
 import { DrawCircle } from '../Draw/DrawCircle'
 import { DrawText } from '../Draw/DrawText'
 import { request } from '../../../../api'
-import { useHistory, useParams, useRouteMatch } from 'react-router'
+import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import Slider from 'react-slick'
-import { useQueryString } from 'utils/whiteboard/hooks/useQueryString'
 import { SocketContext } from '../../../../utils/whiteboard/context/SocketContext'
 import { mergeDrawData, removeData } from '../../../../utils/whiteboard/localStorage'
+import { Dropdown } from '../Dropdown'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
-import Konva from 'konva'
-import { Dropdown } from '../Dropdown'
+import { ListParticipantDropdown } from '../ListParticipantDropdown'
 
 const scaleBy = 1.05
 const MAX_SCALE = 3.125
@@ -34,9 +33,6 @@ const generatePages = (totalPage) => {
 export const MainBoard = React.memo(() => {
   const { socket } = useContext(SocketContext)
   const { whiteboardId } = useParams()
-  // const history = useHistory()
-  // const { url } = useRouteMatch()
-  // // const queryString = useQueryString()
   const [pageNow, setPageNow] = useState(() => Number(localStorage.getItem(KEYS.CURRENT_PAGE) ?? 1))
   const { width, height } = useWindowSize()
 
@@ -62,6 +58,7 @@ export const MainBoard = React.memo(() => {
     isCreatedUser: false,
   })
   const [pendingDrawRequestList, setPendingDrawRequestList] = useState([])
+  const [listParticipant, setListParticipant] = useState([])
 
   const isDrawing = useRef(false)
   const gridLayerRef = useRef(null)
@@ -70,6 +67,8 @@ export const MainBoard = React.memo(() => {
   const slideRef = useRef(null)
 
   const isAbleToDraw = roleStatus.roleId === ROLE_STATUS.WRITE && roleStatus.statusId === ROLE_STATUS.ACCEPTED
+
+  console.log('sdfds', localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE))
 
   useEffect(() => {
     socket.on(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE, ({ newPage, currentWhiteboardId, changePage, totalPage }) => {
@@ -256,6 +255,22 @@ export const MainBoard = React.memo(() => {
           (res) => {
             if (res?.addUserToWhiteboardResultModelList?.length > 0) {
               setPendingDrawRequestList(res.addUserToWhiteboardResultModelList)
+            }
+          },
+          {},
+          {},
+        )
+      }
+    })()
+
+    void (async () => {
+      if (roleStatus.isCreatedUser) {
+        await request(
+          'get',
+          `/whiteboards/user/${whiteboardId}/list-users`,
+          (res) => {
+            if (res?.data?.length > 0) {
+              setListParticipant(res.data)
             }
           },
           {},
@@ -691,6 +706,7 @@ export const MainBoard = React.memo(() => {
           onRejectRequest={rejectRequest}
         />
       )}
+      {listParticipant.length > 0 && <ListParticipantDropdown list={listParticipant} onRejectRequest={rejectRequest} />}
       <div
         id="slider-grand"
         style={{ width: 'calc(100% - 5px)', height: 'calc(100vh - 155px)', position: 'relative' }}

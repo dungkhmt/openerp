@@ -40,6 +40,9 @@ export default function ListWhiteBoard() {
   const onCreateNewWhiteboard = async () => {
     const whiteboardId = nanoid()
     // create new whiteboard
+    localStorage.removeItem(KEYS.DRAW_DATA_LOCAL_STORAGE)
+    localStorage.removeItem(KEYS.TOTAL_PAGE)
+    localStorage.removeItem(KEYS.CURRENT_PAGE)
     await request(
       'post',
       '/whiteboards',
@@ -51,11 +54,11 @@ export default function ListWhiteBoard() {
             if (res.status === 200) {
               localStorage.setItem(KEYS.USER_ID, res?.data?.userId)
             }
+            history.push(`${url}/whiteboard/${whiteboardId}?page=1`)
           },
           {},
           { roleId: ROLE_STATUS.WRITE, statusId: ROLE_STATUS.ACCEPTED },
         )
-        history.push(`${url}/whiteboard/${whiteboardId}?page=1`)
       },
       {},
       { whiteboardId, classSessionId: sessionId },
