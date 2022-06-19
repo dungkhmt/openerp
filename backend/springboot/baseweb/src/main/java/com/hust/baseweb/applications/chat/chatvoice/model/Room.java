@@ -71,4 +71,9 @@ public class Room {
     this.openIn = openIn;
     this.closeIn = closeIn;
   }
+
+  @Override
+  public String toString() {
+    return this.roomName + "     " + this.closeIn + "     " + this.openIn;
+  }
 }
