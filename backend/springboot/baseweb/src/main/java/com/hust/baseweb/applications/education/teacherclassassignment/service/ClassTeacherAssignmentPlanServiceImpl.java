@@ -424,7 +424,10 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
                 c = row.getCell(21);
                 String classType = c.getStringCellValue();
                 c = row.getCell(7);
-                String credit = c.getStringCellValue().substring(0, 1);
+                String credit = "0";
+                if (null != c && null != c.getStringCellValue() && !"".equals(c.getStringCellValue().trim())) {
+                    credit = c.getStringCellValue().substring(0, 1);
+                }
 
                 TeacherCourse teacherCourse = new TeacherCourse();
                 teacherCourse.setCourseId(courseId);
