@@ -382,10 +382,11 @@ function TeacherBasedTimeTableAssignmentInSolution(props) {
 
   // const [openSuggestion, setOpenSuggestion] = React.useState(false);
 
+  // Table
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  //
+  // Funcs
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -449,7 +450,6 @@ function TeacherBasedTimeTableAssignmentInSolution(props) {
           style={{
             maxWidth: "100%",
             paddingBottom: 16,
-            // maxHeight: "25rem",
           }}
         >
           <Box border={2} borderBottom={1} width={160 * 16 + 2 + "px"}>
@@ -467,10 +467,10 @@ function TeacherBasedTimeTableAssignmentInSolution(props) {
         <TablePagination
           component="div"
           count={dataTimeTable.length}
-          page={page}
-          rowsPerPageOptions={[10, 15]}
           showFirstButton
           showLastButton
+          page={page}
+          rowsPerPageOptions={[10, 15]}
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
