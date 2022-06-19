@@ -68,7 +68,6 @@ const tabsLabel = [
   "Giáo viên-môn",
   "Giáo viên-môn trong KH",
   "Kết quả phân công",
-  "Biểu đồ",
   "Lớp chưa được phân công",
 ];
 
@@ -268,13 +267,12 @@ export default function PlanDetail() {
           planId={planId}
           planName={plan.planName}
         />
+        <TeacherBasedTimeTableAssignmentInSolution planId={planId} />
         <ConflictClassesAssignedToTeacherInSolution planId={planId} />
         <AssignmentStatistic planId={planId} />
       </TabPanel>
+
       <TabPanel value={selectedTab} index={6} dir={theme.direction}>
-        <TeacherBasedTimeTableAssignmentInSolution planId={planId} />
-      </TabPanel>
-      <TabPanel value={selectedTab} index={7} dir={theme.direction}>
         <NotAssignedClassInSolutionList planId={planId} />
       </TabPanel>
     </>
