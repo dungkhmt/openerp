@@ -18,35 +18,43 @@ const io = new Server(httpServer, {
 
 app.use(cors())
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
   console.log(`${socket.id} has connected`)
 
+  socket.on(SOCKET_IO_EVENTS.CONNECT_TO_WHITEBOARD, async ({ whiteboardId }) => {
+    await socket.join(whiteboardId)
+  })
+
   socket.on(SOCKET_IO_EVENTS.DRAW_LINE_END, (data) => {
-    socket.broadcast.emit(SOCKET_IO_EVENTS.ON_DRAW_LINE_END, data)
+    socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_DRAW_LINE_END, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.DRAW_RECT_END, (data) => {
-    socket.broadcast.emit(SOCKET_IO_EVENTS.ON_DRAW_RECT_END, data)
+    socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_DRAW_RECT_END, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.DRAW_CIRCLE_END, (data) => {
-    socket.broadcast.emit(SOCKET_IO_EVENTS.ON_DRAW_CIRCLE_END, data)
+    socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_DRAW_CIRCLE_END, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.ADD_TEXT, (data) => {
-    socket.broadcast.emit(SOCKET_IO_EVENTS.ON_ADD_TEXT_END, data)
+    socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_ADD_TEXT_END, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.ADD_NEW_PAGE, (data) => {
-    socket.broadcast.emit(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE, data)
+    socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.DELETE_PAGE, (data) => {
-    socket.broadcast.emit(SOCKET_IO_EVENTS.ON_DELETE_PAGE, data)
+    socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_DELETE_PAGE, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE, (data) => {
-    socket.emit(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, data)
+    io.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, data)
+  })
+
+  socket.on(SOCKET_IO_EVENTS.REQUEST_DRAW, (data) => {
+    socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_REQUEST_DRAW, data)
   })
 
   socket.on('disconnect', () => {

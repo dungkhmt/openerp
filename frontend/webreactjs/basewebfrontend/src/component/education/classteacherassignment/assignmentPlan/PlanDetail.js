@@ -271,6 +271,7 @@ export default function PlanDetail() {
         <ConflictClassesAssignedToTeacherInSolution planId={planId} />
         <AssignmentStatistic planId={planId} />
       </TabPanel>
+
       <TabPanel value={selectedTab} index={6} dir={theme.direction}>
         <NotAssignedClassInSolutionList planId={planId} />
       </TabPanel>

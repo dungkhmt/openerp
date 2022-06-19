@@ -1,12 +1,12 @@
 export const updateLocalStorageData = (dataFromLS, newData, key) => {
-  const dataIndex = dataFromLS.findIndex(data => Number(data.currentPage) === Number(key))
+  const dataIndex = dataFromLS.findIndex((data) => Number(data.currentPage) === Number(key))
   if (dataIndex > -1) {
     dataFromLS[dataIndex] = { data: newData, currentPage: key }
   } else {
     dataFromLS.push({ data: newData, currentPage: key })
   }
 
-  return dataFromLS 
+  return dataFromLS
 }
 
 export const mergeDrawData = (oldData, newData) => {
@@ -44,9 +44,9 @@ export const mergeDrawData = (oldData, newData) => {
 export const removeData = (data, page) => {
   //  data: [{ currentPage: 1, data: []}, { currentPage: 2, data: []}]
   let newData = []
-  const index = data.findIndex(item => Number(item.currentPage) === Number(page))
+  const index = data.findIndex((item) => Number(item.currentPage) === Number(page))
   if (index === -1) {
-    if (data.some(item => Number(item.currentPage) > Number(page))) {
+    if (data.some((item) => Number(item.currentPage) > Number(page))) {
       // decrease currentPage by 1
       data.forEach((item) => {
         if (Number(item.currentPage) < Number(page)) {
