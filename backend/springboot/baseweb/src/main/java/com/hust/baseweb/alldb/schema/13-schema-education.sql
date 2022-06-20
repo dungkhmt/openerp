@@ -95,6 +95,7 @@ create table public.edu_course_chapter_material(
     slide_id                 varchar(200),
 	last_updated_stamp timestamp NULL,
 	created_stamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    slide_id character varying,
     constraint pk_edu_course_chapter_material primary key(edu_course_material_id),
     constraint fk_edu_course_material_id_chapter_id foreign key(chapter_id) references edu_course_chapter(chapter_id)
 
@@ -241,6 +242,7 @@ create TABLE edu_assignment_submission (
 	original_file_name varchar(255) NOT NULL,
 	last_updated_stamp timestamp NULL,
 	created_stamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    material_source_mongo_id varchar(255) NULL,
 	CONSTRAINT edu_assignment_submission_check CHECK ((created_stamp <= last_updated_stamp)),
 	CONSTRAINT pk_assignment_submission PRIMARY KEY (id)
 );
