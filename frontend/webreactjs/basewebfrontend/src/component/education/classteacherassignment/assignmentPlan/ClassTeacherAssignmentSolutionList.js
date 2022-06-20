@@ -33,7 +33,7 @@ function ClassTeacherAssignmentSolutionList(props) {
     { title: "Mã học phần", field: "courseId" },
     { title: "Tên học phần", field: "courseName" },
     { title: "Loại lớp", field: "classType" },
-    { title: "Mã giảng viên", field: "teacherId" },
+    { title: "Email", field: "teacherId" },
     { title: "Tên giảng viên", field: "teacherName" },
     { title: "Thời khoá biểu", field: "timetable", sorting: false },
     {
