@@ -145,17 +145,24 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
         return result;
     }
 
+    /**
+     * Temporarily OK
+     *
+     * @param planId
+     * @param file
+     * @return
+     */
     @Transactional
     @Override
     public boolean extractExcelAndStoreDB(UUID planId, MultipartFile file) {
         List<ClassTeacherAssignmentClassInfo> classes = new ArrayList<>();
 
-        try {
-            InputStream inputStream = file.getInputStream();
-            XSSFWorkbook wb = new XSSFWorkbook(inputStream);
+        try (InputStream is = file.getInputStream()) {
+            XSSFWorkbook wb = new XSSFWorkbook(is);
             XSSFSheet sheet = wb.getSheetAt(0);
-            int sz = sheet.getLastRowNum();
-            for (int i = 1; i <= sz; i++) {
+            int lastRowNum = sheet.getLastRowNum();
+
+            for (int i = 1; i <= lastRowNum; i++) {
                 Row row = sheet.getRow(i);
                 Cell c = row.getCell(1);
 
@@ -191,6 +198,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
                 c = row.getCell(29);
                 double hourLoad = c.getNumericCellValue();
 
+                //
                 ClassTeacherAssignmentClassInfo cls = new ClassTeacherAssignmentClassInfo();
                 cls.setClassId(classId);
                 cls.setClassName(className);
@@ -215,7 +223,6 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
                 log.info(classId + "\t" + courseId + "\t" + className + "\t" + timeTable);
             }
             classInfoRepo.saveAll(classes);
-            inputStream.close();
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -254,7 +261,9 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
      */
     @Override
     public List<EduTeacher> findAllTeachers() {
-        return eduTeacherRepo.findAll();
+        List<EduTeacher> teachers = eduTeacherRepo.findAll();
+        teachers.sort(Comparator.comparing(EduTeacher::getId));
+        return teachers;
     }
 
     @Override
@@ -270,7 +279,9 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
      */
     @Override
     public List<TeacherForAssignmentPlan> findAllTeacherByPlanId(UUID planId) {
-        return teacherForAssignmentPlanRepo.findAllByPlanId(planId);
+        List<TeacherForAssignmentPlan> teachersInPlan = teacherForAssignmentPlanRepo.findAllByPlanId(planId);
+        teachersInPlan.sort(Comparator.comparing(TeacherForAssignmentPlan::getTeacherId));
+        return teachersInPlan;
     }
 
     /**
@@ -366,19 +377,38 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
 
     @Override
     public List<TeacherCourse> findAllTeacherCourse() {
-        return teacherCourseRepo.findAll();
+        List<TeacherCourse> tc = teacherCourseRepo.findAll();
+        tc.sort((tc1, tc2) -> {
+            String key1 = tc1.getTeacherId() + tc1.getCourseId() + tc1.getClassType();
+            String key2 = tc2.getTeacherId() + tc2.getCourseId() + tc2.getClassType();
+            return key1.compareTo(key2);
+        });
+        return tc;
     }
 
     @Override
     public List<TeacherCourseForAssignmentPlan> findTeacherCourseOfPlan(UUID planId) {
-        return teacherCourseForAssignmentPlanRepo.findAllByPlanId(planId);
+        List<TeacherCourseForAssignmentPlan> tc = teacherCourseForAssignmentPlanRepo.findAllByPlanId(planId);
+        tc.sort((tc1, tc2) -> {
+            String key1 = tc1.getTeacherId() + tc1.getCourseId() + tc1.getClassType();
+            String key2 = tc2.getTeacherId() + tc2.getCourseId() + tc2.getClassType();
+            return key1.compareTo(key2);
+        });
+        return tc;
     }
 
+    /**
+     * Temporarily OK
+     *
+     * @param planId
+     * @param choice
+     * @param file
+     * @return
+     */
     @Transactional
     @Override
     public boolean extractExcelAndStoreDBTeacherCourse(UUID planId, String choice, MultipartFile file) {
-        try {
-            InputStream inputStream = file.getInputStream();
+        try (InputStream inputStream = file.getInputStream()) {
             XSSFWorkbook wb = new XSSFWorkbook(inputStream);
             XSSFSheet sheet = wb.getSheetAt(1);
 
@@ -449,6 +479,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
                     teachers.add(teacher);
                     teacherIds.add(teacherId);
                 }
+
                 if (!courseIds.contains(courseId)) { // OK
                     EduCourse course = new EduCourse();
                     course.setId(courseId);
@@ -481,8 +512,8 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
 //            if (choice.equals("UPLOAD_COURSE")) {
             // check and store courses
             for (EduCourse c : courses) {
-
                 EduCourse eduCourse = eduCourseRepo.findById(c.getId()).orElse(null);
+
                 if (eduCourse != null) {
                     // EXISTS, do nothing
                     log.info("extractExcelAndStoreDBTeacherCourse, course " + c.getId() + " EXISTS");
@@ -495,6 +526,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
             // check and store teachers
             for (EduTeacher t : teachers) {
                 EduTeacher teacher = eduTeacherRepo.findById(t.getId()).orElse(null);
+
                 if (teacher != null) {
                     // EXISTS do nothing
                     log.info("extractExcelAndStoreDBTeacherCourse, teacher " + t.getId() + " EXISTS");
@@ -509,6 +541,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
                 TeacherCourse existedTeacherCourse = teacherCourseRepo
                     .findById(new TeacherCourseId(tc.getTeacherId(), tc.getCourseId(), tc.getClassType()))
                     .orElse(null);
+
                 if (null == existedTeacherCourse) {
                     teacherCourseRepo.save(tc);
                 }
@@ -519,6 +552,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
             e.printStackTrace();
             return false;
         }
+
         return true;
     }
 
@@ -1021,6 +1055,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
             }
         }
 
+        suggestedTeachers.sort(Comparator.comparing(SuggestedTeacherAndActionForClass::getTeacherId));
         return suggestedTeachers;
     }
 
