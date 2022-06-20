@@ -69,26 +69,14 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "none",
   },
 }));
-
-const headerProperties = {
-  headerStyle: {
-    textAlign: "center",
-  },
-  cellStyle: {
-    textAlign: "center",
-    fontSize: "1rem",
-  },
-};
 const registCols = [
   {
     field: "name",
     title: "Họ và tên",
-    ...headerProperties,
   },
   {
     field: "email",
     title: "Email",
-    ...headerProperties,
     render: (rowData) => (
       <Link href={`mailto:${rowData.email}`}>{rowData.email}</Link>
     ),
@@ -193,7 +181,6 @@ export default function TeacherViewDetailClassStudentRegistered(props) {
   }, []);
   return (
     <div>
-      <h1>Registered students</h1>
       <Card className={classes.card} elevation={0}>
         {/* <CardActionArea
               disableRipple
@@ -255,14 +242,7 @@ export default function TeacherViewDetailClassStudentRegistered(props) {
               pageSize: 10,
               selection: true,
               debounceInterval: 500,
-              headerStyle: {
-                backgroundColor: "#673ab7",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "white",
-              },
               sorting: false,
-              cellStyle: { fontSize: "1rem" },
               toolbarButtonAlignment: "left",
               showTextRowsSelected: false,
             }}
