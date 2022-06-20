@@ -69,9 +69,9 @@ export const MEDIA_TYPE = {
 // };
 
 export const PEER_SERVER = {
-  // secure: true,
-  host: "localhost",
-  port: "3001",
+  secure: true,
+  host: "peer-server-nguyenbahoang.herokuapp.com",
+  port: "443",
   path: "/",
 };
 
