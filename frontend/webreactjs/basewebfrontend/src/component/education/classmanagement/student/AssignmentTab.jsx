@@ -35,15 +35,6 @@ function AssignmentTab({ classId }) {
   // Table refs.
   const assignTableRef = useRef(null);
 
-  const headerProperties = {
-    headerStyle: {
-      textAlign: "center",
-    },
-    cellStyle: {
-      textAlign: "center",
-      fontSize: "1rem",
-    },
-  };
   const assignCols = [
     // {
     //   field: "id",
@@ -61,12 +52,10 @@ function AssignmentTab({ classId }) {
     {
       field: "name",
       title: "Tên bài tập",
-      ...headerProperties,
     },
     {
       field: "closeTime",
       title: "Hạn nộp",
-      ...headerProperties,
       render: (rowData) => {
         let closeTime = new Date(rowData.closeTime);
         return displayTime(closeTime);
@@ -93,17 +82,9 @@ function AssignmentTab({ classId }) {
 
   return (
     <Card className={classes.card}>
-      <CardHeader
-        avatar={
-          <Avatar style={{ background: "white" }}>
-            <FcMindMap size={40} />
-          </Avatar>
-        }
-        title={<Typography variant="h5">Bài tập</Typography>}
-      />
       <CardContent>
         <MaterialTable
-          title=""
+          title="Bài tập"
           columns={assignCols}
           localization={localization}
           tableRef={assignTableRef}
@@ -115,15 +96,8 @@ function AssignmentTab({ classId }) {
             pageSize: 10,
             search: false,
             debounceInterval: 300,
-            headerStyle: {
-              backgroundColor: "#673ab7",
-              fontWeight: "bold",
-              fontSize: "1rem",
-              color: "white",
-            },
             sorting: false,
             cellStyle: {
-              fontSize: "1rem",
               whiteSpace: "normal",
               wordBreak: "break-word",
             },

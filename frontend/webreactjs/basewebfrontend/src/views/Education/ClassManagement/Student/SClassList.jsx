@@ -44,25 +44,14 @@ function SClassList() {
   const history = useHistory();
 
   // Table.
-  const headerProperties = {
-    headerStyle: {
-      textAlign: "center",
-    },
-    cellStyle: {
-      textAlign: "center",
-      fontSize: "1rem",
-    },
-  };
   const columns = [
     {
       field: "classCode",
       title: "Mã lớp",
-      ...headerProperties,
     },
     {
       field: "courseId",
       title: "Mã học phần",
-      ...headerProperties,
     },
     {
       field: "name",
@@ -71,12 +60,10 @@ function SClassList() {
     {
       field: "classType",
       title: "Loại lớp",
-      ...headerProperties,
     },
     {
       field: "semester",
       title: "Học kỳ",
-      ...headerProperties,
     },
     {
       field: "status",
@@ -148,6 +135,7 @@ function SClassList() {
             icons={tableIcons}
             localization={localization}
             components={{
+              Toolbar: () => null,
               Container: (props) => <Paper {...props} elevation={0} />,
             }}
             options={{
@@ -155,15 +143,7 @@ function SClassList() {
               search: false,
               pageSize: 10,
               debounceInterval: 300,
-              headerStyle: {
-                backgroundColor: "#673ab7",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "white",
-              },
               sorting: false,
-              filterCellStyle: { textAlign: "center" },
-              cellStyle: { fontSize: "1rem" },
             }}
             onRowClick={(event, rowData) => {
               // console.log(rowData);
