@@ -77,7 +77,11 @@ public class RoomParticipantService {
   }
 
   public Page<Room> getListInvitedRoom(Pageable page, UserLogin u) {
-    return roomParticipantRepository.getListInvitedRoom(page, u);
+    Page<Room> pageRoom = roomParticipantRepository.getListInvitedRoom(page, u);
+    pageRoom.forEach((room) -> {
+      room.setHost(null);
+    });
+    return pageRoom;
   }
 
   public Page<String> getInvitedFriends(Pageable page, Room r) {

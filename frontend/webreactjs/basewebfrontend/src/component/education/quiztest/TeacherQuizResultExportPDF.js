@@ -115,26 +115,33 @@ function resultDetailList(dataPdf) {
         let pele = {
           margin: [0, 5, 0, 10],
           bold: true,
+          display: "inline",
         };
+        let ansContent = ans.choiceAnswerContent;
 
         if (ans.isCorrectAnswer === "Y") {
+          // Add check-mark symbols
+          ansContent = "<p>√ " + ansContent.substring(3);
+
           if (listchooseAns.includes(ans.choiceAnswerId)) {
             pele["color"] = "blue";
+            pele["decoration"] = "underline";
           } else {
             pele["color"] = "green";
           }
         } else {
+          pele["margin"] = [10, 5, 0, 10];
+
           if (listchooseAns.includes(ans.choiceAnswerId)) {
             pele["color"] = "red";
+            pele["decoration"] = "underline";
           } else {
-            pele = {
-              margin: [0, 5, 0, 10],
-            };
+            pele["bold"] = false;
           }
         }
 
         questionDetail.push(
-          htmlToPdfmake(ans.choiceAnswerContent, {
+          htmlToPdfmake(ansContent, {
             defaultStyles: { ...answerDefaultStyles, p: pele },
           })
         );

@@ -63,10 +63,10 @@ const useStyles = makeStyles((theme) => ({
 
 const tabsLabel = [
   "DS lớp",
-  "Giáo viên",
-  "Giáo viên trong KH",
-  "Giáo viên-môn",
-  "Giáo viên-môn trong KH",
+  "Giảng viên",
+  "Giảng viên trong KH",
+  "Giảng viên-Môn",
+  "Giảng viên-Môn trong KH",
   "Kết quả phân công",
   "Lớp chưa được phân công",
 ];
@@ -271,6 +271,7 @@ export default function PlanDetail() {
         <ConflictClassesAssignedToTeacherInSolution planId={planId} />
         <AssignmentStatistic planId={planId} />
       </TabPanel>
+
       <TabPanel value={selectedTab} index={6} dir={theme.direction}>
         <NotAssignedClassInSolutionList planId={planId} />
       </TabPanel>

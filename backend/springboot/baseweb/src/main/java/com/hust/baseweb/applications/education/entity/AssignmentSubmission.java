@@ -32,6 +32,8 @@ public class AssignmentSubmission {
 
     private String originalFileName;
 
+    private String materialSourceMongoId;
+
     @LastModifiedDate
     private Date lastUpdatedStamp;
 

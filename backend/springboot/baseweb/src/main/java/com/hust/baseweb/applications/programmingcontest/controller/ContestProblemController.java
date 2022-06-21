@@ -1,6 +1,7 @@
 package com.hust.baseweb.applications.programmingcontest.controller;
 
 import com.google.gson.Gson;
+import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
@@ -508,11 +509,10 @@ public class ContestProblemController {
     }
 
     @GetMapping("/get-ranking-contest-new/{contestId}")
-    public ResponseEntity<?> getRankingContestNewVersion(@PathVariable("contestId") String contestId, Pageable pageable){
-        log.info("getRankingContest page {}", pageable);
-        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-        List<ContestSubmissionsByUser> page = problemTestCaseService.getRankingByContestIdNew(pageable, contestId);
-        log.info("ranking page {}", page);
+    public ResponseEntity<?> getRankingContestNewVersion(@PathVariable("contestId") String contestId, Pageable pageable, @RequestParam Constants.GetPointForRankingType getPointForRankingType){
+        pageable = Pageable.unpaged();
+        List<ContestSubmissionsByUser> page = problemTestCaseService.getRankingByContestIdNew(pageable, contestId, getPointForRankingType);
+//        log.info("ranking page {}", page);
         return ResponseEntity.status(200).body(page);
     }
 
@@ -521,7 +521,7 @@ public class ContestProblemController {
         log.info("getRankingContest page {}", pageable);
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("point").descending());
         Page<UserSubmissionContestResultNativeEntity> page = problemTestCaseService.getRankingByContestId(pageable, contestId);
-        log.info("ranking page {}", page);
+//        log.info("ranking page {}", page);
         return ResponseEntity.status(200).body(page);
     }
 
@@ -593,7 +593,7 @@ public class ContestProblemController {
     @GetMapping("/get-contest-submission-paging-of-a-user-and-contest/{contestId}")
     public ResponseEntity<?> getContestSubmissionPagingOfCurrentUser( Principal principal, @PathVariable String contestId, Pageable pageable){
         log.info("getContestSubmissionPagingOfCurrentUser, user = " + principal.getName() + " contestId = " + contestId);
-        pageable = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), Sort.by("createdAt").descending());
+        pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by("createdAt").descending());
         Page<ContestSubmission> page = problemTestCaseService.findContestSubmissionByUserLoginIdAndContestIdPaging(pageable, principal.getName(), contestId);
         log.info("page {}", page);
         return ResponseEntity.status(200).body(page);

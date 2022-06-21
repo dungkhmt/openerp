@@ -1,7 +1,6 @@
 package com.hust.baseweb.entity;
 
 import com.hust.baseweb.applications.whiteboard.entity.UserWhiteboard;
-import com.hust.baseweb.applications.whiteboard.entity.Whiteboard;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

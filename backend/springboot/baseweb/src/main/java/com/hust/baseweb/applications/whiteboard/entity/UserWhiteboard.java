@@ -23,4 +23,12 @@ public class UserWhiteboard {
     @ManyToOne
     @JoinColumn(name = "whiteboard_id")
     private Whiteboard whiteboard;
+
+    // write - read
+    @Column(name = "role_id")
+    private String roleId;
+
+    // idle - accepted - rejected - pending
+    @Column(name = "status_id")
+    private String statusId;
 }

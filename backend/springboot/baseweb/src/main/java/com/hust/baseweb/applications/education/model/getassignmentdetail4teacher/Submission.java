@@ -9,4 +9,6 @@ public interface Submission {
     String getName();
 
     Date getSubmissionDate();
+
+    String getOriginalFileName();
 }

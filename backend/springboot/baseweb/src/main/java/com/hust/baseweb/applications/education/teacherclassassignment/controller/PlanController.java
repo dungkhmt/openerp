@@ -18,6 +18,7 @@ import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.security.Principal;
@@ -143,6 +144,23 @@ public class PlanController {
     }
 
     /**
+     * Temporarily OK
+     *
+     * @param planId
+     * @param file
+     * @return
+     */
+    @PostMapping("/{planId}/teacher-course/upload-excel")
+    public ResponseEntity<?> uploadExcelTeacherCourse(
+        @PathVariable UUID planId,
+        @RequestParam("file") MultipartFile file
+    ) {
+        log.info("uploadExcelTeacherCourse");
+        boolean ok = planService.extractExcelAndStoreDBTeacherCourse(planId, "", file);
+        return ResponseEntity.ok().body(ok);
+    }
+
+    /**
      * OK
      *
      * @param planId
@@ -191,6 +209,24 @@ public class PlanController {
         UserLogin u = userService.findById(principal.getName());
         planService.updateClassForAssignment(u, planId, classId, input);
         return ResponseEntity.ok().body("OK");
+    }
+
+    /**
+     * Temporarily OK
+     *
+     * @param planId
+     * @param file
+     * @return
+     */
+    @PostMapping("/{planId}/class/upload-excel")
+    public ResponseEntity<?> uploadExcelClass4TeacherAssignment(
+        @PathVariable UUID planId,
+        @RequestParam("file") MultipartFile file
+    ) {
+        log.info("uploadExcelClass4TeacherAssignment, planId = " + planId);
+        planService.extractExcelAndStoreDB(planId, file);
+        return ResponseEntity.ok().body("OK");
+
     }
 
     /**

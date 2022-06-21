@@ -33,48 +33,33 @@ function TClassList() {
   //const token = useSelector((state) => state.auth.token);
 
   // Table.
-  const headerProperties = {
-    headerStyle: {
-      textAlign: "center",
-    },
-    cellStyle: {
-      textAlign: "center",
-      fontSize: "1rem",
-    },
-  };
 
   const columns = [
     {
       field: "classCode",
       title: "Mã lớp",
-      ...headerProperties,
     },
     {
       field: "courseId",
       title: "Mã môn",
-      ...headerProperties,
     },
     {
       field: "courseName",
       title: "Tên môn",
-      ...headerProperties,
     },
     {
       field: "createdByUserLoginId",
       title: "Người tạo",
-      ...headerProperties,
     },
 
     {
       field: "semester",
       title: "Học kỳ",
-      ...headerProperties,
     },
 
     {
       field: "statusId",
       title: "Trạng thái",
-      ...headerProperties,
     },
   ];
 
@@ -82,39 +67,30 @@ function TClassList() {
     {
       field: "classCode",
       title: "Mã lớp",
-      ...headerProperties,
     },
     {
       field: "courseId",
       title: "Mã học phần",
-      ...headerProperties,
     },
     {
       field: "name",
       title: "Tên học phần",
-      headerStyle: {
-        textAlign: "center",
-      },
     },
     {
       field: "classType",
       title: "Loại lớp",
-      ...headerProperties,
     },
     {
       field: "department",
       title: "Khoa/Viện",
-      ...headerProperties,
     },
     {
       field: "semester",
       title: "Học kỳ",
-      ...headerProperties,
     },
     {
       field: "statusId",
       title: "Trạng thái",
-      ...headerProperties,
     },
   ];
 
@@ -181,6 +157,7 @@ function TClassList() {
             localization={localization}
             data={data}
             components={{
+              Toolbar: () => null,
               Container: (props) => <Paper {...props} elevation={0} />,
             }}
             options={{
@@ -188,14 +165,6 @@ function TClassList() {
               search: false,
               pageSize: 10,
               debounceInterval: 500,
-              headerStyle: {
-                backgroundColor: "#673ab7",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "white",
-              },
-              filterCellStyle: { textAlign: "center" },
-              cellStyle: { fontSize: "1rem" },
             }}
             onRowClick={(event, rowData) => {
               // console.log(rowData);
