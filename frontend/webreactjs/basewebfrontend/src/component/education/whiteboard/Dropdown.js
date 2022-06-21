@@ -1,3 +1,4 @@
+import { Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 
@@ -36,12 +37,22 @@ export const Dropdown = React.memo(({ pendingList, onApproveRequest, onRejectReq
         pendingList.map((item) => (
           <div className={classes.dropdown} key={item.userId}>
             <div>{item.userId}</div>
-            <button type="button" style={{ cursor: 'pointer' }} onClick={() => onApproveRequest(item)}>
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ cursor: 'pointer' }}
+              onClick={() => onApproveRequest(item)}
+            >
               Approve
-            </button>
-            <button type="button" style={{ cursor: 'pointer' }} onClick={() => onRejectRequest(item)}>
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              style={{ cursor: 'pointer' }}
+              onClick={() => onRejectRequest(item)}
+            >
               Reject
-            </button>
+            </Button>
           </div>
         ))}
     </div>
