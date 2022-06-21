@@ -117,9 +117,12 @@ public class ContestProblemController {
             ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
             ProblemEntity problemEntity = problemTestCaseService.getContestProblem(problemId);
             ModelStudentViewProblemDetail model = new ModelStudentViewProblemDetail();
-            if(contestEntity.getProblemDescriptionViewType().equals(ContestEntity.CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_VISIBLE))
+            if(contestEntity.getProblemDescriptionViewType() != null &&
+               contestEntity.getProblemDescriptionViewType().equals(ContestEntity.CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_HIDDEN))
+                model.setProblemStatement(" ");
+            else
                 model.setProblemStatement(problemEntity.getProblemDescription());
-            else model.setProblemStatement(" ");
+
 
             model.setProblemName(problemEntity.getProblemName());
             return ResponseEntity.ok().body(model);

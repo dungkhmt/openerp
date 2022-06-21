@@ -12,4 +12,5 @@ public interface EduQuizTestGroupService {
     List<EduTestQuizGroup> generateQuizTestGroups(GenerateQuizTestGroupInputModel input);
 
     QuizGroupTestDetailModel getTestGroupQuestionDetail(Principal principal, String testID);
+    QuizGroupTestDetailModel getTestGroupQuestionDetail(String userLoginId, String testID);
 }

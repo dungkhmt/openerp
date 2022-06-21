@@ -66,6 +66,7 @@ export default function StudentViewSubmission() {
         }
       },
     },
+    { title: t("submissionList.point"), field: "point" },
     { title: t("submissionList.language"), field: "sourceCodeLanguage" },
     {
       title: t("submissionList.numTestCases"),

@@ -3,6 +3,8 @@ package com.hust.baseweb.applications.education.quiztest.controller;
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
 import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizGroup;
 import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizParticipant;
+import com.hust.baseweb.applications.education.quiztest.model.ParticipantAndQuestionsModel;
+import com.hust.baseweb.applications.education.quiztest.model.QuizGroupTestDetailModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestgroup.GenerateQuizTestGroupInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestgroup.QuizTestGroupParticipantAssignmentOutputModel;
 import com.hust.baseweb.applications.education.quiztest.repo.EduTestQuizParticipantRepo;
@@ -13,6 +15,7 @@ import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.PartialUpdate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +49,24 @@ public class EduQuizTestGroupController {
         List<EduTestQuizGroup> eduTestQuizGroups = eduQuizTestGroupService.generateQuizTestGroups(input);
 
         return ResponseEntity.ok().body(eduTestQuizGroups);
+    }
+
+    @GetMapping("/get-all-quiz-test-participation-group-question/{testID}")
+    public ResponseEntity<?> getAllTestGroupQuestionByUser(Principal principal, @PathVariable String testID) {
+        List<QuizTestGroupParticipantAssignmentOutputModel> quizTestGroupParticipantAssignmentOutputModels
+            = eduTestQuizGroupParticipationAssignmentService.getQuizTestGroupParticipant(testID);
+        List<ParticipantAndQuestionsModel> retList = new ArrayList();
+        for(QuizTestGroupParticipantAssignmentOutputModel p : quizTestGroupParticipantAssignmentOutputModels){
+            String userId = p.getParticipantUserLoginId();
+            QuizGroupTestDetailModel questions = eduQuizTestGroupService.getTestGroupQuestionDetail(userId, testID);
+            ParticipantAndQuestionsModel participantAndQuestionsModel = new ParticipantAndQuestionsModel();
+            participantAndQuestionsModel.setParticipantUserLoginId(userId);
+            participantAndQuestionsModel.setQuizGroupTestDetailModel(questions);
+
+            retList.add(participantAndQuestionsModel);
+
+        }
+        return ResponseEntity.ok().body(retList);
     }
 
     @GetMapping("/get-quiz-test-participation-group-question/{testID}")
