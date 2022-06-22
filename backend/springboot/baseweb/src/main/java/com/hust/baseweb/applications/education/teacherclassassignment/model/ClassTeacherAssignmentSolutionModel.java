@@ -57,6 +57,7 @@ public class ClassTeacherAssignmentSolutionModel {
 
         model.setSolutionItemId(this.getSolutionItemId());
         model.setClassCode(this.getClassCode());
+        model.setClassType(this.getClassType());
         model.setCourseId(this.getCourseId());
         model.setCourseName(this.getCourseName());
         model.setTeacherId(this.getTeacherId());

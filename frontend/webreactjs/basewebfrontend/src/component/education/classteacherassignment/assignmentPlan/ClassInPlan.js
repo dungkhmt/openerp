@@ -119,16 +119,21 @@ function ClassInPlan({ planId }) {
       `edu/teaching-assignment/plan/${planId}/class/upload-excel`,
       (res) => {
         e.target.value = "";
-        successNoti("Đã tải lên.");
-        getClasses();
+
+        if (res.data === true) {
+          successNoti("Đã tải lên.");
+          getClasses();
+        } else {
+          errorNoti(
+            "Đã có lỗi xảy ra. Vui lòng kiểm tra định dạng file excel và thử lại."
+          );
+        }
       },
       {
         onError: (error) => {
           e.target.value = "";
           console.error(error);
-          errorNoti(
-            "Đã có lỗi xảy ra. Vui lòng kiểm tra định dạng file excel và thử lại."
-          );
+          errorNoti("Đã có lỗi xảy ra.");
         },
       },
       data

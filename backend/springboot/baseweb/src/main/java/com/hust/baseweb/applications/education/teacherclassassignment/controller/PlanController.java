@@ -224,8 +224,8 @@ public class PlanController {
         @RequestParam("file") MultipartFile file
     ) {
         log.info("uploadExcelClass4TeacherAssignment, planId = " + planId);
-        planService.extractExcelAndStoreDB(planId, file);
-        return ResponseEntity.ok().body("OK");
+        boolean ok = planService.extractExcelAndStoreDB(planId, file);
+        return ResponseEntity.ok().body(ok);
 
     }
 

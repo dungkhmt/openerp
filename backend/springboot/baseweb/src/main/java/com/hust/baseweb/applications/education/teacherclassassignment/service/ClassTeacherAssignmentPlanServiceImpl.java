@@ -170,7 +170,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
                 c = row.getCell(0);
                 String semesterId = c.getStringCellValue();
                 c = row.getCell(2);
-                String classId = c.getStringCellValue();
+                String classId = String.valueOf(Double.valueOf(c.getNumericCellValue()).intValue());
                 c = row.getCell(4);
                 String courseId = c.getStringCellValue();
                 c = row.getCell(5);
@@ -184,9 +184,9 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
                 c = row.getCell(22);
                 String semesterType = c.getStringCellValue();
                 c = row.getCell(18);
-                int enrollment = Double.valueOf(c.getStringCellValue()).intValue();
+                int enrollment = Double.valueOf(c.getNumericCellValue()).intValue();
                 c = row.getCell(19);
-                int maxEnrollment = Double.valueOf(c.getStringCellValue()).intValue();
+                int maxEnrollment = Double.valueOf(c.getNumericCellValue()).intValue();
                 c = row.getCell(21);
                 String classType = c.getStringCellValue();
                 c = row.getCell(26);
@@ -222,6 +222,10 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
 
                 log.info(classId + "\t" + courseId + "\t" + className + "\t" + timeTable);
             }
+
+            solutionRepo.deleteAll();
+            classInfoRepo.deleteAll();
+
             classInfoRepo.saveAll(classes);
         } catch (Exception ex) {
             ex.printStackTrace();

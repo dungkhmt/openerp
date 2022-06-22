@@ -67,16 +67,21 @@ function TeacherCourseList(props) {
       `edu/teaching-assignment/plan/${planId}/teacher-course/upload-excel`,
       (res) => {
         e.target.value = "";
-        successNoti("Đã tải lên.");
-        getTeacherForAssignmentList();
+
+        if (res.data === true) {
+          successNoti("Đã tải lên.");
+          getTeacherForAssignmentList();
+        } else {
+          errorNoti(
+            "Đã có lỗi xảy ra. Vui lòng kiểm tra định dạng file excel và thử lại."
+          );
+        }
       },
       {
         onError: (error) => {
           e.target.value = "";
           console.error(error);
-          errorNoti(
-            "Đã có lỗi xảy ra. Vui lòng kiểm tra định dạng file excel và thử lại."
-          );
+          errorNoti("Đã có lỗi xảy ra.");
         },
       },
       data
