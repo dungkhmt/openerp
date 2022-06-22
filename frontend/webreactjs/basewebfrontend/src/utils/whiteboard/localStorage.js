@@ -28,7 +28,7 @@ export const mergeDrawData = (oldData, newData) => {
           resultData.push(totalDrawData[j])
           continue
         }
-        const index = resultData.findIndex((item) => Number(item.key) === Number(totalDrawData[j].key))
+        const index = resultData.findIndex((item) => item.key === totalDrawData[j].key)
         if (index === -1) {
           resultData.push(totalDrawData[j])
         }

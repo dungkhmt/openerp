@@ -16,6 +16,9 @@ export const SOCKET_IO_EVENTS = {
   DELETE_PAGE: 'delete_page',
   ON_DELETE_PAGE: 'on_delete_page',
 
+  CHANGE_STROKE_DRAW: 'change_stroke_draw',
+  ON_CHANGE_STROKE_DRAW: 'on_change_stroke_draw',
+
   CHECK_LOCAL_STORAGE: 'check_local_storage',
   ON_CHECK_LOCAL_STORAGE: 'on_check_local_storage',
 }

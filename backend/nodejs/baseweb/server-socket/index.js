@@ -57,6 +57,10 @@ io.on("connection", async (socket) => {
     socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_REQUEST_DRAW, data)
   })
 
+  socket.on(SOCKET_IO_EVENTS.CHANGE_STROKE_DRAW, (data) => {
+    socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_CHANGE_STROKE_DRAW, data)
+  })
+
   socket.on('disconnect', () => {
     console.log(`${socket.id} is disconnected`)
   })
