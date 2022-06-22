@@ -8,7 +8,10 @@ import { nanoid } from 'nanoid'
 
 export const DrawCircle = React.memo(
   React.forwardRef(
-    ({ eventPointer, scale, tool, currentPage, stageContainer, whiteboardId, onDrawDone, totalPage }, ref) => {
+    (
+      { eventPointer, scale, tool, currentPage, stageContainer, whiteboardId, onDrawDone, totalPage, strokeDraw },
+      ref,
+    ) => {
       const { socket } = useContext(SocketContext)
       const [annotations, setAnnotations] = useState([])
       const [newAnnotation, setNewAnnotation] = useState([])
@@ -30,8 +33,8 @@ export const DrawCircle = React.memo(
                     x: data[i].x,
                     y: data[i].y,
                     radius: data[i].radius,
-                    stroke: currentAnnotation !== null && currentAnnotation.key === data[i].key ? 'red' : '#df4b26',
-                    strokeWidth: 5 * scale,
+                    stroke: currentAnnotation !== null && currentAnnotation.key === data[i].key ? 'red' : data[i].color,
+                    strokeWidth: data[i].strokeWidth * scale,
                     tension: 0.5,
                     lineCap: 'round',
                     lineJoin: 'round',
@@ -74,27 +77,9 @@ export const DrawCircle = React.memo(
 
         socket.on(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, ({ currentWhiteboardId }) => onCheckLS(currentWhiteboardId))
 
-        // socket.on(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE, ({ currentWhiteboardId, newPage, changePage }) => {
-        //   if (whiteboardId !== currentWhiteboardId || !changePage) {
-        //     return
-        //   }
-        //   const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-        //   if (typeof drawData.circle !== 'undefined') {
-        //     const foundDrawData = drawData.circle.find((item) => Number(item.currentPage) === Number(newPage))
-        //     if (typeof foundDrawData !== 'undefined') {
-        //       setAnnotations(foundDrawData.data)
-        //       // annotationsRef.current = foundDrawData.data
-        //     } else {
-        //       setAnnotations([])
-        //       // annotationsRef.current = []
-        //     }
-        //   }
-        // })
-
         return () => {
           socket.off(SOCKET_IO_EVENTS.ON_DRAW_CIRCLE_END)
           socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
-          socket.off(SOCKET_IO_EVENTS.ON_CHANGE_PAGE)
         }
       }, [currentPage, totalPage])
 
@@ -119,7 +104,9 @@ export const DrawCircle = React.memo(
         if (eventPointer.eventType === EVENT_TYPE.MOUSE_DOWN) {
           if (newAnnotation.length === 0) {
             const { x, y } = eventPointer.pointerPosition
-            setNewAnnotation([{ x, y, radius: 0, key: nanoid(), tool }])
+            setNewAnnotation([
+              { x, y, radius: 0, key: nanoid(), tool, color: strokeDraw.color, strokeWidth: strokeDraw.strokeWidth },
+            ])
           }
         } else if (eventPointer.eventType === EVENT_TYPE.MOUSE_MOVE) {
           if (newAnnotation.length === 1) {
@@ -131,6 +118,8 @@ export const DrawCircle = React.memo(
                 radius: Math.sqrt(Math.pow(x - newAnnotation[0].x, 2) + Math.pow(y - newAnnotation[0].y, 2)),
                 key: nanoid(),
                 tool,
+                color: strokeDraw.color,
+                strokeWidth: strokeDraw.strokeWidth,
               },
             ])
           }
@@ -143,6 +132,8 @@ export const DrawCircle = React.memo(
               radius: Math.sqrt(Math.pow(x - newAnnotation[0].x, 2) + Math.pow(y - newAnnotation[0].y, 2)),
               key: nanoid(),
               tool,
+              color: strokeDraw.color,
+              strokeWidth: strokeDraw.strokeWidth,
             }
             setNewAnnotation([])
             const newAnno = [...annotations, annotationToAdd]
@@ -207,8 +198,8 @@ export const DrawCircle = React.memo(
               x={value.x}
               y={value.y}
               radius={value.radius}
-              stroke={currentAnnotation !== null && currentAnnotation.key === value.key ? 'red' : '#df4b26'}
-              strokeWidth={5 * scale}
+              stroke={currentAnnotation !== null && currentAnnotation.key === value.key ? 'red' : value.color}
+              strokeWidth={value.strokeWidth * scale}
               tension={0.5}
               lineCap="round"
               lineJoin="round"

@@ -102,6 +102,11 @@ public class QuizTestController {
     ) {
         return ResponseEntity.ok().body(quizTestService.getQuizTestById(testId));
     }
+    @GetMapping("/get-list-question-statement-view-type-id")
+    public ResponseEntity<?> getListQuestionStatementViewTypeId(){
+        List<String> L = EduQuizTest.getListQuestionStatementViewType();
+        return ResponseEntity.ok().body(L);
+    }
 
     @GetMapping("/get-all-quiz-test-user")
     public ResponseEntity<?> getAllQuizTestByUser(

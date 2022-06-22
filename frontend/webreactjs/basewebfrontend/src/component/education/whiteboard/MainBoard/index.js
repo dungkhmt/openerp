@@ -17,10 +17,30 @@ import { Dropdown } from '../Dropdown'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import { ListParticipantDropdown } from '../ListParticipantDropdown'
+import { Button, FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core'
 
 const scaleBy = 1.05
 const MAX_SCALE = 3.125
 const MIN_SCALE = 0.25
+
+const useStyles = makeStyles((theme) => ({
+  container: {
+    position: 'relative',
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+  optionWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    columnGap: 12,
+    fontSize: 12,
+  },
+}))
 
 const generatePages = (totalPage) => {
   const pages = []
@@ -33,16 +53,21 @@ const generatePages = (totalPage) => {
 export const MainBoard = React.memo(() => {
   const { socket } = useContext(SocketContext)
   const { whiteboardId } = useParams()
-  const [pageNow, setPageNow] = useState(() => Number(localStorage.getItem(KEYS.CURRENT_PAGE) ?? 1))
+  const classes = useStyles()
   const { width, height } = useWindowSize()
 
-  const [pages, setPages] = useState(() => generatePages(Number(localStorage.getItem(KEYS.TOTAL_PAGE) ?? 1)))
+  const [pageNow, setPageNow] = useState(Number(localStorage.getItem(KEYS.CURRENT_PAGE) ?? 1))
+  const [pages, setPages] = useState(generatePages(Number(localStorage.getItem(KEYS.TOTAL_PAGE) ?? 1)))
   const [stageConfig, setStageConfig] = useState({
     width,
     height,
   })
   const [tool, setTool] = useState(TOOL.POINTER)
   const [scale, setScale] = useState(1)
+  const [strokeDraw, setStrokeDraw] = useState({
+    strokeWidth: 5,
+    color: '#df4b26',
+  })
   const [eventPointer, setEventPointer] = useState({
     [TOOL.PEN]: { eventType: null, pointerPosition: { x: 0, y: 0 } },
     [TOOL.RECTANGLE]: { eventType: null, pointerPosition: { x: 0, y: 0 } },
@@ -67,8 +92,6 @@ export const MainBoard = React.memo(() => {
   const slideRef = useRef(null)
 
   const isAbleToDraw = roleStatus.roleId === ROLE_STATUS.WRITE && roleStatus.statusId === ROLE_STATUS.ACCEPTED
-
-  console.log('sdfds', localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE))
 
   useEffect(() => {
     socket.on(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE, ({ newPage, currentWhiteboardId, changePage, totalPage }) => {
@@ -103,6 +126,13 @@ export const MainBoard = React.memo(() => {
           return acc
         }, []),
       )
+
+      socket.on(SOCKET_IO_EVENTS.ON_CHANGE_STROKE_DRAW, ({ data, currentWhiteboardId }) => {
+        if (whiteboardId !== currentWhiteboardId) {
+          return
+        }
+        setStrokeDraw(data.strokeDraw)
+      })
 
       localStorage.setItem(KEYS.CURRENT_PAGE, pageId === 1 ? 1 : pageId - 1)
       localStorage.setItem(KEYS.TOTAL_PAGE, totalPage)
@@ -144,13 +174,6 @@ export const MainBoard = React.memo(() => {
         `/whiteboards/detail/${whiteboardId}`,
         (res) => {
           const currentPage = res?.data?.totalPage || 1
-          // const totalPageLS = Number(localStorage.getItem(KEYS.TOTAL_PAGE) ?? 1)
-          // if (totalPageLS === 1) {
-          //   localStorage.setItem(KEYS.TOTAL_PAGE, currentPage)
-          // }
-          // if (currentPage > totalPageLS) {
-          //   localStorage.setItem(KEYS.TOTAL_PAGE, currentPage)
-          // }
           localStorage.setItem(KEYS.TOTAL_PAGE, currentPage)
           localStorage.setItem(KEYS.CURRENT_PAGE, currentPage)
           setPageNow(currentPage)
@@ -644,6 +667,17 @@ export const MainBoard = React.memo(() => {
     )
   }
 
+  const onChangeStrokeDraw = (e) => {
+    setStrokeDraw((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value.includes('#') ? e.target.value : Number(e.target.value),
+    }))
+    socket.emit(SOCKET_IO_EVENTS.CHANGE_STROKE_DRAW, {
+      data: { ...strokeDraw, [e.target.name]: e.target.value },
+      currentWhiteboardId: whiteboardId,
+    })
+  }
+
   const settings = useMemo(
     () => ({
       arrows: false,
@@ -661,52 +695,71 @@ export const MainBoard = React.memo(() => {
   )
 
   return (
-    <>
+    <div className={classes.container}>
       {isAbleToDraw ? (
-        <>
-          <button type="button" onClick={onPrevPage} disabled={pageNow === 1}>
+        <div className={classes.optionWrapper}>
+          <Button variant="outlined" color="secondary" onClick={onPrevPage} disabled={pageNow === 1}>
             Prev page
-          </button>
-          <button type="button" onClick={onNextPage} disabled={pageNow >= pages.length}>
+          </Button>
+          <Button variant="outlined" color="primary" onClick={onNextPage} disabled={pageNow >= pages.length}>
             Next page
-          </button>
-          <select value={tool} onChange={(e) => setTool(e.target.value)}>
-            <option value={TOOL.POINTER}>Pointer</option>
-            <option value={TOOL.PEN}>Pen</option>
-            <option value={TOOL.RECTANGLE}>Rectangle</option>
-            <option value={TOOL.CIRCLE}>Circle</option>
-            <option value={TOOL.ERASER}>Eraser</option>
-            <option value={TOOL.TEXT}>Text</option>
-          </select>
-          <button type="button" onClick={onSaveWhiteboardData}>
+          </Button>
+          <label htmlFor="color">Color</label>
+          <input id="color" name="color" type="color" value={strokeDraw.color} onChange={onChangeStrokeDraw} />
+          <label htmlFor="strokeWidth">Stroke width</label>
+          <input
+            type="range"
+            max={15}
+            min={0}
+            step={0.5}
+            name="strokeWidth"
+            value={strokeDraw.strokeWidth}
+            onChange={onChangeStrokeDraw}
+            aria-labelledby="strokeWidth"
+          />
+          <FormControl className={classes.formControl}>
+            <InputLabel id="tool">Tool</InputLabel>
+            <Select labelId="tool" value={tool} onChange={(e) => setTool(e.target.value)}>
+              <MenuItem value={TOOL.POINTER}>Pointer</MenuItem>
+              <MenuItem value={TOOL.PEN}>Pen</MenuItem>
+              <MenuItem value={TOOL.RECTANGLE}>Rectangle</MenuItem>
+              <MenuItem value={TOOL.CIRCLE}>Circle</MenuItem>
+              <MenuItem value={TOOL.ERASER}>Eraser</MenuItem>
+              <MenuItem value={TOOL.TEXT}>Text</MenuItem>
+            </Select>
+          </FormControl>
+          <Button variant="contained" color="primary" onClick={onSaveWhiteboardData}>
             Save
-          </button>
-          <button type="button" onClick={onAddNewPage}>
+          </Button>
+          <Button variant="contained" color="primary" onClick={onAddNewPage}>
             Add new page
-          </button>
+          </Button>
           {pages.length >= 2 && (
-            <button type="button" onClick={onDeletePage}>
+            <Button variant="contained" color="secondary" onClick={onDeletePage}>
               Delete page {pageNow}
-            </button>
+            </Button>
           )}
-        </>
+          {pendingDrawRequestList.length > 0 && (
+            <Dropdown
+              pendingList={pendingDrawRequestList}
+              onApproveRequest={approveRequest}
+              onRejectRequest={rejectRequest}
+            />
+          )}
+          {listParticipant.length > 0 && (
+            <ListParticipantDropdown list={listParticipant} onRejectRequest={rejectRequest} />
+          )}
+        </div>
       ) : roleStatus.statusId === ROLE_STATUS.PENDING ? (
-        <button type="button" disabled>
+        <Button variant="contained" disabled>
           Request sent. Please wait.
-        </button>
+        </Button>
       ) : (
-        <button type="button" onClick={onRequestDraw}>
+        <Button variant="contained" color="primary" onClick={onRequestDraw}>
           Request draw
-        </button>
+        </Button>
       )}
-      {pendingDrawRequestList.length > 0 && (
-        <Dropdown
-          pendingList={pendingDrawRequestList}
-          onApproveRequest={approveRequest}
-          onRejectRequest={rejectRequest}
-        />
-      )}
-      {listParticipant.length > 0 && <ListParticipantDropdown list={listParticipant} onRejectRequest={rejectRequest} />}
+
       <div
         id="slider-grand"
         style={{ width: 'calc(100% - 5px)', height: 'calc(100vh - 155px)', position: 'relative' }}
@@ -716,7 +769,7 @@ export const MainBoard = React.memo(() => {
           {pages.map((page) => (
             <div id={`konva-${page.id - 1}`} key={page}>
               <Stage
-                ref={(el) => (stageRef.current[page.id - 1] = el)}
+                ref={(el) => (stageRef.current[page.id] = el)}
                 width={stageConfig.width === 0 ? width - 300 : stageConfig.width}
                 height={stageConfig.height === 0 ? height - 120 : stageConfig.height}
                 onMouseDown={handleMouseDown}
@@ -735,8 +788,9 @@ export const MainBoard = React.memo(() => {
                   currentPage={pageNow}
                   whiteboardId={whiteboardId}
                   totalPage={pages.length}
+                  strokeDraw={strokeDraw}
                   onDrawDone={onDrawDone}
-                  ref={stageRef.current[Number(pageNow) - 1]}
+                  ref={stageRef.current[Number(pageNow)]}
                 />
                 <DrawRectangle
                   eventPointer={eventPointer[TOOL.RECTANGLE]}
@@ -746,8 +800,9 @@ export const MainBoard = React.memo(() => {
                   stageContainer={stageContainer}
                   whiteboardId={whiteboardId}
                   totalPage={pages.length}
+                  strokeDraw={strokeDraw}
                   onDrawDone={onDrawDone}
-                  ref={stageRef.current[Number(pageNow) - 1]}
+                  ref={stageRef.current[Number(pageNow)]}
                 />
                 <DrawCircle
                   eventPointer={eventPointer[TOOL.CIRCLE]}
@@ -757,8 +812,9 @@ export const MainBoard = React.memo(() => {
                   stageContainer={stageContainer}
                   whiteboardId={whiteboardId}
                   onDrawDone={onDrawDone}
+                  strokeDraw={strokeDraw}
                   totalPage={pages.length}
-                  ref={stageRef.current[Number(pageNow) - 1]}
+                  ref={stageRef.current[Number(pageNow)]}
                 />
                 <DrawText
                   eventPointer={eventPointer[TOOL.TEXT]}
@@ -769,13 +825,13 @@ export const MainBoard = React.memo(() => {
                   whiteboardId={whiteboardId}
                   onDrawDone={onDrawDone}
                   totalPage={pages.length}
-                  ref={stageRef.current[Number(pageNow) - 1]}
+                  ref={stageRef.current[Number(pageNow)]}
                 />
               </Stage>
             </div>
           ))}
         </Slider>
       </div>
-    </>
+    </div>
   )
 })

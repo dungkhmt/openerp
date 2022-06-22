@@ -1,4 +1,4 @@
-import { Box, Paper, Typography } from "@material-ui/core";
+import { Box, Paper, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Skeleton } from "@material-ui/lab";
 import React, { Fragment, useEffect, useState } from "react";
@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import { request } from "../../../api";
 import TeacherViewQuizDetailInQuizTest from "./TeacherViewQuizDetailInQuizTest";
+import PrimaryButton from "../../button/PrimaryButton";
 
 const useStyles = makeStyles(() => ({
   titleContainer: {
@@ -35,6 +36,7 @@ function QuizQuestionsInQuizTest({ testId }) {
   const [quizGroups, setQuizGroups] = useState();
   const [loading, setLoading] = useState(true);
 
+  const [importFromTestId, setImportFromTestId] = useState(null);
   //
   const getQuizListOfClass = () => {
     request(
@@ -67,6 +69,27 @@ function QuizQuestionsInQuizTest({ testId }) {
     );
   };
 
+  function handleImportQuestions() {
+    let body = {
+      fromTestId: importFromTestId,
+      toTestId: testId,
+    };
+    request(
+      "post",
+      "/copy-question-from-quiztest-to-quiztest",
+      (res) => {
+        // console.log("problem list", res.data);
+        getQuizListOfClass();
+      },
+      {},
+      body
+    ).then();
+  }
+
+  function handleChangeImportFromTestId(e) {
+    setImportFromTestId(e.target.value);
+  }
+
   useEffect(() => {
     getQuizListOfClass();
     getQuizGroup();
@@ -88,6 +111,22 @@ function QuizQuestionsInQuizTest({ testId }) {
       </div>
       <div className={classes.body}>
         <div className={classes.quizzList}>
+          <PrimaryButton
+            className={classes.btn}
+            onClick={(e) => {
+              handleImportQuestions(e);
+            }}
+          >
+            Import Questions
+          </PrimaryButton>
+          <TextField
+            label="Import From TestId"
+            placeholder="90"
+            style={{ marginTop: "15px" }}
+            fullWidth
+            onChange={handleChangeImportFromTestId}
+            value={importFromTestId}
+          />
           {loading ? (
             <Fragment>
               <Skeleton

@@ -4,6 +4,7 @@ import com.hust.baseweb.applications.education.exception.SimpleResponse;
 import com.hust.baseweb.entity.RegisteredAffiliation;
 import com.hust.baseweb.model.ApproveRegistrationIM;
 import com.hust.baseweb.model.DisableUserRegistrationIM;
+import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.model.RegisterIM;
 import com.hust.baseweb.service.RegisteredAffiliationService;
 import com.hust.baseweb.service.UserService;
@@ -98,5 +99,12 @@ public class UserRegisterController {
     public ResponseEntity<?> disableUserRegistration(Principal principal, @RequestBody DisableUserRegistrationIM input){
         SimpleResponse res = userService.disableUserRegistration(input);
         return ResponseEntity.status(res.getStatus()).body(res);
+    }
+    @GetMapping("/get-user-detail/{userId}")
+    public ResponseEntity<?> getUserDetail(@PathVariable String userId){
+        log.info("getUserDetail userId = " + userId);
+        PersonModel p = userService.findPersonByUserLoginId(userId);
+        log.info("getUserDetail, found personModel {}",p);
+        return ResponseEntity.ok().body(p);
     }
 }

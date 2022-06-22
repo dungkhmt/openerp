@@ -1,5 +1,5 @@
 import DateFnsUtils from "@date-io/date-fns";
-import { Button, Card, Grid, TextField } from "@material-ui/core/";
+import { Button, Card, Grid, TextField, MenuItem } from "@material-ui/core/";
 import {
   KeyboardDatePicker,
   KeyboardTimePicker,
@@ -47,6 +47,10 @@ function QuizTestEdit() {
   const [quizTest, setQuizTest] = useState(null);
   const [duration, setDuration] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [questionStatementViewTypeId, setQuestionStatementViewTypeId] =
+    useState(null);
+  const [listQuestionStatementViewTypeId, setListQuestionStatementViewTypeId] =
+    useState([]);
 
   const handleChangeDuration = (e) => {
     setDuration(e.target.value);
@@ -55,6 +59,21 @@ function QuizTestEdit() {
     setSelectedDate(event);
   };
 
+  function getListQuestionStatementViewTypeId() {
+    request(
+      // token,
+      // history,
+      "get",
+      "get-list-question-statement-view-type-id",
+      (res) => {
+        console.log("get-list-question-statement-view-type-id res = ", res);
+        setListQuestionStatementViewTypeId(res.data);
+
+        //alert('assign questions to groups OK');
+      },
+      { 401: () => {} }
+    );
+  }
   async function getQuizTestDetail() {
     request(
       // token,
@@ -66,6 +85,8 @@ function QuizTestEdit() {
         setQuizTest(res.data);
         setDuration(res.data.duration);
         setSelectedDate(res.data.scheduleDatetime);
+        setQuestionStatementViewTypeId(res.data);
+
         //alert('assign questions to groups OK');
       },
       { 401: () => {} }
@@ -106,6 +127,7 @@ function QuizTestEdit() {
       testId: testId,
       scheduleDate: selectedDate,
       duration: duration,
+      questionStatementViewTypeId: questionStatementViewTypeId,
     };
     request(
       // token,
@@ -124,6 +146,7 @@ function QuizTestEdit() {
     history.push("/edu/class/quiztest/detail/" + testId);
   }
   useEffect(() => {
+    getListQuestionStatementViewTypeId();
     getQuizTestDetail();
   }, []);
 
@@ -184,6 +207,26 @@ function QuizTestEdit() {
                     value={duration}
                     type="number"
                   />
+                </Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    autoFocus
+                    // required
+                    select
+                    id="questionStatementViewTypeId"
+                    label="QuestionStatementViewType"
+                    placeholder="QuestionStatementViewType"
+                    onChange={(event) => {
+                      setQuestionStatementViewTypeId(event.target.value);
+                    }}
+                    value={questionStatementViewTypeId}
+                  >
+                    {listQuestionStatementViewTypeId.map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </TextField>
                 </Grid>
               </Grid>
             </div>

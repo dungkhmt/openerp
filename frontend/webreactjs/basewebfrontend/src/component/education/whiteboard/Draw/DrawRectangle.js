@@ -8,7 +8,10 @@ import { nanoid } from 'nanoid'
 
 export const DrawRectangle = React.memo(
   React.forwardRef(
-    ({ eventPointer, scale, tool, currentPage, stageContainer, whiteboardId, onDrawDone, totalPage }, ref) => {
+    (
+      { eventPointer, scale, tool, currentPage, stageContainer, whiteboardId, onDrawDone, totalPage, strokeDraw },
+      ref,
+    ) => {
       const { socket } = useContext(SocketContext)
       const [annotations, setAnnotations] = useState([])
       const [newAnnotation, setNewAnnotation] = useState([])
@@ -31,8 +34,8 @@ export const DrawRectangle = React.memo(
                     y: data[i].y,
                     width: data[i].width,
                     height: data[i].height,
-                    stroke: currentAnnotation !== null && currentAnnotation.key === data[i].key ? 'red' : '#df4b26',
-                    strokeWidth: 5 * scale,
+                    stroke: currentAnnotation !== null && currentAnnotation.key === data[i].key ? 'red' : data[i].color,
+                    strokeWidth: data[i].strokeWidth * scale,
                     tension: 0.5,
                     lineCap: 'round',
                     lineJoin: 'round',
@@ -75,23 +78,6 @@ export const DrawRectangle = React.memo(
 
         socket.on(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, ({ currentWhiteboardId }) => onCheckLS(currentWhiteboardId))
 
-        // socket.on(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE, ({ currentWhiteboardId, newPage, changePage }) => {
-        //   if (whiteboardId !== currentWhiteboardId || !changePage) {
-        //     return
-        //   }
-        //   const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-        //   if (typeof drawData.rectangle !== 'undefined') {
-        //     const foundDrawData = drawData.rectangle.find((item) => Number(item.currentPage) === Number(newPage))
-        //     if (typeof foundDrawData !== 'undefined') {
-        //       setAnnotations(foundDrawData.data)
-        //       // annotationsRef.current = foundDrawData.data
-        //     } else {
-        //       setAnnotations([])
-        //       // annotationsRef.current = []
-        //     }
-        //   }
-        // })
-
         return () => {
           socket.off(SOCKET_IO_EVENTS.ON_DRAW_RECT_END)
           socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
@@ -120,7 +106,19 @@ export const DrawRectangle = React.memo(
         if (eventPointer.eventType === EVENT_TYPE.MOUSE_DOWN) {
           if (newAnnotation.length === 0) {
             const { x, y } = eventPointer.pointerPosition
-            setNewAnnotation([{ x, y, width: 0, height: 0, key: nanoid(), tool, page: currentPage }])
+            setNewAnnotation([
+              {
+                x,
+                y,
+                width: 0,
+                height: 0,
+                key: nanoid(),
+                tool,
+                page: currentPage,
+                color: strokeDraw.color,
+                strokeWidth: strokeDraw.strokeWidth,
+              },
+            ])
           }
         } else if (eventPointer.eventType === EVENT_TYPE.MOUSE_MOVE) {
           if (newAnnotation.length === 1) {
@@ -131,6 +129,8 @@ export const DrawRectangle = React.memo(
                 y: newAnnotation[0].y,
                 width: x - newAnnotation[0].x,
                 height: y - newAnnotation[0].y,
+                color: strokeDraw.color,
+                strokeWidth: strokeDraw.strokeWidth,
                 key: nanoid(),
                 tool,
               },
@@ -144,6 +144,8 @@ export const DrawRectangle = React.memo(
               y: newAnnotation[0].y,
               width: x - newAnnotation[0].x,
               height: y - newAnnotation[0].y,
+              color: strokeDraw.color,
+              strokeWidth: strokeDraw.strokeWidth,
               key: nanoid(),
               tool,
             }
@@ -220,8 +222,8 @@ export const DrawRectangle = React.memo(
               y={value.y}
               width={value.width}
               height={value.height}
-              stroke={currentAnnotation !== null && currentAnnotation.key === value.key ? 'red' : '#df4b26'}
-              strokeWidth={5 * scale}
+              stroke={currentAnnotation !== null && currentAnnotation.key === value.key ? 'red' : value.color}
+              strokeWidth={value.strokeWidth * scale}
               tension={0.5}
               lineCap="round"
               lineJoin="round"
