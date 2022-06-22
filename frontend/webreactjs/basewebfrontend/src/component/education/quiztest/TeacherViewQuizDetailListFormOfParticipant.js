@@ -1,6 +1,6 @@
 import { useState } from "@hookstate/core";
 import Card from "@material-ui/core/Card";
-//import Grid from "@material-ui/core/Grid";
+import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
@@ -8,8 +8,8 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
 //import Quiz from "./Quiz";
-import StudentQuizDetailStepForm from "./StudentQuizDetailStepForm";
-import StudentQuizDetailListForm from "./StudentQuizDetailListForm";
+import TeacherViewAQuiz from "./TeacherViewAQuiz";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -25,22 +25,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StudentQuizDetail() {
+export default function TeacherViewQuizDetailListFormOfParticipant(props) {
   const history = useHistory();
-  const testQuizId = history.location.state?.testId;
-
+  const testId = props.testId;
   const classes = useStyles();
-
+  const participantId = props.participantId;
   //
   const [questions, setQuestions] = React.useState([]);
   const [requestSuccessfully, setRequestSuccessfully] = React.useState(false);
   const [requestFailed, setRequestFailed] = React.useState(false);
   const [messageRequest, setMessageRequest] = React.useState(false);
   const [quizGroupTestDetail, setQuizGroupTestDetail] = React.useState({});
-  //const [viewTypeId, setViewTypeId] = React.useState(null);
-  const [viewTypeId, setViewTypeId] = React.useState(
-    history.location.state?.viewTypeId
-  );
 
   // Keep track of checking state of all choices of all quiz
   const checkState = useState([]);
@@ -48,7 +43,10 @@ export default function StudentQuizDetail() {
   function getQuestionList() {
     request(
       "get",
-      "/get-quiz-test-participation-group-question/" + testQuizId,
+      "/get-quiz-questions-assigned-to-participant/" +
+        testId +
+        "/" +
+        participantId,
       (res) => {
         const {
           listQuestion,
@@ -58,8 +56,6 @@ export default function StudentQuizDetail() {
 
         setQuestions(listQuestion);
         setQuizGroupTestDetail(quizGroupTestDetail);
-
-        setViewTypeId(quizGroupTestDetail.viewTypeId);
 
         // Restore test result
         // TODO: optimize code
@@ -118,7 +114,7 @@ export default function StudentQuizDetail() {
         },
       },
       {
-        testId: testQuizId,
+        testId: testId,
         questionId: questionId,
         quizGroupId: quizGroupTestDetail.quizGroupId,
         chooseAnsIds: choseAnswers,
@@ -159,48 +155,33 @@ export default function StudentQuizDetail() {
             {messageRequest}
           </Alert>
         </Snackbar>
-        <div style={{ padding: "0px 20px 20px 30px" }}>
-          <div style={{ justifyContent: "space-between", display: "flex" }}>
-            <h3>Quiz test: {quizGroupTestDetail.testName}</h3>
-            <h3>Môn: {quizGroupTestDetail.courseName}</h3>
-          </div>
-          <h4>Bắt đầu: {quizGroupTestDetail.scheduleDatetime}</h4>
-          <h4>Thời gian: {quizGroupTestDetail.duration} phút</h4>
-        </div>
 
-        {viewTypeId === "VIEW_STEP" ? (
-          <StudentQuizDetailStepForm />
-        ) : (
-          <StudentQuizDetailListForm />
-        )}
-
-        {/*
-          <Grid container spacing={3}>
-            {quizGroupTestDetail.quizGroupId ? (
-              questions != null ? (
-                questions.map((question, idx) => (
-                  <Quiz
-                    key={question.questionId}
-                    question={question}
-                    choseAnswers={checkState[idx]}
-                    order={idx}
-                    onSave={onSave}
-                  />
-                ))
-              ) : (
-                <p style={{ justifyContent: "center" }}>
-                  {" "}
-                  Chưa có câu hỏi cho mã đề này
-                </p>
-              )
+        {/* Quiz */}
+        <Grid container spacing={3}>
+          {quizGroupTestDetail.quizGroupId ? (
+            questions != null ? (
+              questions.map((question, idx) => (
+                <TeacherViewAQuiz
+                  key={question.questionId}
+                  question={question}
+                  choseAnswers={checkState[idx]}
+                  order={idx}
+                  onSave={onSave}
+                />
+              ))
             ) : (
               <p style={{ justifyContent: "center" }}>
                 {" "}
-                Chưa phát đề cho sinh viên{" "}
+                Chưa có câu hỏi cho mã đề này
               </p>
-            )}
-          </Grid>
-            */}
+            )
+          ) : (
+            <p style={{ justifyContent: "center" }}>
+              {" "}
+              Chưa phát đề cho sinh viên{" "}
+            </p>
+          )}
+        </Grid>
       </Card>
     </div>
   );

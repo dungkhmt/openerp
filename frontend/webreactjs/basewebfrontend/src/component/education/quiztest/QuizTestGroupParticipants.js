@@ -1,5 +1,6 @@
 import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { request } from "../../../api";
 import { exportQuizQuestionAssigned2StudentPdf } from "./TeacherQuizQuestionAssign2StudentExportPDF.js";
 function QuizTestGroupParticipants(props) {
@@ -12,6 +13,24 @@ function QuizTestGroupParticipants(props) {
     { title: "Group Code", field: "quizTestGroupCode" },
     { title: "UserLoginId", field: "participantUserLoginId" },
     { title: "FullName", field: "fullName" },
+    {
+      title: "View Question",
+      field: "quizTestGroupId",
+      render: (rowData) => (
+        <Link
+          to={
+            "/edu/class/quiztest/teacher-view-questions-of-participant/" +
+            rowData["participantUserLoginId"] +
+            "/" +
+            rowData["quizTestGroupId"] +
+            "/" +
+            testId
+          }
+        >
+          VIEW
+        </Link>
+      ),
+    },
   ];
 
   async function getStudentListResultGeneral() {

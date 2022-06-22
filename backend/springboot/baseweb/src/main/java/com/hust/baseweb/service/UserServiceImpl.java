@@ -486,7 +486,7 @@ public class UserServiceImpl implements UserService {
                 log.info("findPersonByUserLoginId, person of " + userLoginId + " not exists");
                 return new PersonModel();
             }
-
+            log.info("findPersonByUserLoginId, found person {}", person);
             PersonModel personModel = new PersonModel();
             personModel.setFirstName(person.getFirstName());
             personModel.setMiddleName(person.getMiddleName());
