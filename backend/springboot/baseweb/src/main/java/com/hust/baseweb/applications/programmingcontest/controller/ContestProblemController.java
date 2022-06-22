@@ -117,9 +117,12 @@ public class ContestProblemController {
             ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
             ProblemEntity problemEntity = problemTestCaseService.getContestProblem(problemId);
             ModelStudentViewProblemDetail model = new ModelStudentViewProblemDetail();
-            if(contestEntity.getProblemDescriptionViewType().equals(ContestEntity.CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_VISIBLE))
+            if(contestEntity.getProblemDescriptionViewType() != null &&
+               contestEntity.getProblemDescriptionViewType().equals(ContestEntity.CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_HIDDEN))
+                model.setProblemStatement(" ");
+            else
                 model.setProblemStatement(problemEntity.getProblemDescription());
-            else model.setProblemStatement(" ");
+
 
             model.setProblemName(problemEntity.getProblemName());
             return ResponseEntity.ok().body(model);
@@ -507,7 +510,7 @@ public class ContestProblemController {
 
     @GetMapping("/get-ranking-contest-new/{contestId}")
     public ResponseEntity<?> getRankingContestNewVersion(@PathVariable("contestId") String contestId, Pageable pageable, @RequestParam Constants.GetPointForRankingType getPointForRankingType){
-        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        pageable = Pageable.unpaged();
         List<ContestSubmissionsByUser> page = problemTestCaseService.getRankingByContestIdNew(pageable, contestId, getPointForRankingType);
 //        log.info("ranking page {}", page);
         return ResponseEntity.status(200).body(page);
@@ -590,7 +593,7 @@ public class ContestProblemController {
     @GetMapping("/get-contest-submission-paging-of-a-user-and-contest/{contestId}")
     public ResponseEntity<?> getContestSubmissionPagingOfCurrentUser( Principal principal, @PathVariable String contestId, Pageable pageable){
         log.info("getContestSubmissionPagingOfCurrentUser, user = " + principal.getName() + " contestId = " + contestId);
-        pageable = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), Sort.by("createdAt").descending());
+        pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by("createdAt").descending());
         Page<ContestSubmission> page = problemTestCaseService.findContestSubmissionByUserLoginIdAndContestIdPaging(pageable, principal.getName(), contestId);
         log.info("page {}", page);
         return ResponseEntity.status(200).body(page);

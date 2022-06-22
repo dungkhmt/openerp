@@ -7,7 +7,8 @@ import Alert from "@material-ui/lab/Alert";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
-import Quiz from "./Quiz";
+//import Quiz from "./Quiz";
+import TeacherViewAQuiz from "./TeacherViewAQuiz";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,11 +25,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StudentQuizDetailListForm() {
+export default function TeacherViewQuizDetailListFormOfParticipant(props) {
   const history = useHistory();
-  const testQuizId = history.location.state?.testId;
+  const testId = props.testId;
   const classes = useStyles();
-
+  const participantId = props.participantId;
   //
   const [questions, setQuestions] = React.useState([]);
   const [requestSuccessfully, setRequestSuccessfully] = React.useState(false);
@@ -42,7 +43,10 @@ export default function StudentQuizDetailListForm() {
   function getQuestionList() {
     request(
       "get",
-      "/get-quiz-test-participation-group-question/" + testQuizId,
+      "/get-quiz-questions-assigned-to-participant/" +
+        testId +
+        "/" +
+        participantId,
       (res) => {
         const {
           listQuestion,
@@ -73,9 +77,6 @@ export default function StudentQuizDetailListForm() {
             });
 
             choices.submitted = true;
-            choices["lastSubmittedAnswers"] = choseAnswers;
-          } else {
-            choices["lastSubmittedAnswers"] = [];
           }
 
           chkState.push(choices);
@@ -98,10 +99,9 @@ export default function StudentQuizDetailListForm() {
       "post",
       "/quiz-test-choose_answer-by-user",
       (res) => {
+        checkState[order].submitted.set(true);
         setMessageRequest("Đã lưu vào hệ thống!");
         setRequestSuccessfully(true);
-        checkState[order].submitted.set(true);
-        checkState[order].lastSubmittedAnswers.set(choseAnswers);
       },
       {
         400: () => {
@@ -114,7 +114,7 @@ export default function StudentQuizDetailListForm() {
         },
       },
       {
-        testId: testQuizId,
+        testId: testId,
         questionId: questionId,
         quizGroupId: quizGroupTestDetail.quizGroupId,
         chooseAnsIds: choseAnswers,
@@ -161,7 +161,7 @@ export default function StudentQuizDetailListForm() {
           {quizGroupTestDetail.quizGroupId ? (
             questions != null ? (
               questions.map((question, idx) => (
-                <Quiz
+                <TeacherViewAQuiz
                   key={question.questionId}
                   question={question}
                   choseAnswers={checkState[idx]}

@@ -8,7 +8,7 @@ function ConflictClassesAssignedToTeacherInSolution(props) {
 
   const columns = [
     { title: "Mã giáo viên", field: "teacherId" },
-    { title: "Tên giáo viên", field: "teacherName" },
+    { title: "Tên giảng viên", field: "teacherName" },
     { title: "Lớp 1", field: "classCode1" },
     { title: "Môn", field: "courseName1" },
     { title: "Thời khoá biểu", field: "timeTable1" },

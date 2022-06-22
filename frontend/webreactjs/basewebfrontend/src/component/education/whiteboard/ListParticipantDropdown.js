@@ -1,3 +1,4 @@
+import { Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import { ROLE_STATUS } from 'utils/whiteboard/constants'
@@ -38,9 +39,14 @@ export const ListParticipantDropdown = React.memo(({ list, onRejectRequest }) =>
           <div className={classes.dropdown} key={item.userId}>
             <div>{item.userId}</div>
             {item.roleId === ROLE_STATUS.WRITE && item.status === ROLE_STATUS.ACCEPTED && (
-              <button type="button" style={{ cursor: 'pointer' }} onClick={() => onRejectRequest(item)}>
+              <Button
+                variant="contained"
+                color="secondary"
+                style={{ cursor: 'pointer' }}
+                onClick={() => onRejectRequest(item)}
+              >
                 Cancel draw
-              </button>
+              </Button>
             )}
           </div>
         ))}

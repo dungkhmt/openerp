@@ -1,13 +1,18 @@
 import { useState } from "@hookstate/core";
 import Card from "@material-ui/core/Card";
-import Grid from "@material-ui/core/Grid";
+//import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
-import Quiz from "./Quiz";
+//import Quiz from "./Quiz";
+//import StudentQuizDetailStepForm from "./StudentQuizDetailStepForm";
+//import StudentQuizDetailListForm from "./StudentQuizDetailListForm";
+import TeacherViewQuizDetailListFormOfParticipant from "./TeacherViewQuizDetailListFormOfParticipant";
+
+import { useParams } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,10 +28,12 @@ const useStyles = makeStyles((theme) => ({
     background: "#EBEDEF",
   },
 }));
-
-export default function StudentQuizDetailListForm() {
+export default function TeacherViewQuestionsOfParticipant() {
+  const params = useParams();
   const history = useHistory();
-  const testQuizId = history.location.state?.testId;
+  const participantId = params.participantid;
+  const quiztestGroupId = params.quiztestgroupid;
+  const testId = params.testid;
   const classes = useStyles();
 
   //
@@ -35,14 +42,25 @@ export default function StudentQuizDetailListForm() {
   const [requestFailed, setRequestFailed] = React.useState(false);
   const [messageRequest, setMessageRequest] = React.useState(false);
   const [quizGroupTestDetail, setQuizGroupTestDetail] = React.useState({});
+  const [participant, setParticipant] = React.useState(null);
+
+  //const [viewTypeId, setViewTypeId] = React.useState(null);
+  const [viewTypeId, setViewTypeId] = React.useState(
+    history.location.state?.viewTypeId
+  );
 
   // Keep track of checking state of all choices of all quiz
   const checkState = useState([]);
 
+  function getParticipantDetail() {
+    request("get", "/get-user-detail/" + participantId, (res) => {
+      setParticipant(res.data);
+    });
+  }
   function getQuestionList() {
     request(
       "get",
-      "/get-quiz-test-participation-group-question/" + testQuizId,
+      "/get-quiz-test-participation-group-question/" + testId,
       (res) => {
         const {
           listQuestion,
@@ -52,6 +70,8 @@ export default function StudentQuizDetailListForm() {
 
         setQuestions(listQuestion);
         setQuizGroupTestDetail(quizGroupTestDetail);
+
+        setViewTypeId(quizGroupTestDetail.viewTypeId);
 
         // Restore test result
         // TODO: optimize code
@@ -73,9 +93,6 @@ export default function StudentQuizDetailListForm() {
             });
 
             choices.submitted = true;
-            choices["lastSubmittedAnswers"] = choseAnswers;
-          } else {
-            choices["lastSubmittedAnswers"] = [];
           }
 
           chkState.push(choices);
@@ -98,10 +115,9 @@ export default function StudentQuizDetailListForm() {
       "post",
       "/quiz-test-choose_answer-by-user",
       (res) => {
+        checkState[order].submitted.set(true);
         setMessageRequest("Đã lưu vào hệ thống!");
         setRequestSuccessfully(true);
-        checkState[order].submitted.set(true);
-        checkState[order].lastSubmittedAnswers.set(choseAnswers);
       },
       {
         400: () => {
@@ -114,7 +130,7 @@ export default function StudentQuizDetailListForm() {
         },
       },
       {
-        testId: testQuizId,
+        testId: testId,
         questionId: questionId,
         quizGroupId: quizGroupTestDetail.quizGroupId,
         chooseAnsIds: choseAnswers,
@@ -132,6 +148,7 @@ export default function StudentQuizDetailListForm() {
 
   useEffect(() => {
     getQuestionList();
+    getParticipantDetail();
   }, []);
 
   return (
@@ -155,33 +172,30 @@ export default function StudentQuizDetailListForm() {
             {messageRequest}
           </Alert>
         </Snackbar>
+        <div style={{ padding: "0px 20px 20px 30px" }}>
+          <div style={{ justifyContent: "space-between", display: "flex" }}>
+            <h3>Quiz test: {quizGroupTestDetail.testName}</h3>
+            <h3>Môn: {quizGroupTestDetail.courseName}</h3>
+            <h3>MSSV: {participantId}</h3>
+            <h3>
+              Ho ten:{" "}
+              {participant
+                ? participant.lastName +
+                  " " +
+                  participant.middleName +
+                  " " +
+                  participant.firstName
+                : ""}
+            </h3>
+          </div>
+          <h4>Bắt đầu: {quizGroupTestDetail.scheduleDatetime}</h4>
+          <h4>Thời gian: {quizGroupTestDetail.duration} phút</h4>
+        </div>
 
-        {/* Quiz */}
-        <Grid container spacing={3}>
-          {quizGroupTestDetail.quizGroupId ? (
-            questions != null ? (
-              questions.map((question, idx) => (
-                <Quiz
-                  key={question.questionId}
-                  question={question}
-                  choseAnswers={checkState[idx]}
-                  order={idx}
-                  onSave={onSave}
-                />
-              ))
-            ) : (
-              <p style={{ justifyContent: "center" }}>
-                {" "}
-                Chưa có câu hỏi cho mã đề này
-              </p>
-            )
-          ) : (
-            <p style={{ justifyContent: "center" }}>
-              {" "}
-              Chưa phát đề cho sinh viên{" "}
-            </p>
-          )}
-        </Grid>
+        <TeacherViewQuizDetailListFormOfParticipant
+          participantId={participantId}
+          testId={testId}
+        />
       </Card>
     </div>
   );

@@ -3,13 +3,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import EditIcon from "@material-ui/icons/Edit";
 import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
-import { authPostMultiPart, request } from "api";
+import { styled } from "@mui/material/styles";
+import { request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import UpdateClassForAssignmentModel from "../UpdateClassForAssignmentModel";
-import UploadExcelClassForTeacherAssignmentModel from "../UploadExcelClassForTeacherAssignmentModel";
+import { errorNoti, successNoti } from "utils/notification";
+import UpdateClassForAssignmentDialog from "../UpdateClassForAssignmentDialog";
 
 export const useStyles = makeStyles((theme) => ({
   uploadExcelBtn: {
@@ -33,6 +33,10 @@ const alignRightCellStyles = {
   cellStyle: { padding: 8, textAlign: "right" },
 };
 
+export const Input = styled("input")({
+  display: "none",
+});
+
 function ClassInPlan({ planId }) {
   const classes = useStyles();
 
@@ -45,10 +49,7 @@ function ClassInPlan({ planId }) {
   //
   const [selectedClassId, setSelectedClassId] = useState(null);
   const [open, setOpen] = React.useState(false);
-  const [openModelExcel, setOpenModelExcel] = React.useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+  // const [openModelExcel, setOpenModelExcel] = React.useState(false);
 
   // Table
   const columns = [
@@ -100,49 +101,47 @@ function ClassInPlan({ planId }) {
     handleModalOpen();
   }
 
-  // TODO: fix this func
-  function uploadExcel(selectedFile) {
-    setIsProcessing(true);
+  const getClasses = () => {
+    request("GET", `edu/teaching-assignment/plan/${planId}/class`, (res) => {
+      setClassList(res.data);
+    });
+  };
 
-    if (selectedFile == null) {
-      alert("You must select a file");
-      return;
-    }
+  function uploadExcel(e) {
+    const selectedFile = e.target.files[0];
     console.log("upload file " + selectedFile.name);
-    let body = {
-      planId: planId,
-    };
-    let formData = new FormData();
-    formData.append("inputJson", JSON.stringify(body));
-    formData.append("file", selectedFile);
 
-    authPostMultiPart(
-      dispatch,
-      token,
-      "/upload-excel-class-4-teacher-assignment",
-      formData
-    )
-      .then((res) => {
-        setIsProcessing(false);
-        console.log("result submit = ", res);
+    const data = new FormData();
+    data.append("file", selectedFile);
 
-        //var f = document.getElementById("selected-upload-file");
-        //f.value = null;
-        //setSelectedFile(null);
-      })
-      .catch((e) => {
-        setIsProcessing(false);
-        console.error(e);
-      });
+    request(
+      "POST",
+      `edu/teaching-assignment/plan/${planId}/class/upload-excel`,
+      (res) => {
+        e.target.value = "";
+        successNoti("Đã tải lên.");
+        getClasses();
+      },
+      {
+        onError: (error) => {
+          e.target.value = "";
+          console.error(error);
+          errorNoti(
+            "Đã có lỗi xảy ra. Vui lòng kiểm tra định dạng file excel và thử lại."
+          );
+        },
+      },
+      data
+    );
   }
 
-  const customUploadHandle = (selectedFile) => {
-    uploadExcel(selectedFile);
-    handleModalCloseModelExcel();
+  const onUpload = (e) => {
+    uploadExcel(e);
+    // handleModalCloseModelExcel();
   };
 
   // OK
-  const customUpdateHandle = (hourLoad) => {
+  const onUpdateInfo = (hourLoad) => {
     let data = {
       hourLoad: hourLoad,
     };
@@ -175,13 +174,13 @@ function ClassInPlan({ planId }) {
     setOpen(false);
   };
 
-  const handleModalOpenModelExcel = () => {
-    setOpenModelExcel(true);
-  };
+  // const handleModalOpenModelExcel = () => {
+  //   setOpenModelExcel(true);
+  // };
 
-  const handleModalCloseModelExcel = () => {
-    setOpenModelExcel(false);
-  };
+  // const handleModalCloseModelExcel = () => {
+  //   setOpenModelExcel(false);
+  // };
 
   // OK
   const removeClassesFromAssignmentPlan = () => {
@@ -207,9 +206,7 @@ function ClassInPlan({ planId }) {
 
   // OK
   useEffect(() => {
-    request("GET", `edu/teaching-assignment/plan/${planId}/class`, (res) => {
-      setClassList(res.data);
-    });
+    getClasses();
   }, []);
 
   return (
@@ -223,16 +220,23 @@ function ClassInPlan({ planId }) {
         commandBarComponents={
           <>
             {selectedRows.length === 0 ? (
-              <>
+              <label htmlFor="upload-excel-class-in-plan">
+                <Input
+                  type="file"
+                  accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  id="upload-excel-class-in-plan"
+                  onChange={onUpload}
+                />
                 <TertiaryButton
                   className={classes.uploadExcelBtn}
                   color="default"
                   startIcon={<PublishRoundedIcon />}
-                  onClick={handleModalOpenModelExcel}
+                  component="span"
+                  // onClick={handleModalOpenModelExcel}
                 >
                   Tải lên Excel
                 </TertiaryButton>
-              </>
+              </label>
             ) : (
               <>
                 <TertiaryButton
@@ -253,16 +257,16 @@ function ClassInPlan({ planId }) {
         }
       />
 
-      <UploadExcelClassForTeacherAssignmentModel
+      {/* <UploadExcelClassForTeacherAssignmentModel
         open={openModelExcel}
         onClose={handleModalCloseModelExcel}
-        onUpload={customUploadHandle}
-      />
+        onUpload={onUpload}
+      /> */}
 
-      <UpdateClassForAssignmentModel
+      <UpdateClassForAssignmentDialog
         open={open}
         onClose={handleModalClose}
-        onUpdateInfo={customUpdateHandle}
+        onUpdateInfo={onUpdateInfo}
         selectedClassId={selectedClassId}
       />
     </>

@@ -1,77 +1,12 @@
-import Konva from 'konva'
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Text, Transformer } from 'react-konva'
-import { SocketContext } from 'utils/whiteboard/context/SocketContext'
 import { SOCKET_IO_EVENTS, TOOL } from '../../../../utils/whiteboard/constants'
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
 export const TransformerText = React.memo(
   React.forwardRef(({ value, offset, tool, onUpdateText, annotations, whiteboardId, currentPage }, ref) => {
-    const { socket } = useContext(SocketContext)
     const textRef = useRef(null)
     const transformRef = useRef(null)
-
-    // useEffect(() => {
-    //   socket.on(SOCKET_IO_EVENTS.ON_ADD_TEXT_END, ({ data, currentDrawPage, currentWhiteboardId }) => {
-    //     if (whiteboardId !== currentWhiteboardId) {
-    //       return
-    //     }
-    //     if (Number(currentDrawPage) === Number(currentPage)) {
-    //       console.log(ref?.getLayers()[4]?.getChildren().length / 2 !== data.length)
-    //       if (ref?.getLayers().length > 0 && ref?.getLayers()[4]?.getChildren().length / 2 !== data.length) {
-    //         ref?.getLayers()[4]?.clear()
-    //         ref?.getLayers()[4]?.destroyChildren()
-    //         for (let i = 0; i < data.length; ++i) {
-    //           ref?.getLayers()[4]?.add(
-    //             new Konva.Text({
-    //               ref: textRef,
-    //               x: data[i].x,
-    //               y: data[i].y,
-    //               width: data[i].width,
-    //               draggable: tool !== TOOL.POINTER ? false : true,
-    //               rotation: data[i].rotation,
-    //               text: data[i].text,
-    //               verticalAlign: 'bottom',
-    //               fontSize: data[i].fontSize,
-    //               fontFamily: data[i].fontFamily,
-    //               fill: data[i].fill,
-    //               padding: data[i].padding,
-    //               align: data[i].align,
-    //               onClick: onClickText,
-    //               onDblClick: onDblClickTextRect,
-    //               onDblTap: onDblClickTextRect,
-    //               onDragEnd: onDragTextEnd,
-    //               onTransformEnd: onTextTransformEnd,
-    //             }),
-    //           )
-    //           ref?.getLayers()[4]?.add(
-    //             new Konva.Transformer({
-    //               ref: transformRef,
-    //               enabledAnchors: [
-    //                 'middle-left',
-    //                 'middle-right',
-    //                 'top-left',
-    //                 'top-right',
-    //                 'top-center',
-    //                 'bottom-left',
-    //                 'bottom-right',
-    //                 'bottom-center',
-    //               ],
-    //               boundBoxFunc: function (_, newBox) {
-    //                 newBox.width = Math.max(30, newBox.width)
-    //                 return newBox
-    //               },
-    //             }),
-    //           )
-    //         }
-    //         ref?.getLayers()[4]?.batchDraw()
-    //       }
-    //     }
-    //   })
-
-    //   return () => {
-    //     socket.off(SOCKET_IO_EVENTS.ON_ADD_TEXT_END)
-    //   }
-    // }, [currentPage])
 
     useEffect(() => {
       if (tool === TOOL.POINTER) {
@@ -135,6 +70,7 @@ export const TransformerText = React.memo(
         x: textPosition.x,
         y: textPosition.y,
       }
+      // editorRef.current?.style.display = ''
       const textarea = document.createElement('textarea')
       document.body.querySelector('#slider-grand').appendChild(textarea)
       textarea.value = value.text

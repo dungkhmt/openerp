@@ -50,6 +50,8 @@ import TClassDetail from "../views/Education/ClassManagement/Teacher/TClassDetai
 import TClassList from "../views/Education/ClassManagement/Teacher/TClassList";
 import TeacherViewDetailClass from "../views/Education/ClassManagement/Teacher/TeacherViewDetailClass";
 import TeacherViewLearningSessionDetail from "../views/Education/ClassManagement/Teacher/TeacherViewLearningSessionDetail";
+import TeacherViewQuestionsOfParticipant from "../component/education/quiztest/TeacherViewQuestionsOfParticipant";
+
 import NotFound from "../views/errors/NotFound";
 
 export default function EduRoute() {
@@ -215,6 +217,12 @@ export default function EduRoute() {
           path={`${path}/class/quiztest/detail/:id`}
           exact
         />
+        <Route
+          component={TeacherViewQuestionsOfParticipant}
+          path={`${path}/class/quiztest/teacher-view-questions-of-participant/:participantid/:quiztestgroupid/:testid`}
+          exact
+        />
+
         <Route
           component={QuizTestEdit}
           path={`${path}/class/quiztest/edit/:id`}

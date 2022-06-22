@@ -5,16 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EditQuizTestInputModel {
-
-    private String testId;
-    private Date scheduleDate;
-    private int duration;
-    private String questionStatementViewTypeId;
+public class ParticipantAndQuestionsModel {
+    private String participantUserLoginId;
+    private String fullName;
+    private QuizGroupTestDetailModel quizGroupTestDetailModel;
 }

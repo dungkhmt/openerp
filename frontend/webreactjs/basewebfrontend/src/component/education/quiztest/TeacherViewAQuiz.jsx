@@ -1,12 +1,12 @@
 import { useState } from "@hookstate/core";
 import Button from "@material-ui/core/Button";
 import Checkbox from "@material-ui/core/Checkbox";
-// import { green } from "@material-ui/core/colors";
+import { green } from "@material-ui/core/colors";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
-// import CheckCircleOutlineRoundedIcon from "@material-ui/icons/CheckCircleOutlineRounded";
-import { Typography } from "@mui/material";
+import CheckCircleOutlineRoundedIcon from "@material-ui/icons/CheckCircleOutlineRounded";
+import React from "react";
 import ReactHtmlParser from "react-html-parser";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +29,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Quiz({ question, order, choseAnswers, onSave }) {
+export default function TeacherViewAQuiz({
+  question,
+  order,
+  choseAnswers,
+  onSave,
+}) {
   const classes = useStyles();
   const {
     questionId,
@@ -67,7 +72,6 @@ export default function Quiz({ question, order, choseAnswers, onSave }) {
     question
   );
   */
-
   return (
     <Grid item xs={12} key={questionId}>
       <Paper className={classes.paper}>
@@ -110,8 +114,9 @@ export default function Quiz({ question, order, choseAnswers, onSave }) {
                 </div>
               ))}
 
+              {/*
               <div style={{ textAlign: "right" }}>
-                {/* {checkState.submitted.get() ? (
+                {checkState.submitted.get() ? (
                   <Button
                     variant="contained"
                     color="primary"
@@ -124,42 +129,21 @@ export default function Quiz({ question, order, choseAnswers, onSave }) {
                   >
                     Đã lưu
                   </Button>
-                ) : ( */}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSubmit}
-                  style={{
-                    textTransform: "none",
-                    width: 100,
-                  }}
-                >
-                  Lưu
-                </Button>
-                {/* )} */}
-              </div>
-              {checkState.lastSubmittedAnswers.get().length > 0 && (
-                <Typography
-                  variant="body2"
-                  sx={{
-                    mt: 2,
-                    "& p": {
-                      ml: 5.25,
-                      mt: 1.25,
-                      mb: 1.25,
-                    },
-                  }}
-                >
-                  *Phương án hệ thống đã lưu lần gần nhất:{" "}
-                  {choices
-                    .filter((ans) =>
-                      checkState.lastSubmittedAnswers
-                        .get()
-                        .includes(ans.choiceAnswerId)
-                    )
-                    .map((ans) => ReactHtmlParser(ans.choiceAnswerContent))}
-                </Typography>
-              )}
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmit}
+                    style={{
+                      textTransform: "none",
+                    }}
+                  >
+                    Lưu
+                  </Button>
+                              )}
+                
+                          </div>
+                          */}
             </>
           )}
         </div>

@@ -6,7 +6,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 function header(testId) {
   return [
     {
-      text: "Kết quả " + testId,
+      text: "Đề Thi: " + testId,
       bold: true,
       fontSize: 16,
       alignment: "center",
@@ -67,6 +67,41 @@ const answerDefaultStyles = {
   th: { bold: true, fillColor: "#EEEEEE" },
 };
 
+function participantQuestionsViewPdf(studentQuestions) {
+  let participantQuestionsView = [];
+  studentQuestions.map((studentQuestion) => {
+    console.log("Consider studentQuestion ", studentQuestion);
+    let studentInfo = {
+      text: "MSSV: " + studentQuestion.participantUserLoginId,
+      fontSize: 13,
+      width: "auto",
+      margin: [0, 3, 5, 5],
+      padding: [0, 0, 8, 0],
+    };
+    let studentResult = [];
+    studentResult.push(htmlToPdfmake(`<hr/>`));
+    studentResult.push(studentInfo);
+
+    const listQuestions = studentQuestion.quizGroupTestDetailModel.listQuestion;
+
+    listQuestions.map((q, index) => {
+      const statement = q.statement;
+      let questionContent = htmlToPdfmake(
+        `<br/><p>Câu ${index + 1}. ${statement.slice(3)}`,
+        {
+          defaultStyles: questionContentDefaultStyles,
+        }
+      );
+      let questionDetail = [];
+      questionDetail.push(questionContent);
+      studentResult.push(questionDetail);
+    });
+
+    participantQuestionsView.push(studentResult);
+  });
+  return participantQuestionsView;
+}
+
 function resultDetailList(dataPdf) {
   let contentResult = [];
 
@@ -105,7 +140,7 @@ function resultDetailList(dataPdf) {
         }
       );
 
-      console.log(questionContent);
+      console.log("questionContent = ", questionContent);
 
       let questionDetail = [];
       questionDetail.push(questionContent);
@@ -115,33 +150,26 @@ function resultDetailList(dataPdf) {
         let pele = {
           margin: [0, 5, 0, 10],
           bold: true,
-          display: "inline",
         };
-        let ansContent = ans.choiceAnswerContent;
 
         if (ans.isCorrectAnswer === "Y") {
-          // Add check-mark symbols
-          ansContent = "<p>√ " + ansContent.substring(3);
-
           if (listchooseAns.includes(ans.choiceAnswerId)) {
             pele["color"] = "blue";
-            pele["decoration"] = "underline";
           } else {
             pele["color"] = "green";
           }
         } else {
-          pele["margin"] = [10, 5, 0, 10];
-
           if (listchooseAns.includes(ans.choiceAnswerId)) {
             pele["color"] = "red";
-            pele["decoration"] = "underline";
           } else {
-            pele["bold"] = false;
+            pele = {
+              margin: [0, 5, 0, 10],
+            };
           }
         }
 
         questionDetail.push(
-          htmlToPdfmake(ansContent, {
+          htmlToPdfmake(ans.choiceAnswerContent, {
             defaultStyles: { ...answerDefaultStyles, p: pele },
           })
         );
@@ -229,7 +257,7 @@ function resultList(students) {
           // headers are automatically repeated if the table spans over multiple pages
           // you can declare how many rows should be treated as headers
           headerRows: 1,
-          widths: ["auto", "auto", "auto"],
+          widths: ["auto", "auto"],
           body: [
             // Table Header
             [
@@ -241,10 +269,6 @@ function resultList(students) {
                 text: "Nhóm",
                 style: ["itemsHeader", "center"],
               },
-              {
-                text: "Điểm",
-                style: ["itemsHeader", "center"],
-              },
             ],
             // Items
             // Item 1
@@ -254,11 +278,7 @@ function resultList(students) {
                 style: "itemText",
               },
               {
-                text: student.groupId,
-                style: "itemText",
-              },
-              {
-                text: student.grade.toString(),
+                text: student.quizTestGroupCode,
                 style: "itemText",
               },
             ]),
@@ -305,14 +325,15 @@ let styles = {
   },
 };
 
-export function exportResultListPdf(
-  studentListResult,
+export function exportQuizQuestionAssigned2StudentPdf(
+  students,
   resultExportPDFData,
+  studentQuestions,
   testId
 ) {
-  console.log("export pdf result ", studentListResult);
+  console.log("export pdf result ", students);
 
-  studentListResult.sort(function (firstEl, secondEl) {
+  students.sort(function (firstEl, secondEl) {
     if (firstEl.fullName === null || secondEl.fullName === null) return -1;
     if (firstEl.fullName.toLowerCase() < secondEl.fullName.toLowerCase()) {
       return -1;
@@ -325,11 +346,11 @@ export function exportResultListPdf(
   });
 
   let resultData = [];
-  studentListResult.map((student, index) => {
+  students.map((student, index) => {
     let tmp = {};
     tmp.fullName = student.fullName;
-    tmp.groupId = student.groupId;
-    tmp.grade = student.grade;
+    tmp.quizTestGroupCode = student.quizTestGroupCode;
+    //tmp.grade = student.grade;
     resultData.push(tmp);
   });
 
@@ -362,10 +383,12 @@ export function exportResultListPdf(
     content: [
       ...header(testId),
 
+      //"\n\n",
+      //resultList(resultData),
+      //"\n\n",
+      //dataDetail,
       "\n\n",
-      resultList(resultData),
-      "\n\n",
-      dataDetail,
+      participantQuestionsViewPdf(studentQuestions),
     ],
     styles: styles,
     defaultStyle: {

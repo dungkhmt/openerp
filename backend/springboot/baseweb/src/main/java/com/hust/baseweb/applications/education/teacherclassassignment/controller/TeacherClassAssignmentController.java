@@ -1,6 +1,5 @@
 package com.hust.baseweb.applications.education.teacherclassassignment.controller;
 
-import com.google.gson.Gson;
 import com.hust.baseweb.applications.education.teacherclassassignment.entity.ClassTeacherAssignmentPlan;
 import com.hust.baseweb.applications.education.teacherclassassignment.entity.EduTeacher;
 import com.hust.baseweb.applications.education.teacherclassassignment.entity.TeacherCourse;
@@ -22,7 +21,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -42,43 +40,11 @@ public class TeacherClassAssignmentController {
 
     private ClassTeacherAssignmentPlanService planService;
 
-    @PostMapping("/upload-excel-class-4-teacher-assignment")
-    public ResponseEntity<?> uploadExcelClass4TeacherAssignment(
-        Principal principal, @RequestParam("inputJson") String inputJson,
-        @RequestParam("file") MultipartFile file
-    ) {
-        Gson gson = new Gson();
-        UploadExcelClass4TeacherAssignmentInputModel input = gson.fromJson(
-            inputJson,
-            UploadExcelClass4TeacherAssignmentInputModel.class);
-        UUID planId = input.getPlanId();
-        log.info("uploadExcelClass4TeacherAssignment, json = " + inputJson + " planId = " + planId);
-        planService.extractExcelAndStoreDB(planId, file);
-        return ResponseEntity.ok().body("OK");
-
-    }
-
     @GetMapping("/get-all-class-teacher-assignment-plan")
     public ResponseEntity<?> getAllClassTeacherAssignmentPlan(Principal principal) {
         UserLogin u = userService.findById(principal.getName());
         List<ClassTeacherAssignmentPlan> classTeacherAssignmentPlanList = planService.findAll();
         return ResponseEntity.ok().body(classTeacherAssignmentPlanList);
-    }
-
-    @PostMapping("/upload-excel-teacher-course")
-    public ResponseEntity<?> uploadExcelTeacherCourse(
-        Principal principal, @RequestParam("inputJson") String inputJson,
-        @RequestParam("file") MultipartFile file
-    ) {
-        Gson gson = new Gson();
-        UploadExcelTeacherCourseInputModel input = gson.fromJson(
-            inputJson,
-            UploadExcelTeacherCourseInputModel.class);
-        UUID planId = input.getPlanId();
-        String choice = input.getChoice();
-        log.info("uploadExcelTeacherCourse, choice = " + choice);
-        boolean ok = planService.extractExcelAndStoreDBTeacherCourse(planId, choice, file);
-        return ResponseEntity.ok().body(ok);
     }
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})

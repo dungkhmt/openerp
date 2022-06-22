@@ -1,15 +1,14 @@
 import { useState } from "@hookstate/core";
 import Card from "@material-ui/core/Card";
-import Grid from "@material-ui/core/Grid";
+//import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
-import Quiz from "./Quiz";
-import StudentQuizDetailStepForm from "./StudentQuizDetailStepForm";
 import StudentQuizDetailListForm from "./StudentQuizDetailListForm";
+import StudentQuizDetailStepForm from "./StudentQuizDetailStepForm";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -81,6 +80,9 @@ export default function StudentQuizDetail() {
             });
 
             choices.submitted = true;
+            choices["lastSubmittedAnswers"] = choseAnswers;
+          } else {
+            choices["lastSubmittedAnswers"] = [];
           }
 
           chkState.push(choices);
@@ -103,9 +105,10 @@ export default function StudentQuizDetail() {
       "post",
       "/quiz-test-choose_answer-by-user",
       (res) => {
-        checkState[order].submitted.set(true);
         setMessageRequest("Đã lưu vào hệ thống!");
         setRequestSuccessfully(true);
+        checkState[order].submitted.set(true);
+        checkState[order].lastSubmittedAnswers.set(choseAnswers);
       },
       {
         400: () => {

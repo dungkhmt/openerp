@@ -1,24 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Avatar,
   Card,
   CardContent,
   CardHeader,
   Grid,
+  Paper,
   //Link,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   //Paper,
   Typography,
 } from "@material-ui/core";
+import MaterialTable from "material-table";
 //import { BiDetail } from "react-icons/bi";
 import {
   //FcApproval,
-  FcClock,
   //FcConferenceCall,
-  FcExpired,
   FcMindMap,
 } from "react-icons/fc";
 import { makeStyles } from "@material-ui/core/styles";
@@ -27,6 +23,11 @@ import { drawerWidth } from "../../../../assets/jss/material-dashboard-react";
 import PositiveButton from "../../../../component/education/classmanagement/PositiveButton";
 import { useHistory } from "react-router";
 import { request } from "../../../../api";
+import changePageSize, {
+  localization,
+  tableIcons,
+} from "../../../../utils/MaterialTableUtils";
+import displayTime from "../../../../utils/DateTimeUtils";
 import AssignList from "../../../../component/education/classmanagement/AssignList";
 
 const useStyles = makeStyles((theme) => ({
@@ -84,18 +85,72 @@ export default function TeacherViewDetailClassExercises(props) {
   //const params = useParams();
   const history = useHistory();
   const classId = props.classId;
-  // Assignment.
-  const [assignSets, setAssignSets] = useState([
-    { title: "Đã giao", data: [] },
-    { title: "Chưa giao", data: [] },
-    { title: "Đã xoá", data: [] },
-  ]);
+  const [data, setData] = useState([]);
+  const tableRef = useRef(null);
+
+  const cols = [
+    {
+      field: "name",
+      title: "Tên bài tập",
+    },
+    {
+      field: "openTime",
+      title: "Thời gian bắt đầu",
+      filtering: false,
+      render: (rowData) => {
+        let date = new Date(rowData.openTime);
+
+        return displayTime(date);
+      },
+    },
+    {
+      field: "closeTime",
+      title: "Thời gian kết thúc",
+      filtering: false,
+      render: (rowData) => {
+        let date = new Date(rowData.closeTime);
+
+        return displayTime(date);
+      },
+    },
+    {
+      field: "status",
+      title: "Trạng thái",
+      lookup: {
+        CLOSED: "Đã hết hạn",
+        STARTED: "Đã giao",
+        DELETED: "Đã xóa",
+        "NOT STARTED": "Chưa giao",
+      },
+    },
+  ];
   // const [deletedAssignId, setDeletedAssignId] = useState();
   // Student Assignment
-  const [assignmentList, setAssignmentList] = useState([]);
 
-  const onClickAssign = (id) => {
-    history.push(`/edu/teacher/class/${classId}/assignment/${id}`);
+  const addStatusProperty = (assignments) => {
+    let current = new Date();
+    assignments.forEach((assign) => {
+      if (assign.deleted) {
+        assign.status = "DELETED";
+      } else {
+        let open = new Date(assign.openTime);
+
+        if (current.getTime() < open.getTime()) {
+          assign.status = "NOT STARTED";
+        } else {
+          let close = new Date(assign.closeTime);
+
+          if (close.getTime() < current.getTime()) {
+            assign.status = "CLOSED";
+          } else {
+            assign.status = "STARTED";
+          }
+        }
+      }
+    });
+
+    console.log(assignments);
+    return assignments;
   };
 
   const getAssigns = () => {
@@ -105,39 +160,9 @@ export default function TeacherViewDetailClassExercises(props) {
       "get",
       `/edu/class/${classId}/assignments/teacher`,
       (res) => {
-        // changePageSize(res.data.length, assignTableRef);
-        let wait4Opening = [];
-        let opened = [];
-        let deleted = [];
-        let current = new Date();
-
-        setAssignmentList(res.data);
-
-        res.data.forEach((assign) => {
-          if (assign.deleted) {
-            deleted.push(assign);
-          } else {
-            let open = new Date(assign.openTime);
-
-            if (current.getTime() < open.getTime()) {
-              wait4Opening.push(assign);
-            } else {
-              let close = new Date(assign.closeTime);
-
-              if (close.getTime() < current.getTime()) {
-                opened.push({ ...assign, opening: false });
-              } else {
-                opened.push({ ...assign, opening: true });
-              }
-            }
-          }
-        });
-
-        setAssignSets([
-          { ...assignSets[0], data: opened },
-          { ...assignSets[1], data: wait4Opening },
-          { ...assignSets[2], data: deleted },
-        ]);
+        changePageSize(res.data.length, tableRef);
+        let assignmentData = addStatusProperty(res.data);
+        setData(assignmentData);
       }
     );
   };
@@ -152,7 +177,6 @@ export default function TeacherViewDetailClassExercises(props) {
 
   return (
     <div>
-      <h1>Exercises</h1>
       <Card className={classes.card}>
         <CardHeader
           avatar={
@@ -171,97 +195,34 @@ export default function TeacherViewDetailClassExercises(props) {
             />
           }
         />
-        <Grid container md={12} justify="center">
-          <Grid item md={10}>
-            <CardContent className={classes.assignList}>
-              {/* <MaterialTable
+        <CardContent>
+          <MaterialTable
             title=""
-            columns={assignCols}
-            tableRef={assignTableRef}
+            columns={cols}
+            icons={tableIcons}
+            tableRef={tableRef}
             localization={localization}
-            data={assign}
+            data={data}
             components={{
+              Toolbar: () => null,
               Container: (props) => <Paper {...props} elevation={0} />,
-              Action: (props) => {
-                if (props.action.icon === "create") {
-                  return (
-                    <PositiveButton
-                      label="Tạo mới"
-                      className={classes.positiveBtn}
-                      onClick={(event) =>
-                        props.action.onClick(event, props.data)
-                      }
-                    />
-                  );
-                }
-              },
             }}
             options={{
+              filtering: true,
               search: false,
               pageSize: 10,
-              actionsColumnIndex: -1,
               debounceInterval: 500,
-              headerStyle: {
-                backgroundColor: "#673ab7",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "white",
-                paddingLeft: 5,
-                paddingRight: 5,
-              },
-              sorting: false,
-              cellStyle: {
-                fontSize: "1rem",
-                whiteSpace: "normal",
-                paddingLeft: 5,
-                wordBreak: "break-word",
-              },
-              toolbarButtonAlignment: "left",
             }}
-            actions={[
-              {
-                icon: "create",
-                position: "toolbar",
-                onClick: () => {
-                  history.push(
-                    `/edu/teacher/class/${params.id}/assignment/create`
-                  );
-                },
-              },
-            ]}
             onRowClick={(event, rowData) => {
-              console.log(rowData);
-              history.push(
-                `/edu/teacher/class/${params.id}/assignment/${rowData.id}`
-              );
+              // console.log(rowData);
+              history.push({
+                //pathname: `/edu/teacher/class/${rowData.id}`,
+                pathname: `/edu/teacher/class/${classId}/assignment/${rowData.id}`,
+                state: {},
+              });
             }}
-          /> */}
-              <List>
-                {assignSets.map((assignList) => (
-                  <AssignList title={assignList.title}>
-                    {assignList.data.map((assign) => (
-                      <ListItem
-                        button
-                        disableRipple
-                        className={classes.listItem}
-                        onClick={() => onClickAssign(assign.id)}
-                      >
-                        <ListItemText primary={assign.name} />
-                        <ListItemIcon>
-                          {assign.opening ? (
-                            <FcClock size={24} />
-                          ) : assign.opening == false ? (
-                            <FcExpired size={24} />
-                          ) : null}
-                        </ListItemIcon>
-                      </ListItem>
-                    ))}
-                  </AssignList>
-                ))}
-              </List>
-            </CardContent>
-          </Grid>
-        </Grid>
+          />
+        </CardContent>
       </Card>
     </div>
   );

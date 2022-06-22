@@ -77,7 +77,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         newRecord.setClassId(input.getClassId());
         newRecord.setCreatedStamp(new Date());
         newRecord.setLastUpdatedStamp(new Date());
-
+        newRecord.setQuestionStatementViewTypeId(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_VISIBLE);
         return repo.save(newRecord);
     }
 
@@ -95,6 +95,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         if (eduQuizTest != null) {
             eduQuizTest.setDuration(input.getDuration());
             eduQuizTest.setScheduleDatetime(input.getScheduleDate());
+            eduQuizTest.setQuestionStatementViewTypeId(input.getQuestionStatementViewTypeId());
             eduQuizTest = repo.save(eduQuizTest);
             log.info("update, testId = " +
                      input.getTestId() +

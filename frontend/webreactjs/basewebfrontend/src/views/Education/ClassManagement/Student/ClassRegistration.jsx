@@ -45,25 +45,14 @@ function ClassRegistration() {
     departmentId: "",
   });
 
-  const headerProperties = {
-    headerStyle: {
-      textAlign: "center",
-    },
-    cellStyle: {
-      textAlign: "center",
-      fontSize: "1rem",
-    },
-  };
   const columns = [
     {
       field: "classCode",
       title: "Mã lớp",
-      ...headerProperties,
     },
     {
       field: "courseId",
       title: "Mã học phần",
-      ...headerProperties,
     },
     {
       field: "courseName",
@@ -72,12 +61,10 @@ function ClassRegistration() {
     {
       field: "classType",
       title: "Loại lớp",
-      ...headerProperties,
     },
     {
       field: "departmentId",
       title: "Khoa/Viện",
-      ...headerProperties,
     },
     {
       field: "",
@@ -207,6 +194,7 @@ function ClassRegistration() {
             icons={tableIcons}
             localization={localization}
             components={{
+              Toolbar: () => null,
               Container: (props) => <Paper {...props} elevation={0} />,
             }}
             options={{
@@ -214,15 +202,7 @@ function ClassRegistration() {
               search: false,
               pageSize: 20,
               debounceInterval: 500,
-              headerStyle: {
-                backgroundColor: "#673ab7",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "white",
-              },
               sorting: false,
-              filterCellStyle: { textAlign: "center" },
-              cellStyle: { fontSize: "1rem" },
             }}
           />
         </CardContent>

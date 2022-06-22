@@ -21,7 +21,6 @@ export const DrawText = React.memo(
             return
           }
           if (Number(currentDrawPage) === Number(currentPage)) {
-            console.log('ref', ref, annotations, data)
             if (
               ref?.getLayers().length > 0 &&
               ref?.getLayers()[4]?.getChildren().length / 2 !== data.length
