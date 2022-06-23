@@ -62,6 +62,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Autowired
     private MongoContentService mongoContentService;
+
     public AssignmentServiceImpl(
         AssignmentRepo assignRepo,
         AssignmentSubmissionRepo submissionRepo,
@@ -134,7 +135,6 @@ public class AssignmentServiceImpl implements AssignmentService {
     public GetAssignmentDetail4TeacherOM getAssignmentDetail4Teacher(UUID assignmentId) {
         UUID classId = UUID.fromString(assignRepo.getClassIdOf(assignmentId));
         List<Submission> submissions = assignRepo.getStudentSubmissionsOf(assignmentId);
-        log.info("ten hoc sinh" + submissions.get(0).getName());
         int noOfStudents = classRepo.getNoStudentsOf(classId);
 
         String noSubmissions = noOfStudents == 0 ? "0/0" : submissions.size() +
@@ -180,11 +180,11 @@ public class AssignmentServiceImpl implements AssignmentService {
             if (content != null) {
                 //check if folder slides is existing
                 File fileDownloadsDir = new File(storageFilesDownloadPath);
-                if (!fileDownloadsDir.exists()){
+                if (!fileDownloadsDir.exists()) {
                     fileDownloadsDir.mkdirs();
                 }
                 File outputFile = new File(storageFilesDownloadPath + content.getFilename());
-                try(OutputStream outputFileStream = new FileOutputStream(outputFile)){
+                try (OutputStream outputFileStream = new FileOutputStream(outputFile)) {
                     IOUtils.copy(content.getInputStream(), outputFileStream);
                     fileToAdd.add(outputFile);
                 } catch (FileNotFoundException e) {
@@ -206,7 +206,7 @@ public class AssignmentServiceImpl implements AssignmentService {
             AesKeyStrength.KEY_STRENGTH_256);
 
         //delete files
-        for(File file: fileToAdd) {
+        for (File file : fileToAdd) {
             file.delete();
         }
     }
@@ -367,7 +367,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
             //store image to mongodb
             materialSourceMongoId = mongoContentService.storeFileToGridFs(model);
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             throw new StorageException("Failed to store file " + originalFileName, e);
         }
@@ -396,7 +396,12 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Transactional
-    private SimpleResponse saveSubmissionMetaData(String originalFileName, UUID assignmentId, String studentId, String materialSourceMongoId) {
+    private SimpleResponse saveSubmissionMetaData(
+        String originalFileName,
+        UUID assignmentId,
+        String studentId,
+        String materialSourceMongoId
+    ) {
         Date closeTime = assignRepo.getCloseTime(assignmentId);
 
         if (null == closeTime) {
@@ -424,7 +429,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
 
         //delete file if update file
-        if(null != submission.getMaterialSourceMongoId()) {
+        if (null != submission.getMaterialSourceMongoId()) {
             mongoContentService.deleteFilesById(submission.getMaterialSourceMongoId());
         }
 
