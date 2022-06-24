@@ -30,7 +30,7 @@ public class WhiteboardServiceImpl implements  WhiteboardService {
         Whiteboard whiteboard = new Whiteboard();
         EduClassSession eduClassSession = eduClassSessionRepo.findBySessionId(classSessionId);
         whiteboard.setId(whiteboardId);
-        whiteboard.setName("Whiteboard" + whiteboardId);
+        whiteboard.setName("Whiteboard " + whiteboardId);
         whiteboard.setEduClassSession(eduClassSession);
         whiteboard.setTotalPage(1);
         whiteboard.setCreatedBy(userId);
@@ -90,10 +90,8 @@ public class WhiteboardServiceImpl implements  WhiteboardService {
         AddUserToWhiteboardResultModel addUserToWhiteboardResultModel = new AddUserToWhiteboardResultModel();
         UserWhiteboard userWhiteboard = new UserWhiteboard();
         List<UserWhiteboard> userWhiteboardList = userWhiteboardRepo.findAllByUserLogin(userLogin);
-        log.info("input = " + input.getRoleId(), input.getStatusId());
         boolean found = false;
         for(UserWhiteboard x : userWhiteboardList){
-            log.info("x: whiteboardId = " + x.getWhiteboard().getId());
             if(x.getWhiteboard().getId().equals(whiteboardId)){
                 if (x.getWhiteboard().getCreatedBy().equals(userLogin.getUserLoginId())) {
                     addUserToWhiteboardResultModel.setIsCreatedUser(true);
