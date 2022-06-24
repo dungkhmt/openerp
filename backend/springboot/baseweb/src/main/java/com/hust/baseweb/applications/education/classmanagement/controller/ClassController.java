@@ -320,69 +320,83 @@ public class ClassController {
 
             log.info("file type = " + eduCourseChapterMaterialModelCreate.getMaterialType());
             if(eduCourseChapterMaterialModelCreate.getMaterialType().equals("EDU_COURSE_MATERIAL_TYPE_SLIDE") ){
-                List<String> attachmentId = new ArrayList<>();
+//                List<String> attachmentId = new ArrayList<>();
+//
+//                PDDocument document = PDDocument.load(files[0].getInputStream());
+//                PDFRenderer pdfRenderer = new PDFRenderer(document);
+//
+//                //check if folder slides is existing
+//                File slidesDir = new File(properties.getFilesystemRoot() + "/slides/");
+//                if (!slidesDir.exists()){
+//                    slidesDir.mkdirs();
+//                }
+//
+//                //change pdf format to png and hash image
+//                int numberOfPages = document.getNumberOfPages();
+//                System.out.println("Total files to be converting -> "+ numberOfPages);
+//
+//                String fileName = files[0].getName().replace(".pdf", "");
+//                String fileExtension= "png";
+//
+//                int dpi = 150;  //for less store hard disk
+//                for (int i = 0; i < numberOfPages; ++i) {
+//                    File outPutFile = new File(properties.getFilesystemRoot() + "/slides/" + fileName +"_"+ (i+1) +"."+ fileExtension);
+//                    BufferedImage bImage = pdfRenderer.renderImageWithDPI(i, dpi, ImageType.RGB);
+//                    ImageIO.write(bImage, fileExtension, outPutFile);
+//
+//                    // change type File to type MultipartFile
+//                    FileInputStream input = new FileInputStream(outPutFile);
+//                    MultipartFile multipartFileImage = new MockMultipartFile(
+//                        "file",
+//                        outPutFile.getName(),
+//                        "text/plain",
+//                        IOUtils.toByteArray(input)
+//                    );
+//                    //hash image to binary
+//                    ObjectId id = null;
+//
+//                    long imageId = new Date().getTime();
+//                    ContentModel model = new ContentModel( String.valueOf(imageId), multipartFileImage);
+//
+//                    //store image to mongodb
+//                    try {
+//                        id = mongoContentService.storeFileToGridFs(model);
+//                    } catch (IOException e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                    }
+//
+//                    // add list id to array attachmentId
+//                    if (id != null) {
+//                        ContentHeaderModel rs = new ContentHeaderModel(id.toHexString());
+//                        attachmentId.add(rs.getId());
+//                    }
+//
+//                    //delete file image
+//                    try  {
+//                        outPutFile.delete();
+//                    }
+//                    catch (Exception e){
+//                     e.printStackTrace();
+//                    }
+//                }
+//                String stringIdList = String.join(";", attachmentId);
 
-                PDDocument document = PDDocument.load(files[0].getInputStream());
-                PDFRenderer pdfRenderer = new PDFRenderer(document);
-
-                //check if folder slides is existing
-                File slidesDir = new File(properties.getFilesystemRoot() + "/slides/");
-                if (!slidesDir.exists()){
-                    slidesDir.mkdirs();
+                // add list id to array attachmentId
+//                if (id != null) {
+//                    ContentHeaderModel rs = new ContentHeaderModel(id.toHexString());
+//                    attachmentId.add(rs.getId());
+//                }
+                ContentModel model = new ContentModel(files[0].getOriginalFilename(), files[0]);
+                ObjectId id = null;
+                try {
+                    id = mongoContentService.storeFileToGridFs(model);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
 
-                //change pdf format to png and hash image
-                int numberOfPages = document.getNumberOfPages();
-                System.out.println("Total files to be converting -> "+ numberOfPages);
-
-                String fileName = files[0].getName().replace(".pdf", "");
-                String fileExtension= "png";
-
-                int dpi = 150;  //for less store hard disk
-                for (int i = 0; i < numberOfPages; ++i) {
-                    File outPutFile = new File(properties.getFilesystemRoot() + "/slides/" + fileName +"_"+ (i+1) +"."+ fileExtension);
-                    BufferedImage bImage = pdfRenderer.renderImageWithDPI(i, dpi, ImageType.RGB);
-                    ImageIO.write(bImage, fileExtension, outPutFile);
-
-                    // change type File to type MultipartFile
-                    FileInputStream input = new FileInputStream(outPutFile);
-                    MultipartFile multipartFileImage = new MockMultipartFile(
-                        "file",
-                        outPutFile.getName(),
-                        "text/plain",
-                        IOUtils.toByteArray(input)
-                    );
-                    //hash image to binary
-                    ObjectId id = null;
-
-                    long imageId = new Date().getTime();
-                    ContentModel model = new ContentModel( String.valueOf(imageId), multipartFileImage);
-
-                    //store image to mongodb
-                    try {
-                        id = mongoContentService.storeFileToGridFs(model);
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
-                    // add list id to array attachmentId
-                    if (id != null) {
-                        ContentHeaderModel rs = new ContentHeaderModel(id.toHexString());
-                        attachmentId.add(rs.getId());
-                    }
-
-                    //delete file image
-                    try  {
-                        outPutFile.delete();
-                    }
-                    catch (Exception e){
-                     e.printStackTrace();
-                    }
-                }
-                String stringIdList = String.join(";", attachmentId);
-
-                eduCourseChapterMaterial = eduCourseChapterMaterialService.saveSlide(eduCourseChapterMaterialModelCreate, stringIdList);
+                eduCourseChapterMaterial = eduCourseChapterMaterialService.saveSlide(eduCourseChapterMaterialModelCreate, id.toString());
             } else
                 if(eduCourseChapterMaterialModelCreate.getMaterialType().equals("EDU_COURSE_MATERIAL_TYPE_VIDEO")){
                 Video video = videoService.create(files[0]);
@@ -534,76 +548,85 @@ public class ClassController {
 
             log.info("file type = " + eduCourseChapterMaterial.getEduCourseMaterialType());
             if(eduCourseChapterMaterial.getEduCourseMaterialType().equals("EDU_COURSE_MATERIAL_TYPE_SLIDE") ){
-                List<String> attachmentId = new ArrayList<>();
-
-                PDDocument document = PDDocument.load(files[0].getInputStream());
-                PDFRenderer pdfRenderer = new PDFRenderer(document);
-
-                //check if folder slides is existing
-                File slidesDir = new File(properties.getFilesystemRoot() + "/slides/");
-                if (!slidesDir.exists()){
-                    slidesDir.mkdirs();
+//                List<String> attachmentId = new ArrayList<>();
+//
+//                PDDocument document = PDDocument.load(files[0].getInputStream());
+//                PDFRenderer pdfRenderer = new PDFRenderer(document);
+//
+//                //check if folder slides is existing
+//                File slidesDir = new File(properties.getFilesystemRoot() + "/slides/");
+//                if (!slidesDir.exists()){
+//                    slidesDir.mkdirs();
+//                }
+//
+//                //change pdf format to png and hash image
+//                int numberOfPages = document.getNumberOfPages();
+//                System.out.println("Total files to be converting -> "+ numberOfPages);
+//
+//                String fileName = files[0].getName().replace(".pdf", "");
+//                String fileExtension= "png";
+//
+//                int dpi = 150;  //for less store hard disk
+//                for (int i = 0; i < numberOfPages; ++i) {
+//                    File outPutFile = new File(properties.getFilesystemRoot() + "/slides/" + fileName +"_"+ (i+1) +"."+ fileExtension);
+//                    BufferedImage bImage = pdfRenderer.renderImageWithDPI(i, dpi, ImageType.RGB);
+//                    ImageIO.write(bImage, fileExtension, outPutFile);
+//
+//                    // change type File to type MultipartFile
+//                    FileInputStream input = new FileInputStream(outPutFile);
+//                    MultipartFile multipartFileImage = new MockMultipartFile(
+//                        "file",
+//                        outPutFile.getName(),
+//                        "text/plain",
+//                        IOUtils.toByteArray(input)
+//                    );
+//                    //hash image to binary
+//                    ObjectId id = null;
+//
+//                    long imageId = new Date().getTime();
+//                    ContentModel model = new ContentModel( String.valueOf(imageId), multipartFileImage);
+//
+//                    //store image to mongodb
+//                    try {
+//                        id = mongoContentService.storeFileToGridFs(model);
+//                    } catch (IOException e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                    }
+//
+//                    // add list id to array attachmentId
+//                    if (id != null) {
+//                        ContentHeaderModel rs = new ContentHeaderModel(id.toHexString());
+//                        attachmentId.add(rs.getId());
+//                    }
+//
+//                    //delete file image
+//                    try  {
+//                        outPutFile.delete();
+//                    }
+//                    catch (Exception e){
+//                        e.printStackTrace();
+//                    }
+//                }
+//                String stringIdList = String.join(";", attachmentId);
+                ContentModel model = new ContentModel(files[0].getOriginalFilename(), files[0]);
+                ObjectId id = null;
+                try {
+                    id = mongoContentService.storeFileToGridFs(model);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
 
-                //change pdf format to png and hash image
-                int numberOfPages = document.getNumberOfPages();
-                System.out.println("Total files to be converting -> "+ numberOfPages);
-
-                String fileName = files[0].getName().replace(".pdf", "");
-                String fileExtension= "png";
-
-                int dpi = 150;  //for less store hard disk
-                for (int i = 0; i < numberOfPages; ++i) {
-                    File outPutFile = new File(properties.getFilesystemRoot() + "/slides/" + fileName +"_"+ (i+1) +"."+ fileExtension);
-                    BufferedImage bImage = pdfRenderer.renderImageWithDPI(i, dpi, ImageType.RGB);
-                    ImageIO.write(bImage, fileExtension, outPutFile);
-
-                    // change type File to type MultipartFile
-                    FileInputStream input = new FileInputStream(outPutFile);
-                    MultipartFile multipartFileImage = new MockMultipartFile(
-                        "file",
-                        outPutFile.getName(),
-                        "text/plain",
-                        IOUtils.toByteArray(input)
-                    );
-                    //hash image to binary
-                    ObjectId id = null;
-
-                    long imageId = new Date().getTime();
-                    ContentModel model = new ContentModel( String.valueOf(imageId), multipartFileImage);
-
-                    //store image to mongodb
-                    try {
-                        id = mongoContentService.storeFileToGridFs(model);
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
-                    // add list id to array attachmentId
-                    if (id != null) {
-                        ContentHeaderModel rs = new ContentHeaderModel(id.toHexString());
-                        attachmentId.add(rs.getId());
-                    }
-
-                    //delete file image
-                    try  {
-                        outPutFile.delete();
-                    }
-                    catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-                String stringIdList = String.join(";", attachmentId);
 
                 EduCourseChapterMaterial newEduCourseChapterMaterial = eduCourseChapterMaterialService.updateMaterial(
                     eduCourseChapterMaterial.getEduCourseMaterialId(),
                     eduCourseChapterMaterial.getEduCourseMaterialName(),
                     eduCourseChapterMaterial.getEduCourseMaterialType(),
-                    stringIdList,
+                    id.toString(),
                     null
                 );
-                document.close();
+//                document.close();
             } else
             if(eduCourseChapterMaterial.getEduCourseMaterialType().equals("EDU_COURSE_MATERIAL_TYPE_VIDEO")){
                 Video video = videoService.create(files[0]);

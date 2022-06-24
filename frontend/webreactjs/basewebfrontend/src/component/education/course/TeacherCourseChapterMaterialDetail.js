@@ -60,7 +60,7 @@ function TeacherCourseChapterMaterialDetail() {
   const classes = useStyles();
 
   async function getImages(slideId) {
-    let res = await authPost(dispatch, token, "/file", {
+    let res = await authPost(dispatch, token, "/get-slide", {
       // fileId: "62829f1693445a31606162b6;62829f1793445a31606162b8",
       fileId: slideId,
     });
