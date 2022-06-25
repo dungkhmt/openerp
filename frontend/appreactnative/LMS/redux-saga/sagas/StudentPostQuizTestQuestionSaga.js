@@ -7,7 +7,7 @@ export function* studentPostQuizTestQuestionSaga(action) {
   console.log('studentPostQuizTestQuestionSaga: enter, action=' + JSON.stringify(action));
   try {
     const response = yield AxiosService.post('/quiz-test-choose_answer-by-user', action.payload);
-    yield put({type: types.STUDENT_POST_QUIZ_TEST_QUESTION_SUCCESS, message: "Đã lưu thành công"});
+    yield put({type: types.STUDENT_POST_QUIZ_TEST_QUESTION_SUCCESS, chooseAnswerIds: response.data, status: response.status});
   } catch (err) {
     console.log('studentPostQuizTestQuestionSaga: ' + err);
     yield put({type: types.STUDENT_POST_QUIZ_TEST_QUESTION_FAILURE, message: err.message, status: err.response.status});

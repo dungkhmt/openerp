@@ -2,6 +2,7 @@ import * as types from '../actions/ActionTypes';
 
 const initialState = {
   status: 0,
+  chooseAnswerIds: [],
   message: '',
   isFetching: false,
 };
@@ -17,8 +18,9 @@ const studentPostQuizTestQuestionReducer = (state = initialState, action) => {
     case types.STUDENT_POST_QUIZ_TEST_QUESTION_SUCCESS:
       return {
         ...state,
-        message: action.message,
         isFetching: false,
+        chooseAnswerIds: action.chooseAnswerIds,
+        status: action.status,
       };
     case types.STUDENT_POST_QUIZ_TEST_QUESTION_FAILURE:
       return {

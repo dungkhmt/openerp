@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import store from './redux-saga/store';
+import configureStore from './redux-saga/store';
 import {Provider} from 'react-redux';
 
 import {navigationRef} from './navigation/Navigation.js';
@@ -13,6 +13,7 @@ import RegisterScreen from './screens/RegisterScreen';
 import DrawerNavigationRoutes from './screens/DrawerNavigationRoutes';
 
 const Stack = createStackNavigator();
+const store = configureStore();
 
 const Auth = () => {
   return (
@@ -33,7 +34,7 @@ const Auth = () => {
 
 const App = () => {
   return (
-    <Provider store={store()}>
+    <Provider store={store}>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator initialRouteName="SplashScreen">
           <Stack.Screen

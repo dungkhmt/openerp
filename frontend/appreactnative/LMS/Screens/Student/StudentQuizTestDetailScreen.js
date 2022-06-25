@@ -19,7 +19,7 @@ const StudentQuizTestDetailScreen = ({route}) => {
   );
 
   useEffect(() => {
-    console.log('StudentQuizTestDetailScreen.useEffect: enter' + testId);
+    console.log('StudentQuizTestDetailScreen.useEffect: enter, testId=' + testId);
     dispatch(studentGetQuizTestDetailAction(testId));
   }, []);
 

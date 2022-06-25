@@ -1,5 +1,16 @@
 import React, {useState, useEffect} from 'react';
-import {View, SafeAreaView, Text, TouchableOpacity, Image, Alert, FlatList, StyleSheet, useWindowDimensions, useColorScheme} from 'react-native';
+import {
+  View,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  Image,
+  Alert,
+  FlatList,
+  StyleSheet,
+  useWindowDimensions,
+  useColorScheme,
+} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import RenderHtml from 'react-native-render-html';
@@ -38,14 +49,11 @@ const Answer = ({data}) => {
 };
 
 const Question = ({total, index, data}) => {
-  console.log(
-    'Question: enter, questionId = ' +
-      data.questionId +
-      ', submitted = ' +
-      data.submitted,
-  );
+  console.log('Question: enter, questionId = ' + data.questionId);
   const isDarkMode = useColorScheme() === 'dark';
-  const backgroundColor = isDarkMode ? Colors.containerBackgroundDarkMode : Colors.containerBackground;
+  const backgroundColor = isDarkMode
+    ? Colors.containerBackgroundDarkMode
+    : Colors.containerBackground;
   const navigation = useNavigation();
   const {width} = useWindowDimensions();
   const source = {
@@ -56,15 +64,15 @@ const Question = ({total, index, data}) => {
     state => state.studentGetQuizTestQuestionListReducer.quizTestQuestionList,
   );
   const submitResult = useSelector(
-    state => state.studentPostQuizTestQuestionAction,
+    state => state.studentPostQuizTestQuestionReducer,
   );
-  const [submitted, setSubmitted] = useState(data.submitted);
 
   const renderItem = ({item}) => {
     return <Answer data={item} />;
   };
 
-  if (submitResult !== undefined && submitResult.status === 406) {
+  var html = `<p style="font-size: 15px; color:#720d5d;"><b>Phương án hệ thống đã lưu lần gần nhất:</b></p>`;
+  if (submitResult.status === 406) {
     Alert.alert('Thông báo', 'Bài test đã hết hạn!', [
       {
         text: 'OK',
@@ -74,37 +82,73 @@ const Question = ({total, index, data}) => {
         },
       },
     ]);
+  } else if (submitResult.status === 200) {
+    // Merge submitResult.chooseAnswerIds into participationExecutionChoice
+    var participationExecutionChoice =
+      quizTestQuestionList.participationExecutionChoice;
+
+    var quizChoiceAnswerIdList = [];
+    data.quizChoiceAnswerList.forEach(e => {
+      quizChoiceAnswerIdList.push(e.choiceAnswerId);
+    });
+    const submittedThisQuestion = submitResult.chooseAnswerIds.every(e => {
+      return quizChoiceAnswerIdList.includes('' + e);
+    });
+    if (submittedThisQuestion) {
+      participationExecutionChoice[data.questionId] =
+        submitResult.chooseAnswerIds;
+    }
+
+    quizTestQuestionList.participationExecutionChoice =
+      participationExecutionChoice;
   }
+
+  for (const [key, value] of Object.entries(
+    quizTestQuestionList.participationExecutionChoice,
+  )) {
+    if (data.questionId === key) {
+      data.quizChoiceAnswerList.forEach(answer => {
+        if (value.includes('' + answer.choiceAnswerId)) {
+          html = html + answer.choiceAnswerContent;
+        }
+      });
+    }
+  }
+
+  const recentAnswers = {
+    html: html,
+  };
 
   const ListFooterComponent = () => {
     return (
-      <View style={styles.buttonStyle}>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={() => {
-            var payload = {
-              testId: quizTestQuestionList.testId,
-              questionId: data.questionId,
-              quizGroupId: quizTestQuestionList.quizGroupId,
-            };
-            var chooseAnsIds = [];
-            quizTestQuestionList.listQuestion.forEach(question => {
-              if (question.questionId === data.questionId) {
-                data.quizChoiceAnswerList.forEach(answer => {
-                  if (answer.checked) {
-                    chooseAnsIds.push(answer.choiceAnswerId);
-                  }
-                });
-              }
-            });
-            payload.chooseAnsIds = chooseAnsIds;
-            // console.log(JSON.stringify(payload));
-            dispatch(studentPostQuizTestQuestionAction(payload));
-            data.submitted = true;
-            setSubmitted(data.submitted);
-          }}>
-          <Text style={styles.buttonTextStyle}>{submitted ? 'Đã lưu' : 'Lưu'}</Text>
-        </TouchableOpacity>
+      <View style={{flexDirection: 'column'}}>
+        <View style={styles.buttonStyle}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => {
+              var payload = {
+                testId: quizTestQuestionList.testId,
+                questionId: data.questionId,
+                quizGroupId: quizTestQuestionList.quizGroupId,
+              };
+              var chooseAnsIds = [];
+              quizTestQuestionList.listQuestion.forEach(question => {
+                if (question.questionId === data.questionId) {
+                  data.quizChoiceAnswerList.forEach(answer => {
+                    if (answer.checked) {
+                      chooseAnsIds.push(answer.choiceAnswerId);
+                    }
+                  });
+                }
+              });
+              payload.chooseAnsIds = chooseAnsIds;
+              // console.log(JSON.stringify(payload));
+              dispatch(studentPostQuizTestQuestionAction(payload));
+            }}>
+            <Text style={styles.buttonTextStyle}>Lưu</Text>
+          </TouchableOpacity>
+        </View>
+        <RenderHtml contentWidth={width - 96} source={recentAnswers}></RenderHtml>
       </View>
     );
   };
@@ -188,14 +232,16 @@ const StudentQuizTestQuestionListScreen = ({route}) => {
     state => state.studentGetQuizTestQuestionListReducer.isFetching,
   );
   const questionList = useSelector(
-    state => state.studentGetQuizTestQuestionListReducer.quizTestQuestionList.listQuestion,
+    state =>
+      state.studentGetQuizTestQuestionListReducer.quizTestQuestionList
+        .listQuestion,
   );
 
   useEffect(() => {
-    console.log('StudentQuizTestQuestionListScreen.useEffect: enter, testId=' + testId);
-    dispatch(
-      studentGetQuizTestQuestionListAction({testId: testId}),
+    console.log(
+      'StudentQuizTestQuestionListScreen.useEffect: enter, testId=' + testId,
     );
+    dispatch(studentGetQuizTestQuestionListAction({testId: testId}));
   }, []);
 
   if (
