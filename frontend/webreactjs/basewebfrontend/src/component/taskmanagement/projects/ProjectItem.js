@@ -45,7 +45,7 @@ const ProjectItem = ({ name, id }) => {
                         <Box>
                             <Link to={`/taskmanagement/project/tasks/create/${id}`} style={{ textDecoration: 'none', marginRight: "15px" }}>Thêm n.vụ</Link>
                             <Link to={`/taskmanagement/project/${id}/tasks#list-task`} style={{ textDecoration: 'none', marginRight: "15px" }}>Danh sách n.vụ</Link>
-                            <Link to="#" style={{ textDecoration: 'none', marginRight: "15px" }}>Boards</Link>
+                            <Link to={`/taskmanagement/project/${id}/board`} style={{ textDecoration: 'none', marginRight: "15px" }}>Board</Link>
                         </Box>
                     </Box>
                 </Box>

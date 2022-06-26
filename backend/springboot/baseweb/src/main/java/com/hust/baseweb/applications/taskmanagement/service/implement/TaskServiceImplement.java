@@ -3,9 +3,7 @@ package com.hust.baseweb.applications.taskmanagement.service.implement;
 import com.hust.baseweb.applications.taskmanagement.dto.form.TaskForm;
 import com.hust.baseweb.applications.taskmanagement.dto.form.TaskStatusForm;
 import com.hust.baseweb.applications.taskmanagement.entity.*;
-import com.hust.baseweb.applications.taskmanagement.repository.TaskAssignableRepository;
-import com.hust.baseweb.applications.taskmanagement.repository.TaskExecutionRepository;
-import com.hust.baseweb.applications.taskmanagement.repository.TaskRepository;
+import com.hust.baseweb.applications.taskmanagement.repository.*;
 import com.hust.baseweb.applications.taskmanagement.service.*;
 import com.hust.baseweb.entity.StatusItem;
 import lombok.AllArgsConstructor;
@@ -37,6 +35,8 @@ public class TaskServiceImplement implements TaskService {
     private TaskExecutionRepository taskExecutionRepository;
 
     private ProjectMemberService projectMemberService;
+
+    private TaskSkillRepository taskSkillRepository;
 
     @Override
     public Task createTask(Task task) {
@@ -105,16 +105,16 @@ public class TaskServiceImplement implements TaskService {
         taskExecution.setExecutionTags("updated");
         taskExecution.setCreatedByUserLoginId(userLoginId);
         taskExecution.setProjectId(task.getProject().getId());
-        if(!taskStatusForm.getStatusId().equals(oldStatusItem.getStatusId())){
+        if (!taskStatusForm.getStatusId().equals(oldStatusItem.getStatusId())) {
             taskExecution.setStatus(statusItem.getDescription());
         }
 
         // fixed by PQD
         //if(!partyIdOld.toString().equals(taskStatusForm.getPartyId().toString())){
-            taskExecution.setAssignee(assignee);
+        taskExecution.setAssignee(assignee);
         //}
 
-        if(!sdf.format(taskStatusForm.getDueDate()).equals(sdf.format(oldDueDate))){
+        if (!sdf.format(taskStatusForm.getDueDate()).equals(sdf.format(oldDueDate))) {
             taskExecution.setDueDate(dueDate);
         }
 
@@ -147,7 +147,7 @@ public class TaskServiceImplement implements TaskService {
 
         TaskAssignable taskAssignable = taskAssignableRepository.getByTaskId(taskId);
         UUID oldPartyId = taskAssignable.getPartyId();
-        if(taskAssignable.getPartyId() != taskForm.getPartyId()){
+        if (taskAssignable.getPartyId() != taskForm.getPartyId()) {
             taskAssignable.setPartyId(taskForm.getPartyId());
         }
         taskAssignableRepository.save(taskAssignable);
@@ -158,39 +158,49 @@ public class TaskServiceImplement implements TaskService {
         taskExecution.setExecutionTags("updated");
         taskExecution.setProjectId(taskForm.getProjectId());
 
-        if(!taskForm.getCategoryId().equals(oldTask.getTaskCategory().getCategoryId())){
+        if (!taskForm.getCategoryId().equals(oldTask.getTaskCategory().getCategoryId())) {
             taskExecution.setCategory(taskCategory.getCategoryName());
         }
 
-        if(!taskForm.getName().equals(oldTask.getName())){
+        if (!taskForm.getName().equals(oldTask.getName())) {
             taskExecution.setTaskName(taskForm.getName());
         }
 
-        if(!taskForm.getDescription().equals(oldTask.getDescription())){
+        if (!taskForm.getDescription().equals(oldTask.getDescription())) {
             taskExecution.setTaskDescription(taskForm.getDescription());
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        if(!sdf.format(taskForm.getDueDate()).equals(sdf.format(oldTask.getDueDate()))){
+        if (!sdf.format(taskForm.getDueDate()).equals(sdf.format(oldTask.getDueDate()))) {
             taskExecution.setDueDate(sdf.format(taskForm.getDueDate()));
         }
 
-        if(!taskForm.getStatusId().equals(oldTask.getStatusItem().getStatusId())){
+        if (!taskForm.getStatusId().equals(oldTask.getStatusItem().getStatusId())) {
             taskExecution.setStatus(statusItem.getDescription());
         }
 
-        if(!oldPartyId.toString().equals(taskForm.getPartyId().toString())){
+        if (!oldPartyId.toString().equals(taskForm.getPartyId().toString())) {
             taskExecution.setAssignee(assignee);
         }
 
-        if(!taskForm.getPriorityId().equals(oldTask.getTaskPriority().getPriorityId())){
-            taskExecution.setPriority(taskPriorityService.getTaskPriorityById(taskForm.getPriorityId()).getPriorityName());
+        if (!taskForm.getPriorityId().equals(oldTask.getTaskPriority().getPriorityId())) {
+            taskExecution.setPriority(taskPriorityService
+                                          .getTaskPriorityById(taskForm.getPriorityId())
+                                          .getPriorityName());
         }
 
-        if(!taskForm.getAttachmentPaths().equals(oldTask.getAttachmentPaths())){
+        if (!taskForm.getAttachmentPaths().equals(oldTask.getAttachmentPaths())) {
             taskExecution.setFileName(fileName);
         }
         taskExecutionRepository.save(taskExecution);
         return taskRepository.save(taskRes);
+    }
+
+    @Override
+    public void addTaskSkill(UUID taskId, String skillId) {
+        TaskSkill taskSkill = new TaskSkill();
+        taskSkill.setTaskId(taskId);
+        taskSkill.setSkillId(skillId);
+        taskSkillRepository.save(taskSkill);
     }
 }

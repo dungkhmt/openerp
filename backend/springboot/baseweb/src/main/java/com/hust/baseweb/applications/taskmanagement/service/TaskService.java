@@ -30,4 +30,6 @@ public interface TaskService {
     Task updateStatusTask(UUID taskId, TaskStatusForm taskStatusForm, String userLoginId);
 
     Task updateTask(UUID taskId, TaskForm taskForm, String createdByUserLoginId);
+
+    void addTaskSkill(UUID taskId, String skillId);
 }
