@@ -199,4 +199,14 @@ public class WhiteboardServiceImpl implements  WhiteboardService {
         }
         return usersInWhiteboardModelList;
     }
+
+    @Override
+    public void deleteWhiteboard(DeleteWhiteboardModel input) {
+        Whiteboard whiteboard = whiteboardRepo.findWhiteboardById(input.getWhiteboardId());
+        List<UserWhiteboard> userWhiteboardList = userWhiteboardRepo.findAllByWhiteboard(whiteboard);
+        userWhiteboardRepo.deleteAll(userWhiteboardList);
+        whiteboardRepo.delete(whiteboard);
+
+        return;
+    }
 }
