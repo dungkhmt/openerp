@@ -27,10 +27,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.security.Principal;
-import java.util.List;
-import java.util.Scanner;
-import java.util.UUID;
-import java.util.Date;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 @RestController
 @CrossOrigin
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -40,6 +40,9 @@ public class ContestProblemController {
     ContestRepo contestRepo;
     ContestSubmissionRepo contestSubmissionRepo;
     UserService userService;
+
+    //public static List<ModelGetContestDetailResponse> runningContests = new ArrayList();
+    public static ConcurrentMap<String, ModelGetContestDetailResponse> runningContests = new ConcurrentHashMap();
 
     @PostMapping("/create-problem")
     public ResponseEntity<?> createContestProblem(@RequestBody ModelCreateContestProblem modelCreateContestProblem, Principal principal) throws MiniLeetCodeException {
@@ -186,8 +189,19 @@ public class ContestProblemController {
     @PostMapping("/edit-contest/{contestId}")
     public ResponseEntity<?> editContest(@RequestBody ModelUpdateContest modelUpdateContest, Principal principal, @PathVariable("contestId") String contestId) throws Exception {
         log.info("edit contest modelUpdateContest {}",modelUpdateContest );
+
         problemTestCaseService.updateContest(modelUpdateContest, principal.getName(), contestId);
+        ModelGetContestDetailResponse runningContest = runningContests.get(contestId);
+        if(runningContest != null && !modelUpdateContest.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)){
+            log.info("updateContest, found contest " + contestId + " is running in cache --> remove it");
+            // remove active contest from runningContests
+            removeContestFromCache(contestId);
+        }
         return ResponseEntity.status(200).body(null);
+    }
+    synchronized static void removeContestFromCache(String contestId){
+        log.info("removeContestFromCache synchronized remove from cache contestId " + contestId);
+        runningContests.remove(contestId);
     }
     @GetMapping("/get-list-roles-contest")
     public ResponseEntity<?> getListRolesContest(){
@@ -229,10 +243,51 @@ public class ContestProblemController {
     @GetMapping("/get-contest-detail-solving/{contestId}")
     public ResponseEntity<?> getContestDetailSolving(@PathVariable("contestId") String contestId, Principal principal) throws MiniLeetCodeException {
         log.info("getContestDetail constestid {}", contestId);
-        ModelGetContestDetailResponse response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
+        ModelGetContestDetailResponse response = null;
+        //ModelGetContestDetailResponse response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
+
+        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+        if(!contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)){
+            response = ModelGetContestDetailResponse.builder()
+                                                .contestId(contestId)
+                                                .contestName(contestEntity.getContestName())
+                                                .contestTime(contestEntity.getContestSolvingTime())
+                                                .startAt(contestEntity.getStartedAt())
+                                                .list(new ArrayList())
+                                                .unauthorized(false)
+                                                .isPublic(contestEntity.getIsPublic())
+                                                .statusId(contestEntity.getStatusId())
+                                                .listStatusIds(ContestEntity.getStatusIds())
+                                                .build();
+            return ResponseEntity.status(200).body(response);
+        }
+        // USE cache
+        /*for(ModelGetContestDetailResponse res: runningContests){
+        if(res.getContestId().equals(contestId)){
+            log.info("getContestDetail constestid {} use cache, found a running contest!!!", contestId);
+            response = res; break;
+        }
+        }
+        */
+        response = runningContests.get(contestId);
+        if(response == null){
+            // load from DB and store in cache
+            log.info("getContestDetail constestid " + contestId + " not found in the cache --> load from DB");
+            response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
+            if(response != null) checkAndAddRunningContest(response);
+
+        }else{
+            log.info("getContestDetail constestid {} use cache, found a running contest in cache!!!", contestId);
+        }
+
         return ResponseEntity.status(200).body(response);
     }
-
+    synchronized static void checkAndAddRunningContest(ModelGetContestDetailResponse response){
+        if(runningContests.get(response.getContestId()) == null){
+            runningContests.put(response.getContestId(), response);
+            log.info("getContestDetail constestid " + response.getContestId() + " not found in the cache --> load from DB AND push successfully in cache");
+        }
+    }
     @Secured("ROLE_STUDENT")
     @PostMapping("/student-register-contest/{contestId}")
     public ResponseEntity<?> studentRegisterContest(@PathVariable("contestId") String contestId, Principal principal) throws MiniLeetCodeException {
@@ -441,7 +496,7 @@ public class ContestProblemController {
             while(in.hasNext()) {
                 String line = in.nextLine();
                 source += line + "\n";
-                System.out.println("contestSubmitProblemViaUploadFile: read line: " + line);
+                //System.out.println("contestSubmitProblemViaUploadFile: read line: " + line);
             }
             in.close();
 
