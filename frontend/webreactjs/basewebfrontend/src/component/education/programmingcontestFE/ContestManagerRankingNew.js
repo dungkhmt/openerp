@@ -55,7 +55,10 @@ export default function ContestManagerRankingNew(props) {
     sheet["!cols"] = wbcols;
 
     XLSX.utils.book_append_sheet(wb, sheet, "ranking");
-    XLSX.writeFile(wb, contestId + "-RANKING-" + getPointForRankingType + ".xlsx");
+    XLSX.writeFile(
+      wb,
+      contestId + "-RANKING-" + getPointForRankingType + ".xlsx"
+    );
   };
 
   const handlePageRankingSizeChange = (event) => {
@@ -148,10 +151,11 @@ export default function ContestManagerRankingNew(props) {
               {ranking.length > 0 &&
                 ranking.map(
                   (element, index) =>
-                    index < rowsPerPage && (
+                    index >= page * rowsPerPage &&
+                    index < (page + 1) * rowsPerPage && (
                       <StyledTableRow>
                         <StyledTableCell>
-                          <b>{index + 1 + page * rowsPerPage}</b>
+                          <b>{index + 1}</b>
                         </StyledTableCell>
 
                         <StyledTableCell align="center">
