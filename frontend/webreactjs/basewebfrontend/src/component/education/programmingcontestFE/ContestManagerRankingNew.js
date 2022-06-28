@@ -55,7 +55,10 @@ export default function ContestManagerRankingNew(props) {
     sheet["!cols"] = wbcols;
 
     XLSX.utils.book_append_sheet(wb, sheet, "ranking");
-    XLSX.writeFile(wb, contestId + "-RANKING-" + getPointForRankingType + ".xlsx");
+    XLSX.writeFile(
+      wb,
+      contestId + "-RANKING-" + getPointForRankingType + ".xlsx"
+    );
   };
 
   const handlePageRankingSizeChange = (event) => {
@@ -128,6 +131,11 @@ export default function ContestManagerRankingNew(props) {
               <TableRow>
                 <StyledTableCell align="center"></StyledTableCell>
                 <StyledTableCell align="center">Username</StyledTableCell>
+                <StyledTableCell align="center">Fullname</StyledTableCell>
+                <StyledTableCell align="center">
+                  <b>TOTAL</b>
+                </StyledTableCell>
+
                 {ranking.length > 0 &&
                   ranking[0].mapProblemsToPoints.map((problem) => {
                     return (
@@ -139,9 +147,6 @@ export default function ContestManagerRankingNew(props) {
                       </StyledTableCell>
                     );
                   })}
-                <StyledTableCell align="center">
-                  <b>TOTAL</b>
-                </StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -157,7 +162,13 @@ export default function ContestManagerRankingNew(props) {
                         <StyledTableCell align="center">
                           <b>{element.userId}</b>
                         </StyledTableCell>
+                        <StyledTableCell align="center">
+                          <b>{element.fullname}</b>
+                        </StyledTableCell>
 
+                        <StyledTableCell align="center">
+                          <b>{element.totalPoint}</b>
+                        </StyledTableCell>
                         {element.mapProblemsToPoints.map((problem) => {
                           return (
                             <StyledTableCell align="center">
@@ -165,9 +176,6 @@ export default function ContestManagerRankingNew(props) {
                             </StyledTableCell>
                           );
                         })}
-                        <StyledTableCell align="center">
-                          <b>{element.totalPoint}</b>
-                        </StyledTableCell>
                       </StyledTableRow>
                     )
                 )}

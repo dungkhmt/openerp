@@ -25,6 +25,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.ws.rs.Path;
 import java.io.InputStream;
 import java.security.Principal;
 import java.util.*;
@@ -192,10 +193,18 @@ public class ContestProblemController {
 
         problemTestCaseService.updateContest(modelUpdateContest, principal.getName(), contestId);
         ModelGetContestDetailResponse runningContest = runningContests.get(contestId);
-        if(runningContest != null && !modelUpdateContest.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)){
-            log.info("updateContest, found contest " + contestId + " is running in cache --> remove it");
-            // remove active contest from runningContests
+        if(runningContest != null){
             removeContestFromCache(contestId);
+            if(modelUpdateContest.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)){
+                log.info("updateContest, found contest " + contestId + " is running in cache --> remove it");
+                // remove active contest from runningContests
+                //removeContestFromCache(contestId);
+
+                // RELOAD Contest and Put into the cache
+                log.info("editContest, status = RUNNING -> RELOAD from DB and put into cache");
+                runningContest = problemTestCaseService.getContestDetailByContestId(contestId);
+                if(runningContest != null) checkAndAddRunningContest(runningContest);
+            }
         }
         return ResponseEntity.status(200).body(null);
     }
@@ -269,17 +278,22 @@ public class ContestProblemController {
         }
         }
         */
-        response = runningContests.get(contestId);
-        if(response == null){
-            // load from DB and store in cache
-            log.info("getContestDetail constestid " + contestId + " not found in the cache --> load from DB");
-            response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
-            if(response != null) checkAndAddRunningContest(response);
+        if(contestEntity.getUseCacheContestProblem() != null &&
+           contestEntity.getUseCacheContestProblem().equals(ContestEntity.USE_CACHE_CONTEST_PROBLEM_YES)) {
+            response = runningContests.get(contestId);
+            if (response == null) {
+                // load from DB and store in cache
+                log.info("getContestDetail constestid " + contestId + " USED_CACHE not found in the cache --> load from DB");
+                response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
+                if (response != null) checkAndAddRunningContest(response);
 
+            } else {
+                log.info("getContestDetail constestid {} use cache, found a running contest in cache!!!", contestId);
+            }
         }else{
-            log.info("getContestDetail constestid {} use cache, found a running contest in cache!!!", contestId);
+            log.info("getContestDetail constestid {} NOT use cache -> load from DB", contestId);
+            response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
         }
-
         return ResponseEntity.status(200).body(response);
     }
     synchronized static void checkAndAddRunningContest(ModelGetContestDetailResponse response){
@@ -516,10 +530,16 @@ public class ContestProblemController {
         }
         return ResponseEntity.ok().body("OK");
     }
+    @GetMapping ("/evaluate-submission/{submissionId}")
+    public ResponseEntity<?> evaluateSubmission(Principal principal, @PathVariable UUID submissionId){
+        ModelContestSubmissionResponse res = problemTestCaseService.evaluateSubmission(submissionId);
+        return ResponseEntity.ok().body(res);
+    }
     @GetMapping("/evaluate-batch-submission-of-contest/{contestId}")
     public ResponseEntity<?> evaluateBatchSubmissionContest(Principal principal, @PathVariable String contestId){
         log.info("evaluateBatchSubmissionContest, contestId = " + contestId);
-        ModelEvaluateBatchSubmissionResponse res = problemTestCaseService.evaluateBatchSubmissionContest(contestId);
+        //ModelEvaluateBatchSubmissionResponse res = problemTestCaseService.evaluateBatchSubmissionContest(contestId);
+        ModelEvaluateBatchSubmissionResponse res = problemTestCaseService.reJudgeAllSubmissionsOfContest(contestId);
         return ResponseEntity.ok().body(res);
     }
     @PostMapping("/submit-solution-output")
