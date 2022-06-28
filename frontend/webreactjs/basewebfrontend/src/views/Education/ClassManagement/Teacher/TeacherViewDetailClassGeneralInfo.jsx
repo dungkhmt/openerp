@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Card,
   CardContent,
   CardHeader,
   Grid,
@@ -37,6 +38,7 @@ import { drawerWidth } from "../../../../assets/jss/material-dashboard-react";
 //import { errorNoti } from "../../../../utils/notification";
 import EditIcon from "@material-ui/icons/Edit";
 import TClassUpdatePopup from "./TClassUpdatePopup";
+import PositiveButton from "../../../../component/education/classmanagement/PositiveButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -112,52 +114,53 @@ export default function TeacherViewDetailClassGeneralInfo(props) {
 
   useEffect(() => {
     getClassDetail();
-  });
+  }, []);
 
   return (
     <div>
-      <h1>General information</h1>
-      <IconButton
-        color="primary"
-        aria-label="edit"
-        onClick={() => {
-          onUpdateClass();
-        }}
-      >
-        <EditIcon />
-      </IconButton>
-      <CardHeader
-        avatar={
-          <Avatar style={{ background: "#ff7043" }}>
-            <BiDetail size={32} />
-          </Avatar>
-        }
-        title={<Typography variant="h5">Thông tin lớp</Typography>}
-      />
-      <CardContent>
-        <Grid container className={classes.grid}>
-          <Grid item md={3} sm={3} xs={3} container direction="column">
-            <Typography>Mã lớp</Typography>
-            <Typography>Mã học phần</Typography>
-            <Typography>Tên học phần</Typography>
-            <Typography>Loại lớp</Typography>
+      <Card className={classes.card}>
+        <CardHeader
+          avatar={
+            <Avatar style={{ background: "#ff7043" }}>
+              <BiDetail size={32} />
+            </Avatar>
+          }
+          title={<Typography variant="h5">Thông tin lớp</Typography>}
+          action={
+            <PositiveButton
+              label="Chỉnh sửa"
+              className={classes.positiveBtn}
+              onClick={() => {
+                onUpdateClass();
+              }}
+            />
+          }
+        />
+        <CardContent>
+          <Grid container className={classes.grid}>
+            <Grid item md={3} sm={3} xs={3} container direction="column">
+              <Typography>Mã lớp</Typography>
+              <Typography>Mã học phần</Typography>
+              <Typography>Tên học phần</Typography>
+              <Typography>Loại lớp</Typography>
+            </Grid>
+            <Grid item md={8} sm={8} xs={8} container direction="column">
+              <Typography>
+                <b>:</b> {classDetail.code}
+              </Typography>
+              <Typography>
+                <b>:</b> {classDetail.courseId}
+              </Typography>
+              <Typography>
+                <b>:</b> {classDetail.name}
+              </Typography>
+              <Typography>
+                <b>:</b> {classDetail.classType}
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item md={8} sm={8} xs={8} container direction="column">
-            <Typography>
-              <b>:</b> {classDetail.code}
-            </Typography>
-            <Typography>
-              <b>:</b> {classDetail.courseId}
-            </Typography>
-            <Typography>
-              <b>:</b> {classDetail.name}
-            </Typography>
-            <Typography>
-              <b>:</b> {classDetail.classType}
-            </Typography>
-          </Grid>
-        </Grid>
-      </CardContent>
+        </CardContent>
+      </Card>
 
       <TClassUpdatePopup open={open} setOpen={setOpen} classId={classId} />
     </div>

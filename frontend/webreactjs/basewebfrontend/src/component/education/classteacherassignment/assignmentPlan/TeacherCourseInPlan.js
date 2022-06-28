@@ -1,14 +1,11 @@
 import { Typography } from "@material-ui/core/";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 // import EditIcon from "@material-ui/icons/Edit";
-import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
-import { authPostMultiPart, request } from "api";
+import { request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 // import UpdateTeacherCourseForAssignmentModel from "../UpdateTeacherCourseForAssignmentModel";
-import UploadExcelTeacherCourseModel from "../UploadExcelTeacherCourseModel";
 import { useStyles } from "./ClassInPlan";
 
 function TeacherCourseInPlan(props) {
@@ -19,17 +16,12 @@ function TeacherCourseInPlan(props) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [teacherCourses, setTeacherCourses] = useState([]);
 
-  const [open, setOpen] = React.useState(false);
   // const [openUpdateTeacherCourse, setOpenUpdateTeacherCourse] = useState(false);
   // const [selectedTeacherCourse, setSelectedTeacherCourse] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
 
   // Table
   const columns = [
-    { title: "Giáo viên", field: "teacherId" },
+    { title: "Giảng viên", field: "teacherId" },
     { title: "Mã học phần", field: "courseId" },
     { title: "Loại lớp", field: "classType" },
     // { title: "Độ ưu tiên", field: "priority" },
@@ -94,43 +86,6 @@ function TeacherCourseInPlan(props) {
   //   handleModalUpdateTeacherCourseClose();
   // };
 
-  // TODO: upgrade this func
-  const uploadExcel = (selectedFile, choice) => {
-    setIsProcessing(true);
-
-    if (selectedFile == null) {
-      alert("You must select a file");
-      return;
-    }
-    console.log("upload file " + selectedFile.name);
-    let body = {
-      planId: planId,
-      choice: choice,
-    };
-    let formData = new FormData();
-    formData.append("inputJson", JSON.stringify(body));
-    formData.append("file", selectedFile);
-
-    authPostMultiPart(dispatch, token, "/upload-excel-teacher-course", formData)
-      .then((res) => {
-        setIsProcessing(false);
-        console.log("result submit = ", res);
-
-        //var f = document.getElementById("selected-upload-file");
-        //f.value = null;
-        //setSelectedFile(null);
-      })
-      .catch((e) => {
-        setIsProcessing(false);
-        console.error(e);
-      });
-  };
-
-  const customUploadHandle = (selectedFile, choice) => {
-    uploadExcel(selectedFile, choice);
-    handleModalClose();
-  };
-
   const getTeacherCourseForAssignmentList = () => {
     request(
       "GET",
@@ -139,14 +94,6 @@ function TeacherCourseInPlan(props) {
         setTeacherCourses(res.data);
       }
     );
-  };
-
-  const handleModalOpen = () => {
-    setOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setOpen(false);
   };
 
   const removeTeacherCourseFromAssignmentPlan = () => {
@@ -192,41 +139,23 @@ function TeacherCourseInPlan(props) {
         onSelectionChange={(selectedRows) => setSelectedRows(selectedRows)}
         commandBarComponents={
           <>
-            {selectedRows.length === 0 ? (
-              <>
-                <TertiaryButton
-                  className={classes.uploadExcelBtn}
-                  color="default"
-                  startIcon={<PublishRoundedIcon />}
-                  onClick={handleModalOpen}
-                >
-                  Tải lên Excel
-                </TertiaryButton>
-              </>
-            ) : (
-              <>
-                <TertiaryButton
-                  className={classes.uploadExcelBtn}
-                  color="default"
-                  startIcon={<DeleteRoundedIcon />}
-                  onClick={removeTeacherCourseFromAssignmentPlan}
-                >
-                  Xoá
-                </TertiaryButton>
-                <Typography
-                  component="span"
-                  style={{ marginLeft: "auto", marginRight: 32 }}
-                >{`Đã chọn ${selectedRows.length} mục`}</Typography>
-              </>
+            <TertiaryButton
+              className={classes.uploadExcelBtn}
+              color="default"
+              startIcon={<DeleteRoundedIcon />}
+              onClick={removeTeacherCourseFromAssignmentPlan}
+              disabled={selectedRows.length === 0}
+            >
+              Xoá
+            </TertiaryButton>
+            {selectedRows.length > 0 && (
+              <Typography
+                component="span"
+                style={{ marginLeft: "auto", marginRight: 32 }}
+              >{`Đã chọn ${selectedRows.length} mục`}</Typography>
             )}
           </>
         }
-      />
-
-      <UploadExcelTeacherCourseModel
-        open={open}
-        onClose={handleModalClose}
-        onUpload={customUploadHandle}
       />
 
       {/* <UpdateTeacherCourseForAssignmentModel

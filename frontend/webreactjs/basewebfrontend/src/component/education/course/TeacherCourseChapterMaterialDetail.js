@@ -6,6 +6,11 @@ import {
   CardActions,
   TextField,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@material-ui/core/";
 import DateFnsUtils from "@date-io/date-fns";
 import React, { useEffect, useState } from "react";
@@ -49,6 +54,7 @@ function TeacherCourseChapterMaterialDetail() {
   const [selectedInputFile, setSelectedInputFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditting, setIsEditting] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [flag, setFlag] = useState(false);
 
   const classes = useStyles();
@@ -162,8 +168,44 @@ function TeacherCourseChapterMaterialDetail() {
     //setSourceId(chapterMaterial.sourceId);
   }, [flag]);
 
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const onHandleConfirmDelete = () => {
+    deleteSlideOrVideo();
+    handleCloseDialog();
+  };
+
   return (
     <>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="draggable-dialog-title"
+      >
+        <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
+          Xác nhận xóa
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            <div>Bạn sẽ không thể khôi phục được tài liệu nếu xóa.</div>
+            <div>Bạn có chắc muốn xóa tài liệu bài giảng.</div>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleCloseDialog} color="primary">
+            Hủy
+          </Button>
+          <Button onClick={onHandleConfirmDelete} color="primary">
+            Xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
       {isEditting ? (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           {isLoading ? (
@@ -355,7 +397,7 @@ function TeacherCourseChapterMaterialDetail() {
               <Button
                 variant="contained"
                 color="secondary"
-                onClick={() => deleteSlideOrVideo()}
+                onClick={handleOpenDialog}
               >
                 Xóa tài liệu
               </Button>

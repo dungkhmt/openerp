@@ -5,7 +5,7 @@ import { request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
-import UpdateTeacherForAssignmentModel from "../UpdateTeacherForAssignmentModel";
+import UpdateTeacherForAssignmentDialog from "../UpdateTeacherForAssignmentDialog";
 import { useStyles } from "./ClassInPlan";
 
 function TeacherInPlan(props) {
@@ -22,9 +22,9 @@ function TeacherInPlan(props) {
 
   // Table
   const columns = [
-    { title: "Mã Giáo viên", field: "teacherId" },
+    { title: "Email", field: "teacherId" },
     // { title: "Tên", field: "teacherName" },
-    { title: "Max GD", field: "maxHourLoad" },
+    { title: "Tải tối đa", field: "maxHourLoad" },
     // { title: "Tối ưu số ngày", field: "minimizeNumberWorkingDays" },
     {
       title: "",
@@ -48,7 +48,7 @@ function TeacherInPlan(props) {
     handleModalOpen();
   }
 
-  const customUploadHandle = (hourLoad, minimizeNumberWorkingDays) => {
+  const onUpdateInfo = (hourLoad, minimizeNumberWorkingDays) => {
     let data = {
       planId: planId,
       teacherId: selectedTeacherId,
@@ -146,10 +146,10 @@ function TeacherInPlan(props) {
         }
       />
 
-      <UpdateTeacherForAssignmentModel
+      <UpdateTeacherForAssignmentDialog
         open={open}
         onClose={handleModalClose}
-        onUpdateInfo={customUploadHandle}
+        onUpdateInfo={onUpdateInfo}
         selectedTeacherId={selectedTeacherId}
       />
     </>

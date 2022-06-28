@@ -32,7 +32,8 @@ public interface AssignmentRepo extends JpaRepository<Assignment, UUID> {
     @Query(value = "select\n" +
                    "\teas.student_id studentId,\n" +
                    "\tconcat(p.first_name, ' ', p.middle_name, ' ', p.last_name) \"name\",\n" +
-                   "\teas.last_updated_stamp submissionDate\n" +
+                   "\teas.last_updated_stamp submissionDate,\n" +
+                   "\teas.original_file_name originalFileName\n" +
                    "from\n" +
                    "\tedu_assignment_submission eas\n" +
                    "inner join user_login ul on\n" +

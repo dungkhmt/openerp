@@ -1,4 +1,4 @@
-package com.hust.baseweb.applications.education.teacherclassassignment.model;
+package com.hust.baseweb.applications.whiteboard.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,8 +11,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UploadExcelTeacherCourseInputModel {
-
-    private UUID planId;
-    private String choice;
+public class DeleteWhiteboardModel {
+    private String whiteboardId;
+    private UUID classSessionId;
 }

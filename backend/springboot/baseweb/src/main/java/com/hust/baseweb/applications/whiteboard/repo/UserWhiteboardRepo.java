@@ -13,6 +13,5 @@ public interface UserWhiteboardRepo
 
     List<UserWhiteboard> findAllByUserLogin(UserLogin userLogin);
     UserWhiteboard findByWhiteboardIdAndUserLogin(String whiteboardId, UserLogin userLogin);
-
     List<UserWhiteboard> findAllByWhiteboard(Whiteboard whiteboard);
 }

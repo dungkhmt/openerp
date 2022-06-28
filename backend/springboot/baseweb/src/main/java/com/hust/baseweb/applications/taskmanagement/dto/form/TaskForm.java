@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -24,4 +25,5 @@ public class TaskForm {
     private String priorityId;
     private String categoryId;
     private UUID partyId;
+    private List<String> skillIds;
 }

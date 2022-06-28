@@ -106,7 +106,7 @@ export default function CreateProject() {
         <Box sx={boxChildComponent}>
           <Box>
             <Box mb={3}>
-              <Typography variant="h6" component={"h6"}>
+              <Typography variant="body1">
                 Tên dự án *
               </Typography>
               <TextField
@@ -120,7 +120,7 @@ export default function CreateProject() {
               />
             </Box>
             <Box mb={3}>
-              <Typography variant="h6" component={"h6"}>
+              <Typography variant="body1">
                 Mã dự án *
               </Typography>
               <TextField

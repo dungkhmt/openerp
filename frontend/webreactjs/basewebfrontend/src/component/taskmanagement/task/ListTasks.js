@@ -13,7 +13,9 @@ import {
     IconButton,
     TableCell,
     Avatar,
-    AvatarGroup
+    AvatarGroup,
+    Menu,
+    MenuItem
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { request } from "../../../api";
@@ -37,6 +39,8 @@ import { useScroll } from '../customhook/useScroll';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import CategoryElement from '../common/CategoryElement';
 import HistoryStatus from '../common/HistoryStatus';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import ExportExcelButton from '../exportexcel/ExportExcelButton';
 
 const ListTasks = () => {
     const [open, setOpen] = useState(false);
@@ -48,6 +52,15 @@ const ListTasks = () => {
     const [projectName, setProjectName] = useState("");
 
     const [executeScroll, elRef] = useScroll();
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const openMenu = Boolean(anchorEl);
+    const handleClickMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
 
     const columns = [
         {
@@ -96,6 +109,7 @@ const ListTasks = () => {
     ];
 
     const [history, setHistory] = useState([]);
+    const [tasks, setTasks] = useState([]);
 
     const [labelsCategory, setLabelsCategory] = useState([]);
     const [dataChartCategory, setDataChartCategory] = useState([]);
@@ -121,6 +135,7 @@ const ListTasks = () => {
         executeScroll;
 
         request('get', `/projects/${projectId}/tasks`, res => {
+            setTasks(res.data);
             let rowsTask = res.data.map(task => {
                 return {
                     'id': task.id,
@@ -327,7 +342,14 @@ const ListTasks = () => {
                     <Typography variant='h5'>
                         Danh sách các nhiệm vụ
                     </Typography>
-                    <Link to={`/taskmanagement/project/tasks/create/${projectId}`} style={{ textDecoration: 'none', marginRight: '15px' }}><Button variant='outlined' color='primary'>Thêm nhiệm vụ</Button></Link>
+                    <Box display={'flex'} alignItems={'center'}>
+                        <Link to={`/taskmanagement/project/tasks/create/${projectId}`} style={{ textDecoration: 'none', marginRight: '15px' }}><Button variant='outlined' color='primary'>Thêm nhiệm vụ</Button></Link>
+                        <Box>
+                            <IconButton aria-label="delete" size="large" onClick={handleClickMenu}>
+                                <SettingsOutlinedIcon />
+                            </IconButton>
+                        </Box>
+                    </Box>
                 </Box>
                 <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                     <TableContainer sx={{ maxHeight: 440 }}>
@@ -365,7 +387,7 @@ const ListTasks = () => {
                                                         return (
                                                             <TableCell key={column.id} align={column.align}>
                                                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                                    {row.outOfDate && <><LocalFireDepartmentIcon color="error"/></>} {value}
+                                                                    {row.outOfDate && <><LocalFireDepartmentIcon color="error" /></>} {value}
                                                                 </Box>
                                                             </TableCell>
                                                         );
@@ -402,6 +424,26 @@ const ListTasks = () => {
                     />
                 </Paper>
             </Box>
+            <Menu
+                anchorEl={anchorEl}
+                open={openMenu}
+                onClose={handleCloseMenu}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+            >
+                <MenuItem onClick={handleCloseMenu}>
+                    <ExportExcelButton 
+                        projectName={projectName}
+                        tasks={tasks}
+                    />
+                </MenuItem>
+            </Menu>
         </>
     );
 }

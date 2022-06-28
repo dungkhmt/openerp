@@ -252,6 +252,10 @@ export default function EditContest(props) {
   const [listProblemDescriptionViewTypes, setListProblemDescriptionViewTypes] =
     useState([]);
 
+  const [useCacheContestProblem, setUseCacheContestProblem] = useState(null);
+  const [listUseCacheContestProblems, setListUseCacheContestProblems] =
+    useState([]);
+
   const classes = useStyles();
   const handleClick = (event, name) => {
     const selectedIndex = problemSelected.indexOf(name);
@@ -289,6 +293,7 @@ export default function EditContest(props) {
       maxNumberSubmission: maxNumberSubmission,
       participantViewResultMode: participantViewResultMode,
       problemDescriptionViewType: problemDescriptionViewType,
+      useCacheContestProblem: useCacheContestProblem,
     };
     request(
       "post",
@@ -340,6 +345,8 @@ export default function EditContest(props) {
       setListProblemDescriptionViewTypes(
         res.data.listProblemDescriptionViewTypes
       );
+      setUseCacheContestProblem(res.data.useCacheContestProblem);
+      setListUseCacheContestProblems(res.data.listUseCacheContestProblems);
       console.log("res ", res.data);
     }).then();
   }, [page]);
@@ -476,6 +483,25 @@ export default function EditContest(props) {
                 value={participantViewResultMode}
               >
                 {listParticipantViewResultModes.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                autoFocus
+                // required
+                select
+                id="useCacheContestProblem"
+                label="useCacheContestProblem"
+                placeholder="useCacheContestProblem"
+                onChange={(event) => {
+                  setUseCacheContestProblem(event.target.value);
+                }}
+                value={useCacheContestProblem}
+              >
+                {listUseCacheContestProblems.map((item) => (
                   <MenuItem key={item} value={item}>
                     {item}
                   </MenuItem>

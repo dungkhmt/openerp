@@ -10,6 +10,7 @@
     "title": "Submissions",
     "status": "Status",
     "language": "Language",
+    "point": "Grade",
     "at": "At",
     "numTestCases": "Test cases"
   }

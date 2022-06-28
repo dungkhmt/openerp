@@ -7,8 +7,8 @@ function AssignmentStatistic(props) {
   const [teachers, setTeachers] = useState([]);
 
   const columns = [
-    { title: "Mã giáo viên", field: "teacherId" },
-    { title: "Tên giáo viên", field: "teacherName" },
+    { title: "Email", field: "teacherId" },
+    { title: "Tên giảng viên", field: "teacherName" },
     { title: "Tổng số giờ", field: "hourLoad" },
     { title: "Tổng số lớp", field: "numberOfClass" },
     { title: "Tổng số ngày", field: "numberOfWorkingDays" },

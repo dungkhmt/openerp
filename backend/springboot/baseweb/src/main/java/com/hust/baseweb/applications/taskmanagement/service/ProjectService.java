@@ -1,5 +1,8 @@
 package com.hust.baseweb.applications.taskmanagement.service;
 
+import com.hust.baseweb.applications.taskmanagement.dto.dao.ProjectPagination;
+import com.hust.baseweb.applications.taskmanagement.dto.dao.StatusTaskDao;
+import com.hust.baseweb.applications.taskmanagement.dto.form.BoardFilterInputForm;
 import com.hust.baseweb.applications.taskmanagement.entity.Project;
 import org.springframework.stereotype.Service;
 
@@ -19,4 +22,10 @@ public interface ProjectService {
     void deleteProjectById(UUID id);
 
     Project save(Project project);
+
+    ProjectPagination findPaginated(int pageNo, int pageSize);
+
+    List<StatusTaskDao> getDataBoardWithFilters(BoardFilterInputForm boardFilterInputForm);
+
+    List<Project> getAllProjects();
 }

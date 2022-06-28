@@ -23,4 +23,6 @@ public interface WhiteboardService {
     ListDrawRequestPendingModel getListDrawRequestPending(String whiteboardId, UserLogin userLogin);
 
     List<UsersInWhiteboardModel> getListUsersInWhiteboard(String whiteboardId);
+
+    void deleteWhiteboard(DeleteWhiteboardModel input);
 }

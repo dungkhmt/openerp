@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
-import PeopleAltRoundedIcon from "@material-ui/icons/PeopleAltRounded";
+import { PeopleAltRounded, GetApp } from "@material-ui/icons";
 import parse from "html-react-parser";
 import MaterialTable from "material-table";
 import React, { Fragment, useEffect, useRef, useState } from "react";
@@ -97,6 +97,17 @@ const useStyles = makeStyles((theme) => ({
   deleteBtn: {
     marginRight: 10,
   },
+  downloadRow: {
+    display: "flex",
+    alignItems: "center",
+  },
+  fileDownload: {
+    color: "rgb(0, 0, 238)",
+    "&:hover": {
+      textDecoration: "underline",
+      cursor: "pointer",
+    },
+  },
 }));
 
 const minuteSeconds = 60;
@@ -142,32 +153,42 @@ function TAssignmentDetail() {
   // Dialog.
   const [open, setOpen] = useState(false);
 
-  // Table.
-  const headerProperties = {
-    headerStyle: {
-      textAlign: "center",
-    },
-    cellStyle: {
-      textAlign: "center",
-      fontSize: "1rem",
-    },
-  };
-
   const cols = [
     {
       field: "name",
       title: "Họ và tên",
-      ...headerProperties,
+      filtering: true,
     },
     {
       field: "submissionDate",
       title: "Ngày nộp",
-      ...headerProperties,
       filtering: false,
       render: (rowData) => {
         let date = rowData.submissionDate;
 
         return displayTime(date);
+      },
+    },
+    {
+      field: "originalFileName",
+      title: "File",
+      filtering: false,
+      render: (rowData) => {
+        return (
+          <span
+            className={classes.downloadRow}
+            onClick={() => onSingleDownload(rowData)}
+            title="Tải xuống"
+          >
+            <GetApp />
+            &nbsp;
+            <span className={classes.fileDownload}>
+              {rowData?.originalFileName
+                ? rowData.originalFileName
+                : "undefined"}
+            </span>
+          </span>
+        );
       },
     },
   ];
@@ -216,6 +237,29 @@ function TAssignmentDetail() {
         });
       }
     );
+  };
+
+  const onSingleDownload = (submission) => {
+    const form = document.createElement("form");
+
+    form.setAttribute("method", "post");
+    form.setAttribute("target", "_blank");
+    form.setAttribute(
+      "action",
+      `${API_URL}/edu/assignment/${params.assignmentId}/submissions?token=${token}`
+    );
+
+    const input = document.createElement("input");
+
+    input.setAttribute("type", "hidden");
+    input.setAttribute("name", "studentIds");
+    input.setAttribute("value", submission.studentId);
+
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+    form.parentNode.removeChild(form);
   };
 
   const onDownload = () => {
@@ -425,7 +469,7 @@ function TAssignmentDetail() {
         <CardHeader
           avatar={
             <Avatar style={{ background: "#f9a825" }}>
-              <PeopleAltRoundedIcon />
+              <PeopleAltRounded />
             </Avatar>
           }
           title={<Typography variant="h5">Danh sách nộp bài</Typography>}
@@ -446,7 +490,6 @@ function TAssignmentDetail() {
                   return (
                     <div className={classes.wrapper}>
                       <Button
-                        className={classes.downloadBtn}
                         // disabled={isZipping}
                         variant="outlined"
                         color="primary"
@@ -475,14 +518,6 @@ function TAssignmentDetail() {
               pageSize: 10,
               selection: true,
               debounceInterval: 500,
-              headerStyle: {
-                backgroundColor: "#673ab7",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "white",
-              },
-              filterCellStyle: { textAlign: "center" },
-              cellStyle: { fontSize: "1rem" },
               toolbarButtonAlignment: "left",
               showTextRowsSelected: false,
             }}

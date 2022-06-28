@@ -4,7 +4,13 @@ import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import Table from "@mui/material/Table";
 import { Link } from "react-router-dom";
-import { Grid, MenuItem, TableHead, TextField } from "@material-ui/core";
+import {
+  Grid,
+  MenuItem,
+  TableHead,
+  TextField,
+  Button,
+} from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@mui/material/TableBody";
 import { request } from "./Request";
@@ -43,6 +49,12 @@ export default function ContestManagerUserSubmission(props) {
     ).then();
   }
 
+  function handleRejudge(submissionId) {
+    //alert("rejudge submission " + submissionId);
+    request("get", "/evaluate-submission/" + submissionId, (res) => {
+      console.log("evaluate submission", res.data);
+    }).then();
+  }
   useEffect(() => {
     getSubmission(pageSubmissionSize, 1);
   }, []);
@@ -74,6 +86,7 @@ export default function ContestManagerUserSubmission(props) {
               <StyledTableCell align="center">Status</StyledTableCell>
               <StyledTableCell align="center">Point</StyledTableCell>
               <StyledTableCell align="center">Submitted At</StyledTableCell>
+              <StyledTableCell align="center">Action</StyledTableCell>
             </TableRow>
           </TableHead>
 
@@ -123,6 +136,18 @@ export default function ContestManagerUserSubmission(props) {
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   <b>{s.createAt}</b>
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  <b>
+                    <Button
+                      onClick={() => {
+                        handleRejudge(s.contestSubmissionId);
+                      }}
+                    >
+                      {" "}
+                      REJUDGE{" "}
+                    </Button>
+                  </b>
                 </StyledTableCell>
               </StyledTableRow>
             ))}

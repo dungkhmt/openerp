@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { request } from "../../../api";
 import {
     Box,
@@ -18,10 +18,18 @@ import {
 } from "../ultis/constant";
 import { useHistory } from "react-router";
 import BasicAlert from "../alert/BasicAlert";
+import { toast } from "react-toastify";
+import {
+    infoNoti,
+    processingNoti,
+    successNoti
+} from "utils/notification";
 
 const AddUserToProject = () => {
 
     const history = useHistory();
+
+    const toastId = useRef();
 
     const [members, setMembers] = useState([]);
     const [projects, setProjects] = useState([]);
@@ -48,6 +56,7 @@ const AddUserToProject = () => {
     }, []);
 
     const onSubmit = () => {
+        processingNoti(toastId, true);
         const data = {
             projectId: projectId,
             partyId: partyId
@@ -57,9 +66,10 @@ const AddUserToProject = () => {
             `/projects/${data.projectId}/members`,
             (res) => {
                 console.log(res.data);
-                setOpen(true);
-                setTypeAlert("success");
-                setMessage("Đã thêm mới thành công");
+                // setOpen(true);
+                // setTypeAlert("success");
+                // setMessage("Đã thêm mới thành công");
+                successNoti("Đã thêm mới thành công!", true);
                 setTimeout(() => {
                     history.push(`/taskmanagement/project/${data.projectId}/tasks`);
                 }, 1000);
@@ -132,12 +142,12 @@ const AddUserToProject = () => {
                     </Box>
                 </Box>
             </Box>
-            <BasicAlert
+            {/* <BasicAlert
                 openModal={open}
                 handleClose={handleClose}
                 typeAlert={typeAlert}
                 message={message}
-            />
+            /> */}
         </>
     );
 }

@@ -202,8 +202,9 @@ const TimeTableRow = memo((props) => {
                   {c?.classType && " - " + c.classType}
                 </Typography>
                 <Typography variant="body2">{c.courseName}</Typography>
-                <Typography variant="body2">{c.timetable}</Typography>
-                <br />
+                <Typography variant="body2" style={{ paddingBottom: 8 }}>
+                  {c.timetable}
+                </Typography>
               </>
             ))}
           </>
@@ -229,8 +230,8 @@ const TimeTableRow = memo((props) => {
           borderRight={0}
           borderTop={0}
           // borderColor={grey[500]}
-          data-tip
-          data-for={classCode}
+          // data-tip
+          // data-for={classCode}
         />
         {/* <ReactTooltip id={classCode} place="bottom" type="light" effect="solid">
         {classes.map((c) => (

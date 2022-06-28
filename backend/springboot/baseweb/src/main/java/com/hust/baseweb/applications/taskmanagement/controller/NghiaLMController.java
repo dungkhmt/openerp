@@ -6,6 +6,7 @@ import com.hust.baseweb.applications.taskmanagement.dto.form.*;
 import com.hust.baseweb.applications.taskmanagement.entity.*;
 import com.hust.baseweb.applications.taskmanagement.repository.ProjectMemberRepository;
 import com.hust.baseweb.applications.taskmanagement.service.*;
+import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.entity.Person;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.service.PartyService;
@@ -53,20 +54,28 @@ public class NghiaLMController {
 
     private final TaskExecutionService taskExecutionService;
 
+    private final NotificationsService notificationsService;
+
+    private final SkillService skillService;
+
     @GetMapping("/nghialm")
     public ResponseEntity<?> testController() {
         String bodyResponse = "Hello Nghia Le Minh, test spring boot api";
         return ResponseEntity.ok().body(bodyResponse);
     }
 
+    @GetMapping("/projects/page={pageNo}/size={pageSize}")
+    public ResponseEntity<Object> getListProjects(
+        @PathVariable("pageNo") int pageNo,
+        @PathVariable("pageSize") int pageSize
+    ) {
+        ProjectPagination pagination = projectService.findPaginated(pageNo, pageSize);
+        return ResponseEntity.ok().body(pagination);
+    }
+
     @GetMapping("/projects")
-    public ResponseEntity<Object> getListProjects() {
-        List<Project> listProject = projectService.getListProject();
-        List<ProjectDao> projectDaos = new ArrayList<>();
-        for (Project project : listProject) {
-            projectDaos.add(new ProjectDao(project));
-        }
-        return ResponseEntity.ok().body(projectDaos);
+    public ResponseEntity<Object> getAllProjects() {
+        return ResponseEntity.ok().body(projectService.getAllProjects());
     }
 
     @PostMapping("/projects")
@@ -105,13 +114,7 @@ public class NghiaLMController {
         @PathVariable("projectId") UUID projectId, @RequestBody
         ProjectMemberForm projectMemberForm
     ) {
-        ProjectMember projectMember = new ProjectMember();
-        ProjectMemberId projectMemberId = new ProjectMemberId();
-        projectMemberId.setProjectId(UUID.fromString(projectMemberForm.getProjectId()));
-        projectMemberId.setPartyID((UUID.fromString(projectMemberForm.getPartyId())));
-        projectMember.setId(projectMemberId);
-
-        return ResponseEntity.ok(projectMemberService.create(projectMember));
+        return ResponseEntity.ok(projectMemberService.addMemberToProject(projectMemberForm));
     }
 
 
@@ -172,6 +175,10 @@ public class NghiaLMController {
         taskExecution.setExecutionTags("issue");
         taskExecution.setProjectId(projectId);
         taskExecutionService.create(taskExecution);
+
+        for (String skillId : taskForm.getSkillIds()) {
+            taskService.addTaskSkill(taskRes.getId(), skillId);
+        }
         return ResponseEntity.ok(taskRes);
     }
 
@@ -370,9 +377,19 @@ public class NghiaLMController {
         @PathVariable("taskId") UUID taskId,
         @RequestBody TaskForm taskForm,
         Principal principal
-    ){
+    ) {
         String createdByUserLoginId = principal.getName();
         taskService.updateTask(taskId, taskForm, createdByUserLoginId);
         return ResponseEntity.ok("ok");
+    }
+
+    @PostMapping("/board")
+    public ResponseEntity<Object> board(@RequestBody BoardFilterInputForm boardFilterInputForm) {
+        return ResponseEntity.ok(projectService.getDataBoardWithFilters(boardFilterInputForm));
+    }
+
+    @GetMapping("/skills")
+    public ResponseEntity<Object> getList() {
+        return ResponseEntity.ok(skillService.getAllSkills());
     }
 }

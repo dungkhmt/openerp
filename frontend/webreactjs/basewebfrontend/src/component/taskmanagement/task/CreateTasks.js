@@ -14,7 +14,9 @@ import {
     TextField,
     FormHelperText,
     Button,
-    MenuItem
+    MenuItem,
+    Stack,
+    Autocomplete
 } from '@mui/material';
 
 import BasicAlert from "../alert/BasicAlert";
@@ -37,7 +39,7 @@ export default function CreateTask() {
 
     const [categoryId, setCategoryId] = useState("TASK");
     const [priorityId, setPriorityId] = useState("HIGH");
-    const [partyId, setPartyId] = useState("");
+    const [person, setPerson] = useState("");
     const [projectId, setProjectId] = useState("");
     const [dueDate, setDueDate] = useState(new Date());
 
@@ -45,6 +47,9 @@ export default function CreateTask() {
 
     const [typeAlert, setTypeAlert] = useState("success");
     const [message, setMessage] = useState("Đã thêm mới thành công");
+
+    const [skills, setSkills] = useState([]);
+    const [selectedSkills, setSelectedSkills] = useState([]);
 
     useEffect(() => {
         request('get', '/task-categories', res => {
@@ -59,6 +64,12 @@ export default function CreateTask() {
             console.log(err);
         });
 
+        request('get', '/skills', res => {
+            setSkills(res.data);
+        }, err => {
+            console.log(err);
+        })
+
         if (projectIdUrl) {
             request('get', `/projects/${projectIdUrl}`, res => {
                 setProjectName(res.data.name);
@@ -68,12 +79,14 @@ export default function CreateTask() {
 
             request('get', `/projects/${projectIdUrl}/members`, res => {
                 setPersons(res.data);
+                setPerson(res.data[0]);
             }, err => {
                 console.log(err);
             });
         } else {
             request('get', '/task-persons', res => {
                 setPersons(res.data);
+                setPerson(res.data[0]);
             }, err => {
                 console.log(err);
             });
@@ -90,14 +103,17 @@ export default function CreateTask() {
         let projectIdForm = projectIdUrl ? projectIdUrl : projectId;
         const dataForm = {
             ...data,
-            partyId,
+            partyId: person.partyId,
             categoryId,
             dueDate,
             priorityId,
             attachmentPaths: selectedFile == null ? "Không có tệp đính kèm" : `${selectedFile.name},${fileId}`,
             statusId: "TASK_INPROGRESS",
-            projectId: projectId
+            projectId: projectIdForm,
+            skillIds: selectedSkills.map(item => item.skillId)
         };
+
+        console.log(dataForm);
 
         request(
             "post",
@@ -130,7 +146,7 @@ export default function CreateTask() {
         formData.append("inputJson", JSON.stringify(body));
         formData.append("file", selectedFile);
 
-        if(selectedFile != null){
+        if (selectedFile != null) {
             request(
                 "post",
                 "/content/create",
@@ -145,7 +161,7 @@ export default function CreateTask() {
                 },
                 formData
             )
-        }else{
+        } else {
             onHandleData(data);
         }
     }
@@ -186,7 +202,7 @@ export default function CreateTask() {
                                 select
                                 fullWidth
                                 label={"Danh mục"}
-                                defaultValue="Nhiệm vụ"
+                                defaultValue="TASK"
                                 value={categoryId}
                                 onChange={(e) => setCategoryId(e.target.value)}
                                 required
@@ -245,7 +261,7 @@ export default function CreateTask() {
                                             select
                                             fullWidth
                                             label={"Độ ưu tiên"}
-                                            defaultValue="Cao"
+                                            defaultValue="HIGH"
                                             value={priorityId}
                                             onChange={(e) => setPriorityId(e.target.value)}
                                             required
@@ -265,7 +281,16 @@ export default function CreateTask() {
                                         </Typography>
                                     </Grid>
                                     <Grid item={true} xs={8}>
-                                        <TextField
+                                        <Autocomplete
+                                            disablePortal
+                                            options={persons}
+                                            value={person}
+                                            onChange={(e, value) => setPerson(value)}
+                                            getOptionLabel={(option) => {return `${option.userLoginId} (${option.fullName})`}}
+                                            fullWidth
+                                            renderInput={(params) => <TextField {...params} label="Danh mục" placeholder=""/>}
+                                        />
+                                        {/* <TextField
                                             select
                                             fullWidth
                                             label={"Danh mục"}
@@ -277,11 +302,11 @@ export default function CreateTask() {
                                             {persons.map((item) => (
                                                 <MenuItem key={item.partyId} value={item.partyId}>{item.userLoginId} ({item.fullName})</MenuItem>
                                             ))}
-                                        </TextField>
+                                        </TextField> */}
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item={true} xs={6}>
+                            <Grid item={true} xs={6} p={2}>
                                 <Grid container>
                                     <Grid item={true} xs={4}>
                                         <Typography variant="body1">
@@ -325,6 +350,36 @@ export default function CreateTask() {
                                     </Grid>
                                 </Grid>
                             }
+                            <Grid item={true} xs={12} p={2}>
+                                <Grid container rowSpacing={2}>
+                                    <Grid item={true} xs={12}>
+                                        <Typography variant="body1">
+                                            Yêu cầu các kỹ năng
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item={true} xs={10}>
+                                        <Stack spacing={3}>
+                                            <Autocomplete
+                                                multiple
+                                                id="required-skills"
+                                                options={skills}
+                                                getOptionLabel={(option) => option.name}
+                                                defaultValue={[]}
+                                                onChange={(e, value) => setSelectedSkills(value)}
+                                                filterSelectedOptions
+                                                fullWidth={true}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Danh sách các kĩ năng"
+                                                        placeholder=""
+                                                    />
+                                                )}
+                                            />
+                                        </Stack>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Box>
                     <Box sx={boxChildComponent} mb={3}>

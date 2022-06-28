@@ -2,14 +2,13 @@ import { Typography } from "@material-ui/core/";
 import AddIcon from "@material-ui/icons/Add";
 // import EditIcon from "@material-ui/icons/Edit";
 import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
-import { authPostMultiPart, request } from "api";
+import { request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { errorNoti, successNoti } from "utils/notification";
 // import UpdateTeacherCourseModel from "../UpdateTeacherCourseModel";
-import { useStyles } from "./assignmentPlan/ClassInPlan";
-import UploadExcelTeacherCourseModel from "./UploadExcelTeacherCourseModel";
+import { Input, useStyles } from "./assignmentPlan/ClassInPlan";
 
 function TeacherCourseList(props) {
   const classes = useStyles();
@@ -20,17 +19,15 @@ function TeacherCourseList(props) {
 
   //
   const [teacherCourses, setTeacherCourses] = useState([]);
-  const [open, setOpen] = React.useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+  // const [open, setOpen] = React.useState(false);
+  // const [isProcessing, setIsProcessing] = useState(false);
 
   // const [selectedTeacherCourse, setSelectedTeacherCourse] = useState(null);
   // const [openUpdateTeacherCourse, setOpenUpdateTeacherCourse] = useState(false);
 
   // Table
   const columns = [
-    { title: "Giáo viên", field: "teacherId" },
+    { title: "Giảng viên", field: "teacherId" },
     { title: "Mã học phần", field: "courseId" },
     { title: "Loại lớp", field: "classType" },
     // { title: "Độ ưu tiên", field: "priority" },
@@ -52,44 +49,43 @@ function TeacherCourseList(props) {
   ];
 
   // Funcs
-  const customUploadHandle = (selectedFile, choice) => {
-    uploadExcel(selectedFile, choice);
-    handleModalClose();
+  const onUpload = (e) => {
+    console.log("SUBMIT");
+    uploadExcel(e);
+    // handleModalClose();
   };
 
-  // TODO: fix this func
-  function uploadExcel(selectedFile, choice) {
-    setIsProcessing(true);
-
-    if (selectedFile == null) {
-      alert("You must select a file");
-      return;
-    }
-
+  function uploadExcel(e) {
+    const selectedFile = e.target.files[0];
     console.log("upload file " + selectedFile.name);
 
-    let body = {
-      planId: planId,
-      choice: choice,
-    };
+    const data = new FormData();
+    data.append("file", selectedFile);
 
-    let formData = new FormData();
-    formData.append("inputJson", JSON.stringify(body));
-    formData.append("file", selectedFile);
+    request(
+      "POST",
+      `edu/teaching-assignment/plan/${planId}/teacher-course/upload-excel`,
+      (res) => {
+        e.target.value = "";
 
-    authPostMultiPart(dispatch, token, "/upload-excel-teacher-course", formData)
-      .then((res) => {
-        setIsProcessing(false);
-        console.log("result submit = ", res);
-
-        //var f = document.getElementById("selected-upload-file");
-        //f.value = null;
-        //setSelectedFile(null);
-      })
-      .catch((e) => {
-        setIsProcessing(false);
-        console.error(e);
-      });
+        if (res.data === true) {
+          successNoti("Đã tải lên.");
+          getTeacherForAssignmentList();
+        } else {
+          errorNoti(
+            "Đã có lỗi xảy ra. Vui lòng kiểm tra định dạng file excel và thử lại."
+          );
+        }
+      },
+      {
+        onError: (error) => {
+          e.target.value = "";
+          console.error(error);
+          errorNoti("Đã có lỗi xảy ra.");
+        },
+      },
+      data
+    );
   }
 
   // TODO: fix this func
@@ -145,13 +141,13 @@ function TeacherCourseList(props) {
     });
   };
 
-  const handleModalOpen = () => {
-    setOpen(true);
-  };
+  // const handleModalOpen = () => {
+  //   setOpen(true);
+  // };
 
-  const handleModalClose = () => {
-    setOpen(false);
-  };
+  // const handleModalClose = () => {
+  //   setOpen(false);
+  // };
 
   const addTeacherCourseToAssignmentPlan = () => {
     if (selectedRows.length > 0) {
@@ -193,16 +189,22 @@ function TeacherCourseList(props) {
         commandBarComponents={
           <>
             {selectedRows.length === 0 ? (
-              <>
+              <label htmlFor="upload-excel-teacher-course">
+                <Input
+                  type="file"
+                  accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  id="upload-excel-teacher-course"
+                  onChange={onUpload}
+                />
                 <TertiaryButton
                   className={classes.uploadExcelBtn}
                   color="default"
                   startIcon={<PublishRoundedIcon />}
-                  onClick={handleModalOpen}
+                  component="span"
                 >
                   Tải lên Excel
                 </TertiaryButton>
-              </>
+              </label>
             ) : (
               <>
                 <TertiaryButton
@@ -223,11 +225,11 @@ function TeacherCourseList(props) {
         }
       />
 
-      <UploadExcelTeacherCourseModel
+      {/* <UploadExcelTeacherCourseModel
         open={open}
         onClose={handleModalClose}
         onUpload={customUploadHandle}
-      />
+      /> */}
 
       {/* <UpdateTeacherCourseModel
         open={openUpdateTeacherCourse}

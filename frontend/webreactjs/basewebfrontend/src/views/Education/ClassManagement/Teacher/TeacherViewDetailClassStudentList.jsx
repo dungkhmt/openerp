@@ -34,43 +34,10 @@ const useStyles = makeStyles((theme) => ({
   card: {
     marginTop: theme.spacing(2),
   },
-  grid: {
-    paddingLeft: 56,
-  },
   negativeBtn: {
     minWidth: 112,
     marginLeft: 10,
     marginRight: 10,
-  },
-  positiveBtn: {
-    minWidth: 112,
-  },
-  dialogRemoveBtn: {
-    fontWeight: "normal",
-  },
-  listItem: {
-    height: 48,
-    borderRadius: 6,
-    marginBottom: 6,
-    backgroundColor: "#f5f5f5",
-    "&:hover": {
-      backgroundColor: "#e0e0e0",
-    },
-  },
-  open: { transform: "rotate(-180deg)", transition: "0.3s" },
-  close: { transition: "0.3s" },
-  item: {
-    paddingLeft: 32,
-  },
-  tabs: { padding: theme.spacing(2) },
-  tabSelected: {
-    background: "rgba(254,243,199,1)",
-    color: "rgba(180,83,9,1) !important",
-  },
-  tabRoot: {
-    margin: "0px 0.5rem",
-    borderRadius: "0.375rem",
-    textTransform: "none",
   },
 }));
 
@@ -86,15 +53,6 @@ export default function TeacherViewDetailClassStudentList(props) {
   //const [openDelStuDialog, setOpenDelStuDialog] = useState(false);
 
   console.log("classId = ", classId);
-  const headerProperties = {
-    headerStyle: {
-      textAlign: "center",
-    },
-    cellStyle: {
-      textAlign: "center",
-      fontSize: "1rem",
-    },
-  };
 
   const registCols = [
     {
@@ -110,12 +68,10 @@ export default function TeacherViewDetailClassStudentList(props) {
     {
       field: "name",
       title: "Họ và tên",
-      ...headerProperties,
     },
     {
       field: "email",
       title: "Email",
-      ...headerProperties,
       render: (rowData) => (
         <Link href={`mailto:${rowData.email}`}>{rowData.email}</Link>
       ),
@@ -127,7 +83,6 @@ export default function TeacherViewDetailClassStudentList(props) {
     {
       field: "",
       title: "",
-      ...headerProperties,
       render: (rowData) => (
         <NegativeButton
           label="Loại khỏi lớp"
@@ -167,7 +122,6 @@ export default function TeacherViewDetailClassStudentList(props) {
 
   return (
     <div>
-      <h1>Students</h1>
       <Card className={classes.card} elevation={0}>
         {/* <CardActionArea disableRipple onClick={onClickStuCard}> */}
         <CardHeader
@@ -203,6 +157,7 @@ export default function TeacherViewDetailClassStudentList(props) {
             localization={localization}
             data={students}
             components={{
+              Toolbar: () => null,
               Container: (props) => <Paper {...props} elevation={0} />,
             }}
             options={{
@@ -211,14 +166,6 @@ export default function TeacherViewDetailClassStudentList(props) {
               search: false,
               pageSize: 10,
               debounceInterval: 500,
-              headerStyle: {
-                backgroundColor: "#673ab7",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "white",
-              },
-              filterCellStyle: { textAlign: "center" },
-              cellStyle: { fontSize: "1rem", textAlign: "center" },
               toolbarButtonAlignment: "left",
             }}
           />

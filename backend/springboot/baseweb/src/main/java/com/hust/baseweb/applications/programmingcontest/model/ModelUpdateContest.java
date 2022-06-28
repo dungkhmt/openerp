@@ -18,4 +18,5 @@ public class ModelUpdateContest {
     private int maxNumberSubmission;
     private String participantViewResultMode;
     private String problemDescriptionViewType;
+    private String useCacheContestProblem;
 }

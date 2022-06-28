@@ -98,4 +98,11 @@ public class WhiteBoardController {
 
         return ResponseEntity.ok().body(listUsersInWhiteboard);
     }
+
+    @DeleteMapping("/whiteboards")
+    public void deleteWhiteboard(
+        @RequestBody DeleteWhiteboardModel input){
+
+       whiteboardService.deleteWhiteboard(input);
+    }
 }
