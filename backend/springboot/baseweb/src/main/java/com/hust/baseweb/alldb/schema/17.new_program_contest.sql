@@ -88,6 +88,7 @@ create table contest_new
 	max_number_submission int,
     participant_view_result_mode varchar(200),
     use_cache_contest_problem varchar(1),
+    max_source_code_length int,
     last_updated_stamp         timestamp DEFAULT current_date ,
     created_stamp              timestamp DEFAULT current_date ,
     constraint pk_contest_id_new primary key (contest_id),

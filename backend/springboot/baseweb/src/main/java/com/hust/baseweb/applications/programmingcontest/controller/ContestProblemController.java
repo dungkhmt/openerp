@@ -514,6 +514,23 @@ public class ContestProblemController {
             }
             in.close();
 
+            if(source.length() > contestEntity.getMaxSourceCodeLength()){
+                ModelContestSubmissionResponse resp = ModelContestSubmissionResponse.builder()
+                                                                                    .status("MAX_SOURCE_CODE_LENGTH_VIOLATIONS")
+                                                                                    .message("Max source code length violations " + source.length() + " > " + contestEntity.getMaxSourceCodeLength() + " ")
+                                                                                    .testCasePass("0")
+                                                                                    .runtime(new Long(0))
+                                                                                    .memoryUsage(new Float(0))
+                                                                                    .problemName("")
+                                                                                    .contestSubmissionID(null)
+                                                                                    .submittedAt(null)
+                                                                                    .score(0)
+                                                                                    .numberTestCasePassed(0)
+                                                                                    .totalNumberTestCase(0)
+                                                                                    .build();
+                log.info("contestSubmitProblemViaUploadFile: Max Source code Length violations " + source.length() + " > " + contestEntity.getMaxSourceCodeLength() + " --> Cannot submit more");
+                return ResponseEntity.ok().body(resp);
+            }
             ModelContestSubmission request = new ModelContestSubmission(model.getContestId(), model.getProblemId(), source,model.getLanguage());
             ModelContestSubmissionResponse resp = null;
             if(contestEntity.getSubmissionActionType().equals(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)) {
@@ -542,6 +559,14 @@ public class ContestProblemController {
         ModelEvaluateBatchSubmissionResponse res = problemTestCaseService.reJudgeAllSubmissionsOfContest(contestId);
         return ResponseEntity.ok().body(res);
     }
+    @GetMapping("/evaluate-batch-not-evaluated-submission-of-contest/{contestId}")
+    public ResponseEntity<?> evaluateBatchNotEvaluatedSubmissionContest(Principal principal, @PathVariable String contestId){
+        log.info("evaluateBatchNotEvaluatedSubmissionContest, contestId = " + contestId);
+        //ModelEvaluateBatchSubmissionResponse res = problemTestCaseService.evaluateBatchSubmissionContest(contestId);
+        ModelEvaluateBatchSubmissionResponse res = problemTestCaseService.judgeAllSubmissionsOfContest(contestId);
+        return ResponseEntity.ok().body(res);
+    }
+
     @PostMapping("/submit-solution-output")
     public ResponseEntity<?>  submitSolutionOutput(Principal principale,
                                                    @RequestParam("inputJson") String inputJson,

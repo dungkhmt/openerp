@@ -365,6 +365,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .userId(userName)
                                                            .statusId(ContestEntity.CONTEST_STATUS_CREATED)
                                                            .maxNumberSubmissions(modelCreateContest.getMaxNumberSubmissions())
+                                                            .maxSourceCodeLength(modelCreateContest.getMaxSourceCodeLength())
                                                            .createdAt(new Date())
                                                            .build();
                 contestEntity = contestRepo.save(contestEntity);
@@ -379,6 +380,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .userId(userName)
                                                            .statusId(ContestEntity.CONTEST_STATUS_CREATED)
                                                            .maxNumberSubmissions(modelCreateContest.getMaxNumberSubmissions())
+                                                            .maxSourceCodeLength(modelCreateContest.getMaxSourceCodeLength())
                                                            .createdAt(new Date())
                                                            .build();
                 contestEntity = contestRepo.save(contestEntity);
@@ -474,6 +476,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .participantViewResultMode(modelUpdateContest.getParticipantViewResultMode())
                                                        .problemDescriptionViewType(modelUpdateContest.getProblemDescriptionViewType())
                                                        .useCacheContestProblem(modelUpdateContest.getUseCacheContestProblem())
+                                                       .maxSourceCodeLength(modelUpdateContest.getMaxSourceCodeLength())
                                                        .build();
             return contestRepo.save(contestEntity);
 
@@ -602,6 +605,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                             .participantViewResultMode(contestEntity.getParticipantViewResultMode())
                                             .problemDescriptionViewType(contestEntity.getProblemDescriptionViewType())
                                             .useCacheContestProblem(contestEntity.getUseCacheContestProblem())
+                                            .maxSourceCodeLength(contestEntity.getMaxSourceCodeLength())
                                             .build();
     }
 
@@ -864,12 +868,19 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             }
         }
         if(accepted) totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
-        if(compileError){
+
+        if(compileError) {
             // keep compile error message above
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
+        }else if(nbTestCasePass == 0){
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
+        }else if(nbTestCasePass > 0 && nbTestCasePass < testCaseEntityList.size()) {
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL;
         }else{
             message = "Successful";
         }
+        log.info("evaluateSubmission, totalStatus = " + totalStatus + " nbTestCasePass = " + nbTestCasePass);
+
         //String response = submission(modelContestSubmission.getSource(), modelContestSubmission.getLanguage(), tempName, testCaseEntityList, "language not found", problemEntity.getTimeLimit());
 
         //List<String> testCaseAns = testCaseEntityList.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
@@ -1698,12 +1709,19 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 }
             }
             if(accepted) totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
-            if(compileError){
+
+            if(compileError) {
                 // keep compile error message above
                 totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
+            }else if(nbTestCasePass == 0){
+                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
+            }else if(nbTestCasePass > 0 && nbTestCasePass < testCaseEntityList.size()) {
+                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL;
             }else{
                 message = "Successful";
             }
+            log.info("evaluateSubmission, totalStatus = " + totalStatus + " nbTestCasePass = " + nbTestCasePass);
+
             //String response = submission(modelContestSubmission.getSource(), modelContestSubmission.getLanguage(), tempName, testCaseEntityList, "language not found", problemEntity.getTimeLimit());
 
             //List<String> testCaseAns = testCaseEntityList.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
@@ -1756,13 +1774,46 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 for(int i = 0; i < submissions.size(); i++){// take the last submission in the sorted list
                     ContestSubmissionEntity sub = submissions.get(i);
                     log.info("evaluateBatchSubmissionContest, consider participant " + userLoginId + " problem " + problemId + " submissions " + sub.getContestSubmissionId());
-                    ModelContestSubmissionResponse res = evaluateSubmission(sub);
+                        ModelContestSubmissionResponse res = evaluateSubmission(sub);
+
                 }
             }
         }
         return null;
 
     }
+    @Override
+    public ModelEvaluateBatchSubmissionResponse judgeAllSubmissionsOfContest(String contestId){
+        List<UserRegistrationContestEntity> participants = userRegistrationContestRepo
+            .findAllByContestIdAndStatus(contestId, UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+
+        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+        List<ProblemEntity> problems = contestEntity.getProblems();
+        for(UserRegistrationContestEntity participant: participants){
+            String userLoginId = participant.getUserId();
+            log.info("evaluateBatchSubmissionContest, consider participant " + userLoginId);
+            for(ProblemEntity p: problems){
+                String problemId = p.getProblemId();
+                List<ContestSubmissionEntity> submissions = contestSubmissionRepo.findAllByContestIdAndUserIdAndProblemId(contestId,userLoginId,problemId);
+                log.info("evaluateBatchSubmissionContest, consider participant " + userLoginId + " problem " + problemId + " submissions.sz = " + submissions.size() + "");
+
+                for(int i = 0; i < submissions.size(); i++){// take the last submission in the sorted list
+                    ContestSubmissionEntity sub = submissions.get(i);
+
+                    log.info("evaluateBatchSubmissionContest, consider participant " + userLoginId + " problem " + problemId + " submissions " + sub.getContestSubmissionId());
+                    if(sub.getStatus() == null || sub.getStatus().equals("")) {
+                        ModelContestSubmissionResponse res = evaluateSubmission(sub);
+                    }else{
+                        log.info("evaluateBatchSubmissionContest, consider participant " + userLoginId + " problem " + problemId +
+                                 " submissions " + sub.getContestSubmissionId() + " has evaluated --> IGNORE");
+                    }
+                }
+            }
+        }
+        return null;
+
+    }
+
     @Override
     public ModelEvaluateBatchSubmissionResponse evaluateBatchSubmissionContest(String contestId) {
         List<UserRegistrationContestEntity> participants = userRegistrationContestRepo

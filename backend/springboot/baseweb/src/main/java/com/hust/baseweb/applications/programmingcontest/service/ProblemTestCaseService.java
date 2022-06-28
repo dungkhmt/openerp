@@ -119,6 +119,7 @@ public interface ProblemTestCaseService {
 
     ModelEvaluateBatchSubmissionResponse evaluateBatchSubmissionContest(String contestId);
     ModelEvaluateBatchSubmissionResponse reJudgeAllSubmissionsOfContest(String contestId);
+    ModelEvaluateBatchSubmissionResponse judgeAllSubmissionsOfContest(String contestId);
 
     ModelContestSubmissionResponse evaluateSubmission(UUID submisionId);
     ModelContestSubmissionResponse evaluateSubmission(ContestSubmissionEntity sub);

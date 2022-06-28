@@ -139,4 +139,8 @@ public class ContestEntity {
 
     @Column(name="use_cache_contest_problem")
     private String useCacheContestProblem;
+
+    @Column(name="max_source_code_length")
+    private int maxSourceCodeLength;
+
 }

@@ -256,6 +256,8 @@ export default function EditContest(props) {
   const [listUseCacheContestProblems, setListUseCacheContestProblems] =
     useState([]);
 
+  const [maxSourceCodeLength, setMaxSourceCodeLength] = useState(50000);
+
   const classes = useStyles();
   const handleClick = (event, name) => {
     const selectedIndex = problemSelected.indexOf(name);
@@ -294,6 +296,7 @@ export default function EditContest(props) {
       participantViewResultMode: participantViewResultMode,
       problemDescriptionViewType: problemDescriptionViewType,
       useCacheContestProblem: useCacheContestProblem,
+      maxSourceCodeLength: maxSourceCodeLength,
     };
     request(
       "post",
@@ -346,6 +349,7 @@ export default function EditContest(props) {
         res.data.listProblemDescriptionViewTypes
       );
       setUseCacheContestProblem(res.data.useCacheContestProblem);
+      setMaxSourceCodeLength(res.data.maxSourceCodeLength);
       setListUseCacheContestProblems(res.data.listUseCacheContestProblems);
       console.log("res ", res.data);
     }).then();
@@ -470,6 +474,19 @@ export default function EditContest(props) {
                   </MenuItem>
                 ))}
               </TextField>
+              <TextField
+                autoFocus
+                // required
+
+                id="maxSourceCodeLength"
+                label="maxSourceCodeLength"
+                placeholder="maxSourceCodeLength"
+                onChange={(event) => {
+                  setMaxSourceCodeLength(event.target.value);
+                }}
+                value={maxSourceCodeLength}
+              ></TextField>
+
               <TextField
                 autoFocus
                 // required

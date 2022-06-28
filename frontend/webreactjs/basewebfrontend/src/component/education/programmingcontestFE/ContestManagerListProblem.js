@@ -45,6 +45,22 @@ export function ContestManagerListProblem(props) {
       }
     ).then();
   }
+  function handleJudgeContest(event) {
+    //alert("Rejudge");
+    event.preventDefault();
+    setIsProcessing(true);
+    request(
+      "get",
+      "/evaluate-batch-not-evaluated-submission-of-contest/" + contestId,
+      (res) => {
+        console.log("handleJudgeContest", res.data);
+        //alert("Rejudge DONE!!!");
+        setIsProcessing(false);
+        //setSuccessful(res.data.contents.content);
+        //setTotalPageSuccessful(res.data.contents.totalPages);
+      }
+    ).then();
+  }
 
   return (
     <div>
@@ -63,6 +79,15 @@ export function ContestManagerListProblem(props) {
           {" "}
           Rejudge
         </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleJudgeContest}
+        >
+          {" "}
+          Judge
+        </Button>
+
         {isProcessing ? <CircularProgress /> : ""}
       </Typography>
 
