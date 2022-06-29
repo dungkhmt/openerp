@@ -17,7 +17,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import { getColorLevel, StyledTableCell, StyledTableRow } from "./lib";
 import { useTranslation } from "react-i18next";
-
+import { toFormattedDateTime } from "../../../utils/dateutils";
 function ListProblem() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -64,7 +64,12 @@ function ListProblem() {
               <TableRow>
                 <StyledTableCell>{t("status")}</StyledTableCell>
                 <StyledTableCell align="left">{t("title")}</StyledTableCell>
-                <StyledTableCell align="left">{t("solution")}</StyledTableCell>
+                <StyledTableCell align="left">
+                  {t("created by UserID")}
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {t("created date")}
+                </StyledTableCell>
                 <StyledTableCell align="left">
                   {t("difficulty")}
                 </StyledTableCell>
@@ -85,7 +90,7 @@ function ListProblem() {
                   <StyledTableCell align="left">
                     <Link
                       to={
-                        "/programming-contest/problem-detail/" +
+                        "/programming-contest/manager-view-problem-detail/" +
                         problem.problemId
                       }
                       style={{
@@ -99,6 +104,13 @@ function ListProblem() {
                   </StyledTableCell>
 
                   <StyledTableCell align="left"></StyledTableCell>
+
+                  <StyledTableCell align="left">
+                    <span>{`${problem.userId}`}</span>
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <span>{`${toFormattedDateTime(problem.createdAt)}`}</span>
+                  </StyledTableCell>
 
                   <StyledTableCell align="left">
                     <span

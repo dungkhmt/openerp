@@ -20,6 +20,8 @@ public class ContestSubmissionEntity {
     public static final String SUBMISSION_STATUS_WRONG ="Wrong Answer";
     public static final String SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED = "Time Limit Exceeded";
     public static final String SUBMISSION_STATUS_COMPILE_ERROR = "Compile Error";
+    public static final String SUBMISSION_STATUS_NOT_AVAILABLE = "NA";
+
     @Id
     @Column(name = "contest_submission_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

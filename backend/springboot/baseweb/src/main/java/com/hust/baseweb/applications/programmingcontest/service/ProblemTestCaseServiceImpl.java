@@ -930,7 +930,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
         ContestSubmissionEntity c = ContestSubmissionEntity.builder()
                                                            .contestId(modelContestSubmission.getContestId())
-                                                           .status("")
+                                                           .status(ContestSubmissionEntity.SUBMISSION_STATUS_NOT_AVAILABLE)
                                                            .point(0)
                                                            .problemId(modelContestSubmission.getProblemId())
                                                            .userId(userName)
@@ -1782,8 +1782,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         return null;
 
     }
-    @Override
-    public ModelEvaluateBatchSubmissionResponse judgeAllSubmissionsOfContest(String contestId){
+    private ModelEvaluateBatchSubmissionResponse judgeAllSubmissionsOfContestBasedOnUserAndProblems(String contestId){
         List<UserRegistrationContestEntity> participants = userRegistrationContestRepo
             .findAllByContestIdAndStatus(contestId, UserRegistrationContestEntity.STATUS_SUCCESSFUL);
 
@@ -1812,6 +1811,37 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         return null;
 
+    }
+    private ModelEvaluateBatchSubmissionResponse judgeAllSubmissionsOfContestBasedSubmissionDate(String contestId){
+        List<ContestSubmissionEntity> submissions = contestSubmissionRepo.findAllByContestIdAndStatus(contestId, ContestSubmissionEntity.SUBMISSION_STATUS_NOT_AVAILABLE);
+        for(int i = 0; i < submissions.size(); i++){// take the last submission in the sorted list
+            ContestSubmissionEntity sub = submissions.get(i);
+
+            log.info("evaluateBatchSubmissionContest, start " + i + "/" + submissions.size()
+                     + " consider submission " + sub.getContestSubmissionId() + " participant " + sub.getUserId() + " problem "
+
+                     + sub.getProblemId() + " submissions " + sub.getContestSubmissionId());
+
+            ModelContestSubmissionResponse res = evaluateSubmission(sub);
+            /*
+            if(sub.getStatus() == null || sub.getStatus().equals("")) {
+                ModelContestSubmissionResponse res = evaluateSubmission(sub);
+            }else{
+                log.info("evaluateBatchSubmissionContest, consider participant " + sub.getUserId()
+                         + " problem " + sub.getProblemId() +
+                         " submissions " + sub.getContestSubmissionId() + " has evaluated --> IGNORE");
+            }
+            */
+        }
+        return null;
+
+
+    }
+
+    @Override
+    public ModelEvaluateBatchSubmissionResponse judgeAllSubmissionsOfContest(String contestId){
+        //return judgeAllSubmissionsOfContestBasedOnUserAndProblems(contestId);
+        return judgeAllSubmissionsOfContestBasedSubmissionDate(contestId);
     }
 
     @Override

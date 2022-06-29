@@ -38,10 +38,9 @@ const editorStyle = {
   },
 };
 
-export default function StudentViewProgrammingContestProblemDetail() {
+export default function ManagerViewProblemDetail() {
   const params = useParams();
   const problemId = params.problemId;
-  const contestId = params.contestId;
   const [problem, setProblem] = useState(null);
   const [testCases, setTestCases] = useState([]);
   const [filename, setFilename] = useState("");
@@ -69,50 +68,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
     setFilename(name);
   };
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
-    setIsProcessing(true);
-    let body = {
-      problemId: problemId,
-      contestId: contestId,
-      language: language,
-    };
-    let formData = new FormData();
-    formData.append("inputJson", JSON.stringify(body));
-    formData.append("file", filename);
-
-    authPostMultiPart(
-      dispatch,
-      token,
-      "/contest-submit-problem-via-upload-file",
-      formData
-    )
-      .then((res) => {
-        setIsProcessing(false);
-        if (res.status == "TIME_OUT") {
-          alert("Time Out!!!");
-          setScore("");
-          setNbTestCasePassed("");
-          setNbTotalTestCase("");
-          setRunTime("");
-          setStatus(res.status);
-          setMessage(res.message);
-        } else {
-          setScore(res.score);
-          setNbTestCasePassed(res.numberTestCasePassed);
-          setNbTotalTestCase(res.totalNumberTestCase);
-          setRunTime(runTime);
-          setStatus(res.status);
-          setMessage(res.message);
-        }
-      })
-      .catch((e) => {
-        setIsProcessing(false);
-        console.error(e);
-        //alert("Time Out!!!");
-      });
-  };
-
   function getTestCases() {
     request(
       "GET",
@@ -129,11 +84,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
     request(
       "GET",
       //"/get-problem-detail-view-by-student/" + problemId,
-      "/get-problem-detail-view-by-student-in-contest/" +
-        problemId +
-        "/" +
-        contestId,
-
+      "/get-problem-detail-view-by-manager/" + problemId,
       (res) => {
         setProblem(res.data);
         //setProblemStatement(res.data.problemStatement);
@@ -154,35 +105,8 @@ export default function StudentViewProgrammingContestProblemDetail() {
 
   useEffect(() => {
     getProblemDetail();
-    //getTestCases();
+    getTestCases();
   }, []);
-
-  // const downloadHandler = (event) => {
-  //   if (testCases.length === 0) {
-  //     return;
-  //   }
-  //   var wbcols = [
-  //     { wpx: 300 },
-  //     { wpx: 300 },
-  //     { wpx: 50 },
-  //   ];
-
-  //   var publicTestCases = testCases.filter(item => item.isPublic === "Y")
-
-  //   var data = publicTestCases.map((item) => ({
-  //     "Input": item.testCase,
-  //     "Output": item.correctAns,
-  //     "Point": item.point,
-  //   }));
-
-  //   var sheet = XLSX.utils.json_to_sheet(data);
-  //   var wb = XLSX.utils.book_new();
-  //   sheet["!cols"] = wbcols;
-
-  //   const wb_opts = {bookType: 'xlsx', type: 'binary'};
-  //   XLSX.utils.book_append_sheet(wb, sheet, "testCases");
-  //   XLSX.writeFile(wb, "TestCasesProblem.xlsx", wb_opts);
-  // };
 
   const copyAllHandler = () => {
     let allTestCases = "";
@@ -358,74 +282,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
         </Table>
       </TableContainer>
       <ModalPreview chosenTestcase={selectedTestcase} />
-      <div>
-        <form onSubmit={handleFormSubmit}>
-          <Grid container spacing={1} alignItems="flex-end">
-            <Grid item xs={3}>
-              <input
-                type="file"
-                accept=".cpp, .java, .py"
-                id="selected-upload-file"
-                onChange={onFileChange}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                autoFocus
-                // required
-                select
-                id="language"
-                label="Language"
-                placeholder="Language"
-                onChange={(event) => {
-                  setLanguage(event.target.value);
-                }}
-                value={language}
-              >
-                <MenuItem key={"CPP"} value="CPP">
-                  {"CPP"}
-                </MenuItem>
-                <MenuItem key={"JAVA"} value="JAVA">
-                  {"JAVA"}
-                </MenuItem>
-              </TextField>
-            </Grid>
-
-            <Grid item xs={2}>
-              <Button
-                color="primary"
-                variant="contained"
-                type="submit"
-                onChange={onInputChange}
-                width="100%"
-              >
-                SUBMIT
-              </Button>
-            </Grid>
-
-            {isProcessing ? <CircularProgress /> : ""}
-          </Grid>
-        </form>
-
-        <div>
-          <h2>Status: {status}</h2>
-        </div>
-        <div>
-          <h2>Message: </h2> {message}
-        </div>
-        <div>
-          <h2>Score: {score}</h2>
-        </div>
-        <div>
-          <h2>Number TestCases Passed: {nbTestCasePassed}</h2>
-        </div>
-        <div>
-          <h2>Total TestCases : {nbTotalTestCase}</h2>
-        </div>
-        <div>
-          <h2>RunTime : {runTime}(ms)</h2>
-        </div>
-      </div>
     </div>
   );
 }

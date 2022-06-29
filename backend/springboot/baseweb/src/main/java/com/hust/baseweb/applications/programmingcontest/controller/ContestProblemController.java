@@ -10,6 +10,7 @@ import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.service.UserService;
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.AllArgsConstructor;
@@ -113,6 +114,23 @@ public class ContestProblemController {
             e.printStackTrace();
         }
         return ResponseEntity.ok().body("NOTFOUND");
+    }
+    @GetMapping("/get-problem-detail-view-by-manager/{problemId}")
+    public ResponseEntity<?> getProblemDetailViewByManager(Principal principal, @PathVariable String problemId){
+        try {
+            ProblemEntity problemEntity = problemTestCaseService.getContestProblem(problemId);
+            ModelStudentViewProblemDetail model = new ModelStudentViewProblemDetail();
+            model.setProblemStatement(problemEntity.getProblemDescription());
+            model.setProblemName(problemEntity.getProblemName());
+            model.setCreatedStamp(problemEntity.getCreatedAt());
+            PersonModel person = userService.findPersonByUserLoginId(problemEntity.getUserId());
+            model.setCreatedByUserFullName(person.getFullName());
+            return ResponseEntity.ok().body(model);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body("NOTFOUND");
+
     }
     @GetMapping("/get-problem-detail-view-by-student-in-contest/{problemId}/{contestId}")
     public ResponseEntity<?> getProblemDetailViewByStudent(Principal principal,@PathVariable("problemId") String problemId
