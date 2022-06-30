@@ -53,6 +53,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private ContestSubmissionTestCaseEntityRepo contestSubmissionTestCaseEntityRepo;
     private UserService userService;
     private ContestRoleRepo contestRoleRepo;
+    private CodePlagiarismRepo codePlagiarismRepo;
 
     @Override
     public void createContestProblem(ModelCreateContestProblem modelCreateContestProblem, String userId) throws MiniLeetCodeException {
@@ -1564,6 +1565,20 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     e.setProblemId2(s2.getProblemId());
 
                     list.add(e);
+
+
+                    CodePlagiarism codePlagiarism = new CodePlagiarism();
+                    codePlagiarism.setContestId(contestId);
+                    codePlagiarism.setProblemId(problemId);
+                    codePlagiarism.setUserId1(s1.getUserId());
+                    codePlagiarism.setUserId2(s2.getUserId());
+                    codePlagiarism.setSourceCode1(s1.getSourceCode());
+                    codePlagiarism.setSourceCode2(s2.getSourceCode());
+                    codePlagiarism.setScore(score);
+                    codePlagiarism.setCreatedStamp(new Date());
+
+                    codePlagiarism = codePlagiarismRepo.save(codePlagiarism);
+                    log.info("checkSimilarity, save score = " + score);
                 }
             }
         }
@@ -2177,5 +2192,11 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
 //        tempDir.pushToConcurrentLinkedQueue(tempName);
         return ans;
+    }
+
+    @Override
+    public List<CodePlagiarism> findAllByContestId(String contestId){
+        List<CodePlagiarism> codePlagiarisms = codePlagiarismRepo.findAllByContestId(contestId);
+        return codePlagiarisms;
     }
 }

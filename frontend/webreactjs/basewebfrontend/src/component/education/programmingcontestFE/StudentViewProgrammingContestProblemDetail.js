@@ -364,7 +364,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
             <Grid item xs={3}>
               <input
                 type="file"
-                accept=".cpp, .java, .py"
+                accept=".c, .cpp, .java, .py"
                 id="selected-upload-file"
                 onChange={onFileChange}
               />

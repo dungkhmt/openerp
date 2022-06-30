@@ -189,3 +189,25 @@ create table contest_role(
     constraint fk_contest_role_user_login_id foreign key(user_login_id) references user_login(user_login_id)
 
 );
+
+create table code_plagiarism(
+    plagiarism_id uuid not null default uuid_generate_v1(),
+    contest_id varchar(100) not null,
+    problem_id varchar(100) not null,
+    user_id_1 varchar(60),
+    user_fullname1 varchar(200),
+    user_id_2 varchar(60),
+    user_fullname2 varchar(200),
+    source_code_1 text,
+    source_code_2 text,
+    score numeric,
+
+    last_updated_stamp         timestamp default current_date ,
+    created_stamp              timestamp default current_date ,
+
+    constraint pk_code_plagiarism_id primary key(plagiarism_id),
+    constraint fk_code_plagiarism_user_1 foreign key(user_id_1) references user_login(user_login_id),
+    constraint fk_code_plagiarism_user_2 foreign key(user_id_2) references user_login(user_login_id),
+    constraint fk_code_plagiarism_contest foreign key(contest_id) references contest_new(contest_id),
+    constraint fk_code_plagiarism_problem foreign key(problem_id) references contest_problem_new(problem_id)
+);

@@ -260,6 +260,13 @@ public class ContestProblemController {
         ModelGetContestDetailResponse response = problemTestCaseService.getContestDetailByContestIdAndTeacher(contestId, principal.getName());
         return ResponseEntity.status(200).body(response);
     }
+
+    @GetMapping("/get-code-similarity/{contestId}")
+    public ResponseEntity<?> getCodeSimilarity(Principal principal, @PathVariable String contestId){
+        List<CodePlagiarism> codePlagiarism = problemTestCaseService.findAllByContestId(contestId);
+        return ResponseEntity.ok().body(codePlagiarism);
+    }
+
     @PostMapping("/check-code-similarity/{contestId}")
     public ResponseEntity<?> checkCodeSimilarity(Principal principal, @RequestBody ModelCheckSimilarityInput I, @PathVariable String contestId){
         log.info("checkCodeSimilarity, contestId = " + contestId);
