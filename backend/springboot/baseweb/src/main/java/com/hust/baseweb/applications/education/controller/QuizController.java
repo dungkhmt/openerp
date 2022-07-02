@@ -74,6 +74,30 @@ public class QuizController {
         return ResponseEntity.ok().body(nbr);
     }
 
+    @GetMapping("/get-list-reply-comments-on-quiz/{commentId}")
+    public ResponseEntity<?> getListReplyCommentsOnQuiz(Principal principal, @PathVariable UUID commentId){
+        List<CommentOnQuizQuestionDetailOM> lst = commentOnQuizQuestionService.findByReplyToCommentId(commentId);
+        return ResponseEntity.ok().body(lst);
+    }
+
+    @DeleteMapping("/delete-comment-on-quiz/{commentId}")
+    public ResponseEntity<?> deleteCommentOnQuiz(
+        Principal principal,
+        @PathVariable UUID commentId
+    ){
+        commentOnQuizQuestionService.deleteCommentOnQuiz(commentId);
+        return ResponseEntity.ok().body(commentId);
+    }
+
+    @PutMapping("/edit-comment-on-quiz/{commentId}")
+    public ResponseEntity<?> editCommentOnQuiz(
+        Principal principal,
+        @RequestBody CommentOnQuizQuestion input,
+        @PathVariable UUID commentId
+    ){
+        CommentOnQuizQuestion edittedComment = commentOnQuizQuestionService.updateComment(commentId, input.getCommentText());
+        return ResponseEntity.ok().body(edittedComment);
+    }
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @GetMapping("/get-all-quiz-course-topics")

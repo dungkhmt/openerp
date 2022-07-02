@@ -18,4 +18,6 @@ public interface CommentOnQuizQuestionService {
     CommentOnQuizQuestion updateComment(UUID commentId, String commentText);
 
     int getNumberCommentsOnQuiz(UUID questionId);
+
+    List<String>listUserIdHadComment(UUID questionId);
 }

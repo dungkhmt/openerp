@@ -9,11 +9,19 @@ import {
   DialogContentText,
   DialogActions,
   Input,
+  Menu,
+  MenuItem,
+  IconButton,
 } from "@material-ui/core";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import ReplyCommentItem from "./ReplyCommentItem";
 import { request } from "../../../../../api";
+import displayTime from "utils/DateTimeUtils";
+import { errorNoti, successNoti } from "utils/notification";
+import { Fragment } from "react";
+
 const useStyles = makeStyles((theme) => ({
   commentItem: {
     display: "flex",
@@ -24,6 +32,8 @@ const useStyles = makeStyles((theme) => ({
   },
   commentContent: {
     marginLeft: theme.spacing(1),
+    flexGrow: 1,
+    display: "flex",
   },
   commentActionBtn: {
     color: "#bbb",
@@ -32,9 +42,20 @@ const useStyles = makeStyles((theme) => ({
   listComment: {
     marginLeft: theme.spacing(6),
   },
+  displayMenu: {
+    visibility: true,
+  },
+  hideMenu: {
+    visibility: false,
+  },
 }));
 
-export default function CommentItem({ comment, commentFlag, setCommentFlag }) {
+export default function CommentItem({
+  comment,
+  commentFlag,
+  setCommentFlag,
+  loginUser,
+}) {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const [isEditting, setIsEditting] = useState(false);
@@ -47,6 +68,16 @@ export default function CommentItem({ comment, commentFlag, setCommentFlag }) {
   const [replyCommentText, setReplyCommentText] = useState("");
   const [flag, setFlag] = useState(false);
   const classes = useStyles();
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const open = Boolean(menuAnchorEl);
+  const [isDisplayMenu, setIsDisplayMenu] = useState(false);
+
+  const handleClose = () => {
+    setMenuAnchorEl(null);
+  };
+  const handleClick = (event) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
 
   useEffect(() => {
     let getListReply = async () => {
@@ -136,10 +167,16 @@ export default function CommentItem({ comment, commentFlag, setCommentFlag }) {
     request(
       // token,
       // history,
-      "post",
+      "put",
       `/edit-comment-on-quiz/${comment.commentId}`,
-      (res) => {},
-      {},
+      (res) => {
+        if (200 === res.status) {
+          successNoti("Sửa bình luận thành công", true);
+        }
+      },
+      () => {
+        errorNoti("Sửa bình luận thất bại", true);
+      },
       body
     );
 
@@ -148,14 +185,24 @@ export default function CommentItem({ comment, commentFlag, setCommentFlag }) {
 
   //delete comment
   const deleteComment = async () => {
-    /*
-    let edittedComment = await authDelete(
-      dispatch,
-      token,
+    // let edittedComment = await authDelete(
+    //   dispatch,
+    //   token,
+    //   `/delete-comment-on-quiz/${comment.commentId}`,
+    //   {}
+    // );
+
+    // setCommentFlag(!commentFlag);
+    request(
+      "delete",
       `/delete-comment-on-quiz/${comment.commentId}`,
-      {}
+      (res) => {
+        successNoti("Xóa bình luận thành công", true);
+      },
+      () => {
+        errorNoti("Xóa bình luận thất bại", true);
+      }
     );
-		*/
 
     setCommentFlag(!commentFlag);
   };
@@ -163,111 +210,184 @@ export default function CommentItem({ comment, commentFlag, setCommentFlag }) {
   //post reply comment
   const createComment = async () => {
     let body = {
-      comment: replyCommentText,
+      comment: replyCommentText.trim(),
       questionId: comment.questionId,
       replyToCommentId: comment.commentId,
     };
 
-    if (comment.commentMessage !== "") {
-      /*
-      let commentPost = await authPost(
-        dispatch,
-        token,
+    if (replyCommentText.trim() !== "") {
+      // /*
+      // let commentPost = await authPost(
+      //   dispatch,
+      //   token,
+      //   "/post-comment-on-quiz",
+      //   body
+      // );
+      // */
+      request(
+        "post",
         "/post-comment-on-quiz",
+        (res) => {
+          if (200 === res.status) {
+            onGetListReplyComment(comment.commentId);
+            successNoti("Đăng bình luận thành công", true);
+          }
+        },
+        {},
         body
-		  );
-		  */
-      request("post", "/post-comment-on-quiz", (res) => {}, {}, body);
+      );
+      setReplyCommentText("");
+    } else {
+      errorNoti("Bình luận không thể để trống");
     }
-    setReplyCommentText("");
-    setFlag(!flag);
+  };
+
+  //format date
+  const formatDate = (originalDate) => {
+    let date = new Date(originalDate);
+
+    return displayTime(date);
   };
 
   return (
     <div>
+      <Dialog
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="draggable-dialog-title"
+      >
+        <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
+          Xóa bình luận
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Khi bạn xóa bình luận, các bình luận trả lời cũng mất theo. <br />
+            Bạn có chắc muốn xóa?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="primary">
+            Hủy bỏ
+          </Button>
+          <Button onClick={() => onConfirmDeleteComment()} color="secondary">
+            Xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
       <div className={classes.commentItem}>
-        <Dialog
-          open={openModal}
-          onClose={handleCloseModal}
-          aria-labelledby="draggable-dialog-title"
-        >
-          <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
-            Xóa bình luận
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Khi bạn xóa bình luận, các bình luận trả lời cũng mất theo. <br />
-              Bạn có chắc muốn xóa?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseModal} color="primary">
-              Hủy bỏ
-            </Button>
-            <Button onClick={() => onConfirmDeleteComment()} color="secondary">
-              Xóa
-            </Button>
-          </DialogActions>
-        </Dialog>
         <Avatar>
           {comment.fullNameOfCreator.split(" ").pop().charAt(0).toUpperCase()}
         </Avatar>
-        <div className={classes.commentContent}>
-          <div>
-            <b>{comment.fullNameOfCreator}</b>&nbsp;
-            <span style={{ marginLeft: "5px" }}>2021/12/22 22:05</span>
-          </div>
-          <div>
-            {!isEditting ? (
-              comment.commentText
-            ) : (
-              <div>
-                <Input
-                  value={commentTextEdit}
-                  onChange={(event) => setCommentTextEdit(event.target.value)}
-                  type="text"
-                />
+        <div
+          className={classes.commentContent}
+          onMouseEnter={() => setIsDisplayMenu(true)}
+          onMouseLeave={() => setIsDisplayMenu(false)}
+        >
+          <div style={{ flexGrow: 1 }}>
+            <div>
+              <b>
+                {`${comment.fullNameOfCreator} (${comment.createdByUserLoginId})`}
+              </b>
+              &nbsp;
+              <span style={{ marginLeft: "5px" }}>
+                {comment ? formatDate(comment.createdStamp) : null}
+              </span>
+            </div>
+            <div>
+              {!isEditting ? (
+                comment.commentText
+              ) : (
+                <div>
+                  <Input
+                    value={commentTextEdit}
+                    onChange={(event) => setCommentTextEdit(event.target.value)}
+                    type="text"
+                  />
+                  <Button
+                    className={classes.commentActionBtn}
+                    onClick={() => setIsEditting(false)}
+                  >
+                    Hủy
+                  </Button>
+                  <Button onClick={() => onHandleUpdateComment()}>
+                    Cập nhật
+                  </Button>
+                </div>
+              )}
+            </div>
+            <div>
+              <Button
+                onClick={() => setIsShowInputReply(!isShowInputReply)}
+                className={classes.commentActionBtn}
+              >
+                Phản hồi
+              </Button>
+              <Button
+                onClick={() => onGetListReplyComment(comment.commentId)}
+                className={classes.commentActionBtn}
+              >
+                {isShowReplyComment ? (
+                  <span>&#x25B2; Ẩn phản hồi</span>
+                ) : (
+                  <span>&#x25BC; Xem các phản hổi</span>
+                )}
+              </Button>
+              {/* {loginUser?.userName === comment.createdByUserLoginId && (
+              <>
                 <Button
                   className={classes.commentActionBtn}
-                  onClick={() => setIsEditting(false)}
+                  onClick={() => setIsEditting(!isEditting)}
                 >
-                  Hủy
+                  Chỉnh sửa
                 </Button>
-                <Button onClick={() => onHandleUpdateComment()}>
-                  Cập nhật
+                <Button
+                  className={classes.commentActionBtn}
+                  onClick={handleClickOpenModal}
+                >
+                  Xóa
                 </Button>
-              </div>
-            )}
+              </>
+            )} */}
+            </div>
           </div>
-          <div>
-            <Button
-              onClick={() => setIsShowInputReply(!isShowInputReply)}
-              className={classes.commentActionBtn}
-            >
-              Phản hồi
-            </Button>
-            <Button
-              onClick={() => onGetListReplyComment(comment.commentId)}
-              className={classes.commentActionBtn}
-            >
-              {isShowReplyComment ? (
-                <span>&#x25B2; Ẩn phản hồi</span>
-              ) : (
-                <span>&#x25BC; Xem các phản hổi</span>
+          <div style={{ height: "70px", minWidth: "70px" }}>
+            {isDisplayMenu &&
+              loginUser?.userName === comment.createdByUserLoginId && (
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  onClick={handleClick}
+                  // className={isDisplayMenu ? classes.displayMenu : classes.hideMenu}
+                  style={{ height: "70px", width: "70px" }}
+                >
+                  <MoreVertIcon />
+                </IconButton>
               )}
-            </Button>
-            <Button
-              className={classes.commentActionBtn}
-              onClick={() => setIsEditting(!isEditting)}
+            <Menu
+              id="long-menu"
+              anchorEl={menuAnchorEl}
+              open={open}
+              onClose={handleClose}
+              keepMounted
             >
-              Chỉnh sửa
-            </Button>
-            <Button
-              className={classes.commentActionBtn}
-              onClick={handleClickOpenModal}
-            >
-              Xóa
-            </Button>
+              <MenuItem
+                onClick={() => {
+                  setIsEditting(!isEditting);
+                  handleClose();
+                }}
+              >
+                Chỉnh sửa
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleClickOpenModal();
+                  handleClose();
+                }}
+              >
+                Xoá
+              </MenuItem>
+            </Menu>
           </div>
         </div>
       </div>
@@ -280,6 +400,7 @@ export default function CommentItem({ comment, commentFlag, setCommentFlag }) {
                   comment={comment}
                   flag={flag}
                   setFlag={setFlag}
+                  loginUser={loginUser}
                 />
               ))}
           </div>
