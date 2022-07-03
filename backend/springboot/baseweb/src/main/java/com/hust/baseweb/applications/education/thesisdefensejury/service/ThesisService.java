@@ -18,4 +18,6 @@ public interface ThesisService {
     Response deleteThesis(UUID id, String UserId);
     Response editThesis(ThesisIM thesis);
     Response disableThesisWithDefenseJury(UUID id,UUID defenseJuryId);
+    Response findAllBelongPlanID(String planId);
+    Response filterThesis(ThesisFilter filter);
 }

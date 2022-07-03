@@ -32,10 +32,10 @@ export const eduLearningManagement = {
 
     {
       id: "MENU_EDUCATION_THESIS_DEFENSE_JURY_STUDENT_MANAGEMENT",
-      path: "",
+      path: "/edu/student/thesis/create",
       isPublic: true,
       icon: null,
-      text: "Đồ án",
+      text: "Thêm mới Đồ án",
       child: [],
     },
   ],

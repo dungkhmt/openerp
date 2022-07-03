@@ -52,6 +52,7 @@ import TClassList from "../views/Education/ClassManagement/Teacher/TClassList";
 import TeacherViewDetailClass from "../views/Education/ClassManagement/Teacher/TeacherViewDetailClass";
 import TeacherViewLearningSessionDetail from "../views/Education/ClassManagement/Teacher/TeacherViewLearningSessionDetail";
 import NotFound from "../views/errors/NotFound";
+import StudentCreateThesis from "../component/education/thesisdefensejury/StudentCreateThesis"
 
 export default function EduRoute() {
   let { path } = useRouteMatch();
@@ -296,6 +297,12 @@ export default function EduRoute() {
         <Route
           component={TClassDetail}
           path={`${path}/teacher/class/:id`}
+          exact
+        />
+
+        <Route
+          component={StudentCreateThesis}
+          path={`${path}/student/thesis/create`}
           exact
         />
 

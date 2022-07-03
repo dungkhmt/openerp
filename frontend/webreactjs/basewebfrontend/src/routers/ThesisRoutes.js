@@ -5,6 +5,9 @@ import CreateDefenseJury from "../component/education/thesisdefensejury/CreateDe
 import Thesis from "../component/education/thesisdefensejury/Thesis";
 import CreateThesis from "../component/education/thesisdefensejury/CreateThesis";
 import EditThesis from "../component/education/thesisdefensejury/EditThesis";
+import DefensePlanManager from "../component/education/thesisdefensejury/DefensePlanManager";
+import ThesisDetail from "component/education/thesisdefensejury/ThesisDetail";
+import ThesisDefensePlans from "component/education/thesisdefensejury/ThesisDefensePlans";
 
 export default function ThesisRoutes() {
   let { path } = useRouteMatch();
@@ -17,6 +20,7 @@ export default function ThesisRoutes() {
           path={`${path}/create`}
           exact
         />
+
          <Route
           component={EditThesis}
           path={`${path}/edit/:id`}
@@ -32,7 +36,19 @@ export default function ThesisRoutes() {
           path={`${path}/defense_jury/:id`}
           exact
         />
-      
+        
+       <Route
+          component={ThesisDefensePlans}
+          path={`${path}/thesis_defense_plan`}
+          exact
+        />
+
+      <Route
+          component={DefensePlanManager}
+          path={`${path}/thesis_defense_plan/:id`}
+          exact
+        />
+     
       
         
         <Route
@@ -41,9 +57,17 @@ export default function ThesisRoutes() {
         />
 
         <Route
+          component={ThesisDetail}
+          path={`${path}/:id`}
+          exact
+        />
+
+        <Route
           component={Thesis}
           path={`${path}`}
         />
+
+        
         
         
         

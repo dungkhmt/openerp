@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.google.ortools:ortools-darwin-x86-64:9.3.10497">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/ortools/ortools-darwin-x86-64/9.3.10497/ortools-darwin-x86-64-9.3.10497.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/ortools/ortools-darwin-x86-64/9.3.10497/ortools-darwin-x86-64-9.3.10497-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/ortools/ortools-darwin-x86-64/9.3.10497/ortools-darwin-x86-64-9.3.10497-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -9,7 +9,15 @@ import {
     Checkbox,
     Tooltip,
   } from "@material-ui/core/";
-  import React, { useState, useEffect } from "react";
+  import {
+    Box,
+    FormControl,
+    Select,
+    InputLabel,
+    ListSubheader,
+    InputAdornment
+  } from "@mui/material";
+  import React, { useState, useEffect, useMemo } from "react";
   import { useHistory } from "react-router-dom";
   import { authPost, authGet, authPostMultiPart } from "../../../api";
   import { useDispatch, useSelector } from "react-redux";
@@ -19,6 +27,22 @@ import {
   import AddIcon from "@material-ui/icons/Add";
   import { DataGrid,GridToolbar  } from "@material-ui/data-grid";
   import { request } from "../../../api";
+  import { Grid, Modal,TableContainer } from "@material-ui/core";
+  import {
+    boxComponentStyle,
+    boxChildComponent,
+    Header
+} from "../../taskmanagement/ultis/constant";
+import { useForm } from "react-hook-form";
+import SearchIcon from "@mui/icons-material/Search";
+import { TableHead, CircularProgress } from "@material-ui/core";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import { getColorLevel, StyledTableCell, StyledTableRow } from "../programmingcontestFE/lib";
+import ModalLoading from "./ModalLoading"
+import Delete from '@material-ui/icons/Delete';
 
   
   function Thesis() {
@@ -26,25 +50,129 @@ import {
     const dispatch = useDispatch();
     const token = useSelector((state) => state.auth.token);
     const history = useHistory();
-    const [thesis, setThesis] = useState([]);
+    const [thesiss, setThesiss] = useState([]);
     const [selectThesiss,setSelectThesiss] = useState([]);
     const [open, setOpen] = React.useState(false);
     const [searchString, setSearchString] = React.useState("");
     const [showSubmitSuccess,setShowSubmitSuccess] = React.useState(false);
+    const [listPlan,setListPlan] = React.useState([]);
+    const [searchText, setSearchText] = useState("");
+    const [thesisPlanName,setThesisPlanName] = React.useState("");
+    const [defenseJuryName,setDefenseJuryName] = React.useState("");
+    const [listJury,setListJury] = React.useState([]);
+    const [key,setKey] = React.useState("");
+    const [toggle,setToggle] = useState(false)
+    const [openLoading, setOpenLoading] = React.useState(false);
+    const [thesisPlanId,setThesisPlanId] = React.useState("");
+    const [juryId,setJuryId] = React.useState("");
     const VISIBLE_FIELDS = ['name', 'thesis_abstract', 'program_name', 'thesisPlanName', 'student_name','supervisor_name','defense_jury_name','keyword'];
     const columns = [
-      { headerName: "Tên luan van", field: "name" },
-      { headerName: "Mo ta", field: "thesis_abstract" },
-      {headerName:"Ten Chuong trinh",field:"program_name"},
-      {headerName:"Ten lich bao ve",field:"thesisPlanName"},
-      {headerName:"Ten nguoi viet",field:"student_name"},
-      {headerName:"Ten nguoi huong dan",field:"supervisor_name"},
-      {headerName:"Ten HD",field:"defense_jury_name"},
-      {headerName:"Keyword",field:"keyword"},
-      {headerName:"Ngay tao",field:"createdTime"},
+      { title: "Tên luận văn", field: "name" },
+      { title: "Mô tả", field: "thesis_abstract" },
+      // {title:"Tên chương trình",field:"program_name"},
+      {title:"Đợt bảo vệ",field:"thesisPlanName"},
+      {title:"Tên HĐ",field:"defense_jury_name"},
+      {title:"Người hướng dẫn",field:"supervisor_name"},
+      // {title:"Keyword",field:"keyword"},
+      {title:"Người tạo",field:"student_name"},
+      {title:"Ngày tạo",field:"createdTime"},
     ];
+    const containsText = (text, searchText) =>
+    text.toLowerCase().indexOf(searchText.toLowerCase()) > -1;
+    const handlerSearch = (event) => {
+      event.preventDefault();
+      setOpenLoading(true);
+      let planRes = listPlan.filter(e => e.name == thesisPlanName)
+      console.log(planRes)
+      let juryRes = listJury.filter(e => e.name == defenseJuryName)
+      console.log(juryRes)
+      let planInput = ""
+      let juryInput = ""
+      if (planRes.length > 0) {
+        planInput = planRes[0].id
+      }
+      if (juryRes.length > 0){
+        juryInput = juryRes[0].id
+      }
+      let body = {
+        "key" : key,
+        "thesisPlanId":planInput,
+        "juryId": juryInput
+      }
+      request(
+        "post",
+        "/thesis/_search",
+        (res) => {
+          
+            console.log(res.data)
+          setOpenLoading(false);
+          if (res.data.ok) {
+            setThesiss(res.data.result)
+          }else{
+            setThesiss([])
+          }
+          
+        },
+        {
+            onError: (e) => {
+            }
+        },
+        body
+      ).then();
+
+    }
+   
+    async function getAllPlan() {
+      request(
+        // token,
+        // history,
+        "GET",
+        "/thesis_defense_plan",
+        (res) => {
+            console.log("Plan",res.data)
+            let objAll = {
+              id:"",
+              name: "All"
+            }
+            res.data.unshift(objAll)
+            console.log("Plan",res.data)
+          setListPlan(res.data)
+          
+        }
+      );
+  }
+  async function getAllJury() {
+    request(
+      // token,
+      // history,
+      "GET",
+      "/defense_jurys",
+      (res) => {
+          console.log("Jury",res.data)
+          let objAll = {
+            id:"",
+            name: "All"
+          }
+          res.data.DefenseJurys.unshift(objAll)
+            console.log("Plan",res.data.DefenseJurys)
+        setListJury(res.data.DefenseJurys)
+        
+      }
+    );
+}
+
+    const displayedPlanOptions = useMemo(
+      () => listPlan.filter((option) =>  containsText(option.name, searchText)),
+      [searchText]
+    );
+    const displayedJuryOptions = useMemo(
+      () => listJury.filter((option) =>  containsText(option.name, searchText)),
+      [searchText]
+    );
+
   
     async function getAllThesis() {
+      setOpenLoading(true)
       request(
         // token,
         // history,
@@ -52,21 +180,44 @@ import {
         "/thesis",
         (res) => {
             console.log(res.data.content)
-          setThesis(res.data.content);
+            setOpenLoading(false)
+          setThesiss(res.data.content);
         }
       );
     }
-  
-    const handleModalOpen = () => {
+
+
+    const handlerCreate = () => {
       history.push({
         pathname: `/thesis/create`,
       });
-      setOpen(true);
-    };
-  
-    const handleModalClose = () => {
-      setOpen(false);
-    };
+    }
+    async function DeleteThesisById(thesisID,userLoginID) {
+      setOpenLoading(true)
+      var body = {
+        id:thesisID,
+        userLogin:userLoginID
+      }
+      request(
+        "post",
+        `/thesis/delete`,
+        (res) => {
+            console.log(res.data)
+            setOpenLoading(false)
+            setToggle(!toggle)
+          // setShowSubmitSuccess(true);
+        //   history.push(`/thesis/defense_jury/${res.data.id}`);
+        },
+        {
+            onError: (e) => {
+                // setShowSubmitSuccess(false);
+                console.log(e)
+            }
+        },
+        body
+      ).then();
+    }
+    
     const handleDelete = () => {
       console.log(selectThesiss);
       if (selectThesiss.length >0){
@@ -101,86 +252,182 @@ import {
    
   
     useEffect(() => {
-      getAllThesis();
+      
+      getAllJury();
+      getAllPlan();
     }, [showSubmitSuccess]);
     useEffect(() => {
-       console.log(thesis)
-      }, [thesis]);
+      getAllThesis();
+      }, [toggle]);
     
     return (
-      // <Card>
-      //   <MaterialTable
-      //     title={"Danh sách luan van"}
-      //     columns={columns}
-      //     data={thesis}
-      //     checkboxSelection
-      //   disableSelectionOnClick
-      //     onRowClick = {(event,rowData) => {
-      //           console.log(rowData)
-      //           // history.push({
-      //           // pathname: `/thesis/defense_jury/${rowData.id}`,
-      //           // state: {
-      //           //     defenseJuryId: rowData.id,
-      //           // },
-      //       //   });
-      //         }}
-      //     components={{
-      //       Toolbar: (props) => (
-      //         <div style={{ position: "relative" }}>
-      //           <MTableToolbar {...props} />
-      //           <div
-      //             style={{ position: "absolute", top: "16px", right: "350px" }}
-      //           >
-      //             <Button onClick={handleModalOpen} color="primary">
-      //               Thêm mới
-      //             </Button>
-      //           </div>
+      <Card>
+       <Box>
+        <Typography variant="h4" mb={4} component={'h4'}>
+            Search
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item={true} xs={3} spacing={2} p={2}>
+            <Box sx={{ minWidth: '100%' }}>
+              <FormControl fullWidth style={{margin:"2% 0px"}}>
+                <InputLabel id="search-select-label">Đợt bảo vệ</InputLabel>
+                <Select
 
-      //         </div>
-      //       ),
-      //     }}
-      //   />
+                MenuProps={{ autoFocus: false }}
+                labelId="search-select-label"
+                id="search-select"
+                value={thesisPlanName}
+                label="Options"
+                onChange={(e) => setThesisPlanName(e.target.value)}
+                onClose={() => setSearchText("")}
+
+                renderValue={() => thesisPlanName}
+                >
+
+                <ListSubheader>
+                    <TextField
+                    size="small"
+                    autoFocus
+                    placeholder="Type to search..."
+                    fullWidth
+                    InputProps={{
+                        startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon />
+                        </InputAdornment>
+                        )
+                    }}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key !== "Escape") {
+                      
+                        e.stopPropagation();
+                        }
+                    }}
+                    />
+                </ListSubheader>
+                {displayedPlanOptions.map((option, i) => (
+                    <MenuItem key={i} value={option.name}>
+                    {option.name}
+                    </MenuItem>
+                ))}
+                </Select>
+              </FormControl>
+            </Box>
+          </Grid>
+          <Grid item ={true} xs={3} spacing={2} p={2}>
+            <Box sx={{ minWidth: '100%' }}>
+                <FormControl fullWidth style={{margin:"2% 0px"}}>
+                    <InputLabel id="search-select-label">Tên hội đồng</InputLabel>
+                    <Select
+                    MenuProps={{ autoFocus: false }}
+                    labelId="search-select-label"
+                    id="search-select"
+                    value={defenseJuryName}
+                    label="Options"
+                    onChange={(e) => setDefenseJuryName(e.target.value)}
+                    onClose={() => setSearchText("")}
+                    renderValue={() => defenseJuryName}
+                    >
+                    <ListSubheader>
+                        <TextField
+                        size="small"
+                        autoFocus
+                        placeholder="Type to search..."
+                        fullWidth
+                        InputProps={{
+                            startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon />
+                            </InputAdornment>
+                            )
+                        }}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key !== "Escape") {
+                            e.stopPropagation();
+                            }
+                        }}
+                        />
+                    </ListSubheader>
+                    {displayedJuryOptions.map((option, i) => (
+                        <MenuItem key={i} value={option.name}>
+                        {option.name}
+                        </MenuItem>
+                    ))}
+                    </Select>
+                </FormControl>
+          </Box>
+        </Grid>
+        <Grid item={true} xs={3} spacing={2} p={2}>
+          <Box sx={{minWidth:'100%'}}>
+              <TextField
+                label="Contains text"
+                multiline
+                fullWidth={true}
+                value={key}
+              onChange={(event) => {
+                  setKey(event.target.value)
+              }}
+               name="search"
+              />
+          </Box>
+        </Grid>
+        <Button variant="contained" color="success" size="small" style={{
+          height:"60%",
+          margin:"2.5%",
+          display: 'flex', justifyContent: 'end'
+        }}
+          onClick = {handlerSearch}
+        >
+           Search
+        </Button>
+
+        <Button onClick={handlerCreate} color="primary">
+                    Thêm mới
+        </Button>
+      </Grid>
+       </Box>
+        <MaterialTable
+          title={"Danh sách đề tài"}
+          columns={columns}
+          options={
+            {search: false}
+          }
+          data={thesiss}
+          actions={[
+            {
+              icon: Delete,
+              tooltip: "Delete Thesis",
+              onClick: (event, rowData) => {
+                console.log(rowData)
+                console.log(rowData.id)
+                DeleteThesisById(rowData.id,rowData.userLoginID)
+                
+                
+              }
+            }
+          ]}
+          components={{
+            Toolbar: (props) => (
+              <div style={{ position: "relative" }}>
+                <MTableToolbar {...props} />
+                <div
+                  style={{ position: "absolute", top: "16px", right: "350px" }}
+                >
+                 
+                </div>
+              </div>
+            ),
+          }}
+        />
+        <ModalLoading openLoading={openLoading} />
+      </Card>
+
   
-      //   {/* <CreateClassTeacherAssignmentPlanModal
-      // //     open={open}
-      // //     onClose={handleModalClose}
-      // //     onCreate={customCreateHandle}
-      // //   /> */}
-      //  </Card>
-      <div style={{ height: 400, width: '100%' }}>
-      <Button  color="primary" onClick={handleDelete}>
-        Delete
-      </Button>
-      <DataGrid
-        rows={thesis}
-        columns={columns}
-        pageSize={5}
-        disableColumnFilter={false}
-        rowsPerPageOptions={[5]}
-        checkboxSelection
-        disableSelectionOnClick
-        components={{ Toolbar: GridToolbar }}
-        componentsProps={{
-          toolbar: {
-            showQuickFilter: true,
-            quickFilterProps: { debounceMs: 500 },
-          },
-        }}
-        onSelectionModelChange={(ids) => {
-          const selectedIDs = new Set(ids);
-          const selectedRowData = thesis.filter((row) =>
-            selectedIDs.has(row.id.toString())
-          );
-         
-          setSelectThesiss(selectedRowData);
-          console.log(selectThesiss);
-        }}
-      />
-      
-    </div>
-      
     );
   }
   
   export default Thesis;
+      
   

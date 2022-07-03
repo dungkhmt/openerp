@@ -1,6 +1,7 @@
 import { Button, Grid, Modal } from "@material-ui/core";
 import React, { useState, useEffect,useMemo } from "react";
 import { Link, useHistory,useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { SubmitSuccess } from "../programmingcontestFE/SubmitSuccess";
 import DateTimePicker from "@mui/lab/DateTimePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
@@ -70,6 +71,9 @@ function EditThesis(props) {
     const [listPlan,setListPlan] = React.useState([]);
     const [searchText, setSearchText] = useState("");
     const params = useParams();
+    const location = useLocation();
+
+
 
     const handleChange = (event) => {
         setProgramName(event.target.value);
@@ -164,6 +168,13 @@ function EditThesis(props) {
           }
         );
     }
+
+    const handleBack = (e) => {
+        e.preventDefault();
+        history.push({
+            pathname: `/thesis/${params.id}`,
+          });
+    }
     
     const handleFormSubmit = (event) => {
         event.preventDefault();
@@ -211,6 +222,10 @@ function EditThesis(props) {
         getAllPlan();
         getThesisDetail();
     },[])
+
+    useEffect(() => {
+        console.log(location.state.thesisID); 
+     }, [location]);
 
     const displayedProgramOptions = useMemo(
         () => listProgram.filter((option) =>  containsText(option.name, searchText)),
@@ -538,9 +553,15 @@ function EditThesis(props) {
                             </Grid>
                             
                             
-                            <Grid container item xs={2}>
-                                <Button color="primary" type="submit" onClick={handleFormSubmit} width="100%">Cập nhật</Button>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6} alignItems="center">
+                                    <Button color="primary" type="submit" onClick={handleFormSubmit} width="100%">Cập nhật</Button>   
+                                </Grid>
+                                <Grid item xs={6} alignItems="center">
+                                    <Button color="primary" type="submit" onClick={handleBack} width="100%">Back</Button>   
+                                </Grid>
                             </Grid>
+                           
                             {(openAlert===true)?(<div>
                                 {showSubmitSuccess === true ?(<SubmitSuccess
                                 showSubmitSuccess={showSubmitSuccess}
