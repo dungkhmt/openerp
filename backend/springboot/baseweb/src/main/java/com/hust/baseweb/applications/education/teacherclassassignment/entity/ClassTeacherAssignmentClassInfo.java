@@ -1,12 +1,10 @@
 package com.hust.baseweb.applications.education.teacherclassassignment.entity;
 
+import com.hust.baseweb.applications.education.teacherclassassignment.entity.compositeid.ClassId;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
@@ -16,13 +14,15 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "class_teacher_assignment_class_info")
+@Table(name = "class_info")
+@IdClass(ClassId.class)
 public class ClassTeacherAssignmentClassInfo {
 
     @Id
-    @Column(name = "class_id")
+    @Column(name = "id")
     private String classId;
 
+    @Id
     @Column(name = "plan_id")
     private UUID planId;
 
@@ -38,13 +38,13 @@ public class ClassTeacherAssignmentClassInfo {
     @Column(name = "class_name")
     private String className;
 
-    @Column(name = "credit_info")
-    private String creditInfo;
+    @Column(name = "credit")
+    private String credit;
 
-    @Column(name = "class_note")
-    private String classNote;
+    @Column(name = "note")
+    private String note;
 
-    @Column(name = "program")
+    @Column(name = "class_program")
     private String program;
 
     @Column(name = "semester_type")
@@ -59,8 +59,8 @@ public class ClassTeacherAssignmentClassInfo {
     @Column(name = "class_type")
     private String classType;
 
-    @Column(name = "time_table")
-    private String timeTable;
+    @Column(name = "timetable")
+    private String timetable;
 
     @Column(name = "lesson")
     private String lesson;
@@ -68,11 +68,14 @@ public class ClassTeacherAssignmentClassInfo {
     @Column(name = "department_id")
     private String departmentId;
 
-    @Column(name = "teacher_id")
-    private String teacherId;
+//    @Column(name = "teacher_id")
+//    private String teacherId;
 
-    @Column(name = "created_by_user_login_id")
-    private String createdByUserLoginId;
+    @Column(name = "created_by")
+    private String createdBy;
+
+    @Column(name = "last_updated_stamp")
+    private Date lastUpdatedStamp;
 
     @Column(name = "created_stamp")
     private Date createdStamp;

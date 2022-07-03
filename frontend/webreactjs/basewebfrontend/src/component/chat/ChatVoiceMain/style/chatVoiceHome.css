@@ -131,7 +131,7 @@
 }
 
 .host-modal {
-  width: 50%;
+  width: 50% !important;
   max-width: 600px;
 }
 
@@ -160,7 +160,7 @@
   max-height: 300px;
   border: 1px solid black;
   border-radius: 8px;
-  margin: 5px 0 20px;
+  margin: 5px 0 20px !important;
 }
 
 .host-modal-no-invite {

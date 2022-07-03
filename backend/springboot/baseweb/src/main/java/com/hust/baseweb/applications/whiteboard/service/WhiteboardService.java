@@ -1,20 +1,28 @@
 package com.hust.baseweb.applications.whiteboard.service;
 
-import com.hust.baseweb.applications.whiteboard.entity.Whiteboard;
-import com.hust.baseweb.applications.whiteboard.model.GetListWhiteboard;
-import com.hust.baseweb.applications.whiteboard.model.SaveWhiteboardDataModel;
-import com.hust.baseweb.applications.whiteboard.model.WhiteboardDetailModel;
+import com.hust.baseweb.applications.whiteboard.model.*;
 import com.hust.baseweb.entity.UserLogin;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface WhiteboardService {
-    void createWhiteboard(String userId, String whiteboardId);
-    List<GetListWhiteboard> getWhiteboards(UserLogin userLogin);
+    void createWhiteboard(String userId, String whiteboardId, UUID classSessionId);
+    List<GetListWhiteboardModel> getWhiteboards(UUID sessionId);
 
     void saveWhiteboardData(SaveWhiteboardDataModel input, String userId);
 
     WhiteboardDetailModel getWhiteboardDetail(String id);
 
-    void addUserToWhiteboard(String whiteboardId, UserLogin userLogin);
+    AddUserToWhiteboardResultModel addUserToWhiteboard(String whiteboardId, UserLogin userLogin, AddUserToWhiteboardModel input);
+
+    GetUserWhiteboardModel getUserWhiteboard(String whiteboardId, UserLogin userLogin);
+
+    ChangeRoleStatusModel changeRoleStatusUserWhiteboard(String whiteboardId, ChangeRoleStatusModel input);
+
+    ListDrawRequestPendingModel getListDrawRequestPending(String whiteboardId, UserLogin userLogin);
+
+    List<UsersInWhiteboardModel> getListUsersInWhiteboard(String whiteboardId);
+
+    void deleteWhiteboard(DeleteWhiteboardModel input);
 }

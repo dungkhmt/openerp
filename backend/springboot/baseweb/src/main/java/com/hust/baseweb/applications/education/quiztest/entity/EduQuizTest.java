@@ -7,7 +7,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -24,6 +26,16 @@ public class EduQuizTest {
     public static final String QUIZ_TEST_VIEW_TYPE_LIST = "VIEW_LIST";
     public static final String QUIZ_TEST_VIEW_TYPE_STEP = "VIEW_STEP";
 
+    public static final String QUESTION_STATEMENT_VIEW_TYPE_VISIBLE = "VISIBLE";
+    public static final String QUESTION_STATEMENT_VIEW_TYPE_HIDDEN = "HIDDEN";
+
+
+    public static List<String> getListQuestionStatementViewType(){
+        List<String> L = new ArrayList();
+        L.add(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_VISIBLE);
+        L.add(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_HIDDEN);
+        return L;
+    };
 
     @Id
     @Column(name = "test_id")
@@ -62,4 +74,8 @@ public class EduQuizTest {
 
     @Column(name="view_type_id")
     private String viewTypeId;
+
+    @Column(name="question_statement_view_type_id")
+    private String questionStatementViewTypeId;
+
 }

@@ -8,7 +8,6 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
 import Quiz from "./Quiz";
-import StudentQuizDetailStep from "./StudentQuizDetailStepForm";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,6 +73,9 @@ export default function StudentQuizDetailListForm() {
             });
 
             choices.submitted = true;
+            choices["lastSubmittedAnswers"] = choseAnswers;
+          } else {
+            choices["lastSubmittedAnswers"] = [];
           }
 
           chkState.push(choices);
@@ -96,9 +98,10 @@ export default function StudentQuizDetailListForm() {
       "post",
       "/quiz-test-choose_answer-by-user",
       (res) => {
-        checkState[order].submitted.set(true);
         setMessageRequest("Đã lưu vào hệ thống!");
         setRequestSuccessfully(true);
+        checkState[order].submitted.set(true);
+        checkState[order].lastSubmittedAnswers.set(choseAnswers);
       },
       {
         400: () => {

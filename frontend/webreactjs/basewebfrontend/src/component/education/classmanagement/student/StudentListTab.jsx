@@ -35,25 +35,14 @@ function StudentListTab({ classId }) {
   // Table refs.
   const studentTableRef = useRef(null);
 
-  const headerProperties = {
-    headerStyle: {
-      textAlign: "center",
-    },
-    cellStyle: {
-      textAlign: "center",
-      fontSize: "1rem",
-    },
-  };
   const studentCols = [
     {
       field: "name",
       title: "Họ và tên",
-      ...headerProperties,
     },
     {
       field: "email",
       title: "Email",
-      ...headerProperties,
       render: (rowData) => (
         <Link href={`mailto:${rowData.email}`}>{rowData.email}</Link>
       ),
@@ -97,6 +86,7 @@ function StudentListTab({ classId }) {
           localization={localization}
           data={students}
           components={{
+            Toolbar: () => null,
             Container: (props) => <Paper {...props} elevation={0} />,
           }}
           options={{
@@ -104,14 +94,6 @@ function StudentListTab({ classId }) {
             search: false,
             pageSize: 10,
             debounceInterval: 500,
-            headerStyle: {
-              backgroundColor: "#673ab7",
-              fontWeight: "bold",
-              fontSize: "1rem",
-              color: "white",
-            },
-            filterCellStyle: { textAlign: "center" },
-            cellStyle: { fontSize: "1rem" },
             toolbarButtonAlignment: "left",
           }}
         />

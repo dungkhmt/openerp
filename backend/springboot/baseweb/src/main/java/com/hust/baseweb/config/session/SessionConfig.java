@@ -12,6 +12,8 @@ import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
 
+import java.time.Duration;
+
 @Configuration
 @EnableSpringHttpSession
 public class SessionConfig {
@@ -39,7 +41,9 @@ public class SessionConfig {
 
     @Bean
     public RedisSessionRepository sessionRepository(RedisTemplate<String, Object> redisTemplate) {
-        return new RedisSessionRepository(redisTemplate);
+        RedisSessionRepository redisSessionRepository = new RedisSessionRepository(redisTemplate);
+        redisSessionRepository.setDefaultMaxInactiveInterval(Duration.ofHours(24));
+        return redisSessionRepository;
     }
 
     /**

@@ -13,6 +13,7 @@ import com.hust.baseweb.applications.education.repo.*;
 import com.hust.baseweb.applications.notifications.entity.Notifications;
 import com.hust.baseweb.applications.notifications.repo.NotificationsRepo;
 import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +44,8 @@ public class ClassServiceImpl implements ClassService {
     private EduDepartmentRepo eduDepartmentRepo;
 
     private EduClassUserLoginRoleRepo eduClassUserLoginRoleRepo;
+
+    private UserService userService;
 
     private NotificationsRepo notificationsRepo;
 
@@ -407,6 +410,32 @@ public class ClassServiceImpl implements ClassService {
         }
         course = mClassCode2Course.get(classCode);
         return course;
+    }
+
+    @Transactional
+    @Override
+    public int addAllUser2Class(String classCode) {
+        List<EduClass> eduClasses = classRepo.findByClassCode(classCode);
+        EduClass eduClass = null;
+        if(eduClasses != null && eduClasses.size() > 0)
+            eduClass = eduClasses.get(0);
+
+        List<UserLogin> users = userService.getAllUserLogins();
+        for(UserLogin u: users){
+            ClassRegistrationId id = new ClassRegistrationId(eduClass, u);
+            ClassRegistration registration = registRepo.findById(id).orElse(null);
+            if(registration == null) {
+                registration = new ClassRegistration();
+                registration.setId(id);
+                registration.setStatus(RegistStatus.APPROVED);
+            }else{
+                registration.setStatus(RegistStatus.APPROVED);
+            }
+            registRepo.save(registration);
+            log.info("addAllUser2Class, added " + u.getUserLoginId());
+        }
+
+        return 0;
     }
 
     @Transactional

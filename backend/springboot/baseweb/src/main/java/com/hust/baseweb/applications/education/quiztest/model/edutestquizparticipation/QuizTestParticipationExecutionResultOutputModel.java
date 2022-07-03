@@ -1,6 +1,5 @@
 package com.hust.baseweb.applications.education.quiztest.model.edutestquizparticipation;
 
-import com.hust.baseweb.applications.education.entity.QuizChoiceAnswer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,16 +16,41 @@ import java.util.UUID;
 public class QuizTestParticipationExecutionResultOutputModel {
 
     private String testId;
+
     private UUID quizGroupId;
+
     private String quizGroupCode;
+
     private String participationUserLoginId;
+
     private String participationFullName;
+
     private UUID questionId;
+
     private String questionContent;
-    List<QuizChoiceAnswer> quizChoiceAnswerList;
+
+    List<QuizChoiceAnswerDTO> quizChoiceAnswerList;
+
     List<UUID> chooseAnsIds;
+
     private char result;// Y or N
+
     private int grade;// diem, ket qua
+
     private Date createdStamp;
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class QuizChoiceAnswerDTO {
+
+        private UUID choiceAnswerId;
+
+        private String choiceAnswerContent;
+
+        private char isCorrectAnswer;
+    }
+
 }
+
+

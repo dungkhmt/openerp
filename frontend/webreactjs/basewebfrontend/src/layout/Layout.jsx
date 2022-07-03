@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import { default as MenuIcon } from "@material-ui/icons/Menu";
 import clsx from "clsx";
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { ReactComponent as Logo } from "../assets/icons/logo.svg";
 import bgImage from "../assets/img/sidebar-2.webp";
 import { useAuthState } from "../state/AuthState";
@@ -80,6 +81,8 @@ const useStyles = makeStyles((theme) => ({
 
 function Layout({ children }) {
   const classes = useStyles();
+  const history = useHistory();
+  const isMeeting = history?.location?.pathname?.startsWith('/chat/voice/main/');
 
   //
   const { isAuthenticated } = useAuthState();
@@ -123,10 +126,10 @@ function Layout({ children }) {
           </div>
         </Toolbar>
       </AppBar>
-      <SideBar open={open} image={image} color={color} />
+      <SideBar open={isMeeting ? false : open} image={image} color={color} />
       <main
         className={clsx(classes.content, {
-          [classes.contentShift]: open,
+          [classes.contentShift]: isMeeting ? false : open,
         })}
       >
         <Offset />

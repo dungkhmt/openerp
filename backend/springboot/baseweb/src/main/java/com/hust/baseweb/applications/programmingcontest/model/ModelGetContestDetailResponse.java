@@ -20,9 +20,13 @@ public class ModelGetContestDetailResponse {
     private String submissionActionType;
     private int maxNumberSubmission;
     private String participantViewResultMode;
+    private String problemDescriptionViewType;
+    private String useCacheContestProblem;
+    private int maxSourceCodeLength;
     private List<String> listStatusIds;
     private List<String> listSubmissionActionTypes;
     private List<String> listParticipantViewModes;
     private List<Integer> listMaxNumberSubmissions;
-
+    private List<String> listProblemDescriptionViewTypes;
+    private List<String> listUseCacheContestProblems;
 }

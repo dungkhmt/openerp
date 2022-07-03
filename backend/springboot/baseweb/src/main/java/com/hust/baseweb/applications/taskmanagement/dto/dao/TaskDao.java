@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 @Setter
 public class TaskDao {
+
     private static final String STATUS_DONE = "TASK_RESOLVED";
 
     private UUID id;
@@ -32,23 +33,40 @@ public class TaskDao {
 
     private TaskPriority taskPriority;
 
+    private String createdByUserLoginId;
+
+    private String assignee;
+
+    private UUID PartyId;
+
+    private String createdStamp;
+
+    private String lastUpdatedStamp;
+
+    private String fileName;
+
+    private String fileId;
+
     private String dueDate;
+
+    private Date dueDateOrigin;
 
     private String timeRemaining;
 
     private boolean outOfDate;
 
-    public TaskDao(Task task) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    public TaskDao(Task task, String assignee, UUID partyId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         this.setId(task.getId());
         this.setName(task.getName());
         this.setProject(task.getProject());
         this.setTaskCategory(task.getTaskCategory());
-        this.setDescription(task.getDescription() != null ? "Không có mô tả" : task.getDescription());
+        this.setDescription(task.getDescription() != null ? task.getDescription() : "Không có mô tả");
         this.setStatusItem(task.getStatusItem());
         this.setTaskPriority(task.getTaskPriority());
         this.setDueDate(sdf.format(task.getDueDate()));
-
+        this.setCreatedStamp(task.getCreatedStamp() != null ? sdf.format(task.getCreatedStamp()) : null);
+        this.setLastUpdatedStamp(task.getLastUpdatedStamp() != null ? sdf.format(task.getLastUpdatedStamp()) : null);
         try {
             Date d1 = task.getDueDate();
             Date d2 = new Date();
@@ -92,9 +110,17 @@ public class TaskDao {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        if(this.getStatusItem() != null && (this.getStatusItem().getStatusId().equals(STATUS_DONE))){
+        if (this.getStatusItem() != null && (this.getStatusItem().getStatusId().equals(STATUS_DONE))) {
             this.setOutOfDate(false);
             this.setTimeRemaining("");
         }
+
+        String[] arrOfStr = task.getAttachmentPaths().split(",");
+        this.setFileName(arrOfStr[0] != "" ? arrOfStr[0] : "Không có tệp đính kèm");
+        this.setFileId(arrOfStr.length > 1 ? (!arrOfStr[1].equals("null") && !arrOfStr[1].equals("undefined") ? arrOfStr[1] : null) : null);
+        this.setAssignee(assignee);
+        this.setPartyId(partyId);
+        this.setDueDateOrigin(task.getDueDate());
+        this.setCreatedByUserLoginId(task.getCreatedByUserLoginId());
     }
 }

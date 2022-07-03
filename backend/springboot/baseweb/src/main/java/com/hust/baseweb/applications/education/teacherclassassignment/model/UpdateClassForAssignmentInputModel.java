@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UpdateClassForAssignmentInputModel {
 
-    private String classId;
     private double hourLoad;
+
 }

@@ -22,14 +22,6 @@ public class ProjectMember {
     @EmbeddedId
     private ProjectMemberId id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "backlog_project_id")
-//    private Project project;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "member_party_id")
-//    private Party partyMember;
-
     @CreationTimestamp
     @Column(name = "created_stamp")
     private Date createdStamp;

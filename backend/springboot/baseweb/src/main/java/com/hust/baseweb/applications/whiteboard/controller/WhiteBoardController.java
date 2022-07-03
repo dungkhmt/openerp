@@ -1,11 +1,6 @@
 package com.hust.baseweb.applications.whiteboard.controller;
 
-import com.hust.baseweb.applications.whiteboard.entity.WhiteBoardData;
-import com.hust.baseweb.applications.whiteboard.entity.Whiteboard;
-import com.hust.baseweb.applications.whiteboard.model.CreateWhiteboardModel;
-import com.hust.baseweb.applications.whiteboard.model.GetListWhiteboard;
-import com.hust.baseweb.applications.whiteboard.model.SaveWhiteboardDataModel;
-import com.hust.baseweb.applications.whiteboard.model.WhiteboardDetailModel;
+import com.hust.baseweb.applications.whiteboard.model.*;
 import com.hust.baseweb.applications.whiteboard.service.WhiteboardServiceImpl;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.service.UserService;
@@ -16,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -29,17 +25,16 @@ public class WhiteBoardController {
         @RequestBody CreateWhiteboardModel input){
 
         UserLogin u = userService.findById(principal.getName());
-        whiteboardService.createWhiteboard(u.getUserLoginId(), input.getWhiteboardId());
+        whiteboardService.createWhiteboard(u.getUserLoginId(), input.getWhiteboardId(), input.getClassSessionId());
     }
 
-    @GetMapping("/whiteboards")
-    public ResponseEntity<List<GetListWhiteboard>> getWhiteboards(
-        Principal principal){
+    @GetMapping("/whiteboards/{sessionId}")
+    public ResponseEntity<List<GetListWhiteboardModel>> getWhiteboards(
+        @PathVariable UUID sessionId){
 
-        UserLogin u = userService.findById(principal.getName());
-        List<GetListWhiteboard> getListWhiteboards = whiteboardService.getWhiteboards(u);
+        List<GetListWhiteboardModel> getListWhiteboardModels = whiteboardService.getWhiteboards(sessionId);
 
-        return ResponseEntity.ok().body(getListWhiteboards);
+        return ResponseEntity.ok().body(getListWhiteboardModels);
     }
 
     @PostMapping("/whiteboards/save")
@@ -59,12 +54,55 @@ public class WhiteBoardController {
         return ResponseEntity.ok().body(whiteboardDetail);
     }
 
-    @PutMapping("/whiteboards/add-user/{whiteboardId}")
-    public void addUserToWhiteboard(
+    @PutMapping("/whiteboards/user/{whiteboardId}")
+    public ResponseEntity<AddUserToWhiteboardResultModel> addUserToWhiteboard(
+        @PathVariable String whiteboardId, @RequestBody AddUserToWhiteboardModel input, Principal principal){
+
+        UserLogin userLogin = userService.findById(principal.getName());
+        AddUserToWhiteboardResultModel addUserToWhiteboardResultModel = whiteboardService.addUserToWhiteboard(whiteboardId, userLogin, input);
+
+        return ResponseEntity.ok().body(addUserToWhiteboardResultModel);
+    }
+
+    @GetMapping("/whiteboards/user/{whiteboardId}")
+    public void getUserWhiteboard(
         @PathVariable String whiteboardId, Principal principal){
 
         UserLogin userLogin = userService.findById(principal.getName());
-        whiteboardService.addUserToWhiteboard(whiteboardId, userLogin);
+        whiteboardService.getUserWhiteboard(whiteboardId, userLogin);
     }
 
+    @PostMapping("/whiteboards/user/{whiteboardId}")
+    public ResponseEntity<ChangeRoleStatusModel> changeRoleStatusUserWhiteboard(
+        @PathVariable String whiteboardId, @RequestBody ChangeRoleStatusModel input){
+        ChangeRoleStatusModel changeRoleStatusModel = whiteboardService.changeRoleStatusUserWhiteboard(whiteboardId, input);
+
+        return ResponseEntity.ok().body(changeRoleStatusModel);
+    }
+
+    @GetMapping("/whiteboards/user/{whiteboardId}/list-pending")
+    public ResponseEntity<ListDrawRequestPendingModel> getListDrawRequestPending(
+        @PathVariable String whiteboardId, Principal principal){
+
+        UserLogin userLogin = userService.findById(principal.getName());
+        ListDrawRequestPendingModel listDrawRequestPendingModel = whiteboardService.getListDrawRequestPending(whiteboardId, userLogin);
+
+        return ResponseEntity.ok().body(listDrawRequestPendingModel);
+    }
+
+    @GetMapping("/whiteboards/user/{whiteboardId}/list-users")
+    public ResponseEntity<List<UsersInWhiteboardModel>> getListUsersInWhiteboard(
+        @PathVariable String whiteboardId){
+
+        List<UsersInWhiteboardModel> listUsersInWhiteboard = whiteboardService.getListUsersInWhiteboard(whiteboardId);
+
+        return ResponseEntity.ok().body(listUsersInWhiteboard);
+    }
+
+    @DeleteMapping("/whiteboards")
+    public void deleteWhiteboard(
+        @RequestBody DeleteWhiteboardModel input){
+
+       whiteboardService.deleteWhiteboard(input);
+    }
 }

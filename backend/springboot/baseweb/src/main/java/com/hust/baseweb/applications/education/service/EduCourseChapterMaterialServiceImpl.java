@@ -80,4 +80,19 @@ public class EduCourseChapterMaterialServiceImpl implements EduCourseChapterMate
         log.info("findById, sourceId = " + eduCourseChapterMaterial.getSourceId());
         return eduCourseChapterMaterial;
     }
+
+    @Override
+    public EduCourseChapterMaterial updateMaterial(UUID eduCourseChapterMaterialId, String eduCourseMaterialName, String eduCourseMaterialType, String slideId, UUID sourceId){
+        EduCourseChapterMaterial eduCourseChapterMaterial = eduCourseChapterMaterialRepo
+            .findById(eduCourseChapterMaterialId)
+            .orElse(null);
+        log.info("findById, sourceId = " + eduCourseChapterMaterial.getSourceId());
+        eduCourseChapterMaterial.setEduCourseMaterialName(eduCourseMaterialName);
+        eduCourseChapterMaterial.setEduCourseMaterialType(eduCourseMaterialType);
+        eduCourseChapterMaterial.setSourceId(sourceId);
+        eduCourseChapterMaterial.setSlideId(slideId);
+
+        eduCourseChapterMaterialRepo.save(eduCourseChapterMaterial);
+        return eduCourseChapterMaterial;
+    }
 }

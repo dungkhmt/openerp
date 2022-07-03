@@ -14,7 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "teacher_for_assignment_plan")
+@Table(name = "teacher_in_plan")
 @IdClass(TeacherPlanId.class)
 public class TeacherForAssignmentPlan {
 
@@ -32,4 +32,11 @@ public class TeacherForAssignmentPlan {
 
     @Column(name = "minimize_number_working_days")
     private String minimizeNumberWorkingDays;
+
+//    @Column(name = "last_updated_stamp")
+//    private Date lastUpdatedStamp;
+//
+//    @Column(name = "created_stamp")
+//    private Date createdStamp;
+
 }

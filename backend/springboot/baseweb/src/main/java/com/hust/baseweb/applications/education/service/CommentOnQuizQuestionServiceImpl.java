@@ -60,10 +60,10 @@ public class CommentOnQuizQuestionServiceImpl implements CommentOnQuizQuestionSe
 
         //String url = properties.getUrl_root() + "/edu/teacher/course/quiz/view/detail/" + questionId + "/" + q.getQuizCourseTopic().getEduCourse().getId();
         String url = "/edu/teacher/course/quiz/view/detail/" + questionId + "/" + q.getQuizCourseTopic().getEduCourse().getId();
-
-        log.info("createComment, push notification from " + fromUserLoginId + " to " + toUserLoginId
-                 + " msg = " + msg + ", url = " + url);
-        notificationsService.create(fromUserLoginId, toUserLoginId, msg,url);
+        List<String> listUsers = commentOnQuizQuestionRepo.getListUserIdHadComment(questionId);
+        listUsers.forEach((userId)->{
+            notificationsService.create(fromUserLoginId, userId, msg,url);
+        });
 
         return commentOnQuizQuestion;
     }
@@ -137,5 +137,11 @@ public class CommentOnQuizQuestionServiceImpl implements CommentOnQuizQuestionSe
         deleteComment = commentOnQuizQuestionRepo.save(deleteComment);
 
         return deleteComment;
+    }
+
+    public List<String> listUserIdHadComment(UUID questionId){
+        List<String> listUserId = commentOnQuizQuestionRepo.getListUserIdHadComment(questionId);
+
+        return listUserId;
     }
 }

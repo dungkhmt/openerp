@@ -237,7 +237,7 @@ export default function CreateContest(props) {
   const [startDate, setStartDate] = React.useState(new Date());
   const [maxNumberSubmissions, setMaxNumberSubmissions] = useState(10);
   const [countDown, setCountDown] = useState(Number(0));
-
+  const [maxSourceCodeLength, setMaxSourceCodeLength] = useState(50000);
   const classes = useStyles();
   const handleClick = (event, name) => {
     const selectedIndex = problemSelected.indexOf(name);
@@ -272,6 +272,7 @@ export default function CreateContest(props) {
       maxNumberSubmissions: maxNumberSubmissions,
       startedAt: startDate,
       countDownTime: countDown,
+      maxSourceCodeLength: maxSourceCodeLength,
     };
     request(
       "post",
@@ -365,6 +366,18 @@ export default function CreateContest(props) {
                   setMaxNumberSubmissions(event.target.value);
                 }}
                 value={maxNumberSubmissions}
+              ></TextField>
+              <TextField
+                autoFocus
+                // required
+
+                id="maxSourceCodeLength"
+                label="maxSourceCodeLength"
+                placeholder="maxSourceCodeLength"
+                onChange={(event) => {
+                  setMaxSourceCodeLength(event.target.value);
+                }}
+                value={maxSourceCodeLength}
               ></TextField>
 
               <TextField

@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+/**
+ * OK
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,7 +17,10 @@ import java.util.UUID;
 public class ClassTeacherAssignmentPlanDetailModel {
 
     private UUID planId;
+
     private String planName;
+
     private String createdByUserLoginId;
+
     private String createdDate;
 }

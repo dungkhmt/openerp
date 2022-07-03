@@ -12,5 +12,6 @@ import lombok.Setter;
 public class TeacherMaxHourLoad {
 
     private String teacherId;
+
     private int maxHourLoad;
 }

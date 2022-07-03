@@ -34,3 +34,5 @@ package-lock.json
 /.idea/
 /.ssh/
 *.bat
+
+.prettierrc

@@ -1,47 +1,38 @@
 package com.hust.baseweb.applications.education.teacherclassassignment.service;
 
-import com.google.gson.Gson;
 import com.hust.baseweb.applications.education.entity.EduCourse;
-import com.hust.baseweb.applications.education.entity.mongodb.Teacher;
 import com.hust.baseweb.applications.education.repo.EduCourseRepo;
-import com.hust.baseweb.applications.education.repo.mongodb.TeacherRepo;
 import com.hust.baseweb.applications.education.teacherclassassignment.entity.*;
 import com.hust.baseweb.applications.education.teacherclassassignment.entity.compositeid.TeacherCourseId;
 import com.hust.baseweb.applications.education.teacherclassassignment.model.*;
-import com.hust.baseweb.applications.education.teacherclassassignment.model.teachersuggestion.ClassToListTeacher;
+import com.hust.baseweb.applications.education.teacherclassassignment.model.teachersuggestion.MoveClassToTeacher;
 import com.hust.baseweb.applications.education.teacherclassassignment.model.teachersuggestion.SuggestedTeacherAndActionForClass;
 import com.hust.baseweb.applications.education.teacherclassassignment.model.teachersuggestion.TeacherCandidate;
 import com.hust.baseweb.applications.education.teacherclassassignment.repo.*;
-import com.hust.baseweb.applications.education.teacherclassassignment.utils.CheckConflict;
 import com.hust.baseweb.applications.education.teacherclassassignment.utils.TimeTableStartAndDuration;
 import com.hust.baseweb.applications.education.teacherclassassignment.utils.TimetableConflictChecker;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.repo.UserLoginRepo;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Log4j2
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@AllArgsConstructor(onConstructor_ = @Autowired)
 @Service
 public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssignmentPlanService {
 
@@ -49,14 +40,15 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
 
     private ClassTeacherAssignmentPlanRepo classTeacherAssignmentPlanRepo;
 
-    private ClassTeacherAssignmentClassInfoRepo classTeacherAssignmentClassInfoRepo;
+    private ClassTeacherAssignmentClassInfoRepo classInfoRepo;
 
     private TeacherCourseRepo teacherCourseRepo;
 
     private EduTeacherRepo eduTeacherRepo;
 
     private EduCourseRepo eduCourseRepo;
-    private TeacherClassAssignmentSolutionRepo teacherClassAssignmentSolutionRepo;
+
+    private TeacherClassAssignmentSolutionRepo solutionRepo;
 
     private TeacherCourseForAssignmentPlanRepo teacherCourseForAssignmentPlanRepo;
 
@@ -64,14 +56,14 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
 
     private TeacherClassAssignmentAlgoService teacherClassAssignmentAlgoService;
 
-    private TeacherRepo teacherRepo;
     @Override
     public ClassTeacherAssignmentPlan create(UserLogin u, ClassTeacherAssignmentPlanCreateModel input) {
         ClassTeacherAssignmentPlan classTeacherAssignmentPlan = new ClassTeacherAssignmentPlan();
         classTeacherAssignmentPlan.setPlanName(input.getPlanName());
         classTeacherAssignmentPlan.setCreatedStamp(new Date());
-        classTeacherAssignmentPlan.setCreatedByUserLoginId(u.getUserLoginId());
+        classTeacherAssignmentPlan.setCreatedBy(u.getUserLoginId());
         classTeacherAssignmentPlan = classTeacherAssignmentPlanRepo.save(classTeacherAssignmentPlan);
+
         return classTeacherAssignmentPlan;
     }
 
@@ -81,141 +73,160 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
         return classTeacherAssignmentPlans;
     }
 
+    /**
+     * OK
+     *
+     * @param planId
+     * @return
+     */
     @Override
     public ClassTeacherAssignmentPlanDetailModel getClassTeacherAssignmentPlanDetail(UUID planId) {
-        ClassTeacherAssignmentPlan classTeacherAssignmentPlan = classTeacherAssignmentPlanRepo
-            .findById(planId)
-            .orElse(null);
-        ClassTeacherAssignmentPlanDetailModel classTeacherAssignmentPlanDetailModel = new ClassTeacherAssignmentPlanDetailModel();
-        classTeacherAssignmentPlanDetailModel.setPlanId(classTeacherAssignmentPlan.getPlanId());
-        classTeacherAssignmentPlanDetailModel.setPlanName(classTeacherAssignmentPlan.getPlanName());
-        classTeacherAssignmentPlanDetailModel.setCreatedByUserLoginId(classTeacherAssignmentPlan.getCreatedByUserLoginId());
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-        String dateTimeStr = dateFormat.format(classTeacherAssignmentPlan.getCreatedStamp());
-        classTeacherAssignmentPlanDetailModel.setCreatedDate(dateTimeStr);
+        ClassTeacherAssignmentPlan plan = classTeacherAssignmentPlanRepo.findById(planId).orElse(null);
+        ClassTeacherAssignmentPlanDetailModel planDetail = new ClassTeacherAssignmentPlanDetailModel();
 
-        return classTeacherAssignmentPlanDetailModel;
+        if (null != plan) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+
+            planDetail.setPlanId(plan.getId());
+            planDetail.setPlanName(plan.getPlanName());
+            planDetail.setCreatedByUserLoginId(plan.getCreatedBy());
+            planDetail.setCreatedDate(dateFormat.format(plan.getCreatedStamp()));
+        }
+
+        return planDetail;
     }
 
+    /**
+     * OK
+     *
+     * @param planId
+     * @return
+     */
     @Override
-    //public List<ClassTeacherAssignmentClassInfo> findAllClassTeacherAssignmentClassByPlanId(UUID planId) {
-    public List<ClassInfoForAssignment2TeacherModel> findAllClassTeacherAssignmentClassByPlanId(UUID planId) {
-        List<ClassTeacherAssignmentClassInfo> classTeacherAssignmentClassInfos =
-            classTeacherAssignmentClassInfoRepo.findAllByPlanId(planId);
-        List<ClassInfoForAssignment2TeacherModel> lst = new ArrayList();
+    public List<ClassInfoForAssignment2TeacherModel> findClassesInPlan(UUID planId) {
+        List<ClassTeacherAssignmentClassInfo> classes = classInfoRepo.findAllByPlanId(planId);
         List<TeacherCourse> teacherCourses = teacherCourseRepo.findAll();
-        HashMap<String, List<TeacherCourse>> mCourseId2Teacher = new HashMap();
-        for (TeacherCourse tc : teacherCourses) {
-            if (mCourseId2Teacher.get(tc.getCourseId()) == null) {
-                mCourseId2Teacher.put(tc.getCourseId(), new ArrayList<>());
-            }
-            mCourseId2Teacher.get(tc.getCourseId()).add(tc);
-        }
-        List<TeacherCourseForAssignmentPlan> teacherCourseForAssignmentPlans = teacherCourseForAssignmentPlanRepo.findAllByPlanId(
+        List<TeacherCourseForAssignmentPlan> teacherCourseInPlan = teacherCourseForAssignmentPlanRepo.findAllByPlanId(
             planId);
-        List<TeacherForAssignmentPlan> teacherForAssignmentPlans = teacherForAssignmentPlanRepo.findAllByPlanId(planId);
-        HashSet<String> teacherPlanIds = new HashSet();
-        for (TeacherForAssignmentPlan t : teacherForAssignmentPlans) {
-            teacherPlanIds.add(t.getTeacherId());
+
+        // Compute extra information
+        HashMap<String, Set<String>> mClassId2TeacherId = new HashMap<>();
+        HashMap<String, Set<String>> mClassId2TeacherIdInPlan = new HashMap<>();
+        List<ClassInfoForAssignment2TeacherModel> result = new ArrayList<>();
+        for (ClassTeacherAssignmentClassInfo classInfo : classes) {
+            mClassId2TeacherId.computeIfAbsent(classInfo.getClassId(), k -> new HashSet<>());
+            mClassId2TeacherIdInPlan.computeIfAbsent(classInfo.getClassId(), k -> new HashSet<>());
+            ClassInfoForAssignment2TeacherModel clazz = new ClassInfoForAssignment2TeacherModel(classInfo);
+
+            for (TeacherCourse tc : teacherCourses) {
+                try {
+                    if (tc.getCourseId().equalsIgnoreCase(classInfo.getCourseId()) &&
+                        tc.getClassType().equalsIgnoreCase(classInfo.getClassType())) {
+                        mClassId2TeacherId.get(classInfo.getClassId()).add(tc.getTeacherId());
+                    }
+                } catch (NullPointerException ignored) {
+                }
+            }
+            clazz.setNumberPossibleTeachers(mClassId2TeacherId.get(classInfo.getClassId()).size());
+
+            for (TeacherCourseForAssignmentPlan tc : teacherCourseInPlan) {
+                try {
+                    if (tc.getCourseId().equalsIgnoreCase(classInfo.getCourseId()) &&
+                        tc.getClassType().equalsIgnoreCase(classInfo.getClassType())) {
+                        mClassId2TeacherIdInPlan.get(classInfo.getClassId()).add(tc.getTeacherId());
+                    }
+                } catch (NullPointerException ignored) {
+                }
+            }
+            clazz.setNumberPossibleTeachersInPlan(mClassId2TeacherIdInPlan.get(classInfo.getClassId()).size());
+            result.add(clazz);
         }
-        HashMap<String, List<TeacherCourseForAssignmentPlan>> mCourseId2TeacherInPlan = new HashMap();
-        for (TeacherCourseForAssignmentPlan tcp : teacherCourseForAssignmentPlans) {
-            if (mCourseId2TeacherInPlan.get(tcp.getCourseId()) == null) {
-                mCourseId2TeacherInPlan.put(tcp.getCourseId(), new ArrayList());
-            }
 
-            if (teacherPlanIds.contains(tcp.getTeacherId())) {
-                mCourseId2TeacherInPlan.get(tcp.getCourseId()).add(tcp);
-            }
-        }
-
-        for (ClassTeacherAssignmentClassInfo c : classTeacherAssignmentClassInfos) {
-            ClassInfoForAssignment2TeacherModel classInfoForAssignment2TeacherModel =
-                new ClassInfoForAssignment2TeacherModel(c);
-            int nbTeachers = 0;
-
-            if (mCourseId2Teacher.get(c.getCourseId()) != null) {
-                nbTeachers = mCourseId2Teacher.get(c.getCourseId()).size();
-            }
-
-            int nbTeachersInPlan = 0;
-            if (mCourseId2TeacherInPlan.get(c.getCourseId()) != null) {
-                nbTeachersInPlan = mCourseId2TeacherInPlan.get(c.getCourseId()).size();
-            }
-
-            classInfoForAssignment2TeacherModel.setNumberPosibleTeachers(nbTeachers);
-            classInfoForAssignment2TeacherModel.setNumberPosibleTeachersInPlan(nbTeachersInPlan);
-
-            lst.add(classInfoForAssignment2TeacherModel);
-        }
-        //return classTeacherAssignmentClassInfos;
-        return lst;
+        return result;
     }
 
+    /**
+     * Temporarily OK
+     *
+     * @param planId
+     * @param file
+     * @return
+     */
     @Transactional
     @Override
     public boolean extractExcelAndStoreDB(UUID planId, MultipartFile file) {
-        List<ClassTeacherAssignmentClassInfo> lst = new ArrayList();
-        try {
-            InputStream inputStream = file.getInputStream();
-            HSSFWorkbook wb = new HSSFWorkbook(inputStream);
-            HSSFSheet sheet = wb.getSheetAt(0);
-            int sz = sheet.getLastRowNum();
-            for (int i = 1; i <= sz; i++) {
+        List<ClassTeacherAssignmentClassInfo> classes = new ArrayList<>();
+
+        try (InputStream is = file.getInputStream()) {
+            XSSFWorkbook wb = new XSSFWorkbook(is);
+            XSSFSheet sheet = wb.getSheetAt(0);
+            int lastRowNum = sheet.getLastRowNum();
+
+            for (int i = 1; i <= lastRowNum; i++) {
                 Row row = sheet.getRow(i);
-                Cell c = row.getCell(0);
+                Cell c = row.getCell(1);
+
                 String schoolName = c.getStringCellValue();
-                c = row.getCell(1);
+                c = row.getCell(0);
                 String semesterId = c.getStringCellValue();
                 c = row.getCell(2);
-                String classId = c.getStringCellValue();
-                c = row.getCell(3);
-                String courseId = c.getStringCellValue();
+                String classId = String.valueOf(Double.valueOf(c.getNumericCellValue()).intValue());
                 c = row.getCell(4);
-                String className = c.getStringCellValue();
+                String courseId = c.getStringCellValue();
                 c = row.getCell(5);
-                String creditInfo = c.getStringCellValue();
-                c = row.getCell(6);
-                String classNote = c.getStringCellValue();
-
+                String className = c.getStringCellValue();
                 c = row.getCell(7);
-                String program = c.getStringCellValue();
+                String creditInfo = c.getStringCellValue();
                 c = row.getCell(8);
+                String classNote = c.getStringCellValue();
+                c = row.getCell(23);
+                String program = c.getStringCellValue();
+                c = row.getCell(22);
                 String semesterType = c.getStringCellValue();
-                c = row.getCell(9);
-                int enrollment = Integer.valueOf(c.getStringCellValue());
-                c = row.getCell(10);
-                int maxEnrollment = Integer.valueOf(c.getStringCellValue());
-
-                c = row.getCell(12);
+                c = row.getCell(18);
+                int enrollment = Double.valueOf(c.getNumericCellValue()).intValue();
+                c = row.getCell(19);
+                int maxEnrollment = Double.valueOf(c.getNumericCellValue()).intValue();
+                c = row.getCell(21);
+                String classType = c.getStringCellValue();
+                c = row.getCell(26);
                 String timeTable = c.getStringCellValue();
-                c = row.getCell(13);
+                c = row.getCell(27);
                 String lesson = c.getStringCellValue();
-                c = row.getCell(14);
-                String department = c.getStringCellValue();
-                c = row.getCell(15);
+                c = row.getCell(28);
+                String department = null == c ? null : c.getStringCellValue();
+                c = row.getCell(29);
                 double hourLoad = c.getNumericCellValue();
 
+                //
                 ClassTeacherAssignmentClassInfo cls = new ClassTeacherAssignmentClassInfo();
                 cls.setClassId(classId);
                 cls.setClassName(className);
                 cls.setCourseId(courseId);
-                cls.setClassNote(classNote);
+                cls.setNote(classNote);
                 cls.setSemesterId(semesterId);
                 cls.setSemesterType(semesterType);
                 cls.setProgram(program);
-                cls.setTimeTable(timeTable);
+                cls.setTimetable(timeTable);
                 cls.setLesson(lesson);
                 cls.setDepartmentId(department);
                 cls.setEnrollment(enrollment);
                 cls.setMaxEnrollment(maxEnrollment);
+                cls.setClassType(classType);
+                cls.setCredit(creditInfo);
+                cls.setSchoolName(schoolName);
                 cls.setPlanId(planId);
                 cls.setHourLoad(hourLoad);
-                lst.add(cls);
+                cls.setCreatedStamp(new Date());
+                classes.add(cls);
+
                 log.info(classId + "\t" + courseId + "\t" + className + "\t" + timeTable);
-                cls = classTeacherAssignmentClassInfoRepo.save(cls);
             }
-            inputStream.close();
+
+            solutionRepo.deleteAll();
+            classInfoRepo.deleteAll();
+
+            classInfoRepo.saveAll(classes);
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -226,7 +237,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
 
     @Override
     public String addTeacher(EduTeacher teacher) {
-        Optional<EduTeacher> t = eduTeacherRepo.findById(teacher.getTeacherId());
+        Optional<EduTeacher> t = eduTeacherRepo.findById(teacher.getId());
         if (t.isPresent()) {
             return "Email đã tồn tại";
         }
@@ -247,11 +258,16 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
         return "OK";
     }
 
-    ;
-
+    /**
+     * OK
+     *
+     * @return
+     */
     @Override
     public List<EduTeacher> findAllTeachers() {
-        return eduTeacherRepo.findAll();
+        List<EduTeacher> teachers = eduTeacherRepo.findAll();
+        teachers.sort(Comparator.comparing(EduTeacher::getId));
+        return teachers;
     }
 
     @Override
@@ -259,867 +275,952 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
         return eduTeacherRepo.findAllContain(keyword, pageable);
     }
 
+    /**
+     * OK
+     *
+     * @param planId
+     * @return
+     */
     @Override
     public List<TeacherForAssignmentPlan> findAllTeacherByPlanId(UUID planId) {
-        return teacherForAssignmentPlanRepo.findAllByPlanId(planId);
+        List<TeacherForAssignmentPlan> teachersInPlan = teacherForAssignmentPlanRepo.findAllByPlanId(planId);
+        teachersInPlan.sort(Comparator.comparing(TeacherForAssignmentPlan::getTeacherId));
+        return teachersInPlan;
     }
 
+    /**
+     * OK
+     *
+     * @param planId
+     * @param addedTeachers
+     * @return
+     */
     @Transactional
     @Override
-    public boolean addTeacherToAssignmentPlan(UUID planId, String teacherList) {
-        log.info("addTeacherToAssignmentPlan");
+    public void addTeacherToAssignmentPlan(UUID planId, TeacherForAssignmentPlan[] addedTeachers) {
         List<EduTeacher> teachers = eduTeacherRepo.findAll();
-        Map<String, EduTeacher> mId2Teacher = new HashMap();
-        for(EduTeacher t: teachers){
-            mId2Teacher.put(t.getTeacherId(),t);
-            log.info("addTeacherToAssignmentPlan, put teacher " + t.getTeacherId() + " maxCredit " + t.getMaxCredit());
+        Map<String, EduTeacher> mTeacherId2Teacher = new HashMap<>();
+        for (EduTeacher t : teachers) {
+            mTeacherId2Teacher.put(t.getId(), t);
+//            log.info("addTeacherToAssignmentPlan, put teacher " + t.getTeacherId() + " maxCredit " + t.getMaxCredit());
         }
-        String[] lst = teacherList.split(";");
-        Gson gson = new Gson();
-        for (String t : lst) {
-            TeacherMaxHourLoad teacherMaxHourLoad = gson.fromJson(t, TeacherMaxHourLoad.class);
-            TeacherForAssignmentPlan teacherForAssignmentPlan =
-                teacherForAssignmentPlanRepo.findByTeacherIdAndPlanId(teacherMaxHourLoad.getTeacherId(), planId);
-            if(teacherForAssignmentPlan == null) {
-                teacherForAssignmentPlan = new TeacherForAssignmentPlan();
-                log.info("addTeacherToAssignmentPlan, record not exist -> create new!");
-            }
 
-            teacherForAssignmentPlan.setMaxHourLoad(teacherMaxHourLoad.getMaxHourLoad());
-            teacherForAssignmentPlan.setTeacherId(teacherMaxHourLoad.getTeacherId());
-            teacherForAssignmentPlan.setPlanId(planId);
+        for (TeacherForAssignmentPlan addedTeacher : addedTeachers) {
+            TeacherForAssignmentPlan teacherForPlan = teacherForAssignmentPlanRepo.findByTeacherIdAndPlanId(
+                addedTeacher.getTeacherId(),
+                planId);
 
-            EduTeacher teacher = mId2Teacher.get(teacherMaxHourLoad.getTeacherId());
-            if(teacher != null){
-                if(teacherMaxHourLoad.getMaxHourLoad() == 0) {
-                    // take info from DB
+            if (null == teacherForPlan) {
+                teacherForPlan = new TeacherForAssignmentPlan();
+                teacherForPlan.setTeacherId(addedTeacher.getTeacherId());
+                teacherForPlan.setPlanId(planId);
+//                log.info("addTeacherToAssignmentPlan, record not exist -> create new!");
+//            }
 
-                    teacherForAssignmentPlan.setMaxHourLoad(teacher.getMaxCredit());
-                    log.info("addTeacherToAssignmentPlan, input maxHourLoad = 0 -> take from DB = " + teacherForAssignmentPlan.getMaxHourLoad()
-                    + " = " + teacher.getMaxCredit());
+                EduTeacher teacher = mTeacherId2Teacher.get(addedTeacher.getTeacherId());
+                if (teacher != null) {
+                    if (addedTeacher.getMaxHourLoad() == 0) {
+                        // take info from DB
+                        teacherForPlan.setMaxHourLoad(teacher.getMaxHourLoad());
+//                    log.info("addTeacherToAssignmentPlan, input maxHourLoad = 0 -> take from DB = " +
+//                             teacherForPlan.getMaxHourLoad() + " = " + teacher.getMaxCredit());
+                    }
+
+                    teacherForAssignmentPlanRepo.save(teacherForPlan);
+//                log.info("addTeacherToAssignmentPlan, save teacher " + teacherForPlan.getTeacherId() +
+//                         " plan " + teacherForPlan.getPlanId() + " maxCredit  " + teacherForPlan.getMaxHourLoad());
+                } else {
+                    log.info("addTeacherToAssignmentPlan, not found teacher " + addedTeacher.getTeacherId());
                 }
-            }else{
-                log.info("addTeacherToAssignmentPlan, not found teacher " + teacherMaxHourLoad.getTeacherId());
             }
-
-
-            teacherForAssignmentPlan = teacherForAssignmentPlanRepo.save(teacherForAssignmentPlan);
-
-            log.info("addTeacherToAssignmentPlan, save teacher " + teacherForAssignmentPlan.getTeacherId() + " plan "
-            + teacherForAssignmentPlan.getPlanId() + " maxCredit  " + teacherForAssignmentPlan.getMaxHourLoad());
-
         }
-        return true;
     }
 
+    /**
+     * OK
+     *
+     * @param planId
+     * @param teacherIds
+     */
     @Transactional
     @Override
-    public boolean removeTeacherFromAssignmentPlan(UUID planId, String teacherList) {
-        log.info("removeTeacherFromAssignmentPlan");
-        String[] lst = teacherList.split(";");
-        Gson gson = new Gson();
-        for (String t : lst) {
-            TeacherMaxHourLoad teacherMaxHourLoad = gson.fromJson(t, TeacherMaxHourLoad.class);
-            TeacherForAssignmentPlan teacherForAssignmentPlan
-                = teacherForAssignmentPlanRepo.findByTeacherIdAndPlanId(teacherMaxHourLoad.getTeacherId(), planId);
-            if (teacherForAssignmentPlan != null) {
-                // remove related items from TeacherClassAssignmentSolution
-                List<TeacherClassAssignmentSolution> sol = teacherClassAssignmentSolutionRepo
-                    .findAllByPlanIdAndTeacherId(planId, teacherForAssignmentPlan.getTeacherId());
-                for (TeacherClassAssignmentSolution s : sol) {
-                    log.info("removeTeacherFromAssignmentPlan, delete item in solution (" +
-                             s.getClassId() +
-                             " - " +
-                             s.getTeacherId()
-                             +
-                             ") in plan " +
-                             planId);
-                    teacherClassAssignmentSolutionRepo.delete(s);
-                }
+    public void removeTeacherFromAssignmentPlan(UUID planId, String[] teacherIds) {
+//        log.info("removeTeacherFromAssignmentPlan");
+        for (String id : teacherIds) {
+            TeacherForAssignmentPlan teacherForPlan = teacherForAssignmentPlanRepo.findByTeacherIdAndPlanId(id, planId);
 
-                teacherForAssignmentPlanRepo.delete(teacherForAssignmentPlan);
-                log.info("removeTeacherFromAssignmentPlan, delete (" +
-                         teacherMaxHourLoad.getTeacherId() +
-                         "," +
-                         planId +
-                         ")");
+            if (teacherForPlan != null) {
+                // Remove related items from TeacherCourseForAssignmentPlan
+                teacherCourseForAssignmentPlanRepo.deleteByPlanIdAndTeacherId(planId, id);
+                // Remove related items from TeacherClassAssignmentSolution
+                solutionRepo.deleteAllByPlanIdAndTeacherId(planId, id);
+
+                teacherForAssignmentPlanRepo.delete(teacherForPlan);
+//                log.info("removeTeacherFromAssignmentPlan, delete (" + id + "," + planId + ")");
             }
-
         }
-        return true;
     }
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    class ClassIdModel {
-
-        String classId;
-    }
-
+    /**
+     * OK
+     *
+     * @param planId
+     * @param classIds
+     */
+    @Transactional
     @Override
-    public boolean removeClassFromAssignmentPlan(UUID planId, String classList) {
-        log.info("removeClassFromAssignmentPlan");
-        String[] lst = classList.split(";");
-        Gson gson = new Gson();
-        for (String t : lst) {
-            ClassIdModel cm = gson.fromJson(t, ClassIdModel.class);
-            String classId = cm.getClassId();
-            ClassTeacherAssignmentClassInfo cls = classTeacherAssignmentClassInfoRepo.findById(classId).orElse(null);
-            if (cls != null) {
-                classTeacherAssignmentClassInfoRepo.delete(cls);
-                log.info("removeClassFromAssignmentPlan, remove classId " + classId + " OK");
+    public void removeClassFromAssignmentPlan(UUID planId, String[] classIds) {
+        for (String classId : classIds) {
+            if (null != classId) {
+                classInfoRepo.deleteByPlanIdAndClassId(planId, classId);
+                solutionRepo.deleteAllByPlanIdAndClassId(planId, classId);
+//                log.info("removeClassFromAssignmentPlan, remove classId " + classId + " OK");
             }
         }
-        return true;
     }
 
     @Override
     public List<TeacherCourse> findAllTeacherCourse() {
-        List<TeacherCourse> teacherCourses = teacherCourseRepo.findAll();
-        return teacherCourses;
+        List<TeacherCourse> tc = teacherCourseRepo.findAll();
+        tc.sort((tc1, tc2) -> {
+            String key1 = tc1.getTeacherId() + tc1.getCourseId() + tc1.getClassType();
+            String key2 = tc2.getTeacherId() + tc2.getCourseId() + tc2.getClassType();
+            return key1.compareTo(key2);
+        });
+        return tc;
     }
 
     @Override
     public List<TeacherCourseForAssignmentPlan> findTeacherCourseOfPlan(UUID planId) {
-        return teacherCourseForAssignmentPlanRepo.findAllByPlanId(planId);
+        List<TeacherCourseForAssignmentPlan> tc = teacherCourseForAssignmentPlanRepo.findAllByPlanId(planId);
+        tc.sort((tc1, tc2) -> {
+            String key1 = tc1.getTeacherId() + tc1.getCourseId() + tc1.getClassType();
+            String key2 = tc2.getTeacherId() + tc2.getCourseId() + tc2.getClassType();
+            return key1.compareTo(key2);
+        });
+        return tc;
     }
 
+    /**
+     * Temporarily OK
+     *
+     * @param planId
+     * @param choice
+     * @param file
+     * @return
+     */
     @Transactional
     @Override
     public boolean extractExcelAndStoreDBTeacherCourse(UUID planId, String choice, MultipartFile file) {
-        try {
-            InputStream inputStream = file.getInputStream();
-            HSSFWorkbook wb = new HSSFWorkbook(inputStream);
-            HSSFSheet sheet = wb.getSheetAt(0);
+        try (InputStream inputStream = file.getInputStream()) {
+            XSSFWorkbook wb = new XSSFWorkbook(inputStream);
+            XSSFSheet sheet = wb.getSheetAt(1);
+
+            List<TeacherCourse> teacherCourses = new ArrayList<>();
+            List<EduTeacher> teachers = new ArrayList<>();
+            List<EduCourse> courses = new ArrayList<>();
+            HashMap<String, TeacherCourse> mTeacherCourseId2TeacherCourse = new HashMap<>();
+            HashSet<String> teacherIds = new HashSet<>();
+            HashSet<String> courseIds = new HashSet<>();
+
             int sz = sheet.getLastRowNum();
-            List<TeacherCourse> lst = new ArrayList();
-            List<EduTeacher> eduTeachers = new ArrayList();
-            List<EduCourse> eduCourses = new ArrayList();
-            HashMap<TeacherCourseId, TeacherCourse> mId2TeacherCourse = new HashMap();
-            HashSet<String> teacherIds = new HashSet();
-            HashSet<String> courseIds = new HashSet();
             for (int i = 1; i <= sz; i++) {
                 Row row = sheet.getRow(i);
-                Cell c = row.getCell(0);
+                Cell c = row.getCell(4);
                 String courseId = c.getStringCellValue();
 
-                c = row.getCell(1);
+                c = row.getCell(5);
                 String courseName = c.getStringCellValue();
 
-                c = row.getCell(3);
+                c = row.getCell(25);
                 String teacherName = c.getStringCellValue();
 
-                c = row.getCell(4);
+                c = row.getCell(26);
                 String teacherId = c.getStringCellValue();
-                c = row.getCell(5);
 
+//                c = row.getCell(5);
                 //int maxCredits = Integer.valueOf(c.getStringCellValue());
 
-                c = row.getCell(6);
-                int priority = 0;
-                if (c.getCellType().equals(CellType.STRING)) {
-                    //System.out.println("line i = " + i + ", column 6, str = " + c.getStringCellValue());
-                    try {
-                        priority = Integer.valueOf(c.getStringCellValue());
-                    }catch(Exception e){
-                        System.out.println("exception priority convert str to int");
-                        //e.printStackTrace();
-                    }
-                } else if (c.getCellType().equals(CellType.NUMERIC)) {
-                    priority = (int) c.getNumericCellValue();
+//                c = row.getCell(6);
+//                int priority = 0;
+//                if (c.getCellType().equals(CellType.STRING)) {
+//                    //System.out.println("line i = " + i + ", column 6, str = " + c.getStringCellValue());
+//                    try {
+//                        priority = Integer.parseInt(c.getStringCellValue());
+//                    } catch (Exception e) {
+//                        System.out.println("exception priority convert str to int");
+//                        //e.printStackTrace();
+//                    }
+//                } else if (c.getCellType().equals(CellType.NUMERIC)) {
+//                    priority = (int) c.getNumericCellValue();
+//                }
+
+                c = row.getCell(21);
+                String classType = c.getStringCellValue();
+                c = row.getCell(7);
+                String credit = "0";
+                if (null != c && null != c.getStringCellValue() && !"".equals(c.getStringCellValue().trim())) {
+                    credit = c.getStringCellValue().substring(0, 1);
                 }
 
                 TeacherCourse teacherCourse = new TeacherCourse();
                 teacherCourse.setCourseId(courseId);
                 teacherCourse.setTeacherId(teacherId);
-                teacherCourse.setPriority(priority);
+                teacherCourse.setClassType(classType);
+                teacherCourse.setPriority(0);
+                teacherCourse.setCreatedStamp(new Date());
 
-                TeacherCourseId id = new TeacherCourseId(courseId, teacherId);
+//                TeacherCourseId id = new TeacherCourseId(teacherId, courseId, classType);
+                String id = teacherId + courseId + classType;
 
                 if (!teacherIds.contains(teacherId)) {
-                    EduTeacher eduTeacher = new EduTeacher();
-                    eduTeacher.setTeacherId(teacherId);
-                    eduTeacher.setTeacherName(teacherName);
+                    EduTeacher teacher = new EduTeacher();
+                    teacher.setId(teacherId);
+                    teacher.setTeacherName(teacherName);
+                    teacher.setMaxHourLoad(30);
+                    teacher.setCreatedStamp(new Date());
 
-                    eduTeachers.add(eduTeacher);
+                    teachers.add(teacher);
                     teacherIds.add(teacherId);
                 }
-                if (!courseIds.contains(courseId)) {
-                    EduCourse eduCourse = new EduCourse();
-                    eduCourse.setId(courseId);
-                    eduCourse.setName(courseName);
-                    eduCourse.setCredit((short) 0);
-                    eduCourse.setCreatedStamp(new Date());
 
-                    eduCourses.add(eduCourse);
+                if (!courseIds.contains(courseId)) { // OK
+                    EduCourse course = new EduCourse();
+                    course.setId(courseId);
+                    course.setName(courseName);
+                    course.setCredit(Short.parseShort(credit));
+                    course.setCreatedStamp(new Date());
+
+                    courses.add(course);
                     courseIds.add(courseId);
                 }
 
-                if (mId2TeacherCourse.get(id) == null) {
-                    mId2TeacherCourse.put(id, teacherCourse);
-                    lst.add(teacherCourse);
+                if (mTeacherCourseId2TeacherCourse.get(id) == null) {
+                    mTeacherCourseId2TeacherCourse.put(id, teacherCourse);
+                    teacherCourses.add(teacherCourse);
                     //log.info("extractExcelAndStoreDBTeacherCourse, add new " + courseId + ", " + teacherId + ", " + priority);
                 } else {
-                    log.info("extractExcelAndStoreDBTeacherCourse, " + courseId + ", " + teacherId + ", " + priority +
+                    log.info("extractExcelAndStoreDBTeacherCourse, " + courseId + ", " + teacherId + ", " +
+//                             priority +
                              " EXISTS");
                 }
 
                 //teacherCourse  = teacherCourseRepo.save(teacherCourse);
                 //log.info("extractExcelAndStoreDBTeacherCourse, " + courseId + ", " + teacherId + ", " + priority);
             }
-            log.info("extractExcelAndStoreDBTeacherCourse, choice = " + choice + " courses.sz = " + eduCourses.size()
-                     + " teachers.sz = " + eduTeachers.size() + ", teacher-course.sz = " + lst.size());
+
+            log.info("extractExcelAndStoreDBTeacherCourse, choice = " + choice + " courses.sz = " + courses.size()
+                     + " teachers.sz = " + teachers.size() + ", teacher-course.sz = " + teacherCourses.size());
 
 
-            if (choice.equals("UPLOAD_COURSE")) {
-                // check and store courses
-                for (EduCourse c : eduCourses) {
+//            if (choice.equals("UPLOAD_COURSE")) {
+            // check and store courses
+            for (EduCourse c : courses) {
+                EduCourse eduCourse = eduCourseRepo.findById(c.getId()).orElse(null);
 
-                    EduCourse eduCourse = eduCourseRepo.findById(c.getId()).orElse(null);
-                    if (eduCourse != null) {
-                        // EXISTS, do nothing
-                        log.info("extractExcelAndStoreDBTeacherCourse, course " + c.getId() + " EXISTS");
-                    } else {
-                        c = eduCourseRepo.save(c);
-                        log.info("extractExcelAndStoreDBTeacherCourse, course " + c.getId() + " -> INSERTED");
-                    }
+                if (eduCourse != null) {
+                    // EXISTS, do nothing
+                    log.info("extractExcelAndStoreDBTeacherCourse, course " + c.getId() + " EXISTS");
+                } else {
+                    c = eduCourseRepo.save(c);
+                    log.info("extractExcelAndStoreDBTeacherCourse, course " + c.getId() + " -> INSERTED");
                 }
-            } else if (choice.equals("UPLOAD_TEACHER")) {
-
-                // check and store teachers
-                for (EduTeacher t : eduTeachers) {
-                    EduTeacher teacher = eduTeacherRepo.findById(t.getTeacherId()).orElse(null);
-                    if (teacher != null) {
-                        // EXISTS do nothing
-                        log.info("extractExcelAndStoreDBTeacherCourse, teacher " + t.getTeacherId() + " EXISTS");
-                    } else {
-                        t = eduTeacherRepo.save(t);
-                        log.info("extractExcelAndStoreDBTeacherCourse, teacher " + t.getTeacherId() + " INSERTED");
-                    }
-                }
-            } else if (choice.equals("UPLOAD_TEACHER_COURSE")) {
-                log.info("extractExcelAndStoreDBTeacherCourse, saveAll teacher-course");
-                teacherCourseRepo.saveAll(lst);
             }
+//            } else if (choice.equals("UPLOAD_TEACHER")) {
+            // check and store teachers
+            for (EduTeacher t : teachers) {
+                EduTeacher teacher = eduTeacherRepo.findById(t.getId()).orElse(null);
+
+                if (teacher != null) {
+                    // EXISTS do nothing
+                    log.info("extractExcelAndStoreDBTeacherCourse, teacher " + t.getId() + " EXISTS");
+                } else {
+                    t = eduTeacherRepo.save(t);
+                    log.info("extractExcelAndStoreDBTeacherCourse, teacher " + t.getId() + " INSERTED");
+                }
+            }
+//            } else if (choice.equals("UPLOAD_TEACHER_COURSE")) {
+            log.info("extractExcelAndStoreDBTeacherCourse, saveAll teacher-course");
+            for (TeacherCourse tc : teacherCourses) {
+                TeacherCourse existedTeacherCourse = teacherCourseRepo
+                    .findById(new TeacherCourseId(tc.getTeacherId(), tc.getCourseId(), tc.getClassType()))
+                    .orElse(null);
+
+                if (null == existedTeacherCourse) {
+                    teacherCourseRepo.save(tc);
+                }
+            }
+//            teacherCourseRepo.saveAll(teacherCourses);
+//            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
+
         return true;
     }
 
+    /**
+     * OK. Consider only TeacherCourseForAssignmentPlan that have teacher in plan
+     *
+     * @param im
+     * @return
+     */
+    @Transactional
     @Override
-    public boolean autoAssignTeacher2Class(RunAutoAssignTeacher2ClassInputModel I) {
-        UUID planId = I.getPlanId();
-        List<ClassTeacherAssignmentClassInfo> classes = classTeacherAssignmentClassInfoRepo.findAllByPlanId(planId);
+    public boolean autoAssignTeacher2Class(RunAutoAssignTeacher2ClassInputModel im) {
+        UUID planId = im.getPlanId();
+        List<ClassTeacherAssignmentClassInfo> classes = classInfoRepo.findAllByPlanId(planId);
+
         log.info("autoAssignTeacher2Class, classes.sz = " + classes.size());
-        //if(true) return true;
-        List<EduTeacher> allteachers = eduTeacherRepo.findAll();
-        //List<TeacherCourse> teacherCourses = teacherCourseRepo.findAll();
-        HashMap<String, EduTeacher> mId2Teacher = new HashMap();
-        for (EduTeacher t : allteachers) {
-            mId2Teacher.put(t.getTeacherId(), t);
+
+        // Preprocessing
+        List<EduTeacher> allTeachers = eduTeacherRepo.findAll();
+        HashMap<String, EduTeacher> mTeacherId2Teacher = new HashMap<>();
+        for (EduTeacher t : allTeachers) {
+            mTeacherId2Teacher.put(t.getId(), t);
         }
 
-        List<TeacherForAssignmentPlan> teachers = teacherForAssignmentPlanRepo.findAllByPlanId(planId);
-        List<TeacherCourseForAssignmentPlan> teacherCourses = teacherCourseForAssignmentPlanRepo
-            .findAllByPlanId(planId);
-
-
-        List<EduCourse> eduCourses = eduCourseRepo.findAll();
-        HashMap<String, EduCourse> mId2Course = new HashMap();
-        HashMap<String, List<Course4Teacher>> mTeacher2Courses = new HashMap();
-
-        for (EduCourse c : eduCourses) {
-            mId2Course.put(c.getId(), c);
+        ////
+        List<EduCourse> allCourses = eduCourseRepo.findAll();
+        HashMap<String, EduCourse> mCourseId2Course = new HashMap<>();
+        for (EduCourse course : allCourses) {
+            mCourseId2Course.put(course.getId(), course);
         }
-        //for(TeacherCourse tc: teacherCourses){
-        for (TeacherCourseForAssignmentPlan tc : teacherCourses) {
-            if (mTeacher2Courses.get(tc.getTeacherId()) == null) {
-                mTeacher2Courses.put(tc.getTeacherId(), new ArrayList<>());
+
+        //// Todo: Xem xet Course4Teacher, thay bang TeacherCourseForAssignmentPlan
+        List<TeacherCourseForAssignmentPlan> teacherCoursesInPlan = teacherCourseForAssignmentPlanRepo.findAllByPlanId(
+            planId);
+        ////// Build map for all teacher-course in plan even if the teacher is not in plan
+        HashMap<String, List<Course4Teacher>> mTeacherId2CoursesInPlan = new HashMap<>();
+        for (TeacherCourseForAssignmentPlan tc : teacherCoursesInPlan) {
+            mTeacherId2CoursesInPlan.computeIfAbsent(tc.getTeacherId(), k -> new ArrayList<>()); // init
+
+            EduCourse course = mCourseId2Course.get(tc.getCourseId());
+            if (null != course) { // Todo: reconsider this logic
+                Course4Teacher c4t = new Course4Teacher(
+                    course.getId(),
+                    course.getName(),
+                    tc.getPriority(),
+                    tc.getClassType());
+
+                mTeacherId2CoursesInPlan.get(tc.getTeacherId()).add(c4t);
             }
-
-            EduCourse course = mId2Course.get(tc.getCourseId());
-            if (course != null) {
-                Course4Teacher c4t = new Course4Teacher(course.getId(), course.getName(), tc.getPriority(), null);
-                mTeacher2Courses.get(tc.getTeacherId()).add(c4t);
-            }
-
         }
 
-        // load existing solution/assignment
-        List<TeacherClassAssignmentSolution> preAssignmentSolutions =
-            teacherClassAssignmentSolutionRepo.findAllByPlanId(planId);
+        // Encode data.
+        List<TeacherForAssignmentPlan> teachersInPlan = teacherForAssignmentPlanRepo.findAllByPlanId(planId);
+        AlgoClassIM[] algoClasses = new AlgoClassIM[classes.size()];
 
-
-        AlgoClassIM[] inputClass = new AlgoClassIM[classes.size()];
-        AlgoTeacherIM[] inputTeacher = new AlgoTeacherIM[teachers.size()];
-
-        HashMap<String, AlgoClassIM> mClassId2AlgoClass = new HashMap();
+        //// TODO: reduces size of: mClassId2AlgoClass, mTeacherId2AlgoTeacher
+        HashMap<String, AlgoClassIM> mClassId2AlgoClass = new HashMap<>();
         for (int i = 0; i < classes.size(); i++) {
             ClassTeacherAssignmentClassInfo c = classes.get(i);
-            AlgoClassIM ci = new AlgoClassIM();
-            ci.setClassCode(c.getClassId());
-            ci.setTimetable(c.getLesson());
-            ci.setClassType(c.getClassType());
-            ci.setCourseId(c.getCourseId());
-            ci.setCourseName(c.getCourseId());
-            ci.setHourLoad(c.getHourLoad());// TOBE UPGRADED
 
-            mClassId2AlgoClass.put(c.getClassId(), ci);
+            EduCourse course = mCourseId2Course.get(c.getCourseId());
+            String courseName = null == course ? c.getCourseId() : course.getName();
 
-            inputClass[i] = ci;
+            AlgoClassIM algoClass = new AlgoClassIM(
+                c.getClassId(),
+                c.getClassType(),
+                c.getCourseId(),
+                courseName,
+                c.getLesson(),
+                c.getHourLoad(), // TOBE UPGRADED
+                false); // Will be updated value when processing preassigned solutions/assignments
+
+            mClassId2AlgoClass.put(c.getClassId(), algoClass);
+            algoClasses[i] = algoClass;
         }
 
-        HashMap<String, AlgoTeacherIM> mTeacherId2AlgoTeacher = new HashMap();
-        for (int i = 0; i < teachers.size(); i++) {
-            TeacherForAssignmentPlan t = teachers.get(i);
-            EduTeacher teacher = mId2Teacher.get(t.getTeacherId());//teachers.get(i);
+        ////
+        AlgoTeacherIM[] algoTeachers = new AlgoTeacherIM[teachersInPlan.size()];
+        HashMap<String, AlgoTeacherIM> mTeacherId2AlgoTeacher = new HashMap<>();
+        for (int i = 0; i < teachersInPlan.size(); i++) {
+            TeacherForAssignmentPlan teacher = teachersInPlan.get(i);
+            String teacherName = mTeacherId2Teacher.get(teacher.getTeacherId()).getTeacherName();
 
-            AlgoTeacherIM ti = new AlgoTeacherIM();
-            ti.setId(t.getTeacherId());
-            ti.setName(teacher.getTeacherName());
-            ti.setPrespecifiedHourLoad(t.getMaxHourLoad());// TOBE UPGRADED
-            List<Course4Teacher> course4Teachers = mTeacher2Courses.get(t.getTeacherId());
-            ti.setCourses(course4Teachers);
+            AlgoTeacherIM algoTeacher = new AlgoTeacherIM(
+                teacher.getTeacherId(),
+                teacherName,
+                mTeacherId2CoursesInPlan.get(teacher.getTeacherId()), // Consider only teacher in plan
+                teacher.getMaxHourLoad(),// TOBE UPGRADED, tai sao lai dung maxHourLoad?
+                "Y".equalsIgnoreCase(teacher.getMinimizeNumberWorkingDays()));
 
-            if (t.getMinimizeNumberWorkingDays() != null) {
-                if (t.getMinimizeNumberWorkingDays().equals("Y")) {
-                    ti.setMinimizeNumberWorkingDays(true);
-                }
-            } else {
-                ti.setMinimizeNumberWorkingDays(false);
-            }
-
-            mTeacherId2AlgoTeacher.put(t.getTeacherId(), ti);
-
-            inputTeacher[i] = ti;
+            mTeacherId2AlgoTeacher.put(teacher.getTeacherId(), algoTeacher);
+            algoTeachers[i] = algoTeacher;
         }
 
-        TeacherClassAssignmentModel[] preAssignment = new TeacherClassAssignmentModel[preAssignmentSolutions.size()];
-        for (int i = 0; i < preAssignmentSolutions.size(); i++) {
-            TeacherClassAssignmentSolution s = preAssignmentSolutions.get(i);
-            String teacherId = s.getTeacherId();
-            String classId = s.getClassId();
-            AlgoClassIM ci = mClassId2AlgoClass.get(classId);
-            AlgoTeacherIM ti = mTeacherId2AlgoTeacher.get(teacherId);
+        //// Load existing solution/assignment
+        List<TeacherClassAssignmentSolution> preAssignedSolutions = solutionRepo.findAllByPinned(true);
+        TeacherClassAssignmentModel[] preAssignments = new TeacherClassAssignmentModel[preAssignedSolutions.size()];
 
-            preAssignment[i] = new TeacherClassAssignmentModel(ci, ti);
+        for (int i = 0; i < preAssignedSolutions.size(); i++) {
+            TeacherClassAssignmentSolution assignment = preAssignedSolutions.get(i);
+            AlgoClassIM algoClass = mClassId2AlgoClass.get(assignment.getClassId());
+            AlgoTeacherIM algoTeacher = mTeacherId2AlgoTeacher.get(assignment.getTeacherId());
 
+            algoClass.setPinned(true);
+            preAssignments[i] = new TeacherClassAssignmentModel(algoClass, algoTeacher);
         }
 
-        AlgoTeacherAssignmentIM input = new AlgoTeacherAssignmentIM();
-        input.setClasses(inputClass);
-        input.setTeachers(inputTeacher);
-        input.setPreAssignments(preAssignment);
-        input.setSolver(I.getSolver());
+        AlgoTeacherAssignmentIM input = new AlgoTeacherAssignmentIM(
+            algoTeachers,
+            algoClasses,
+            preAssignments,
+            im.getConfig());
 
-        // save input json to file
+        // Testing and debugging only: save input json to file
+//        Gson gson = new Gson();
+//        String jsonInput = gson.toJson(input);
+//        try {
+//            PrintWriter out = new PrintWriter("teachingAssignment.json");
+//            out.write(jsonInput);
+//            out.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-        /*
-        Gson gson = new Gson();
-        String jsonInput = gson.toJson(input);
-        try{
-            PrintWriter out = new PrintWriter("teacherclassassignment.json");
-            out.write(jsonInput);
-            out.close();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        */
-
-        TeacherClassAssignmentOM solution = teacherClassAssignmentAlgoService.computeTeacherClassAssignment(input);
-        if (solution == null) {
+        // Solve
+        TeacherClassAssignmentOM om = teacherClassAssignmentAlgoService.computeTeacherClassAssignment(input);
+        if (null == om) {
             return false;
         }
 
-        // remove all existing items of planId
-        List<TeacherClassAssignmentSolution> teacherClassAssignmentSolutions = teacherClassAssignmentSolutionRepo.findAllByPlanId(
-            planId);
-        for (TeacherClassAssignmentSolution s : teacherClassAssignmentSolutions) {
-            teacherClassAssignmentSolutionRepo.delete(s);
-        }
+        // Post-processing
+        //// Remove all existing solution items of planId
+        solutionRepo.deleteAllByPlanId(planId);
 
-        // store solution intoDB
+        //// Store solution to DB
         log.info("autoAssignTeacher2Class, START storing solution to DB");
-        TeacherClassAssignmentModel[] assignments = solution.getAssignments();
-        //for(TeacherClassAssignmentModel a: solution.getAssignments()){
-        for (int i = 0; i < assignments.length; i++) {
-            TeacherClassAssignmentModel a = assignments[i];
-            if (a == null) {
-                //log.info("autoAssignTeacher2Class, found assignment " + i + " NULL");
-                continue;
-            }
-            TeacherClassAssignmentSolution s = new TeacherClassAssignmentSolution();
-            if (a.getAlgoClassIM() == null) {
-                //log.info("autoAssignTeacher2Class, found assignment class NULL " + a.getAlgoTeacherIM().getId());
-                continue;
-            }
-            //log.info("autoAssignTeacher2Class, assignment " + a.getAlgoClassIM().getCourseId() +
-            //         ", " + a.getAlgoClassIM().getId() + ", " + a.getAlgoClassIM().getClassCode());
 
-            s.setClassId(a.getAlgoClassIM().getClassCode());
-            s.setTeacherId(a.getAlgoTeacherIM().getId());
-            s.setPlanId(planId);
-            s.setCreatedStamp(new Date());
-            s = teacherClassAssignmentSolutionRepo.save(s);
-            //log.info("autoAssignTeacher2Class, save solution " + s.getClassId() + " -> " + s.getTeacherId());
+        TeacherClassAssignmentModel[] assignments = om.getAssignments();
+        for (int i = 0; i < assignments.length; i++) {
+            TeacherClassAssignmentModel assignment = assignments[i];
+
+            if (null == assignment) {
+                log.info("autoAssignTeacher2Class, found assignment " + i + " NULL, class is not assigned");
+                continue;
+            }
+
+            AlgoClassIM algoClass = assignment.getAlgoClassIM();
+            if (null == algoClass) {
+                log.info("autoAssignTeacher2Class, found assignment " + i + " with class NULL");
+                continue;
+            }
+
+            log.info("autoAssignTeacher2Class, assign class " + algoClass.getClassId() +
+                     " of course " + algoClass.getCourseId() +
+                     " to teacher " + assignment.getAlgoTeacherIM().getId());
+
+            TeacherClassAssignmentSolution solution = new TeacherClassAssignmentSolution();
+
+            solution.setClassId(algoClass.getClassId());
+            solution.setPlanId(planId);
+            solution.setTeacherId(assignment.getAlgoTeacherIM().getId());
+            solution.setPinned(algoClass.isPinned());
+            solution.setCreatedStamp(new Date());
+
+            solutionRepo.save(solution);
+//            log.info("autoAssignTeacher2Class, save solution " + solution.getClassId() + " --> " + solution.getTeacherId());
         }
+
+        // TODO: why return false?
         return false;
     }
 
+    /**
+     * OK
+     *
+     * @param planId
+     * @return
+     */
     @Override
     public List<ClassTeacherAssignmentSolutionModel> getNotAssignedClassSolution(UUID planId) {
-        List<EduCourse> eduCourses = eduCourseRepo.findAll();
-
-        HashMap<String, EduCourse> mID2Course = new HashMap();
-        for (EduCourse c : eduCourses) {
-            mID2Course.put(c.getId(), c);
+        List<EduCourse> allCourses = eduCourseRepo.findAll();
+        HashMap<String, EduCourse> mCourseId2Course = new HashMap<>();
+        for (EduCourse c : allCourses) {
+            mCourseId2Course.put(c.getId(), c);
         }
 
-        List<ClassTeacherAssignmentClassInfo> allClasses =
-            classTeacherAssignmentClassInfoRepo.findAllByPlanId(planId);
-        List<TeacherClassAssignmentSolution> teacherClassAssignmentSolutions =
-            teacherClassAssignmentSolutionRepo.findAllByPlanId(planId);
-        HashSet<String> assignedClassIds = new HashSet();
-        for (TeacherClassAssignmentSolution s : teacherClassAssignmentSolutions) {
+        List<TeacherClassAssignmentSolution> assignments = solutionRepo.findAllByPlanId(planId);
+        HashSet<String> assignedClassIds = new HashSet<>();
+        for (TeacherClassAssignmentSolution s : assignments) {
             assignedClassIds.add(s.getClassId());
         }
 
-        List<ClassTeacherAssignmentSolutionModel> notAssignedClass = new ArrayList();
+        List<ClassTeacherAssignmentClassInfo> allClasses = classInfoRepo.findAllByPlanId(planId);
+        List<ClassTeacherAssignmentSolutionModel> notAssignedClasses = new ArrayList<>();
         for (ClassTeacherAssignmentClassInfo c : allClasses) {
             if (!assignedClassIds.contains(c.getClassId())) {
-                ClassTeacherAssignmentSolutionModel ns = new ClassTeacherAssignmentSolutionModel();
-                ns.setClassCode(c.getClassId());
-                ns.setCourseId(c.getCourseId());
-                ns.setTimetable(c.getLesson());
-                EduCourse course = mID2Course.get(c.getCourseId());
-                if (course != null) {
-                    ns.setCourseName(course.getName());
+                ClassTeacherAssignmentSolutionModel model = new ClassTeacherAssignmentSolutionModel();
+
+                model.setClassCode(c.getClassId());
+                model.setClassType(c.getClassType());
+                model.setCourseId(c.getCourseId());
+                model.setTimetable(c.getLesson());
+
+                EduCourse course = mCourseId2Course.get(c.getCourseId());
+                if (null != course) {
+                    model.setCourseName(course.getName());
                 } else {
-                    log.info("getNotAssignedClassSolution, courseId = " + c.getCourseId()
-                             + " has not name???");
+                    log.info("getNotAssignedClassSolution, courseId = " + c.getCourseId() + " has not name???");
                 }
-                notAssignedClass.add(ns);
+
+                notAssignedClasses.add(model);
             }
         }
 
-        return notAssignedClass;
+        return notAssignedClasses;
     }
 
-    @Override
-    public List<SuggestedTeacherForClass> getSuggestedTeacherForClass(String classId, UUID planId) {
-        List<ClassTeacherAssignmentClassInfo> cls = classTeacherAssignmentClassInfoRepo.findByClassId(classId);
-        String courseId = null;
-        double hourLoad = 0;
-        String timetable = "";
-        List<TeacherForAssignmentPlan> teachersInPlan = teacherForAssignmentPlanRepo.findAllByPlanId(planId);
+    /**
+     * Don't use this logic anymore, consider removing in future
+     *
+     * @param classId
+     * @param planId
+     * @return
+     */
+//    @Override
+//    public List<SuggestedTeacherForClass> getSuggestedTeacherForClass(String classId, UUID planId) {
+//        List<ClassTeacherAssignmentClassInfo> classes = classInfoRepo.findByClassId(classId);
+//        String courseId = null;
+//        String timetable = "";
+//        List<TeacherForAssignmentPlan> teachersInPlan = teacherForAssignmentPlanRepo.findAllByPlanId(planId);
+//
+//        for (ClassTeacherAssignmentClassInfo c : classes) {
+//            courseId = c.getCourseId();
+//            timetable = c.getLesson();
+//            break;
+//        }
+//        List<SuggestedTeacherForClass> lst = new ArrayList<>();
+//
+//        log.info("getSuggestedTeacherForClass, courseId = " + courseId + ", planId = " + planId);
+//        // TOBE improved
+//        //List<TeacherCourse> teacherCourses = teacherCourseRepo.findAll();
+//        List<TeacherCourseForAssignmentPlan> teacherCourses = teacherCourseForAssignmentPlanRepo.findAllByPlanId(planId);// consider only item in the plan
+//
+//        //for (TeacherCourse tc : teacherCourses) {
+//        for (TeacherCourseForAssignmentPlan tc : teacherCourses) {
+//            if (tc.getCourseId().equals(courseId)) {
+//                SuggestedTeacherForClass t = new SuggestedTeacherForClass();
+//                t.setTeacherId(tc.getTeacherId());
+//                t.setTeacherName(tc.getTeacherId());
+//                //t.setHourLoad(0.0);// TOBE upgrade
+//
+//                StringBuilder info = new StringBuilder(tc.getTeacherId() + ": ");
+//
+//                // get list of classes assigned to teacherId for more detail about suggestion
+//                List<TeacherClassAssignmentSolution> assignments =
+//                    solutionRepo.findAllByPlanIdAndTeacherId(planId, tc.getTeacherId());
+//
+//                double hourLoadOfTeacher = 0;
+//
+//                for (TeacherClassAssignmentSolution tcs : assignments) {
+//                    List<ClassTeacherAssignmentClassInfo> ctai = classInfoRepo.findByClassId(tcs.getClassId());
+//                    ClassTeacherAssignmentClassInfo c;
+//                    if (ctai != null && ctai.size() > 0) {
+//                        c = ctai.get(0);
+//                    } else {
+//                        continue;
+//                    }
+//                    hourLoadOfTeacher += c.getHourLoad();
+//                    boolean conflict = TimetableConflictChecker.conflict(c.getLesson(), timetable);
+//                    if (conflict) {
+//                        info
+//                            .append(" [Conflict: Class ")
+//                            .append(c.getClassId())
+//                            .append(", TimeTable ")
+//                            .append(c.getLesson())
+//                            .append("] ");
+//                    }
+//                }
+//                info.append(" hour = ").append(hourLoadOfTeacher);
+//                t.setInfo(info.toString());
+//                lst.add(t);
+//            }
+//        }
+//
+//        return lst;
+//    }
 
-        for (ClassTeacherAssignmentClassInfo cti : cls) {
-            courseId = cti.getCourseId();
-            hourLoad = cti.getHourLoad();
-            timetable = cti.getLesson();
-            break;
-        }
-        List<SuggestedTeacherForClass> lst = new ArrayList<SuggestedTeacherForClass>();
-
-        log.info("getSuggestedTeacherForClass, courseId = " + courseId + ", planId = " + planId);
-        // TOBE improved
-        //List<TeacherCourse> teacherCourses = teacherCourseRepo.findAll();
-        List<TeacherCourseForAssignmentPlan> teacherCourses = teacherCourseForAssignmentPlanRepo.findAllByPlanId(planId);// consider only item in the plan
-
-        //for (TeacherCourse tc : teacherCourses) {
-        for (TeacherCourseForAssignmentPlan tc : teacherCourses) {
-            if (tc.getCourseId().equals(courseId)) {
-                SuggestedTeacherForClass t = new SuggestedTeacherForClass();
-                t.setTeacherId(tc.getTeacherId());
-                t.setTeacherName(tc.getTeacherId());
-                //t.setHourLoad(0.0);// TOBE upgrade
-
-                String info = tc.getTeacherId() + ": ";
-
-                // get list of classes assigned to teacherId for more detail about suggestion
-                List<TeacherClassAssignmentSolution> teacherClassAssignmentSolutions =
-                    teacherClassAssignmentSolutionRepo.findAllByPlanIdAndTeacherId(planId, tc.getTeacherId());
-
-                double hourLoadOfTeacher = 0;
-
-                for (TeacherClassAssignmentSolution tcs : teacherClassAssignmentSolutions) {
-                    List<ClassTeacherAssignmentClassInfo> ctai = classTeacherAssignmentClassInfoRepo.findByClassId(tcs.getClassId());
-                    ClassTeacherAssignmentClassInfo c = null;
-                    if (ctai != null && ctai.size() > 0) {
-                        c = ctai.get(0);
-                    } else {
-                        continue;
-                    }
-                    hourLoadOfTeacher += c.getHourLoad();
-                    boolean conflict = TimetableConflictChecker.conflict(c.getLesson(), timetable);
-                    if (conflict) {
-                        info = info + " [Conflict: Class " + c.getClassId() + ", TimeTable " + c.getLesson() + "] ";
-                    }
-                }
-                info = info + " hour = " + hourLoadOfTeacher;
-                t.setInfo(info);
-                lst.add(t);
-            }
-        }
-
-
-        return lst;
-    }
-
+    /**
+     * OK
+     *
+     * @return
+     */
     private boolean checkCanAssign(
         ClassTeacherAssignmentClassInfo selectedClass,
-        ClassTeacherAssignmentClassInfo c, TeacherCourseForAssignmentPlan t,
+        ClassTeacherAssignmentClassInfo c,
+        TeacherCourseForAssignmentPlan tc2,
         HashMap<String, List<TeacherClassAssignmentSolution>> mTeacherToAssignedClass,
         HashMap<String, ClassTeacherAssignmentClassInfo> mClassIdToClassInfo,
         HashMap<String, TeacherClassAssignmentSolution> mClassIdToAssignedTeacher
     ) {
-        String t1 = mClassIdToAssignedTeacher.get(selectedClass.getClassId()).getTeacherId();
-        /*
-            t1: current teacher assigned to the selectedClass
-            selectedClass and c conflicting classes
-            CHECK if the selectedClass can be removed from t1, and assigned to teacher tc (of c)
-                                        then c is removed from tc and reassigned to teacher t
-         */
+//        String t1 = mClassIdToAssignedTeacher.get(selectedClass.getClassId()).getTeacherId();
 
+        // t1: current teacher assigned to the selectedClass
+        // selectedClass and c are conflicting classes
+        // CHECK if the selectedClass can be removed from t1, and assigned to teacher tc1 (of c)
+        // then c is removed from tc1 and reassigned to teacher tc2
 
-        List<TeacherClassAssignmentSolution> cls = mTeacherToAssignedClass.get(t.getTeacherId());
-        if (cls != null) {
-            for (TeacherClassAssignmentSolution s : cls) {
+        List<TeacherClassAssignmentSolution> assignedClassesOfTeacher2 = mTeacherToAssignedClass.get(tc2.getTeacherId());
+        if (null != assignedClassesOfTeacher2) {
+            for (TeacherClassAssignmentSolution s : assignedClassesOfTeacher2) {
                 ClassTeacherAssignmentClassInfo ci = mClassIdToClassInfo.get(s.getClassId());
-                if (ci == selectedClass) {
-                    // IGNORE
-                    // This case: t is equal t1 which is the current teacher assign to selectedClass
-                    // selectedClass will be removed from t1 (which is t), thus ci will no longer to be in t-> no need to check conflict
-                } else {
+                if (ci != selectedClass) {
                     if (TimetableConflictChecker.conflictMultiTimeTable(ci.getLesson(), c.getLesson())) {
                         return false;
                     }
+                } else {
+                    // IGNORE this case: tc2 is equal t1 which is the current teacher assign to selectedClass
+                    // selectedClass will be removed from t1 (which is tc2), thus ci will no longer to be in tc2
+                    // -> no need to check conflict
                 }
             }
         }
+
         return true;
     }
 
+    /**
+     * Temporarily OK.
+     * Include classType.
+     * conflictClass of tc2 may be pinned but don't care, it can still move to tc3
+     * Upgrade after defending
+     *
+     * @param classId
+     * @param planId
+     * @return
+     */
     @Override
     public List<SuggestedTeacherAndActionForClass> getSuggestedTeacherAndActionForClass(String classId, UUID planId) {
-        List<ClassTeacherAssignmentClassInfo> cls = classTeacherAssignmentClassInfoRepo.findByClassId(classId);
-
-        String courseId = null;
-        double hourLoad = 0;
-        String timetable = "";
-        ClassTeacherAssignmentClassInfo selectedClass = null;
-        for (ClassTeacherAssignmentClassInfo cti : cls) {
-            courseId = cti.getCourseId();
-            hourLoad = cti.getHourLoad();
-            timetable = cti.getLesson();
-            selectedClass = cti;
-            break;
-        }
         List<TeacherForAssignmentPlan> teachersInPlan = teacherForAssignmentPlanRepo.findAllByPlanId(planId);
-        HashSet<String> teacherIdsInPlan = new HashSet<String>();
+        HashSet<String> teacherInPlanIds = new HashSet<>();
         for (TeacherForAssignmentPlan t : teachersInPlan) {
-            teacherIdsInPlan.add(t.getTeacherId());
+            teacherInPlanIds.add(t.getTeacherId());
         }
 
-        List<ClassTeacherAssignmentClassInfo> listClass = classTeacherAssignmentClassInfoRepo.findAllByPlanId(planId);
-        HashMap<String, ClassTeacherAssignmentClassInfo> mClassIdToClassInfo = new HashMap();
-        for (ClassTeacherAssignmentClassInfo c : listClass) {
-            mClassIdToClassInfo.put(c.getClassId(), c);
+        //
+        List<ClassTeacherAssignmentClassInfo> classes = classInfoRepo.findAllByPlanId(planId);
+        HashMap<String, ClassTeacherAssignmentClassInfo> mClassId2Class = new HashMap<>();
+        for (ClassTeacherAssignmentClassInfo c : classes) {
+            mClassId2Class.put(c.getClassId(), c);
         }
 
-        List<SuggestedTeacherAndActionForClass> lst = new ArrayList();
+        List<SuggestedTeacherAndActionForClass> suggestedTeachers = new ArrayList<>();
 
-        log.info("getSuggestedTeacherAndActionForClass, courseId = " + courseId + ", planId = " + planId);
+//        log.info("getSuggestedTeacherAndActionForClass, courseId = " + courseId + ", planId = " + planId);
         // TOBE improved
         //List<TeacherCourse> teacherCourses = teacherCourseRepo.findAll();
-        List<TeacherCourseForAssignmentPlan> teacherCourses = teacherCourseForAssignmentPlanRepo.findAllByPlanId(planId);// consider only item in the plan
+        List<TeacherClassAssignmentSolution> assignments = solutionRepo.findAllByPlanId(planId);
+        HashMap<String, List<TeacherClassAssignmentSolution>> mTeacherToAssignedClass = new HashMap<>();
+        HashMap<String, TeacherClassAssignmentSolution> mClassIdToAssignedTeacher = new HashMap<>();
+        for (TeacherClassAssignmentSolution assignment : assignments) {
+            mTeacherToAssignedClass.computeIfAbsent(assignment.getTeacherId(), k -> new ArrayList<>());
 
-        List<TeacherClassAssignmentSolution> teacherClassAssignmentSolutions =
-            teacherClassAssignmentSolutionRepo.findAllByPlanId(planId);
-        HashMap<String, List<TeacherClassAssignmentSolution>> mTeacherToAssignedClass = new HashMap();
-        HashMap<String, TeacherClassAssignmentSolution> mClassIdToAssignedTeacher = new HashMap();
-        for (TeacherClassAssignmentSolution s : teacherClassAssignmentSolutions) {
-            if (mTeacherToAssignedClass.get(s.getTeacherId()) == null) {
-                mTeacherToAssignedClass.put(s.getTeacherId(), new ArrayList());
-            }
-            mTeacherToAssignedClass.get(s.getTeacherId()).add(s);
-
-            mClassIdToAssignedTeacher.put(s.getClassId(), s);
+            mTeacherToAssignedClass.get(assignment.getTeacherId()).add(assignment);
+            mClassIdToAssignedTeacher.put(assignment.getClassId(), assignment);
         }
-        String assignedTeacherId = mClassIdToAssignedTeacher.get(selectedClass.getClassId()).getTeacherId();
 
-        // explore possibilities for new teachers
-        for (TeacherCourseForAssignmentPlan tc : teacherCourses) {
-            //if (tc.getCourseId().equals(courseId))
-            //    log.info("getSuggestedTeacherAndActionForClass, consider teacher " + tc.getTeacherId() + " for course " +
-            //             courseId + " for class " + classId + " InPlan = " + teacherIdsInPlan.contains(tc.getTeacherId()));
+        ClassTeacherAssignmentClassInfo selectedClass = classInfoRepo.findByClassIdAndPlanId(classId, planId);
+        TeacherClassAssignmentSolution assignment = mClassIdToAssignedTeacher.get(selectedClass.getClassId());
+        String assignedTeacherId = null == assignment ? null : assignment.getTeacherId();
 
-            if (tc.getCourseId().equals(courseId) && !tc.getTeacherId().equals(assignedTeacherId)
-                && teacherIdsInPlan.contains(tc.getTeacherId())) {
+        // Explore possibilities for new teachers
+        // Consider only item in the plan
+        for (TeacherCourseForAssignmentPlan tc1 :
+            teacherCourseForAssignmentPlanRepo.findAllByPlanIdAndCourseIdAndClassType(
+                planId,
+                selectedClass.getCourseId(),
+                selectedClass.getClassType())) {
+
+            if (!tc1.getTeacherId().equalsIgnoreCase(assignedTeacherId) &&
+                teacherInPlanIds.contains(tc1.getTeacherId())) {
 
                 log.info("getSuggestedTeacherAndActionForClass, consider teacher " +
-                         tc.getTeacherId() +
-                         " for class " +
-                         classId);
+                         tc1.getTeacherId() + " for class " + classId);
 
-                List<TeacherClassAssignmentSolution> L = mTeacherToAssignedClass.get(tc.getTeacherId());
-                List<ClassTeacherAssignmentClassInfo> listConflictClass = new ArrayList();
-                if (L != null) {
-                    log.info("getSuggestedTeacherAndActionForClass, consider teacher " + tc.getTeacherId()
-                             + " HAS " + L.size());
-                    for (TeacherClassAssignmentSolution s : L) {
-                        ClassTeacherAssignmentClassInfo ci = mClassIdToClassInfo.get(s.getClassId());
-                        //if (true) {// FOR TESTING
-                        if (TimetableConflictChecker.conflictMultiTimeTable(selectedClass.getLesson(),
-                                                                            ci.getLesson())) {
-                            listConflictClass.add(ci);
+                List<TeacherClassAssignmentSolution> assignedClasses = mTeacherToAssignedClass.get(tc1.getTeacherId());
+                List<ClassTeacherAssignmentClassInfo> conflictClasses = new ArrayList<>(); // can be empty
+                if (null != assignedClasses) {
+                    log.info("getSuggestedTeacherAndActionForClass, consider teacher " + tc1.getTeacherId()
+                             + " HAS " + assignedClasses.size() + " assigned classes");
 
-                            log.info("getSuggestedTeacherAndActionForClass, consider teacher " +
-                                     tc.getTeacherId() +
-                                     " for class "
-                                     +
-                                     classId +
-                                     " FOUND conflict class " +
-                                     ci.getClassId() +
-                                     " timetable " +
-                                     ci.getLesson());
+                    // Collect all classes in assignedClasses that conflict with selectedClass
+                    for (TeacherClassAssignmentSolution s : assignedClasses) {
+                        ClassTeacherAssignmentClassInfo c = mClassId2Class.get(s.getClassId());
+
+                        if (TimetableConflictChecker.conflictMultiTimeTable(selectedClass.getLesson(), c.getLesson())) {
+                            conflictClasses.add(c);
+                            log.info("getSuggestedTeacherAndActionForClass, consider teacher " + tc1.getTeacherId() +
+                                     " for class " + classId +
+                                     " FOUND conflict class " + c.getClassId() + " with timetable " + c.getLesson());
                         }
                     }
                 }
 
-                boolean okTeacher = true;
-                // find other teachers for each conflicting class in listConflictClass with selectedClass
-                HashMap<String, List> mClassIdToNewTeacher = new HashMap();
-                for (ClassTeacherAssignmentClassInfo c : listConflictClass) {
-                    // consider a conflicting class c, try to find other teachers for this class
+                // Voi moi lop cua tc1 bi xung dot --> co gang tim tc2 nhan lop do de gan selectedClass cho tc1
+                // tc2 cung co the la gv t hien tai cua selectedClass, khi do se thanh doi lop giua t va tc1
+                // Find other teachers for each conflicting class in conflictClasses with selectedClass
+                boolean teacherOk = true;
+                HashMap<String, List<TeacherCourseForAssignmentPlan>> mClassId2NewTeacher = new HashMap<>();
+                for (ClassTeacherAssignmentClassInfo conflictClass : conflictClasses) {
+                    // Consider a conflicting class conflictClass of tc1, try to find other teachers tc2 for conflictClass
+                    for (TeacherCourseForAssignmentPlan tc2 :
+                        teacherCourseForAssignmentPlanRepo.findAllByPlanIdAndCourseIdAndClassType(
+                            planId,
+                            conflictClass.getCourseId(),
+                            conflictClass.getClassType())) {
 
-                    for (TeacherCourseForAssignmentPlan tci : teacherCourses) {
-                        if (!tci.getTeacherId().equals(tc.getTeacherId())
-                            && c.getCourseId().equals(tci.getCourseId())
-                            && teacherIdsInPlan.contains(tci.getTeacherId())
+                        if (!tc2.getTeacherId().equalsIgnoreCase(tc1.getTeacherId()) &&
+                            teacherInPlanIds.contains(tc2.getTeacherId())
                         ) {
-                            if (checkCanAssign(selectedClass,
-                                               c, tci,
-                                               mTeacherToAssignedClass,
-                                               mClassIdToClassInfo,
-                                               mClassIdToAssignedTeacher)) {
-                                if (mClassIdToNewTeacher.get(c.getClassId()) == null) {
-                                    mClassIdToNewTeacher.put(c.getClassId(), new ArrayList());
-                                }
-                                mClassIdToNewTeacher.get(c.getClassId()).add(tci);
+                            // Gan selectedClass cho tc1 va gan conflictClass cua tc1 cho tc2
+                            if (checkCanAssign(
+                                selectedClass,
+                                conflictClass,
+                                tc2,
+                                mTeacherToAssignedClass,
+                                mClassId2Class,
+                                mClassIdToAssignedTeacher)
+                            ) {
+                                mClassId2NewTeacher.computeIfAbsent(conflictClass.getClassId(), k -> new ArrayList<>());
+                                mClassId2NewTeacher.get(conflictClass.getClassId()).add(tc2);
                             }
                         }
-                        /*
-                        if(!tci.getTeacherId().equals(assignedTeacherId)
-                           && ! tci.getTeacherId().equals(tc.getTeacherId())
-                        && c.getCourseId().equals(tci.getCourseId())
-                        && teacherIdsInPlan.contains(tci.getTeacherId())
-                        ){
-                            boolean ok = true;
-                            List<TeacherClassAssignmentSolution> Li = mTeacherToAssignedClass.get(tci.getTeacherId());
-                            if(Li != null)
-                                for(TeacherClassAssignmentSolution si: Li){
-                                ClassTeacherAssignmentClassInfo ci = mClassIdToClassInfo.get(si.getClassId());
-                                if(TimetableConflictChecker.conflictMultiTimeTable(ci.getLesson(),c.getLesson())){
-                                    ok = false; break;
-                                }
-                            }
-                            if(ok){
-                                if(mClassIdToNewTeacher.get(c.getClassId())== null){
-                                    mClassIdToNewTeacher.put(c.getClassId(), new ArrayList());
-                                }
-                                mClassIdToNewTeacher.get(c.getClassId()).add(tci);
-                            }
-                        }
-                        */
+
+                        // Only consider tc2 different from assignedTeacherId, this logic can be ignored
+//                        if (!tc2.getTeacherId().equals(assignedTeacherId) &&
+//                            !tc2.getTeacherId().equals(tc1.getTeacherId()) &&
+//                            conflictClass.getCourseId().equals(tc2.getCourseId()) &&
+//                            teacherInPlanIds.contains(tc2.getTeacherId())
+//                        ) {
+//                            boolean ok = true;
+//                            List<TeacherClassAssignmentSolution> Li = mTeacherToAssignedClass.get(tc2.getTeacherId());
+//                            if (Li != null) {
+//                                for (TeacherClassAssignmentSolution si : Li) {
+//                                    ClassTeacherAssignmentClassInfo ci = mClassId2Class.get(si.getClassId());
+//                                    if (TimetableConflictChecker.conflictMultiTimeTable(
+//                                        ci.getLesson(),
+//                                        conflictClass.getLesson())) {
+//                                        ok = false;
+//                                        break;
+//                                    }
+//                                }
+//                            }
+//                            if (ok) {
+//                                mClassId2NewTeacher.computeIfAbsent(conflictClass.getClassId(), k -> new ArrayList<>());
+//                                mClassId2NewTeacher.get(conflictClass.getClassId()).add(tc2);
+//                            }
+//                        }
                     }
-                    if (mClassIdToNewTeacher.get(c.getClassId()) == null) {
-                        okTeacher = false;
-                        //break;
+
+                    if (mClassId2NewTeacher.get(conflictClass.getClassId()) == null) {
+                        teacherOk = false;
+                        break;
                     }
                 }
 
-                if (okTeacher) {
-                    //if(true){
-                    SuggestedTeacherAndActionForClass t = new SuggestedTeacherAndActionForClass();
-                    t.setTeacherId(tc.getTeacherId());
-                    t.setTeacherName(tc.getTeacherId());
-                    //t.setHourLoad(0.0);// TOBE upgrade
+                if (teacherOk) {
+                    SuggestedTeacherAndActionForClass suggestedTeacher = new SuggestedTeacherAndActionForClass();
+                    suggestedTeacher.setTeacherId(tc1.getTeacherId());
+                    suggestedTeacher.setTeacherName(tc1.getTeacherId());
+                    //suggestedTeacher.setHourLoad(0.0);// TOBE upgrade
 
-                    String info = tc.getTeacherId() + ": ";
-                    List<ClassToListTeacher> moveClass = new ArrayList();
-                    for (ClassTeacherAssignmentClassInfo c : listConflictClass) {
-                        List<TeacherCourseForAssignmentPlan> Lc = mClassIdToNewTeacher.get(c.getClassId());
-                        List<TeacherCandidate> teachers = new ArrayList();
-                        String inforNewTeachers = "";
-                        if (Lc != null) {
-                            for (TeacherCourseForAssignmentPlan tci : Lc) {
-                                TeacherCandidate o =
-                                    new TeacherCandidate();
-                                o.setTeacherId(tci.getTeacherId());
-                                teachers.add(o);
-                                inforNewTeachers += tci.getTeacherId() + "; ";
+                    List<MoveClassToTeacher> movedClasses = new ArrayList<>();
+                    for (ClassTeacherAssignmentClassInfo conflictClass : conflictClasses) {
+                        List<TeacherCourseForAssignmentPlan> newTeachers = mClassId2NewTeacher.get(conflictClass.getClassId());
+                        List<TeacherCandidate> teachers = new ArrayList<>();
+                        StringBuilder infoNewTeachers = new StringBuilder();
+
+                        if (null != newTeachers) {
+                            for (TeacherCourseForAssignmentPlan tc : newTeachers) {
+                                TeacherCandidate candidate = new TeacherCandidate();
+                                candidate.setTeacherId(tc.getTeacherId());
+                                teachers.add(candidate);
+                                infoNewTeachers.append(tc.getTeacherId()).append("\n");
                             }
                         } else {
                             log.info("getSuggestedTeacherAndActionForClass, class " +
-                                     c.getClassId() +
-                                     " DOES NOT has new teachers");
+                                     conflictClass.getClassId() + " DOES NOT has new teachers");
                         }
-                        ClassToListTeacher o = new ClassToListTeacher();
-                        o.setClassCode(c.getClassId());
-                        o.setTeachers(teachers);
-                        o.setInfoNewTeachers(inforNewTeachers);
-                        moveClass.add(o);
-                    }
-                    t.setMoveClass(moveClass);
 
-                    lst.add(t);
+                        MoveClassToTeacher movedClass = new MoveClassToTeacher();
+                        movedClass.setClassCode(conflictClass.getClassId());
+                        movedClass.setTeachers(teachers);
+                        movedClass.setInfoNewTeachers(infoNewTeachers.toString());
+                        movedClasses.add(movedClass);
+                    }
+
+                    suggestedTeacher.setMoveClass(movedClasses);
+                    suggestedTeachers.add(suggestedTeacher);
                 }
             }
         }
 
-
-        return lst;
+        suggestedTeachers.sort(Comparator.comparing(SuggestedTeacherAndActionForClass::getTeacherId));
+        return suggestedTeachers;
     }
 
+    /**
+     * OK
+     *
+     * @param planId
+     * @return
+     */
+    // Todo: optimize
     @Override
     public List<ClassesAssignedToATeacherModel> getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable(
         UUID planId
     ) {
-        List<ClassesAssignedToATeacherModel> lst = new ArrayList();
-        List<EduTeacher> teachers = eduTeacherRepo.findAll();
+        List<ClassesAssignedToATeacherModel> gridViewData = new ArrayList<>();
         List<TeacherForAssignmentPlan> teachersInPlan = teacherForAssignmentPlanRepo.findAllByPlanId(planId);
-        HashMap<String, EduTeacher> mId2Teacher = new HashMap();
-        for (EduTeacher t : teachers) {
-            mId2Teacher.put(t.getTeacherId(), t);
+
+        //
+        List<EduTeacher> allTeachers = eduTeacherRepo.findAll();
+        HashMap<String, EduTeacher> mId2Teacher = new HashMap<>();
+        for (EduTeacher t : allTeachers) {
+            mId2Teacher.put(t.getId(), t);
         }
-        HashSet<String> teacherHasClasses = new HashSet<String>();
-        HashMap<String, List> mTeacherId2Classes = new HashMap();
-        List<ClassTeacherAssignmentSolutionModel> sol = getClassTeacherAssignmentSolution(planId);
-        for (ClassTeacherAssignmentSolutionModel s : sol) {
-            if (mTeacherId2Classes.get(s.getTeacherId()) == null) {
-                mTeacherId2Classes.put(s.getTeacherId(), new ArrayList());
-            }
+
+        //
+        HashSet<String> teacherHasClasses = new HashSet<>();
+        HashMap<String, List<ClassTeacherAssignmentSolutionModel>> mTeacherId2AssignedClasses = new HashMap<>();
+        List<ClassTeacherAssignmentSolutionModel> solutionModels = getClassTeacherAssignmentSolution(planId);
+        for (ClassTeacherAssignmentSolutionModel s : solutionModels) {
             teacherHasClasses.add(s.getTeacherId());
+
             // if the class s has two or more fragments, then duplicate multiple fragments
-            if (s.checkMultipleFragments()) {
-                ClassTeacherAssignmentSolutionModel[] ss = s.checkMultipleFragmentsAndDuplicate();
-                log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class " +
-                         s.getClassCode()
-                         +
-                         " has multiple timetable ss.length = " +
-                         ss.length);
-                if (ss != null) {
-                    for (int i = 0; i < ss.length; i++) {
-                        mTeacherId2Classes.get(s.getTeacherId()).add(ss[i]);
-                        log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class " +
-                                 s.getClassCode()
-                                 +
-                                 " has multiple timetable ss.length = " +
-                                 ss.length +
-                                 " ADD fragment " +
-                                 ss[i].getTimetable());
-                    }
+            mTeacherId2AssignedClasses.computeIfAbsent(s.getTeacherId(), k -> new ArrayList<>());
+            if (s.isMultipleFragments()) {
+                ClassTeacherAssignmentSolutionModel[] fragments = s.checkMultipleFragmentsAndDuplicate();
+
+//                log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class " +
+//                         s.getClassCode() + " has multiple timetable fragments.length = " + fragments.length);
+
+                for (ClassTeacherAssignmentSolutionModel fragment : fragments) {
+                    mTeacherId2AssignedClasses.get(s.getTeacherId()).add(fragment);
+
+//                    log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class " +
+//                             s.getClassCode() + " has multiple timetable fragments.length = " +
+//                             fragments.length + " ADD fragment " + fragment.getTimetable());
                 }
             } else {
-                log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class " +
-                         s.getClassCode()
-                         +
-                         " has ONLY ONE timetable");
+//                log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class " +
+//                         s.getClassCode() + " has ONLY ONE timetable");
 
-                mTeacherId2Classes.get(s.getTeacherId()).add(s);
+                mTeacherId2AssignedClasses.get(s.getTeacherId()).add(s);
             }
         }
+
+        // Fill in to prevent NULL in the next logic, also debug and test
         for (TeacherForAssignmentPlan t : teachersInPlan) {
-            log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, consider teacher " +
-                     t.getTeacherId());
-            if (!teacherHasClasses.contains(t.getTeacherId())) {
-                log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, consider teacher " +
-                         t.getTeacherId()
-                         +
-                         " DOES NOT have classes assigned");
+//            log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, consider teacher " +
+//                     t.getTeacherId());
 
-                mTeacherId2Classes.put(t.getTeacherId(), new ArrayList());
+            if (!teacherHasClasses.contains(t.getTeacherId())) {
+//                log.info("getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, consider teacher " +
+//                         t.getTeacherId() + " DOES NOT have classes assigned");
+
+                mTeacherId2AssignedClasses.put(t.getTeacherId(), new ArrayList<>());
             }
         }
-        for (String teacherId : mTeacherId2Classes.keySet()) {
-            ClassesAssignedToATeacherModel c = new ClassesAssignedToATeacherModel();
-            c.setTeacherId(teacherId);
+
+        //
+        for (String teacherId : mTeacherId2AssignedClasses.keySet()) {
+            ClassesAssignedToATeacherModel assignedModel = new ClassesAssignedToATeacherModel();
+
+            //
             String teacherName = "";
             if (mId2Teacher.get(teacherId) != null) {
                 teacherName = mId2Teacher.get(teacherId).getTeacherName();
             }
-            c.setTeacherName(teacherName);
+            assignedModel.setTeacherName(teacherName);
 
-            c.setClassList(mTeacherId2Classes.get(teacherId));
-            c.setNumberOfClass(c.getClassList().size());
-            double hourLoad = 0;
-            for (ClassTeacherAssignmentSolutionModel i : c.getClassList()) {
-                hourLoad += i.getHourLoad();
-            }
-            c.setHourLoad(hourLoad);
+            assignedModel.setTeacherId(teacherId);
+            assignedModel.setClassList(mTeacherId2AssignedClasses.get(teacherId));
+//            assignedModel.setNumberOfClass(assignedModel.getClassList().size());
 
-            //if(c.getClassList().size() == 0) continue;
+            // Not neccessary for grid view
+//            double hourLoad = 0;
+//            for (ClassTeacherAssignmentSolutionModel solutionModel : assignedModel.getClassList()) {
+//                hourLoad += solutionModel.getHourLoad();
+//            }
+//            assignedModel.setHourLoad(hourLoad);
 
-            if (c.getClassList().size() > 0) {
-                // sort classes assigned to current teacher in an increasing order of time-table
-                ClassTeacherAssignmentSolutionModel[] arr = new ClassTeacherAssignmentSolutionModel[c
-                    .getClassList()
-                    .size()];
-                for (int i = 0; i < arr.length; i++) {
-                    arr[i] = c.getClassList().get(i);
-                    TimeTableStartAndDuration ttsd = TimetableConflictChecker.extractFromString(arr[i].getTimetable());
-                    if(ttsd == null) {
-                        log.info("getSuggestedTeacherAndActionForClass, TimeTableStartAndDuration NULL for "
-                                 +
-                                 arr[i].getTimetable() +
-                                 " class " +
-                                 arr[i].getClassCode() +
-                                 ", " +
-                                 arr[i].getCourseName() +
-                                 " courseId = " +
-                                 arr[i].getCourseId());
-                        arr[i].setStartSlot(0);
-                        arr[i].setEndSlot(0);
-                        arr[i].setDuration(0);
-                    }else {
-                        arr[i].setStartSlot(ttsd.getStartSlot());
-                        arr[i].setEndSlot(ttsd.getEndSlot());
-                        arr[i].setDuration(ttsd.getDuration());
+            //if(assignedModel.getClassList().size() == 0) continue;
+
+            if (assignedModel.getClassList().size() > 0) {
+                // Sort classes assigned to current teacher in an increasing order of time-table
+                ClassTeacherAssignmentSolutionModel[] orderedAssignments = new ClassTeacherAssignmentSolutionModel[assignedModel
+                    .getClassList().size()];
+
+                // Calculate extra informations
+                for (int i = 0; i < orderedAssignments.length; i++) {
+                    orderedAssignments[i] = assignedModel.getClassList().get(i);
+                    TimeTableStartAndDuration ttsd = TimetableConflictChecker.extractFromString(orderedAssignments[i].getTimetable());
+
+                    if (ttsd == null) {
+                        log.info("getSuggestedTeacherAndActionForClass, TimeTableStartAndDuration NULL for " +
+                                 orderedAssignments[i].getTimetable() +
+                                 " class " + orderedAssignments[i].getClassCode() +
+                                 ", " + orderedAssignments[i].getCourseName() +
+                                 " courseId = " + orderedAssignments[i].getCourseId());
+
+                        orderedAssignments[i].setStartSlot(0);
+                        orderedAssignments[i].setEndSlot(0);
+                        orderedAssignments[i].setDuration(0);
+                    } else {
+                        orderedAssignments[i].setStartSlot(ttsd.getStartSlot());
+                        orderedAssignments[i].setEndSlot(ttsd.getEndSlot());
+                        orderedAssignments[i].setDuration(ttsd.getDuration());
                     }
                 }
-                for (int i = 0; i < arr.length; i++) {
-                    for (int j = i + 1; j < arr.length; j++) {
-                        if (arr[i].getStartSlot() > arr[j].getStartSlot()) {
-                            ClassTeacherAssignmentSolutionModel tmp = arr[i];
-                            arr[i] = arr[j];
-                            arr[j] = tmp;
+
+                // Sorting
+                for (int i = 0; i < orderedAssignments.length; i++) {
+                    // Remove unnecessary field
+                    orderedAssignments[i].setSolutionItemId(null);
+                    orderedAssignments[i].setTeacherId(null);
+                    orderedAssignments[i].setTeacherName(null);
+
+                    for (int j = i + 1; j < orderedAssignments.length; j++) {
+                        if (orderedAssignments[i].getStartSlot() > orderedAssignments[j].getStartSlot()) {
+                            ClassTeacherAssignmentSolutionModel tmp = orderedAssignments[i];
+                            orderedAssignments[i] = orderedAssignments[j];
+                            orderedAssignments[j] = tmp;
                         }
                     }
                 }
-                int previousSlot = arr[0].getStartSlot() - 1;
-                arr[0].setStartIndexFromPrevious(previousSlot);
-                for (int i = 1; i < arr.length; i++) {
-                    arr[i].setStartIndexFromPrevious(arr[i].getStartSlot() - arr[i - 1].getEndSlot() - 1);
-                }
-                c.getClassList().clear();
-                for (int i = 0; i < arr.length; i++) {
-                    c.getClassList().add(arr[i]);
-                }
-                c.setRemainEmptySlots(72 - arr[arr.length - 1].getEndSlot());
 
+                //
+                orderedAssignments[0].setStartIndexFromPrevious(orderedAssignments[0].getStartSlot() - 1);
+                for (int i = 1; i < orderedAssignments.length; i++) {
+                    orderedAssignments[i]
+                        .setStartIndexFromPrevious(orderedAssignments[i].getStartSlot() -
+                                                   orderedAssignments[i - 1].getEndSlot() -
+                                                   1);
+                }
+
+                //
+                assignedModel.getClassList().clear();
+                for (ClassTeacherAssignmentSolutionModel orderedAssignment : orderedAssignments) {
+                    assignedModel.getClassList().add(orderedAssignment);
+                }
+
+                assignedModel
+                    .setRemainEmptySlots(
+                        72 - orderedAssignments[orderedAssignments.length - 1].getEndSlot()); // 72 = 6 * 12 periods
             }
-            if(c.getClassList().size() > 0) {
-                lst.add(c);
+
+            if (assignedModel.getClassList().size() > 0) {
+                gridViewData.add(assignedModel);
             }
         }
 
-
-        return lst;
+        gridViewData.sort(Comparator.comparing(ClassesAssignedToATeacherModel::getTeacherId));
+        return gridViewData;
     }
 
     @Override
@@ -1128,41 +1229,40 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
         teacherClassAssignmentSolution.setTeacherId(input.getTeacherId());
         teacherClassAssignmentSolution.setClassId(input.getClassId());
         teacherClassAssignmentSolution.setPlanId(input.getPlanId());
-        teacherClassAssignmentSolution.setCreatedByUserLoginId(u.getUserLoginId());
+        teacherClassAssignmentSolution.setCreatedBy(u.getUserLoginId());
         teacherClassAssignmentSolution.setCreatedStamp(new Date());
 
-        teacherClassAssignmentSolution = teacherClassAssignmentSolutionRepo.save(teacherClassAssignmentSolution);
+        teacherClassAssignmentSolution = solutionRepo.save(teacherClassAssignmentSolution);
 
         return teacherClassAssignmentSolution;
     }
 
+    /**
+     * OK. Da them pinned cua TeacherClassAssignmentSolution
+     *
+     * @param userId
+     * @param planId
+     * @param input
+     */
+    @Transactional
     @Override
-    public TeacherClassAssignmentSolution reAssignTeacherToClass(UserLogin u, AssignTeacherToClassInputModel input) {
-        List<TeacherClassAssignmentSolution> L = teacherClassAssignmentSolutionRepo
-            .findAllByPlanIdAndClassId(input.getPlanId(), input.getClassId());
-        for (TeacherClassAssignmentSolution s : L) {
-            // remove class s.getClassId() from current solution
-            log.info("reAssignTeacherToClass, REMOVE assignment (" +
-                     s.getClassId() +
-                     " - " +
-                     s.getTeacherId() +
-                     ") in plan " +
-                     s.getPlanId());
-            teacherClassAssignmentSolutionRepo.delete(s);
-        }
+    public void assignTeacherToClass(String userId, UUID planId, AssignTeacherToClassInputModel input) {
+        // planId and classId unique identify a solution but TeacherClassAssignmentSolution's id is solutionItemId,
+        // so may have 2 solution for the same class in an assignment plan
+        // Remove class s.getClassId() from current solution
+        solutionRepo.deleteAllByPlanIdAndClassId(planId, input.getClassId());
 
-        TeacherClassAssignmentSolution teacherClassAssignmentSolution = new TeacherClassAssignmentSolution();
-        teacherClassAssignmentSolution.setTeacherId(input.getTeacherId());
-        teacherClassAssignmentSolution.setClassId(input.getClassId());
-        teacherClassAssignmentSolution.setPlanId(input.getPlanId());
-        teacherClassAssignmentSolution.setCreatedByUserLoginId(u.getUserLoginId());
-        teacherClassAssignmentSolution.setCreatedStamp(new Date());
+        TeacherClassAssignmentSolution assignment = new TeacherClassAssignmentSolution();
+        assignment.setClassId(input.getClassId());
+        assignment.setPlanId(input.getPlanId());
+        assignment.setTeacherId(input.getTeacherId());
+        assignment.setPinned(input.isPinned());
+        assignment.setCreatedBy(userId);
+        assignment.setCreatedStamp(new Date());
 
-        teacherClassAssignmentSolution = teacherClassAssignmentSolutionRepo.save(teacherClassAssignmentSolution);
-
-        log.info("reAssignTeacherToClass, ADD and SAVE assignemnt (" + input.getClassId() + " - " + input.getTeacherId()
-                 + ") in plan " + input.getPlanId());
-        return teacherClassAssignmentSolution;
+        solutionRepo.save(assignment);
+        log.info("assignTeacherToClass, ADD and SAVE assignment (" +
+                 input.getClassId() + " - " + input.getTeacherId() + ") in plan " + input.getPlanId());
     }
 
     @Override
@@ -1171,305 +1271,402 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
         RemoveClassTeacherAssignmentSolutionInputModel input
     ) {
         TeacherClassAssignmentSolution teacherClassAssignmentSolution
-            = teacherClassAssignmentSolutionRepo.findById(input.getSolutionItemId()).orElse(null);
+            = solutionRepo.findById(input.getSolutionItemId()).orElse(null);
         if (teacherClassAssignmentSolution == null) {
             return false;
         } else {
-            teacherClassAssignmentSolutionRepo.delete(teacherClassAssignmentSolution);
+            solutionRepo.delete(teacherClassAssignmentSolution);
         }
         return true;
     }
 
+    /**
+     * OK
+     *
+     * @param planId
+     * @param solutionItemIds
+     * @return
+     */
     @Override
-    public boolean removeClassTeacherAssignmentSolutionList(UUID planId, String solutionItemList) {
-        String[] lst = solutionItemList.split(";");
-        Gson gson = new Gson();
-        for (String t : lst) {
-            RemoveClassTeacherAssignmentSolutionInputModel cm = gson.fromJson(
-                t,
-                RemoveClassTeacherAssignmentSolutionInputModel.class);
-            TeacherClassAssignmentSolution s = teacherClassAssignmentSolutionRepo
-                .findById(cm.getSolutionItemId())
-                .orElse(null);
-            if (s != null) {
-                teacherClassAssignmentSolutionRepo.delete(s);
-                log.info("removeClassTeacherAssignmentSolutionList, delete " + s.getSolutionItemId());
+    public void removeClassTeacherAssignmentSolutionList(UUID planId, UUID[] solutionItemIds) {
+        for (UUID id : solutionItemIds) {
+            TeacherClassAssignmentSolution s = solutionRepo.findById(id).orElse(null);
+            if (null != s) {
+                solutionRepo.delete(s);
+                log.info("removeClassTeacherAssignmentSolutionList, delete " + s.getId());
             }
         }
-        return true;
     }
 
+    /**
+     * Ok
+     *
+     * @param planId
+     * @return
+     */
     @Override
     public List<ClassesAssignedToATeacherModel> getClassesAssignedToATeacherSolution(UUID planId) {
-        List<ClassesAssignedToATeacherModel> lst = new ArrayList();
-        List<EduTeacher> teachers = eduTeacherRepo.findAll();
-        HashMap<String, EduTeacher> mId2Teacher = new HashMap();
-        for (EduTeacher t : teachers) {
-            mId2Teacher.put(t.getTeacherId(), t);
+        List<ClassesAssignedToATeacherModel> assignedModels = new ArrayList<>();
+
+        //
+        List<EduTeacher> allTeachers = eduTeacherRepo.findAll();
+        HashMap<String, EduTeacher> mId2Teacher = new HashMap<>();
+        for (EduTeacher t : allTeachers) {
+            mId2Teacher.put(t.getId(), t);
         }
 
-        HashMap<String, List> mTeacherId2Classes = new HashMap();
-        List<ClassTeacherAssignmentSolutionModel> sol = getClassTeacherAssignmentSolution(planId);
-        for (ClassTeacherAssignmentSolutionModel s : sol) {
-            if (mTeacherId2Classes.get(s.getTeacherId()) == null) {
-                mTeacherId2Classes.put(s.getTeacherId(), new ArrayList());
-            }
+        //
+        HashMap<String, List<ClassTeacherAssignmentSolutionModel>> mTeacherId2Classes = new HashMap<>();
+        List<ClassTeacherAssignmentSolutionModel> assignments = getClassTeacherAssignmentSolution(planId);
+        for (ClassTeacherAssignmentSolutionModel s : assignments) {
+            mTeacherId2Classes.computeIfAbsent(s.getTeacherId(), k -> new ArrayList<>());
             mTeacherId2Classes.get(s.getTeacherId()).add(s);
         }
+
+        //
         for (String teacherId : mTeacherId2Classes.keySet()) {
-            ClassesAssignedToATeacherModel c = new ClassesAssignedToATeacherModel();
-            c.setTeacherId(teacherId);
+            ClassesAssignedToATeacherModel model = new ClassesAssignedToATeacherModel();
+
             String teacherName = "";
             if (mId2Teacher.get(teacherId) != null) {
                 teacherName = mId2Teacher.get(teacherId).getTeacherName();
             }
-            c.setTeacherName(teacherName);
+            model.setTeacherName(teacherName);
 
-            c.setClassList(mTeacherId2Classes.get(teacherId));
-            c.setNumberOfClass(c.getClassList().size());
+            model.setTeacherId(teacherId);
+            model.setClassList(mTeacherId2Classes.get(teacherId));
+            model.setNumberOfClass(model.getClassList().size());
+
             double hourLoad = 0;
-            HashSet<Integer> D = new HashSet<Integer>();
-            for (ClassTeacherAssignmentSolutionModel i : c.getClassList()) {
-                hourLoad += i.getHourLoad();
-                HashSet<Integer> Di = TimetableConflictChecker.extractDayOfTimeTable(i.getTimetable());
-                for (int d : Di) {
-                    D.add(d);
+            HashSet<Integer> D = new HashSet<>();
+            for (ClassTeacherAssignmentSolutionModel solutionModel : model.getClassList()) {
+                hourLoad += solutionModel.getHourLoad();
+                HashSet<Integer> days = TimetableConflictChecker.extractDayOfTimeTable(solutionModel.getTimetable());
+
+                if (null != days) {
+                    D.addAll(days);
                 }
             }
-            c.setHourLoad(hourLoad);
-            c.setNumberOfWorkingDays(D.size());
 
-            lst.add(c);
+            model.setHourLoad(hourLoad);
+            model.setNumberOfWorkingDays(D.size());
+
+            assignedModels.add(model);
         }
-        return lst;
+
+        assignedModels.sort(Comparator.comparing(ClassesAssignedToATeacherModel::getTeacherId));
+        return assignedModels;
     }
 
+    /**
+     * OK. Da xu ly them pinned vao TeacherClassAssignmentSolution
+     *
+     * @param planId
+     * @return
+     */
     @Override
     public List<ClassTeacherAssignmentSolutionModel> getClassTeacherAssignmentSolution(UUID planId) {
-        List<TeacherClassAssignmentSolution> teacherClassAssignmentSolutions =
-            teacherClassAssignmentSolutionRepo.findAllByPlanId(planId);
-        List<ClassTeacherAssignmentSolutionModel> m = new ArrayList();
-        List<EduCourse> eduCourses = eduCourseRepo.findAll();
-        List<EduTeacher> eduTeachers = eduTeacherRepo.findAll();
-        List<ClassTeacherAssignmentClassInfo> classTeacherAssignmentClassInfos = classTeacherAssignmentClassInfoRepo.findAllByPlanId(
-            planId);
+        List<TeacherClassAssignmentSolution> solutions = solutionRepo.findAllByPlanId(planId);
 
-        HashMap<String, EduCourse> mID2Course = new HashMap();
-        HashMap<String, EduTeacher> mID2Teacher = new HashMap();
-        HashMap<String, ClassTeacherAssignmentClassInfo> mClass2Info = new HashMap();
-        for (ClassTeacherAssignmentClassInfo i : classTeacherAssignmentClassInfos) {
-            mClass2Info.put(i.getClassId(), i);
+        List<EduCourse> courses = eduCourseRepo.findAll();
+        HashMap<String, EduCourse> mCourseId2Course = new HashMap<>();
+        for (EduCourse c : courses) {
+            mCourseId2Course.put(c.getId(), c);
         }
-        for (EduCourse c : eduCourses) {
-            mID2Course.put(c.getId(), c);
+
+        List<EduTeacher> teachers = eduTeacherRepo.findAll();
+        HashMap<String, EduTeacher> mTeacherId2Teacher = new HashMap<>();
+        for (EduTeacher t : teachers) {
+            mTeacherId2Teacher.put(t.getId(), t);
         }
-        for (EduTeacher t : eduTeachers) {
-            mID2Teacher.put(t.getTeacherId(), t);
+
+        List<ClassTeacherAssignmentClassInfo> classes = classInfoRepo.findAllByPlanId(planId);
+        HashMap<String, ClassTeacherAssignmentClassInfo> mClassId2Class = new HashMap<>();
+        for (ClassTeacherAssignmentClassInfo i : classes) {
+            mClassId2Class.put(i.getClassId(), i);
         }
-        List<ClassTeacherAssignmentSolutionModel> classTeacherAssignmentSolutionModels = new ArrayList<>();
-        for (TeacherClassAssignmentSolution s : teacherClassAssignmentSolutions) {
+
+        List<ClassTeacherAssignmentSolutionModel> solutionModels = new ArrayList<>();
+        for (TeacherClassAssignmentSolution s : solutions) {
             String classId = s.getClassId();
-            ClassTeacherAssignmentClassInfo info = mClass2Info.get(classId);
+            ClassTeacherAssignmentClassInfo info = mClassId2Class.get(classId);
+
             if (info == null) {
                 continue;
             }
-            ClassTeacherAssignmentSolutionModel classTeacherAssignmentSolutionModel = new ClassTeacherAssignmentSolutionModel();
 
-            classTeacherAssignmentSolutionModel.setSolutionItemId(s.getSolutionItemId());
-            classTeacherAssignmentSolutionModel.setClassCode(s.getClassId());
-            classTeacherAssignmentSolutionModel.setCourseId(info.getCourseId());
-            EduCourse course = mID2Course.get(info.getCourseId());
-            if (course == null) {
-                log.info("getClassTeacherAssignmentSolution, courseId " + info.getCourseId() + " null");
+            ClassTeacherAssignmentSolutionModel solutionModel = new ClassTeacherAssignmentSolutionModel();
+            solutionModel.setSolutionItemId(s.getId());
+            solutionModel.setClassCode(s.getClassId());
+            solutionModel.setClassType(info.getClassType());
+            solutionModel.setCourseId(info.getCourseId());
+            solutionModel.setPinned(s.isPinned());
+
+            EduCourse course = mCourseId2Course.get(info.getCourseId());
+            if (null != course) {
+                solutionModel.setCourseName(course.getName());
             } else {
-                classTeacherAssignmentSolutionModel.setCourseName(course.getName());
+                log.info("getClassTeacherAssignmentSolution, courseId " + info.getCourseId() + " null");
             }
-            classTeacherAssignmentSolutionModel.setTeacherId(s.getTeacherId());
-            EduTeacher teacher = mID2Teacher.get(s.getTeacherId());
-            classTeacherAssignmentSolutionModel.setTeacherName(teacher.getTeacherName());
-            classTeacherAssignmentSolutionModel.setTimetable(info.getLesson());
-            classTeacherAssignmentSolutionModel.setHourLoad(info.getHourLoad());
 
-            classTeacherAssignmentSolutionModels.add(classTeacherAssignmentSolutionModel);
+            EduTeacher teacher = mTeacherId2Teacher.get(s.getTeacherId());
+
+            solutionModel.setTeacherId(s.getTeacherId());
+            solutionModel.setTeacherName(teacher.getTeacherName());
+            solutionModel.setTimetable(info.getLesson());
+//            solutionModel.setTimetableCode(info.getTimetable());
+            solutionModel.setHourLoad(info.getHourLoad());
+
+            solutionModels.add(solutionModel);
         }
-        return classTeacherAssignmentSolutionModels;
+
+        return solutionModels;
     }
 
+    /**
+     * OK
+     *
+     * @param planId
+     * @param teacherCourses
+     */
     @Transactional
     @Override
-    public boolean addTeacherCourseToAssignmentPlan(UUID planId, String teacherCourseList) {
-        String[] lst = teacherCourseList.split(";");
-        log.info("addTeacherCourseToAssignmentPlan, planId = " + planId + ", teacherCourseList = " + teacherCourseList);
-        Gson gson = new Gson();
-        if (lst != null && lst.length > 0) {
-            for (int i = 0; i < lst.length; i++) {
-                TeacherCoursePriority tcp = gson.fromJson(lst[i], TeacherCoursePriority.class);
-                TeacherCourseForAssignmentPlan teacherCourseForAssignmentPlan = new TeacherCourseForAssignmentPlan();
-                teacherCourseForAssignmentPlan.setCourseId(tcp.getCourseId());
-                teacherCourseForAssignmentPlan.setTeacherId(tcp.getTeacherId());
-                teacherCourseForAssignmentPlan.setPriority(tcp.getPriority());
-                teacherCourseForAssignmentPlan.setPlanId(planId);
+    public void addTeacherCourseToAssignmentPlan(UUID planId, AddTeacherCourse2PlanIM[] teacherCourses) {
+//        log.info("addTeacherCourseToAssignmentPlan, planId = " + planId);
+        Set<String> addedTeacherIds = new HashSet<>();
+        for (AddTeacherCourse2PlanIM input : teacherCourses) {
+            TeacherCourse tc = teacherCourseRepo.findByRefId(input.getTeacherCourseId());
 
-                teacherCourseForAssignmentPlan = teacherCourseForAssignmentPlanRepo
-                    .save(teacherCourseForAssignmentPlan);
+            if (null != tc) {
+                teacherCourseForAssignmentPlanRepo.save(new TeacherCourseForAssignmentPlan(
+                    tc.getRefId(),
+                    planId,
+                    input.getPriority(),
+                    tc.getTeacherId(),
+                    tc.getCourseId(),
+                    tc.getClassType()
+                ));
+
+                addedTeacherIds.add(tc.getTeacherId());
             }
         }
-        return true;
+
+        // Auto add teacher to plan
+        List<TeacherForAssignmentPlan> addedTeachers = new ArrayList<>();
+        for (String id : addedTeacherIds) {
+            TeacherForAssignmentPlan t = new TeacherForAssignmentPlan();
+            t.setTeacherId(id);
+            t.setMaxHourLoad(0);
+            addedTeachers.add(t);
+        }
+
+        addTeacherToAssignmentPlan(planId, addedTeachers.toArray(new TeacherForAssignmentPlan[0]));
     }
 
+    /**
+     * Temporarily OK
+     *
+     * @param planId
+     * @param teacherCourses
+     */
     @Transactional
     @Override
-    public boolean removeTeacherCourseFromAssignmentPlan(UUID planId, String teacherCourseList) {
-        String[] lst = teacherCourseList.split(";");
-        log.info("removeTeacherCourseFromAssignmentPlan, planId = " +
-                 planId +
-                 ", teacherCourseList = " +
-                 teacherCourseList);
-        Gson gson = new Gson();
-        if (lst != null && lst.length > 0) {
-            List<ClassTeacherAssignmentClassInfo> classTeacherAssignmentClassInfos = classTeacherAssignmentClassInfoRepo
-                .findAllByPlanId(planId);
-            HashMap<String, ClassTeacherAssignmentClassInfo> mClassId2ClassTeacherAssignmentInfo = new HashMap();
-            for (ClassTeacherAssignmentClassInfo c : classTeacherAssignmentClassInfos) {
-                mClassId2ClassTeacherAssignmentInfo.put(c.getClassId(), c);
+    public void removeTeacherCourseFromAssignmentPlan(UUID planId, TeacherCourseForAssignmentPlan[] teacherCourses) {
+        // Todo: test truong hop xoa solution
+        if (teacherCourses.length > 0) {
+            List<ClassTeacherAssignmentClassInfo> classes = classInfoRepo.findAllByPlanId(planId);
+            HashMap<String, ClassTeacherAssignmentClassInfo> mClassId2Class = new HashMap<>();
+            for (ClassTeacherAssignmentClassInfo c : classes) {
+                mClassId2Class.put(c.getClassId(), c);
             }
 
-            for (int i = 0; i < lst.length; i++) {
-                TeacherCoursePriority tcp = gson.fromJson(lst[i], TeacherCoursePriority.class);
-                TeacherCourseForAssignmentPlan teacherCourseForAssignmentPlan
-                    = teacherCourseForAssignmentPlanRepo.findByTeacherIdAndCourseIdAndPlanId(
-                    tcp.getTeacherId(),
-                    tcp.getCourseId(),
-                    planId);
+            for (TeacherCourseForAssignmentPlan tc : teacherCourses) {
+                // Remove related items in solution
+                List<TeacherClassAssignmentSolution> solutions = solutionRepo.findAllByPlanIdAndTeacherId(
+                    planId,
+                    tc.getTeacherId());
 
-                // remove related items in solution
-                List<TeacherClassAssignmentSolution> sol = teacherClassAssignmentSolutionRepo
-                    .findAllByPlanIdAndTeacherId(planId, tcp.getTeacherId());
-                for (TeacherClassAssignmentSolution s : sol) {
+                for (TeacherClassAssignmentSolution s : solutions) {
                     String classId = s.getClassId();
-                    ClassTeacherAssignmentClassInfo c = mClassId2ClassTeacherAssignmentInfo.get(classId);
+                    ClassTeacherAssignmentClassInfo c = mClassId2Class.get(classId);
+
                     if (c != null) {
-                        if (c.getCourseId().equals(tcp.getCourseId())) {
-                            // remove s (solution for classId with tcp.getCourseId())
-                            teacherClassAssignmentSolutionRepo.delete(s);
-                            log.info("removeTeacherCourseFromAssignmentPlan, remove assignment(" +
-                                     classId +
-                                     "[" +
-                                     c.getCourseId()
-                                     +
-                                     "] - " +
-                                     tcp.getTeacherId() +
-                                     ") in plan " +
-                                     planId);
+                        if (c.getCourseId().equalsIgnoreCase(tc.getCourseId())
+                            && c.getClassType().equalsIgnoreCase(tc.getClassType())) {
+                            solutionRepo.delete(s);
+//                            log.info("removeTeacherCourseFromAssignmentPlan, remove assignment(" +
+//                                     classId + "[" + c.getCourseId() + ", " + c.getClassType() + "] - " +
+//                                     tc.getTeacherId() + ") in plan " + planId);
                         }
                     }
                 }
 
-                if (teacherCourseForAssignmentPlan != null) {
-                    teacherCourseForAssignmentPlanRepo
-                        .delete(teacherCourseForAssignmentPlan);
-                    log.info("removeTeacherCourseFromAssignmentPlan, remove (" +
-                             tcp.getTeacherId() +
-                             "," +
-                             tcp.getCourseId() +
-                             "," +
-                             planId +
-                             ")");
+                teacherCourseForAssignmentPlanRepo.delete(tc);
+//                log.info("removeTeacherCourseFromAssignmentPlan, remove (" +
+//                         tc.getTeacherId() + ", " +
+//                         tc.getCourseId() + ", " +
+//                         tc.getClassType() + ", " +
+//                         planId + ")");
 
-                }
             }
         }
-        return true;
     }
 
+    /**
+     * OK
+     *
+     * @param planId
+     * @return
+     */
     @Override
     public List<PairOfConflictTimetableClassModel> getPairOfConflictTimetableClass(UUID planId) {
-        List<ClassTeacherAssignmentClassInfo> classes =
-            classTeacherAssignmentClassInfoRepo.findAllByPlanId(planId);
-
-        AlgoClassIM[] inputClass = new AlgoClassIM[classes.size()];
+        List<ClassTeacherAssignmentClassInfo> classes = classInfoRepo.findAllByPlanId(planId);
+        List<PairOfConflictTimetableClassModel> pairs = new ArrayList<>();
 
         for (int i = 0; i < classes.size(); i++) {
-            ClassTeacherAssignmentClassInfo c = classes.get(i);
-            AlgoClassIM ci = new AlgoClassIM();
-            ci.setClassCode(c.getClassId());
-            ci.setTimetable(c.getLesson());
-            ci.setClassType(c.getClassType());
-            ci.setCourseId(c.getCourseId());
-            ci.setCourseName(c.getCourseId());
-            ci.setHourLoad(1);// TOBE UPGRADED
-            inputClass[i] = ci;
-        }
-        CheckConflict checker = new CheckConflict();
+            for (int j = i + 1; j < classes.size(); j++) {
+                ClassTeacherAssignmentClassInfo c1 = classes.get(i);
+                ClassTeacherAssignmentClassInfo c2 = classes.get(j);
 
-        List<PairOfConflictTimetableClassModel> lst = new ArrayList<>();
-        for (int i = 0; i < inputClass.length; i++) {
-            for (int j = i + 1; j < inputClass.length; j++) {
-                //if(checker.isConflict(inputClass[i],inputClass[j])){
-                ClassTeacherAssignmentClassInfo ci = classes.get(i);
-                ClassTeacherAssignmentClassInfo cj = classes.get(j);
-                if (TimetableConflictChecker.conflict(ci.getLesson(), cj.getLesson())) {
+                if (TimetableConflictChecker.conflict(c1.getLesson(), c2.getLesson())) {
                     PairOfConflictTimetableClassModel p = new PairOfConflictTimetableClassModel();
-                    p.setClassId1(ci.getClassId());
-                    p.setCourseId1(ci.getCourseId());
-                    p.setTimetable1(ci.getTimeTable());
-                    p.setTimetableCode1(ci.getLesson());
+                    p.setClassId1(c1.getClassId());
+                    p.setCourseId1(c1.getCourseId());
+                    p.setTimetable1(c1.getTimetable());
+                    p.setTimetableCode1(c1.getLesson());
 
-                    p.setClassId2(cj.getClassId());
-                    p.setCourseId2(cj.getCourseId());
-                    p.setTimetable2(cj.getTimeTable());
-                    p.setTimetableCode2(cj.getLesson());
+                    p.setClassId2(c2.getClassId());
+                    p.setCourseId2(c2.getCourseId());
+                    p.setTimetable2(c2.getTimetable());
+                    p.setTimetableCode2(c2.getLesson());
 
-                    lst.add(p);
+                    pairs.add(p);
                 }
             }
         }
 
-        return lst;
+        return pairs;
     }
 
+    /**
+     * OK
+     *
+     * @param u
+     * @param planId
+     * @param classId
+     * @param input
+     */
+    @Transactional
     @Override
-    public ClassTeacherAssignmentClassInfo updateClassForAssignment(
+    public void updateClassForAssignment(
         UserLogin u,
+        UUID planId,
+        String classId,
         UpdateClassForAssignmentInputModel input
     ) {
-        ClassTeacherAssignmentClassInfo classTeacherAssignmentClassInfo =
-            classTeacherAssignmentClassInfoRepo.findById(input.getClassId()).orElse(null);
-        if (classTeacherAssignmentClassInfo != null) {
-            classTeacherAssignmentClassInfo.setHourLoad(input.getHourLoad());
-            classTeacherAssignmentClassInfo = classTeacherAssignmentClassInfoRepo.save(classTeacherAssignmentClassInfo);
+        ClassTeacherAssignmentClassInfo c = classInfoRepo.findByClassIdAndPlanId(classId, planId);
+        if (null != c) {
+            c.setHourLoad(input.getHourLoad());
+            classInfoRepo.save(c);
         }
-        return classTeacherAssignmentClassInfo;
+
+        solutionRepo.deleteAllByPlanIdAndClassId(planId, classId);
     }
 
+    /**
+     * OK
+     *
+     * @param input
+     * @return
+     */
+    @Transactional
     @Override
-    public TeacherForAssignmentPlan updateTeacherForAssignment(
-        UserLogin u,
+    public void updateTeacherForAssignment(
+        UUID planId,
+        String teacherId,
         UpdateTeacherForAssignmentInputModel input
     ) {
-        TeacherForAssignmentPlan teacherForAssignmentPlan =
-            teacherForAssignmentPlanRepo.findByTeacherIdAndPlanId(input.getTeacherId(), input.getPlanId());
-        if (teacherForAssignmentPlan != null) {
-            teacherForAssignmentPlan.setMaxHourLoad(input.getHourLoad());
-            teacherForAssignmentPlan.setMinimizeNumberWorkingDays(input.getMinimizeNumberWorkingDays());
-            teacherForAssignmentPlan = teacherForAssignmentPlanRepo.save(teacherForAssignmentPlan);
+        TeacherForAssignmentPlan teacherForPlan = teacherForAssignmentPlanRepo.findByTeacherIdAndPlanId(
+            teacherId,
+            planId);
+
+        if (teacherForPlan != null) {
+            // Remove all solution items of teacher if any parameter change
+            if (teacherForPlan.getMaxHourLoad() != input.getHourLoad() ||
+                !teacherForPlan.getMinimizeNumberWorkingDays().equalsIgnoreCase(input.getMinimizeNumberWorkingDays())
+            ) {
+                solutionRepo.deleteAllByPlanIdAndTeacherId(planId, teacherId);
+            }
+
+            teacherForPlan.setMaxHourLoad(input.getHourLoad());
+            teacherForPlan.setMinimizeNumberWorkingDays(input.getMinimizeNumberWorkingDays());
+            teacherForAssignmentPlanRepo.save(teacherForPlan);
         }
-        return teacherForAssignmentPlan;
     }
 
     @Override
-    public TeacherCourseForAssignmentPlan updateTeacherCourseForAssignmentPlan(
+    public void updateTeacherCourseForAssignmentPlan(
         UserLogin u,
-        UpdateTeacherCoursePriorityForAssignmentPlanInputModel input
+        TeacherCourseForAssignmentPlan teacherCourse
     ) {
-        TeacherCourseForAssignmentPlan teacherCourseForAssignmentPlan = teacherCourseForAssignmentPlanRepo
-            .findByTeacherIdAndCourseIdAndPlanId(input.getTeacherId(), input.getCourseId(), input.getPlanId());
-        if (teacherCourseForAssignmentPlan != null) {
-            teacherCourseForAssignmentPlan.setPriority(input.getPriority());
-            teacherCourseForAssignmentPlan = teacherCourseForAssignmentPlanRepo.save(teacherCourseForAssignmentPlan);
-            log.info("updateTeacherCourseForAssignmentPlan, update OK!!");
+        TeacherCourseForAssignmentPlan tc = teacherCourseForAssignmentPlanRepo
+            .findByPlanIdAndTeacherCourseId(teacherCourse.getPlanId(), teacherCourse.getTeacherCourseId());
 
+        if (null != tc) {
+            teacherCourseForAssignmentPlanRepo.save(teacherCourse);
+
+            log.info("updateTeacherCourseForAssignmentPlan, update OK!!");
         }
-        return null;
+    }
+
+    /**
+     * OK
+     *
+     * @param planId
+     * @return
+     */
+    @Override
+    public List<ConflictClassAssignedToTeacherModel> getConflictClassesInSolution(UUID planId) {
+        List<ClassTeacherAssignmentSolutionModel> solutionModels = getClassTeacherAssignmentSolution(planId);
+
+        log.info("getConflictClassesAssignedToTeacherInSolution, planId = " + planId +
+                 ", sol.sz = " + solutionModels.size());
+
+        List<ConflictClassAssignedToTeacherModel> conflictModels = new ArrayList<>();
+        for (int i = 0; i < solutionModels.size(); i++) {
+            ClassTeacherAssignmentSolutionModel si = solutionModels.get(i);
+
+            for (int j = i + 1; j < solutionModels.size(); j++) {
+                ClassTeacherAssignmentSolutionModel sj = solutionModels.get(j);
+
+                if (si.getTeacherId().equals(sj.getTeacherId())) {
+                    boolean conflict = TimetableConflictChecker.conflictMultiTimeTable(
+                        si.getTimetable(),
+                        sj.getTimetable());
+
+//                    log.info("getConflictClassesAssignedToTeacherInSolution, timetable1 = " +
+//                             si.getTimetable() + " timetable2 = " + sj.getTimetable() + " conflict = " + conflict);
+
+                    if (conflict) {
+                        ConflictClassAssignedToTeacherModel cm = new ConflictClassAssignedToTeacherModel();
+
+                        cm.setTeacherId(si.getTeacherId());
+                        cm.setTeacherName(si.getTeacherName());
+                        cm.setClassCode1(si.getClassCode());
+                        cm.setCourseName1(si.getCourseName());
+                        cm.setTimeTable1(si.getTimetable());
+                        cm.setClassCode2(sj.getClassCode());
+                        cm.setCourseName2(sj.getCourseName());
+                        cm.setTimeTable2(sj.getTimetable());
+
+                        conflictModels.add(cm);
+                    }
+                }
+            }
+        }
+
+        log.info("getConflictClassesAssignedToTeacherInSolution, conflict list.sz = " + conflictModels.size());
+
+        return conflictModels;
     }
 }

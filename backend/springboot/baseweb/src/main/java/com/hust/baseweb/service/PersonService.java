@@ -10,5 +10,5 @@ public interface PersonService {
 
     Person findByPartyId(UUID partyId);
 
-    List<PersonDao> getALL();
+    List<Person> getALL();
 }

@@ -1,5 +1,7 @@
 package com.hust.baseweb.applications.whiteboard.entity;
 
+import com.hust.baseweb.applications.education.classmanagement.entity.EduClassSession;
+import com.hust.baseweb.applications.education.entity.EduCourse;
 import com.hust.baseweb.entity.UserLogin;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,8 +28,12 @@ public class Whiteboard {
     @Column(name = "data")
     private String data;
 
-    @OneToMany(mappedBy = "whiteboard")
-    private Set<UserWhiteboard> userWhiteboards;
+    @Column(name = "total_page")
+    private Integer totalPage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_session_id", referencedColumnName = "session_id")
+    private EduClassSession eduClassSession;
 
     @CreatedDate
     private Date createdDate;

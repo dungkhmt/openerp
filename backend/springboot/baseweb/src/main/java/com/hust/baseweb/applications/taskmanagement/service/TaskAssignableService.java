@@ -11,4 +11,6 @@ public interface TaskAssignableService {
     TaskAssignable create(TaskAssignable taskAssignable);
 
     List<TaskAssignable> getByPartyId(UUID partyId);
+
+    TaskAssignable getByTaskId(UUID taskId);
 }

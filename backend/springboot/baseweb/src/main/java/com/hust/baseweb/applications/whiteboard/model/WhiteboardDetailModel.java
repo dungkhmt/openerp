@@ -14,4 +14,5 @@ public class WhiteboardDetailModel {
     private String name;
     private String type;
     private String data;
+    private Integer totalPage;
 }

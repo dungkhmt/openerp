@@ -6,13 +6,17 @@ import Participant from "../components/Meet/Participant";
 import FooterControl from "../components/Meet/FooterControl";
 import Main from "../components/Meet/Main";
 import { API_URL } from "../../../../config/config";
-import { ADMIN_CHAT_TYPE, ADMIN_ID, PEER_CONFIG } from "../ultis/constant";
+import {
+  ADMIN_CHAT_TYPE,
+  ADMIN_ID,
+  PEER_CONFIG,
+  PEER_SERVER,
+} from "../ultis/constant";
 import "../style/meet.css";
 import {
   getDisplayMedia,
   getUserMedia,
   stopAndSetMediaStream,
-  stopMediaStream,
 } from "../ultis/helpers";
 import useGetMediaStream from "../hooks/useGetMediaStream";
 import { useHistory } from "react-router";
@@ -41,7 +45,7 @@ const Meet = () => {
   const [microStream, setMicroStream] = useState();
   const [cameraStream, setCameraStream] = useState();
   const [screenStream, setScreenStream] = useState();
-  const [peer] = useState(() => new Peer({ config: PEER_CONFIG }));
+  const [peer] = useState(() => new Peer(undefined, PEER_SERVER));
   const mediaStream = useGetMediaStream([
     microStream,
     cameraStream,
@@ -50,7 +54,7 @@ const Meet = () => {
 
   const sendMessage = useCallback(
     (type, content) => {
-      stompClient.send(
+      stompClient?.send(
         "/app/chat/" + meetId,
         { "X-Auth-Token": localStorage.getItem("TOKEN") },
         JSON.stringify({ id: name, name, type, content })
@@ -167,7 +171,6 @@ const Meet = () => {
   }, []);
   useEffect(() => {
     if (mediaStream) {
-      console.log("myMediaStream: ", mediaStream.getTracks());
       listParticipant.forEach((participant) => {
         if (participant.peerId !== peerId) {
           peer.call(participant.peerId, mediaStream);
@@ -176,20 +179,28 @@ const Meet = () => {
     }
   }, [microStream, cameraStream, screenStream]);
   useEffect(() => {
+    let interval;
     if (name) {
       peer?.on("open", (peerId) => {
         setPeerId(peerId);
-        sendMessage("join", peerId);
+        interval = setInterval(() => {
+          if (stompClient?.connected) {
+            sendMessage("join", peerId);
+            clearInterval(interval);
+          }
+        }, 1000);
         peer.on("call", (call) => {
           call.answer();
           call?.on("stream", (remoteStream) => {
-            console.log("remoteStream: ", remoteStream.getTracks());
             setRemoteStreamInfo({ mediaStream: remoteStream, call });
           });
         });
       });
     }
-  }, [peer, name]);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [peer, name, sendMessage, stompClient]);
   useEffect(() => {
     if (message) {
       setListMsg((prevList) => [...prevList, message]);
@@ -237,25 +248,27 @@ const Meet = () => {
   }, [remoteStreamInfo]);
 
   return (
-    <div className="room">
-      <Main
-        display={displayBar}
-        mediaStream={mediaStream}
-        listParticipant={listParticipant}
-        typeDisplay="all"
-      />
-      <ChatList
-        display={displayBar}
-        setDisplay={setDisplayBar}
-        listMsg={listMsg}
-        sendMessage={sendMessage}
-      />
-      <Participant
-        meetId={meetId}
-        display={displayBar}
-        setDisplay={setDisplayBar}
-        listParticipant={listParticipant}
-      />
+    <>
+      <div className="room">
+        <Main
+          display={displayBar}
+          mediaStream={mediaStream}
+          listParticipant={listParticipant}
+          typeDisplay="all"
+        />
+        <ChatList
+          display={displayBar}
+          setDisplay={setDisplayBar}
+          listMsg={listMsg}
+          sendMessage={sendMessage}
+        />
+        <Participant
+          meetId={meetId}
+          display={displayBar}
+          setDisplay={setDisplayBar}
+          listParticipant={listParticipant}
+        />
+      </div>
       <FooterControl
         displayBar={displayBar}
         setDisplayBar={setDisplayBar}
@@ -269,7 +282,7 @@ const Meet = () => {
         handleClickShareScreen={handleClickShareScreen}
         leaveMeet={leaveMeet}
       />
-    </div>
+    </>
   );
 };
 

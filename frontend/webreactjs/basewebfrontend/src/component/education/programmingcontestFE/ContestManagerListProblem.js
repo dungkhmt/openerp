@@ -7,7 +7,12 @@ import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import Table from "@mui/material/Table";
 
-import { Button, TableHead, CircularProgress } from "@material-ui/core";
+import {
+  Button,
+  TableHead,
+  CircularProgress,
+  TextField,
+} from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
 import { getColorLevel, StyledTableCell, StyledTableRow } from "./lib";
 import TableBody from "@mui/material/TableBody";
@@ -19,7 +24,7 @@ export function ContestManagerListProblem(props) {
   const [problems, setProblems] = useState([]);
   const [timeLimit, setTimeLimit] = useState();
   const [isProcessing, setIsProcessing] = useState(false);
-
+  const [threshold, setThreshold] = useState(50);
   useEffect(() => {
     request("get", "/get-contest-detail/" + contestId, (res) => {
       setContestTime(res.data.contestTime);
@@ -45,7 +50,39 @@ export function ContestManagerListProblem(props) {
       }
     ).then();
   }
+  function handleJudgeContest(event) {
+    //alert("Rejudge");
+    event.preventDefault();
+    setIsProcessing(true);
+    request(
+      "get",
+      "/evaluate-batch-not-evaluated-submission-of-contest/" + contestId,
+      (res) => {
+        console.log("handleJudgeContest", res.data);
+        //alert("Rejudge DONE!!!");
+        setIsProcessing(false);
+        //setSuccessful(res.data.contents.content);
+        //setTotalPageSuccessful(res.data.contents.totalPages);
+      }
+    ).then();
+  }
+  function handleCheckPlagiarism(event) {
+    event.preventDefault();
+    setIsProcessing(true);
+    let body = {
+      threshold: threshold,
+    };
+    request(
+      "post",
+      "/check-code-similarity/" + contestId,
 
+      (res) => {
+        console.log("handleCheckPlagiarism, res = ", res.data);
+      },
+      {},
+      body
+    );
+  }
   return (
     <div>
       <Typography variant="h4" component="h2">
@@ -63,6 +100,34 @@ export function ContestManagerListProblem(props) {
           {" "}
           Rejudge
         </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleJudgeContest}
+        >
+          {" "}
+          Judge
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleCheckPlagiarism}
+        >
+          {" "}
+          Check Plagiarism
+        </Button>
+        <TextField
+          autoFocus
+          required
+          id="Threshold"
+          label="Threshold"
+          placeholder="Threshold"
+          value={threshold}
+          onChange={(event) => {
+            setThreshold(event.target.value);
+          }}
+        ></TextField>
+        (%)
         {isProcessing ? <CircularProgress /> : ""}
       </Typography>
 

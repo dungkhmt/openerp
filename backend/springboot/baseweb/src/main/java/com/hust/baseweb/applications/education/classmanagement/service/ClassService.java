@@ -55,4 +55,6 @@ public interface ClassService {
     List<ClassOfUserOM> getClassOfUser(String userLoginId);
 
     EduCourse getCourseOfClassCode(String classCode);
+
+    int addAllUser2Class(String classCode);
 }

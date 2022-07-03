@@ -12,5 +12,13 @@ public interface TeacherCourseForAssignmentPlanRepo
 
     List<TeacherCourseForAssignmentPlan> findAllByPlanId(UUID planId);
 
-    TeacherCourseForAssignmentPlan findByTeacherIdAndCourseIdAndPlanId(String teacherId, String courseId, UUID planId);
+    TeacherCourseForAssignmentPlan findByPlanIdAndTeacherCourseId(UUID planId, UUID teacherCourseId);
+
+    void deleteByPlanIdAndTeacherId(UUID planId, String teacherId);
+
+    List<TeacherCourseForAssignmentPlan> findAllByPlanIdAndCourseIdAndClassType(
+        UUID planId,
+        String courseId,
+        String classType
+    );
 }

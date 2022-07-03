@@ -6,7 +6,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 function header(testId) {
   return [
     {
-      text: "Kết quả test " + testId,
+      text: "Kết quả " + testId,
       bold: true,
       fontSize: 16,
       alignment: "center",
@@ -15,118 +15,145 @@ function header(testId) {
   ];
 }
 
+const questionContentDefaultStyles = {
+  b: { bold: true, fontSize: 16 },
+  strong: { bold: true, fontSize: 16 },
+  u: { decoration: "underline", fontSize: 16, bold: true },
+  s: { decoration: "lineThrough", bold: true, fontSize: 16 },
+  em: { italics: true, bold: true, fontSize: 16 },
+  i: { italics: true, bold: true },
+  h1: { fontSize: 24, bold: true, marginBottom: 5 },
+  h2: { fontSize: 22, bold: true, marginBottom: 5 },
+  h3: { fontSize: 20, bold: true, marginBottom: 5 },
+  h4: { fontSize: 18, bold: true, marginBottom: 5 },
+  h5: { fontSize: 16, bold: true, marginBottom: 5 },
+  h6: { fontSize: 14, bold: true, marginBottom: 5 },
+  a: {
+    color: "blue",
+    decoration: "underline",
+    bold: true,
+    fontSize: 16,
+  },
+  strike: { decoration: "lineThrough", bold: true, fontSize: 16 },
+  p: {
+    margin: [0, 5, 10, 10],
+    // bold: true,
+    fontSize: 12,
+  },
+  ul: { marginBottom: 5, bold: true, fontSize: 16 },
+  li: { marginLeft: 5, bold: true, fontSize: 16 },
+  table: { marginBottom: 5, bold: true, fontSize: 16 },
+  th: { bold: true, fillColor: "#EEEEEE", bold: true, fontSize: 16 },
+};
+
+const answerDefaultStyles = {
+  b: { bold: true },
+  strong: { bold: true },
+  u: { decoration: "underline" },
+  s: { decoration: "lineThrough" },
+  em: { italics: true },
+  i: { italics: true },
+  h1: { fontSize: 24, bold: true, marginBottom: 5 },
+  h2: { fontSize: 22, bold: true, marginBottom: 5 },
+  h3: { fontSize: 20, bold: true, marginBottom: 5 },
+  h4: { fontSize: 18, bold: true, marginBottom: 5 },
+  h5: { fontSize: 16, bold: true, marginBottom: 5 },
+  h6: { fontSize: 14, bold: true, marginBottom: 5 },
+  a: { color: "blue", decoration: "underline" },
+  strike: { decoration: "lineThrough" },
+  ul: { marginBottom: 5 },
+  li: { marginLeft: 5 },
+  table: { marginBottom: 5 },
+  th: { bold: true, fillColor: "#EEEEEE" },
+};
+
 function resultDetailList(dataPdf) {
   let contentResult = [];
 
-  dataPdf.map((value, index) => {
-    let studentResult = [];
-    let info = {
+  dataPdf.map((resultDetail) => {
+    let studentInfo = {
       text:
-        "Họ và tên: " +
-        value.fullName +
+        "Họ và tên          " +
+        resultDetail.fullName +
         "\n" +
-        "Điểm: " +
-        value.totalGrade +
-        "\n Nhóm: " +
-        value.groupId +
-        "\n Chi tiết bài làm:",
-      fontSize: 17,
+        "Điểm                  " +
+        resultDetail.totalGrade +
+        "\n" +
+        "Nhóm                " +
+        resultDetail.groupId +
+        "\n\n" +
+        "Chi tiết bài làm:",
+      fontSize: 13,
       width: "auto",
       margin: [0, 3, 5, 5],
+      padding: [0, 0, 8, 0],
     };
-    let line = {
-      text: "-----------------------------------------------------------------------------------------------------------------------------------------------------------",
-      margin: [0, 15, 0, 0],
-      width: "auto",
-    };
-    studentResult.push(line);
-    studentResult.push(info);
-    value["listQuestion"].map((ques, indexques) => {
-      let questionDetail = [];
-      let quesNumber = {
-        text: "Câu " + (indexques + 1).toString(),
-        style: "itemQuestion",
-      };
-      let quesContent = htmlToPdfmake(ques["content"], {
-        defaultStyles: {
-          b: { bold: true, fontSize: 16 },
-          strong: { bold: true, fontSize: 16 },
-          u: { decoration: "underline", fontSize: 16, bold: true },
-          s: { decoration: "lineThrough", bold: true, fontSize: 16 },
-          em: { italics: true, bold: true, fontSize: 16 },
-          i: { italics: true, bold: true },
-          h1: { fontSize: 24, bold: true, marginBottom: 5 },
-          h2: { fontSize: 22, bold: true, marginBottom: 5 },
-          h3: { fontSize: 20, bold: true, marginBottom: 5 },
-          h4: { fontSize: 18, bold: true, marginBottom: 5 },
-          h5: { fontSize: 16, bold: true, marginBottom: 5 },
-          h6: { fontSize: 14, bold: true, marginBottom: 5 },
-          a: {
-            color: "blue",
-            decoration: "underline",
-            bold: true,
-            fontSize: 16,
-          },
-          strike: { decoration: "lineThrough", bold: true, fontSize: 16 },
-          p: { margin: [0, 5, 0, 10], bold: true, fontSize: 16 },
-          ul: { marginBottom: 5, bold: true, fontSize: 16 },
-          li: { marginLeft: 5, bold: true, fontSize: 16 },
-          table: { marginBottom: 5, bold: true, fontSize: 16 },
-          th: { bold: true, fillColor: "#EEEEEE", bold: true, fontSize: 16 },
-        },
-      });
-      console.log(quesContent);
-      questionDetail.push(quesNumber);
-      questionDetail.push(quesContent);
-      ques["listAnswer"].map((ans, indAns) => {
-        let isChoose = ques.listchooseAns.includes(ans.choiceAnswerId)
-          ? true
-          : false;
-        if (!isChoose) {
-          console.log(value.fullName + "  " + ans.choiceAnswerContent);
+
+    let studentResult = [];
+    studentResult.push(htmlToPdfmake(`<hr/>`));
+    studentResult.push(studentInfo);
+
+    //
+    const { listQuestion } = resultDetail;
+    listQuestion.map((question, index) => {
+      const { content, listAnswer, grade, listchooseAns } = question;
+      //
+      let questionContent = htmlToPdfmake(
+        `<br/><p>Câu ${index + 1}. ${content.slice(3)}`,
+        {
+          defaultStyles: questionContentDefaultStyles,
         }
-        let pele =
-          ans.isCorrectAnswer === "Y"
-            ? {
-                margin: [0, 5, 0, 10],
-                bold: isChoose,
-                decoration: "underline",
-              }
-            : {
-                margin: [0, 5, 0, 10],
-                bold: isChoose,
-              };
-        let ansTmp = htmlToPdfmake(ans.choiceAnswerContent, {
-          defaultStyles: {
-            b: { bold: true },
-            strong: { bold: true },
-            u: { decoration: "underline" },
-            s: { decoration: "lineThrough" },
-            em: { italics: true },
-            i: { italics: true },
-            h1: { fontSize: 24, bold: true, marginBottom: 5 },
-            h2: { fontSize: 22, bold: true, marginBottom: 5 },
-            h3: { fontSize: 20, bold: true, marginBottom: 5 },
-            h4: { fontSize: 18, bold: true, marginBottom: 5 },
-            h5: { fontSize: 16, bold: true, marginBottom: 5 },
-            h6: { fontSize: 14, bold: true, marginBottom: 5 },
-            a: { color: "blue", decoration: "underline" },
-            strike: { decoration: "lineThrough" },
-            p: pele,
-            ul: { marginBottom: 5 },
-            li: { marginLeft: 5 },
-            table: { marginBottom: 5 },
-            th: { bold: true, fillColor: "#EEEEEE" },
-          },
-        });
-        console.log(ansTmp);
-        questionDetail.push(ansTmp);
+      );
+
+      console.log(questionContent);
+
+      let questionDetail = [];
+      questionDetail.push(questionContent);
+
+      //
+      listAnswer.forEach((ans, index) => {
+        let pele = {
+          margin: [0, 5, 0, 10],
+          bold: true,
+          display: "inline",
+        };
+        let ansContent = ans.choiceAnswerContent;
+
+        if (ans.isCorrectAnswer === "Y") {
+          // Add check-mark symbols
+          ansContent = "<p>√ " + ansContent.substring(3);
+
+          if (listchooseAns.includes(ans.choiceAnswerId)) {
+            pele["color"] = "blue";
+            pele["decoration"] = "underline";
+          } else {
+            pele["color"] = "green";
+          }
+        } else {
+          pele["margin"] = [10, 5, 0, 10];
+
+          if (listchooseAns.includes(ans.choiceAnswerId)) {
+            pele["color"] = "red";
+            pele["decoration"] = "underline";
+          } else {
+            pele["bold"] = false;
+          }
+        }
+
+        questionDetail.push(
+          htmlToPdfmake(ansContent, {
+            defaultStyles: { ...answerDefaultStyles, p: pele },
+          })
+        );
       });
+
+      //
       let quesGrade = {
-        text: "Điểm : " + ques["grade"],
+        text: `Điểm: ${grade}`,
         style: "itemGrade",
       };
       questionDetail.push(quesGrade);
+
       studentResult.push(questionDetail);
     });
 
@@ -191,6 +218,7 @@ function resultDetailList(dataPdf) {
   //   ]
   // }
 }
+
 function resultList(students) {
   return {
     columns: [
@@ -282,7 +310,8 @@ export function exportResultListPdf(
   resultExportPDFData,
   testId
 ) {
-  console.log(studentListResult);
+  console.log("export pdf result ", studentListResult);
+
   studentListResult.sort(function (firstEl, secondEl) {
     if (firstEl.fullName === null || secondEl.fullName === null) return -1;
     if (firstEl.fullName.toLowerCase() < secondEl.fullName.toLowerCase()) {
@@ -291,8 +320,10 @@ export function exportResultListPdf(
     if (firstEl.fullName.toLowerCase() > secondEl.fullName.toLowerCase()) {
       return 1;
     }
+
     return 0;
   });
+
   let resultData = [];
   studentListResult.map((student, index) => {
     let tmp = {};
@@ -301,6 +332,7 @@ export function exportResultListPdf(
     tmp.grade = student.grade;
     resultData.push(tmp);
   });
+
   let dataDetail = resultDetailList(resultExportPDFData);
   console.log(dataDetail);
   const docDefinitions = {
@@ -314,8 +346,9 @@ export function exportResultListPdf(
     footer: function (currentPage, pageCount) {
       return [
         {
-          text: "Page " + currentPage.toString() + " of " + pageCount,
-          alignment: "center",
+          text: "Trang " + currentPage.toString(),
+          alignment: "right",
+          margin: [0, 0, 20, 0],
         },
       ];
     },
@@ -339,6 +372,7 @@ export function exportResultListPdf(
       columnGap: 20,
     },
   };
+
   pdfMake
     .createPdf(docDefinitions)
     .download("Danh sách kết quả test  " + testId + ".pdf");

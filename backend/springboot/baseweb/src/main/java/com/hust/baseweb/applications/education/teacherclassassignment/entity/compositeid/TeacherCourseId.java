@@ -18,4 +18,6 @@ public class TeacherCourseId implements Serializable {
     private String teacherId;
 
     private String courseId;
+
+    private String classType;
 }

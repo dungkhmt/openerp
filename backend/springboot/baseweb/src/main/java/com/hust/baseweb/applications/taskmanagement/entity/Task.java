@@ -43,7 +43,7 @@ public class Task {
     private Date dueDate;
 
     @Column(name = "created_by_user_login_id")
-    private String userLoginId;
+    private String createdByUserLoginId;
 
     @Column(name = "attachment_paths")
     private String attachmentPaths;
@@ -71,5 +71,15 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "backlog_task_category_id")
     private TaskCategory taskCategory;
+
+    public Task(Task task){
+        this.setName(task.getName());
+        this.setDescription(task.getDescription());
+        this.setTaskCategory(task.getTaskCategory());
+        this.setTaskPriority(task.getTaskPriority());
+        this.setStatusItem(task.getStatusItem());
+        this.setAttachmentPaths(task.getAttachmentPaths());
+        this.setDueDate(task.getDueDate());
+    }
 }
 

@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.service;
 
+import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
 import com.hust.baseweb.applications.programmingcontest.model.*;
@@ -65,7 +66,7 @@ public interface ProblemTestCaseService {
 
     ModelStudentRegisterContestResponse studentRegisterContest(String contestId, String userId) throws MiniLeetCodeException;
 
-    void teacherManageStudentRegisterContest(String teacherId, ModelTeacherManageStudentRegisterContest modelTeacherManageStudentRegisterContest) throws MiniLeetCodeException;
+    int teacherManageStudentRegisterContest(String teacherId, ModelTeacherManageStudentRegisterContest modelTeacherManageStudentRegisterContest) throws MiniLeetCodeException;
 
     void calculateContestResult(String contestId);
 
@@ -83,6 +84,8 @@ public interface ProblemTestCaseService {
 
     ModelGetContestPageResponse getNotRegisteredContestByUser(Pageable pageable, String userName);
 
+    List<ContestSubmissionsByUser> getRankingByContestIdNew(Pageable pageable, String contestId, Constants.GetPointForRankingType getPointForRankingType);
+
     Page<UserSubmissionContestResultNativeEntity> getRankingByContestId(Pageable pageable, String contestId);
 
     Page<ProblemEntity> getPublicProblemPaging(Pageable pageable);
@@ -93,7 +96,8 @@ public interface ProblemTestCaseService {
 
     void editTestCase(UUID testCaseId, ModelSaveTestcase modelSaveTestcase) throws MiniLeetCodeException;
 
-    void addUserToContest(ModelAddUserToContest modelAddUserToContest);
+    int addUserToContest(ModelAddUserToContest modelAddUserToContest);
+    int addAllUsersToContest(ModelAddUserToContest modelAddUserToContest);
 
     void deleteUserContest(ModelAddUserToContest modelAddUserToContest) throws MiniLeetCodeException;
 
@@ -114,7 +118,13 @@ public interface ProblemTestCaseService {
     ModelCodeSimilarityOutput checkSimilarity(String contestId, ModelCheckSimilarityInput I);
 
     ModelEvaluateBatchSubmissionResponse evaluateBatchSubmissionContest(String contestId);
+    ModelEvaluateBatchSubmissionResponse reJudgeAllSubmissionsOfContest(String contestId);
+    ModelEvaluateBatchSubmissionResponse judgeAllSubmissionsOfContest(String contestId);
+
+    ModelContestSubmissionResponse evaluateSubmission(UUID submisionId);
+    ModelContestSubmissionResponse evaluateSubmission(ContestSubmissionEntity sub);
 
     List<ModelContestByRoleResponse> getContestsByRoleOfUser(String userLoginId);
 
+    List<CodePlagiarism> findAllByContestId(String contestId);
 }

@@ -16,9 +16,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class TeacherCoursePlanId implements Serializable {
 
-    private String teacherId;
-
-    private String courseId;
+    private UUID teacherCourseId;
 
     private UUID planId;
 

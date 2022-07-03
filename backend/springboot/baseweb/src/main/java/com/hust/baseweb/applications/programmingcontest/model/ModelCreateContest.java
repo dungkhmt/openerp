@@ -15,4 +15,5 @@ public class ModelCreateContest {
     private List<String> problemIds;
     private Date startedAt;
     private long countDownTime;
+    private int maxSourceCodeLength;
 }

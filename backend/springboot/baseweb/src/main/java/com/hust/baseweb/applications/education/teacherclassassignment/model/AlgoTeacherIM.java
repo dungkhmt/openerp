@@ -27,7 +27,7 @@ public class AlgoTeacherIM {
 
     public void addIfNotExistCourse4Teacher(String courseId, String courseName, int priority, String type) {
         for (Course4Teacher ct : courses) {
-            if (ct.getCourseId().equals(courseId) && ct.getType().equals(type)) {
+            if (ct.getId().equals(courseId) && ct.getClassType().equals(type)) {
                 return;
             }
         }

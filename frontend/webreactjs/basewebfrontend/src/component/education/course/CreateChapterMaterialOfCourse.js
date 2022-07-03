@@ -18,6 +18,7 @@ import { useHistory } from "react-router-dom";
 import { authGet, authPostMultiPart } from "../../../api";
 import AlertDialog from "../../common/AlertDialog";
 import { errorNoti, successNoti } from "../../../utils/notification";
+import Loading from "../../common/Loading";
 let reDirect = null;
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,6 +56,7 @@ function CreateChapterMaterialOfCourse() {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [isLoading, setIsLoading] = useState(false);
 
   const onClickAlertBtn = () => {
     setOpenAlert(false);
@@ -68,6 +70,7 @@ function CreateChapterMaterialOfCourse() {
 
   async function handleSubmit() {
     //console.log('handle submit');
+    setIsLoading(true);
     let body = {
       chapterId: chapterId,
       materialName: materialName,
@@ -87,9 +90,10 @@ function CreateChapterMaterialOfCourse() {
       if (res.error) {
         errorNoti("Tạo bài giảng thất bại", true);
       } else {
-        successNoti("Tạo bài giảng thành công");
+        successNoti("Tạo bài giảng thành công", true);
         history.push("/edu/teacher/course/chapter/detail/" + chapterId);
       }
+      setIsLoading(false);
     });
 
     //let chapter = await authPost(dispatch, token, '/edu/class/create-chapter-material-of-course', body);
@@ -116,64 +120,68 @@ function CreateChapterMaterialOfCourse() {
   }, []);
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Card>
-        <CardContent>
-          <Typography variant="h5" component="h2">
-            Tạo bài tập
-          </Typography>
-          <form className={classes.root} noValidate autoComplete="off">
-            <div>
-              <TextField
-                required
-                id="materialName"
-                label="Tên học liệu"
-                placeholder="Nhập tên học liệu"
-                value={materialName}
-                onChange={(event) => {
-                  setMaterialName(event.target.value);
-                }}
-              />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <Card>
+          <CardContent>
+            <Typography variant="h5" component="h2">
+              Tạo bài tập
+            </Typography>
+            <form className={classes.root} noValidate autoComplete="off">
+              <div>
+                <TextField
+                  required
+                  id="materialName"
+                  label="Tên học liệu"
+                  placeholder="Nhập tên học liệu"
+                  value={materialName}
+                  onChange={(event) => {
+                    setMaterialName(event.target.value);
+                  }}
+                />
 
-              <TextField
-                required
-                id="materialType"
-                select
-                label="Thể Loại"
-                value={materialType}
-                fullWidth
-                onChange={(event) => {
-                  setMaterialType(event.target.value);
-                  //console.log(problemId,event.target.value);
-                }}
-              >
-                {materialTypeList.map((item) => (
-                  <MenuItem key={item} value={item}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </TextField>
+                <TextField
+                  required
+                  id="materialType"
+                  select
+                  label="Thể Loại"
+                  value={materialType}
+                  fullWidth
+                  onChange={(event) => {
+                    setMaterialType(event.target.value);
+                    //console.log(problemId,event.target.value);
+                  }}
+                >
+                  {materialTypeList.map((item) => (
+                    <MenuItem key={item} value={item}>
+                      {item}
+                    </MenuItem>
+                  ))}
+                </TextField>
 
-              <label>Select Input file</label>
-              <input type="file" onChange={onInputFileChange} />
-              <br></br>
-              <br></br>
-            </div>
-          </form>
-        </CardContent>
-        <CardActions>
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ marginLeft: "45px" }}
-            onClick={handleSubmit}
-          >
-            Lưu
-          </Button>
-          <Button variant="contained" onClick={() => history.push("")}>
-            Hủy
-          </Button>
-        </CardActions>
-      </Card>
+                <label>Select Input file</label>
+                <input type="file" onChange={onInputFileChange} />
+                <br></br>
+                <br></br>
+              </div>
+            </form>
+          </CardContent>
+          <CardActions>
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ marginLeft: "45px" }}
+              onClick={handleSubmit}
+            >
+              Lưu
+            </Button>
+            <Button variant="contained" onClick={() => history.push("")}>
+              Hủy
+            </Button>
+          </CardActions>
+        </Card>
+      )}
 
       <AlertDialog
         open={openAlert}

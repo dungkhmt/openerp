@@ -1,12 +1,12 @@
 //import IconButton from '@material-ui/core/IconButton';
 import MaterialTable from "material-table";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactExport from "react-data-export";
 import { request } from "../../../api";
+import { toFormattedDateTime } from "../../../utils/dateutils";
 import { localization } from "../../../utils/MaterialTableUtils";
 import { exportResultListPdf } from "./TeacherQuizResultExportPDF.js";
 import ViewHistoryLogQuizGroupQuestionParticipationExecutionChoice from "./ViewHistoryLogQuizGroupQuestionParticipationExecutionChoice";
-import { toFormattedDateTime } from "../../../utils/dateutils";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -176,21 +176,20 @@ export default function QuizTestStudentListResult(props) {
     let input = { testId: testId };
 
     request(
-      // token,
-      // history,
-      "Post",
+      "POST",
       "/get-quiz-test-participation-execution-result",
       (res) => {
-        // console.log(res);
-
         let dataPdf = [];
         let objectPdf = {};
-        res.data.map((elm, index) => {
-          let question = {};
-          question["content"] = elm.questionContent;
-          question["grade"] = elm.grade;
-          question["listAnswer"] = elm.quizChoiceAnswerList;
-          question["listchooseAns"] = elm.chooseAnsIds;
+
+        res.data.map((elm) => {
+          let question = {
+            content: elm.questionContent,
+            grade: elm.grade,
+            listAnswer: elm.quizChoiceAnswerList,
+            listchooseAns: elm.chooseAnsIds,
+          };
+
           if (objectPdf[elm.participationUserLoginId] == null) {
             let userObj = {
               fullName: elm.participationFullName,
@@ -202,14 +201,14 @@ export default function QuizTestStudentListResult(props) {
           } else {
             objectPdf[elm.participationUserLoginId]["totalGrade"] += elm.grade;
           }
+
           objectPdf[elm.participationUserLoginId]["listQuestion"].push(
             question
           );
         });
 
         // console.log(objectPdf);
-
-        Object.keys(objectPdf).map((ele, ind) => {
+        Object.keys(objectPdf).map((ele) => {
           dataPdf.push(objectPdf[ele]);
         });
 
@@ -228,6 +227,7 @@ export default function QuizTestStudentListResult(props) {
           ) {
             return 1;
           }
+
           return 0;
         });
         //after sort

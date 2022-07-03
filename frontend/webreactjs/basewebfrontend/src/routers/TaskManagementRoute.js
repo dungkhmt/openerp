@@ -1,11 +1,14 @@
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router";
-import CreateProject from "../component/taskmanagement/CreateProject";
-import ListProject from "../component/taskmanagement/ListProject";
-import CreateTask from "../component/taskmanagement/CreateTasks";
-import AddUserToProject from "../component/taskmanagement/AddUserToProject";
-import ListTasks from "../component/taskmanagement/ListTasks";
+import CreateProject from "../component/taskmanagement/projects/CreateProject";
+import ListProject from "../component/taskmanagement/projects/ListProject";
+import CreateTask from "../component/taskmanagement/task/CreateTasks";
+import EditTask from "../component/taskmanagement/task/EditTask";
+import AddUserToProject from "../component/taskmanagement/projects/AddUserToProject";
+import ListTasks from "../component/taskmanagement/task/ListTasks";
 import ListAssignedTasks from "component/taskmanagement/assignedtasks/ListAssignedTasks";
+import ShowTask from "component/taskmanagement/task/ShowTask";
+import Board from "component/taskmanagement/board/Board";
 
 export default function TaskManagementRoute() {
   let { path } = useRouteMatch();
@@ -15,7 +18,7 @@ export default function TaskManagementRoute() {
         <Route
           component={CreateProject}
           exacts
-          path={`${path}/project/create`}
+          path={`${path}/project/type/:type/:projectId?`}
         ></Route>
         <Route
           component={ListProject}
@@ -25,7 +28,7 @@ export default function TaskManagementRoute() {
         <Route
           component={CreateTask}
           exact
-          path={`${path}/project/tasks/create`}
+          path={`${path}/project/tasks/create/:projectIdUrl?`}
         ></Route>
         <Route
           component={AddUserToProject}
@@ -41,6 +44,21 @@ export default function TaskManagementRoute() {
           component={ListAssignedTasks}
           exact
           path={`${path}/tasks/members/assigned`}
+        ></Route>
+        <Route
+          component={ShowTask}
+          exact
+          path={`${path}/tasks/:taskId`}
+        ></Route>
+        <Route
+          component={EditTask}
+          exact
+          path={`${path}/tasks/:taskId/edit`}
+        ></Route>
+        <Route
+          component={Board}
+          exact
+          path={`${path}/project/:projectId/board`}
         ></Route>
       </Switch>
     </div>

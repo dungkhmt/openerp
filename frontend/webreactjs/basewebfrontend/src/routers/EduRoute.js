@@ -1,11 +1,10 @@
-import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router";
 import AssignmentList from "../component/education/AssignmentList";
-import BCASolver from "../component/education/BCASolver";
 import ClassCreate from "../component/education/class/ClassCreate";
-import ClassesList from "../component/education/class/ClassesList";
-import ClassTeacherAssignmentPlanDetail from "../component/education/classteacherassignment/assignmentPlan/ClassTeacherAssignmentPlanDetail";
-import ClassTeacherAssignmentPlanList from "../component/education/classteacherassignment/ClassTeacherAssignmentPlanList";
+import { MainBoard } from "../component/education/whiteboard/MainBoard";
+// import ClassesList from "../component/education/class/ClassesList";
+import PlanDetail from "../component/education/classteacherassignment/assignmentPlan/PlanDetail";
+import ClassTeacherAssignmentPlanList from "../component/education/classteacherassignment/PlanList";
 import AddNewCourse from "../component/education/course/AddNewCourse";
 import CourseDetail from "../component/education/course/CourseDetail";
 import CourseList from "../component/education/course/CourseList";
@@ -24,7 +23,7 @@ import TeacherCourseQuizChoiceAnswerDetail from "../component/education/course/T
 import TeacherCourseQuizDetail from "../component/education/course/TeacherCourseQuizDetail";
 import TeacherCourseTopicDetail from "../component/education/course/TeacherCourseTopicDetail";
 import TeacherViewCourseQuizDetail from "../component/education/course/TeacherViewCourseQuizDetail";
-import CreateSemester from "../component/education/CreateSemester";
+// import CreateSemester from "../component/education/CreateSemester";
 import CreateQuizTest from "../component/education/quiztest/CreateQuizTest";
 import QuizTestDetail from "../component/education/quiztest/QuizTestDetail";
 import QuizTestEdit from "../component/education/quiztest/QuizTestEdit";
@@ -38,7 +37,7 @@ import ResourceDomainList from "../component/education/resourcelink/ResourceDoma
 import ResourceList from "../component/education/resourcelink/ResourceList";
 import AddTeacher from "../component/education/teacher/AddTeacher";
 import TeacherDetail from "../component/education/teacher/TeacherDetail";
-import TeacherList from "../component/education/teacher/TeacherList";
+// import TeacherList from "../component/education/teacher/TeacherList";
 import ClassRegistration from "../views/Education/ClassManagement/Student/ClassRegistration";
 import SAssignmentDetail from "../views/Education/ClassManagement/Student/SAssignmentDetail";
 import SClassDetail from "../views/Education/ClassManagement/Student/SClassDetail";
@@ -51,6 +50,8 @@ import TClassDetail from "../views/Education/ClassManagement/Teacher/TClassDetai
 import TClassList from "../views/Education/ClassManagement/Teacher/TClassList";
 import TeacherViewDetailClass from "../views/Education/ClassManagement/Teacher/TeacherViewDetailClass";
 import TeacherViewLearningSessionDetail from "../views/Education/ClassManagement/Teacher/TeacherViewLearningSessionDetail";
+import TeacherViewQuestionsOfParticipant from "../component/education/quiztest/TeacherViewQuestionsOfParticipant";
+
 import NotFound from "../views/errors/NotFound";
 import StudentCreateThesis from "../component/education/thesisdefensejury/StudentCreateThesis"
 
@@ -164,18 +165,16 @@ export default function EduRoute() {
           component={ResourceList}
           path={`${path}/domains/:id/resources`}
         />
+
+        <Route
+          component={PlanDetail}
+          path={`${path}/teaching-assignment/plan/:planId/`}
+        />
+
         <Route
           component={ClassTeacherAssignmentPlanList}
-          path={`${path}/class-teacher-assignment-plan/list`}
+          path={`${path}/teaching-assignment/plan`}
         />
-        <Route
-          component={ClassTeacherAssignmentPlanDetail}
-          path={`${path}/class-teacher-assignment-plan/detail/:planId`}
-        />
-
-        <Route component={BCASolver} path={`${path}/solve`} />
-
-        <Route component={CreateSemester} path={`${path}/semester`} />
 
         <Route component={ClassCreate} path={`${path}/class/add`} />
 
@@ -185,23 +184,26 @@ export default function EduRoute() {
           exact
         />
 
-        <Route component={CourseList} path={`${path}/courses/list`} />
+        <Route
+          component={CourseList}
+          path={`${path}/teaching-assignment/courses`}
+        />
 
         <Route component={CourseDetail} path={`${path}/course/detail`} />
 
         <Route component={AddNewCourse} path={`${path}/course/create`} />
 
-        <Route component={TeacherList} path={`${path}/teachers/list`} />
+        {/* <Route component={TeacherList} path={`${path}/teachers/list`} /> */}
 
         <Route component={TeacherDetail} path={`${path}/teacher/detail`} />
 
         <Route component={AddTeacher} path={`${path}/teacher/create`} />
 
-        <Route component={ClassesList} path={`${path}/classes-list`} />
+        {/* <Route component={ClassesList} path={`${path}/classes-list`} /> */}
 
         <Route component={AssignmentList} path={`${path}/assignment`} />
 
-        <Route component={CreateSemester} path={`${path}/semester`} />
+        {/* <Route component={CreateSemester} path={`${path}/semester`} /> */}
 
         <Route component={ClassCreate} path={`${path}/class/add`} />
 
@@ -216,6 +218,12 @@ export default function EduRoute() {
           path={`${path}/class/quiztest/detail/:id`}
           exact
         />
+        <Route
+          component={TeacherViewQuestionsOfParticipant}
+          path={`${path}/class/quiztest/teacher-view-questions-of-participant/:participantid/:quiztestgroupid/:testid`}
+          exact
+        />
+
         <Route
           component={QuizTestEdit}
           path={`${path}/class/quiztest/edit/:id`}
@@ -263,6 +271,11 @@ export default function EduRoute() {
           path={`${path}/student/class/session/detail/:sessionId`}
           exact
         />
+        <Route
+          component={MainBoard}
+          path={`${path}/student/class/session/detail/:sessionId/whiteboard/:whiteboardId`}
+          exact
+        />
 
         <Route
           component={TClassList}
@@ -273,6 +286,11 @@ export default function EduRoute() {
         <Route
           component={TeacherViewDetailClass}
           path={`${path}/teacher/class/detail/:classId`}
+          exact
+        />
+        <Route
+          component={MainBoard}
+          path={`${path}/teacher/class/session/detail/:sessionId/whiteboard/:whiteboardId`}
           exact
         />
 

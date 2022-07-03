@@ -43,11 +43,7 @@ export const getDisplayMedia = async () => {
       video: {
         cursor: "always",
       },
-      // audio: {
-      //   echoCancellation: true,
-      //   noiseSuppression: true,
-      //   sampleRate: 44100
-      // }
+
       auto: false,
     };
     return await navigator.mediaDevices.getDisplayMedia(constraints);
@@ -62,7 +58,11 @@ export const getUserMedia = async (type) => {
       type === "micro"
         ? {
             video: false,
-            audio: true,
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              sampleRate: 44100,
+            },
           }
         : {
             video: true,

@@ -247,6 +247,17 @@ export default function EditContest(props) {
   const [listParticipantViewResultModes, setListParticipantViewResultModes] =
     useState([]);
 
+  const [problemDescriptionViewType, setProblemDescriptionViewType] =
+    useState(null);
+  const [listProblemDescriptionViewTypes, setListProblemDescriptionViewTypes] =
+    useState([]);
+
+  const [useCacheContestProblem, setUseCacheContestProblem] = useState(null);
+  const [listUseCacheContestProblems, setListUseCacheContestProblems] =
+    useState([]);
+
+  const [maxSourceCodeLength, setMaxSourceCodeLength] = useState(50000);
+
   const classes = useStyles();
   const handleClick = (event, name) => {
     const selectedIndex = problemSelected.indexOf(name);
@@ -283,6 +294,9 @@ export default function EditContest(props) {
       submissionActionType: submissionActionType,
       maxNumberSubmission: maxNumberSubmission,
       participantViewResultMode: participantViewResultMode,
+      problemDescriptionViewType: problemDescriptionViewType,
+      useCacheContestProblem: useCacheContestProblem,
+      maxSourceCodeLength: maxSourceCodeLength,
     };
     request(
       "post",
@@ -291,7 +305,8 @@ export default function EditContest(props) {
         // console.log("problem list", res.data);
         setShowSubmitSuccess(true);
         sleep(1000).then((r) => {
-          history.push("/programming-contest/list-contest");
+          //history.push("/programming-contest/list-contest");
+          history.push("/programming-contest/teacher-list-contest-manager");
         });
       },
       {},
@@ -329,7 +344,13 @@ export default function EditContest(props) {
       setListParticipantViewResultModes(res.data.listParticipantViewModes);
       setMaxNumberSubmission(res.data.maxNumberSubmission);
       setListMaxNumberSubmissions(res.data.listMaxNumberSubmissions);
-
+      setProblemDescriptionViewType(res.data.problemDescriptionViewType);
+      setListProblemDescriptionViewTypes(
+        res.data.listProblemDescriptionViewTypes
+      );
+      setUseCacheContestProblem(res.data.useCacheContestProblem);
+      setMaxSourceCodeLength(res.data.maxSourceCodeLength);
+      setListUseCacheContestProblems(res.data.listUseCacheContestProblems);
       console.log("res ", res.data);
     }).then();
   }, [page]);
@@ -456,6 +477,19 @@ export default function EditContest(props) {
               <TextField
                 autoFocus
                 // required
+
+                id="maxSourceCodeLength"
+                label="maxSourceCodeLength"
+                placeholder="maxSourceCodeLength"
+                onChange={(event) => {
+                  setMaxSourceCodeLength(event.target.value);
+                }}
+                value={maxSourceCodeLength}
+              ></TextField>
+
+              <TextField
+                autoFocus
+                // required
                 select
                 id="participantViewResultMode"
                 label="ParticipantViewResultMode"
@@ -466,6 +500,44 @@ export default function EditContest(props) {
                 value={participantViewResultMode}
               >
                 {listParticipantViewResultModes.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                autoFocus
+                // required
+                select
+                id="useCacheContestProblem"
+                label="useCacheContestProblem"
+                placeholder="useCacheContestProblem"
+                onChange={(event) => {
+                  setUseCacheContestProblem(event.target.value);
+                }}
+                value={useCacheContestProblem}
+              >
+                {listUseCacheContestProblems.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                autoFocus
+                // required
+                select
+                id="problemDescriptionViewType"
+                label="problemDescriptionViewType"
+                placeholder="problemDescriptionViewType"
+                onChange={(event) => {
+                  setProblemDescriptionViewType(event.target.value);
+                }}
+                value={problemDescriptionViewType}
+              >
+                {listProblemDescriptionViewTypes.map((item) => (
                   <MenuItem key={item} value={item}>
                     {item}
                   </MenuItem>
