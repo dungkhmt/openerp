@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface DefenseJuryRepo extends JpaRepository<DefenseJury, UUID> {
     Page<DefenseJury> findAll(Pageable pageable);
     @Override
-    @Query(value = "select * from defense_jury where id= :Id", nativeQuery = true)
+    @Query(value = "select * from defense_jury d where d.id= :Id", nativeQuery = true)
     Optional<DefenseJury> findById(UUID Id);
 
     @Query(value = "select * from defense_jury df where df.name like :name% ", nativeQuery = true)
@@ -23,4 +23,7 @@ public interface DefenseJuryRepo extends JpaRepository<DefenseJury, UUID> {
 
     @Query(value = "select * from defense_jury d where d.name like %:name%", nativeQuery = true)
     List<DefenseJury> findAllByName(String name);
+
+    @Query(value = "select * from defense_jury d where d.thesis_defense_plan_id = :planId", nativeQuery = true)
+    List<DefenseJury> findAllByPlanId(String planId);
 }

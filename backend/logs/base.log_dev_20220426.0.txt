@@ -1,0 +1,285 @@
+2022-04-26 00:00:54.351  WARN 7036 --- [l-1 housekeeper]  com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m32s278ms678µs300ns).
+2022-04-26 00:01:13.857  WARN 7036 --- [nio-8080-exec-3]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+2022-04-26 00:01:13.857  WARN 7036 --- [nio-8080-exec-1]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+2022-04-26 00:01:13.882 ERROR 7036 --- [nio-8080-exec-1]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: column userlogin0_.email does not exist
+  Position: 144
+2022-04-26 00:01:13.882 ERROR 7036 --- [nio-8080-exec-3]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: column userlogin0_.email does not exist
+  Position: 144
+2022-04-26 00:06:35.736  INFO 7036 --- [MessageBroker-3]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 122]
+2022-04-26 00:07:36.539  WARN 7036 --- [nio-8080-exec-6]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+2022-04-26 00:07:36.540 ERROR 7036 --- [nio-8080-exec-6]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: column userlogin0_.email does not exist
+  Position: 144
+2022-04-26 00:08:20.775  INFO 7036 --- [io-8080-exec-10]  c.h.b.s.RegisteredAffiliationServiceImpl : findAll
+2022-04-26 00:08:21.944  WARN 7036 --- [io-8080-exec-10]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42P01
+2022-04-26 00:08:21.945 ERROR 7036 --- [io-8080-exec-10]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: relation "registered_affiliation" does not exist
+  Position: 106
+2022-04-26 00:08:22.460 ERROR 7036 --- [io-8080-exec-10]  o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api] threw exception [Request processing failed; nested exception is org.springframework.dao.InvalidDataAccessResourceUsageException: could not extract ResultSet; SQL [n/a]; nested exception is org.hibernate.exception.SQLGrammarException: could not extract ResultSet] with root cause
+org.postgresql.util.PSQLException: ERROR: relation "registered_affiliation" does not exist
+  Position: 106
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2497)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2233)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:310)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:446)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:370)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:149)
+	at org.postgresql.jdbc.PgPreparedStatement.executeQuery(PgPreparedStatement.java:108)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeQuery(ProxyPreparedStatement.java:52)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeQuery(HikariProxyPreparedStatement.java)
+	at org.hibernate.engine.jdbc.internal.ResultSetReturnImpl.extract(ResultSetReturnImpl.java:57)
+	at org.hibernate.loader.Loader.getResultSet(Loader.java:2287)
+	at org.hibernate.loader.Loader.executeQueryStatement(Loader.java:2045)
+	at org.hibernate.loader.Loader.executeQueryStatement(Loader.java:2007)
+	at org.hibernate.loader.Loader.doQuery(Loader.java:953)
+	at org.hibernate.loader.Loader.doQueryAndInitializeNonLazyCollections(Loader.java:354)
+	at org.hibernate.loader.Loader.doList(Loader.java:2810)
+	at org.hibernate.loader.Loader.doList(Loader.java:2792)
+	at org.hibernate.loader.Loader.listIgnoreQueryCache(Loader.java:2624)
+	at org.hibernate.loader.Loader.list(Loader.java:2619)
+	at org.hibernate.loader.hql.QueryLoader.list(QueryLoader.java:506)
+	at org.hibernate.hql.internal.ast.QueryTranslatorImpl.list(QueryTranslatorImpl.java:396)
+	at org.hibernate.engine.query.spi.HQLQueryPlan.performList(HQLQueryPlan.java:219)
+	at org.hibernate.internal.SessionImpl.list(SessionImpl.java:1410)
+	at org.hibernate.query.internal.AbstractProducedQuery.doList(AbstractProducedQuery.java:1558)
+	at org.hibernate.query.internal.AbstractProducedQuery.list(AbstractProducedQuery.java:1526)
+	at org.hibernate.query.Query.getResultList(Query.java:165)
+	at org.hibernate.query.criteria.internal.compile.CriteriaQueryTypeQueryAdapter.getResultList(CriteriaQueryTypeQueryAdapter.java:76)
+	at org.springframework.data.jpa.repository.support.SimpleJpaRepository.findAll(SimpleJpaRepository.java:355)
+	at org.springframework.data.jpa.repository.support.SimpleJpaRepository.findAll(SimpleJpaRepository.java:78)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.springframework.data.repository.core.support.RepositoryComposition$RepositoryFragments.invoke(RepositoryComposition.java:371)
+	at org.springframework.data.repository.core.support.RepositoryComposition.invoke(RepositoryComposition.java:204)
+	at org.springframework.data.repository.core.support.RepositoryFactorySupport$ImplementationMethodExecutionInterceptor.invoke(RepositoryFactorySupport.java:657)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.data.repository.core.support.RepositoryFactorySupport$QueryExecutorMethodInterceptor.doInvoke(RepositoryFactorySupport.java:621)
+	at org.springframework.data.repository.core.support.RepositoryFactorySupport$QueryExecutorMethodInterceptor.invoke(RepositoryFactorySupport.java:605)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.data.projection.DefaultMethodInvokingMethodInterceptor.invoke(DefaultMethodInvokingMethodInterceptor.java:80)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:353)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:99)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:139)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.data.jpa.repository.support.CrudMethodMetadataPostProcessor$CrudMethodMetadataPopulatingMethodInterceptor.invoke(CrudMethodMetadataPostProcessor.java:178)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:93)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:212)
+	at com.sun.proxy.$Proxy192.findAll(Unknown Source)
+	at com.hust.baseweb.service.RegisteredAffiliationServiceImpl.findAll(RegisteredAffiliationServiceImpl.java:22)
+	at com.hust.baseweb.controller.UserRegisterController.getRegisteredAffiliations(UserRegisterController.java:55)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:190)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:138)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:106)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:888)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:793)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1040)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:634)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:126)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:90)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:118)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:158)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.www.BasicAuthenticationFilter.doFilterInternal(BasicAuthenticationFilter.java:154)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:92)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:77)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:358)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:271)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.session.web.http.SessionRepositoryFilter.doFilterInternal(SessionRepositoryFilter.java:141)
+	at org.springframework.session.web.http.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:82)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:92)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:526)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:408)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:861)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1579)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2022-04-26 00:13:20.566  WARN 7036 --- [nio-8080-exec-1]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+2022-04-26 00:13:20.567 ERROR 7036 --- [nio-8080-exec-1]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: column userlogin0_.email does not exist
+  Position: 144
+2022-04-26 00:30:11.911  WARN 7036 --- [nio-8080-exec-6]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+2022-04-26 00:30:11.913 ERROR 7036 --- [nio-8080-exec-6]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: column userlogin0_.email does not exist
+  Position: 144
+2022-04-26 00:30:21.753  WARN 7036 --- [io-8080-exec-10]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+2022-04-26 00:30:21.753 ERROR 7036 --- [io-8080-exec-10]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: column userlogin0_.email does not exist
+  Position: 144
+2022-04-26 00:31:38.156  WARN 7036 --- [nio-8080-exec-3]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+2022-04-26 00:31:38.157 ERROR 7036 --- [nio-8080-exec-3]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: column userlogin0_.email does not exist
+  Position: 144
+2022-04-26 00:32:09.269  WARN 7036 --- [nio-8080-exec-4]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+2022-04-26 00:32:09.270 ERROR 7036 --- [nio-8080-exec-4]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: column userlogin0_.email does not exist
+  Position: 144
+2022-04-26 00:32:10.422  WARN 7036 --- [nio-8080-exec-5]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+2022-04-26 00:32:10.423 ERROR 7036 --- [nio-8080-exec-5]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: column userlogin0_.email does not exist
+  Position: 144
+2022-04-26 00:36:35.806  INFO 7036 --- [MessageBroker-4]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 183]
+2022-04-26 00:51:41.469  WARN 7036 --- [nio-8080-exec-8]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+2022-04-26 00:51:41.470 ERROR 7036 --- [nio-8080-exec-8]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: column userlogin0_.email does not exist
+  Position: 144
+2022-04-26 00:52:40.081  WARN 7036 --- [nio-8080-exec-9]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+2022-04-26 00:52:40.082 ERROR 7036 --- [nio-8080-exec-9]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: column userlogin0_.email does not exist
+  Position: 144
+2022-04-26 00:52:49.335  WARN 7036 --- [nio-8080-exec-3]  o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+2022-04-26 00:52:49.336 ERROR 7036 --- [nio-8080-exec-3]  o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: column userlogin0_.email does not exist
+  Position: 144
+2022-04-26 00:53:03.676  INFO 7036 --- [extShutdownHook]  o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2022-04-26 00:53:03.703  INFO 7036 --- [extShutdownHook]  o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [DefaultSubscriptionRegistry[cache[0 destination(s)], registry[0 sessions]]]]
+2022-04-26 00:53:03.750  INFO 7036 --- [extShutdownHook]  o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2022-04-26 09:21:18.940  INFO 8260 --- [           main]  com.hust.baseweb.BasewebApplication      : Starting BasewebApplication on DESKTOP-65R9FFG with PID 8260 (C:\Users\DELL\Gr3\openerp\backend\springboot\baseweb\target\classes started by DELL in C:\Users\DELL\Gr3\openerp\backend)
+2022-04-26 09:21:18.951 DEBUG 8260 --- [           main]  com.hust.baseweb.BasewebApplication      : Running with Spring Boot v2.2.0.RELEASE, Spring v5.2.0.RELEASE
+2022-04-26 09:21:18.952  INFO 8260 --- [           main]  com.hust.baseweb.BasewebApplication      : No active profile set, falling back to default profiles: default
+2022-04-26 09:21:19.299  WARN 8260 --- [kground-preinit]  o.s.h.c.j.Jackson2ObjectMapperBuilder    : For Jackson Kotlin classes support please add "com.fasterxml.jackson.module:jackson-module-kotlin" to the classpath
+2022-04-26 09:21:35.942  INFO 8260 --- [           main]  .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2022-04-26 09:21:35.944  INFO 8260 --- [           main]  .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data repositories in DEFAULT mode.
+2022-04-26 09:21:36.113  INFO 8260 --- [           main]  .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 156ms. Found 1 repository interfaces.
+2022-04-26 09:21:37.884  INFO 8260 --- [           main]  .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2022-04-26 09:21:37.885  INFO 8260 --- [           main]  .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data repositories in DEFAULT mode.
+2022-04-26 09:21:38.217  INFO 8260 --- [           main]  .RepositoryConfigurationExtensionSupport : Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.hust.baseweb.applications.education.repo.mongodb.TeacherRepo.
+2022-04-26 09:21:38.615  INFO 8260 --- [           main]  .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 724ms. Found 72 repository interfaces.
+2022-04-26 09:21:39.884  INFO 8260 --- [           main]  trationDelegate$BeanPostProcessorChecker : Bean 'asyncConfiguration' of type [com.hust.baseweb.config.AsyncConfiguration$$EnhancerBySpringCGLIB$$49bd5ddd] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-04-26 09:21:40.165  INFO 8260 --- [           main]  trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-04-26 09:21:41.333  INFO 8260 --- [           main]  o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-04-26 09:21:41.360  INFO 8260 --- [           main]  o.a.coyote.http11.Http11NioProtocol      : Initializing ProtocolHandler ["http-nio-8080"]
+2022-04-26 09:21:41.369  INFO 8260 --- [           main]  o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-04-26 09:21:41.370  INFO 8260 --- [           main]  org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.27]
+2022-04-26 09:21:41.962  INFO 8260 --- [           main]  o.a.c.c.C.[Tomcat].[localhost].[/api]    : Initializing Spring embedded WebApplicationContext
+2022-04-26 09:21:41.963  INFO 8260 --- [           main]  o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 22758 ms
+2022-04-26 09:21:42.738  INFO 8260 --- [           main]  com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2022-04-26 09:21:43.575  INFO 8260 --- [           main]  com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2022-04-26 09:21:44.067  INFO 8260 --- [           main]  o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2022-04-26 09:21:44.388  INFO 8260 --- [           main]  org.hibernate.Version                    : HHH000412: Hibernate Core {5.4.6.Final}
+2022-04-26 09:21:45.376  INFO 8260 --- [           main]  o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
+2022-04-26 09:21:45.679  INFO 8260 --- [           main]  org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL10Dialect
+2022-04-26 09:21:49.945  INFO 8260 --- [           main]  o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-04-26 09:21:50.015  INFO 8260 --- [           main]  j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-04-26 09:21:52.427 DEBUG 8260 --- [           main]  c.h.baseweb.config.AsyncConfiguration    : Creating Async Task Executor
+2022-04-26 09:21:52.501  INFO 8260 --- [           main]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'taskExecutor'
+2022-04-26 09:21:53.352  INFO 8260 --- [           main]  org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017, localhost:27018, localhost:27019], mode=MULTIPLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2022-04-26 09:21:53.353  INFO 8260 --- [           main]  org.mongodb.driver.cluster               : Adding discovered server localhost:27017 to client view of cluster
+2022-04-26 09:21:53.408  INFO 8260 --- [           main]  org.mongodb.driver.cluster               : Adding discovered server localhost:27018 to client view of cluster
+2022-04-26 09:21:53.410  INFO 8260 --- [           main]  org.mongodb.driver.cluster               : Adding discovered server localhost:27019 to client view of cluster
+2022-04-26 09:21:53.537  INFO 8260 --- [localhost:27019]  org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:20}] to localhost:27019
+2022-04-26 09:21:53.537  INFO 8260 --- [localhost:27018]  org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:25}] to localhost:27018
+2022-04-26 09:21:53.538  INFO 8260 --- [localhost:27017]  org.mongodb.driver.connection            : Opened connection [connectionId{localValue:3, serverValue:22}] to localhost:27017
+2022-04-26 09:21:53.573  INFO 8260 --- [localhost:27018]  org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27018, type=REPLICA_SET_PRIMARY, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 2, 6]}, minWireVersion=0, maxWireVersion=8, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=30153000, setName='rs0', canonicalAddress=localhost:27018, hosts=[localhost:27018, localhost:27017, localhost:27019], passives=[], arbiters=[], primary='localhost:27018', tagSet=TagSet{[]}, electionId=7fffffff0000000000000075, setVersion=3, lastWriteDate=Tue Apr 26 09:21:48 ICT 2022, lastUpdateTimeNanos=491728797120500}
+2022-04-26 09:21:53.580  INFO 8260 --- [localhost:27019]  org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27019, type=REPLICA_SET_SECONDARY, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 2, 6]}, minWireVersion=0, maxWireVersion=8, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=40778800, setName='rs0', canonicalAddress=localhost:27019, hosts=[localhost:27018, localhost:27017, localhost:27019], passives=[], arbiters=[], primary='localhost:27018', tagSet=TagSet{[]}, electionId=null, setVersion=3, lastWriteDate=Tue Apr 26 09:21:48 ICT 2022, lastUpdateTimeNanos=491728806412200}
+2022-04-26 09:21:53.581  INFO 8260 --- [localhost:27017]  org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=REPLICA_SET_SECONDARY, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 2, 6]}, minWireVersion=0, maxWireVersion=8, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=41903800, setName='rs0', canonicalAddress=localhost:27017, hosts=[localhost:27018, localhost:27017, localhost:27019], passives=[], arbiters=[], primary='localhost:27018', tagSet=TagSet{[]}, electionId=null, setVersion=3, lastWriteDate=Tue Apr 26 09:21:48 ICT 2022, lastUpdateTimeNanos=491728808020500}
+2022-04-26 09:21:53.587  INFO 8260 --- [localhost:27018]  org.mongodb.driver.cluster               : Discovered cluster type of REPLICA_SET
+2022-04-26 09:21:53.589  INFO 8260 --- [localhost:27018]  org.mongodb.driver.cluster               : Setting max election id to 7fffffff0000000000000075 from replica set primary localhost:27018
+2022-04-26 09:21:53.590  INFO 8260 --- [localhost:27018]  org.mongodb.driver.cluster               : Setting max set version to 3 from replica set primary localhost:27018
+2022-04-26 09:21:53.590  INFO 8260 --- [localhost:27018]  org.mongodb.driver.cluster               : Discovered replica set primary localhost:27018
+2022-04-26 09:21:53.778  WARN 8260 --- [           main]  o.s.data.convert.CustomConversions       : Registering converter from class java.time.LocalDateTime to class java.time.Instant as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2022-04-26 09:21:53.779  WARN 8260 --- [           main]  o.s.data.convert.CustomConversions       : Registering converter from class java.time.Instant to class java.time.LocalDateTime as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2022-04-26 09:21:53.818  WARN 8260 --- [           main]  o.s.data.convert.CustomConversions       : Registering converter from class java.time.LocalDateTime to class java.time.Instant as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2022-04-26 09:21:53.819  WARN 8260 --- [           main]  o.s.data.convert.CustomConversions       : Registering converter from class java.time.Instant to class java.time.LocalDateTime as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2022-04-26 09:21:56.605  WARN 8260 --- [           main]  o.h.dialect.function.TemplateRenderer    : HHH000174: Function template anticipated 4 arguments, but 1 arguments encountered
+2022-04-26 09:21:56.606  WARN 8260 --- [           main]  o.h.dialect.function.TemplateRenderer    : HHH000174: Function template anticipated 4 arguments, but 1 arguments encountered
+2022-04-26 09:21:56.606  WARN 8260 --- [           main]  o.h.dialect.function.TemplateRenderer    : HHH000174: Function template anticipated 4 arguments, but 1 arguments encountered
+2022-04-26 09:21:56.610  WARN 8260 --- [           main]  o.h.dialect.function.TemplateRenderer    : HHH000174: Function template anticipated 4 arguments, but 1 arguments encountered
+2022-04-26 09:21:56.610  WARN 8260 --- [           main]  o.h.dialect.function.TemplateRenderer    : HHH000174: Function template anticipated 4 arguments, but 1 arguments encountered
+2022-04-26 09:21:56.611  WARN 8260 --- [           main]  o.h.dialect.function.TemplateRenderer    : HHH000174: Function template anticipated 4 arguments, but 1 arguments encountered
+2022-04-26 09:21:57.690  INFO 8260 --- [           main]  o.s.c.fs.io.FileSystemResourceLoader     : Defaulting filesystem root to C:\Users\DELL\OpenERP\openerp\frontend
+2022-04-26 09:21:57.923  WARN 8260 --- [           main]  JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2022-04-26 09:22:08.906  INFO 8260 --- [           main]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'clientInboundChannelExecutor'
+2022-04-26 09:22:08.953  INFO 8260 --- [           main]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'clientOutboundChannelExecutor'
+2022-04-26 09:22:09.056  INFO 8260 --- [           main]  o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'messageBrokerTaskScheduler'
+2022-04-26 09:22:09.206  INFO 8260 --- [           main]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'brokerChannelExecutor'
+2022-04-26 09:22:12.436  INFO 8260 --- [           main]  c.h.b.a.p.docker.DockerClientBase        : ping OK
+2022-04-26 09:22:13.160  INFO 8260 --- [           main]  c.h.b.a.p.docker.DockerClientBase        : list container [Container{id=538ced2943d60d54ab43cd4aeb0e5850dc571507930dbd08b013c0e5f7ad1b8e, names=[/golang], image=golang:1.16-buster, imageId=sha256:237b9837a200f2ec258e13c7b5dfb97414943663c5eb8d1e5d1e52e169830924, command=sh -c 'while :; do sleep 1; done', created=1641353718, state=running, status=Up 3 months, ports=[], labels={names=leetcode}, sizeRw=null, sizeRootFs=null, networkSettings=NetworkSettings{ipAddress=null, ipPrefixLen=null, gateway=null, bridge=null, portMapping=null, ports={}, macAddress=null, networks={bridge=AttachedNetwork{aliases=null, networkId=1ff2b4d32ab9cead4a01849f5ddd340f71cbda4f33bd962acbff150a6206036f, endpointId=6643a51be1372e39eed0bd22386899278a89a56dba0fa5a7f0a00e5b31fa9f19, gateway=172.17.0.1, ipAddress=172.17.0.5, ipPrefixLen=16, ipv6Gateway=, globalIPv6Address=, globalIPv6PrefixLen=0, macAddress=02:42:ac:11:00:05}}, endpointId=null, sandboxId=null, sandboxKey=null, hairpinMode=null, linkLocalIPv6Address=null, linkLocalIPv6PrefixLen=null, globalIPv6Address=null, globalIPv6PrefixLen=null, ipv6Gateway=null}, mounts=[]}, Container{id=5315f0d15b5efc899ff38eb6d2ed8ef91c0da0bdd173c059081a1cf171498f21, names=[/gcc], image=gcc:8.5-buster, imageId=sha256:21997055d1a44a57588ba17c0f0c400b8af0f12725cb4d592c3c55c1cfc415e0, command=/bin/sh -c 'while true; do sleep 1000; done', created=1640707449, state=running, status=Up 3 months, ports=[], labels={names=leetcode}, sizeRw=null, sizeRootFs=null, networkSettings=NetworkSettings{ipAddress=null, ipPrefixLen=null, gateway=null, bridge=null, portMapping=null, ports={}, macAddress=null, networks={bridge=AttachedNetwork{aliases=null, networkId=1ff2b4d32ab9cead4a01849f5ddd340f71cbda4f33bd962acbff150a6206036f, endpointId=988453fc8bd2cf72c7d396cb65f478908ed5aafd7d607b224edcb6d0ff708242, gateway=172.17.0.1, ipAddress=172.17.0.2, ipPrefixLen=16, ipv6Gateway=, globalIPv6Address=, globalIPv6PrefixLen=0, macAddress=02:42:ac:11:00:02}}, endpointId=null, sandboxId=null, sandboxKey=null, hairpinMode=null, linkLocalIPv6Address=null, linkLocalIPv6PrefixLen=null, globalIPv6Address=null, globalIPv6PrefixLen=null, ipv6Gateway=null}, mounts=[]}, Container{id=ecd71718fe129d14cf0462c1ad0e03c25eaddc2e8e1776a474ac8cd9159cd642, names=[/python3], image=python:3.6-buster, imageId=sha256:6a16f0d6824577f4295aa0324e581796320c0fd4ad7f9b801698b2ac5e1baf5d, command=/bin/sh -c 'while true; do sleep 1000; done', created=1640707423, state=running, status=Up 3 months, ports=[], labels={names=leetcode}, sizeRw=null, sizeRootFs=null, networkSettings=NetworkSettings{ipAddress=null, ipPrefixLen=null, gateway=null, bridge=null, portMapping=null, ports={}, macAddress=null, networks={bridge=AttachedNetwork{aliases=null, networkId=1ff2b4d32ab9cead4a01849f5ddd340f71cbda4f33bd962acbff150a6206036f, endpointId=63dc1cef7bec4fb5758eab8f269b4ce32c133a6119be8a5e88079d1d589bae10, gateway=172.17.0.1, ipAddress=172.17.0.3, ipPrefixLen=16, ipv6Gateway=, globalIPv6Address=, globalIPv6PrefixLen=0, macAddress=02:42:ac:11:00:03}}, endpointId=null, sandboxId=null, sandboxKey=null, hairpinMode=null, linkLocalIPv6Address=null, linkLocalIPv6PrefixLen=null, globalIPv6Address=null, globalIPv6PrefixLen=null, ipv6Gateway=null}, mounts=[]}, Container{id=14c9e924de74e0a7024493b543c47147af90c9366f1a76655953d5bcc76affc6, names=[/java], image=openjdk:13-buster, imageId=sha256:55956f412dc6a0cfe09a2a750de6ef798b51ccef87aba93a09f66f5bb15e6212, command=/bin/sh -c 'while true; do sleep 1000; done', created=1640707359, state=running, status=Up 3 months, ports=[], labels={names=leetcode}, sizeRw=null, sizeRootFs=null, networkSettings=NetworkSettings{ipAddress=null, ipPrefixLen=null, gateway=null, bridge=null, portMapping=null, ports={}, macAddress=null, networks={bridge=AttachedNetwork{aliases=null, networkId=1ff2b4d32ab9cead4a01849f5ddd340f71cbda4f33bd962acbff150a6206036f, endpointId=cd14af7b6430e0601ca6f7a7b5f8374255cd4dee21022eecddd590db8e95b957, gateway=172.17.0.1, ipAddress=172.17.0.4, ipPrefixLen=16, ipv6Gateway=, globalIPv6Address=, globalIPv6PrefixLen=0, macAddress=02:42:ac:11:00:04}}, endpointId=null, sandboxId=null, sandboxKey=null, hairpinMode=null, linkLocalIPv6Address=null, linkLocalIPv6PrefixLen=null, globalIPv6Address=null, globalIPv6PrefixLen=null, ipv6Gateway=null}, mounts=[]}]
+2022-04-26 09:22:13.167  INFO 8260 --- [           main]  c.h.b.a.p.docker.DockerClientBase        : containerSet [/golang, /java, /python3, /gcc]
+2022-04-26 09:22:13.211  INFO 8260 --- [           main]  c.h.b.a.p.docker.DockerClientBase        : {/golang=538ced2943d60d54ab43cd4aeb0e5850dc571507930dbd08b013c0e5f7ad1b8e, /java=14c9e924de74e0a7024493b543c47147af90c9366f1a76655953d5bcc76affc6, /python3=ecd71718fe129d14cf0462c1ad0e03c25eaddc2e8e1776a474ac8cd9159cd642, /gcc=5315f0d15b5efc899ff38eb6d2ed8ef91c0da0bdd173c059081a1cf171498f21}
+2022-04-26 09:22:15.204  WARN 8260 --- [           main]  o.s.data.convert.CustomConversions       : Registering converter from class java.time.LocalDateTime to class java.time.Instant as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2022-04-26 09:22:15.204  WARN 8260 --- [           main]  o.s.data.convert.CustomConversions       : Registering converter from class java.time.Instant to class java.time.LocalDateTime as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2022-04-26 09:22:15.739  INFO 8260 --- [           main]  o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4cb25b53, org.springframework.security.web.context.SecurityContextPersistenceFilter@13bea51d, org.springframework.security.web.header.HeaderWriterFilter@6dbf203c, org.springframework.security.web.authentication.logout.LogoutFilter@29cbbff7, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@6178b3bf, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@14c16388, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@d3767cf, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4e9a4142, org.springframework.security.web.session.SessionManagementFilter@3c532b97, org.springframework.security.web.access.ExceptionTranslationFilter@26420ed1, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@27868127]
+2022-04-26 09:22:22.934  INFO 8260 --- [           main]  o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2022-04-26 09:22:22.935  INFO 8260 --- [           main]  o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [DefaultSubscriptionRegistry[cache[0 destination(s)], registry[0 sessions]]]]
+2022-04-26 09:22:22.936  INFO 8260 --- [           main]  o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2022-04-26 09:22:22.977  INFO 8260 --- [           main]  o.a.coyote.http11.Http11NioProtocol      : Starting ProtocolHandler ["http-nio-8080"]
+2022-04-26 09:22:23.149  INFO 8260 --- [           main]  o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path '/api'
+2022-04-26 09:22:23.194  INFO 8260 --- [           main]  com.hust.baseweb.BasewebApplication      : Started BasewebApplication in 67.596 seconds (JVM running for 72.517)
+2022-04-26 09:23:09.209  INFO 8260 --- [MessageBroker-2]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 3, active threads = 1, queued tasks = 1, completed tasks = 1]
+2022-04-26 09:41:44.538  INFO 8260 --- [nio-8080-exec-1]  o.a.c.c.C.[Tomcat].[localhost].[/api]    : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2022-04-26 09:41:44.754  INFO 8260 --- [nio-8080-exec-1]  o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2022-04-26 09:41:48.035  INFO 8260 --- [nio-8080-exec-1]  o.s.web.servlet.DispatcherServlet        : Completed initialization in 3279 ms
+2022-04-26 09:41:56.935  INFO 8260 --- [nio-8080-exec-2]  io.lettuce.core.EpollProvider            : Starting without optional epoll library
+2022-04-26 09:41:56.986  INFO 8260 --- [nio-8080-exec-2]  io.lettuce.core.KqueueProvider           : Starting without optional kqueue library
+2022-04-26 09:45:19.501  INFO 8260 --- [extShutdownHook]  o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2022-04-26 09:45:19.543  INFO 8260 --- [extShutdownHook]  o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [DefaultSubscriptionRegistry[cache[0 destination(s)], registry[0 sessions]]]]
+2022-04-26 09:45:19.544  INFO 8260 --- [extShutdownHook]  o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2022-04-26 09:45:20.004  INFO 8260 --- [extShutdownHook]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'brokerChannelExecutor'
+2022-04-26 09:45:20.025  INFO 8260 --- [extShutdownHook]  o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'messageBrokerTaskScheduler'
+2022-04-26 09:45:20.027  INFO 8260 --- [extShutdownHook]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'clientOutboundChannelExecutor'
+2022-04-26 09:45:20.030  INFO 8260 --- [extShutdownHook]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'clientInboundChannelExecutor'
+2022-04-26 09:45:21.464  INFO 8260 --- [extShutdownHook]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'taskExecutor'
+2022-04-26 09:45:21.535  INFO 8260 --- [extShutdownHook]  j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2022-04-26 09:45:21.962  INFO 8260 --- [extShutdownHook]  com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2022-04-26 09:45:21.973  INFO 8260 --- [extShutdownHook]  com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

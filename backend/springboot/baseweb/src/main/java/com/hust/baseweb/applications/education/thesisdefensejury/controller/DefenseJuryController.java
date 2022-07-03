@@ -9,6 +9,8 @@ import com.hust.baseweb.applications.education.thesisdefensejury.models.*;
 import com.hust.baseweb.applications.education.thesisdefensejury.repo.DefenseJuryTeacherRepo;
 import com.hust.baseweb.applications.education.thesisdefensejury.repo.ThesisRepo;
 import com.hust.baseweb.applications.education.thesisdefensejury.service.DefenseJuryService;
+import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.security.Principal;
 import java.util.*;
 
 @Log4j2
@@ -35,18 +38,26 @@ public class DefenseJuryController {
     private final DefenseJuryService juryService;
     private final DefenseJuryTeacherRepo defenseJuryTeacherRepo;
     private final ThesisRepo thesisRepo;
+    private UserService userService;
     private static Logger logger = LogManager.getLogger(DefenseJuryController.class);
 
     @PostMapping("/defense_jury")
     public ResponseEntity<?> createDefenseJury(
+        Principal principal,
         @RequestBody DefenseJuryIM request
     ){
         logger.debug(request);
+        log.info("Session Login , sessionName = " + principal.getName());
+        UserLogin u = userService.findById(principal.getName());
+        if (u == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid session login");
+        }
         // TODO: check valid request
         if (request == null) {
            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid body request");
         }
 
+        request.setUserLoginID(u.getUserLoginId());
         DefenseJury jury = juryService.createDefenseJury(request);
         if (jury == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error Internal server");
@@ -150,9 +161,9 @@ public class DefenseJuryController {
         @RequestBody AddTeacherToDefenseJuryIM request,
         @PathVariable("defenseJuryId")UUID juryID
     ){
-        logger.debug(request);
+        logger.debug("Inout Delete Teacher",request);
         // TODO: check valid request
-        if (request == null || juryID == null) {
+        if (request.getTeacherId() == "" || juryID == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid body request");
         }
         // delete data at defense jury teacher
@@ -197,6 +208,21 @@ public class DefenseJuryController {
 
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
+
+    @GetMapping("/{planId}/defenseJurysBelongPlan")
+    public ResponseEntity<?> getAllDefensseJurysBelongPlan(
+        @PathVariable("planId")String planId
+    ){
+        // check input
+        if(planId == ""){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid plan id");
+        }
+        // TODO handler
+        Response res = juryService.findAllBelongPlanID(planId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(res);
+    }
+
 
 
 }

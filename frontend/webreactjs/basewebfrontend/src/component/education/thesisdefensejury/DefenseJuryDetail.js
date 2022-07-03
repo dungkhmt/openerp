@@ -1,6 +1,7 @@
 import { Box, IconButton, Typography } from "@material-ui/core/";
 import { grey } from "@material-ui/core/colors";
 import { makeStyles, MuiThemeProvider,createMuiTheme } from "@material-ui/core/styles";
+import { Button } from "@material-ui/core";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import EditIcon from "@material-ui/icons/Edit";
 import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
@@ -16,6 +17,9 @@ import ElementDeleteThesis from  './ElementDeleteThesis';
 import ElementAddThesis from  './ElementAddThesis';
 import ElementAddTeacher from  './ElementAddTeacher';
 import ElementDeleteTeacher from  './ElementDeleteTeacher';
+import { useLocation,useHistory } from "react-router-dom";
+import Loading from "../../common/Loading"
+import LoadingOverlay from "react-loading-overlay";
 // import {
 //   components,
 //   localization,
@@ -65,7 +69,7 @@ function DefenseJuryDetail(props) {
 
   //
   const [defenseJuryDetail, setDefenseJuryDetail] = useState([]);
-
+  const history = useHistory();
   const [selectedClassId, setSelectedClassId] = useState(null);
   const [open, setOpen] = React.useState(false);
   const [openModelExcel, setOpenModelExcel] = React.useState(false);
@@ -81,6 +85,15 @@ function DefenseJuryDetail(props) {
   const [teacher, setTeacher] = useState([]);
   const [notBelongTeacher,setNotBelongTeacher] = useState([]);
   const [listTeacher,setListTeacher] = React.useState([]);
+  const location = useLocation();
+  const [loading,setLoading] = useState(true)
+  const [openLoadingAdd,setOpenLoadingAdd] = useState(false)
+  const [openLoadingDelete,setOpenLoadingDelete] = useState(false)
+  const [defensePlanId,setDefensePlanId] = useState();
+  useEffect(() => {
+    console.log(location.state.defensePlanId); 
+    setDefensePlanId(location.state.defensePlanId);
+ }, [location]);
   //const [selectedFile, setSelectedFile] = useState(null);
 
   // Table
@@ -113,6 +126,16 @@ function DefenseJuryDetail(props) {
     },
   ];
 
+  
+  const handlerIsLoad = () => {
+    console.log("Loadding: ",loading)
+    setLoading(true)
+  }
+  const handlerNotLoad = () => {
+    console.log("Loadding: ",loading)
+    setLoading(false)
+  }
+
   async function getListThesisOfDefenseJury() {
     request(
       // token,
@@ -138,28 +161,29 @@ function DefenseJuryDetail(props) {
   }
 
   async function getAllThesisNotBelongToDefenseJury(thesis) {
+    console.log(location.state.defensePlanId)
     request(
       // token,
       // history,
       "GET",
-      `/thesis`,
+      `${location.state.defensePlanId}/thesisBelongPlan`,
       (res) => {
-          console.log("Resp:",res.data.content)
-          console.log("Thesis Resp:",thesis)
+          console.log("Resp:",res.data)
+          // console.log("Thesis Resp:",thesis)
           let listThesis = [];
           let listThesisId = [];
           var data = [];
           for (let i=0;i<thesis.length;i++){
             listThesisId.push(thesis[i].id);
           }
-          listThesis =  res.data.content.filter(ele => !listThesisId.includes(ele.id));
-          console.log("List Thesis :",listThesis)
+          listThesis =  res.data.result.filter(ele => !listThesisId.includes(ele.id));
+          // console.log("List Thesis :",listThesis)
           for (let j=0;j<listThesis.length;j++){
             var ele = {
               stt:j+1,
               id:listThesis[j].id,
-              thesisName:listThesis[j].name,
-              studentName:listThesis[j].student_name
+              thesisName:listThesis[j].thesisName,
+              studentName:listThesis[j].studentName
             }
             data.push(ele)
           }
@@ -170,15 +194,36 @@ function DefenseJuryDetail(props) {
     );
   }
 
-  async function getAllTeacherNotBelongToDefenseJury() {
+  async function getAllTeacherNotBelongToDefenseJury(teacher) {
     request(
       // token,
       // history,
       "GET",
       "/teachers",
       (res) => {
-          console.log("Teachers",res.data)
-          setListTeacher(res.data)
+        
+          console.log("Resp:",res.data)
+          console.log("Teacher Resp:",teacher)
+          let listTeachers = [];
+          let listTeachersId = [];
+          var data = [];
+          for (let i=0;i<teacher.length;i++){
+            listTeachersId.push(teacher[i].teacherId);
+          }
+          listTeachers =  res.data.filter(ele => !listTeachersId.includes(ele.teacherId));
+          console.log("List Teachers :",listTeachers)
+          for (let j=0;j<listTeachers.length;j++){
+            var ele = {
+              stt:j+1,
+              teacherId:listTeachers[j].teacherId,
+              teacherName:listTeachers[j].teacherName,
+              // studentName:listTeachers[j].student_name
+            }
+            data.push(ele)
+          }
+          
+          console.log(data)
+        setListTeacher(data)
         
       }
     );
@@ -192,7 +237,17 @@ function DefenseJuryDetail(props) {
       `/defense_jury/${params.id}/teachers`,
       (res) => {
           console.log("List Teachers",res.data)
-         setTeacher(res.data.result)
+          getAllTeacherNotBelongToDefenseJury(res.data.result)
+          let listTeachers = []
+        for (let i=0;i<res.data.result.length;i++){
+          var ele = {
+            stt:i+1,
+            teacherId:res.data.result[i].teacherId,
+            teacherName:res.data.result[i].teacherName,
+          }
+          listTeachers.push(ele)
+        }
+         setTeacher(listTeachers)
         
       }
     );
@@ -240,11 +295,22 @@ function DefenseJuryDetail(props) {
     getDefenseJury();
   },[])
 
+  const handleBack = (e) => {
+    e.preventDefault();
+    history.push({
+        pathname: `/thesis/thesis_defense_plan/${location.state.defensePlanId}`,
+        state: {
+          valueTab:1
+      },
+    });
+  }
+
+
   useEffect(() => {
    
     getListThesisOfDefenseJury();
     getListTeacherOfDefenseJury();
-    getAllTeacherNotBelongToDefenseJury();
+    // getAllTeacherNotBelongToDefenseJury();
     // getAllThesisNotBelongToDefenseJury();
   }, [toggle,toggleTeacher]);
   return (
@@ -260,72 +326,19 @@ function DefenseJuryDetail(props) {
         mb={3}
         style={{ borderColor: "#e8e8e8" }}
       >
-    
-        {/* {selectedRows.length > 0 && (
-          <>
-            <TertiaryButton
-              className={classes.commandButton}
-              color="default"
-              startIcon={<DeleteRoundedIcon />}
-              // disableRipple
-              onClick={handleRemoveClassFromAssignmentPlan}
-            >
-              Xoá
-            </TertiaryButton>
-            <Typography
-              component="span"
-              style={{ marginLeft: "auto", marginRight: 32 }}
-            >{`Đã chọn ${selectedRows.length} mục`}</Typography>
-          </>
-        )} */}
+  
       </Box>
       <MuiThemeProvider >
-        {/* <MaterialTable
-          title={"Chi tiết HĐ Bảo vệ"}
-          columns={columns}
-          data={defenseJuryDetail}
-          localization={{
-            ...localization,
-            toolbar: { ...localization.toolbar, nRowsSelected: "" },
-          }}
-          options={{
-            selection: true,
-            pageSize: 20,
-            headerStyle: {
-              backgroundColor: "transparent",
-            },
-            // rowStyle: (rowData) => ({
-            //   backgroundColor: rowData.tableData.checked
-            //     ? grey[200]
-            //     : "#FFFFFF",
-            // }),
-          }}
-          onSelectionChange={(rows) => {
-            setSelectedRows(rows);
-          }}
-          components={{
-            Toolbar: (props) => (
-              <MTableToolbar
-                {...props}
-                classes={{
-                  highlight: classes.tableToolbarHighlight,
-                }}
-                searchFieldVariant="outlined"
-                searchFieldStyle={{
-                  height: 40,
-                }}
-              />
-            ),
-          }}
-        /> */}
+      <Button color="primary" type="submit" onClick={handleBack} width="20%">Back</Button>   
         <div>
           <Grid container spacing={2}>
             <Grid item sm={12} md={6}>
-              <h2>Danh sach luan van trong HD</h2>
-              <ElementDeleteThesis thesis = {thesis} defenseJuryID = {params.id} toggle={toggle} handleToggle={handleToggle} getListThesisOfDefenseJury={getListThesisOfDefenseJury}/>
+              <h2>Danh sách luận văn trong HĐ</h2>
+              <ElementDeleteThesis thesis = {thesis} defenseJuryID = {params.id} toggle={toggle} handleToggle={handleToggle} 
+              getListThesisOfDefenseJury={getListThesisOfDefenseJury}/>
             </Grid>
             <Grid item sm={12} md={6}>
-               <h2>Danh sach luan van</h2>
+               <h2>Danh sách luận văn</h2>
                <ElementAddThesis notBelongThesis = {notBelongThesis} 
                defenseJuryID = {params.id} toggle={toggle} handleToggle={handleToggle} getAllThesisNotBelongToDefenseJury={getAllThesisNotBelongToDefenseJury}
 
@@ -336,18 +349,25 @@ function DefenseJuryDetail(props) {
         <div>
           <Grid container spacing={2}>
             <Grid item sm={12} md={6}>
-              <h2>Danh sach giảng viên trong HD</h2>
-              <ElementDeleteTeacher teacher = {teacher} defenseJuryID = {params.id} toggleTeacher={toggleTeacher} handleToggleTeacher={handleToggleTeacher} getListTeacherOfDefenseJury={getListTeacherOfDefenseJury}/>
+              <h2>Danh sách giảng viên trong HĐ</h2>
+              <ElementDeleteTeacher teacher = {teacher} defenseJuryID = {params.id} toggleTeacher={toggleTeacher} handleToggleTeacher={handleToggleTeacher} getListTeacherOfDefenseJury={getListTeacherOfDefenseJury}
+                handlerIsLoad = {handlerIsLoad} handlerNotLoad = {handlerNotLoad}
+              />
             </Grid>
             <Grid item sm={12} md={6}>
-               <h2>Danh sach giảng viên</h2>
+               <h2>Danh sách giảng viên</h2>
                <ElementAddTeacher listTeacher = {listTeacher} 
                defenseJuryID = {params.id} toggleTeacher={toggleTeacher} handleToggleTeacher={handleToggleTeacher} getAllTeacherNotBelongToDefenseJury={getAllTeacherNotBelongToDefenseJury}
-
+               handlerIsLoad = {handlerIsLoad} handlerNotLoad = {handlerNotLoad}
                />
             </Grid>
         </Grid>
         </div>
+        {/* {loading ?  (<LoadingOverlay
+          active={true}
+          spinner={true}
+          text="Loading your content..."
+        > </LoadingOverlay>) :<></>} */}
       </MuiThemeProvider>
     </>
   );

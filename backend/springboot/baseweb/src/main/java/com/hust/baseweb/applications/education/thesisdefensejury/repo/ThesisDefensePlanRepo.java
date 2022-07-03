@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface ThesisDefensePlanRepo extends JpaRepository<ThesisDefensePlan, String> {
 
     Optional<ThesisDefensePlan> findByName(String name);
+    Optional<ThesisDefensePlan> findByNameAndAndId(String name, String id);
 }

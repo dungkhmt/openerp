@@ -49,7 +49,7 @@ function CreateDefenseJury(props) {
         let body = {
             name: name,
             program_name: program,
-            userLoginID: userId,
+            // userLoginID: userId,
             maxThesis: nbr,
             thesisPlanName: thesisPlanName,
             defenseDate: startDate,
@@ -99,13 +99,13 @@ function CreateDefenseJury(props) {
                                 value={program}
                                 label="Chương trình đào tạo" />
                             </Grid>
-                            <Grid item xs={9}>
+                            {/* <Grid item xs={9}>
                                 <TextField onChange={(event) => {
                                     setUserId(event.target.value)
                                 }} fullWidth={true} 
                                 value={userId}
                                 id="input-with-icon-grid" label="Người tạo" />
-                            </Grid>
+                            </Grid> */}
                             <Grid item xs={9}>
                                 <TextField onChange={(event) => {
                                     setThesisPlanName(event.target.value)

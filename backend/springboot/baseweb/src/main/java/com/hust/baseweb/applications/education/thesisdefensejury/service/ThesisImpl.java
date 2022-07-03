@@ -8,6 +8,7 @@ import com.hust.baseweb.applications.education.thesisdefensejury.entity.Thesis;
 import com.hust.baseweb.applications.education.thesisdefensejury.entity.ThesisDefensePlan;
 import com.hust.baseweb.applications.education.thesisdefensejury.entity.TraningProgram;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.Response;
+import com.hust.baseweb.applications.education.thesisdefensejury.models.ThesisFilter;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.ThesisIM;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.ThesisOM;
 import com.hust.baseweb.applications.education.thesisdefensejury.repo.DefenseJuryRepo;
@@ -63,7 +64,7 @@ public class ThesisImpl implements ThesisService {
             log.info("not found thesis defense plan name");
             return null;
         }
-        Optional<EduTeacher> eduTeacher = eduTeacherRepo.findByTeacherName(thesis.getSupervisor_name());
+        Optional<EduTeacher> eduTeacher = eduTeacherRepo.findById(thesis.getSupervisor_name());
         if (!eduTeacher.isPresent()){
             log.info("not found supervisor teacher name");
             return null;
@@ -76,11 +77,23 @@ public class ThesisImpl implements ThesisService {
         // if reviewer name exist
         Optional<EduTeacher> reviewer = Optional.of(new EduTeacher());
         if (thesis.getReviewer_name() != ""){
-            reviewer = eduTeacherRepo.findByTeacherName(thesis.getReviewer_name());
+            reviewer = eduTeacherRepo.findById(thesis.getReviewer_name());
             if (!reviewer.isPresent()){
                 log.info("not found reviewer teacher name");
                 return null;
             }
+        }
+        // check UserId exist
+        UserLogin userLogin = userLoginRepo.findByUserLoginId(thesis.getUserLoginID());
+        if (userLogin == null){
+            log.info("not found user login");
+            return null;
+        }
+        // check Thesis name is existed ?
+        List<Thesis> t = thesisRepo.findAllByThesisName(thesis.getName());
+        if (t.size() > 0){
+            log.info("thesis name is existed");
+            return null;
         }
 
         // maping fields and
@@ -115,12 +128,15 @@ public class ThesisImpl implements ThesisService {
         Optional<ThesisDefensePlan> defensePlan = thesisDefensePlanRepo.findById(thesis.get().getDefensePlanId());
         Optional<EduTeacher> supervisor = eduTeacherRepo.findById(thesis.get().getSupervisor());
         Optional<EduTeacher> reviewer = eduTeacherRepo.findById(thesis.get().getScheduled_reviewer_id());
-        Optional<DefenseJury> jury = defenseJuryRepo.findById(thesis.get().getDefenseJury());
-
+        String juryName = "";
+        if (thesis.get().getDefenseJury() != null){
+            Optional<DefenseJury> jury = defenseJuryRepo.findById(thesis.get().getDefenseJury());
+            juryName = jury.get().getName();
+        }
         ele.setProgram_name(program.get().getName());
         ele.setThesisPlanName(defensePlan.get().getName());
         ele.setSupervisor_name(supervisor.get().getTeacherName());
-        ele.setDefense_jury_name(jury.get().getName());
+        ele.setDefense_jury_name( juryName);
         ele.setReviewer_name(reviewer.get().getTeacherName());
         ele.setStudent_name(thesis.get().getStudentName());
         ele.setUserLoginID(thesis.get().getUserLogin());
@@ -332,5 +348,100 @@ public class ThesisImpl implements ThesisService {
         // disable
 
         return null;
+    }
+
+    @Override
+    public Response findAllBelongPlanID(String planId) {
+        Response res = new Response();
+        // check input
+        if(planId == ""){
+            res.setOk(false);
+            res.setErr("Invalid plan id");
+            return res;
+        }
+        // check planID existed
+        Optional<ThesisDefensePlan> dp = thesisDefensePlanRepo.findById(planId);
+        if(!dp.isPresent()){
+            res.setOk(false);
+            res.setErr("Plan Id isnt existed");
+            return res;
+        }
+        // TODO: handler
+        List<Thesis> t = thesisRepo.findAllByPlanId(planId);
+        if (t.size() == 0){
+            res.setOk(true);
+            res.setErr("Not found thesis");
+            return res;
+        }
+        res.setOk(true);
+        res.setResult(t);
+        return res;
+    }
+
+    @Override
+    public Response filterThesis(ThesisFilter filter) {
+        log.info("Request: ",filter);
+        Response res = new Response();
+        List<Thesis> t = new ArrayList<Thesis>();
+        // custom query
+        if (filter.getKey() == null) {
+            filter.setKey("");
+        }
+        if (filter.getThesisPlanId() == ""){
+            filter.setThesisPlanId(null);
+        }
+
+        if (filter.getThesisPlanId() != null && filter.getJuryId() != null){
+            log.info("Case 1");
+            t = thesisRepo.findByDefensePlanIdAndAndDefenseJuryAndThesisName(filter.getThesisPlanId(),filter.getJuryId(),filter.getKey());
+
+        }else if(filter.getThesisPlanId() == null && filter.getJuryId() != null){
+            log.info("Case 2");
+            t = thesisRepo.findAllByJuryIDAAndThesisName(filter.getJuryId(),filter.getKey());
+        }else if (filter.getThesisPlanId() != null && filter.getJuryId() == null){
+            log.info("Case 3");
+            log.info("Case 3: ",filter.getThesisPlanId());
+            t = thesisRepo.findAllByPlanIdAndThesisName(filter.getThesisPlanId(),filter.getKey());
+        }else {
+            log.info("Case 4");
+            t = thesisRepo.findAllByThesisName(filter.getKey());
+        }
+        log.info("Result: ",t);
+        List<ThesisOM> output = new ArrayList<ThesisOM>();
+        for (int i=0;i<t.size();i++) {
+            ThesisOM ele = new ThesisOM();
+            String juryName = "";
+            ele.setId(t.get(i).getId());
+            ele.setName(t.get(i).getThesisName());
+            ele.setThesis_abstract(t.get(i).getThesisAbstract());
+            // TODO: program, thesis_defense_plan_name,supervisor,jury,reviewer
+            Optional<TraningProgram> program = tranningProgramRepo.findById(t.get(i).getProgramId());
+            Optional<ThesisDefensePlan> defensePlan = thesisDefensePlanRepo.findById(t.get(i).getDefensePlanId());
+            Optional<EduTeacher> supervisor = eduTeacherRepo.findById(t.get(i).getSupervisor());
+            Optional<EduTeacher> reviewer = eduTeacherRepo.findById(t.get(i).getScheduled_reviewer_id());
+            if (t.get(i).getDefenseJury() != null){
+                Optional<DefenseJury> jury = defenseJuryRepo.findById(t.get(i).getDefenseJury());
+                juryName = jury.get().getName();
+            }
+
+
+            ele.setProgram_name(program.get().getName());
+            ele.setThesisPlanName(defensePlan.get().getName());
+            ele.setSupervisor_name(supervisor.get().getTeacherName());
+            ele.setDefense_jury_name(juryName);
+            ele.setReviewer_name(reviewer.get().getTeacherName());
+            ele.setStudent_name(t.get(i).getStudentName());
+            ele.setUserLoginID(t.get(i).getUserLogin());
+            ele.setName(t.get(i).getThesisName());
+            ele.setKeyword(t.get(i).getThesisKeyword());
+            ele.setUpdatedDateTime(t.get(i).getUpdatedDateTime());
+            ele.setCreatedTime(t.get(i).getCreatedTime());
+
+            output.add(ele);
+
+        }
+        res.setOk(true);
+        res.setResult(output);
+        return res;
     }
 }

@@ -28,6 +28,7 @@ import { eduTeachingManagement } from "./menuconfig/classmanagement/teacher";
 import { DataAdministration } from "./menuconfig/dataadmin";
 //import { WMS } from "./menuconfig/wms.js";
 import { ThesisDefenseJuryManagement } from "./menuconfig/thesis_defense_jury_management";
+import { ThesisDefensePlanManagement } from "./menuconfig/Thesis_defense_plan_managenment";
 import { taskmanagement } from "./menuconfig/taskmanagement";
 import { warehouse } from "./menuconfig/warehouse";
 import { whiteboard } from "./menuconfig/whiteboard";
@@ -48,6 +49,7 @@ MENU_LIST.push(eduLearningManagement);
 
 MENU_LIST.push(DataAdministration);
 //MENU_LIST.push(WMS);
+MENU_LIST.push(ThesisDefensePlanManagement);
 MENU_LIST.push(ThesisDefenseJuryManagement);
 MENU_LIST.push(taskmanagement);
 MENU_LIST.push(whiteboard);

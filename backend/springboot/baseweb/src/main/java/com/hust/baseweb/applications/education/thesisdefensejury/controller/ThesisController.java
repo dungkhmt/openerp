@@ -9,6 +9,9 @@ import com.hust.baseweb.applications.education.thesisdefensejury.entity.Thesis;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.*;
 import com.hust.baseweb.applications.education.thesisdefensejury.repo.ThesisRepo;
 import com.hust.baseweb.applications.education.thesisdefensejury.service.ThesisService;
+import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.repo.UserLoginRepo;
+import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +34,7 @@ import java.util.UUID;
 public class ThesisController {
     private final ThesisService thesisService;
     private final EduTeacherRepo eduTeacherRepo;
+    private UserService userService;
     @GetMapping("/thesis")
     public ResponseEntity<?> getThesis(Pageable pageable){
         Page<ThesisOM> res = thesisService.findAll(pageable);
@@ -70,13 +75,25 @@ public class ThesisController {
 
     @PostMapping("/thesis")
     public ResponseEntity<?> createThesis(
+        Principal principal,
         @RequestBody ThesisIM request
     ){
+
 
         // TODO: check valid request
         if (request == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid body request");
         }
+
+        if (request.getUserLoginID() == ""){
+            log.info("Session Login , sessionName = " + principal.getName());
+            UserLogin u = userService.findById(principal.getName());
+            if (u == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid session login");
+            }
+            request.setUserLoginID(u.getUserLoginId());
+        }
+
 
         Thesis thesis = thesisService.createThesis(request);
         if (thesis == null) {
@@ -88,12 +105,21 @@ public class ThesisController {
     }
     @PostMapping("/thesis/delete")
     public ResponseEntity<?> deleteThesis(
+        Principal principal,
         @RequestBody DeleteThesisIM request
     ){
         Response res = new Response();
         // TODO: check valid request
         if (request == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid body request");
+        }
+        if (request.getUserLogin() == ""){
+            log.info("Session Login , sessionName = " + principal.getName());
+            UserLogin u = userService.findById(principal.getName());
+            if (u == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid session login");
+            }
+            request.setUserLogin(u.getUserLoginId());
         }
         if (request.getId()==null||request.getUserLogin()==""){
             res.setOk(false);
@@ -118,6 +144,45 @@ public class ThesisController {
 
         Response response = thesisService.editThesis(request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/{planId}/thesisBelongPlan")
+    public ResponseEntity<?> getAllDefensseJurysBelongPlan(
+        @PathVariable("planId")String planId
+    ){
+        // check input
+        System.out.println(planId);
+        if(planId == ""){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid plan id");
+        }
+        // TODO handler
+        Response res = thesisService.findAllBelongPlanID(planId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(res);
+    }
+
+    @GetMapping("/thesis/userlogins")
+    public ResponseEntity<?> getAllUserLogin(Pageable pageable){
+        List<UserLogin> res = userService.getAllUserLogins();
+        if (res.size() <= 0){
+            return ResponseEntity.ok().body("Not found user login");
+        }
+        return ResponseEntity.ok().body(res);
+    }
+
+    @PostMapping("/thesis/_search")
+    public ResponseEntity<?> filterThesis(
+        @RequestBody ThesisFilter request
+    ){
+        Response res = new Response();
+        // TODO: check valid request
+        if (request == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid body request");
+        }
+
+        Response ok = thesisService.filterThesis(request);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ok);
     }
 
 }
