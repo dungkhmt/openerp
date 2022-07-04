@@ -5,7 +5,7 @@ import { API_URL } from "../../../config/config";
 import * as React from "react";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
-import { Grid, TextField } from "@material-ui/core";
+import { Grid, TextField, Button } from "@material-ui/core";
 import CodeMirror from "@uiw/react-codemirror";
 import { cppLanguage } from "@codemirror/lang-cpp";
 import { StreamLanguage } from "@codemirror/stream-parser";
@@ -42,6 +42,22 @@ export default function ContestProblemSubmissionDetail() {
     }
   };
 
+  function updateCode() {
+    let body = {
+      contestSubmissionId: problemSubmissionId,
+      modifiedSourceCodeSubmitted: submissionSource,
+    };
+
+    request(
+      "post",
+      "/update-contest-submission-source-code",
+      (res) => {
+        console.log("update submission source code", res.data);
+      },
+      {},
+      body
+    ).then();
+  }
   useEffect(() => {
     console.log("problemSubmissionId ", problemSubmissionId);
     request(
@@ -60,7 +76,7 @@ export default function ContestProblemSubmissionDetail() {
       },
       {}
     ).then();
-  });
+  }, []);
   return (
     <div>
       {/*<Typography variant={"h5"}>*/}
@@ -120,12 +136,15 @@ export default function ContestProblemSubmissionDetail() {
           margin: 20,
         }}
         multiline
-        maxRows={30}
+        maxRows={100}
         value={submissionSource}
         onChange={(event) => {
           setSubmissionSource(event.target.value);
+          console.log(submissionSource);
         }}
       ></TextField>
+
+      <Button onClick={updateCode}>Update Code</Button>
       {/*
       <CodeMirror
         height={"400px"}

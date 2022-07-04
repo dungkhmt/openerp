@@ -54,7 +54,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private UserService userService;
     private ContestRoleRepo contestRoleRepo;
     private CodePlagiarismRepo codePlagiarismRepo;
-
+    private ContestSubmissionHistoryRepo contestSubmissionHistoryRepo;
     @Override
     public void createContestProblem(ModelCreateContestProblem modelCreateContestProblem, String userId) throws MiniLeetCodeException {
         if(problemRepo.findByProblemId(modelCreateContestProblem.getProblemId()) != null){
@@ -1574,6 +1574,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     codePlagiarism.setUserId2(s2.getUserId());
                     codePlagiarism.setSourceCode1(s1.getSourceCode());
                     codePlagiarism.setSourceCode2(s2.getSourceCode());
+                    codePlagiarism.setSubmitDate1(s1.getCreatedAt());
+                    codePlagiarism.setSubmitDate2(s2.getCreatedAt());
                     codePlagiarism.setScore(score);
                     codePlagiarism.setCreatedStamp(new Date());
 
@@ -2198,5 +2200,25 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public List<CodePlagiarism> findAllByContestId(String contestId){
         List<CodePlagiarism> codePlagiarisms = codePlagiarismRepo.findAllByContestId(contestId);
         return codePlagiarisms;
+    }
+
+    @Transactional
+    @Override
+    public ContestSubmissionEntity updateContestSubmissionSourceCode(ModelUpdateContestSubmission input){
+        ContestSubmissionEntity sub = contestSubmissionRepo.findById(input.getContestSubmissionId()).orElse(null);
+        if(sub != null){
+            sub.setSourceCode(input.getModifiedSourceCodeSubmitted());
+            sub.setUpdateAt(new Date());
+            sub = contestSubmissionRepo.save(sub);
+
+            ContestSubmissionHistoryEntity e = new ContestSubmissionHistoryEntity();
+            e.setContestSubmissionId(sub.getContestSubmissionId());
+            e.setModifiedSourceCodeSubmitted(input.getModifiedSourceCodeSubmitted());
+            e.setLanguage(sub.getSourceCodeLanguage());
+            e.setCreatedStamp(new Date());
+            e = contestSubmissionHistoryRepo.save(e);
+            return sub;
+        }
+        return null;
     }
 }

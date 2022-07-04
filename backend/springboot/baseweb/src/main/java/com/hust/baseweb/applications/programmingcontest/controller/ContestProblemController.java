@@ -260,7 +260,12 @@ public class ContestProblemController {
         ModelGetContestDetailResponse response = problemTestCaseService.getContestDetailByContestIdAndTeacher(contestId, principal.getName());
         return ResponseEntity.status(200).body(response);
     }
-
+    @PostMapping("/update-contest-submission-source-code")
+    public ResponseEntity<?> updateContestSubmisionSourceCode(Principal principal, @RequestBody ModelUpdateContestSubmission input){
+        log.info("updateContestSubmisionSourceCode, new source code = " + input.getModifiedSourceCodeSubmitted());
+        ContestSubmissionEntity sub = problemTestCaseService.updateContestSubmissionSourceCode(input);
+        return ResponseEntity.ok().body(sub);
+    }
     @GetMapping("/get-code-similarity/{contestId}")
     public ResponseEntity<?> getCodeSimilarity(Principal principal, @PathVariable String contestId){
         List<CodePlagiarism> codePlagiarism = problemTestCaseService.findAllByContestId(contestId);

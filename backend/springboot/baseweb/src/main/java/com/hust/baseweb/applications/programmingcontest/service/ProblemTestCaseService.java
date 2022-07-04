@@ -127,4 +127,6 @@ public interface ProblemTestCaseService {
     List<ModelContestByRoleResponse> getContestsByRoleOfUser(String userLoginId);
 
     List<CodePlagiarism> findAllByContestId(String contestId);
+
+    ContestSubmissionEntity updateContestSubmissionSourceCode(ModelUpdateContestSubmission input);
 }

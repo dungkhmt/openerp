@@ -127,6 +127,17 @@ create table contest_submission_new
     constraint fk_user_submission_id_contest_submission_new foreign key (user_submission_id) references user_login(user_login_id)
 --     constraint fk_problem_submission_id_contest_submission_new foreign key(problem_submission_id) references problem_submission_new(problem_submission_id)
 );
+create table contest_submission_history(
+    contest_submission_history_id uuid NOT NULL default uuid_generate_v1(),
+    contest_submission_id uuid NOT NULL,
+    modified_source_code_submitted text,
+    language varchar(10),
+    last_updated_stamp         timestamp default current_date ,
+    created_stamp              timestamp default current_date ,
+    constraint pk_contest_submission_history_id primary key (contest_submission_history_id),
+    constraint fk_contest_submission_history_submission_id foreign key (contest_submission_id) references  contest_submission_new(contest_submission_id)
+
+);
 create table contest_submission_testcase_new(
     contest_submission_testcase_id uuid not null default uuid_generate_v1(),
     contest_submission_id uuid,
@@ -200,6 +211,8 @@ create table code_plagiarism(
     user_fullname2 varchar(200),
     source_code_1 text,
     source_code_2 text,
+    submit_date1 timestamp,
+    submit_date2 timestamp,
     score numeric,
 
     last_updated_stamp         timestamp default current_date ,

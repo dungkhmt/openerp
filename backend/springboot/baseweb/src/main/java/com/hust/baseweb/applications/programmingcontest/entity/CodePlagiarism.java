@@ -43,6 +43,13 @@ public class CodePlagiarism {
     @Column(name="source_code_2")
     private String sourceCode2;
 
+    @Column(name="submit_date1")
+    private Date submitDate1;
+
+    @Column(name="submit_date2")
+    private Date submitDate2;
+
+
     @Column(name="score")
     private double score;
 
