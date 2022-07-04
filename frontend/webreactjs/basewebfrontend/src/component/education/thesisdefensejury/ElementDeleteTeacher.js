@@ -19,12 +19,16 @@ import {
   import MaterialTable, { MTableToolbar } from "material-table";
   import Delete from '@material-ui/icons/Delete';
   import Add from '@mui/icons-material/Add';
+  import ModalLoading from "./ModalLoading"
 
-export default function ElementDeleteTeacher({teacher,defenseJuryID,toggleTeacher,handleToggleTeacher,getListTeacherOfDefenseJury}) {
+export default function ElementDeleteTeacher({teacher,defenseJuryID,handleToggleTeacher,handlerIsLoad,handlerNotLoad}) {
     const [err,setErr] = useState("");
     const [showSubmitSuccess,setShowSubmitSuccess] = useState(false);
+    const [openLoading,setOpenLoading] = useState(false)
   
     async function DeleteTeacherById(teacherID,defenseJuryID) {
+      setOpenLoading(true)
+      handlerIsLoad()
       var body = {
         teacherId:teacherID
       }
@@ -35,6 +39,7 @@ export default function ElementDeleteTeacher({teacher,defenseJuryID,toggleTeache
             console.log(res.data)
             if (res.data.ok) {
                 handleToggleTeacher()
+               
               }else if (res.data.err !== ""){
                   setShowSubmitSuccess(true)
                   setErr(res.data.err)
@@ -46,6 +51,8 @@ export default function ElementDeleteTeacher({teacher,defenseJuryID,toggleTeache
               }
           // setShowSubmitSuccess(true);
         //   history.push(`/thesis/defense_jury/${res.data.id}`);
+              handlerNotLoad()
+              setOpenLoading(false)
         },
         {
             onError: (e) => {
@@ -74,9 +81,9 @@ export default function ElementDeleteTeacher({teacher,defenseJuryID,toggleTeache
           actions={[
             {
               icon: Delete,
-              tooltip: "Delete Thesis",
+              tooltip: "Delete Teacher",
               onClick: (event, rowData) => {
-                console.log(rowData.teacherId)
+                console.log(rowData)
                 DeleteTeacherById(rowData.teacherId,defenseJuryID)
                 
                 // setToggle(true)
@@ -98,6 +105,7 @@ export default function ElementDeleteTeacher({teacher,defenseJuryID,toggleTeache
           }}
         />
          {(err!=="") ? <Alert severity={(err!=="")?'error':'success'}>{(err!=="")?err:"Successed"}</Alert> : <></> }
+        <ModalLoading openLoading={openLoading} />
       </Card>
   );
 }

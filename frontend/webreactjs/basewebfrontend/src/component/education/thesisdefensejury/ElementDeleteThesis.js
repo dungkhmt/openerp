@@ -19,11 +19,13 @@ import {
   import MaterialTable, { MTableToolbar } from "material-table";
   import Delete from '@material-ui/icons/Delete';
   import Add from '@mui/icons-material/Add';
+  import ModalLoading from "./ModalLoading"
 
 export default function ElementDeleteThesis({thesis,defenseJuryID,toggle,handleToggle,getListThesisOfDefenseJury}) {
     
-  
+    const [openLoading,setOpenLoading] = useState(false);
     async function DeleteThesisById(thesisID,defenseJuryID) {
+      setOpenLoading(true)
       var body = {
         thesisId:thesisID
       }
@@ -33,6 +35,7 @@ export default function ElementDeleteThesis({thesis,defenseJuryID,toggle,handleT
         (res) => {
             console.log(res.data)
             handleToggle()
+            setOpenLoading(false)
           // setShowSubmitSuccess(true);
         //   history.push(`/thesis/defense_jury/${res.data.id}`);
         },
@@ -49,7 +52,7 @@ export default function ElementDeleteThesis({thesis,defenseJuryID,toggle,handleT
         
     const columns = [
         { title: "STT", field: "stt" },
-      { title: "Tên Luan van", field: "thesisName" },
+      { title: "Tên luận văn", field: "thesisName" },
       { title: "Người tạo", field: "studentName" },
     ];
     useEffect(() => {
@@ -87,6 +90,7 @@ export default function ElementDeleteThesis({thesis,defenseJuryID,toggle,handleT
             ),
           }}
         />
+        <ModalLoading openLoading={openLoading} />
       </Card>
   );
 }

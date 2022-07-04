@@ -29,6 +29,9 @@ public interface ThesisRepo extends  PagingAndSortingRepository<Thesis, UUID>{
     @Query(value = "select * from thesis t where t.scheduled_jury_id = :juryID", nativeQuery = true)
     List<Thesis> findAllByJuryID(UUID juryID);
 
+    @Query(value = "select * from thesis t where t.scheduled_jury_id = :juryID and t.thesis_name like %:key%", nativeQuery = true)
+    List<Thesis> findAllByJuryIDAAndThesisName(UUID juryID,String key);
+
     @Query(value = "select * from thesis t where t.id = :thesisId and t.scheduled_jury_id = :defenseJuryId", nativeQuery = true)
     Optional<Thesis> findByIdAndDefenseJury(UUID thesisId, UUID defenseJuryId);
 
@@ -43,6 +46,17 @@ public interface ThesisRepo extends  PagingAndSortingRepository<Thesis, UUID>{
 
     @Query(value = "select count(t.scheduled_jury_id) from  thesis t WHERE t.scheduled_jury_id = :juryId", nativeQuery = true)
     Long getCountThesisByJuryId(UUID juryId);
+
+    @Query(value = "select * from thesis t where t.thesis_defense_plan_id = :planId", nativeQuery = true)
+    List<Thesis> findAllByPlanId(String planId);
+
+    @Query(value = "select * from thesis t where t.thesis_defense_plan_id = :planId and t.thesis_name like %:key%", nativeQuery = true)
+    List<Thesis> findAllByPlanIdAndThesisName(String planId,String key);
+
+    @Modifying
+    @Query(value = "select * from thesis t where t.thesis_defense_plan_id = :planId and t.scheduled_jury_id = :juryId and t.thesis_name like %:key%", nativeQuery = true)
+    List<Thesis> findByDefensePlanIdAndAndDefenseJuryAndThesisName(String planId,UUID juryId,String key);
+
 
 
 //    @Modifying

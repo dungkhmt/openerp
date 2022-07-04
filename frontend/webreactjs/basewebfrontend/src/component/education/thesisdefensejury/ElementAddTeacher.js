@@ -20,12 +20,16 @@ import {
   import MaterialTable, { MTableToolbar } from "material-table";
   import Delete from '@material-ui/icons/Delete';
   import Add from '@mui/icons-material/Add';
+  import ModalLoading from "./ModalLoading"
 
-export default function ElementAddTeacher({listTeacher,defenseJuryID,toggleTeacher,handleToggleTeacher,getAllTeacherNotBelongToDefenseJury}) {
+export default function ElementAddTeacher({listTeacher,defenseJuryID,toggleTeacher,handleToggleTeacher,getAllTeacherNotBelongToDefenseJury,handlerIsLoad,handlerNotLoad}) {
     const [err,setErr] = useState("");
     const [showSubmitSuccess,setShowSubmitSuccess] = useState(false);
+    const [openLoading,setOpenLoading] = useState(false)
    
     async function AddTeacherById(teacherID,defenseJuryID) {
+      handlerIsLoad()
+      setOpenLoading(true)
       var body = {
         teacherId:teacherID
       }
@@ -36,6 +40,7 @@ export default function ElementAddTeacher({listTeacher,defenseJuryID,toggleTeach
             console.log(res.data)
             if (res.data.ok) {
               handleToggleTeacher()
+             
             }else if (res.data.err !== ""){
                 setShowSubmitSuccess(true)
                 setErr(res.data.err)
@@ -49,6 +54,8 @@ export default function ElementAddTeacher({listTeacher,defenseJuryID,toggleTeach
             
           // setShowSubmitSuccess(true);
         //   history.push(`/thesis/defense_jury/${res.data.id}`);
+            handlerNotLoad()
+            setOpenLoading(false)
         },
         {
             onError: (e) => {
@@ -78,6 +85,7 @@ export default function ElementAddTeacher({listTeacher,defenseJuryID,toggleTeach
                 icon: Add,
                 tooltip: "Add Teacher",
                 onClick: (event, rowData) => {
+                  console.log("AddTeacher RowData:",rowData)
                     AddTeacherById(rowData.teacherId,defenseJuryID)
                   
                 }
@@ -98,6 +106,7 @@ export default function ElementAddTeacher({listTeacher,defenseJuryID,toggleTeach
           }}
         />
         {(err!=="") ? <Alert severity={(err!=="")?'error':'success'}>{(err!=="")?err:"Successed"}</Alert> : <></> }
+        <ModalLoading openLoading={openLoading} />
       </Card>
   );
 }

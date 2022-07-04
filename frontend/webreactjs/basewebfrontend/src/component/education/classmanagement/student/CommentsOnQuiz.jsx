@@ -13,12 +13,15 @@ import PersonIcon from "@material-ui/icons/Person";
 import CommentItem from "./comment/CommentItem.jsx";
 import { request } from "../../../../api";
 import { toFormattedDateTime } from "../../../../utils/dateutils";
+import { errorNoti, successNoti } from "utils/notification/index.js";
 
 export default function CommentsOnQuiz(props) {
   const { questionId, open, setOpen } = props;
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [commentFlag, setCommentFlag] = useState(false);
+  const [loginUser, setLoginUser] = useState(null);
+
   function handleChangeComment(e) {
     setComment(e.target.value);
   }
@@ -29,23 +32,48 @@ export default function CommentsOnQuiz(props) {
     });
   }
   function handlePostComment() {
-    request(
-      "post",
-      "/post-comment-on-quiz",
-      (res) => {
-        getCommentList();
-      },
-      {},
-      {
-        questionId: questionId,
-        comment: comment,
-      }
-    );
+    if (comment.trim() === "") {
+      errorNoti("Nội dung không được để trống");
+    } else {
+      request(
+        "post",
+        "/post-comment-on-quiz",
+        (res) => {
+          getCommentList();
+          successNoti("Đăng bình luận thành công", true);
+          setComment("");
+        },
+        {},
+        {
+          questionId: questionId,
+          comment: comment,
+        }
+      );
+    }
   }
+
+  //get user login
+  useEffect(() => {
+    request(
+      "get",
+      "/my-account/",
+      (res) => {
+        let data = res.data;
+
+        setLoginUser({
+          name: data.name,
+          userName: data.user,
+          partyId: data.partyId,
+        });
+      },
+      { 401: () => {} }
+    );
+  }, []);
+
   useEffect(() => {
     getCommentList();
     //}, [commentFlag]);
-  }, []);
+  }, [commentFlag]);
   return (
     <>
       <div>
@@ -61,6 +89,7 @@ export default function CommentsOnQuiz(props) {
             <PersonIcon />
           </Avatar>
           <TextField
+            value={comment}
             onChange={handleChangeComment}
             style={{ flexGrow: 1, marginRight: "20px" }}
             placeholder="Bình luận về quiz này"
@@ -86,6 +115,7 @@ export default function CommentsOnQuiz(props) {
               comment={item}
               setCommentFlag={setCommentFlag}
               commentFlag={commentFlag}
+              loginUser={loginUser}
             />
           ))}
         </Table>

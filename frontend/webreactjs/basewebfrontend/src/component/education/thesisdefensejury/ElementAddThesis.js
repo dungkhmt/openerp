@@ -20,12 +20,15 @@ import {
   import MaterialTable, { MTableToolbar } from "material-table";
   import Delete from '@material-ui/icons/Delete';
   import Add from '@mui/icons-material/Add';
+  import ModalLoading from "./ModalLoading"
 
 export default function ElementAddThesis({notBelongThesis,defenseJuryID,toggle,handleToggle,getAllThesisNotBelongToDefenseJury}) {
     const [err,setErr] = useState("");
     const [showSubmitSuccess,setShowSubmitSuccess] = useState(false);
+    const [openLoading,setOpenLoading]= useState(false);
    
     async function AddThesisById(thesisID,defenseJuryID) {
+      setOpenLoading(true)
       var body = {
         thesisId:thesisID
       }
@@ -36,6 +39,7 @@ export default function ElementAddThesis({notBelongThesis,defenseJuryID,toggle,h
             console.log(res.data)
             if (res.data.ok) {
               handleToggle()
+              
             }else if (res.data.err !== ""){
                 // setShowSubmitSuccess(true)
                 setErr(res.data.err)
@@ -46,7 +50,7 @@ export default function ElementAddThesis({notBelongThesis,defenseJuryID,toggle,h
                 
             }
             
-            
+            setOpenLoading(false)
           // setShowSubmitSuccess(true);
         //   history.push(`/thesis/defense_jury/${res.data.id}`);
         },
@@ -62,7 +66,7 @@ export default function ElementAddThesis({notBelongThesis,defenseJuryID,toggle,h
    
     const columns = [
         { title: "STT", field: "stt" },
-      { title: "Tên Luan van", field: "thesisName" },
+      { title: "Tên luận văn", field: "thesisName" },
       { title: "Người tạo", field: "studentName" },
     ];
     useEffect(() => {
@@ -99,6 +103,7 @@ export default function ElementAddThesis({notBelongThesis,defenseJuryID,toggle,h
           }}
         />
         {(err!=="") ? <Alert severity={(err!=="")?'error':'success'}>{(err!=="")?err:"Successed"}</Alert> : <></> }
+       <ModalLoading openLoading={openLoading} />
       </Card>
   );
 }

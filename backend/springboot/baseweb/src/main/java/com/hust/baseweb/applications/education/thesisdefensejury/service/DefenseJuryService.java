@@ -19,6 +19,7 @@ public interface DefenseJuryService {
     Optional<DefenseJury> findById(UUID id);
     DefenseJuryOM getDefenseJury(DefenseJury jury);
     Page<DefenseJury> findAll(Pageable pageable);
+    Response findAllBelongPlanID(String planId);
     List<DefenseJuryOM> searchByDefenseJury(String name);
     Response getListDefenseJuryTeachers(UUID defenseJuryID);
     Response deleteTheisByIdAtIt(ThesisWithDefenseJuryIM request,UUID juryId);

@@ -1,4 +1,6 @@
 import { Button, Grid, Modal } from "@material-ui/core";
+import Paper from "@material-ui/core/Paper";
+import Table from "@mui/material/Table";
 import React, { useState, useEffect,useMemo } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { SubmitSuccess } from "../programmingcontestFE/SubmitSuccess";
@@ -21,10 +23,19 @@ import {
     InputLabel,
     ListSubheader,
     TextField,
+    Typography,
     InputAdornment
   } from "@mui/material";
   import SearchIcon from "@mui/icons-material/Search";
-  
+  import ModalLoading from "./ModalLoading"
+import { Create } from "@mui/icons-material";
+import {
+    boxComponentStyle,
+    boxChildComponent,
+    Header
+} from "../../taskmanagement/ultis/constant";
+import { useForm } from "react-hook-form";
+import FormError from "./FormError"
 
 
 
@@ -49,6 +60,8 @@ const modalStyle = {
     }
 }
 
+
+
 function CreateThesis(props) {
     const history = useHistory();
     const [name, setName] = React.useState("");
@@ -59,7 +72,7 @@ function CreateThesis(props) {
     const [supervisorName, setSupervisorName] = React.useState("");
     const [reviewerName, setReviewerName] = React.useState("");
     const [defenseJuryName,setDefenseJuryName] = React.useState("");
-    const [userLoginID,setUserLoginID] = React.useState("dungkhmt");
+    const [userLoginID,setUserLoginID] = React.useState("");
     const [keyword,setKeyword] = React.useState("");
     const [openAlert,setOpenAlert] = React.useState(false);
     const [showSubmitSuccess,setShowSubmitSuccess] = React.useState(false);
@@ -69,7 +82,16 @@ function CreateThesis(props) {
     const [listTeacher,setListTeacher] = React.useState([]);
     const [listPlan,setListPlan] = React.useState([]);
     const [searchText, setSearchText] = useState("");
+    const [listUserLoginID,setListUserLoginID] = React.useState([]);
+    const [openLoading, setOpenLoading] = React.useState(false);
+    const { register, errors, handleSubmit, watch } = useForm();
+    const [isInputValidThesis,setIsInputValidThesis] = React.useState(true);
+    const [isInputValidDescript,setIsInputValidDescrip] = React.useState(true);
+    const [isInputValidStudentName,setIsInputValidStudentName] = React.useState(true);
+    const [isInputValidKeyWord,setIsInputValidKeyWord] = React.useState(true);
+    const [isInputValidStudentID,setIsInputValidStudentID] = React.useState(true);
 
+    const [errorMessage,setErrorMessage] = React.useState('');
     
     const handleChange = (event) => {
         setProgramName(event.target.value);
@@ -84,10 +106,55 @@ function CreateThesis(props) {
     };
     const containsText = (text, searchText) =>
     text.toLowerCase().indexOf(searchText.toLowerCase()) > -1;
-    
-  
-  
 
+    const validateInput = (checkingText) => {
+        /* reg exp để kiểm tra xem chuỗi có chỉ bao gồm 10 - 11 chữ số hay không */
+        if (checkingText == "" || checkingText == null){
+            return { isInputValid: false,
+                errorMessage: 'Trường này không được bỏ trống và không có ký tự đặc biệt'};
+        }
+        const regexp = /^[A-Za-z0-9 -]*$/;
+        const checkingResult = regexp.exec(checkingText);
+        if (checkingResult !== null) {
+            return { isInputValid: true,
+                     errorMessage: ''};
+        } else {
+            return { isInputValid: false,
+                     errorMessage: 'Trường này không được bỏ trống và không có ký tự đặc biệt'};
+        }
+    }
+    const handleInputValidationThesis = e => {
+        console.log(e)
+        const { isInputValid, errorMessage } = validateInput(e.target.value);
+        setIsInputValidThesis(isInputValid)
+        setErrorMessage(errorMessage)
+    }
+    const handleInputValidationDescript = e => {
+        console.log(e)
+        const { isInputValid, errorMessage } = validateInput(e.target.value);
+        setIsInputValidDescrip(isInputValid)
+        setErrorMessage(errorMessage)
+    }
+    const handleInputValidationStudentName = e => {
+        console.log(e)
+        const { isInputValid, errorMessage } = validateInput(e.target.value);
+        setIsInputValidStudentName(isInputValid)
+        setErrorMessage(errorMessage)
+    }
+    const handleInputValidationStudentID = e => {
+        console.log(e)
+        const { isInputValid, errorMessage } = validateInput(e.target.value);
+        setIsInputValidStudentID(isInputValid)
+        setErrorMessage(errorMessage)
+    }
+    const handleInputValidationKeyWord = e => {
+        console.log(e)
+        const { isInputValid, errorMessage } = validateInput(e.target.value);
+        setIsInputValidKeyWord(isInputValid)
+        setErrorMessage(errorMessage)
+    }
+
+    
     async function getAllProgram() {
         request(
           // token,
@@ -97,6 +164,19 @@ function CreateThesis(props) {
           (res) => {
               console.log(res.data)
               setListProgram(res.data)
+            
+          }
+        );
+      }
+      async function getAllUserLoginID() {
+        request(
+          // token,
+          // history,
+          "GET",
+          "/thesis/userlogins",
+          (res) => {
+              console.log(res.data)
+              setListUserLoginID(res.data)
             
           }
         );
@@ -143,6 +223,7 @@ function CreateThesis(props) {
     
     const handleFormSubmit = (event) => {
         event.preventDefault();
+        setOpenLoading(true);
         let body = {
             name: name,
             thesis_abstract: thesisAbstract,
@@ -165,18 +246,21 @@ function CreateThesis(props) {
             (res) => {
                 console.log(res.data)
               setShowSubmitSuccess(true);
+              setOpenLoading(false);
+              history.push({
+                pathname: `/thesis`,
+              });
             //   history.push(`/thesis/defense_jury/${res.data.id}`);
             },
             {
                 onError: (e) => {
                     setShowSubmitSuccess(false);
+                    setOpenLoading(false);
                 }
             },
             body
           ).then();
-          history.push({
-            pathname: `/thesis`,
-          });
+          
     }
 
     useEffect(() => {
@@ -184,6 +268,7 @@ function CreateThesis(props) {
         getAllJury();
         getAllTeachers();
         getAllPlan();
+        // getAllUserLoginID();
     },[])
 
     const displayedProgramOptions = useMemo(
@@ -202,200 +287,224 @@ function CreateThesis(props) {
         () => listPlan.filter((option) =>  containsText(option.name, searchText)),
         [searchText]
       );
+      const displayedUserLoginIDOptions = useMemo(
+        () => listUserLoginID.filter((option) =>  containsText(option.userLoginId, searchText)),
+        [searchText]
+      );
     return (
-        
-            <div style={modalStyle.paper}>
-                <h2 id="simple-modal-title">Thêm mới luận văn</h2>
+        <>
+         <Box sx={boxComponentStyle}>
+             <Typography variant="h4" mb={4} component={'h4'}>
+                    Thêm mới luận văn
+            </Typography>
                 <div width="100%">
                     <form >
-                        <Grid container spacing={1}>
-                            
-                            <Grid container item xs={12} spacing={2}>
-                                <TextField 
-                                    style={{margin:"2% 0px"}}
-                                    value={name}
-                                    onChange={(event) => {
+                    <Box mb={3}>
+                        <TextField
+                            fullWidth={true}
+                            label="Tên luận văn"
+                            variant="outlined"
+                            name="name"
+                            value={name}
+                            onChange={(event) => {
                                     setName(event.target.value)
-                                }} fullWidth={true} id="input-with-icon-grid" label="Tên luận văn" />
-                            </Grid>
-                            <Grid  container item xs={12} spacing={2}>
-                                <TextField 
-                                    style={{margin:"2% 0px"}}
-                                    value={thesisAbstract}
-                                    onChange={(event) => {
+                                }}
+                            onBlur={(e) => handleInputValidationThesis(e)} 
+                            inputRef={register({ required: "Thiếu tên luận văn!" })}
+                            error={!!errors.name}
+                            helperText={errors.name?.message}
+                        />
+                        <FormError 
+                            isHidden={isInputValidThesis} 
+                            errorMessage={errorMessage}
+                        />
+                    </Box>
+                    <Box sx={boxChildComponent} mb={3}>
+                        <TextField
+                            label="Mô tả luận văn"
+                            multiline
+                            fullWidth={true}
+                            rows={5}
+                            value={thesisAbstract}
+                            onChange={(event) => {
                                     setThesisAbstract(event.target.value)
-                                }} fullWidth={true} id="input-with-icon-grid" label="Mô tả luận văn" />
+                            }}
+                            onBlur={(e) => handleInputValidationDescript(e)} 
+                            
+                            name="description"
+                            inputRef={register}
+                            sx={{ mb: 3 }}
+                        />
+                        <FormError 
+                            isHidden={isInputValidDescript} 
+                            errorMessage={errorMessage}
+                        />
+                        <Grid container spacing={2}>
+                            <Grid item ={true} xs={6} spacing={2} p={2}>
+                                    <Box sx={{ minWidth: '100%' }}>
+                                        <FormControl fullWidth style={{margin:"2% 0px"}}>
+                                            <InputLabel id="search-select-label">Tên hội đồng</InputLabel>
+                                            <Select
+                                            MenuProps={{ autoFocus: false }}
+                                            labelId="search-select-label"
+                                            id="search-select"
+                                            value={defenseJuryName}
+                                            label="Options"
+                                            onChange={(e) => setDefenseJuryName(e.target.value)}
+                                            onClose={() => setSearchText("")}
+                                            renderValue={() => defenseJuryName}
+                                            >
+                                            <ListSubheader>
+                                                <TextField
+                                                size="small"
+                                                autoFocus
+                                                placeholder="Type to search..."
+                                                fullWidth
+                                                InputProps={{
+                                                    startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <SearchIcon />
+                                                    </InputAdornment>
+                                                    )
+                                                }}
+                                                onChange={(e) => setSearchText(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key !== "Escape") {
+                                                    e.stopPropagation();
+                                                    }
+                                                }}
+                                                />
+                                            </ListSubheader>
+                                            {displayedJuryOptions.map((option, i) => (
+                                                <MenuItem key={i} value={option.name}>
+                                                {option.name}
+                                                </MenuItem>
+                                            ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
                             </Grid>
-                            <Grid container item xs={12} spacing={2}>
-                                <Box sx={{ minWidth: '100%' }}>
-                                    <FormControl fullWidth style={{margin:"2% 0px"}}>
-                                        <InputLabel id="search-select-label">Tên hội đồng</InputLabel>
-                                        <Select
-                                        // Disables auto focus on MenuItems and allows TextField to be in focus
-                                        MenuProps={{ autoFocus: false }}
-                                        labelId="search-select-label"
-                                        id="search-select"
-                                        value={defenseJuryName}
-                                        label="Options"
-                                        onChange={(e) => setDefenseJuryName(e.target.value)}
-                                        onClose={() => setSearchText("")}
-                                        // This prevents rendering empty string in Select's value
-                                        // if search text would exclude currently selected option.
-                                        renderValue={() => defenseJuryName}
-                                        >
-                                        {/* TextField is put into ListSubheader so that it doesn't
-                                            act as a selectable item in the menu
-                                            i.e. we can click the TextField without triggering any selection.*/}
-                                        <ListSubheader>
-                                            <TextField
-                                            size="small"
-                                            // Autofocus on textfield
-                                            autoFocus
-                                            placeholder="Type to search..."
-                                            fullWidth
-                                            InputProps={{
-                                                startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <SearchIcon />
-                                                </InputAdornment>
-                                                )
-                                            }}
-                                            onChange={(e) => setSearchText(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key !== "Escape") {
-                                                // Prevents autoselecting item while typing (default Select behaviour)
-                                                e.stopPropagation();
-                                                }
-                                            }}
-                                            />
-                                        </ListSubheader>
-                                        {displayedJuryOptions.map((option, i) => (
-                                            <MenuItem key={i} value={option.name}>
-                                            {option.name}
-                                            </MenuItem>
-                                        ))}
-                                        </Select>
-                                    </FormControl>
-                                </Box>
+                            <Grid item = {true} xs={6} spacing={2} p={2}>
+                                    <TextField
+                                    style={{margin:"2% 0px"}} 
+                                        value={studentName}
+                                        onChange={(event) => {
+                                        setStudentName(event.target.value)
+                                    }} fullWidth={true} 
+                                    onBlur={(e) => handleInputValidationStudentName(e)} id="input-with-icon-grid" label="Tên sinh viên" />
+                                      <FormError 
+                                        isHidden={isInputValidStudentName} 
+                                        errorMessage={errorMessage}
+                                    />
                             </Grid>
-                            <Grid container item xs={12} spacing={2}>
-                                <TextField
-                                style={{margin:"2% 0px"}} 
-                                    value={studentName}
-                                    onChange={(event) => {
-                                    setStudentName(event.target.value)
-                                }} fullWidth={true} id="input-with-icon-grid" label="Tên sinh viên" />
+                        </Grid>
+                        <Grid container spacing ={2}>
+                            <Grid item={true} xs={6} spacing={2} p={2}>
+                                    <Box sx={{ minWidth: '100%' }}>
+                                        <FormControl fullWidth style={{margin:"2% 0px"}}>
+                                            <InputLabel id="search-select-label">Tên giảng viên hướng dẫn</InputLabel>
+                                            <Select
+                                        
+                                            MenuProps={{ autoFocus: false }}
+                                            labelId="search-select-label"
+                                            id="search-select"
+                                            value={supervisorName}
+                                            label="Options"
+                                            onChange={(e) => setSupervisorName(e.target.value)}
+                                            onClose={() => setSearchText("")}
+                                        
+                                            renderValue={() => supervisorName}
+                                            >
+                                        
+                                            <ListSubheader>
+                                                <TextField
+                                                size="small"
+                                            
+                                                autoFocus
+                                                placeholder="Type to search..."
+                                                fullWidth
+                                                InputProps={{
+                                                    startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <SearchIcon />
+                                                    </InputAdornment>
+                                                    )
+                                                }}
+                                                onChange={(e) => setSearchText(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key !== "Escape") {
+                                                
+                                                    e.stopPropagation();
+                                                    }
+                                                }}
+                                                />
+                                            </ListSubheader>
+                                            {displayedTeacherOptions.map((option, i) => (
+                                                <MenuItem key={i} value={option.teacherId}>
+                                                {option.teacherId}
+                                                </MenuItem>
+                                            ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
                             </Grid>
-                            <Grid container item xs={12} spacing={2}>
-                                <Box sx={{ minWidth: '100%' }}>
-                                    <FormControl fullWidth style={{margin:"2% 0px"}}>
-                                        <InputLabel id="search-select-label">Tên giảng viên hướng dẫn</InputLabel>
-                                        <Select
-                                        // Disables auto focus on MenuItems and allows TextField to be in focus
-                                        MenuProps={{ autoFocus: false }}
-                                        labelId="search-select-label"
-                                        id="search-select"
-                                        value={supervisorName}
-                                        label="Options"
-                                        onChange={(e) => setSupervisorName(e.target.value)}
-                                        onClose={() => setSearchText("")}
-                                        // This prevents rendering empty string in Select's value
-                                        // if search text would exclude currently selected option.
-                                        renderValue={() => supervisorName}
-                                        >
-                                        {/* TextField is put into ListSubheader so that it doesn't
-                                            act as a selectable item in the menu
-                                            i.e. we can click the TextField without triggering any selection.*/}
-                                        <ListSubheader>
-                                            <TextField
-                                            size="small"
-                                            // Autofocus on textfield
-                                            autoFocus
-                                            placeholder="Type to search..."
-                                            fullWidth
-                                            InputProps={{
-                                                startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <SearchIcon />
-                                                </InputAdornment>
-                                                )
-                                            }}
-                                            onChange={(e) => setSearchText(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key !== "Escape") {
-                                                // Prevents autoselecting item while typing (default Select behaviour)
-                                                e.stopPropagation();
-                                                }
-                                            }}
-                                            />
-                                        </ListSubheader>
-                                        {displayedTeacherOptions.map((option, i) => (
-                                            <MenuItem key={i} value={option.teacherName}>
-                                            {option.teacherName}
-                                            </MenuItem>
-                                        ))}
-                                        </Select>
-                                    </FormControl>
-                                </Box>
+                            <Grid item={true} xs={6} spacing={2} p={2}>
+                                    <Box sx={{ minWidth: '100%' }}>
+                                        <FormControl fullWidth style={{margin:"2% 0px"}}>
+                                            <InputLabel id="search-select-label">Tên giảng viên Reviewer</InputLabel>
+                                            <Select
+                                            
+                                            MenuProps={{ autoFocus: false }}
+                                            labelId="search-select-label"
+                                            id="search-select"
+                                            value={reviewerName}
+                                            label="Options"
+                                            onChange={(e) => setReviewerName(e.target.value)}
+                                            onClose={() => setSearchText("")}
+                                        
+                                            renderValue={() => reviewerName}
+                                            >
+                                            
+                                            <ListSubheader>
+                                                <TextField
+                                                size="small"
+                                                
+                                                autoFocus
+                                                placeholder="Type to search..."
+                                                fullWidth
+                                                InputProps={{
+                                                    startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <SearchIcon />
+                                                    </InputAdornment>
+                                                    )
+                                                }}
+                                                onChange={(e) => setSearchText(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key !== "Escape") {
+                                                
+                                                    e.stopPropagation();
+                                                    }
+                                                }}
+                                                />
+                                            </ListSubheader>
+                                            {displayedTeacherOptions.map((option, i) => (
+                                                <MenuItem key={i} value={option.teacherId}>
+                                                {option.teacherId}
+                                                </MenuItem>
+                                            ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
                             </Grid>
-                            <Grid container item xs={12} spacing={2}>
-                                <Box sx={{ minWidth: '100%' }}>
-                                    <FormControl fullWidth style={{margin:"2% 0px"}}>
-                                        <InputLabel id="search-select-label">Tên giảng viên Reviewer</InputLabel>
-                                        <Select
-                                        // Disables auto focus on MenuItems and allows TextField to be in focus
-                                        MenuProps={{ autoFocus: false }}
-                                        labelId="search-select-label"
-                                        id="search-select"
-                                        value={reviewerName}
-                                        label="Options"
-                                        onChange={(e) => setReviewerName(e.target.value)}
-                                        onClose={() => setSearchText("")}
-                                        // This prevents rendering empty string in Select's value
-                                        // if search text would exclude currently selected option.
-                                        renderValue={() => reviewerName}
-                                        >
-                                        {/* TextField is put into ListSubheader so that it doesn't
-                                            act as a selectable item in the menu
-                                            i.e. we can click the TextField without triggering any selection.*/}
-                                        <ListSubheader>
-                                            <TextField
-                                            size="small"
-                                            // Autofocus on textfield
-                                            autoFocus
-                                            placeholder="Type to search..."
-                                            fullWidth
-                                            InputProps={{
-                                                startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <SearchIcon />
-                                                </InputAdornment>
-                                                )
-                                            }}
-                                            onChange={(e) => setSearchText(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key !== "Escape") {
-                                                // Prevents autoselecting item while typing (default Select behaviour)
-                                                e.stopPropagation();
-                                                }
-                                            }}
-                                            />
-                                        </ListSubheader>
-                                        {displayedTeacherOptions.map((option, i) => (
-                                            <MenuItem key={i} value={option.teacherName}>
-                                            {option.teacherName}
-                                            </MenuItem>
-                                        ))}
-                                        </Select>
-                                    </FormControl>
-                                </Box>
-                            </Grid>
-                            <Grid container item xs={12} spacing={2}>
+                        </Grid>
+                        <Grid container spacing ={2}>
+                            <Grid item={true} xs={6} spacing={2} p={2}>
                                 <Box sx={{ minWidth: '100%' }}>
                                     <FormControl fullWidth style={{margin:"2% 0px"}}>
                                         <InputLabel id="search-select-label">Đợt bảo vệ</InputLabel>
                                         <Select
-                                        // Disables auto focus on MenuItems and allows TextField to be in focus
+                                      
                                         MenuProps={{ autoFocus: false }}
                                         labelId="search-select-label"
                                         id="search-select"
@@ -403,17 +512,14 @@ function CreateThesis(props) {
                                         label="Options"
                                         onChange={(e) => setThesisPlanName(e.target.value)}
                                         onClose={() => setSearchText("")}
-                                        // This prevents rendering empty string in Select's value
-                                        // if search text would exclude currently selected option.
+                                       
                                         renderValue={() => thesisPlanName}
                                         >
-                                        {/* TextField is put into ListSubheader so that it doesn't
-                                            act as a selectable item in the menu
-                                            i.e. we can click the TextField without triggering any selection.*/}
+                                        
                                         <ListSubheader>
                                             <TextField
                                             size="small"
-                                            // Autofocus on textfield
+                                           
                                             autoFocus
                                             placeholder="Type to search..."
                                             fullWidth
@@ -427,7 +533,7 @@ function CreateThesis(props) {
                                             onChange={(e) => setSearchText(e.target.value)}
                                             onKeyDown={(e) => {
                                                 if (e.key !== "Escape") {
-                                                // Prevents autoselecting item while typing (default Select behaviour)
+                                              
                                                 e.stopPropagation();
                                                 }
                                             }}
@@ -442,28 +548,40 @@ function CreateThesis(props) {
                                     </FormControl>
                                 </Box>
                             </Grid>
-                            <Grid container item xs={12} spacing={2}>
+                            <Grid item={true} xs={6} spacing={2} p={2}>
                                 <TextField 
-                                style={{margin:"2% 0px"}}
+                                    style={{margin:"2% 0px"}}
                                     value={userLoginID}
+                                    onBlur={(e) => handleInputValidationStudentID(e)} 
                                     onChange={(event) => {
                                     setUserLoginID(event.target.value)
-                                }} fullWidth={true} id="input-with-icon-grid" label="Tên người tạo" />
+                                }} fullWidth={true} id="input-with-icon-grid" label="StudentID" />
+                                 <FormError 
+                                        isHidden={isInputValidStudentID} 
+                                        errorMessage={errorMessage}
+                                    />
                             </Grid>
-                            <Grid container item xs={12} spacing={2}>
+                        </Grid>
+                        <Grid container spacing ={2}>
+                            <Grid  item ={true} xs={6} spacing={2} p={2}>
                                 <TextField 
                                     style={{margin:"2% 0px"}}
                                     value={keyword}
+                                    onBlur={(e) => handleInputValidationKeyWord(e)} 
                                     onChange={(event) => {
                                     setKeyword(event.target.value)
                                 }} fullWidth={true} id="input-with-icon-grid" label="Tên hướng đề tài lựa chọn" />
+                                 <FormError 
+                                        isHidden={isInputValidKeyWord} 
+                                        errorMessage={errorMessage}
+                                    />
                             </Grid>
-                            <Grid container item xs={12} spacing={2}>
+                            <Grid  item={true} xs={6} spacing={2} p={2}>
                                 <Box sx={{ minWidth: '100%' }}>
                                     <FormControl fullWidth style={{margin:"2% 0px"}}>
-                                        <InputLabel id="search-select-label">Program Name</InputLabel>
+                                        <InputLabel id="search-select-label">Tên chương trình đào tạo</InputLabel>
                                         <Select
-                                        // Disables auto focus on MenuItems and allows TextField to be in focus
+                                       
                                         MenuProps={{ autoFocus: false }}
                                         labelId="search-select-label"
                                         id="search-select"
@@ -471,17 +589,14 @@ function CreateThesis(props) {
                                         label="Options"
                                         onChange={(e) => setProgramName(e.target.value)}
                                         onClose={() => setSearchText("")}
-                                        // This prevents rendering empty string in Select's value
-                                        // if search text would exclude currently selected option.
+                                      
                                         renderValue={() => programName}
                                         >
-                                        {/* TextField is put into ListSubheader so that it doesn't
-                                            act as a selectable item in the menu
-                                            i.e. we can click the TextField without triggering any selection.*/}
+                                       
                                         <ListSubheader>
                                             <TextField
                                             size="small"
-                                            // Autofocus on textfield
+                                           
                                             autoFocus
                                             placeholder="Type to search..."
                                             fullWidth
@@ -495,7 +610,7 @@ function CreateThesis(props) {
                                             onChange={(e) => setSearchText(e.target.value)}
                                             onKeyDown={(e) => {
                                                 if (e.key !== "Escape") {
-                                                // Prevents autoselecting item while typing (default Select behaviour)
+                                                
                                                 e.stopPropagation();
                                                 }
                                             }}
@@ -510,24 +625,28 @@ function CreateThesis(props) {
                                     </FormControl>
                                 </Box>
                             </Grid>
-                            
-                            
-                            <Grid container item xs={2}>
-                                <Button color="primary" type="submit" onClick={handleFormSubmit} width="100%">Tạo mới</Button>
-                            </Grid>
+                        </Grid>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'end' }}>
+                        <Button variant="contained" color="success" onClick={handleFormSubmit}>
+                            Thêm luận văn
+                        </Button>
+                    </Box>
+                        
                             {(openAlert===true)?(<div>
                                 {showSubmitSuccess === true ?(<SubmitSuccess
                                 showSubmitSuccess={showSubmitSuccess}
-                                content={"You have saved defense jury"}
-                                />):(<Alert severity="error">Failed</Alert>)}
+                                content={"Tạo mới thành công"}
+                                />):(<Alert severity="error">Thêm mới thất bại</Alert>)}
                                 
                             </div>):(<></>)}
-                        </Grid>
+                        {/* </Grid> */}
                     </form>
+                    <ModalLoading openLoading={openLoading} />
                 </div>
-            </div>
-       
+            
+        </Box>
+        </>
     );
 }
-
 export default CreateThesis;

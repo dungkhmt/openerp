@@ -17,7 +17,6 @@ public class ThesisDefensePlan {
 
     @Id
     @Column(updatable = false, nullable = false)
-    @GeneratedValue(strategy=GenerationType.AUTO)
     private String id;
 
     @Column(name = "name")

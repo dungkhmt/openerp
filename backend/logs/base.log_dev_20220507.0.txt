@@ -1,0 +1,553 @@
+2022-05-07 00:02:02.553  INFO 7512 --- [MessageBroker-4]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 123]
+2022-05-07 00:03:45.938  INFO 7512 --- [nio-8080-exec-4]  a.e.t.c.TeacherClassAssignmentController : getClassListForAssignment2Teacher, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 00:03:45.939  INFO 7512 --- [nio-8080-exec-8]  a.e.t.c.TeacherClassAssignmentController : getClassTeacherAssignmentPlanDetail, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 00:03:47.399  INFO 7512 --- [nio-8080-exec-2]  a.e.t.c.TeacherClassAssignmentController : getPairOfConflictTimetableClass, return list.sz = 25
+2022-05-07 00:03:56.225  INFO 7512 --- [nio-8080-exec-5]  a.e.t.c.TeacherClassAssignmentController : autoAssignTeacher2Class
+2022-05-07 00:03:56.230  INFO 7512 --- [nio-8080-exec-5]  .s.ClassTeacherAssignmentPlanServiceImpl : autoAssignTeacher2Class, classes.sz = 24
+2022-05-07 00:03:56.920  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: teacher[0] = dung.phamquang@hust.edu.vn
+2022-05-07 00:03:56.921  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: teacher[1] = anh.dotuan@hust.edu.vn
+2022-05-07 00:03:56.921  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[0] = 699257
+2022-05-07 00:03:56.921  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[1] = 117832
+2022-05-07 00:03:56.922  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[2] = 121337
+2022-05-07 00:03:56.922  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[3] = 118565
+2022-05-07 00:03:56.922  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[4] = 118604
+2022-05-07 00:03:56.922  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[5] = 118575
+2022-05-07 00:03:56.922  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[6] = 119183
+2022-05-07 00:03:56.922  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[7] = 118424
+2022-05-07 00:03:56.923  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[8] = 118566
+2022-05-07 00:03:56.923  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[9] = 119182
+2022-05-07 00:03:56.923  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[10] = 699259
+2022-05-07 00:03:56.923  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[11] = 699260
+2022-05-07 00:03:56.923  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[12] = 118164
+2022-05-07 00:03:56.923  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[13] = 118588
+2022-05-07 00:03:56.923  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[14] = 699261
+2022-05-07 00:03:56.923  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[15] = 121284
+2022-05-07 00:03:56.923  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[16] = 699262
+2022-05-07 00:03:56.923  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[17] = 118576
+2022-05-07 00:03:56.924  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[18] = 699258
+2022-05-07 00:03:56.924  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[19] = 118262
+2022-05-07 00:03:56.924  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[20] = 699255
+2022-05-07 00:03:56.924  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[21] = 119181
+2022-05-07 00:03:56.924  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[22] = 699256
+2022-05-07 00:03:56.924  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : map: class[23] = 121285
+2022-05-07 00:03:56.925  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : prepare preAssignment.sz = 17
+2022-05-07 00:03:56.925  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[0] = 699257 - teacher[0] = dung.phamquang@hust.edu.vn
+2022-05-07 00:03:56.925  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[3] = 118565 - teacher[1] = anh.dotuan@hust.edu.vn
+2022-05-07 00:03:56.925  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[4] = 118604 - teacher[0] = dung.phamquang@hust.edu.vn
+2022-05-07 00:03:56.925  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[5] = 118575 - teacher[1] = anh.dotuan@hust.edu.vn
+2022-05-07 00:03:56.926  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[6] = 119183 - teacher[1] = anh.dotuan@hust.edu.vn
+2022-05-07 00:03:56.926  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[8] = 118566 - teacher[1] = anh.dotuan@hust.edu.vn
+2022-05-07 00:03:56.926  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[9] = 119182 - teacher[1] = anh.dotuan@hust.edu.vn
+2022-05-07 00:03:56.926  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[10] = 699259 - teacher[0] = dung.phamquang@hust.edu.vn
+2022-05-07 00:03:56.926  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[11] = 699260 - teacher[0] = dung.phamquang@hust.edu.vn
+2022-05-07 00:03:56.926  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[13] = 118588 - teacher[0] = dung.phamquang@hust.edu.vn
+2022-05-07 00:03:56.926  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[14] = 699261 - teacher[0] = dung.phamquang@hust.edu.vn
+2022-05-07 00:03:56.926  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[16] = 699262 - teacher[0] = dung.phamquang@hust.edu.vn
+2022-05-07 00:03:56.926  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[17] = 118576 - teacher[1] = anh.dotuan@hust.edu.vn
+2022-05-07 00:03:56.927  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[18] = 699258 - teacher[0] = dung.phamquang@hust.edu.vn
+2022-05-07 00:03:56.927  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[20] = 699255 - teacher[0] = dung.phamquang@hust.edu.vn
+2022-05-07 00:03:56.927  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[21] = 119181 - teacher[1] = anh.dotuan@hust.edu.vn
+2022-05-07 00:03:56.927  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, preAssign class[22] = 699256 - teacher[0] = dung.phamquang@hust.edu.vn
+2022-05-07 00:03:59.855  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, MIP found optimal solution!!
+2022-05-07 00:03:59.855  INFO 7512 --- [nio-8080-exec-5]  .s.TeacherClassAssignmentAlgoServiceImpl : computeTeacherClassAssignment, notAssign = 7
+2022-05-07 00:04:01.377  INFO 7512 --- [nio-8080-exec-5]  .s.ClassTeacherAssignmentPlanServiceImpl : autoAssignTeacher2Class, START storing solution to DB
+2022-05-07 00:08:43.441  INFO 7512 --- [nio-8080-exec-2]  a.e.t.c.TeacherClassAssignmentController : getClassListForAssignment2Teacher, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 00:08:43.746  INFO 7512 --- [nio-8080-exec-6]  a.e.t.c.TeacherClassAssignmentController : getPairOfConflictTimetableClass, return list.sz = 25
+2022-05-07 00:10:36.037  INFO 7512 --- [nio-8080-exec-6]  a.e.t.c.TeacherClassAssignmentController : getClassListForAssignment2Teacher, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 00:10:36.082  INFO 7512 --- [nio-8080-exec-3]  a.e.t.c.TeacherClassAssignmentController : getClassTeacherAssignmentPlanDetail, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 00:10:36.090  INFO 7512 --- [nio-8080-exec-5]  a.e.t.c.TeacherClassAssignmentController : getPairOfConflictTimetableClass, return list.sz = 25
+2022-05-07 00:32:03.944  INFO 7512 --- [MessageBroker-2]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 184]
+2022-05-07 01:02:04.226  INFO 7512 --- [MessageBroker-2]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 245]
+2022-05-07 01:11:42.747  INFO 7512 --- [ioEventLoop-6-1]  io.lettuce.core.protocol.CommandHandler  : null Unexpected exception during request: java.io.IOException: An existing connection was forcibly closed by the remote host
+java.io.IOException: An existing connection was forcibly closed by the remote host
+	at sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:43)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:192)
+	at sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:380)
+	at io.netty.buffer.PooledByteBuf.setBytes(PooledByteBuf.java:247)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1147)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:347)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:148)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:700)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:635)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:552)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:514)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$6.run(SingleThreadEventExecutor.java:1044)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.lang.Thread.run(Thread.java:748)
+2022-05-07 01:11:44.875  INFO 7512 --- [xecutorLoop-1-1]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost/127.0.0.1:6379
+2022-05-07 01:11:46.295  INFO 7512 --- [localhost:27017]  org.mongodb.driver.cluster               : Exception in monitor thread while connecting to server localhost:27017
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:70)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:128)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:131)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.net.DualStackPlainSocketImpl.waitForConnect(Native Method)
+	at java.net.DualStackPlainSocketImpl.socketConnect(DualStackPlainSocketImpl.java:85)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:172)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:606)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:64)
+	at com.mongodb.internal.connection.SocketStream.initializeSocket(SocketStream.java:79)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:65)
+	... 3 common frames omitted
+2022-05-07 01:11:46.295  INFO 7512 --- [localhost:27019]  org.mongodb.driver.cluster               : Exception in monitor thread while connecting to server localhost:27019
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:70)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:128)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:131)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.net.DualStackPlainSocketImpl.waitForConnect(Native Method)
+	at java.net.DualStackPlainSocketImpl.socketConnect(DualStackPlainSocketImpl.java:85)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:172)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:606)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:64)
+	at com.mongodb.internal.connection.SocketStream.initializeSocket(SocketStream.java:79)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:65)
+	... 3 common frames omitted
+2022-05-07 01:11:46.380  INFO 7512 --- [localhost:27018]  org.mongodb.driver.cluster               : Exception in monitor thread while connecting to server localhost:27018
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:70)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:128)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:131)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.net.DualStackPlainSocketImpl.waitForConnect(Native Method)
+	at java.net.DualStackPlainSocketImpl.socketConnect(DualStackPlainSocketImpl.java:85)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:172)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:606)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:64)
+	at com.mongodb.internal.connection.SocketStream.initializeSocket(SocketStream.java:79)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:65)
+	... 3 common frames omitted
+2022-05-07 01:11:48.633  WARN 7512 --- [ioEventLoop-6-2]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-07 01:11:51.134  INFO 7512 --- [xecutorLoop-1-3]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost:6379
+2022-05-07 01:11:53.214  WARN 7512 --- [ioEventLoop-6-4]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/127.0.0.1:6379
+2022-05-07 01:11:55.944  INFO 7512 --- [extShutdownHook]  o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2022-05-07 01:11:55.976  INFO 7512 --- [extShutdownHook]  o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [DefaultSubscriptionRegistry[cache[0 destination(s)], registry[0 sessions]]]]
+2022-05-07 01:11:55.976  INFO 7512 --- [extShutdownHook]  o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2022-05-07 01:11:56.931  INFO 7512 --- [extShutdownHook]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'brokerChannelExecutor'
+2022-05-07 01:11:56.931  INFO 7512 --- [extShutdownHook]  o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'messageBrokerTaskScheduler'
+2022-05-07 01:11:56.947  INFO 7512 --- [extShutdownHook]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'clientOutboundChannelExecutor'
+2022-05-07 01:11:56.947  INFO 7512 --- [extShutdownHook]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'clientInboundChannelExecutor'
+2022-05-07 01:11:57.564  INFO 7512 --- [xecutorLoop-1-2]  i.l.core.protocol.ConnectionWatchdog     : Reconnecting, last destination was localhost:6379
+2022-05-07 01:11:57.580  WARN 7512 --- [extShutdownHook]  i.l.core.protocol.ConnectionWatchdog     : Cannot reconnect: java.util.concurrent.CancellationException
+2022-05-07 01:11:58.937  INFO 7512 --- [extShutdownHook]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'taskExecutor'
+2022-05-07 01:12:00.719  INFO 7512 --- [extShutdownHook]  j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2022-05-07 01:12:00.989  INFO 7512 --- [extShutdownHook]  com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2022-05-07 01:12:01.142  INFO 7512 --- [extShutdownHook]  com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2022-05-07 19:26:22.062  INFO 3208 --- [           main]  com.hust.baseweb.BasewebApplication      : Starting BasewebApplication on DESKTOP-65R9FFG with PID 3208 (C:\Users\DELL\Gr3\openerp\backend\springboot\baseweb\target\classes started by DELL in C:\Users\DELL\Gr3\openerp\backend)
+2022-05-07 19:26:22.072 DEBUG 3208 --- [           main]  com.hust.baseweb.BasewebApplication      : Running with Spring Boot v2.2.0.RELEASE, Spring v5.2.0.RELEASE
+2022-05-07 19:26:22.074  INFO 3208 --- [           main]  com.hust.baseweb.BasewebApplication      : No active profile set, falling back to default profiles: default
+2022-05-07 19:26:22.467  WARN 3208 --- [kground-preinit]  o.s.h.c.j.Jackson2ObjectMapperBuilder    : For Jackson Kotlin classes support please add "com.fasterxml.jackson.module:jackson-module-kotlin" to the classpath
+2022-05-07 19:26:49.378  INFO 3208 --- [           main]  .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2022-05-07 19:26:49.385  INFO 3208 --- [           main]  .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data repositories in DEFAULT mode.
+2022-05-07 19:26:50.591  INFO 3208 --- [           main]  .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 1189ms. Found 1 repository interfaces.
+2022-05-07 19:26:54.989  INFO 3208 --- [           main]  .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2022-05-07 19:26:54.990  INFO 3208 --- [           main]  .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data repositories in DEFAULT mode.
+2022-05-07 19:26:55.597  INFO 3208 --- [           main]  .RepositoryConfigurationExtensionSupport : Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.hust.baseweb.applications.education.repo.mongodb.TeacherRepo.
+2022-05-07 19:26:56.154  INFO 3208 --- [           main]  .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 1148ms. Found 75 repository interfaces.
+2022-05-07 19:26:58.516  INFO 3208 --- [           main]  trationDelegate$BeanPostProcessorChecker : Bean 'asyncConfiguration' of type [com.hust.baseweb.config.AsyncConfiguration$$EnhancerBySpringCGLIB$$abf91547] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-05-07 19:26:58.892  INFO 3208 --- [           main]  trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-05-07 19:27:01.450  INFO 3208 --- [           main]  o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-07 19:27:01.535  INFO 3208 --- [           main]  o.a.coyote.http11.Http11NioProtocol      : Initializing ProtocolHandler ["http-nio-8080"]
+2022-05-07 19:27:01.553  INFO 3208 --- [           main]  o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-07 19:27:01.554  INFO 3208 --- [           main]  org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.27]
+2022-05-07 19:27:02.648  INFO 3208 --- [           main]  o.a.c.c.C.[Tomcat].[localhost].[/api]    : Initializing Spring embedded WebApplicationContext
+2022-05-07 19:27:02.650  INFO 3208 --- [           main]  o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 40223 ms
+2022-05-07 19:27:03.776  INFO 3208 --- [           main]  com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2022-05-07 19:27:07.568  INFO 3208 --- [           main]  com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2022-05-07 19:27:08.062  INFO 3208 --- [           main]  o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2022-05-07 19:27:09.342  INFO 3208 --- [           main]  org.hibernate.Version                    : HHH000412: Hibernate Core {5.4.6.Final}
+2022-05-07 19:27:11.640  INFO 3208 --- [           main]  o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
+2022-05-07 19:27:13.057  INFO 3208 --- [           main]  org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL10Dialect
+2022-05-07 19:27:29.192  INFO 3208 --- [           main]  o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-05-07 19:27:29.246  INFO 3208 --- [           main]  j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-05-07 19:27:32.869 DEBUG 3208 --- [           main]  c.h.baseweb.config.AsyncConfiguration    : Creating Async Task Executor
+2022-05-07 19:27:32.940  INFO 3208 --- [           main]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'taskExecutor'
+2022-05-07 19:27:34.370  INFO 3208 --- [           main]  org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017, localhost:27018, localhost:27019], mode=MULTIPLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2022-05-07 19:27:34.371  INFO 3208 --- [           main]  org.mongodb.driver.cluster               : Adding discovered server localhost:27017 to client view of cluster
+2022-05-07 19:27:34.654  INFO 3208 --- [           main]  org.mongodb.driver.cluster               : Adding discovered server localhost:27018 to client view of cluster
+2022-05-07 19:27:34.657  INFO 3208 --- [           main]  org.mongodb.driver.cluster               : Adding discovered server localhost:27019 to client view of cluster
+2022-05-07 19:27:34.965  INFO 3208 --- [localhost:27019]  org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:13}] to localhost:27019
+2022-05-07 19:27:34.966  INFO 3208 --- [localhost:27017]  org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:13}] to localhost:27017
+2022-05-07 19:27:34.967  INFO 3208 --- [localhost:27018]  org.mongodb.driver.connection            : Opened connection [connectionId{localValue:3, serverValue:13}] to localhost:27018
+2022-05-07 19:27:34.979  INFO 3208 --- [localhost:27019]  org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27019, type=REPLICA_SET_PRIMARY, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 2, 6]}, minWireVersion=0, maxWireVersion=8, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=9475200, setName='rs0', canonicalAddress=localhost:27019, hosts=[localhost:27018, localhost:27017, localhost:27019], passives=[], arbiters=[], primary='localhost:27019', tagSet=TagSet{[]}, electionId=7fffffff000000000000007f, setVersion=3, lastWriteDate=Sat May 07 19:27:25 ICT 2022, lastUpdateTimeNanos=1478337398315900}
+2022-05-07 19:27:34.979  INFO 3208 --- [localhost:27017]  org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=REPLICA_SET_SECONDARY, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 2, 6]}, minWireVersion=0, maxWireVersion=8, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=11856600, setName='rs0', canonicalAddress=localhost:27017, hosts=[localhost:27018, localhost:27017, localhost:27019], passives=[], arbiters=[], primary='localhost:27019', tagSet=TagSet{[]}, electionId=null, setVersion=3, lastWriteDate=Sat May 07 19:27:25 ICT 2022, lastUpdateTimeNanos=1478337400078000}
+2022-05-07 19:27:34.981  INFO 3208 --- [localhost:27018]  org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27018, type=REPLICA_SET_SECONDARY, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 2, 6]}, minWireVersion=0, maxWireVersion=8, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=13319200, setName='rs0', canonicalAddress=localhost:27018, hosts=[localhost:27018, localhost:27017, localhost:27019], passives=[], arbiters=[], primary='localhost:27019', tagSet=TagSet{[]}, electionId=null, setVersion=3, lastWriteDate=Sat May 07 19:27:25 ICT 2022, lastUpdateTimeNanos=1478337402078100}
+2022-05-07 19:27:34.983  INFO 3208 --- [localhost:27019]  org.mongodb.driver.cluster               : Discovered cluster type of REPLICA_SET
+2022-05-07 19:27:34.985  INFO 3208 --- [localhost:27019]  org.mongodb.driver.cluster               : Setting max election id to 7fffffff000000000000007f from replica set primary localhost:27019
+2022-05-07 19:27:34.985  INFO 3208 --- [localhost:27019]  org.mongodb.driver.cluster               : Setting max set version to 3 from replica set primary localhost:27019
+2022-05-07 19:27:34.985  INFO 3208 --- [localhost:27019]  org.mongodb.driver.cluster               : Discovered replica set primary localhost:27019
+2022-05-07 19:27:35.858  WARN 3208 --- [           main]  o.s.data.convert.CustomConversions       : Registering converter from class java.time.LocalDateTime to class java.time.Instant as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2022-05-07 19:27:35.859  WARN 3208 --- [           main]  o.s.data.convert.CustomConversions       : Registering converter from class java.time.Instant to class java.time.LocalDateTime as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2022-05-07 19:27:35.897  WARN 3208 --- [           main]  o.s.data.convert.CustomConversions       : Registering converter from class java.time.LocalDateTime to class java.time.Instant as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2022-05-07 19:27:35.898  WARN 3208 --- [           main]  o.s.data.convert.CustomConversions       : Registering converter from class java.time.Instant to class java.time.LocalDateTime as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2022-05-07 19:27:39.429  WARN 3208 --- [           main]  o.h.dialect.function.TemplateRenderer    : HHH000174: Function template anticipated 4 arguments, but 1 arguments encountered
+2022-05-07 19:27:39.430  WARN 3208 --- [           main]  o.h.dialect.function.TemplateRenderer    : HHH000174: Function template anticipated 4 arguments, but 1 arguments encountered
+2022-05-07 19:27:39.430  WARN 3208 --- [           main]  o.h.dialect.function.TemplateRenderer    : HHH000174: Function template anticipated 4 arguments, but 1 arguments encountered
+2022-05-07 19:27:39.435  WARN 3208 --- [           main]  o.h.dialect.function.TemplateRenderer    : HHH000174: Function template anticipated 4 arguments, but 1 arguments encountered
+2022-05-07 19:27:39.435  WARN 3208 --- [           main]  o.h.dialect.function.TemplateRenderer    : HHH000174: Function template anticipated 4 arguments, but 1 arguments encountered
+2022-05-07 19:27:39.435  WARN 3208 --- [           main]  o.h.dialect.function.TemplateRenderer    : HHH000174: Function template anticipated 4 arguments, but 1 arguments encountered
+2022-05-07 19:27:41.137  INFO 3208 --- [           main]  o.s.c.fs.io.FileSystemResourceLoader     : Defaulting filesystem root to C:\Users\DELL\OpenERP\openerp\frontend
+2022-05-07 19:27:41.541  WARN 3208 --- [           main]  JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2022-05-07 19:28:01.520  INFO 3208 --- [           main]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'clientInboundChannelExecutor'
+2022-05-07 19:28:02.176  INFO 3208 --- [           main]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'clientOutboundChannelExecutor'
+2022-05-07 19:28:02.651  INFO 3208 --- [           main]  o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'messageBrokerTaskScheduler'
+2022-05-07 19:28:04.020  INFO 3208 --- [           main]  o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'brokerChannelExecutor'
+2022-05-07 19:28:09.966  INFO 3208 --- [           main]  c.h.b.a.p.docker.DockerClientBase        : ping OK
+2022-05-07 19:28:11.569  INFO 3208 --- [           main]  c.h.b.a.p.docker.DockerClientBase        : list container [Container{id=538ced2943d60d54ab43cd4aeb0e5850dc571507930dbd08b013c0e5f7ad1b8e, names=[/golang], image=golang:1.16-buster, imageId=sha256:237b9837a200f2ec258e13c7b5dfb97414943663c5eb8d1e5d1e52e169830924, command=sh -c 'while :; do sleep 1; done', created=1641353718, state=running, status=Up 4 months, ports=[], labels={names=leetcode}, sizeRw=null, sizeRootFs=null, networkSettings=NetworkSettings{ipAddress=null, ipPrefixLen=null, gateway=null, bridge=null, portMapping=null, ports={}, macAddress=null, networks={bridge=AttachedNetwork{aliases=null, networkId=1ff2b4d32ab9cead4a01849f5ddd340f71cbda4f33bd962acbff150a6206036f, endpointId=6643a51be1372e39eed0bd22386899278a89a56dba0fa5a7f0a00e5b31fa9f19, gateway=172.17.0.1, ipAddress=172.17.0.5, ipPrefixLen=16, ipv6Gateway=, globalIPv6Address=, globalIPv6PrefixLen=0, macAddress=02:42:ac:11:00:05}}, endpointId=null, sandboxId=null, sandboxKey=null, hairpinMode=null, linkLocalIPv6Address=null, linkLocalIPv6PrefixLen=null, globalIPv6Address=null, globalIPv6PrefixLen=null, ipv6Gateway=null}, mounts=[]}, Container{id=5315f0d15b5efc899ff38eb6d2ed8ef91c0da0bdd173c059081a1cf171498f21, names=[/gcc], image=gcc:8.5-buster, imageId=sha256:21997055d1a44a57588ba17c0f0c400b8af0f12725cb4d592c3c55c1cfc415e0, command=/bin/sh -c 'while true; do sleep 1000; done', created=1640707449, state=running, status=Up 4 months, ports=[], labels={names=leetcode}, sizeRw=null, sizeRootFs=null, networkSettings=NetworkSettings{ipAddress=null, ipPrefixLen=null, gateway=null, bridge=null, portMapping=null, ports={}, macAddress=null, networks={bridge=AttachedNetwork{aliases=null, networkId=1ff2b4d32ab9cead4a01849f5ddd340f71cbda4f33bd962acbff150a6206036f, endpointId=988453fc8bd2cf72c7d396cb65f478908ed5aafd7d607b224edcb6d0ff708242, gateway=172.17.0.1, ipAddress=172.17.0.2, ipPrefixLen=16, ipv6Gateway=, globalIPv6Address=, globalIPv6PrefixLen=0, macAddress=02:42:ac:11:00:02}}, endpointId=null, sandboxId=null, sandboxKey=null, hairpinMode=null, linkLocalIPv6Address=null, linkLocalIPv6PrefixLen=null, globalIPv6Address=null, globalIPv6PrefixLen=null, ipv6Gateway=null}, mounts=[]}, Container{id=ecd71718fe129d14cf0462c1ad0e03c25eaddc2e8e1776a474ac8cd9159cd642, names=[/python3], image=python:3.6-buster, imageId=sha256:6a16f0d6824577f4295aa0324e581796320c0fd4ad7f9b801698b2ac5e1baf5d, command=/bin/sh -c 'while true; do sleep 1000; done', created=1640707423, state=running, status=Up 4 months, ports=[], labels={names=leetcode}, sizeRw=null, sizeRootFs=null, networkSettings=NetworkSettings{ipAddress=null, ipPrefixLen=null, gateway=null, bridge=null, portMapping=null, ports={}, macAddress=null, networks={bridge=AttachedNetwork{aliases=null, networkId=1ff2b4d32ab9cead4a01849f5ddd340f71cbda4f33bd962acbff150a6206036f, endpointId=63dc1cef7bec4fb5758eab8f269b4ce32c133a6119be8a5e88079d1d589bae10, gateway=172.17.0.1, ipAddress=172.17.0.3, ipPrefixLen=16, ipv6Gateway=, globalIPv6Address=, globalIPv6PrefixLen=0, macAddress=02:42:ac:11:00:03}}, endpointId=null, sandboxId=null, sandboxKey=null, hairpinMode=null, linkLocalIPv6Address=null, linkLocalIPv6PrefixLen=null, globalIPv6Address=null, globalIPv6PrefixLen=null, ipv6Gateway=null}, mounts=[]}, Container{id=14c9e924de74e0a7024493b543c47147af90c9366f1a76655953d5bcc76affc6, names=[/java], image=openjdk:13-buster, imageId=sha256:55956f412dc6a0cfe09a2a750de6ef798b51ccef87aba93a09f66f5bb15e6212, command=/bin/sh -c 'while true; do sleep 1000; done', created=1640707359, state=running, status=Up 4 months, ports=[], labels={names=leetcode}, sizeRw=null, sizeRootFs=null, networkSettings=NetworkSettings{ipAddress=null, ipPrefixLen=null, gateway=null, bridge=null, portMapping=null, ports={}, macAddress=null, networks={bridge=AttachedNetwork{aliases=null, networkId=1ff2b4d32ab9cead4a01849f5ddd340f71cbda4f33bd962acbff150a6206036f, endpointId=cd14af7b6430e0601ca6f7a7b5f8374255cd4dee21022eecddd590db8e95b957, gateway=172.17.0.1, ipAddress=172.17.0.4, ipPrefixLen=16, ipv6Gateway=, globalIPv6Address=, globalIPv6PrefixLen=0, macAddress=02:42:ac:11:00:04}}, endpointId=null, sandboxId=null, sandboxKey=null, hairpinMode=null, linkLocalIPv6Address=null, linkLocalIPv6PrefixLen=null, globalIPv6Address=null, globalIPv6PrefixLen=null, ipv6Gateway=null}, mounts=[]}]
+2022-05-07 19:28:11.687  INFO 3208 --- [           main]  c.h.b.a.p.docker.DockerClientBase        : containerSet [/golang, /java, /python3, /gcc]
+2022-05-07 19:28:11.780  INFO 3208 --- [           main]  c.h.b.a.p.docker.DockerClientBase        : {/golang=538ced2943d60d54ab43cd4aeb0e5850dc571507930dbd08b013c0e5f7ad1b8e, /java=14c9e924de74e0a7024493b543c47147af90c9366f1a76655953d5bcc76affc6, /python3=ecd71718fe129d14cf0462c1ad0e03c25eaddc2e8e1776a474ac8cd9159cd642, /gcc=5315f0d15b5efc899ff38eb6d2ed8ef91c0da0bdd173c059081a1cf171498f21}
+2022-05-07 19:28:15.600  WARN 3208 --- [           main]  o.s.data.convert.CustomConversions       : Registering converter from class java.time.LocalDateTime to class java.time.Instant as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2022-05-07 19:28:15.601  WARN 3208 --- [           main]  o.s.data.convert.CustomConversions       : Registering converter from class java.time.Instant to class java.time.LocalDateTime as reading converter although it doesn't convert from a store-supported type! You might wanna check you annotation setup at the converter implementation.
+2022-05-07 19:28:18.549  INFO 3208 --- [           main]  o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@42ca6733, org.springframework.security.web.context.SecurityContextPersistenceFilter@6ad11552, org.springframework.security.web.header.HeaderWriterFilter@4a501cab, org.springframework.security.web.authentication.logout.LogoutFilter@7a2c95e2, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@749aa36f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@684f20ea, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1de36da2, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@452d71e5, org.springframework.security.web.session.SessionManagementFilter@1353f515, org.springframework.security.web.access.ExceptionTranslationFilter@bd62a6e, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@739e76e6]
+2022-05-07 19:28:22.686  INFO 3208 --- [           main]  o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2022-05-07 19:28:22.686  INFO 3208 --- [           main]  o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [DefaultSubscriptionRegistry[cache[0 destination(s)], registry[0 sessions]]]]
+2022-05-07 19:28:22.688  INFO 3208 --- [           main]  o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2022-05-07 19:28:22.757  INFO 3208 --- [           main]  o.a.coyote.http11.Http11NioProtocol      : Starting ProtocolHandler ["http-nio-8080"]
+2022-05-07 19:28:23.908  INFO 3208 --- [           main]  o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path '/api'
+2022-05-07 19:28:23.923  INFO 3208 --- [           main]  com.hust.baseweb.BasewebApplication      : Started BasewebApplication in 125.867 seconds (JVM running for 138.642)
+2022-05-07 19:29:03.860  INFO 3208 --- [MessageBroker-2]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 3, active threads = 1, queued tasks = 1, completed tasks = 1]
+2022-05-07 19:51:43.330  WARN 3208 --- [l-1 housekeeper]  com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m5s243ms46µs900ns).
+2022-05-07 19:51:47.190  INFO 3208 --- [nio-8080-exec-1]  o.a.c.c.C.[Tomcat].[localhost].[/api]    : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2022-05-07 19:51:47.204  INFO 3208 --- [nio-8080-exec-1]  o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2022-05-07 19:51:47.654  INFO 3208 --- [nio-8080-exec-1]  o.s.web.servlet.DispatcherServlet        : Completed initialization in 449 ms
+2022-05-07 19:51:54.269  INFO 3208 --- [nio-8080-exec-2]  io.lettuce.core.EpollProvider            : Starting without optional epoll library
+2022-05-07 19:51:54.449  INFO 3208 --- [nio-8080-exec-2]  io.lettuce.core.KqueueProvider           : Starting without optional kqueue library
+2022-05-07 19:59:03.955  INFO 3208 --- [MessageBroker-4]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 61]
+2022-05-07 20:29:03.970  INFO 3208 --- [MessageBroker-1]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 122]
+2022-05-07 20:59:03.975  INFO 3208 --- [MessageBroker-2]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 183]
+2022-05-07 21:29:03.986  INFO 3208 --- [MessageBroker-2]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 244]
+2022-05-07 21:59:03.991  INFO 3208 --- [MessageBroker-3]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 305]
+2022-05-07 22:04:22.993  INFO 3208 --- [nio-8080-exec-9]  a.e.t.c.TeacherClassAssignmentController : getClassListForAssignment2Teacher, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 22:04:22.993  INFO 3208 --- [nio-8080-exec-1]  a.e.t.c.TeacherClassAssignmentController : getClassTeacherAssignmentPlanDetail, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 22:04:24.310  INFO 3208 --- [nio-8080-exec-7]  a.e.t.c.TeacherClassAssignmentController : getPairOfConflictTimetableClass, return list.sz = 25
+2022-05-07 22:04:29.213  INFO 3208 --- [nio-8080-exec-3]  a.e.t.c.TeacherClassAssignmentController : getClassListForAssignment2Teacher, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 22:04:29.336  INFO 3208 --- [nio-8080-exec-1]  a.e.t.c.TeacherClassAssignmentController : getClassTeacherAssignmentPlanDetail, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 22:04:29.369  INFO 3208 --- [io-8080-exec-10]  a.e.t.c.TeacherClassAssignmentController : getPairOfConflictTimetableClass, return list.sz = 25
+2022-05-07 22:06:07.129  INFO 3208 --- [nio-8080-exec-4]  a.e.t.c.TeacherClassAssignmentController : getClassesAssignedToATeacherSolutionForViewGrid, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 22:06:07.263  INFO 3208 --- [nio-8080-exec-5]  a.e.t.c.TeacherClassAssignmentController : getClassTeacherAssignmentSolutions, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 22:06:08.147  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699257 has ONLY ONE timetable
+2022-05-07 22:06:08.147  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 118565 has ONLY ONE timetable
+2022-05-07 22:06:08.148  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 118604 has ONLY ONE timetable
+2022-05-07 22:06:08.148  INFO 3208 --- [nio-8080-exec-3]  a.e.t.c.TeacherClassAssignmentController : getConflictClassesAssignedToTeacherInSolution, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1, sol.sz = 17
+2022-05-07 22:06:08.148  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 118575 has ONLY ONE timetable
+2022-05-07 22:06:08.149  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 119183 has ONLY ONE timetable
+2022-05-07 22:06:08.149  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 118566 has ONLY ONE timetable
+2022-05-07 22:06:08.150  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 119182 has ONLY ONE timetable
+2022-05-07 22:06:08.153  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699259 has ONLY ONE timetable
+2022-05-07 22:06:08.153  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699260 has ONLY ONE timetable
+2022-05-07 22:06:08.153  INFO 3208 --- [nio-8080-exec-3]  a.e.t.c.TeacherClassAssignmentController : getConflictClassesAssignedToTeacherInSolution, conflict list.sz = 0
+2022-05-07 22:06:08.154  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 118588 has ONLY ONE timetable
+2022-05-07 22:06:08.154  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699261 has ONLY ONE timetable
+2022-05-07 22:06:08.155  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699262 has ONLY ONE timetable
+2022-05-07 22:06:08.155  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 118576 has ONLY ONE timetable
+2022-05-07 22:06:08.155  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699258 has ONLY ONE timetable
+2022-05-07 22:06:08.155  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699255 has ONLY ONE timetable
+2022-05-07 22:06:08.155  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 119181 has ONLY ONE timetable
+2022-05-07 22:06:08.155  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699256 has ONLY ONE timetable
+2022-05-07 22:06:08.155  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, consider teacher dung.phamquang@hust.edu.vn
+2022-05-07 22:06:08.156  INFO 3208 --- [nio-8080-exec-4]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, consider teacher anh.dotuan@hust.edu.vn
+2022-05-07 22:06:29.477  INFO 3208 --- [nio-8080-exec-7]  a.e.t.c.TeacherClassAssignmentController : getClassesAssignedToATeacherSolutionForViewGrid, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 22:06:29.547  INFO 3208 --- [nio-8080-exec-8]  a.e.t.c.TeacherClassAssignmentController : getClassTeacherAssignmentSolutions, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 22:06:29.574  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699257 has ONLY ONE timetable
+2022-05-07 22:06:29.574  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 118565 has ONLY ONE timetable
+2022-05-07 22:06:29.574  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 118604 has ONLY ONE timetable
+2022-05-07 22:06:29.574  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 118575 has ONLY ONE timetable
+2022-05-07 22:06:29.574  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 119183 has ONLY ONE timetable
+2022-05-07 22:06:29.575  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 118566 has ONLY ONE timetable
+2022-05-07 22:06:29.575  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 119182 has ONLY ONE timetable
+2022-05-07 22:06:29.575  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699259 has ONLY ONE timetable
+2022-05-07 22:06:29.575  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699260 has ONLY ONE timetable
+2022-05-07 22:06:29.575  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 118588 has ONLY ONE timetable
+2022-05-07 22:06:29.575  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699261 has ONLY ONE timetable
+2022-05-07 22:06:29.575  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699262 has ONLY ONE timetable
+2022-05-07 22:06:29.575  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 118576 has ONLY ONE timetable
+2022-05-07 22:06:29.576  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699258 has ONLY ONE timetable
+2022-05-07 22:06:29.576  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699255 has ONLY ONE timetable
+2022-05-07 22:06:29.576  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 119181 has ONLY ONE timetable
+2022-05-07 22:06:29.576  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, class 699256 has ONLY ONE timetable
+2022-05-07 22:06:29.576  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, consider teacher dung.phamquang@hust.edu.vn
+2022-05-07 22:06:29.576  INFO 3208 --- [nio-8080-exec-7]  .s.ClassTeacherAssignmentPlanServiceImpl : getClassesAssignedToATeacherSolutionDuplicateWhenMultipleFragmentTimeTable, consider teacher anh.dotuan@hust.edu.vn
+2022-05-07 22:06:29.702  INFO 3208 --- [io-8080-exec-10]  a.e.t.c.TeacherClassAssignmentController : getConflictClassesAssignedToTeacherInSolution, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1, sol.sz = 17
+2022-05-07 22:06:29.704  INFO 3208 --- [io-8080-exec-10]  a.e.t.c.TeacherClassAssignmentController : getConflictClassesAssignedToTeacherInSolution, conflict list.sz = 0
+2022-05-07 22:06:30.424  INFO 3208 --- [nio-8080-exec-6]  a.e.t.c.TeacherClassAssignmentController : getNotAssignedClassSolution, return list.sz = 7
+2022-05-07 22:06:33.608  INFO 3208 --- [nio-8080-exec-2]  a.e.t.c.TeacherClassAssignmentController : getClassListForAssignment2Teacher, planId = 117cc555-6e3c-479e-a171-c82d5eab0bb1
+2022-05-07 22:06:33.665  INFO 3208 --- [nio-8080-exec-1]  a.e.t.c.TeacherClassAssignmentController : getPairOfConflictTimetableClass, return list.sz = 25
+2022-05-07 22:07:00.033  INFO 3208 --- [nio-8080-exec-9]  c.h.b.a.p.c.ContestProblemController     : getContestProblemPaging pageable Page request [number: 0, size 5, sort: UNSORTED]
+2022-05-07 22:07:00.072  INFO 3208 --- [nio-8080-exec-9]  c.h.b.a.p.c.ContestProblemController     : sortBy null
+2022-05-07 22:07:10.751  INFO 3208 --- [nio-8080-exec-1]  c.h.b.a.p.c.ContestProblemController     : getContestProblemPaging pageable Page request [number: 0, size 5, sort: UNSORTED]
+2022-05-07 22:07:10.752  INFO 3208 --- [nio-8080-exec-1]  c.h.b.a.p.c.ContestProblemController     : sortBy null
+2022-05-07 22:07:14.262  INFO 3208 --- [nio-8080-exec-8]  c.h.b.a.p.c.ContestProblemController     : getContestProblemPaging pageable Page request [number: 1, size 5, sort: UNSORTED]
+2022-05-07 22:07:14.263  INFO 3208 --- [nio-8080-exec-8]  c.h.b.a.p.c.ContestProblemController     : sortBy null
+2022-05-07 22:08:16.704  INFO 3208 --- [nio-8080-exec-1]  c.h.b.a.p.c.ContestProblemController     : getContestProblemPaging pageable Page request [number: 0, size 5, sort: UNSORTED]
+2022-05-07 22:08:16.704  INFO 3208 --- [nio-8080-exec-1]  c.h.b.a.p.c.ContestProblemController     : sortBy null
+2022-05-07 22:11:09.372  INFO 3208 --- [nio-8080-exec-3]  c.h.b.a.p.c.ContestProblemController     : getContestProblemPaging pageable Page request [number: 0, size 5, sort: UNSORTED]
+2022-05-07 22:11:09.373  INFO 3208 --- [nio-8080-exec-3]  c.h.b.a.p.c.ContestProblemController     : sortBy null
+2022-05-07 22:27:51.795  INFO 3208 --- [nio-8080-exec-7]  c.h.b.a.p.c.ContestProblemController     : getContestProblemPaging pageable Page request [number: 0, size 5, sort: UNSORTED]
+2022-05-07 22:27:51.797  INFO 3208 --- [nio-8080-exec-7]  c.h.b.a.p.c.ContestProblemController     : sortBy null
+2022-05-07 22:29:04.156  INFO 3208 --- [MessageBroker-4]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 366]
+2022-05-07 22:59:04.397  INFO 3208 --- [MessageBroker-4]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 427]
+2022-05-07 23:29:04.740  INFO 3208 --- [MessageBroker-1]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 488]
+2022-05-07 23:37:47.001 DEBUG 3208 --- [nio-8080-exec-6]  c.h.b.a.e.t.c.DefenseJuryController      : com.hust.baseweb.applications.education.thesisdefensejury.models.DefenseJuryIM@621720fc
+2022-05-07 23:37:47.006 DEBUG 3208 --- [nio-8080-exec-5]  c.h.b.a.e.t.c.DefenseJuryController      : com.hust.baseweb.applications.education.thesisdefensejury.models.DefenseJuryIM@7f5c47f2
+2022-05-07 23:38:00.608 DEBUG 3208 --- [nio-8080-exec-2]  c.h.b.a.e.t.c.DefenseJuryController      : com.hust.baseweb.applications.education.thesisdefensejury.models.DefenseJuryIM@47c609e9
+2022-05-07 23:39:54.480 DEBUG 3208 --- [nio-8080-exec-7]  c.h.b.a.e.t.c.DefenseJuryController      : com.hust.baseweb.applications.education.thesisdefensejury.models.DefenseJuryIM@3102af58
+2022-05-07 23:42:10.496 DEBUG 3208 --- [nio-8080-exec-9]  c.h.b.a.e.t.c.DefenseJuryController      : com.hust.baseweb.applications.education.thesisdefensejury.models.DefenseJuryIM@1c0eed62
+2022-05-07 23:42:21.118 ERROR 3208 --- [nio-8080-exec-9]  o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api] threw exception [Request processing failed; nested exception is java.util.NoSuchElementException: No value present] with root cause
+java.util.NoSuchElementException: No value present
+	at java.util.Optional.get(Optional.java:135)
+	at com.hust.baseweb.applications.education.thesisdefensejury.service.DefenseJuryServiceImpl.createDefenseJury(DefenseJuryServiceImpl.java:66)
+	at com.hust.baseweb.applications.education.thesisdefensejury.service.DefenseJuryServiceImpl$$FastClassBySpringCGLIB$$84560337.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:769)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:747)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:353)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:99)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:747)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:689)
+	at com.hust.baseweb.applications.education.thesisdefensejury.service.DefenseJuryServiceImpl$$EnhancerBySpringCGLIB$$c93f8364.createDefenseJury(<generated>)
+	at com.hust.baseweb.applications.education.thesisdefensejury.controller.DefenseJuryController.createDefenseJury(DefenseJuryController.java:48)
+	at com.hust.baseweb.applications.education.thesisdefensejury.controller.DefenseJuryController$$FastClassBySpringCGLIB$$ea9a6c97.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:769)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:747)
+	at org.springframework.validation.beanvalidation.MethodValidationInterceptor.invoke(MethodValidationInterceptor.java:120)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:747)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:689)
+	at com.hust.baseweb.applications.education.thesisdefensejury.controller.DefenseJuryController$$EnhancerBySpringCGLIB$$2be5f9e1.createDefenseJury(<generated>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:190)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:138)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:106)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:888)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:793)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1040)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:660)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:126)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:90)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:118)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:158)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.www.BasicAuthenticationFilter.doFilterInternal(BasicAuthenticationFilter.java:154)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:92)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:77)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:358)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:271)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.session.web.http.SessionRepositoryFilter.doFilterInternal(SessionRepositoryFilter.java:141)
+	at org.springframework.session.web.http.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:82)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:92)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:526)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:408)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:861)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1579)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2022-05-07 23:43:34.142 DEBUG 3208 --- [nio-8080-exec-4]  c.h.b.a.e.t.c.DefenseJuryController      : com.hust.baseweb.applications.education.thesisdefensejury.models.DefenseJuryIM@46cf6a1d
+2022-05-07 23:43:51.301 DEBUG 3208 --- [nio-8080-exec-7]  c.h.b.a.e.t.c.DefenseJuryController      : com.hust.baseweb.applications.education.thesisdefensejury.models.DefenseJuryIM@56b3cbc6
+2022-05-07 23:44:22.879 DEBUG 3208 --- [nio-8080-exec-8]  c.h.b.a.e.t.c.DefenseJuryController      : com.hust.baseweb.applications.education.thesisdefensejury.models.DefenseJuryIM@48eed1c
+2022-05-07 23:48:51.491 DEBUG 3208 --- [nio-8080-exec-4]  c.h.b.a.e.t.c.DefenseJuryController      : com.hust.baseweb.applications.education.thesisdefensejury.models.DefenseJuryIM@66762de3
+2022-05-07 23:48:51.740 ERROR 3208 --- [nio-8080-exec-4]  o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api] threw exception [Request processing failed; nested exception is java.util.NoSuchElementException: No value present] with root cause
+java.util.NoSuchElementException: No value present
+	at java.util.Optional.get(Optional.java:135)
+	at com.hust.baseweb.applications.education.thesisdefensejury.service.DefenseJuryServiceImpl.createDefenseJury(DefenseJuryServiceImpl.java:66)
+	at com.hust.baseweb.applications.education.thesisdefensejury.service.DefenseJuryServiceImpl$$FastClassBySpringCGLIB$$84560337.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:769)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:747)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:353)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:99)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:747)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:689)
+	at com.hust.baseweb.applications.education.thesisdefensejury.service.DefenseJuryServiceImpl$$EnhancerBySpringCGLIB$$c93f8364.createDefenseJury(<generated>)
+	at com.hust.baseweb.applications.education.thesisdefensejury.controller.DefenseJuryController.createDefenseJury(DefenseJuryController.java:48)
+	at com.hust.baseweb.applications.education.thesisdefensejury.controller.DefenseJuryController$$FastClassBySpringCGLIB$$ea9a6c97.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:769)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:747)
+	at org.springframework.validation.beanvalidation.MethodValidationInterceptor.invoke(MethodValidationInterceptor.java:120)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:747)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:689)
+	at com.hust.baseweb.applications.education.thesisdefensejury.controller.DefenseJuryController$$EnhancerBySpringCGLIB$$2be5f9e1.createDefenseJury(<generated>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:190)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:138)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:106)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:888)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:793)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1040)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:660)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:126)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:90)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:118)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:158)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.www.BasicAuthenticationFilter.doFilterInternal(BasicAuthenticationFilter.java:154)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:92)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:77)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:358)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:271)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.session.web.http.SessionRepositoryFilter.doFilterInternal(SessionRepositoryFilter.java:141)
+	at org.springframework.session.web.http.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:82)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:92)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:526)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:408)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:861)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1579)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2022-05-07 23:59:04.900  INFO 3208 --- [MessageBroker-3]  o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 1, completed tasks = 549]

@@ -109,6 +109,34 @@ public class DefenseJuryServiceImpl implements DefenseJuryService {
     }
 
     @Override
+    public Response findAllBelongPlanID(String planId) {
+        Response res = new Response();
+        // check input
+        if(planId == ""){
+            res.setOk(false);
+            res.setErr("Invalid plan id");
+            return res;
+        }
+        // check planID existed
+        Optional<ThesisDefensePlan> dp = thesisDefensePlanRepo.findById(planId);
+        if(!dp.isPresent()){
+            res.setOk(false);
+            res.setErr("Plan Id isnt existed");
+            return res;
+        }
+        // TODO: handler
+        List<DefenseJury> dj = defenseJuryRepo.findAllByPlanId(planId);
+        if (dj.size() == 0){
+            res.setOk(true);
+            res.setErr("Not found defense jury");
+            return res;
+        }
+        res.setOk(true);
+        res.setResult(dj);
+        return res;
+    }
+
+    @Override
     public List<DefenseJuryOM> searchByDefenseJury(String name) {
         // check input
 //        if (name == ""){

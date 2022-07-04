@@ -31,4 +31,7 @@ public interface CommentOnQuizQuestionRepo extends JpaRepository<CommentOnQuizQu
 
     @Query(value="select count(*) from comment_on_quiz_question where question_id = ?1", nativeQuery = true)
     int getNumberCommentsOnQuiz(UUID questionId);
+
+    @Query(value="select distinct created_by_user_login_id from comment_on_quiz_question where question_id = :questionId", nativeQuery = true)
+    List<String>getListUserIdHadComment(UUID questionId);
 }
