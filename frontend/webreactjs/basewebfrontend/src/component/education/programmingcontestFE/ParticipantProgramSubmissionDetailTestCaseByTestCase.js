@@ -47,7 +47,7 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
   function getSubmissionDetailTestCaseByTestCase() {
     request(
       "get",
-      "/get-contest-problem-submission-detail-by-testcase-of-a-submission/" +
+      "/get-contest-problem-submission-detail-by-testcase-of-a-submission-viewed-by-participant/" +
         submissionId,
       (res) => {
         let L = res.data.map((c) => ({
@@ -55,6 +55,17 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
           createdAt: toFormattedDateTime(c.createdAt),
         }));
         setSubmissionTestCase(L);
+
+        let tcl = [];
+        res.data.map((e) => {
+          tcl.push({
+            testCaseId: e.testCaseId,
+            testCase: e.testCase,
+            correctAns: e.correctAns,
+          });
+        });
+        console.log("testCaseDetailList tcl = ", tcl);
+        setTestcaseDetailList(tcl);
       },
       { 401: () => {} }
     );
@@ -75,6 +86,7 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
     getSubmissionDetailTestCaseByTestCase();
   }, []);
 
+  /*
   useEffect(() => {
     var testcaseIdsList = submissionTestCase.map(
       (testcase) => testcase.testCaseId
@@ -83,6 +95,7 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
       getTestcaseDetail(id);
     });
   }, [submissionTestCase]);
+  */
 
   const ModalPreview = (chosenTestcase) => {
     return (

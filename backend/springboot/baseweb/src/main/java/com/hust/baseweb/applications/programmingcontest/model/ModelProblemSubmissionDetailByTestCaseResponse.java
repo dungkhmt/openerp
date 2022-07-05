@@ -17,6 +17,8 @@ public class ModelProblemSubmissionDetailByTestCaseResponse {
     private String problemId;
     private String userLoginId;
     private UUID testCaseId;
+    private String testCase;
+    private String correctAns;
     private String message;
     private int point;
     private String testCaseAnswer;

@@ -657,11 +657,19 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public Page<ModelProblemSubmissionDetailByTestCaseResponse> getContestProblemSubmissionDetailByTestCase(Pageable  page) {
         Page<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAll(page);
         Page<ModelProblemSubmissionDetailByTestCaseResponse> retLst = L.map(e ->{
+            TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
+            String testCase = "";
+            String correctAnswer = "";
+            if(tc != null){
+                testCase = tc.getTestCase(); correctAnswer = tc.getCorrectAnswer();
+            }
             return new ModelProblemSubmissionDetailByTestCaseResponse(e.getContestSubmissionTestcaseId(),
                                                                       e.getContestId(),
                                                                       e.getProblemId(),
                                                                       e.getSubmittedByUserLoginId(),
                                                                       e.getTestCaseId(),
+                                                                      testCase,
+                                                                      correctAnswer,
                                                                       e.getStatus(),
                                                                       e.getPoint(),
                                                                       e.getTestCaseOutput(),
@@ -680,11 +688,60 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
         List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = new ArrayList();
         for(ContestSubmissionTestCaseEntity e: L){
+            TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
+            String testCase = "";
+            String correctAnswer = "";
+            if(tc != null){
+                testCase = tc.getTestCase(); correctAnswer = tc.getCorrectAnswer();
+            }
+
             retLst.add(new ModelProblemSubmissionDetailByTestCaseResponse(e.getContestSubmissionTestcaseId(),
                                                                           e.getContestId(),
                                                                           e.getProblemId(),
                                                                           e.getSubmittedByUserLoginId(),
                                                                           e.getTestCaseId(),
+                                                                          testCase,
+                                                                          correctAnswer,
+                                                                          e.getStatus(),
+                                                                          e.getPoint(),
+                                                                          e.getTestCaseOutput(),
+                                                                          e.getParticipantSolutionOtput(),
+                                                                          e.getCreatedStamp()
+            ));
+        }
+        return retLst;
+    }
+    @Override
+    public List<ModelProblemSubmissionDetailByTestCaseResponse> getContestProblemSubmissionDetailByTestCaseOfASubmissionViewedByParticipant(
+        UUID submissionId
+    ){
+        ContestSubmissionEntity sub = contestSubmissionRepo.findContestSubmissionEntityByContestSubmissionId(submissionId);
+        ContestEntity contest = null;
+        if(sub != null)
+            contest = contestRepo.findContestByContestId(sub.getContestId());
+
+        List<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId((submissionId));
+        log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
+        List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = new ArrayList();
+        for(ContestSubmissionTestCaseEntity e: L){
+
+            String testCase = "";
+            String correctAnswer = "";
+            if(contest != null && contest.getParticipantViewResultMode().equals(ContestEntity
+                                                                 .CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE)) {
+                TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
+                if (tc != null) {
+                    testCase = tc.getTestCase();
+                    correctAnswer = tc.getCorrectAnswer();
+                }
+            }
+            retLst.add(new ModelProblemSubmissionDetailByTestCaseResponse(e.getContestSubmissionTestcaseId(),
+                                                                          e.getContestId(),
+                                                                          e.getProblemId(),
+                                                                          e.getSubmittedByUserLoginId(),
+                                                                          e.getTestCaseId(),
+                                                                          testCase,
+                                                                          correctAnswer,
                                                                           e.getStatus(),
                                                                           e.getPoint(),
                                                                           e.getTestCaseOutput(),
