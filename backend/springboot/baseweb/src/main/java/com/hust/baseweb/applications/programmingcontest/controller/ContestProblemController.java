@@ -738,8 +738,15 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(page);
     }
 
-    @GetMapping("/get-contest-problem-submission-detail/{submissionId}")
-    public ResponseEntity<?> getContestSubmissionDetail(@PathVariable("submissionId") UUID submissionId){
+    @GetMapping("/get-contest-problem-submission-detail-viewed-by-participant/{submissionId}")
+    public ResponseEntity<?> getContestSubmissionDetailViewedByParticipant(@PathVariable("submissionId") UUID submissionId){
+        log.info("get contest submission detail");
+        ContestSubmissionEntity contestSubmission = problemTestCaseService.getContestSubmissionDetail(submissionId);
+        return ResponseEntity.status(200).body(contestSubmission);
+    }
+
+    @GetMapping("/get-contest-problem-submission-detail-viewed-by-manager/{submissionId}")
+    public ResponseEntity<?> getContestSubmissionDetailViewedByManager(@PathVariable("submissionId") UUID submissionId){
         log.info("get contest submission detail");
         ContestSubmissionEntity contestSubmission = problemTestCaseService.getContestSubmissionDetail(submissionId);
         return ResponseEntity.status(200).body(contestSubmission);

@@ -2,6 +2,8 @@ import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router";
 import { ContestManager } from "../component/education/programmingcontestFE/ContestManager";
 import ContestProblemSubmissionDetail from "../component/education/programmingcontestFE/ContestProblemSubmissionDetail";
+import ContestProblemSubmissionDetailViewedByManager from "../component/education/programmingcontestFE/ContestProblemSubmissionDetailViewedByManager";
+
 import CreateContest from "../component/education/programmingcontestFE/CreateContest";
 import CreateProblem from "../component/education/programmingcontestFE/CreateProblem";
 import CreateTestCase from "../component/education/programmingcontestFE/CreateTestCase";
@@ -106,6 +108,10 @@ export default function ProgrammingContestRoutes() {
         <Route
           component={ContestProblemSubmissionDetail}
           path={`${path}/contest-problem-submission-detail/:problemSubmissionId`}
+        />
+        <Route
+          component={ContestProblemSubmissionDetailViewedByManager}
+          path={`${path}/manager-view-contest-problem-submission-detail/:problemSubmissionId`}
         />
       </Switch>
     </div>

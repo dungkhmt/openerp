@@ -96,7 +96,7 @@ export default function ContestManagerUserSubmission(props) {
                 <StyledTableCell align="center">
                   <Link
                     to={
-                      "/programming-contest/contest-problem-submission-detail/" +
+                      "/programming-contest/manager-view-contest-problem-submission-detail/" +
                       s.contestSubmissionId
                     }
                     style={{

@@ -388,6 +388,9 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 <MenuItem key={"JAVA"} value="JAVA">
                   {"JAVA"}
                 </MenuItem>
+                <MenuItem key={"PYTHON3"} value="PYTHON3">
+                  {"PYTHON3"}
+                </MenuItem>
               </TextField>
             </Grid>
 

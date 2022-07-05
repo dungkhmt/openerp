@@ -14,8 +14,9 @@ import { java } from "@codemirror/lang-java";
 import { pythonLanguage } from "@codemirror/lang-python";
 import { javascript } from "@codemirror/lang-javascript";
 import { getStatusColor } from "./lib";
-import ParticipantProgramSubmissionDetailTestCaseByTestCase from "./ParticipantProgramSubmissionDetailTestCaseByTestCase";
-export default function ContestProblemSubmissionDetail() {
+import ManagerViewParticipantProgramSubmissionDetailTestCaseByTestCase from "./ManagerViewParticipantProgramSubmissionDetailTestCaseByTestCase";
+
+export default function ContestProblemSubmissionDetailViewedByManager() {
   const { problemSubmissionId } = useParams();
   const [memoryUsage, setMemoryUsage] = useState();
   const [problemId, setProblemId] = useState();
@@ -62,7 +63,7 @@ export default function ContestProblemSubmissionDetail() {
     console.log("problemSubmissionId ", problemSubmissionId);
     request(
       "get",
-      "/get-contest-problem-submission-detail-viewed-by-participant/" +
+      "/get-contest-problem-submission-detail-viewed-by-manager/" +
         problemSubmissionId,
       (res) => {
         setMemoryUsage(res.data.memoryUsage);
@@ -145,10 +146,7 @@ export default function ContestProblemSubmissionDetail() {
         }}
       ></TextField>
 
-      {/*
       <Button onClick={updateCode}>Update Code</Button>
-      */}
-
       {/*
       <CodeMirror
         height={"400px"}
@@ -159,7 +157,7 @@ export default function ContestProblemSubmissionDetail() {
         value={submissionSource}
       />
       */}
-      <ParticipantProgramSubmissionDetailTestCaseByTestCase
+      <ManagerViewParticipantProgramSubmissionDetailTestCaseByTestCase
         submissionId={problemSubmissionId}
       />
     </div>

@@ -1628,6 +1628,11 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public ModelContestSubmissionResponse evaluateSubmission(ContestSubmissionEntity sub){
         log.info("evaluateSubmission");
         if(sub != null){
+            // set status of submission and store in DB
+            sub.setStatus(ContestSubmissionEntity.SUBMISSION_STATUS_EVALUATION_IN_PROGRESS);
+            sub = contestSubmissionRepo.save(sub);
+            log.info("evaluateSubmission(" + sub.getContestSubmissionId() + " Saved in DB");
+
             ProblemEntity p = problemRepo.findById(sub.getProblemId()).orElse(null);
             if(p == null){
                 log.info("evaluateSubmission, problem is NULL???");

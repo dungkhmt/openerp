@@ -28,6 +28,8 @@ public class ContestEntity {
 
     public static final String CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER = "SEE_CORRECT_ANSWER";
     public static final String CONTEST_PARTICIPANT_VIEW_MODE_NOT_SEE_CORRECT_ANSWER = "NOT_SEE_CORRECT_ANSWER";
+    public static final String CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE = "SEE_CORRECT_ANSWER_AND_PRIVATE_TEST_CASE";
+
 
     public static final String CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_VISIBLE = "VISIBLE";
     public static final String CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_HIDDEN = "HIDDEN";
@@ -69,6 +71,7 @@ public class ContestEntity {
         List<String> L = new ArrayList();
         L.add(CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER);
         L.add(CONTEST_PARTICIPANT_VIEW_MODE_NOT_SEE_CORRECT_ANSWER);
+        L.add(CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE);
         return L;
     }
     public static List<Integer> getListMaxNumberSubmissions(){
