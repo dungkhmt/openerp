@@ -85,7 +85,7 @@ function QuizTestEdit() {
         setQuizTest(res.data);
         setDuration(res.data.duration);
         setSelectedDate(res.data.scheduleDatetime);
-        setQuestionStatementViewTypeId(res.data);
+        setQuestionStatementViewTypeId(res.data.questionStatementViewTypeId);
 
         //alert('assign questions to groups OK');
       },
