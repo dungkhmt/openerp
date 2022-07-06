@@ -20,6 +20,8 @@ import QuizTestJoinRequestList from "./QuizTestJoinRequestList";
 import QuizTestResultChart from "./QuizTestResultChart";
 import QuizTestStudentListResult from "./QuizTestResultList";
 import QuizTestStudentList from "./QuizTestStudentList";
+import ParticipantRolesOfQuizTest from "./ParticipantRolesOfQuizTest";
+
 import withScreenSecurity from "../../withScreenSecurity";
 
 const useStyles = makeStyles((theme) => ({
@@ -50,6 +52,7 @@ const tabsLabel = [
   "Kết quả",
   "Kết quả tổng quát",
   "Biểu đồ",
+  "User Vai trò",
 ];
 
 const weekDay = [
@@ -279,6 +282,9 @@ function QuizTestDetail() {
       </TabPanel>
       <TabPanel value={selectedTab} index={8} dir={theme.direction}>
         <QuizTestResultChart testId={param.id} />
+      </TabPanel>
+      <TabPanel value={selectedTab} index={9} dir={theme.direction}>
+        <ParticipantRolesOfQuizTest testId={param.id} />
       </TabPanel>
     </>
   ) : (

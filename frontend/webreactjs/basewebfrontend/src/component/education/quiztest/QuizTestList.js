@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { authGet } from "../../../api";
 import withScreenSecurity from "../../withScreenSecurity";
-
+import QuizTestsOfParticipantRole from "./QuizTestsOfParticipantRole";
 const nextLine = <pre></pre>;
 
 function createData(
@@ -239,6 +239,7 @@ function QuizTestList() {
           },
         ]}
       />
+      <QuizTestsOfParticipantRole />
     </>
   );
 }

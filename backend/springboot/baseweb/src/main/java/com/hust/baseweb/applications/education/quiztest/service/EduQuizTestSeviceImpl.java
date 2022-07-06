@@ -62,7 +62,9 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
     QuizChoiceAnswerRepo quizChoiceAnswerRepo;
     EduClassSessionRepo eduClassSessionRepo;
     UserService userService;
+    private EduTestQuizRoleRepo eduTestQuizRoleRepo;
 
+    @Transactional
     @Override
     public EduQuizTest save(QuizTestCreateInputModel input, UserLogin user) {
         EduQuizTest newRecord = new EduQuizTest();
@@ -78,6 +80,14 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         newRecord.setCreatedStamp(new Date());
         newRecord.setLastUpdatedStamp(new Date());
         newRecord.setQuestionStatementViewTypeId(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_VISIBLE);
+
+        EduTestQuizRole role = new EduTestQuizRole();
+        role.setRoleId(EduTestQuizRole.ROLE_OWNER);
+        role.setParticipantUserLoginId(user.getUserLoginId());
+        role.setTestId(input.getTestId());
+        role.setStatusId(EduTestQuizRole.STATUS_APPROVED);
+        role = eduTestQuizRoleRepo.save(role);
+
         return repo.save(newRecord);
     }
 

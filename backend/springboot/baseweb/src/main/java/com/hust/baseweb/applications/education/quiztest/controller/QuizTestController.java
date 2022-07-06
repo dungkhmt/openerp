@@ -9,6 +9,7 @@ import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailMode
 import com.hust.baseweb.applications.education.quiztest.UserQuestionQuizExecutionOM;
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
 import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizParticipant;
+import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizRole;
 import com.hust.baseweb.applications.education.quiztest.model.*;
 import com.hust.baseweb.applications.education.quiztest.model.edutestquizparticipation.GetQuizTestParticipationExecutionResultInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.edutestquizparticipation.QuizTestParticipationExecutionResultOutputModel;
@@ -16,7 +17,9 @@ import com.hust.baseweb.applications.education.quiztest.model.quitestgroupquesti
 import com.hust.baseweb.applications.education.quiztest.model.quiztestgroup.AutoAssignParticipants2QuizTestGroupInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestquestion.CopyQuestionFromQuizTest2QuizTestInputModel;
 import com.hust.baseweb.applications.education.quiztest.repo.EduTestQuizParticipantRepo;
+import com.hust.baseweb.applications.education.quiztest.repo.EduTestQuizRoleRepo;
 import com.hust.baseweb.applications.education.quiztest.service.EduQuizTestGroupService;
+import com.hust.baseweb.applications.education.quiztest.service.EduQuizTestParticipantRoleService;
 import com.hust.baseweb.applications.education.quiztest.service.EduQuizTestQuizQuestionService;
 import com.hust.baseweb.applications.education.quiztest.service.QuizTestService;
 import com.hust.baseweb.applications.education.service.QuizQuestionService;
@@ -49,6 +52,8 @@ public class QuizTestController {
     private ClassService classService;
     private EduQuizTestQuizQuestionService eduQuizTestQuizQuestionService;
     private EduQuizTestGroupService eduQuizTestGroupService;
+    private EduTestQuizRoleRepo eduTestQuizRoleRepo;
+    private EduQuizTestParticipantRoleService eduQuizTestParticipantRoleService;
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @PostMapping("/create-quiz-test")
@@ -61,7 +66,8 @@ public class QuizTestController {
 
         UserLogin user = userService.findById(principal.getName());
 
-        System.out.println(input);
+
+        //System.out.println(input);
         return ResponseEntity.ok().body(quizTestService.save(input, user));
     }
 
@@ -84,7 +90,22 @@ public class QuizTestController {
         EduQuizTest eduQuizTest = quizTestService.hideQuizTest(testId);
         return ResponseEntity.ok().body(eduQuizTest);
     }
+    @GetMapping("/get-users-role-of-quiz-test/{testId}")
+    public ResponseEntity<?> getUserRolesOfQuizTest(@PathVariable String testId){
+        List<QuizTestParticipantRoleModel> res = eduQuizTestParticipantRoleService.getParticipantRolesOfQuizTest(testId);
+        return ResponseEntity.ok().body(res);
+    }
+    @GetMapping("/get-quiz-tests-of-user-login")
+    public ResponseEntity<?> getQuizTestsOfUserLogin(Principal principal){
+        List<QuizTestParticipantRoleModel> res = eduQuizTestParticipantRoleService.getQuizTestsOfUser(principal.getName());
+        return ResponseEntity.ok().body(res);
+    }
 
+    @PostMapping("/add-quiz-test-participant-role")
+    public ResponseEntity<?> addQuizTestParticipantRole(Principal principal, @RequestBody ModelCreateEduQuizTestParticipantRole input){
+        EduTestQuizRole eduTestQuizRole = eduQuizTestParticipantRoleService.save(input);
+        return ResponseEntity.ok().body(eduTestQuizRole);
+    }
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @GetMapping("/get-all-quiz-test-by-user")

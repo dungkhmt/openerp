@@ -1,6 +1,6 @@
 package com.hust.baseweb.applications.education.quiztest.entity;
 
-import com.hust.baseweb.applications.education.quiztest.entity.compositeid.CompositeTestQuizParticipationId;
+import com.hust.baseweb.applications.education.quiztest.entity.compositeid.CompositeTestQuizRoleId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +13,9 @@ import javax.persistence.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "edu_test_quiz_participant")
-@IdClass(CompositeTestQuizParticipationId.class)
-public class EduTestQuizParticipant {
-
+@Table(name = "edu_test_quiz_role")
+@IdClass(CompositeTestQuizRoleId.class)
+public class EduTestQuizRole {
     public static final String STATUS_REGISTERED = "STATUS_REGISTERED";
     public static final String STATUS_APPROVED = "STATUS_APPROVED";
     public static final String STATUS_REJECTED = "STATUS_REJECTED";
@@ -39,5 +38,6 @@ public class EduTestQuizParticipant {
     @Column(name="permutation")
     private String permutation;
 
-
+    @Column(name="role_id")
+    private String roleId;
 }

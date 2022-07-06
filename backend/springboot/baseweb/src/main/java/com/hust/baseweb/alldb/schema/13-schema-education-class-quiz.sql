@@ -165,12 +165,29 @@ create table edu_test_quiz_participant(
     participant_user_login_id varchar(60),
     status_id varchar(60),
     permutation varchar(50),
+    role_id varchar(100),
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     constraint pk_edu_test_participation primary key(test_id, participant_user_login_id),
     constraint fk_edu_test_participation_test_id foreign key(test_id) references edu_quiz_test(test_id),
     constraint fk_edu_test_participation_participation_user_login_id foreign key(participant_user_login_id)
+                                            references user_login(user_login_id)
+
+
+);
+create table edu_test_quiz_role(
+    test_id varchar(60),
+    participant_user_login_id varchar(60),
+    status_id varchar(60),
+    permutation varchar(50),
+    role_id varchar(100),
+    last_updated_stamp            TIMESTAMP,
+    created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    constraint pk_edu_test_role primary key(test_id, participant_user_login_id,role_id),
+    constraint fk_edu_test_role_test_id foreign key(test_id) references edu_quiz_test(test_id),
+    constraint fk_edu_test_role_participation_user_login_id foreign key(participant_user_login_id)
                                             references user_login(user_login_id)
 
 
