@@ -2,6 +2,7 @@ package com.hust.baseweb.applications.education.quiztest.controller;
 
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailModel;
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTestQuizQuestion;
+import com.hust.baseweb.applications.education.quiztest.model.EduQuizTestModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestquestion.CreateQuizTestQuestionInputModel;
 import com.hust.baseweb.applications.education.quiztest.service.EduQuizTestQuizQuestionService;
 import com.hust.baseweb.entity.UserLogin;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 
 @Log4j2
 @Controller
@@ -26,6 +28,11 @@ public class EduQuizTestQuizQuestionController {
     private EduQuizTestQuizQuestionService eduQuizTestQuizQuestionService;
     private UserService userService;
 
+    @GetMapping("/get-quiz-test-using-question/{questionId}")
+    public ResponseEntity<?> getQuizTestsUsingQuestion(Principal principal, @PathVariable UUID questionId){
+        List<EduQuizTestModel> eduQuizTestModels = eduQuizTestQuizQuestionService.getQuizTestsUsingQuestion(questionId);
+        return ResponseEntity.ok().body(eduQuizTestModels);
+    }
     @GetMapping("/get-questions-of-quiz-test/{testId}")
     public ResponseEntity<?> getQuestionOfQuizTest(Principal principal, @PathVariable String testId){
         log.info("getQuestionOfQuizTest, testId = " + testId);

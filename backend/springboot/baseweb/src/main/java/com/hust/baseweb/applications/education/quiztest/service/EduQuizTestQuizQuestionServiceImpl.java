@@ -2,9 +2,12 @@ package com.hust.baseweb.applications.education.quiztest.service;
 
 import com.hust.baseweb.applications.education.entity.QuizQuestion;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailModel;
+import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTestQuizQuestion;
+import com.hust.baseweb.applications.education.quiztest.model.EduQuizTestModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestquestion.CreateQuizTestQuestionInputModel;
 import com.hust.baseweb.applications.education.quiztest.repo.EduQuizTestQuizQuestionRepo;
+import com.hust.baseweb.applications.education.quiztest.repo.EduQuizTestRepo;
 import com.hust.baseweb.applications.education.repo.QuizQuestionRepo;
 import com.hust.baseweb.applications.education.service.QuizQuestionService;
 import com.hust.baseweb.entity.UserLogin;
@@ -13,6 +16,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Log4j2
@@ -22,7 +27,7 @@ public class EduQuizTestQuizQuestionServiceImpl implements EduQuizTestQuizQuesti
     private EduQuizTestQuizQuestionRepo eduQuizTestQuizQuestionRepo;
     private QuizQuestionRepo quizQuestionRepo;
     private QuizQuestionService quizQuestionService;
-
+    private EduQuizTestRepo eduQuizTestRepo;
     @Override
     public EduQuizTestQuizQuestion createQuizTestQuestion(UserLogin u, CreateQuizTestQuestionInputModel input) {
         EduQuizTestQuizQuestion eduQuizTestQuizQuestion = eduQuizTestQuizQuestionRepo.findByTestIdAndQuestionId(input.getTestId(), input.getQuestionId());
@@ -123,5 +128,25 @@ public class EduQuizTestQuizQuestionServiceImpl implements EduQuizTestQuizQuesti
 
         return quizQuestionDetailModels;
 
+    }
+
+    @Override
+    public List<EduQuizTestModel> getQuizTestsUsingQuestion(UUID questionId) {
+        List<EduQuizTestQuizQuestion> quizTestQuestions = eduQuizTestQuizQuestionRepo.findAllByQuestionId(questionId);
+        List<EduQuizTestModel> eduQuizTestModels = new ArrayList();
+        for(EduQuizTestQuizQuestion qq: quizTestQuestions){
+            EduQuizTest quizTest = eduQuizTestRepo.findById(qq.getTestId()).orElse(null);
+            if(quizTest != null){
+                EduQuizTestModel q = new EduQuizTestModel();
+                q.setTestId(quizTest.getTestId());
+                q.setStatusId(quizTest.getStatusId());
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                String strDate = dateFormat.format(quizTest.getScheduleDatetime());
+                q.setScheduleDatetime(strDate);
+                q.setTestName(quizTest.getTestName());
+                eduQuizTestModels.add(q);
+            }
+        }
+        return eduQuizTestModels;
     }
 }

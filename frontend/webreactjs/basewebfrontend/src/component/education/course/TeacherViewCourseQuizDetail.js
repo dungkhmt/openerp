@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import TestButton from "../classmanagement/student/TestButton";
 import CommentsOnQuiz from "../classmanagement/student/CommentsOnQuiz";
+import QuizTestUsingAQuestion from "../quiztest/QuizTestUsingAQuestion";
 
 const useStyles = makeStyles(() => ({
   testBtn: {
@@ -195,6 +196,7 @@ export default function TeacherViewCourseQuizDetail() {
           ""
         )}
       </FormGroup>
+      <QuizTestUsingAQuestion questionId={questionId} />
     </div>
   );
 }

@@ -27,6 +27,7 @@ export default function ContestProblemSubmissionDetailViewedByManager() {
   const [submittedAt, setSubmittedAt] = useState();
   const [testCasePass, setTestCasePass] = useState();
   const [status, setStatus] = useState();
+  const [message, setMessage] = useState("");
 
   const getExtension = () => {
     switch (submissionLanguage) {
@@ -75,6 +76,7 @@ export default function ContestProblemSubmissionDetailViewedByManager() {
         setSubmittedAt(res.data.createdAt);
         setTestCasePass(res.data.testCasePass);
         setStatus(res.data.status);
+        setMessage(res.data.message);
       },
       {}
     ).then();
@@ -87,7 +89,6 @@ export default function ContestProblemSubmissionDetailViewedByManager() {
       {/*  </Link>*/}
       {/*</Typography>*/}
       <Typography variant={"h4"}>Submission Detail</Typography>
-
       <Box
         sx={{
           width: "100%",
@@ -145,7 +146,7 @@ export default function ContestProblemSubmissionDetailViewedByManager() {
           console.log(submissionSource);
         }}
       ></TextField>
-
+      <h3>Compile Message:{message}</h3>
       <Button onClick={updateCode}>Update Code</Button>
       {/*
       <CodeMirror

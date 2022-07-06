@@ -84,6 +84,7 @@ export default function ContestManagerUserSubmission(props) {
               <StyledTableCell align="center">Test Case Pass</StyledTableCell>
               <StyledTableCell align="center">Lang</StyledTableCell>
               <StyledTableCell align="center">Status</StyledTableCell>
+              <StyledTableCell align="center">Message</StyledTableCell>
               <StyledTableCell align="center">Point</StyledTableCell>
               <StyledTableCell align="center">Submitted At</StyledTableCell>
               <StyledTableCell align="center">Action</StyledTableCell>
@@ -131,6 +132,10 @@ export default function ContestManagerUserSubmission(props) {
                     >{`${s.status}`}</span>
                   </b>
                 </StyledTableCell>
+                <StyledTableCell align="center">
+                  <b>{s.message}</b>
+                </StyledTableCell>
+
                 <StyledTableCell align="center">
                   <b>{s.point}</b>
                 </StyledTableCell>

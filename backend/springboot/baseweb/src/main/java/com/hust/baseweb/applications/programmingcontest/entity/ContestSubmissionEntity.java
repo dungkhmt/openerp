@@ -80,5 +80,6 @@ public class ContestSubmissionEntity {
     @Column(name = "last_updated_stamp")
     private Date updateAt;
 
-
+    @Column(name="message")
+    private String message;
 }

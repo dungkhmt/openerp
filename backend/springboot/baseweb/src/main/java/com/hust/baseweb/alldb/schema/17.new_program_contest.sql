@@ -119,6 +119,7 @@ create table contest_submission_new
     source_code_language varchar (10),
     runtime bigint ,
     memory_usage float ,
+    message text,
     last_updated_stamp         timestamp default current_date ,
     created_stamp              timestamp default current_date ,
     constraint pk_contest_submission_id_contest_submission_new primary key (contest_submission_id),

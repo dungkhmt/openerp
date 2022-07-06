@@ -11,4 +11,5 @@ public interface EduQuizTestQuizQuestionRepo extends JpaRepository<EduQuizTestQu
     public List<EduQuizTestQuizQuestion> findAllByTestId(String testId);
     public List<EduQuizTestQuizQuestion> findAllByTestIdAndStatusId(String testId, String statusId);
     public EduQuizTestQuizQuestion findByTestIdAndQuestionId(String testId, UUID questionId);
+    public List<EduQuizTestQuizQuestion> findAllByQuestionId(UUID questionId);
 }

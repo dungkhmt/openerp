@@ -1427,6 +1427,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                     .problemId(contestSubmissionEntity.getProblemId())
                                                     .testCasePass(contestSubmissionEntity.getTestCasePass())
                                                     .status(contestSubmissionEntity.getStatus())
+                                                    .message(contestSubmissionEntity.getMessage())
                                                     .userId(contestSubmissionEntity.getUserId())
                                                     .build()
                                                     );
@@ -1448,6 +1449,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                                                      .problemId(contestSubmissionEntity.getProblemId())
                                                                                                      .testCasePass(contestSubmissionEntity.getTestCasePass())
                                                                                                      .status(contestSubmissionEntity.getStatus())
+                                                                                                     .message(contestSubmissionEntity.getMessage())
                                                                                                      .userId(contestSubmissionEntity.getUserId())
                                                                                                      .build()
                                                     );
@@ -1499,7 +1501,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .point(contestSubmissionEntity.getPoint())
                 .problemId(contestSubmissionEntity.getProblemId())
                 .testCasePass(contestSubmissionEntity.getTestCasePass())
-                .status(contestSubmissionEntity.getStatus())
+                .status(contestSubmissionEntity.getStatus()).message(contestSubmissionEntity.getMessage())
                 .userId(contestSubmissionEntity.getUserId())
                 .fullname(userService.findPersonByUserLoginId(contestSubmissionEntity.getUserId()).getFullName())
                 .build());
@@ -1818,11 +1820,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                .sourceCodeLanguage(sub.getSourceCodeLanguage())
                                                                .runtime(new Long(runtime))
                                                                .createdAt(new Date())
+                                                               .message(message)
                                                                .build();
             sub.setPoint(score);
             sub.setTestCasePass(nbTestCasePass + "/" + testCaseEntityList.size());
             sub.setRuntime(new Long(runtime));
             sub.setStatus(totalStatus);
+            sub.setMessage(message);
             c = contestSubmissionRepo.save(sub);
 
             for(ContestSubmissionTestCaseEntity e: LCSTE){
@@ -1830,7 +1834,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 e = contestSubmissionTestCaseEntityRepo.save(e);
             }
 
-            log.info("c {}", c.getRuntime());
+            //log.info("c {}", c.getRuntime());
 
         }
         return null;

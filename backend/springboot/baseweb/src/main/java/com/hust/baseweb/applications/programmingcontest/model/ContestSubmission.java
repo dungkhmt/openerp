@@ -22,6 +22,7 @@ public class ContestSubmission {
     private String sourceCodeLanguage;
     private Integer point;
     private String status;
+    private String message;
     private String createAt;
     private Date submissionDate;
 }

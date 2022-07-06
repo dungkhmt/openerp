@@ -2,6 +2,7 @@ package com.hust.baseweb.applications.education.quiztest.service;
 
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailModel;
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTestQuizQuestion;
+import com.hust.baseweb.applications.education.quiztest.model.EduQuizTestModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestquestion.CreateQuizTestQuestionInputModel;
 import com.hust.baseweb.entity.UserLogin;
 
@@ -14,4 +15,5 @@ public interface EduQuizTestQuizQuestionService {
     public EduQuizTestQuizQuestion removeQuizTestQuestion(UserLogin u, CreateQuizTestQuestionInputModel input);
     public List<QuizQuestionDetailModel> findAllByTestId(String testId);
 
+    public List<EduQuizTestModel> getQuizTestsUsingQuestion(UUID questionId);
 }
