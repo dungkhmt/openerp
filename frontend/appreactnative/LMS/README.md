@@ -4,7 +4,7 @@
 
 https://reactnative.dev/docs/environment-setup
 
-## Third Party Libraries
+## 3rd Libraries
 
 npm install @react-navigation/native \
 npm install react-native-screens react-native-safe-area-context \
@@ -22,6 +22,8 @@ npm install axios \
 npm install react-redux \
 npm install redux-saga \
 npm install @react-native-community/checkbox
+npm install deprecated-react-native-prop-types
+npm install prop-types
 
 ## iOS
 
@@ -63,8 +65,17 @@ https://reactnative.dev/docs/upgrading
 
 ## Troubleshooting
 
+### Build error
+
 rm -rf node_modules \
 rm package-lock.json \
 npm install \
 npx pod-install ios \
 npx react-native start --reset-cache
+
+### 3rd libraries
+
+Here are some reference links to fix error on 3rd libraries.
+- [react-native-video](https://github.com/react-native-video/react-native-video/issues/2714)
+- [react-native-snap-carousel](https://github.com/meliorence/react-native-snap-carousel/issues/923)
+- [prop-types](https://stackoverflow.com/questions/48751601/undefined-is-not-an-object-evaluating-react-proptypes-number-error/50967104#50967104)

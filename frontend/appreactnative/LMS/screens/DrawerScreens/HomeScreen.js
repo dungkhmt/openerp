@@ -112,7 +112,6 @@ const HomeScreen = ({navigation}) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={{flex: 1}}>
-        <Loader loading={loading} />
         <View style={{height: 240, alignItems: 'center', justifyContent: 'center', padding: 24}}>
           <CarouselCards />
         </View>
@@ -126,6 +125,7 @@ const HomeScreen = ({navigation}) => {
             <MenuSectionHeader title={title} />
           )}
         />
+        <Loader loading={loading} />
       </View>
     </SafeAreaView>
   );

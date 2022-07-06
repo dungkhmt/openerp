@@ -1,5 +1,5 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 
 import {Colors} from '../styles/index';
@@ -28,7 +28,7 @@ import StudentIDEScreen from '../screens/Student/StudentIDEScreen';
 import StudentRegisteredProgrammingContestScreen from '../screens/Student/StudentRegisteredProgrammingContestScreen';
 import StudentNotRegisteredProgrammingContestScreen from '../screens/Student/StudentNotRegisteredProgrammingContestScreen';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const HomeScreenStack = ({navigation}) => {
