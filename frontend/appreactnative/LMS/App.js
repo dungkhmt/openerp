@@ -1,7 +1,13 @@
-import 'react-native-gesture-handler';
+/**
+ * Learning Management System
+ *
+ * @format
+ * @flow strict-local
+ */
+
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import configureStore from './redux-saga/store';
 import {Provider} from 'react-redux';
 
@@ -12,7 +18,7 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import DrawerNavigationRoutes from './screens/DrawerNavigationRoutes';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 const store = configureStore();
 
 const Auth = () => {
