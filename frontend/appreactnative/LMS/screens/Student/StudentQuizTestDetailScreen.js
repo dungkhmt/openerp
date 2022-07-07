@@ -28,22 +28,22 @@ const StudentQuizTestDetailScreen = ({route}) => {
       <View style={styles.card}>
         <Loader loading={loading} />
         <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
-          <Image source={require('../../images/course.png')}
+          <Image source={require('../../assets/images/course.png')}
             style={{width: 24, height: 24, margin: 8}}></Image>
           <Text style={styles.course}>{quizTestDetail.courseName}</Text>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
-          <Image source={require('../../images/quiz.png')}
+          <Image source={require('../../assets/images/quiz.png')}
             style={{width: 24, height: 24, margin: 8}}></Image>
           <Text style={styles.testName}>{quizTestDetail.testName}</Text>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
-          <Image source={require('../../images/schedule.png')}
+          <Image source={require('../../assets/images/schedule.png')}
             style={{width: 24, height: 24, margin: 8}}></Image>
           <Text style={styles.schedule}>{quizTestDetail.scheduleDatetime}</Text>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
-          <Image source={require('../../images/duration.png')}
+          <Image source={require('../../assets/images/duration.png')}
             style={{width: 24, height: 24, margin: 8}}></Image>
           <Text style={styles.duration}>{quizTestDetail.duration}</Text>
         </View>

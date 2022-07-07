@@ -40,8 +40,8 @@ const CourseMaterial = ({data}) => {
           <Image
             source={
               data.eduCourseMaterialType === 'EDU_COURSE_MATERIAL_TYPE_VIDEO'
-                ? require('../../images/play_video.png')
-                : require('../../images/slide_show.png')
+                ? require('../../assets/images/play_video.png')
+                : require('../../assets/images/slide_show.png')
             }
             style={{width: 48, height: 48, margin: 8}}></Image>
           <Text style={styles.courseMaterialName}>

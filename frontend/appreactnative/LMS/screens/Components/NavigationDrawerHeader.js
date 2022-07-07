@@ -10,7 +10,7 @@ const NavigationDrawerHeader = props => {
     <View style={{flexDirection: 'row'}}>
       <TouchableOpacity onPress={toggleDrawer}>
         <Image
-          source={require('../../images/home_menu.png')}
+          source={require('../../assets/images/home_menu.png')}
           style={{width: 24, height: 24, margin: 8}}
         />
       </TouchableOpacity>

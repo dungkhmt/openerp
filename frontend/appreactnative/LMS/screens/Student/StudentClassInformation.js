@@ -45,11 +45,11 @@ const StudentClassInformation = ({studentClassId}) => {
           <View style={{flex: 1, flexDirection: 'column'}}>
             <Text style={styles.teacherName}>{classInformation.teacherName}</Text>
             <View style={{flex: 1, flexDirection: 'row', alignContent: 'center'}}>
-              <Image style={{width: 16, height: 16, margin: 8}} source={require('../../images/mail.png')} />
+              <Image style={{width: 16, height: 16, margin: 8}} source={require('../../assets/images/mail.png')} />
               <Text style={styles.email}>{classInformation.email}</Text>
             </View>
             <View style={{flex: 1, flexDirection: 'row', alignContent: 'center'}}>
-            <Image style={{width: 16, height: 16, margin: 8}} source={require('../../images/phone.png')} />
+            <Image style={{width: 16, height: 16, margin: 8}} source={require('../../assets/images/phone.png')} />
               <Text style={styles.phone}>{classInformation.phone}</Text>
             </View>
           </View>

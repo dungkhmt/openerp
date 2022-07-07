@@ -77,7 +77,7 @@ const MenuItem = ({menuItem}) => {
           }
         }}>
         <View style={{flex: 1, flexDirection: 'row'}}>
-          <View style={{width: 96, height: 96, borderRadius: 4, backgroundColor: menuItem.color}} />
+          <View style={{width: 72, height: 72, borderRadius: 12, margin: 12, backgroundColor: menuItem.color}} />
           <View style={{flex: 1, flexDirection: 'column'}}>
             <Text style={styles.menuItem}>{menuItem.title}</Text>
             <Text style={styles.menuDescription}>{menuItem.description}</Text>
