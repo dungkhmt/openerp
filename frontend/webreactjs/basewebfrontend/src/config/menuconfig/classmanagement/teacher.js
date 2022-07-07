@@ -39,6 +39,16 @@ export const eduTeachingManagement = {
       child: [],
     },
     {
+      id: "MENU_EDUCATION_TEACHING_MANAGEMENT_ADMIN_ALL_QUIZ_TEST_LIST",
+      path: "/edu/class/quiztest/list-all",
+      isPublic: false,
+      icon: null,
+      //Danh sách kỳ thi trắc nghiệm
+      text: "All Quiz Test",
+      child: [],
+    },
+
+    {
       id: "",
       path: "/edu/teach/resource-links/list",
       isPublic: true,

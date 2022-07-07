@@ -1,8 +1,10 @@
 package com.hust.baseweb.applications.education.quiztest.service;
 
+import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
 import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizRole;
 import com.hust.baseweb.applications.education.quiztest.model.ModelCreateEduQuizTestParticipantRole;
 import com.hust.baseweb.applications.education.quiztest.model.QuizTestParticipantRoleModel;
+import com.hust.baseweb.applications.education.quiztest.repo.EduQuizTestRepo;
 import com.hust.baseweb.applications.education.quiztest.repo.EduTestQuizRoleRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -17,7 +19,7 @@ import java.util.List;
 @Service
 public class EduQuizTestParticipantRoleServiceImpl implements EduQuizTestParticipantRoleService{
     private EduTestQuizRoleRepo eduTestQuizRoleRepo;
-
+    private EduQuizTestRepo eduQuizTestRepo;
     @Override
     public EduTestQuizRole save(ModelCreateEduQuizTestParticipantRole input) {
         EduTestQuizRole eduQuizTestRole = new EduTestQuizRole();
@@ -58,6 +60,22 @@ public class EduQuizTestParticipantRoleServiceImpl implements EduQuizTestPartici
             m.setTestId(r.getTestId());
             m.setUserId(r.getParticipantUserLoginId());
             m.setRoleId(r.getRoleId());
+            res.add(m);
+        }
+        return res;
+    }
+
+    @Override
+    public List<QuizTestParticipantRoleModel> getAllQuizTests() {
+        //List<EduTestQuizRole> eduTestQuizRoles = eduTestQuizRoleRepo.findAll();
+        List<EduQuizTest> eduQuizTests = eduQuizTestRepo.findAll();
+        List<QuizTestParticipantRoleModel> res = new ArrayList();
+        for(EduQuizTest r: eduQuizTests){
+            //log.info("getParticipantRolesOfQuizTest, role  = {}",r);
+            QuizTestParticipantRoleModel m = new QuizTestParticipantRoleModel();
+            m.setTestId(r.getTestId());
+            m.setUserId(r.getCreatedByUserLoginId());
+            m.setRoleId("");
             res.add(m);
         }
         return res;

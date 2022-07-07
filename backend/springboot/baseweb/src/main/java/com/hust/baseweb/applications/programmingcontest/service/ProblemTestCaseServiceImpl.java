@@ -55,6 +55,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private ContestRoleRepo contestRoleRepo;
     private CodePlagiarismRepo codePlagiarismRepo;
     private ContestSubmissionHistoryRepo contestSubmissionHistoryRepo;
+    private ContestProblemRepo contestProblemRepo;
+
     @Override
     public void createContestProblem(ModelCreateContestProblem modelCreateContestProblem, String userId) throws MiniLeetCodeException {
         if(problemRepo.findByProblemId(modelCreateContestProblem.getProblemId()) != null){
@@ -2286,5 +2288,20 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             return sub;
         }
         return null;
+    }
+
+    @Override
+    public List<ModelGetContestResponse> getContestsUsingAProblem(String problemId) {
+        List<ModelGetContestResponse> res = new ArrayList();
+        List<ContestProblem> contestProblems = contestProblemRepo.findAllByProblemId(problemId);
+        for(ContestProblem cp: contestProblems){
+            ContestEntity contest = contestRepo.findContestByContestId(cp.getContestId());
+            ModelGetContestResponse m = ModelGetContestResponse.builder()
+                .contestId(contest.getContestId())
+                .statusId(contest.getStatusId())
+                .build();
+            res.add(m);
+        }
+        return res;
     }
 }

@@ -19,6 +19,9 @@ VALUES ('EDUCATION_LEARNING_MANAGEMENT_STUDENT', 'Permission education student')
 insert into security_permission (permission_id,description)
 values('VIEW_QUIZ_TEST_TEACHER','view quiz test of teacher');
 
+insert into security_permission (permission_id,description)
+values('VIEW_ALL_QUIZ_TEST_ADMIN','admin view all quiz test');
+
 --application
 insert into public.application
 (application_id, application_type_id, module_id, permission_id, description)
@@ -70,6 +73,13 @@ VALUES ('MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_QUIZ_TEST_LIST', 'MENU', 'ME
 
 insert into public.application
 (application_id, application_type_id, module_id, permission_id, description)
+VALUES ('MENU_EDUCATION_TEACHING_MANAGEMENT_ADMIN_ALL_QUIZ_TEST_LIST', 'MENU', 'MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER', 'VIEW_ALL_QUIZ_TEST_ADMIN',
+'Menu teaching management for eduTeachers: view list quiz test');
+
+
+
+insert into public.application
+(application_id, application_type_id, module_id, permission_id, description)
 VALUES ('MENU_EDUCATION_TEACHING_MANAGEMENT_STUDENT_QUIZ_TEST_LIST', 'MENU', 'MENU_EDUCATION_LEARNING_MANAGEMENT_STUDENT', 'EDUCATION_LEARNING_MANAGEMENT_STUDENT',
 'Menu teaching management for students: view list quiz test');
 
@@ -90,6 +100,10 @@ VALUES ('ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER', 'EDUCATION_TEACHING_MANAGE
 insert into public.security_group_permission
     (group_id, permission_id)
 VALUES ('ROLE_EDUCATION_LEARNING_MANAGEMENT_STUDENT', 'EDUCATION_LEARNING_MANAGEMENT_STUDENT');
+
+insert into public.security_group_permission
+    (group_id, permission_id)
+VALUES ('ROLE_FULL_ADMIN', 'VIEW_ALL_QUIZ_TEST_ADMIN');
 
 --user_login group
 

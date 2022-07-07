@@ -24,6 +24,7 @@ import TeacherCourseQuizDetail from "../component/education/course/TeacherCourse
 import TeacherCourseTopicDetail from "../component/education/course/TeacherCourseTopicDetail";
 import TeacherViewCourseQuizDetail from "../component/education/course/TeacherViewCourseQuizDetail";
 // import CreateSemester from "../component/education/CreateSemester";
+import QuizTestListAll from "../component/education/quiztest/QuizTestListAll";
 import CreateQuizTest from "../component/education/quiztest/CreateQuizTest";
 import QuizTestDetail from "../component/education/quiztest/QuizTestDetail";
 import QuizTestEdit from "../component/education/quiztest/QuizTestEdit";
@@ -53,7 +54,7 @@ import TeacherViewLearningSessionDetail from "../views/Education/ClassManagement
 import TeacherViewQuestionsOfParticipant from "../component/education/quiztest/TeacherViewQuestionsOfParticipant";
 
 import NotFound from "../views/errors/NotFound";
-import StudentCreateThesis from "../component/education/thesisdefensejury/StudentCreateThesis"
+import StudentCreateThesis from "../component/education/thesisdefensejury/StudentCreateThesis";
 
 export default function EduRoute() {
   let { path } = useRouteMatch();
@@ -212,6 +213,10 @@ export default function EduRoute() {
          */}
         {/* Quiztest-001 */}
         <Route component={QuizTestList} path={`${path}/class/quiztest/list`} />
+        <Route
+          component={QuizTestListAll}
+          path={`${path}/class/quiztest/list-all`}
+        />
         {/* Quiztest-002 */}
         <Route
           component={QuizTestDetail}

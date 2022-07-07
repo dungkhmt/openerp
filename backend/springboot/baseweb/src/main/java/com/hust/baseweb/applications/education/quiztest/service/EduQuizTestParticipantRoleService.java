@@ -10,4 +10,5 @@ public interface EduQuizTestParticipantRoleService {
     EduTestQuizRole save(ModelCreateEduQuizTestParticipantRole input);
     List<QuizTestParticipantRoleModel> getParticipantRolesOfQuizTest(String testId);
     List<QuizTestParticipantRoleModel> getQuizTestsOfUser(String userId);
+    List<QuizTestParticipantRoleModel> getAllQuizTests();
 }

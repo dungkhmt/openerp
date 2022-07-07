@@ -95,6 +95,12 @@ public class QuizTestController {
         List<QuizTestParticipantRoleModel> res = eduQuizTestParticipantRoleService.getParticipantRolesOfQuizTest(testId);
         return ResponseEntity.ok().body(res);
     }
+    @GetMapping("/get-all-quiz-test")
+    public ResponseEntity<?> getAllQuizTests(Principal principal){
+        List<QuizTestParticipantRoleModel> res = eduQuizTestParticipantRoleService.getAllQuizTests();
+        return ResponseEntity.ok().body(res);
+    }
+
     @GetMapping("/get-quiz-tests-of-user-login")
     public ResponseEntity<?> getQuizTestsOfUserLogin(Principal principal){
         List<QuizTestParticipantRoleModel> res = eduQuizTestParticipantRoleService.getQuizTestsOfUser(principal.getName());

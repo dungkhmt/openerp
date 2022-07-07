@@ -27,7 +27,7 @@ import { request } from "./Request";
 import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import FileSaver from "file-saver";
-
+import ContestsUsingAProblem from "./ContestsUsingAProblem";
 const editorStyle = {
   toolbar: {
     background: "#FFFFFF",
@@ -282,6 +282,8 @@ export default function ManagerViewProblemDetail() {
         </Table>
       </TableContainer>
       <ModalPreview chosenTestcase={selectedTestcase} />
+
+      <ContestsUsingAProblem problemId={problemId} />
     </div>
   );
 }

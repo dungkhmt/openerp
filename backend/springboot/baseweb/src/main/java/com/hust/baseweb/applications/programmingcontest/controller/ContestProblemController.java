@@ -709,6 +709,11 @@ public class ContestProblemController {
         problemTestCaseService.deleteUserContest(modelAddUserToContest);
         return ResponseEntity.status(200).body(null);
     }
+    @GetMapping("/get-contests-using-a-problem/{problemId}")
+    public ResponseEntity<?> getContestsUsingAProblem(Principal principal, @PathVariable String problemId){
+        List<ModelGetContestResponse> res = problemTestCaseService.getContestsUsingAProblem(problemId);
+        return ResponseEntity.ok().body(res);
+    }
 
     @GetMapping("/get-contest-result-on-problem-of-a-user/{userLoginId}")
     public ResponseEntity<?> getContestResultOnProblemOfAUser( @PathVariable("userLoginId") String userLoginId, Pageable pageable) {

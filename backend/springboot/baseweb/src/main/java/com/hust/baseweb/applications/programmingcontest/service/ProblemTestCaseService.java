@@ -130,4 +130,6 @@ public interface ProblemTestCaseService {
     List<CodePlagiarism> findAllByContestId(String contestId);
 
     ContestSubmissionEntity updateContestSubmissionSourceCode(ModelUpdateContestSubmission input);
+
+    List<ModelGetContestResponse> getContestsUsingAProblem(String problemId);
 }
