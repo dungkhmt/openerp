@@ -62,7 +62,7 @@ const Quiz = ({quiz}) => {
             alignItems: 'center',
           }}>
           <Image
-            source={require('../../images/schedule.png')}
+            source={require('../../assets/images/schedule.png')}
             style={{width: 24, height: 24, margin: 8}}></Image>
           <Text style={styles.schedule}>{quiz.scheduleDatetime}</Text>
           <Status testId={quiz.testId} statusId={quiz.statusId}></Status>

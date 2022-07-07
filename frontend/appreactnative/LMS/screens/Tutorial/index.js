@@ -19,7 +19,7 @@ const TutorialScreen = ({navigation}) => {
           justifyContent: 'flex-end',
         }}>
         <Image
-          source={require('../../images/tutorial_1.png')}
+          source={require('../../assets/images/tutorial_1.png')}
           style={styles.backgroundImage}
         />
         <View style={styles.card}>
@@ -50,7 +50,7 @@ const TutorialScreen = ({navigation}) => {
           justifyContent: 'flex-end',
         }}>
         <Image
-          source={require('../../images/tutorial_2.png')}
+          source={require('../../assets/images/tutorial_2.png')}
           style={styles.backgroundImage}
         />
         <View style={styles.card}>
@@ -81,7 +81,7 @@ const TutorialScreen = ({navigation}) => {
           justifyContent: 'flex-end',
         }}>
         <Image
-          source={require('../../images/tutorial_3.png')}
+          source={require('../../assets/images/tutorial_3.png')}
           style={styles.backgroundImage}
         />
         <View style={styles.card}>
