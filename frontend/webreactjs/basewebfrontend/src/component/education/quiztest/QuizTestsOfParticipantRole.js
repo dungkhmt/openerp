@@ -8,7 +8,19 @@ export default function QuizTestsOfParticipantRole() {
   const [quizTests, setquizTests] = useState([]);
   const history = useHistory();
   const columns = [
-    { title: "TestID", field: "testId" },
+    {
+      title: "TestID",
+      field: "testId",
+      render: (rowData) => (
+        <Link
+          to={{
+            pathname: "/edu/class/quiztest/detail/" + rowData["testId"],
+          }}
+        >
+          {rowData["testId"]}
+        </Link>
+      ),
+    },
     { title: "Role", field: "roleId" },
     { title: "Status", field: "statusId" },
   ];
