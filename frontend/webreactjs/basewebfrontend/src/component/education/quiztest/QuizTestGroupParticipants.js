@@ -1,13 +1,28 @@
+import { IconButton } from "@mui/material";
+import { pdf } from "@react-pdf/renderer";
+import { request } from "api";
+import FileSaver from "file-saver";
 import MaterialTable from "material-table";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { VscFilePdf } from "react-icons/vsc";
 import { Link } from "react-router-dom";
-import { request } from "../../../api";
 import { exportQuizQuestionAssigned2StudentPdf } from "./TeacherQuizQuestionAssign2StudentExportPDF.js";
+import ExamQuestionsOfParticipantPDFDocument from "./template/ExamQuestionsOfParticipantPDFDocument";
+
+const generatePdfDocument = async (documentData, fileName) => {
+  const blob = await pdf(
+    <ExamQuestionsOfParticipantPDFDocument data={documentData} />
+  ).toBlob();
+  FileSaver.saveAs(blob, fileName);
+};
+
 function QuizTestGroupParticipants(props) {
+  let testId = props.testId;
+
   const [data, setData] = useState([]);
   const [studentQuestions, setStudentQuestions] = useState([]);
   const [resultExportPDFData, setResultExportPDFData] = useState([]);
-  let testId = props.testId;
+
   const columns = [
     { title: "Group Id", field: "quizTestGroupId" },
     { title: "Group Code", field: "quizTestGroupCode" },
@@ -18,22 +33,59 @@ function QuizTestGroupParticipants(props) {
       field: "quizTestGroupId",
       render: (rowData) => (
         <Link
-          to={
-            "/edu/class/quiztest/teacher-view-questions-of-participant/" +
-            rowData["participantUserLoginId"] +
-            "/" +
-            rowData["quizTestGroupId"] +
-            "/" +
-            testId
-          }
+          to={`/edu/class/quiztest/teacher-view-questions-of-participant/${rowData["participantUserLoginId"]}/${rowData["quizTestGroupId"]}/${testId}`}
         >
           VIEW
         </Link>
       ),
     },
+    {
+      render: (rowData) => (
+        <IconButton
+          color="primary"
+          aria-label="export PDF"
+          onClick={() => {
+            exportExamQuestions(rowData["participantUserLoginId"]);
+          }}
+        >
+          <VscFilePdf />
+        </IconButton>
+      ),
+    },
   ];
 
-  async function getStudentListResultGeneral() {
+  //
+  const exportExamQuestions = (studentId) => {
+    request(
+      "GET",
+      `/get-quiz-questions-assigned-to-participant/${testId}/${studentId}`,
+      (res1) => {
+        const {
+          testName,
+          scheduleDatetime,
+          courseName,
+          duration,
+          quizGroupId,
+          groupCode,
+          viewTypeId,
+          listQuestion,
+        } = res1.data;
+
+        request("GET", `/get-user-detail/${studentId}`, (res2) => {
+          generatePdfDocument(
+            {
+              userId: studentId,
+              userDetail: res2.data,
+              ...res1.data,
+            },
+            `${testId} - ${courseName} - ${studentId}.pdf`
+          );
+        });
+      }
+    );
+  };
+
+  function getStudentListResultGeneral() {
     let input = { testId: testId };
 
     request(
@@ -102,10 +154,8 @@ function QuizTestGroupParticipants(props) {
     );
   }
 
-  async function getParticipantQuestions() {
+  function getParticipantQuestions() {
     request(
-      // token,
-      // history,
       "get",
       "get-all-quiz-test-participation-group-question/" + testId,
       (res) => {
@@ -117,10 +167,8 @@ function QuizTestGroupParticipants(props) {
     );
   }
 
-  async function getQuizTestGroupParticipants() {
+  function getQuizTestGroupParticipants() {
     request(
-      // token,
-      // history,
       "get",
       "get-all-quiz-test-group-participants/" + testId,
       (res) => {
