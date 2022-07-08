@@ -95,7 +95,7 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
                 <Text style={styles.bold}>Câu {index + 1}. </Text>
                 {ReactHtmlParser(q.statement)}
               </Text>
-              {q.attachment.length > 0 &&
+              {q.attachment?.length > 0 &&
                 q.attachment.map((url, index) => (
                   <View style={styles.imageContainer}>
                     <Image
