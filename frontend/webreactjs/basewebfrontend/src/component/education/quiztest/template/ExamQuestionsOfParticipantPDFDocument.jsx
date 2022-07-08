@@ -7,21 +7,32 @@ import {
   Text,
   View,
 } from "@react-pdf/renderer";
-import ReactHtmlParser from "react-html-parser";
+import parse from "html-react-parser";
 import Footer from "./Footer";
 
 Font.register({
   family: "Inter",
+
   fonts: [
     {
-      src: "https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/Inter (web)/Inter-Light.woff",
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf",
       fontWeight: "normal",
     },
     {
-      src: "https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/Inter (web)/Inter-Regular.woff",
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf",
       fontWeight: "bold",
     },
   ],
+  // fonts: [
+  //   {
+  //     src: "https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/Inter (web)/Inter-Light.woff",
+  //     fontWeight: "normal",
+  //   },
+  //   {
+  //     src: "https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/Inter (web)/Inter-Regular.woff",
+  //     fontWeight: "bold",
+  //   },
+  // ],
 });
 
 // Create styles
@@ -74,12 +85,13 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
     listQuestion,
   } = data;
 
+  // console.log(parse(listQuestion[19].statement));
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
         <View>
           <Text style={styles.textLine}>Quiz test: {testName}</Text>
-          <Text style={styles.textLine}>Môn: {courseName}</Text>
+          <Text style={styles.textLine}>Học phần: {courseName}</Text>
           <Text style={styles.textLine}>MSSV: {userId}</Text>
           <Text style={styles.textLine}>
             Họ tên:{" "}
@@ -93,9 +105,9 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
             <View>
               <Text key={q.questionId} style={styles.question}>
                 <Text style={styles.bold}>Câu {index + 1}. </Text>
-                {ReactHtmlParser(q.statement)}
+                {parse(q.statement)}
               </Text>
-              {q.attachment.length > 0 &&
+              {q.attachment?.length > 0 &&
                 q.attachment.map((url, index) => (
                   <View style={styles.imageContainer}>
                     <Image
@@ -125,7 +137,7 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
                     }}
                   />
                   <Text style={styles.answer}>
-                    {ReactHtmlParser(ans.choiceAnswerContent)}
+                    {parse(ans.choiceAnswerContent)}
                   </Text>
                 </View>
               ))}
