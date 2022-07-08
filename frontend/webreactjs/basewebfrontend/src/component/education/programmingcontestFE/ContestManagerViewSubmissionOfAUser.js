@@ -16,22 +16,16 @@ import TableBody from "@mui/material/TableBody";
 import { request } from "./Request";
 import Pagination from "@material-ui/lab/Pagination";
 import { getStatusColor, StyledTableCell, StyledTableRow } from "./lib";
-import ContestManagerViewSubmissionOfAUserDialog from "./ContestManagerViewSubmissionOfAUserDialog";
 
-export default function ContestManagerUserSubmission(props) {
+export default function ContestManagerViewSubmissionOfAUser(props) {
   const contestId = props.contestId;
-
+  const userId = props.userId;
   const [contestSubmissions, setContestSubmissions] = useState([]);
   const [pageSubmissionSize, setPageSubmissionSize] = useState(10);
   const [totalPageSubmission, setTotalPageSubmission] = useState(0);
   const [pageSubmission, setPageSubmission] = useState(1);
   const pageSizes = [10, 20, 50, 100, 150];
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
 
-  function handleCloseDialog() {
-    setIsOpen(false);
-  }
   const handlePageSubmissionSizeChange = (event) => {
     setPageSubmissionSize(event.target.value);
     setPageSubmission(1);
@@ -40,8 +34,10 @@ export default function ContestManagerUserSubmission(props) {
   function getSubmission(s, p) {
     request(
       "get",
-      "/get-contest-submission-paging/" +
+      "/get-contest-submission-of-a-user-paging/" +
         contestId +
+        "/" +
+        userId +
         "?size=" +
         s +
         "&page=" +
@@ -93,7 +89,6 @@ export default function ContestManagerUserSubmission(props) {
               <StyledTableCell align="center">Message</StyledTableCell>
               <StyledTableCell align="center">Point</StyledTableCell>
               <StyledTableCell align="center">Submitted At</StyledTableCell>
-              <StyledTableCell align="center">Action</StyledTableCell>
               <StyledTableCell align="center">Action</StyledTableCell>
             </TableRow>
           </TableHead>
@@ -161,19 +156,6 @@ export default function ContestManagerUserSubmission(props) {
                     </Button>
                   </b>
                 </StyledTableCell>
-                <StyledTableCell align="center">
-                  <b>
-                    <Button
-                      onClick={() => {
-                        setSelectedUserId(s.userId);
-                        setIsOpen(true);
-                      }}
-                    >
-                      {" "}
-                      ViewByUser{" "}
-                    </Button>
-                  </b>
-                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
@@ -216,12 +198,6 @@ export default function ContestManagerUserSubmission(props) {
           />
         </Grid>
       </Grid>
-      <ContestManagerViewSubmissionOfAUserDialog
-        open={isOpen}
-        onClose={handleCloseDialog}
-        contestId={contestId}
-        userId={selectedUserId}
-      />
     </div>
   );
 }

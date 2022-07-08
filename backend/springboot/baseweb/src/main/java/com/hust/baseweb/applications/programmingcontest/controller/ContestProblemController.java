@@ -749,6 +749,15 @@ public class ContestProblemController {
         log.info("page {}", page);
         return ResponseEntity.status(200).body(page);
     }
+    @GetMapping("/get-contest-submission-of-a-user-paging/{contestId}/{userId}")
+    public ResponseEntity<?> getContestSubmissionOfAUserPaging(@PathVariable("contestId") String contestId,
+                                                               @PathVariable String userId, Pageable pageable){
+        log.info("getContestSubmissionPaging, contestId = " + contestId);
+        pageable = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), Sort.by("createdAt").descending());
+        Page<ContestSubmission> page = problemTestCaseService.findContestSubmissionByUserLoginIdAndContestIdPaging(pageable, userId, contestId);
+        log.info("page {}", page);
+        return ResponseEntity.status(200).body(page);
+    }
 
     @GetMapping("/get-contest-problem-submission-detail-viewed-by-participant/{submissionId}")
     public ResponseEntity<?> getContestSubmissionDetailViewedByParticipant(@PathVariable("submissionId") UUID submissionId){
