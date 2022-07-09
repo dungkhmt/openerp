@@ -12,7 +12,6 @@ import Footer from "./Footer";
 
 Font.register({
   family: "Inter",
-
   fonts: [
     {
       src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf",
@@ -65,6 +64,11 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     maxHeight: "300px",
   },
+  ulChild: {
+    paddingLeft: 20,
+    marginTop: "4px",
+    marginBottom: "4px",
+  },
 });
 
 const checkBoxBase64 =
@@ -85,7 +89,6 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
     listQuestion,
   } = data;
 
-  // console.log(parse(listQuestion[19].statement));
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
@@ -101,26 +104,59 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
           <Text style={styles.textLine}>Thời gian: {duration} phút</Text>
 
           {/* Questions */}
-          {listQuestion.map((q, index) => (
-            <View>
-              <Text key={q.questionId} style={styles.question}>
-                <Text style={styles.bold}>Câu {index + 1}. </Text>
-                {parse(q.statement)}
-              </Text>
+          {listQuestion.map((q, qIndex) => (
+            <View key={q.questionId} style={styles.question}>
+              {parse(q.statement).map((ele, eIndex) => {
+                if (eIndex > 0) {
+                  if (ele.type === "ul") {
+                    return (
+                      <View
+                        style={{ display: "flex", flexGrow: 1, flexShrink: 1 }}
+                      >
+                        {ele.props.children.map((ulChild) => {
+                          if (ulChild.type === "li")
+                            return (
+                              <Text style={styles.ulChild}>
+                                &#8226; {ulChild.props.children}
+                              </Text>
+                            );
+                          else if (ulChild !== "\n")
+                            return (
+                              <Text style={styles.ulChild}>{ulChild}</Text>
+                            );
+                        })}
+                      </View>
+                    );
+                  } else if (ele !== "\n") {
+                    return <Text>{ele}</Text>;
+                  }
+                } else {
+                  return (
+                    <Text>
+                      <Text style={styles.bold}>Câu {qIndex + 1}. </Text>
+                      {ele}
+                    </Text>
+                  );
+                }
+              })}
+
+              {/* Question images */}
               {q.attachment?.length > 0 &&
-                q.attachment.map((url, index) => (
-                  <View style={styles.imageContainer}>
+                q.attachment.map((imageBase64, index) => (
+                  <View key={index} style={styles.imageContainer}>
                     <Image
-                      key={index}
-                      src={`data:application/pdf;base64,${url}`}
+                      src={`data:application/pdf;base64,${imageBase64}`}
                       style={{
                         objectFit: "scale-down",
                       }}
                     />
                   </View>
                 ))}
+
+              {/* Question answers */}
               {q.quizChoiceAnswerList.map((ans) => (
                 <View
+                  key={ans.choiceAnswerId}
                   style={{
                     display: "flex",
                     flexDirection: "row",
@@ -129,7 +165,6 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
                   }}
                 >
                   <Image
-                    key={index}
                     src={`data:application/pdf;base64,${checkBoxBase64}`}
                     style={{
                       width: "24px",
