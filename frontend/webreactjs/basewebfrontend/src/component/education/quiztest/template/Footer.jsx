@@ -23,8 +23,8 @@ const Footer = () => (
   <View style={styles.footer} fixed>
     <Text
       fixed
-      render={({ pageNumber, totalPages }) =>
-        `Trang ${pageNumber} của ${totalPages}`
+      render={({ pageNumber, totalPages, subPageNumber, subPageTotalPages }) =>
+        `Trang ${subPageNumber} của ${subPageTotalPages}`
       }
     />
   </View>

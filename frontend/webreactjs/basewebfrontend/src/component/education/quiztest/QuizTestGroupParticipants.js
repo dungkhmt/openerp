@@ -73,11 +73,13 @@ function QuizTestGroupParticipants(props) {
 
         request("GET", `/get-user-detail/${studentId}`, (res2) => {
           generatePdfDocument(
-            {
-              userId: studentId,
-              userDetail: res2.data,
-              ...res1.data,
-            },
+            [
+              {
+                userId: studentId,
+                userDetail: res2.data,
+                ...res1.data,
+              },
+            ],
             `${testId} - ${courseName} - ${studentId}.pdf`
           );
         });

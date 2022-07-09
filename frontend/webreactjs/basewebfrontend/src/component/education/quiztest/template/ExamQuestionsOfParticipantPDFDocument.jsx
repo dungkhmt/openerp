@@ -76,111 +76,117 @@ const checkBoxBase64 =
 
 // Create Document Component
 function ExamQuestionsOfParticipantPDFDocument({ data }) {
-  const {
-    userId,
-    userDetail,
-    testName,
-    scheduleDatetime,
-    courseName,
-    duration,
-    quizGroupId,
-    groupCode,
-    viewTypeId,
-    listQuestion,
-  } = data;
-
   return (
     <Document>
-      <Page size="A4" style={styles.page} wrap>
-        <View>
-          <Text style={styles.textLine}>Quiz test: {testName}</Text>
-          <Text style={styles.textLine}>Học phần: {courseName}</Text>
-          <Text style={styles.textLine}>MSSV: {userId}</Text>
-          <Text style={styles.textLine}>
-            Họ tên:{" "}
-            {`${userDetail?.firstName} ${userDetail?.middleName} ${userDetail?.lastName}`}
-          </Text>
-          <Text style={styles.textLine}>Bắt đầu: {scheduleDatetime}</Text>
-          <Text style={styles.textLine}>Thời gian: {duration} phút</Text>
+      {data?.map(
+        ({
+          userId,
+          userDetail,
+          testName,
+          scheduleDatetime,
+          courseName,
+          duration,
+          quizGroupId,
+          groupCode,
+          viewTypeId,
+          listQuestion,
+        }) => (
+          <Page size="A4" style={styles.page} wrap>
+            <View>
+              <Text style={styles.textLine}>Quiz test: {testName}</Text>
+              <Text style={styles.textLine}>Học phần: {courseName}</Text>
+              <Text style={styles.textLine}>MSSV: {userId}</Text>
+              <Text style={styles.textLine}>
+                Họ tên:{" "}
+                {`${userDetail?.firstName} ${userDetail?.middleName} ${userDetail?.lastName}`}
+              </Text>
+              <Text style={styles.textLine}>Bắt đầu: {scheduleDatetime}</Text>
+              <Text style={styles.textLine}>Thời gian: {duration} phút</Text>
 
-          {/* Questions */}
-          {listQuestion.map((q, qIndex) => (
-            <View key={q.questionId} style={styles.question}>
-              {parse(q.statement).map((ele, eIndex) => {
-                if (eIndex > 0) {
-                  if (ele.type === "ul") {
-                    return (
-                      <View
-                        style={{ display: "flex", flexGrow: 1, flexShrink: 1 }}
-                      >
-                        {ele.props.children.map((ulChild) => {
-                          if (ulChild.type === "li")
-                            return (
-                              <Text style={styles.ulChild}>
-                                &#8226; {ulChild.props.children}
-                              </Text>
-                            );
-                          else if (ulChild !== "\n")
-                            return (
-                              <Text style={styles.ulChild}>{ulChild}</Text>
-                            );
-                        })}
+              {/* Questions */}
+              {listQuestion.map((q, qIndex) => (
+                <View key={q.questionId} style={styles.question}>
+                  {parse(q.statement).map((ele, eIndex) => {
+                    if (eIndex > 0) {
+                      if (ele.type === "ul") {
+                        return (
+                          <View
+                            style={{
+                              display: "flex",
+                              flexGrow: 1,
+                              flexShrink: 1,
+                            }}
+                          >
+                            {ele.props.children.map((ulChild) => {
+                              if (ulChild.type === "li")
+                                return (
+                                  <Text style={styles.ulChild}>
+                                    &#8226; {ulChild.props.children}
+                                  </Text>
+                                );
+                              else if (ulChild !== "\n")
+                                return (
+                                  <Text style={styles.ulChild}>{ulChild}</Text>
+                                );
+                            })}
+                          </View>
+                        );
+                      } else if (ele !== "\n") {
+                        return <Text>{ele}</Text>;
+                      }
+                    } else {
+                      return (
+                        <Text>
+                          <Text style={styles.bold}>Câu {qIndex + 1}. </Text>
+                          {ele}
+                        </Text>
+                      );
+                    }
+                  })}
+
+                  {/* Question images */}
+                  {q.attachment?.length > 0 &&
+                    q.attachment.map((imageBase64, index) => (
+                      <View key={index} style={styles.imageContainer}>
+                        <Image
+                          src={`data:application/pdf;base64,${imageBase64}`}
+                          style={{
+                            objectFit: "scale-down",
+                          }}
+                        />
                       </View>
-                    );
-                  } else if (ele !== "\n") {
-                    return <Text>{ele}</Text>;
-                  }
-                } else {
-                  return (
-                    <Text>
-                      <Text style={styles.bold}>Câu {qIndex + 1}. </Text>
-                      {ele}
-                    </Text>
-                  );
-                }
-              })}
+                    ))}
 
-              {/* Question images */}
-              {q.attachment?.length > 0 &&
-                q.attachment.map((imageBase64, index) => (
-                  <View key={index} style={styles.imageContainer}>
-                    <Image
-                      src={`data:application/pdf;base64,${imageBase64}`}
+                  {/* Question answers */}
+                  {q.quizChoiceAnswerList.map((ans) => (
+                    <View
+                      key={ans.choiceAnswerId}
                       style={{
-                        objectFit: "scale-down",
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
-                    />
-                  </View>
-                ))}
-
-              {/* Question answers */}
-              {q.quizChoiceAnswerList.map((ans) => (
-                <View
-                  key={ans.choiceAnswerId}
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Image
-                    src={`data:application/pdf;base64,${checkBoxBase64}`}
-                    style={{
-                      width: "24px",
-                      height: "24px",
-                    }}
-                  />
-                  <Text style={styles.answer}>
-                    {parse(ans.choiceAnswerContent)}
-                  </Text>
+                    >
+                      <Image
+                        src={`data:application/pdf;base64,${checkBoxBase64}`}
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                        }}
+                      />
+                      <Text style={styles.answer}>
+                        {parse(ans.choiceAnswerContent)}
+                      </Text>
+                    </View>
+                  ))}
                 </View>
               ))}
             </View>
-          ))}
-        </View>
-        <Footer />
-      </Page>
+            <Footer />
+          </Page>
+        )
+      )}
     </Document>
   );
 }
