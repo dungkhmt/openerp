@@ -80,7 +80,6 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
     <Document>
       {data?.map(
         ({
-          userId,
           userDetail,
           testName,
           scheduleDatetime,
@@ -95,10 +94,9 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
             <View>
               <Text style={styles.textLine}>Quiz test: {testName}</Text>
               <Text style={styles.textLine}>Học phần: {courseName}</Text>
-              <Text style={styles.textLine}>MSSV: {userId}</Text>
+              <Text style={styles.textLine}>MSSV: {userDetail.id}</Text>
               <Text style={styles.textLine}>
-                Họ tên:{" "}
-                {`${userDetail?.firstName} ${userDetail?.middleName} ${userDetail?.lastName}`}
+                Họ tên: {userDetail?.fullName}
               </Text>
               <Text style={styles.textLine}>Bắt đầu: {scheduleDatetime}</Text>
               <Text style={styles.textLine}>Thời gian: {duration} phút</Text>

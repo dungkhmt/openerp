@@ -24,7 +24,7 @@ export const authPost = (dispatch, token, url, body) => {
           console.log(res);
           try {
             res.json().then((res1) => console.log(res1));
-          } catch (err) { }
+          } catch (err) {}
           throw Error();
         }
         // return null;
@@ -63,7 +63,7 @@ export const authPostMultiPart = (dispatch, token, url, body) => {
           console.log(res);
           try {
             res.json().then((res1) => console.log(res1));
-          } catch (err) { }
+          } catch (err) {}
           throw Error();
         }
         // return null;
@@ -111,7 +111,7 @@ export const authGet = (dispatch, token, url) => {
           console.log(res);
           try {
             res.json().then((res1) => console.log(res1));
-          } catch (err) { }
+          } catch (err) {}
           throw Error();
         }
         // return null;
@@ -173,7 +173,7 @@ export const authDelete = (dispatch, token, url, body) => {
           console.log(res);
           try {
             res.json().then((res1) => console.log(res1));
-          } catch (err) { }
+          } catch (err) {}
           throw Error();
         }
         // return null;
@@ -222,7 +222,7 @@ export const axiosPut = (token, url, data, dispatch) => {
   });
 };
 
-const isFunction = (func) =>
+export const isFunction = (func) =>
   func &&
   (Object.prototype.toString.call(func) === "[object Function]" ||
     "function" === typeof func ||

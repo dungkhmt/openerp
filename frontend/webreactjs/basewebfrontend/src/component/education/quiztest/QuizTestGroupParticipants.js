@@ -1,28 +1,37 @@
 import { IconButton } from "@mui/material";
 import { pdf } from "@react-pdf/renderer";
-import { request } from "api";
+import { isFunction, request } from "api";
 import FileSaver from "file-saver";
 import MaterialTable from "material-table";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { VscFilePdf } from "react-icons/vsc";
 import { Link } from "react-router-dom";
-import { exportQuizQuestionAssigned2StudentPdf } from "./TeacherQuizQuestionAssign2StudentExportPDF.js";
+import { toast } from "react-toastify";
+import { infoNoti } from "utils/notification";
 import ExamQuestionsOfParticipantPDFDocument from "./template/ExamQuestionsOfParticipantPDFDocument";
 
-const generatePdfDocument = async (documentData, fileName) => {
+const generatePdfDocument = async (documentData, fileName, onCompleted) => {
   const blob = await pdf(
     <ExamQuestionsOfParticipantPDFDocument data={documentData} />
   ).toBlob();
+
+  if (isFunction(onCompleted)) onCompleted();
+
   FileSaver.saveAs(blob, fileName);
 };
 
 function QuizTestGroupParticipants(props) {
   let testId = props.testId;
 
-  const [data, setData] = useState([]);
-  const [studentQuestions, setStudentQuestions] = useState([]);
+  //
+  const toastId = useRef(null);
+
+  //
+  const [participants, setParticipants] = useState([]);
+  const [studentQuestions, setStudentQuestions] = useState();
   const [resultExportPDFData, setResultExportPDFData] = useState([]);
 
+  //
   const columns = [
     { title: "Group Id", field: "quizTestGroupId" },
     { title: "Group Code", field: "quizTestGroupCode" },
@@ -60,23 +69,18 @@ function QuizTestGroupParticipants(props) {
       "GET",
       `/get-quiz-questions-assigned-to-participant/${testId}/${studentId}`,
       (res1) => {
-        const {
-          testName,
-          scheduleDatetime,
-          courseName,
-          duration,
-          quizGroupId,
-          groupCode,
-          viewTypeId,
-          listQuestion,
-        } = res1.data;
+        const { courseName } = res1.data;
 
         request("GET", `/get-user-detail/${studentId}`, (res2) => {
+          const userInfo = res2.data;
+
           generatePdfDocument(
             [
               {
-                userId: studentId,
-                userDetail: res2.data,
+                userDetail: {
+                  id: studentId,
+                  fullName: `${userInfo?.firstName} ${userInfo?.middleName} ${userInfo?.lastName}`,
+                },
                 ...res1.data,
               },
             ],
@@ -87,7 +91,26 @@ function QuizTestGroupParticipants(props) {
     );
   };
 
-  function getStudentListResultGeneral() {
+  const exportExamQuestionsOfAllStudents = async () => {
+    let questionsOfStudents;
+
+    if (!studentQuestions)
+      questionsOfStudents = await getQuestionsOfParticipants();
+    else questionsOfStudents = studentQuestions;
+
+    const data = questionsOfStudents.map(
+      ({ participantUserLoginId, fullName, quizGroupTestDetailModel }) => ({
+        userDetail: { id: participantUserLoginId, fullName: fullName },
+        ...quizGroupTestDetailModel,
+      })
+    );
+
+    generatePdfDocument(data, `${testId}.pdf`, () => {
+      toast.dismiss(toastId.current);
+    });
+  };
+
+  function getGeneralResult() {
     let input = { testId: testId };
 
     request(
@@ -156,42 +179,45 @@ function QuizTestGroupParticipants(props) {
     );
   }
 
-  function getParticipantQuestions() {
-    request(
+  async function getQuestionsOfParticipants() {
+    let data;
+
+    await request(
       "get",
       "get-all-quiz-test-participation-group-question/" + testId,
       (res) => {
-        console.log("participant questions = ", res.data);
-        //alert('assign students to groups OK');
-        setStudentQuestions(res.data);
+        data = res.data;
+        setStudentQuestions(data);
       },
       { 401: () => {} }
     );
+
+    return data;
   }
 
-  function getQuizTestGroupParticipants() {
+  function getParticipants() {
     request(
       "get",
       "get-all-quiz-test-group-participants/" + testId,
       (res) => {
         //alert('assign students to groups OK');
-        setData(res.data);
+        setParticipants(res.data);
       },
       { 401: () => {} }
     );
   }
 
   useEffect(() => {
-    getQuizTestGroupParticipants();
-    getStudentListResultGeneral();
-    getParticipantQuestions();
+    getParticipants();
+    getGeneralResult();
+    // getQuestionsOfParticipants();
   }, []);
 
   return (
     <MaterialTable
       title={"Phân thí sinh vào các đề"}
       columns={columns}
-      data={data}
+      data={participants}
       actions={[
         {
           icon: () => (
@@ -204,13 +230,15 @@ function QuizTestGroupParticipants(props) {
           tooltip: "Xuất PDF",
           isFreeAction: true,
           onClick: () => {
-            exportQuizQuestionAssigned2StudentPdf(
-              //students,
-              data,
-              resultExportPDFData,
-              studentQuestions,
-              testId
-            );
+            toastId.current = infoNoti("Hệ thống đang chuẩn bị tệp PDF ...");
+            exportExamQuestionsOfAllStudents();
+            // exportQuizQuestionAssigned2StudentPdf(
+            //   //students,
+            //   participants,
+            //   resultExportPDFData,
+            //   studentQuestions,
+            //   testId
+            // );
           },
         },
       ]}
