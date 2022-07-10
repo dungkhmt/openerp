@@ -2,10 +2,15 @@ import { Box } from "@material-ui/core/";
 import { makeStyles, MuiThemeProvider, styled } from "@material-ui/core/styles";
 import MaterialTable, { MTableToolbar } from "material-table";
 import PropTypes from "prop-types";
-import React, { useCallback } from "react";
-import { components, localization, themeTable } from "utils/MaterialTableUtils";
+import { useCallback } from "react";
+import {
+  components,
+  localization,
+  tableIcons,
+  themeTable,
+} from "utils/MaterialTableUtils";
 
-const Offset = styled("div")(({ theme }) => ({
+export const Offset = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   padding: theme.spacing(0, 1),
@@ -56,6 +61,7 @@ function StandardTable(props) {
             toolbar: { ...localization.toolbar, nRowsSelected: "" },
             ...props.localization,
           }}
+          icons={tableIcons}
           options={{
             selection: true,
             pageSize: 20,
