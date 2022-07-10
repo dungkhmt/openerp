@@ -179,11 +179,13 @@ function Notification(props) {
             padding: "6px 0px 10px",
             position: "relative",
             display: "flex",
+            flexGrow: 1,
           }}
         >
           <div
             style={{
               position: "relative",
+              flexGrow: 1,
             }}
           >
             <Typography className={classes.content}>{content.get()}</Typography>
