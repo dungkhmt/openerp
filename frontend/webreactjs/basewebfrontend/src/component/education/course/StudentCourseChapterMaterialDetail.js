@@ -9,7 +9,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link, useHistory } from "react-router-dom";
-import { authGet, authPost } from "../../../api";
+import { authGet, authPost, authDelete, authPut } from "../../../api";
 import Player from "../../../utils/Player";
 import InputComment from "./comment/InputComment";
 import CommentItem from "./comment/CommentItem";
@@ -17,6 +17,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import { number } from "prop-types";
 import Loading from "../../common/Loading";
+import { request } from "../../../api";
+import { errorNoti, successNoti } from "utils/notification";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +54,7 @@ function StudentCourseChapterMaterialDetail() {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [pageNumberValue, setPageNumberValue] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [loginUser, setLoginUser] = useState(null);
 
   //handle change page number
   const onHandleChangePageNumber = (event) => {
@@ -150,45 +153,155 @@ function StudentCourseChapterMaterialDetail() {
     setListComment(cmtOnVideo);
     console.log(cmtOnVideo);
   }
-  const commentOnCourse = async () => {
-    let body = {
-      commentMessage: comment.commentMessage,
-      eduCourseMaterialId: chapterMaterialId,
-      replyToCommentId: comment.replyToCommentId,
-    };
+  // const commentOnCourse = async () => {
+  //   let body = {
+  //     commentMessage: comment.commentMessage,
+  //     eduCourseMaterialId: chapterMaterialId,
+  //     replyToCommentId: comment.replyToCommentId,
+  //   };
 
-    if (comment.commentMessage !== "") {
-      let commentPost = await authPost(
-        dispatch,
-        token,
+  //   if (comment.commentMessage !== "") {
+  //     let commentPost = await authPost(
+  //       dispatch,
+  //       token,
+  //       "/edu/class/comment",
+  //       body
+  //     );
+  //   }
+
+  //   // if flag change, rerender listcomment
+  //   setFlag(!flag);
+  //   //   console.log(commentPost);
+  //   //   if(commentPost.commentId){
+  //   //     if(!commentPost.replyToCommentId){
+  //   //       setListComment([
+  //   //         ...listComment,
+  //   //         commentPost
+  //   //       ])
+  //   //     } else {
+  //   //       let newArr = listComment;
+
+  //   //       newArr.map(cmt => {
+  //   //         if(cmt.commentId === commentPost.replyToCommentId){
+  //   //           cmt.listReplyComments.push(commentPost);
+  //   //         }
+  //   //       })
+
+  //   //       setListComment(newArr);
+  //   //     }
+  //   //   }
+  //   //   console.log(listComment)
+  //   // }
+  // };
+
+  // const getMessageFromInput = (message, replyToCommentId) => {
+  //   setComment({
+  //     ...comment,
+  //     commentMessage: message,
+  //     replyToCommentId,
+  //   });
+  // };
+
+  async function getListMainCommentOnCourse() {
+    let res = await authGet(
+      dispatch,
+      token,
+      `/edu/class/main-comment/${chapterMaterialId}`
+    );
+
+    console.log(res);
+    setListComment(res);
+  }
+
+  const commentOnCourse = async () => {
+    if (
+      comment.commentMessage === undefined ||
+      comment.commentMessage === null ||
+      comment.commentMessage.trim() === ""
+    ) {
+      errorNoti("Bình luận không được để trống", true);
+    } else {
+      let body = {
+        commentMessage: comment.commentMessage,
+        eduCourseMaterialId: chapterMaterialId,
+        replyToCommentId: comment.replyToCommentId,
+      };
+
+      request(
+        "post",
         "/edu/class/comment",
+        (res) => {
+          if (200 === res.status) {
+            setFlag(!flag);
+            successNoti("Đăng bình luận thành công", true);
+          }
+        },
+        () => {
+          errorNoti("Đăng bình luận thất bại", true);
+        },
         body
       );
     }
+  };
 
-    // if flag change, rerender listcomment
-    setFlag(!flag);
-    //   console.log(commentPost);
-    //   if(commentPost.commentId){
-    //     if(!commentPost.replyToCommentId){
-    //       setListComment([
-    //         ...listComment,
-    //         commentPost
-    //       ])
-    //     } else {
-    //       let newArr = listComment;
+  const deleteComment = async (cmtId, renderReplyList) => {
+    request(
+      "delete",
+      `/edu/class/comment/${cmtId}`,
+      (res) => {
+        setFlag(!flag);
+        successNoti("Xóa bình luận thành công", true);
+        renderReplyList();
+      },
+      () => {
+        errorNoti("Xóa bình luận thất bại", true);
+      }
+    );
+  };
 
-    //       newArr.map(cmt => {
-    //         if(cmt.commentId === commentPost.replyToCommentId){
-    //           cmt.listReplyComments.push(commentPost);
-    //         }
-    //       })
+  const editComment = async (
+    cmtId,
+    commentMessage,
+    createdStamp,
+    renderReplyList
+  ) => {
+    if (
+      commentMessage === "undefined" ||
+      commentMessage === null ||
+      commentMessage.trim() === ""
+    ) {
+      errorNoti("Bình luận không được để trống", true);
+    } else {
+      let body = {
+        commentMessage,
+        createdStamp: createdStamp,
+      };
 
-    //       setListComment(newArr);
-    //     }
-    //   }
-    //   console.log(listComment)
-    // }
+      request(
+        // token,
+        // history,
+        "put",
+        `/edu/class/comment/${cmtId}`,
+        (res) => {
+          if (200 === res.status) {
+            setFlag(!flag);
+            successNoti("Sửa bình luận thành công", true);
+            renderReplyList();
+          }
+        },
+        () => {
+          errorNoti("Sửa bình luận thất bại", true);
+        },
+        body
+      );
+
+      // let edittedComment = await authPut(
+      //   dispatch,
+      //   token,
+      //   `/edu/class/comment/${cmtId}`,
+      //   body
+      // );
+    }
   };
 
   const getMessageFromInput = (message, replyToCommentId) => {
@@ -202,7 +315,26 @@ function StudentCourseChapterMaterialDetail() {
   useEffect(() => {
     getCourseChapterMaterialDetail();
     //setSourceId(chapterMaterial.sourceId);
-    getListCommentsEduCourseMaterial();
+    //get user login
+    request(
+      "get",
+      "/my-account/",
+      (res) => {
+        let data = res.data;
+
+        setLoginUser({
+          name: data.name,
+          userName: data.user,
+          partyId: data.partyId,
+        });
+      },
+      { 401: () => {} }
+    );
+  }, []);
+
+  useEffect(() => {
+    // getListCommentsEduCourseMaterial();
+    getListMainCommentOnCourse();
   }, [flag]);
 
   return (
@@ -421,8 +553,12 @@ function StudentCourseChapterMaterialDetail() {
           listComment.map((cmt) => (
             <CommentItem
               comment={cmt}
+              chapterMaterialId={chapterMaterialId}
               getMessageFromInput={getMessageFromInput}
               commentOnCourse={commentOnCourse}
+              deleteComment={deleteComment}
+              editComment={editComment}
+              loginUser={loginUser}
             />
           ))}
       </Card>

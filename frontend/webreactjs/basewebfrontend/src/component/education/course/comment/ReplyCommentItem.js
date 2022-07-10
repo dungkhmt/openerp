@@ -1,7 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Avatar,
-  TextField,
   Button,
   Dialog,
   DialogTitle,
@@ -10,21 +9,11 @@ import {
   DialogActions,
   Menu,
   MenuItem,
-  IconButton,
   Input,
 } from "@material-ui/core";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { useState, useEffect } from "react";
-import {
-  authPut,
-  authDelete,
-  authGet,
-  authPost,
-  request,
-} from "../../../../api";
-import { useDispatch, useSelector } from "react-redux";
-import ReplyCommentItem from "./ReplyCommentItem";
-import { successNoti, errorNoti } from "utils/notification";
+import { errorNoti, successNoti } from "utils/notification";
+import { request } from "api";
 import displayTime from "utils/DateTimeUtils";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,24 +44,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CommentItem({
+export default function ReplyCommentItem({
   comment,
-  chapterMaterialId,
   deleteComment,
   editComment,
+  setFlag,
+  flag,
   loginUser,
 }) {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
   const [valueCommentMessage, setValueCommentMessage] = useState(
     comment.commentMessage
   );
-  const [replyCommentMessage, setReplyCommentMessage] = useState("");
   const [isEdittingComment, setIsEdittingComment] = useState(false);
-  const [isShowReplyInput, setIsShowReplyInput] = useState(false);
-  const [showReplyList, setShowReplyList] = useState(false);
-  const [listReplyComment, setListReplyComment] = useState([]);
-  const [flag, setFlag] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const open = Boolean(anchorEl);
@@ -80,9 +63,7 @@ export default function CommentItem({
 
   useEffect(() => {
     setValueCommentMessage(comment.commentMessage);
-    // onGetListReplyComment(comment.commentId);
   }, [comment]);
-
   const handleClickOpenModal = () => {
     setOpenModal(true);
   };
@@ -102,8 +83,17 @@ export default function CommentItem({
   };
 
   const handleDeleteComment = () => {
-    deleteComment(comment.commentId, () =>
-      onGetListReplyComment(comment.commentId)
+    // deleteComment(comment.commentId);
+    request(
+      "delete",
+      `/edu/class/comment/${comment.commentId}`,
+      (res) => {
+        setFlag(!flag);
+        successNoti("Xóa bình luận thành công", true);
+      },
+      () => {
+        errorNoti("Xóa bình luận thất bại", true);
+      }
     );
     setOpenModal(false);
     setAnchorEl(null);
@@ -114,71 +104,39 @@ export default function CommentItem({
     setIsEdittingComment(true);
   };
 
+  let body = {};
+
   const handleSaveEditComment = (cmtContent) => {
-    editComment(comment.commentId, cmtContent, comment.createdStamp, () =>
-      onGetListReplyComment(comment.commentId)
-    );
-    setIsEdittingComment(false);
-
-    setFlag(!flag);
-  };
-
-  //post reply comment
-  const createReplyComment = async () => {
+    // editComment(comment.commentId, cmtContent);
     if (
-      replyCommentMessage === "undefined" ||
-      replyCommentMessage === null ||
-      replyCommentMessage.trim() === ""
+      cmtContent === undefined ||
+      cmtContent === null ||
+      cmtContent.trim() === ""
     ) {
-      errorNoti("Bình luận không được để trống", true);
+      errorNoti("Nội dung bình luận không được để trống", true);
     } else {
       let body = {
-        commentMessage: replyCommentMessage,
-        eduCourseMaterialId: chapterMaterialId,
-        replyToCommentId: comment.commentId,
+        commentMessage: cmtContent,
+        createdStamp: comment.createdStamp,
       };
-
-      // let commentPost = await authPost(
-      //   dispatch,
-      //   token,
-      //   "/edu/class/comment",
-      //   body
-      // );
       request(
-        "post",
-        "/edu/class/comment",
+        // token,
+        // history,
+        "put",
+        `/edu/class/comment/${comment.commentId}`,
         (res) => {
           if (200 === res.status) {
             setFlag(!flag);
-            setReplyCommentMessage("");
-            successNoti("Đăng bình luận thành công", true);
+            setIsEdittingComment(false);
+            successNoti("Sửa bình luận thành công", true);
           }
         },
         () => {
-          errorNoti("Đăng bình luận thất bại", true);
+          errorNoti("Sửa bình luận thất bại", true);
         },
         body
       );
-
-      // if flag change, rerender listcomment
-      // setFlag(!flag);
-      // onGetListReplyComment(comment.commentId);
-      // setReplyCommentMessage("");
     }
-  };
-
-  //get list reply of comment
-  const onGetListReplyComment = async (commentId) => {
-    // if (showReplyList === false) {
-    let res = await authGet(
-      dispatch,
-      token,
-      `/edu/class/reply-comment/${commentId}`
-    );
-    setListReplyComment(res);
-    console.log(listReplyComment);
-    // }
-    // setShowReplyList(!showReplyList);
   };
 
   //format date
@@ -187,10 +145,6 @@ export default function CommentItem({
 
     return displayTime(date);
   };
-
-  useEffect(() => {
-    onGetListReplyComment(comment.commentId);
-  }, [flag]);
 
   return (
     <div className={classes.root}>
@@ -222,17 +176,15 @@ export default function CommentItem({
         {comment.fullNameOfCreator.split(" ").pop().charAt(0).toUpperCase()}
       </Avatar>
       <div>
-        <div>
-          <b>{`${comment.fullNameOfCreator} (${comment.postedByUserLoginId})`}</b>
-          &nbsp;
-          <span style={{ marginLeft: "5px" }}>
-            {comment ? formatDate(comment.createdStamp) : null}
-          </span>
-        </div>
+        <b>{comment.fullNameOfCreator}</b>
+        &nbsp;
+        <span style={{ marginLeft: "5px" }}>
+          {comment ? formatDate(comment.createdStamp) : null}
+        </span>
         <div className={classes.growItem}>
           {isEdittingComment ? (
             <div>
-              <TextField
+              <Input
                 value={valueCommentMessage}
                 onChange={(event) => setValueCommentMessage(event.target.value)}
                 type="text"
@@ -250,27 +202,6 @@ export default function CommentItem({
           )}
         </div>
         <div>
-          <Button
-            onClick={() => setIsShowReplyInput(!isShowReplyInput)}
-            style={{ color: "#bbb", fontSize: "10px" }}
-          >
-            Phản hồi
-          </Button>
-
-          <Button
-            onClick={() => {
-              setShowReplyList(!showReplyList);
-              onGetListReplyComment(comment.commentId);
-            }}
-            style={{ color: "#1976d2", fontSize: "10px" }}
-          >
-            {showReplyList ? (
-              <span>&#x25B2; Ẩn phản hồi</span>
-            ) : (
-              <span>&#x25BC; Xem các phản hổi</span>
-            )}
-          </Button>
-
           {loginUser?.userName === comment.postedByUserLoginId && (
             <Button
               aria-label="more"
@@ -283,41 +214,6 @@ export default function CommentItem({
             >
               Khác
             </Button>
-          )}
-        </div>
-        <div className={classes.listComment}>
-          {showReplyList && (
-            <div>
-              {listReplyComment.length > 0 &&
-                listReplyComment.map((comment) => (
-                  <ReplyCommentItem
-                    comment={comment}
-                    editComment={editComment}
-                    deleteComment={deleteComment}
-                    chapterMaterialId={chapterMaterialId}
-                    flag={flag}
-                    setFlag={setFlag}
-                    loginUser={loginUser}
-                  />
-                ))}
-            </div>
-          )}
-          {isShowReplyInput && (
-            <div>
-              <TextField
-                value={replyCommentMessage}
-                onChange={(event) => setReplyCommentMessage(event.target.value)}
-                style={{ fontSize: "10px" }}
-                className={classes.customTextField}
-                placeholder="Phản hồi bình luận"
-              />
-              <Button
-                onClick={createReplyComment}
-                style={{ fontSize: "10px", color: "#1976d2" }}
-              >
-                Phản hồi
-              </Button>
-            </div>
           )}
         </div>
       </div>

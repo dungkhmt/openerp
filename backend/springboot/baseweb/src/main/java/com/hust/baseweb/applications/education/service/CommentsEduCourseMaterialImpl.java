@@ -1,8 +1,10 @@
 package com.hust.baseweb.applications.education.service;
 
+import com.hust.baseweb.applications.education.entity.EduCourseChapterMaterial;
 import com.hust.baseweb.applications.education.model.CommentEduCourseDetailOM;
 import com.hust.baseweb.applications.education.repo.CommentsEduCourseMaterialRepo;
 import com.hust.baseweb.applications.education.entity.CommentsEduCourseMaterial;
+import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.service.UserService;
 import com.hust.baseweb.model.PersonModel;
 import lombok.AllArgsConstructor;
@@ -23,6 +25,8 @@ public class CommentsEduCourseMaterialImpl implements CommentsEduCourseMaterialS
     @Autowired
     private CommentsEduCourseMaterialRepo commentsEduCourseMaterialRepo;
     public UserService userService;
+    private NotificationsService notificationsService;
+    private EduCourseChapterMaterialService eduCourseChapterMaterialService;
     @Override
     public  CommentsEduCourseMaterial createComment(
         UUID eduCourseMaterialId,
@@ -38,6 +42,15 @@ public class CommentsEduCourseMaterialImpl implements CommentsEduCourseMaterialS
         commentsEduCourseMaterial.setCreatedStamp(new Date());
         commentsEduCourseMaterial.setStatusId(CommentsEduCourseMaterial.STATUS_CREATED);
         commentsEduCourseMaterial = commentsEduCourseMaterialRepo.save(commentsEduCourseMaterial);
+
+        EduCourseChapterMaterial material = eduCourseChapterMaterialService.findById(eduCourseMaterialId);
+
+        List<String> listUsers = commentsEduCourseMaterialRepo.postedByUserLoginId(eduCourseMaterialId);
+        String url = "/edu/student/course/chapter/material/detail/" + eduCourseMaterialId;
+        String message = "User "+  u.getUserLoginId() + " comments on material " + material.getEduCourseMaterialName();
+        listUsers.forEach((user)->{
+            notificationsService.create(u.getUserLoginId(), user, message, url);
+        });
 
         return commentsEduCourseMaterial;
 
@@ -116,10 +129,11 @@ public class CommentsEduCourseMaterialImpl implements CommentsEduCourseMaterialS
     }
 
     @Override
-    public CommentsEduCourseMaterial editCommentEduCourse(UUID commentId, String comment){
+    public CommentsEduCourseMaterial editCommentEduCourse(UUID commentId, String comment, Date createdStamp){
 
         CommentsEduCourseMaterial newComment = commentsEduCourseMaterialRepo.findByCommentId(commentId);
         newComment.setCommentMessage(comment);
+//        newComment.setCreatedStamp(createdStamp);
         newComment = commentsEduCourseMaterialRepo.save(newComment);
         return newComment;
     }
