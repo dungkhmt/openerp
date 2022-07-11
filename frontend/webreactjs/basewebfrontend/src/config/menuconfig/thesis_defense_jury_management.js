@@ -7,7 +7,7 @@ export const ThesisDefenseJuryManagement = {
   child: [
     {
       id: "MENU_EDUCATION_THESIS_DEFENSE_JURY_MANAGEMENT_LIST",
-      path: "thesis/defense_jury",
+      path: "/thesis/defense_jury",
       isPublic: false,
       icon: "StarBorder",
       text: "DS Hội Đồng ",
@@ -15,7 +15,7 @@ export const ThesisDefenseJuryManagement = {
     },
     {
       id: "MENU_EDUCATION_THESIS_DEFENSE_JURY_MANAGEMENT_CREATE",
-      path: "thesis/defense_jury/create",
+      path: "/thesis/defense_jury/create",
       isPublic: false,
       icon: "StarBorder",
       text: "Tạo mới Hội Đồng ",
@@ -23,7 +23,7 @@ export const ThesisDefenseJuryManagement = {
     },
     {
       id: "MENU_EDUCATION_THESIS_MANAGEMENT_CREATE",
-      path: "thesis/create",
+      path: "/thesis/create",
       isPublic: true,
       icon: "StarBorder",
       text: "Tạo mới Đề tài  tốt nghiệp ",

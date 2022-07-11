@@ -56,6 +56,7 @@ export const eduTeachingManagement = {
       text: "Link hữu ích",
       child: [],
     },
+    /*
     {
       id: "MENU_EDUCATION_MANAGEMENT_PROGRAMMING_CONTEST",
       path: "/edu/management/contestprogramming",
@@ -64,5 +65,6 @@ export const eduTeachingManagement = {
       text: "Programming Contest",
       child: [],
     },
+    */
   ],
 };

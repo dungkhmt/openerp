@@ -35,7 +35,7 @@ create table thesis(
     id uuid not null default uuid_generate_v1(),
     thesis_name varchar(500),
     thesis_abstract text,
-    program_id varchar(200),
+    program_id uuid,
     thesis_defense_plan_id varchar(60),
     student_name varchar(200),
     supervisor_id varchar(60),
@@ -50,8 +50,8 @@ create table thesis(
     constraint fk_thesis_program foreign key(program_id) references training_program(id),
     constraint fk_thesis_thesis_defense_plan_id foreign key(thesis_defense_plan_id) references thesis_defense_plan(id),
     constraint fk_thesis_created_by_user_login_id foreign key(created_by_user_login_id) references user_login(user_login_id),
-    constraint fk_thesis_supervisor_id foreign key(supervisor_id) references teacher(teacher_id),
-    constraint fk_thesis_scheduled_reviewer_id foreign key(scheduled_reviewer_id) references teacher(teacher_id),
+    constraint fk_thesis_supervisor_id foreign key(supervisor_id) references teacher(id),
+    constraint fk_thesis_scheduled_reviewer_id foreign key(scheduled_reviewer_id) references teacher(id),
     constraint fk_thesis_scheduled_jury foreign key(scheduled_jury_id) references defense_jury(id)
 );
 
@@ -78,7 +78,7 @@ create table teacher_thesis_defense_plan(
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     constraint pk_teacher_thesis_defense_plan primary key(teacher_id,thesis_defense_plan_id),
-    constraint fk_teacher_thesis_defense_plan_teacher_id foreign key(teacher_id) references teacher(teacher_id),
+    constraint fk_teacher_thesis_defense_plan_teacher_id foreign key(teacher_id) references teacher(id),
     constraint fk_teacher_thesis_defense_planplan_id foreign key(thesis_defense_plan_id) references thesis_defense_plan(id)
 );
 
@@ -89,7 +89,7 @@ create table teacher_keyword(
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     constraint pk_teacher_keyword primary key(teacher_id,keyword),
-    constraint fk_teacher_keyword_teacher_id foreign key(teacher_id) references teacher(teacher_id),
+    constraint fk_teacher_keyword_teacher_id foreign key(teacher_id) references teacher(id),
     constraint fk_teacher_keyword_keyword foreign key(keyword) references academic_keyword(keyword)
 );
 
@@ -100,6 +100,6 @@ create table defense_jury_teacher(
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     constraint pk_defense_jury_teacher primary key(teacher_id,jury_id),
-    constraint fk_defense_jury_teacher_id foreign key(teacher_id) references teacher(teacher_id),
+    constraint fk_defense_jury_teacher_id foreign key(teacher_id) references teacher(id),
     constraint fk_defense_jury_jury foreign key(jury_id) references defense_jury(id)
 );

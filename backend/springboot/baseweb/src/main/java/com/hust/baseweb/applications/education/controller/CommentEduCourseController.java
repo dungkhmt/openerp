@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,7 +73,8 @@ public class CommentEduCourseController {
     ){
         CommentsEduCourseMaterial commentsEduCourseMaterial = commentsEduCourseMaterialService.editCommentEduCourse(
             commentId,
-            input.getCommentMessage()
+            input.getCommentMessage(),
+            input.getCreatedStamp()
         );
         return ResponseEntity.ok().body(commentsEduCourseMaterial);
     }
