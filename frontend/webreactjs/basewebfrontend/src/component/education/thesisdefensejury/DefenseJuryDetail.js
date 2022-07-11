@@ -208,14 +208,14 @@ function DefenseJuryDetail(props) {
           let listTeachersId = [];
           var data = [];
           for (let i=0;i<teacher.length;i++){
-            listTeachersId.push(teacher[i].teacherId);
+            listTeachersId.push(teacher[i].id);
           }
-          listTeachers =  res.data.filter(ele => !listTeachersId.includes(ele.teacherId));
+          listTeachers =  res.data.filter(ele => !listTeachersId.includes(ele.id));
           console.log("List Teachers :",listTeachers)
           for (let j=0;j<listTeachers.length;j++){
             var ele = {
               stt:j+1,
-              teacherId:listTeachers[j].teacherId,
+              teacherId:listTeachers[j].id,
               teacherName:listTeachers[j].teacherName,
               // studentName:listTeachers[j].student_name
             }
@@ -237,12 +237,16 @@ function DefenseJuryDetail(props) {
       `/defense_jury/${params.id}/teachers`,
       (res) => {
           console.log("List Teachers",res.data)
-          getAllTeacherNotBelongToDefenseJury(res.data.result)
+          let teachersBelongJury = []
+          if (res.data.result != null ){
+            teachersBelongJury = res.data.result
+          }
+          getAllTeacherNotBelongToDefenseJury(teachersBelongJury)
           let listTeachers = []
-        for (let i=0;i<res.data.result.length;i++){
+        for (let i=0;i<teachersBelongJury.length;i++){
           var ele = {
             stt:i+1,
-            teacherId:res.data.result[i].teacherId,
+            teacherId:res.data.result[i].id,
             teacherName:res.data.result[i].teacherName,
           }
           listTeachers.push(ele)
@@ -307,7 +311,7 @@ function DefenseJuryDetail(props) {
 
 
   useEffect(() => {
-   
+    console.log("Loading")
     getListThesisOfDefenseJury();
     getListTeacherOfDefenseJury();
     // getAllTeacherNotBelongToDefenseJury();

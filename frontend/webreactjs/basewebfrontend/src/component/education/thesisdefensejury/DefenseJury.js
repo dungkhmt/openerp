@@ -51,7 +51,12 @@ import {
     }
   
     const handleModalOpen = () => {
-      setOpen(true);
+      history.push({
+        pathname: `/thesis/defense_jury/create`,
+        state: {
+           
+        },
+      });
     };
   
     const handleModalClose = () => {
@@ -69,15 +74,15 @@ import {
           title={"Danh sách HD Bao ve"}
           columns={columns}
           data={jurys}
-          onRowClick = {(event,rowData) => {
-                console.log(rowData)
-                history.push({
-                pathname: `/thesis/defense_jury/${rowData.id}`,
-                state: {
-                    defenseJuryId: rowData.id,
-                },
-              });
-              }}
+          // onRowClick = {(event,rowData) => {
+          //       console.log(rowData)
+          //       history.push({
+          //       pathname: `/thesis/defense_jury/${rowData.id}`,
+          //       state: {
+          //           defenseJuryId: rowData.id,
+          //       },
+          //     });
+          //     }}
           components={{
             Toolbar: (props) => (
               <div style={{ position: "relative" }}>

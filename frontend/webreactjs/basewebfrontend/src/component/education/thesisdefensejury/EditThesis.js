@@ -61,7 +61,7 @@ function EditThesis(props) {
     const [reviewerName, setReviewerName] = React.useState("");
     const [defenseJuryName,setDefenseJuryName] = React.useState("");
     const [userLoginID,setUserLoginID] = React.useState("");
-    const [keyword,setKeyword] = React.useState("");
+    const [keyword,setKeyword] = React.useState([]);
     const [openAlert,setOpenAlert] = React.useState(false);
     const [showSubmitSuccess,setShowSubmitSuccess] = React.useState(false);
     const [open, setOpen] = React.useState(false);
@@ -109,7 +109,7 @@ function EditThesis(props) {
               setReviewerName(thesis.reviewer_name);
               setDefenseJuryName(thesis.defense_jury_name);
               setUserLoginID(thesis.userLoginID);
-              setKeyword(thesis.keyword);
+              setKeyword([]);
             //   setListProgram(res.data)
             
           }
@@ -491,14 +491,14 @@ function EditThesis(props) {
                                     setUserLoginID(event.target.value)
                                 }} fullWidth={true} id="input-with-icon-grid" label="Tên người tạo" />
                             </Grid>
-                            <Grid container item xs={12} spacing={2}>
+                            {/* <Grid container item xs={12} spacing={2}>
                                 <TextField 
                                     style={{margin:"2% 0px"}}
                                     value={keyword}
                                     onChange={(event) => {
                                     setKeyword(event.target.value)
                                 }} fullWidth={true} id="input-with-icon-grid" label="Tên hướng đề tài lựa chọn" />
-                            </Grid>
+                            </Grid> */}
                             <Grid container item xs={12} spacing={2}>
                                 <Box sx={{ minWidth: '100%' }}>
                                     <FormControl fullWidth style={{margin:"2% 0px"}}>

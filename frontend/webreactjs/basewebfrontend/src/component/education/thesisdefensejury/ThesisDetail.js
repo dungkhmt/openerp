@@ -72,7 +72,7 @@ export default function ThesisDetail(props) {
               <StyledTableCell>Tên người hướng dẫn</StyledTableCell>
               <StyledTableCell>Tên HĐ</StyledTableCell>
               <StyledTableCell>Tên chương trình đào tạo</StyledTableCell>
-              <StyledTableCell>Keyword</StyledTableCell>
+              {/* <StyledTableCell>Keyword</StyledTableCell> */}
               <StyledTableCell align="center">Ngày tạo</StyledTableCell>
               <StyledTableCell align="center"></StyledTableCell>
             </TableRow>
@@ -95,9 +95,9 @@ export default function ThesisDetail(props) {
                 <StyledTableCell component="th" scope="row" align="center">
                     <b>{ele.program_name} </b>
                 </StyledTableCell>
-                <StyledTableCell component="th" scope="row" align="center">
+                {/* <StyledTableCell component="th" scope="row" align="center">
                     <b>{ele.keyword} </b>
-                </StyledTableCell>
+                </StyledTableCell> */}
                 <StyledTableCell component="th" scope="row" align="center">
                     <b>{ele.createdTime} </b>
                 </StyledTableCell>
