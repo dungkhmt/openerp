@@ -1,5 +1,5 @@
 create table teacher(
-    teacher_id varchar(60),
+    id varchar(60),
     teacher_name varchar(200),
     user_login_id varchar(60),
     department_id varchar(60),
