@@ -6,7 +6,6 @@ import com.hust.baseweb.applications.education.exception.SimpleResponse;
 import com.hust.baseweb.applications.education.model.*;
 import com.hust.baseweb.applications.education.model.educlassuserloginrole.AddEduClassUserLoginRoleIM;
 import com.hust.baseweb.applications.education.model.educlassuserloginrole.ClassOfUserOM;
-import com.hust.baseweb.applications.education.model.educlassuserloginrole.EduClassUserLoginRoleType;
 import com.hust.baseweb.applications.education.model.getclasslist.ClassOM;
 import com.hust.baseweb.applications.education.model.getclasslist.GetClassListOM;
 import com.hust.baseweb.applications.education.repo.*;
@@ -19,7 +18,6 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,8 +51,7 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     public EduClass findById(UUID id) {
-        EduClass eduClass = classRepo.findById(id).orElse(null);
-        return eduClass;
+        return classRepo.findById(id).orElse(null);
     }
 
     @Override
@@ -73,7 +70,7 @@ public class ClassServiceImpl implements ClassService {
             return aClass;
         }
 
-        Semester semester = semesterRepo.findById(Short.valueOf(addClassModel.getSemesterId()));
+        Semester semester = semesterRepo.findById(Short.parseShort(addClassModel.getSemesterId()));
 
         log.info("save, got semester " + semester.getName() + ", id = " + semester.getId());
         EduDepartment department = eduDepartmentRepo.findById(addClassModel.getDepartmentId()).orElse(null);
@@ -125,11 +122,11 @@ public class ClassServiceImpl implements ClassService {
         Set<String> registeredClasses = null;
 
         if (Stream.of(
-            filterParams.getCourseId(),
-            filterParams.getCourseName(),
-            filterParams.getClassType(),
-            filterParams.getDepartmentId())
-                  .allMatch(attr -> StringUtils.isBlank(attr)) && null == filterParams.getCode()) {
+                      filterParams.getCourseId(),
+                      filterParams.getCourseName(),
+                      filterParams.getClassType(),
+                      filterParams.getDepartmentId())
+                  .allMatch(StringUtils::isBlank) && null == filterParams.getCode()) {
             log.info("getClassesOfCurrentSemester -> call classRepo.findBySemester");
             classes = classRepo.findBySemester(semester.getId(), EduClass.STATUS_OPEN, pageable);
         } else {
@@ -137,7 +134,7 @@ public class ClassServiceImpl implements ClassService {
             classes = classRepo.findBySemesterWithFilters(
                 semester.getId(),
                 null == filterParams.getCode() ? "" : filterParams.getCode().toString(),
-                null == filterParams.getClassCode() ? "" : filterParams.getClassCode().toString(),
+                null == filterParams.getClassCode() ? "" : filterParams.getClassCode(),
                 null == filterParams.getCourseId() ? "" : StringUtils.deleteWhitespace(filterParams.getCourseId()),
                 null == filterParams.getCourseName() ? "" : StringUtils.normalizeSpace(filterParams.getCourseName()),
                 null == filterParams.getClassType() ? "" : StringUtils.deleteWhitespace(filterParams.getClassType()),
@@ -164,7 +161,7 @@ public class ClassServiceImpl implements ClassService {
     public SimpleResponse register(UUID classId, String studentId) {
         SimpleResponse res;
         EduClass cls = classRepo.findById(classId).orElse(null);
-        if(cls == null){
+        if (cls == null) {
             res = new SimpleResponse(
                 400,
                 "class not exists",
@@ -188,7 +185,7 @@ public class ClassServiceImpl implements ClassService {
             notifications.setToUser("admin");// TOBE upgraded
             notifications.setFromUser(studentId);
 
-            notifications  = notificationsRepo.save(notifications);
+            notifications = notificationsRepo.save(notifications);
 
         }
         return res;
@@ -203,7 +200,7 @@ public class ClassServiceImpl implements ClassService {
     ) {
         Map<String, SimpleResponse> res = new HashMap<>();
         EduClass cls = classRepo.findById(classId).orElse(null);
-        if(cls == null){
+        if (cls == null) {
             res.put(classId.toString(), new SimpleResponse(
                 404,
                 "invalid update",
@@ -366,24 +363,26 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public List<ClassOfUserOM> getClassOfUser(String userLoginId){
+    public List<ClassOfUserOM> getClassOfUser(String userLoginId) {
         //Page<EduClassUserLoginRole> lstRoles = eduClassUserLoginRoleRepo
         //    .findAllByUserLoginIdAndThruDate(userLoginId, null, pageable);
         //int totalCount = eduClassUserLoginRoleRepo.totalCountByUserLoginIdAndThruDate(userLoginId,null);
-        List<EduClassUserLoginRole> lstRoles = eduClassUserLoginRoleRepo.findAllByUserLoginIdAndThruDate(userLoginId,null);
+        List<EduClassUserLoginRole> lstRoles = eduClassUserLoginRoleRepo.findAllByUserLoginIdAndThruDate(
+            userLoginId,
+            null);
 
-        List<ClassOfUserOM> lst = new ArrayList();
-        for(EduClassUserLoginRole er: lstRoles){
+        ArrayList lst = new ArrayList();
+        for (EduClassUserLoginRole er : lstRoles) {
             EduClass eduClass = classRepo.findById(er.getClassId()).orElse(null);
 
-            if(eduClass != null) {
+            if (eduClass != null) {
                 ClassOfUserOM e = new ClassOfUserOM();
                 e.setClassId(eduClass.getId());
                 e.setClassCode(eduClass.getClassCode());
                 e.setCourseId(eduClass.getEduCourse().getId());
                 e.setCourseName(eduClass.getEduCourse().getName());
                 e.setStatusId(eduClass.getStatusId());
-                e.setSemester(eduClass.getSemester().getId()+"");
+                e.setSemester(eduClass.getSemester().getId() + "");
                 e.setCreatedByUserLoginId(eduClass.getTeacher().getUserLoginId());
                 lst.add(e);
             }
@@ -394,19 +393,22 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     public EduCourse getCourseOfClassCode(String classCode) {
-        if(mClassCode2Course == null){
+        if (mClassCode2Course == null) {
             mClassCode2Course = new HashMap<String, EduCourse>();
         }
         // try first with cache
-        EduCourse course= mClassCode2Course.get(classCode);
-        if(course != null) return course;
+        EduCourse course = mClassCode2Course.get(classCode);
+        if (course != null) {
+            return course;
+        }
 
         List<EduClass> lst = classRepo.findByClassCode(classCode);
-        if(lst != null && lst.size() > 0){
+        if (lst != null && lst.size() > 0) {
             EduClass aClass = lst.get(0);
             // update to cache
-            if(aClass.getEduCourse() != null)
-                mClassCode2Course.put(aClass.getClassCode(),aClass.getEduCourse());
+            if (aClass.getEduCourse() != null) {
+                mClassCode2Course.put(aClass.getClassCode(), aClass.getEduCourse());
+            }
         }
         course = mClassCode2Course.get(classCode);
         return course;
@@ -417,18 +419,19 @@ public class ClassServiceImpl implements ClassService {
     public int addAllUser2Class(String classCode) {
         List<EduClass> eduClasses = classRepo.findByClassCode(classCode);
         EduClass eduClass = null;
-        if(eduClasses != null && eduClasses.size() > 0)
+        if (eduClasses != null && eduClasses.size() > 0) {
             eduClass = eduClasses.get(0);
+        }
 
         List<UserLogin> users = userService.getAllUserLogins();
-        for(UserLogin u: users){
+        for (UserLogin u : users) {
             ClassRegistrationId id = new ClassRegistrationId(eduClass, u);
             ClassRegistration registration = registRepo.findById(id).orElse(null);
-            if(registration == null) {
+            if (registration == null) {
                 registration = new ClassRegistration();
                 registration.setId(id);
                 registration.setStatus(RegistStatus.APPROVED);
-            }else{
+            } else {
                 registration.setStatus(RegistStatus.APPROVED);
             }
             registRepo.save(registration);
