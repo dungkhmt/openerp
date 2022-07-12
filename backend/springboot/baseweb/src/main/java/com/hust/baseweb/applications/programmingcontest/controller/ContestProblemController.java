@@ -340,6 +340,19 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(resp);
     }
     @Secured("ROLE_TEACHER")
+    @GetMapping("/get-all-contests-paging-by-admin")
+    public ResponseEntity<?> getAllContestPagingByAdmin(Principal principal, Pageable pageable, @Param("sortBy") String sortBy){
+        log.info("getContestPagingByUserCreate");
+        if(sortBy != null){
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(sortBy));
+        }else{
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createdAt").ascending());
+        }
+        ModelGetContestPageResponse resp = problemTestCaseService.getAllContestsPagingByAdmin(principal.getName(), pageable);
+        return ResponseEntity.status(200).body(resp);
+    }
+
+    @Secured("ROLE_TEACHER")
     @GetMapping("/get-contest-paging-by-user-manager")
     public ResponseEntity<?> getContestPagingByUserManager(Principal principal, Pageable pageable, @Param("sortBy") String sortBy){
         log.info("getContestPagingByUserCreate");

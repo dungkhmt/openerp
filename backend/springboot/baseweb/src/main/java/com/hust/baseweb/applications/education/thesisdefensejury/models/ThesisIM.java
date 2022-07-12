@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -22,5 +23,5 @@ public class ThesisIM {
     private String reviewer_name;
     private String defense_jury_name;
     private String userLoginID;
-    private String keyword;
+    private List<String> keyword;
 }

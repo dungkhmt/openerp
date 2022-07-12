@@ -55,6 +55,14 @@ export const ProgrammingContestMenuTeacher = {
       text: "List Contest Manager",
       child: [],
     },
+    {
+      id: "MENU_PROGRAMMING_CONTEST_ADMIN_VIEW_ALL_CONTEST",
+      path: "/programming-contest/list-all-contests",
+      isPublic: false,
+      icon: null,
+      text: "All contests",
+      child: [],
+    },
   ],
 };
 

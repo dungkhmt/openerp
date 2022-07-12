@@ -1199,6 +1199,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public ModelGetContestPageResponse getAllContestsPagingByAdmin(String userName, Pageable pageable) {
+        //List<ContestEntity> contestEntities = contestPagingAndSortingRepo.findAll();
+        Page<ContestEntity> contestEntities = contestPagingAndSortingRepo.findAll(pageable);
+        return getModelGetContestPageResponse(contestEntities);
+    }
+
+    @Override
     public ListModelUserRegisteredContestInfo getListUserRegisterContestSuccessfulPaging(Pageable pageable, String contestId) {
 //        ContestEntity contest = contestRepo.findContestByContestId(contestId);
         Page<ModelUserRegisteredClassInfo> list = userRegistrationContestPagingAndSortingRepo.getAllUserRegisteredByContestIdAndStatusInfo(pageable, contestId, Constants.RegistrationType.SUCCESSFUL.getValue());
