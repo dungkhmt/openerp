@@ -19,10 +19,9 @@ export default function ListWhiteBoard() {
       field: 'id',
       render: (rowData) => <Link to={`${url}/whiteboard/${rowData['id']}?page=1`}>{rowData['id']}</Link>,
     },
-    { title: 'Name', field: 'name', render: (rowData) => <p>{rowData['name'] || `Whiteboard ${rowData['id']}`}</p> },
-    { title: 'Total page', field: 'page', render: (rowData) => <p>{rowData['totalPage']}</p> },
-    { title: 'Created user', field: 'createdUser', render: (rowData) => <p>{rowData['createdBy']}</p> },
-    { title: 'Created user', field: 'createdUser', render: (rowData) => <p>{rowData['createdBy']}</p> },
+    { title: 'Tên', field: 'name', render: (rowData) => <p>{rowData['name'] || `Whiteboard ${rowData['id']}`}</p> },
+    { title: 'Tổng số trang', field: 'page', render: (rowData) => <p>{rowData['totalPage']}</p> },
+    { title: 'Người tạo', field: 'createdUser', render: (rowData) => <p>{rowData['createdBy']}</p> },
     {
       title: 'Action',
       field: 'action',

@@ -80,7 +80,7 @@ export const DrawRectangle = React.memo(
 
         return () => {
           socket.off(SOCKET_IO_EVENTS.ON_DRAW_RECT_END)
-          socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
+          // socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
           // socket.off(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE)
         }
       }, [currentPage, whiteboardId, annotations, socket, totalPage])

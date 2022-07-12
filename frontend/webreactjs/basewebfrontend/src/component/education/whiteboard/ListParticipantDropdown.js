@@ -33,7 +33,7 @@ export const ListParticipantDropdown = React.memo(({ list, onRejectRequest }) =>
 
   return (
     <div className={classes.dropdownWrapper} onClick={() => setIsAppear(!isAppear)}>
-      <p className={classes.title}>List participant</p>
+      <p className={classes.title}>Danh sách sinh viên</p>
       {isAppear &&
         list.map((item) => (
           <div className={classes.dropdown} key={item.userId}>
@@ -45,7 +45,7 @@ export const ListParticipantDropdown = React.memo(({ list, onRejectRequest }) =>
                 style={{ cursor: 'pointer' }}
                 onClick={() => onRejectRequest(item)}
               >
-                Cancel draw
+                Hùy quyền vẽ
               </Button>
             )}
           </div>

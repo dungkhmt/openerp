@@ -52,10 +52,12 @@ export const DrawLine = React.memo(
         })
 
         const onCheckLS = (currentWhiteboardId) => {
+          console.log('onCheckLS', currentWhiteboardId)
           if (whiteboardId !== currentWhiteboardId) {
             return
           }
           const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
+          console.log('drawData-socket', drawData)
           if (typeof drawData.lines !== 'undefined') {
             const foundDrawData = drawData.lines.find((item) => Number(item.currentPage) === Number(currentPage))
             if (typeof foundDrawData !== 'undefined') {
@@ -68,18 +70,19 @@ export const DrawLine = React.memo(
           }
         }
 
-        onCheckLS()
+        // onCheckLS()
 
         socket.on(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, ({ currentWhiteboardId }) => onCheckLS(currentWhiteboardId))
 
         return () => {
           socket.off(SOCKET_IO_EVENTS.ON_DRAW_LINE_END)
-          socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
+          // socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
         }
       }, [currentPage, totalPage])
 
       useEffect(() => {
         const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
+        console.log('drawData', drawData)
         if (typeof drawData.lines !== 'undefined') {
           const foundDrawData = drawData.lines.find((item) => Number(item.currentPage) === Number(currentPage))
           if (typeof foundDrawData !== 'undefined') {

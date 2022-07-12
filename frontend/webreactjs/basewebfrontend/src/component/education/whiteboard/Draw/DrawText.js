@@ -137,7 +137,7 @@ export const DrawText = React.memo(
 
         return () => {
           socket.off(SOCKET_IO_EVENTS.ON_ADD_TEXT_END)
-          socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
+          // socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
         }
       }, [currentPage, annotations, totalPage])
 

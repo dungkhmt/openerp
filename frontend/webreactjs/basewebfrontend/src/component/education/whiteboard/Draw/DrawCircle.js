@@ -79,7 +79,7 @@ export const DrawCircle = React.memo(
 
         return () => {
           socket.off(SOCKET_IO_EVENTS.ON_DRAW_CIRCLE_END)
-          socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
+          // socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
         }
       }, [currentPage, totalPage])
 
