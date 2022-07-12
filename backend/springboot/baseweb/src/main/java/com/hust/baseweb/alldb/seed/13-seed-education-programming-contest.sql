@@ -68,3 +68,12 @@ insert into public.application
 (application_id, application_type_id, module_id, permission_id, description)
 VALUES ('MENU_PROGRAMMING_CONTEST_PARTICIPANT_LIST_PUBLIC_PROBLEM', 'MENU', 'MENU_PROGRAMMING_CONTEST_PARTICIPANT', 'PROGRAMMING_CONTEST_PARTICIPANT',
 'Menu  participant for programming contest - list public problems');
+
+
+-- permision view all contests by admin---
+insert into security_permission (permission_id, description) values('ADMIN_VIEW_ALL_PROGRAMMING_CONTESTS','Admin can view all programming contests');
+insert into security_group_permission (group_id, permission_id) values('ROLE_FULL_ADMIN','ADMIN_VIEW_ALL_PROGRAMMING_CONTESTS');
+insert into public.application
+(application_id, application_type_id, module_id, permission_id, description)
+VALUES ('MENU_PROGRAMMING_CONTEST_ADMIN_VIEW_ALL_CONTEST', 'MENU', 'MENU_PROGRAMMING_CONTEST_MANAGER', 'ADMIN_VIEW_ALL_PROGRAMMING_CONTESTS',
+'Menu  list all programming contests viewed by admin');
