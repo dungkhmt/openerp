@@ -3,6 +3,9 @@ package com.hust.baseweb.applications.education.thesisdefensejury.controller;
 
 import com.hust.baseweb.applications.education.thesisdefensejury.entity.DefenseJury;
 import com.hust.baseweb.applications.education.thesisdefensejury.entity.TraningProgram;
+import com.hust.baseweb.applications.education.thesisdefensejury.models.Response;
+import com.hust.baseweb.applications.education.thesisdefensejury.models.ThesisFilter;
+import com.hust.baseweb.applications.education.thesisdefensejury.models.TranningProgramIM;
 import com.hust.baseweb.applications.education.thesisdefensejury.service.TranningProgramService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -14,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,5 +40,20 @@ public class TraningProgramController {
         } catch (Exception e){
             return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping("/tranning_program")
+    public ResponseEntity<?> createTranningProgram(
+        @RequestBody TranningProgramIM request
+    ){
+        Response res = new Response();
+        // TODO: check valid request
+        if (request == null || request.getName() == "") {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid body request or invalid tranning program name");
+        }
+
+        res  = tranningProgramService.createTranningProgram(request);
+
+        return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 }

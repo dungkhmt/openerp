@@ -56,7 +56,12 @@ import {
     }
   
     const handleModalOpen = () => {
-      setOpen(true);
+      history.push({
+        pathname: `/thesis/defense_jury/create`,
+        state: {
+           
+        },
+      });
     };
   
     const handleModalClose = () => {

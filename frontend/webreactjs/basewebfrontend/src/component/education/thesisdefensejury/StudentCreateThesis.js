@@ -36,7 +36,21 @@ import {
 } from "../../taskmanagement/ultis/constant";
 import { useForm } from "react-hook-form";
 import FormError from "./FormError"
+import ListItemText from '@mui/material/ListItemText';
+import { SelectChangeEvent } from '@mui/material/Select';
+import Checkbox from '@mui/material/Checkbox';
+import OutlinedInput from '@mui/material/OutlinedInput';
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 
 
@@ -73,7 +87,7 @@ function StudentCreateThesis(props) {
     const [reviewerName, setReviewerName] = React.useState("");
     const [defenseJuryName,setDefenseJuryName] = React.useState("");
     const [userLoginID,setUserLoginID] = React.useState("");
-    const [keyword,setKeyword] = React.useState("");
+    const [keyword,setKeyword] = React.useState([]);
     const [openAlert,setOpenAlert] = React.useState(false);
     const [showSubmitSuccess,setShowSubmitSuccess] = React.useState(false);
     const [open, setOpen] = React.useState(false);
@@ -82,6 +96,7 @@ function StudentCreateThesis(props) {
     const [listTeacher,setListTeacher] = React.useState([]);
     const [listPlan,setListPlan] = React.useState([]);
     const [searchText, setSearchText] = useState("");
+    const [keywords,setKeywords] = React.useState([]);
     const [listUserLoginID,setListUserLoginID] = React.useState([]);
     const [openLoading, setOpenLoading] = React.useState(false);
     const { register, errors, handleSubmit, watch } = useForm();
@@ -92,6 +107,16 @@ function StudentCreateThesis(props) {
     const [isInputValidStudentID,setIsInputValidStudentID] = React.useState(true);
 
     const [errorMessage,setErrorMessage] = React.useState('');
+
+    const handleChangeKeyword = (event) => {
+        const {
+          target: { value },
+        } = event;
+        setKeyword(
+          // On autofill we get a stringified value.
+          typeof value === 'string' ? value.split(',') : value,
+        );
+      };
     
     const handleChange = (event) => {
         setProgramName(event.target.value);
@@ -113,15 +138,17 @@ function StudentCreateThesis(props) {
             return { isInputValid: false,
                 errorMessage: 'Trường này không được bỏ trống và không có ký tự đặc biệt'};
         }
-        const regexp = /^[A-Za-z0-9 -]*$/;
-        const checkingResult = regexp.exec(checkingText);
-        if (checkingResult !== null) {
-            return { isInputValid: true,
-                     errorMessage: ''};
-        } else {
-            return { isInputValid: false,
-                     errorMessage: 'Trường này không được bỏ trống và không có ký tự đặc biệt'};
-        }
+        // const regexp = /^[A-Za-z0-9 -]*$/;
+        // const checkingResult = regexp.exec(checkingText);
+        // if (checkingResult !== null) {
+        //     return { isInputValid: true,
+        //              errorMessage: ''};
+        // } else {
+        //     return { isInputValid: false,
+        //              errorMessage: 'Trường này không được bỏ trống và không có ký tự đặc biệt'};
+        // }
+        return { isInputValid: true,
+            errorMessage: ''};
     }
     const handleInputValidationThesis = e => {
         console.log(e)
@@ -220,6 +247,24 @@ function StudentCreateThesis(props) {
           }
         );
     }
+    async function getAllKeywords() {
+        request(
+          // token,
+          // history,
+          "GET",
+          "/academic_keywords",
+          (res) => {
+              console.log(res.data)
+              var keywordsArray = [];
+              for(let i=0;i< res.data.length;i++){
+                keywordsArray.push(res.data[i].keyword)
+              }
+              console.log(keywordsArray);
+              setKeywords(keywordsArray);
+            
+          }
+        );
+      }
     
     const handleFormSubmit = (event) => {
         event.preventDefault();
@@ -232,7 +277,7 @@ function StudentCreateThesis(props) {
             supervisor_name:supervisorName,
             reviewer_name:reviewerName,
             defense_jury_name:defenseJuryName,
-            // userLoginID: userLoginID,
+            userLoginID: userLoginID,
             thesisPlanName: thesisPlanName,
             keyword: keyword,
           };
@@ -268,6 +313,7 @@ function StudentCreateThesis(props) {
         getAllJury();
         getAllTeachers();
         getAllPlan();
+        getAllKeywords();
         // getAllUserLoginID();
     },[])
 
@@ -440,8 +486,8 @@ function StudentCreateThesis(props) {
                                                 />
                                             </ListSubheader>
                                             {displayedTeacherOptions.map((option, i) => (
-                                                <MenuItem key={i} value={option.teacherId}>
-                                                {option.teacherId}
+                                                <MenuItem key={i} value={option.id}>
+                                                {option.id}
                                                 </MenuItem>
                                             ))}
                                             </Select>
@@ -489,8 +535,8 @@ function StudentCreateThesis(props) {
                                                 />
                                             </ListSubheader>
                                             {displayedTeacherOptions.map((option, i) => (
-                                                <MenuItem key={i} value={option.teacherId}>
-                                                {option.teacherId}
+                                                <MenuItem key={i} value={option.id}>
+                                                {option.id}
                                                 </MenuItem>
                                             ))}
                                             </Select>
@@ -548,10 +594,28 @@ function StudentCreateThesis(props) {
                                     </FormControl>
                                 </Box>
                             </Grid>
-                        </Grid>
-                        <Grid container spacing ={2}>
                             <Grid  item ={true} xs={6} spacing={2} p={2}>
-                                <TextField 
+                                <FormControl sx={{ width: '100%' }}>
+                                        <InputLabel id="demo-multiple-checkbox-label">Hướng đề tài</InputLabel>
+                                        <Select
+                                        labelId="demo-multiple-checkbox-label"
+                                        id="demo-multiple-checkbox"
+                                        multiple
+                                        value={keyword}
+                                        onChange={handleChangeKeyword}
+                                        input={<OutlinedInput label="Tag" />}
+                                        renderValue={(selected) => selected.join(', ')}
+                                        MenuProps={MenuProps}
+                                        >
+                                        {keywords.map((ele) => (
+                                            <MenuItem key={ele} value={ele}>
+                                            <Checkbox checked={keyword.indexOf(ele) > -1} />
+                                            <ListItemText primary={ele} />
+                                            </MenuItem>
+                                        ))}
+                                        </Select>
+                                </FormControl>
+                                {/* <TextField 
                                     style={{margin:"2% 0px"}}
                                     value={keyword}
                                     onBlur={(e) => handleInputValidationKeyWord(e)} 
@@ -561,8 +625,11 @@ function StudentCreateThesis(props) {
                                  <FormError 
                                         isHidden={isInputValidKeyWord} 
                                         errorMessage={errorMessage}
-                                    />
+                                    /> */}
                             </Grid>
+                        </Grid>
+                        <Grid container spacing ={2}>
+                           
                             <Grid  item={true} xs={6} spacing={2} p={2}>
                                 <Box sx={{ minWidth: '100%' }}>
                                     <FormControl fullWidth style={{margin:"2% 0px"}}>
