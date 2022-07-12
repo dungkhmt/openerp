@@ -3,18 +3,12 @@ package com.hust.baseweb.applications.education.thesisdefensejury.service;
 
 import com.hust.baseweb.applications.education.teacherclassassignment.entity.EduTeacher;
 import com.hust.baseweb.applications.education.teacherclassassignment.repo.EduTeacherRepo;
-import com.hust.baseweb.applications.education.thesisdefensejury.entity.DefenseJury;
-import com.hust.baseweb.applications.education.thesisdefensejury.entity.Thesis;
-import com.hust.baseweb.applications.education.thesisdefensejury.entity.ThesisDefensePlan;
-import com.hust.baseweb.applications.education.thesisdefensejury.entity.TraningProgram;
+import com.hust.baseweb.applications.education.thesisdefensejury.entity.*;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.Response;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.ThesisFilter;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.ThesisIM;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.ThesisOM;
-import com.hust.baseweb.applications.education.thesisdefensejury.repo.DefenseJuryRepo;
-import com.hust.baseweb.applications.education.thesisdefensejury.repo.ThesisDefensePlanRepo;
-import com.hust.baseweb.applications.education.thesisdefensejury.repo.ThesisRepo;
-import com.hust.baseweb.applications.education.thesisdefensejury.repo.TranningProgramRepo;
+import com.hust.baseweb.applications.education.thesisdefensejury.repo.*;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.repo.UserLoginRepo;
 import lombok.AllArgsConstructor;
@@ -42,6 +36,8 @@ public class ThesisImpl implements ThesisService {
     private final EduTeacherRepo eduTeacherRepo;
     private final DefenseJuryRepo defenseJuryRepo;
     private final UserLoginRepo userLoginRepo;
+    private final AcademicKeywordRepo academicKeywordRepo;
+    private final ThesisKeywordRepo thesisKeywordRepo;
 
     @Override
     public Thesis createThesis(ThesisIM thesis) {
@@ -49,7 +45,7 @@ public class ThesisImpl implements ThesisService {
 
         if( thesis.getName()==""||thesis.getProgram_name()==""||thesis.getThesisPlanName()==""
             || thesis.getStudent_name()==""||thesis.getSupervisor_name()==""||thesis.getDefense_jury_name()==""
-            ||thesis.getUserLoginID()==""||thesis.getKeyword()=="" ){
+            ||thesis.getUserLoginID()==""||thesis.getKeyword().size() == 0 ){
             log.info("invalid request");
             return null;
         }
@@ -96,6 +92,7 @@ public class ThesisImpl implements ThesisService {
             return null;
         }
 
+
         // maping fields and
         // insert or update thesis to db
         Thesis rs = new Thesis();
@@ -108,11 +105,24 @@ public class ThesisImpl implements ThesisService {
         rs.setUserLogin(thesis.getUserLoginID());
         rs.setDefenseJury(defenseJury.get(0).getId());
         rs.setScheduled_reviewer_id(reviewer.get().getId());
-        rs.setThesisKeyword(thesis.getKeyword());
+//        rs.setThesisKeyword(thesis.getKeyword());
         thesisRepo.save(rs);
 
         // get just created thesis detail
         Optional<Thesis> createdThesis = thesisRepo.findByThesisName(thesis.getName());
+        UUID id = createdThesis.get().getId();
+        // check list keyword in academic_keyword
+        for (int i=0;i< thesis.getKeyword().size();i++){
+            log.info("KeyWords:",thesis.getKeyword().get(i));
+            Optional<AcademicKeyword> ak = academicKeywordRepo.findById(thesis.getKeyword().get(i));
+            if (ak.isPresent()) {
+                // insert to thesis_keyword
+                ThesisKeyword tk = new ThesisKeyword();
+                tk.setThesis(id);
+                tk.setKeyword(thesis.getKeyword().get(i));
+                thesisKeywordRepo.save(tk);
+            }
+        }
         return createdThesis.get();
     }
 
@@ -248,6 +258,9 @@ public class ThesisImpl implements ThesisService {
             return  res;
         }
 
+        // delete records which mapping in thesis_keyword table
+        thesisKeywordRepo.deleteByThesisId(id);
+
         thesisRepo.deleteByIdAndUserLogin(id,UserId);
         res.setOk(true);
         return res;
@@ -260,7 +273,7 @@ public class ThesisImpl implements ThesisService {
 
         if( thesis.getName()==""||thesis.getProgram_name()==""||thesis.getThesisPlanName()==""
             || thesis.getStudent_name()==""||thesis.getSupervisor_name()==""||thesis.getDefense_jury_name()==""
-            ||thesis.getUserLoginID()==""||thesis.getKeyword()=="" ){
+            ||thesis.getUserLoginID()=="" ){
             log.info("invalid request");
             res.setErr("invalid request");
             res.setOk(false);
@@ -320,7 +333,7 @@ public class ThesisImpl implements ThesisService {
         rs.setUserLogin(thesis.getUserLoginID());
         rs.setDefenseJury(defenseJury.get(0).getId());
         rs.setScheduled_reviewer_id(reviewer.get().getId());
-        rs.setThesisKeyword(thesis.getKeyword());
+//        rs.setThesisKeyword(thesis.getKeyword());
         thesisRepo.save(rs);
 
         // get just created thesis detail
