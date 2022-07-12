@@ -30,7 +30,6 @@ yarn.lock
 
 .history/
 .vscode/
-package-lock.json
 /.idea/
 /.ssh/
 *.bat
