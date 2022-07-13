@@ -133,4 +133,6 @@ public interface ProblemTestCaseService {
     ContestSubmissionEntity updateContestSubmissionSourceCode(ModelUpdateContestSubmission input);
 
     List<ModelGetContestResponse> getContestsUsingAProblem(String problemId);
+
+    int addAdminToManagerAndParticipantAllContest();
 }

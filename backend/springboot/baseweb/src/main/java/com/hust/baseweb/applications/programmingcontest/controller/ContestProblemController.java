@@ -198,6 +198,12 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(modelProblemSubmissionDetailResponse);
     }
 
+    @GetMapping("/add-admin-to-manager-all-contest")
+    public ResponseEntity<?> addAdminToManagerAndParticipantAllContest(Principal principal){
+        int cnt = problemTestCaseService.addAdminToManagerAndParticipantAllContest();
+        log.info("addAdminToManagerAndParticipantAllContest, cnt = " + cnt);
+        return ResponseEntity.ok().body(cnt);
+    }
     @PostMapping("/create-contest")
     public ResponseEntity<?> createContest(@RequestBody ModelCreateContest modelCreateContest, Principal principal) throws Exception {
         log.info("createContest {}", modelCreateContest);

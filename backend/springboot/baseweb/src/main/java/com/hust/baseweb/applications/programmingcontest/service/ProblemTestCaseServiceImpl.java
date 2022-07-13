@@ -57,6 +57,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private ContestSubmissionHistoryRepo contestSubmissionHistoryRepo;
     private ContestProblemRepo contestProblemRepo;
 
+
     @Override
     public void createContestProblem(ModelCreateContestProblem modelCreateContestProblem, String userId) throws MiniLeetCodeException {
         if(problemRepo.findByProblemId(modelCreateContestProblem.getProblemId()) != null){
@@ -434,6 +435,31 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             urc.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
             urc = userRegistrationContestRepo.save(urc);
 
+            // add account admin to the contest
+            String admin = "admin";
+            UserLogin u = userLoginRepo.findByUserLoginId(admin);
+            if(u != null) {
+                urc = new UserRegistrationContestEntity();
+                urc.setContestId(modelCreateContest.getContestId());
+                urc.setRoleId(UserRegistrationContestEntity.ROLE_OWNER);
+                urc.setUserId(admin);
+                urc.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+                urc = userRegistrationContestRepo.save(urc);
+
+                urc = new UserRegistrationContestEntity();
+                urc.setContestId(modelCreateContest.getContestId());
+                urc.setRoleId(UserRegistrationContestEntity.ROLE_MANAGER);
+                urc.setUserId(admin);
+                urc.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+                urc = userRegistrationContestRepo.save(urc);
+
+                urc = new UserRegistrationContestEntity();
+                urc.setContestId(modelCreateContest.getContestId());
+                urc.setRoleId(UserRegistrationContestEntity.ROLE_PARTICIPANT);
+                urc.setUserId(admin);
+                urc.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+                urc = userRegistrationContestRepo.save(urc);
+            }
             return contestEntity;
         }catch (Exception e){
             throw new Exception(e.getMessage());
@@ -538,7 +564,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         //    .findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
         List<UserRegistrationContestEntity> lc = userRegistrationContestRepo
             .findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
-        ok = (lc != null && lc.size() > 0);
+
+        ok = (lc != null && lc.size() > 0) || (userName.equals("admin"));
 
         /*
         List<ModelContestByRoleResponse> L = getContestsByRoleOfUser(userName);
@@ -2310,5 +2337,40 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             res.add(m);
         }
         return res;
+    }
+
+    @Override
+    public int addAdminToManagerAndParticipantAllContest() {
+        int cnt = 0;
+        String admin = "admin";
+        List<ContestEntity> contests = contestRepo.findAll();
+        for(ContestEntity c: contests){
+            String contestId = c.getContestId();
+            List<UserRegistrationContestEntity> L = userRegistrationContestRepo
+                .findUserRegistrationContestEntityByContestIdAndUserIdAndStatusAndRoleId(contestId, admin, UserRegistrationContestEntity.STATUS_SUCCESSFUL, UserRegistrationContestEntity.ROLE_MANAGER);
+            if(L == null || L.size() == 0){
+                UserRegistrationContestEntity ur = new UserRegistrationContestEntity();
+                ur.setContestId(contestId);
+                ur.setUserId(admin);
+                ur.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+                ur.setRoleId(UserRegistrationContestEntity.ROLE_MANAGER);
+                ur = userRegistrationContestRepo.save(ur);
+                cnt ++;
+            }
+
+            L = userRegistrationContestRepo
+                .findUserRegistrationContestEntityByContestIdAndUserIdAndStatusAndRoleId(contestId, admin, UserRegistrationContestEntity.STATUS_SUCCESSFUL, UserRegistrationContestEntity.ROLE_PARTICIPANT);
+            if(L == null || L.size() == 0){
+                UserRegistrationContestEntity ur = new UserRegistrationContestEntity();
+                ur.setContestId(contestId);
+                ur.setUserId(admin);
+                ur.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+                ur.setRoleId(UserRegistrationContestEntity.ROLE_PARTICIPANT);
+                ur = userRegistrationContestRepo.save(ur);
+                cnt ++;
+            }
+
+        }
+        return cnt;
     }
 }
