@@ -566,6 +566,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             .findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
 
         ok = (lc != null && lc.size() > 0) || (userName.equals("admin"));
+        log.info("getContestDetailByContestIdAndTeacher, userName = " + userName + " ok = " + ok);
 
         /*
         List<ModelContestByRoleResponse> L = getContestsByRoleOfUser(userName);
@@ -2154,6 +2155,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                                          .startAt(contest.getStartedAt())
                                                                                          .isPublic(contest.getIsPublic())
                                                                                          .statusId(contest.getStatusId())
+                                                                                         .userId(contest.getUserId())
+                                                                                         .createdAt(contest.getCreatedAt())
                                                                                          .build();
                 lists.add(modelGetContestResponse);
             });
@@ -2175,6 +2178,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                                          .startAt(contest.getStartedAt())
                                                                                          .isPublic(contest.getIsPublic())
                                                                                          .statusId(contest.getStatusId())
+                                                                                         .userId(contest.getUserId())
+                                                                                         .createdAt(contest.getCreatedAt())
                                                                                          .build();
                 lists.add(modelGetContestResponse);
             });

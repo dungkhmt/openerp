@@ -15,4 +15,6 @@ public class ModelGetContestResponse {
     private Date startAt;
     private Boolean isPublic;
     private String statusId;
+    private String userId;
+    private Date createdAt;
 }
