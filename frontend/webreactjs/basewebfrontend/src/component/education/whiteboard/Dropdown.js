@@ -43,7 +43,7 @@ export const Dropdown = React.memo(({ pendingList, onApproveRequest, onRejectReq
               style={{ cursor: 'pointer' }}
               onClick={() => onApproveRequest(item)}
             >
-              Approve
+              Chấp nhận
             </Button>
             <Button
               variant="contained"
@@ -51,7 +51,7 @@ export const Dropdown = React.memo(({ pendingList, onApproveRequest, onRejectReq
               style={{ cursor: 'pointer' }}
               onClick={() => onRejectRequest(item)}
             >
-              Reject
+              Từ chối
             </Button>
           </div>
         ))}

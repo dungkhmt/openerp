@@ -12,7 +12,7 @@ import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import Slider from 'react-slick'
 import { SocketContext } from '../../../../utils/whiteboard/context/SocketContext'
-import { mergeDrawData, removeData } from '../../../../utils/whiteboard/localStorage'
+import { removeData } from '../../../../utils/whiteboard/localStorage'
 import { Dropdown } from '../Dropdown'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
@@ -186,33 +186,28 @@ export const MainBoard = React.memo(() => {
             slideRef.current.slickGoTo(currentPage - 1)
           }
 
-          const drawingData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE))
-          if (
-            !drawingData ||
-            (typeof drawingData.whiteboardId !== 'undefined' && drawingData.whiteboardId !== whiteboardId)
-          ) {
-            localStorage.removeItem(KEYS.DRAW_DATA_LOCAL_STORAGE)
-            localStorage.setItem(
-              KEYS.DRAW_DATA_LOCAL_STORAGE,
-              JSON.stringify({ whiteboardId, ...JSON.parse(res?.data?.data || '{}') }),
-            )
-            socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE, { currentWhiteboardId: whiteboardId })
-            return
-          }
+          // const drawingData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE))
+          // if (
+          //   !drawingData ||
+          //   (typeof drawingData.whiteboardId !== 'undefined' && drawingData.whiteboardId !== whiteboardId)
+          // ) {
+          //   localStorage.setItem(
+          //     KEYS.DRAW_DATA_LOCAL_STORAGE,
+          //     JSON.stringify({ whiteboardId, ...JSON.parse(res?.data?.data || '{}') }),
+          //     )
+          //     socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE, { currentWhiteboardId: whiteboardId })
+          //     return
+          //   }
+          localStorage.removeItem(KEYS.DRAW_DATA_LOCAL_STORAGE)
           const totalData = JSON.parse(res?.data?.data) || { lines: [], rectangle: [], circle: [], text: [] }
           totalData.whiteboardId = whiteboardId
-          totalData.lines = mergeDrawData(drawingData.lines || [], totalData.lines || [])
-          totalData.rectangle = mergeDrawData(drawingData.rectangle || [], totalData.rectangle || [])
-          totalData.circle = mergeDrawData(drawingData.circle || [], totalData.circle || [])
-          totalData.text = mergeDrawData(drawingData.text || [], totalData.text || [])
+          totalData.lines = totalData.lines || []
+          totalData.rectangle = totalData.rectangle || []
+          totalData.circle = totalData.circle || []
+          totalData.text = totalData.text || []
 
           localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(totalData))
           socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE, { currentWhiteboardId: whiteboardId })
-          /* format: {
-            whiteboardId: '',
-
-        } */
-          // setPages(res?.data?.data?.pages || [])
         },
         {},
         {},
@@ -235,7 +230,7 @@ export const MainBoard = React.memo(() => {
             if (res?.data?.addUserToWhiteboardResultModelList?.length > 0) {
               setPendingDrawRequestList(res.data.addUserToWhiteboardResultModelList)
             }
-            toast.info(`${data.userId ?? 'User'} is requesting to draw.`, {
+            toast.info(`${data.userId ?? 'User'} đang yêu cầu quyền vẽ.`, {
               position: toast.POSITION.BOTTOM_RIGHT,
             })
           },
@@ -244,11 +239,11 @@ export const MainBoard = React.memo(() => {
         )
       } else {
         if (data?.isSuccess) {
-          toast.success(`${data.userId ?? 'User'} has been requested to draw.`, {
+          toast.success(`${data.userId ?? 'User'} đã được chấp thuận quyền vẽ.`, {
             position: toast.POSITION.BOTTOM_RIGHT,
           })
         } else {
-          toast.error(`${data.userId ?? 'User'}'s draw request has been rejected.`, {
+          toast.error(`${data.userId ?? 'User'} đã bị từ chối quyền vẽ.`, {
             position: toast.POSITION.BOTTOM_RIGHT,
           })
         }
@@ -454,7 +449,7 @@ export const MainBoard = React.memo(() => {
       'post',
       '/whiteboards/save',
       () => {
-        toast.success('Save whiteboard content successfully.', {
+        toast.success('Lưu dữ liệu bảng viết thành công.', {
           position: toast.POSITION.BOTTOM_RIGHT,
         })
       },
@@ -465,7 +460,7 @@ export const MainBoard = React.memo(() => {
 
   const onAddNewPage = () => {
     if (tool !== TOOL.POINTER) {
-      toast.info('You need to change tool to pointer')
+      toast.info('Bạn cần đổi sang công cụ chuột.')
       return
     }
     const currentPagesLength = pages.length
@@ -527,7 +522,7 @@ export const MainBoard = React.memo(() => {
       totalPage: pages.length - 1,
     })
     socket.emit(SOCKET_IO_EVENTS.CHECK_LOCAL_STORAGE, { currentWhiteboardId: whiteboardId })
-    toast.success('Delete page successfully.', {
+    toast.success('Xóa trang vẽ thành công.', {
       position: toast.POSITION.BOTTOM_RIGHT,
     })
   }
@@ -572,7 +567,7 @@ export const MainBoard = React.memo(() => {
     // call API with write-pending
     const userId = localStorage.getItem(KEYS.USER_ID)
     if (!userId) {
-      toast.error('Missing userId.', {
+      toast.error('Thiếu userId.', {
         position: toast.POSITION.BOTTOM_RIGHT,
       })
       return
@@ -587,7 +582,7 @@ export const MainBoard = React.memo(() => {
             roleId: res?.data?.roleId,
             statusId: res?.data?.statusId,
           })
-          toast.success('Send request successfully.', {
+          toast.success('Gửi yêu cầu thành công.', {
             position: toast.POSITION.BOTTOM_RIGHT,
           })
           // TODO: Notify to admin
@@ -606,7 +601,7 @@ export const MainBoard = React.memo(() => {
       `/whiteboards/user/${whiteboardId}`,
       async (res) => {
         if (res.status === 200) {
-          toast.info('Request has been accepted.', {
+          toast.info('Yêu cầu vẽ đã được chấp thuận.', {
             position: toast.POSITION.BOTTOM_RIGHT,
           })
           // TODO: Notify to this user
@@ -640,7 +635,7 @@ export const MainBoard = React.memo(() => {
       `/whiteboards/user/${whiteboardId}`,
       async (res) => {
         if (res.status === 200) {
-          toast.info('Request has been rejected.', {
+          toast.info('Yêu cầu vẽ đã bị từ chối.', {
             position: toast.POSITION.BOTTOM_RIGHT,
           })
           // TODO: Notify to this user
@@ -699,14 +694,14 @@ export const MainBoard = React.memo(() => {
       {isAbleToDraw ? (
         <div className={classes.optionWrapper}>
           <Button variant="outlined" color="secondary" onClick={onPrevPage} disabled={pageNow === 1}>
-            Prev page
+            Trang trước
           </Button>
           <Button variant="outlined" color="primary" onClick={onNextPage} disabled={pageNow >= pages.length}>
-            Next page
+            Trang sau
           </Button>
-          <label htmlFor="color">Color</label>
+          <label htmlFor="color">Màu nét vẽ</label>
           <input id="color" name="color" type="color" value={strokeDraw.color} onChange={onChangeStrokeDraw} />
-          <label htmlFor="strokeWidth">Stroke width</label>
+          <label htmlFor="strokeWidth">Độ dày nét vẽ</label>
           <input
             type="range"
             max={15}
@@ -718,25 +713,25 @@ export const MainBoard = React.memo(() => {
             aria-labelledby="strokeWidth"
           />
           <FormControl className={classes.formControl}>
-            <InputLabel id="tool">Tool</InputLabel>
+            <InputLabel id="tool">Công cụ</InputLabel>
             <Select labelId="tool" value={tool} onChange={(e) => setTool(e.target.value)}>
-              <MenuItem value={TOOL.POINTER}>Pointer</MenuItem>
-              <MenuItem value={TOOL.PEN}>Pen</MenuItem>
-              <MenuItem value={TOOL.RECTANGLE}>Rectangle</MenuItem>
-              <MenuItem value={TOOL.CIRCLE}>Circle</MenuItem>
-              <MenuItem value={TOOL.ERASER}>Eraser</MenuItem>
-              <MenuItem value={TOOL.TEXT}>Text</MenuItem>
+              <MenuItem value={TOOL.POINTER}>Chuột</MenuItem>
+              <MenuItem value={TOOL.PEN}>Bút</MenuItem>
+              <MenuItem value={TOOL.RECTANGLE}>Hình chữ nhật</MenuItem>
+              <MenuItem value={TOOL.CIRCLE}>Hình tròn</MenuItem>
+              <MenuItem value={TOOL.ERASER}>Tẩy</MenuItem>
+              <MenuItem value={TOOL.TEXT}>Chữ</MenuItem>
             </Select>
           </FormControl>
           <Button variant="contained" color="primary" onClick={onSaveWhiteboardData}>
-            Save
+            Lưu
           </Button>
           <Button variant="contained" color="primary" onClick={onAddNewPage}>
-            Add new page
+            Thêm trang mới
           </Button>
           {pages.length >= 2 && (
             <Button variant="contained" color="secondary" onClick={onDeletePage}>
-              Delete page {pageNow}
+              Xóa trang {pageNow}
             </Button>
           )}
           {pendingDrawRequestList.length > 0 && (
@@ -752,11 +747,11 @@ export const MainBoard = React.memo(() => {
         </div>
       ) : roleStatus.statusId === ROLE_STATUS.PENDING ? (
         <Button variant="contained" disabled>
-          Request sent. Please wait.
+          Đã gửi yêu cầu. Vui lòng đợi.
         </Button>
       ) : (
         <Button variant="contained" color="primary" onClick={onRequestDraw}>
-          Request draw
+          Yêu cầu quyền vẽ
         </Button>
       )}
 
