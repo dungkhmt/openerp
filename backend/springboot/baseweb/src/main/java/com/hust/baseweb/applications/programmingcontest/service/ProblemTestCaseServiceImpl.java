@@ -370,7 +370,11 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .statusId(ContestEntity.CONTEST_STATUS_CREATED)
                                                            .maxNumberSubmissions(modelCreateContest.getMaxNumberSubmissions())
                                                             .maxSourceCodeLength(modelCreateContest.getMaxSourceCodeLength())
-                                                           .createdAt(new Date())
+                                             .useCacheContestProblem(ContestEntity.USE_CACHE_CONTEST_PROBLEM_YES)
+                                             .submissionActionType(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)
+                                             .problemDescriptionViewType(ContestEntity.CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_VISIBLE)
+                                             .participantViewResultMode(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER)
+                                             .createdAt(new Date())
                                                            .build();
                 contestEntity = contestRepo.save(contestEntity);
             }else{
@@ -482,9 +486,23 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 //            if(!userLogin.getUserLoginId().equals(contestEntityExist.getUserCreatedContest().getUserLoginId())){
 //                throw new MiniLeetCodeException("You don't have privileged");
 //            }
-        if(!userName.equals(contestEntityExist.getUserId())){
+
+        List<UserRegistrationContestEntity> L = userRegistrationContestRepo
+            .findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId,userName,UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+        boolean canUpdate = false;
+        for(UserRegistrationContestEntity u: L){
+            if(u.getRoleId().equals(UserRegistrationContestEntity.ROLE_MANAGER) ||
+               u.getRoleId().equals(UserRegistrationContestEntity.ROLE_OWNER)){
+                canUpdate = true; break;
+            }
+        }
+        if(!canUpdate){
             throw new MiniLeetCodeException("You don't have privileged");
         }
+        //if(!userName.equals(contestEntityExist.getUserId())){
+        //    throw new MiniLeetCodeException("You don't have privileged");
+        //}
+
 
         List<ProblemEntity> problemEntities = getContestProblemsFromListContestId(modelUpdateContest.getProblemIds());
         if(modelUpdateContest.getStartedAt() != null){
