@@ -56,7 +56,8 @@ export function ListContestManagerByRegistration() {
 
   return (
     <div>
-      Contests associated
+      <h2>Contests được phân quyền </h2>
+
       <div>
         <div>
           <TableContainer component={Paper}>
@@ -66,6 +67,9 @@ export function ListContestManagerByRegistration() {
                   <StyledTableCell></StyledTableCell>
                   <StyledTableCell align="left">Title</StyledTableCell>
                   <StyledTableCell align="left">Status</StyledTableCell>
+                  <StyledTableCell align="left">Created By</StyledTableCell>
+                  <StyledTableCell align="left">Created Date</StyledTableCell>
+
                   <StyledTableCell align="center">Detail</StyledTableCell>
                   <StyledTableCell align="center">Edit</StyledTableCell>
                   {/*<StyledTableCell align="center">Delete</StyledTableCell>*/}
@@ -95,6 +99,13 @@ export function ListContestManagerByRegistration() {
                     <StyledTableCell align="left">
                       <b>{contest.statusId}</b>
                     </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <b>{contest.userId}</b>
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <b>{contest.createdAt}</b>
+                    </StyledTableCell>
+
                     <StyledTableCell align="left">
                       <Link
                         to={
