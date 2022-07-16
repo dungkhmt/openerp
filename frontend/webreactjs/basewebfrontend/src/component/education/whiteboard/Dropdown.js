@@ -13,16 +13,22 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     margin: 0,
+    fontSize: 16,
   },
   dropdown: {
     position: 'absolute',
-    background: '#ebebeb',
-    padding: '6px 10px',
-    top: 40,
-    left: -16,
-    zIndex: 10,
     display: 'flex',
-    columnGap: 6,
+    background: '#ebebeb',
+    padding: '10px 16px',
+    top: 40,
+    left: -28,
+    zIndex: 10,
+    columnGap: 12,
+    rowGap: 4,
+    alignItems: 'center',
+  },
+  userId: {
+    fontSize: 16,
   },
 }))
 
@@ -32,15 +38,15 @@ export const Dropdown = React.memo(({ pendingList, onApproveRequest, onRejectReq
 
   return (
     <div className={classes.dropdownWrapper} onClick={() => setIsAppear(!isAppear)}>
-      <p className={classes.title}>List pending request</p>
+      <p className={classes.title}>Danh sách yêu cầu</p>
       {isAppear &&
         pendingList.map((item) => (
           <div className={classes.dropdown} key={item.userId}>
-            <div>{item.userId}</div>
+            <div className={classes.userId}>{item.userId}</div>
             <Button
               variant="contained"
               color="primary"
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', fontSize: '14px' }}
               onClick={() => onApproveRequest(item)}
             >
               Chấp nhận
@@ -48,7 +54,7 @@ export const Dropdown = React.memo(({ pendingList, onApproveRequest, onRejectReq
             <Button
               variant="contained"
               color="secondary"
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', fontSize: '14px' }}
               onClick={() => onRejectRequest(item)}
             >
               Từ chối

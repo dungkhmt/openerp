@@ -163,7 +163,7 @@ export const DrawText = React.memo(
         const annotationToAdd = {
           x,
           y,
-          text: 'Enter some text...',
+          text: 'Nhập gì đó...',
           padding: 5,
           fontSize: 16,
           fontFamily: 'Calibri',

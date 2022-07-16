@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     margin: 0,
+    fontSize: 16,
   },
   dropdown: {
     position: 'absolute',
@@ -24,6 +25,8 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 10,
     display: 'flex',
     columnGap: 6,
+    alignItems: 'center',
+    rowGap: 4,
   },
 }))
 

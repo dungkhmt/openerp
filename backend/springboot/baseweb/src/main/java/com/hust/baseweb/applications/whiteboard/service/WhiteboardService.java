@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface WhiteboardService {
-    void createWhiteboard(String userId, String whiteboardId, UUID classSessionId);
+    void createWhiteboard(String userId, String whiteboardId, String name, UUID classSessionId);
     List<GetListWhiteboardModel> getWhiteboards(UUID sessionId);
 
     void saveWhiteboardData(SaveWhiteboardDataModel input, String userId);
@@ -24,5 +24,5 @@ public interface WhiteboardService {
 
     List<UsersInWhiteboardModel> getListUsersInWhiteboard(String whiteboardId);
 
-    void deleteWhiteboard(DeleteWhiteboardModel input);
+    DeleteWhiteboardResultModel deleteWhiteboard(String userId, DeleteWhiteboardModel input);
 }
