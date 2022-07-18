@@ -52,7 +52,6 @@ export const DrawLine = React.memo(
         })
 
         const onCheckLS = (currentWhiteboardId) => {
-          console.log('onCheckLS', currentWhiteboardId)
           if (whiteboardId !== currentWhiteboardId) {
             return
           }

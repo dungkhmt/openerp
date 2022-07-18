@@ -271,8 +271,8 @@ export const MainBoard = React.memo(() => {
           'get',
           `/whiteboards/user/${whiteboardId}/list-pending`,
           (res) => {
-            if (res?.addUserToWhiteboardResultModelList?.length > 0) {
-              setPendingDrawRequestList(res.addUserToWhiteboardResultModelList)
+            if (res?.data?.addUserToWhiteboardResultModelList?.length > 0) {
+              setPendingDrawRequestList(res.data.addUserToWhiteboardResultModelList)
             }
           },
           {},
@@ -301,6 +301,24 @@ export const MainBoard = React.memo(() => {
       socket.off(SOCKET_IO_EVENTS.ON_REQUEST_DRAW)
     }
   }, [roleStatus.isCreatedUser, socket, whiteboardId])
+
+  useEffect(() => {
+    void (async () => {
+      if (roleStatus.isCreatedUser) {
+        await request(
+          'get',
+          `/whiteboards/user/${whiteboardId}/list-pending`,
+          (res) => {
+            if (res?.data?.addUserToWhiteboardResultModelList?.length > 0) {
+              setPendingDrawRequestList(res.data.addUserToWhiteboardResultModelList)
+            }
+          },
+          {},
+          {},
+        )
+      }
+    })()
+  }, [roleStatus.isCreatedUser, whiteboardId])
 
   useEffect(() => {
     const onWindowResize = () => {
