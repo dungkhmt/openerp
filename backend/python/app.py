@@ -5,7 +5,7 @@ course = [{'id':'IT3010','name':'DSA'},{'id':'IT3010','name':'Toán rời rạc'
 
 @app.route('/')
 def index():
-	return 'Welcome'
+	return '<h1>Welcome</h1><button onClick={handleClick}>Click me</button>'
 	
 @app.route('/courses',methods=['GET'])
 def getCourses():
