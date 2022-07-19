@@ -12,6 +12,7 @@ public class UsersInWhiteboardModel {
     private String userId;
     private String roleId;
     private String statusId;
+    private Boolean isCreatedUser;
 
     public UsersInWhiteboardModel() {
 

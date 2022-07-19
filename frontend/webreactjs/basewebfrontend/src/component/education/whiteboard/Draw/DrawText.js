@@ -392,6 +392,11 @@ export const DrawText = React.memo(
           ? transformRef.current[value.id]?.hide()
           : transformRef.current[value.id]?.show()
       }
+
+      if (annotations.length === 0) {
+        return null
+      }
+
       return (
         <Layer>
           {annotations.map((value) => (

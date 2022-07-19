@@ -213,6 +213,10 @@ export const DrawRectangle = React.memo(
 
       const annotationsToDraw = [...annotations, ...newAnnotation]
 
+      if (annotationsToDraw.length === 0) {
+        return null
+      }
+
       return (
         <Layer>
           {annotationsToDraw.map((value) => (

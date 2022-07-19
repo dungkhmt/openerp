@@ -56,7 +56,6 @@ export const DrawLine = React.memo(
             return
           }
           const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-          console.log('drawData-socket', drawData)
           if (typeof drawData.lines !== 'undefined') {
             const foundDrawData = drawData.lines.find((item) => Number(item.currentPage) === Number(currentPage))
             if (typeof foundDrawData !== 'undefined') {
@@ -158,6 +157,10 @@ export const DrawLine = React.memo(
       }, [eventPointer, currentPage, strokeDraw])
 
       // console.log(ref)
+
+      if (lines.length === 0) {
+        return null
+      }
 
       return (
         <Layer>

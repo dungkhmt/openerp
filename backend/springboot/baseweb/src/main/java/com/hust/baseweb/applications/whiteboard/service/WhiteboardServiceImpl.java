@@ -193,6 +193,11 @@ public class WhiteboardServiceImpl implements  WhiteboardService {
                 usersInWhiteboardModel.setRoleId(userWhiteboard.getRoleId());
                 usersInWhiteboardModel.setStatusId(userWhiteboard.getStatusId());
                 usersInWhiteboardModel.setUserId(userWhiteboard.getUserLogin().getUserLoginId());
+                if (userWhiteboard.getUserLogin().getUserLoginId().equals(whiteboard.getCreatedBy())) {
+                    usersInWhiteboardModel.setIsCreatedUser(true);
+                } else {
+                    usersInWhiteboardModel.setIsCreatedUser(false);
+                }
 
                 usersInWhiteboardModelList.add(usersInWhiteboardModel);
             }

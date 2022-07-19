@@ -243,7 +243,7 @@ export const MainBoard = React.memo(() => {
             position: toast.POSITION.BOTTOM_RIGHT,
           })
         } else {
-          toast.error(`${data.userId ?? 'User'} đã bị từ chối quyền vẽ.`, {
+          toast.error(`${data.userId ?? 'User'} đã bị từ chối/hủy quyền vẽ.`, {
             position: toast.POSITION.BOTTOM_RIGHT,
           })
         }
@@ -281,26 +281,28 @@ export const MainBoard = React.memo(() => {
       }
     })()
 
-    void (async () => {
-      if (roleStatus.isCreatedUser) {
-        await request(
-          'get',
-          `/whiteboards/user/${whiteboardId}/list-users`,
-          (res) => {
-            if (res?.data?.length > 0) {
-              setListParticipant(res.data)
-            }
-          },
-          {},
-          {},
-        )
-      }
-    })()
+    void getListUsers()
 
     return () => {
       socket.off(SOCKET_IO_EVENTS.ON_REQUEST_DRAW)
     }
   }, [roleStatus.isCreatedUser, socket, whiteboardId])
+
+  const getListUsers = async () => {
+    if (roleStatus.isCreatedUser) {
+      await request(
+        'get',
+        `/whiteboards/user/${whiteboardId}/list-users`,
+        (res) => {
+          if (res?.data?.length > 0) {
+            setListParticipant(res.data)
+          }
+        },
+        {},
+        {},
+      )
+    }
+  }
 
   useEffect(() => {
     void (async () => {
@@ -628,6 +630,7 @@ export const MainBoard = React.memo(() => {
             isSuccess: true,
             currentWhiteboardId: whiteboardId,
           })
+          void getListUsers()
           await request(
             'get',
             `/whiteboards/user/${whiteboardId}/list-pending`,
@@ -653,7 +656,7 @@ export const MainBoard = React.memo(() => {
       `/whiteboards/user/${whiteboardId}`,
       async (res) => {
         if (res.status === 200) {
-          toast.info('Yêu cầu vẽ đã bị từ chối.', {
+          toast.info('Yêu cầu vẽ đã bị từ chối/huỷ.', {
             position: toast.POSITION.BOTTOM_RIGHT,
           })
           // TODO: Notify to this user
@@ -662,6 +665,7 @@ export const MainBoard = React.memo(() => {
             isSuccess: false,
             currentWhiteboardId: whiteboardId,
           })
+          void getListUsers()
           await request(
             'get',
             `/whiteboards/user/${whiteboardId}/list-pending`,
