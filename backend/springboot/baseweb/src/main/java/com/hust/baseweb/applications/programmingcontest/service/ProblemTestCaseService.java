@@ -124,7 +124,7 @@ public interface ProblemTestCaseService {
     ModelEvaluateBatchSubmissionResponse judgeAllSubmissionsOfContest(String contestId);
 
     ModelContestSubmissionResponse evaluateSubmission(UUID submisionId);
-    ModelContestSubmissionResponse evaluateSubmission(ContestSubmissionEntity sub);
+    ModelContestSubmissionResponse evaluateSubmission(ContestSubmissionEntity sub, ContestEntity contest);
 
     List<ModelContestByRoleResponse> getContestsByRoleOfUser(String userLoginId);
 

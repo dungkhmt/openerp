@@ -19,6 +19,7 @@ public class ModelUpdateContest {
     private String participantViewResultMode;
     private String problemDescriptionViewType;
     private String useCacheContestProblem;
+    private String evaluateBothPublicPrivateTestcase;
     private int maxSourceCodeLength;
 
 }
