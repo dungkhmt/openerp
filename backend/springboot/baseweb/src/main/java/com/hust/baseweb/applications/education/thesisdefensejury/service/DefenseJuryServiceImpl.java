@@ -36,17 +36,17 @@ public class DefenseJuryServiceImpl implements DefenseJuryService {
     public DefenseJury createDefenseJury(DefenseJuryIM jury) {
         System.out.println(jury);        // TODO: check valid all fields
         if ((jury.getName()=="")||(jury.getDefenseDate()==null)
-            ||(jury.getProgram_name()==null)||(jury.getThesisPlanName()==null)||(jury.getUserLoginID())==null){
+            ||(jury.getThesisPlanName()==null)||(jury.getUserLoginID())==null){
             return null;
         }
         String s1 = jury.getName().substring(0, 1).toUpperCase() + jury.getName().substring(1);
         System.out.println(s1);
         // check program name and thesis plan name
-        Optional<TraningProgram> tp = tranningProgramRepo.findByName(jury.getProgram_name());
+//        Optional<TraningProgram> tp = tranningProgramRepo.findByName(jury.getProgram_name());
         Optional<ThesisDefensePlan> tdp = thesisDefensePlanRepo.findByName(jury.getThesisPlanName());
         UserLogin user = userLoginRepo.findByUserLoginId(jury.getUserLoginID());
-        System.out.println(tp);
-        if ((tp==null) || (tdp==null)|| (user==null)){
+//        System.out.println(tp);
+        if ((tdp==null)|| (user==null)){
             return null;
         }
         // check existed defense jury
@@ -61,7 +61,7 @@ public class DefenseJuryServiceImpl implements DefenseJuryService {
         System.out.println(jury.getName());
         DefenseJury dj = new DefenseJury();
         dj.setName(jury.getName());
-        dj.setProgramID(tp.get().getId());
+//        dj.setProgramID(tp.get().getId());
         dj.setThesisDefensePlanID(tdp.get().getId());
         dj.setDefenseDate(jury.getDefenseDate());
         dj.setMaxThesis(jury.getMaxThesis());
