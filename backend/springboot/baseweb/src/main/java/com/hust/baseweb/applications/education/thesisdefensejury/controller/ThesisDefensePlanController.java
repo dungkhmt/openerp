@@ -172,6 +172,46 @@ public class ThesisDefensePlanController {
         res.setOk(true);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
+
+    @PostMapping("/thesis_defense_plan/{defensePlanId}/teacher/edit")
+    public ResponseEntity<?> editTeachertoDefensePlan(
+        @RequestBody TeacherWithKeyword request,
+        @PathVariable("defensePlanId")String planID
+    ){
+        // TODO: check valid request
+        if (request == null || request.getTeacherId()=="" || request.getTeacherName()=="" || planID == "") {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid body request");
+        }
+        // check teacher belong to plan
+        TeacherThesisDefensePlan ttp = teacherThesisDefensePlanRepo.findByDefensePlanIDAndTeacherId(planID, request.getTeacherId());
+        if (ttp == null) {
+            log.info("1");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Request invalid");
+        }
+        // check teacher valid
+        EduTeacher et = eduTeacherRepo.findByTeacherID(request.getTeacherId());
+        if (et == null) {
+            log.info("2");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Request invalid");
+        }
+//        if (et.getTeacherName() != request.getTeacherName()) {
+//            log.info("3");
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Request invalid");
+//        }
+
+        // update keyword
+        teacherKeywordRepo.deleteByTeacherID(request.getTeacherId());
+//        List<TeacherKeyword> tkDao = teacherKeywordRepo.findAllByTeacherId(request.getTeacherId());
+        for(int i=0;i<request.getKeywords().size();i++){
+
+            teacherKeywordRepo.insertByTeacherIdAndKeyword(request.getTeacherId(),request.getKeywords().get(i));
+
+        }
+
+        Response res = new Response();
+        res.setOk(true);
+        return ResponseEntity.status(HttpStatus.OK).body(res);
+    }
 }
 
 

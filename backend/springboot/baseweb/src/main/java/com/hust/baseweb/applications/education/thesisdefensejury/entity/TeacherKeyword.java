@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(name = "teacher_thesis_defense_plan") // Entity map voi bang teacher_thesis_defense_plan
+@Table(name = "teacher_keyword") // Entity map voi bang teacher_thesis_defense_plan
 @NoArgsConstructor
 public class TeacherKeyword {
 
