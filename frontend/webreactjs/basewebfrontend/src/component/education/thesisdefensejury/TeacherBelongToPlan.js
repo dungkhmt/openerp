@@ -20,16 +20,23 @@ import {
   import MaterialTable, { MTableToolbar } from "material-table";
   import Delete from '@material-ui/icons/Delete';
   import Add from '@mui/icons-material/Add';
+  import Edit from '@mui/icons-material/Edit';
   import ModalLoading from "./ModalLoading"
   import { useLocation,useHistory } from "react-router-dom";
+  import ModalAssignKeywordToTeacher from "./ModalAssignKeywordToTeacher"
 
 export default function TeacherBelongToPlan(props) {
+  const [toggle,setToggle] = React.useState(false);
     const [err,setErr] = useState("");
     const [showSubmitSuccess,setShowSubmitSuccess] = useState(false);
     const [openLoading,setOpenLoading] = useState(false)
     const defensePlanId = props.defensePlanId; 
     const [listTeacher,setListTeacher] = useState([]);
     const history = useHistory();
+    const [teacherID,setTeacherID] =useState("");
+    const [teacherName,setTeacherName] =useState("");
+    const [open, setOpen] = React.useState(false);
+    
 
     const columns = [
         { title: "STT", field: "stt" },
@@ -37,8 +44,13 @@ export default function TeacherBelongToPlan(props) {
       { title: "ID giảng viên", field: "teacherId" },
       { title: "Keyword", field: "keywords" },
     ];
+
+    const handleToggle = () => {
+      setToggle(!toggle);
+    }
     async function getAllTeacherBelongToPlan() {
         console.log(defensePlanId)
+        setOpenLoading(true);
         request(
             // token,
             // history,
@@ -70,6 +82,7 @@ export default function TeacherBelongToPlan(props) {
                     }
                     console.log("Teachers",teachers)
                     setListTeacher(teachers)
+                    setOpenLoading(false);
                     // setOpenLoading(false);
                 }
                 }
@@ -80,27 +93,34 @@ export default function TeacherBelongToPlan(props) {
             pathname: `/thesis/defensePlan/${defensePlanId}/assignTeacher`
           });
     }
+    const handleClose = () => {
+      setOpen(false);
+    };
+   
+   
     
     useEffect(() => {
         getAllTeacherBelongToPlan();
         
-      }, []);
+      }, [toggle]);
   return (
      <Card>
         <MaterialTable
           title={""}
           columns={columns}
-        //   actions={[
-        //     {
-        //         icon: Add,
-        //         tooltip: "Add Teacher",
-        //         onClick: (event, rowData) => {
-        //           console.log("AddTeacher RowData:",rowData)
-        //             AddTeacherById(rowData.teacherId,defenseJuryID)
+          actions={[
+            {
+                icon: Edit,
+                tooltip: "Edit Teacher",
+                onClick: (event, rowData) => {
+                  console.log("EditTeacher RowData:",rowData)
                   
-        //         }
-        //     }
-        //   ]}
+                  setTeacherID(rowData.teacherId)
+                  setTeacherName(rowData.teacherName)
+                  setOpen(true)
+                }
+            }
+          ]}
           data={listTeacher}
           components={{
             Toolbar: (props) => (
@@ -110,7 +130,7 @@ export default function TeacherBelongToPlan(props) {
                   style={{ position: "absolute", top: "16px", right: "350px" }}
                 >
                     <Button onClick={handleAssign} color="primary">
-                    Phân công viên vào đợt bảo vệ
+                    Phân công giáo viên vào đợt bảo vệ
                   </Button>
                 </div>
               </div>
@@ -119,6 +139,7 @@ export default function TeacherBelongToPlan(props) {
         />
         {(err!=="") ? <Alert severity={(err!=="")?'error':'success'}>{(err!=="")?err:"Successed"}</Alert> : <></> }
         <ModalLoading openLoading={openLoading} />
+        <ModalAssignKeywordToTeacher open={open} handleClose={handleClose} teacherId={teacherID} teacherName={teacherName} planId={defensePlanId} handleToggle={handleToggle}/>
       </Card>
   );
 }
