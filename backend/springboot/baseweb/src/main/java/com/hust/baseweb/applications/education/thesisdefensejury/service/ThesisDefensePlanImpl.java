@@ -1,5 +1,7 @@
 package com.hust.baseweb.applications.education.thesisdefensejury.service;
 
+import com.hust.baseweb.applications.education.repo.mongodb.TeacherRepo;
+import com.hust.baseweb.applications.education.teacherclassassignment.repo.EduTeacherRepo;
 import com.hust.baseweb.applications.education.thesisdefensejury.entity.ThesisDefensePlan;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.Response;
 import com.hust.baseweb.applications.education.thesisdefensejury.models.ThesisDefensePlanIM;
@@ -19,6 +21,7 @@ import java.util.Optional;
 @Slf4j
 public class ThesisDefensePlanImpl implements ThesisDefensePlanService{
     private final ThesisDefensePlanRepo thesisDefensePlanRepo;
+    private final EduTeacherRepo eduTeacherRepo;
     @Override
     public List<ThesisDefensePlan> getAllThesisDefensePlan() {
         return thesisDefensePlanRepo.findAll();

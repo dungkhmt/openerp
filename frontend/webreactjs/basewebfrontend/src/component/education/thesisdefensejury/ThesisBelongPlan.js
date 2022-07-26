@@ -19,6 +19,10 @@ import {
   import AddIcon from "@material-ui/icons/Add";
   import { request } from "../../../api";
   import ModalLoading from "./ModalLoading"
+  import ModalDelete from "./ModalDelete"
+  import Delete from '@material-ui/icons/Delete';
+  import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
 
   
   function ThesisBelongPlan(props) {
@@ -27,7 +31,10 @@ import {
     const dispatch = useDispatch();
     const token = useSelector((state) => state.auth.token);
     const history = useHistory();
+    const [toggle,setToggle] = useState(false)
     const [thesiss, setThesiss] = useState([]);
+    const [thesisId, setThesisId] = useState();
+    const [loginID, setLoginID] = useState();
     const [openLoading, setOpenLoading] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [searchString, setSearchString] = React.useState("");
@@ -61,6 +68,33 @@ import {
       });
      
     };
+   
+    async function DeleteThesisById(thesisID,userLoginID) {
+      setOpenLoading(true)
+      var body = {
+        id:thesisID,
+        userLogin:userLoginID
+      }
+      request(
+        "post",
+        `/thesis/delete`,
+        (res) => {
+            console.log(res.data)
+            setOpenLoading(false)
+            setToggle(!toggle)
+            setOpen(false)
+          // setShowSubmitSuccess(true);
+        //   history.push(`/thesis/defense_jury/${res.data.id}`);
+        },
+        {
+            onError: (e) => {
+                // setShowSubmitSuccess(false);
+                console.log(e)
+            }
+        },
+        body
+      ).then();
+    }
   
     const handleModalClose = () => {
       setOpen(false);
@@ -69,7 +103,7 @@ import {
   
     useEffect(() => {
         getAllThesisBelongPlan();
-    }, []);
+    }, [toggle]);
   
     return (
       <Card>
@@ -86,6 +120,22 @@ import {
                 },
               });
               }}
+              actions={[
+            {
+              icon: Delete,
+              tooltip: "Delete Thesis",
+              onClick: (event, rowData) => {
+                console.log(rowData)
+                console.log(rowData.id)
+                setThesisId(rowData.id)
+                setLoginID(rowData.userLogin)
+                setOpen(true)
+                // DeleteThesisById(rowData.id,rowData.userLogin)
+                
+                
+              }
+            }
+          ]}
           components={{
             Toolbar: (props) => (
               <div style={{ position: "relative" }}>
@@ -102,7 +152,7 @@ import {
           }}
         />
         <ModalLoading openLoading={openLoading} />
-  
+        <ModalDelete openDelete={open} handleDeleteClose = {handleModalClose}  thesisId={thesisId} userLoginID={loginID} DeleteThesisById={DeleteThesisById}/>
       </Card>
     );
   }

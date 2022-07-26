@@ -61,7 +61,7 @@ function CreateDefenseJury(props) {
         event.preventDefault();
         let body = {
             name: name,
-            program_name: program,
+            // program_name: program,
             // userLoginID: userId,
             maxThesis: nbr,
             thesisPlanName: thesisPlanName,
@@ -170,7 +170,7 @@ function CreateDefenseJury(props) {
                                     setName(event.target.value)
                                 }} fullWidth={true} id="input-with-icon-grid" label="Tên hội đồng" />
                             </Grid>
-                            <Grid item xs={9}>
+                            {/* <Grid item xs={9}>
                                 <FormControl fullWidth style={{margin:"2% 0px"}}>
                                         <InputLabel id="search-select-label">Tên chương trình đào tạo</InputLabel>
                                         <Select
@@ -216,7 +216,7 @@ function CreateDefenseJury(props) {
                                         ))}
                                         </Select>
                                     </FormControl>
-                            </Grid>
+                            </Grid> */}
                             {/* <Grid item xs={9}>
                                 <TextField onChange={(event) => {
                                     setUserId(event.target.value)
