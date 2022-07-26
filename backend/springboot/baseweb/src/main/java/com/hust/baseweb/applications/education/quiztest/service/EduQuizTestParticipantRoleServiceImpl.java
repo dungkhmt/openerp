@@ -53,7 +53,8 @@ public class EduQuizTestParticipantRoleServiceImpl implements EduQuizTestPartici
     @Override
     public List<QuizTestParticipantRoleModel> getQuizTestsOfUser(String userId) {
         List<EduTestQuizRole> eduTestQuizRoles = eduTestQuizRoleRepo.findByParticipantUserLoginId(userId);
-        List<QuizTestParticipantRoleModel> res = new ArrayList();
+        log.info("getQuizTestsOfUser, user = " + userId + " res.sz = " + eduTestQuizRoles.size());
+        List<QuizTes    tParticipantRoleModel> res = new ArrayList();
         for(EduTestQuizRole r: eduTestQuizRoles){
             //log.info("getParticipantRolesOfQuizTest, role  = {}",r);
             QuizTestParticipantRoleModel m = new QuizTestParticipantRoleModel();

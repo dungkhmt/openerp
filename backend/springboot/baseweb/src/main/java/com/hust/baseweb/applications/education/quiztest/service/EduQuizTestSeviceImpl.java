@@ -80,6 +80,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         newRecord.setCreatedStamp(new Date());
         newRecord.setLastUpdatedStamp(new Date());
         newRecord.setQuestionStatementViewTypeId(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_VISIBLE);
+        newRecord = repo.save(newRecord);
 
         EduTestQuizRole role = new EduTestQuizRole();
         role.setRoleId(EduTestQuizRole.ROLE_OWNER);
@@ -88,7 +89,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         role.setStatusId(EduTestQuizRole.STATUS_APPROVED);
         role = eduTestQuizRoleRepo.save(role);
 
-        return repo.save(newRecord);
+        return newRecord;
     }
 
     @Override
@@ -140,6 +141,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
 
     @Override
     public List<EduQuizTest> getAllTestByCreateUser(String userLoginId) {
+        log.info("getAllTestByCreateUser, user = " + userLoginId);
         if (userLoginId.equals("admin")) {
             log.info("getAllTestByCreateUser, user_login_id = admin -> findAll");
             return repo.findAll();

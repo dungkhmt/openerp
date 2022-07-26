@@ -103,6 +103,7 @@ public class QuizTestController {
 
     @GetMapping("/get-quiz-tests-of-user-login")
     public ResponseEntity<?> getQuizTestsOfUserLogin(Principal principal){
+        log.info("getQuizTestsOfUserLogin, user = " + principal.getName());
         List<QuizTestParticipantRoleModel> res = eduQuizTestParticipantRoleService.getQuizTestsOfUser(principal.getName());
         return ResponseEntity.ok().body(res);
     }
@@ -118,6 +119,7 @@ public class QuizTestController {
     public ResponseEntity<?> getAllQuizTestByUserLogin(
         Principal principal
     ) {
+        log.info("getAllQuizTestByUserLogin, user = " + principal.getName());
         return ResponseEntity.ok().body(quizTestService.getAllTestByCreateUser(principal.getName()));
     }
 
