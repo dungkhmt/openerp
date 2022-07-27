@@ -1,8 +1,8 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.model;
 
 
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.Facilities;
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.Shelves;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.Facility;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.Shelf;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,11 +31,11 @@ public class FacilityResponse {
 
     private Date createAt;
 
-    private List<Shelves> listShelf;
+    private List<Shelf> listShelf;
 
     private Date updateAt;
 
-    public FacilityResponse(Facilities facility) {
+    public FacilityResponse(Facility facility) {
             this.code = facility.getCode();
             this.name = facility.getName();
             this.address = facility.getAddress();

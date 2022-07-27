@@ -1,35 +1,48 @@
 import { Box, Button, FormGroup, Grid, InputAdornment, OutlinedInput, TextField, Typography } from "@material-ui/core";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import ClearIcon from '@mui/icons-material/Clear';
 import { setCanvasSize } from "../../utilities"
-import { Stage, Layer, Rect, Text } from "react-konva";
+import { Stage, Layer, Rect, Text, Group } from "react-konva";
 import useStyles from "./CreateWarehouse.style";
 import { useHistory } from "react-router";
 import { authGet, authPost, axiosPost, request } from "api";
 import { errorNoti, successNoti } from "utils/notification";
 import { Link, useRouteMatch } from "react-router-dom";
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CachedIcon from '@mui/icons-material/Cached';
+import { ColorLensRounded } from "@mui/icons-material";
 
 export default function CreateWarehouse() {
 
   const classes = useStyles();
   const [listShelf, setListShelf] = useState([{ x: "", y: "", width: "", lenght: "" }]);
   const [canvanData, setCanvasData] = useState([]);
-  const [maxSize, setMaxsize] = useState();
+  const [scale, setScale] = useState();
   const { register, errors, handleSubmit, watch, getValues } = useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
+  const [pos, setPos] = useState();
+  const [shelf, setShelf] = useState();
+  const stageCanvasRef = useRef();
+  const [width, setWidth] = useState();
+  const [warehouseHeight, setWarehouseHeight] = useState();
+  const [height, setHeight] = useState();
+
 
   const handleAddShelf = () => {
-    console.log("add ")
     setListShelf([...listShelf, { x: "", y: "", width: "", lenght: "" }])
-    console.log("listShelf", listShelf)
   }
 
   let removeFormFields = (i) => {
     let newFormValues = [...listShelf];
     newFormValues.splice(i, 1);
     setListShelf(newFormValues)
+  }
+
+
+  const addWareHouse = () => {
   }
 
   let submitForm = (data) => {
@@ -57,7 +70,12 @@ export default function CreateWarehouse() {
   const resetCanvas = () => {
     setCanvasData(listShelf)
     const data = getValues();
-    setMaxsize(data.facilityWidth);
+        if(stageCanvasRef.current){
+        setWidth(stageCanvasRef.current.offsetWidth);
+        setHeight(stageCanvasRef.current.offsetHeight);
+        setWarehouseHeight(stageCanvasRef.current.offsetWidth * data.facilityLenght / data.facilityWidth)
+        setScale(stageCanvasRef.current.offsetWidth / data.facilityWidth)
+    }
   };
 
   const warehouseBox = (data, maxSize) => {
@@ -68,249 +86,238 @@ export default function CreateWarehouse() {
         y={setCanvasSize(data.y, maxSize)}
         width={setCanvasSize(data.width, maxSize)}
         height={setCanvasSize(data.lenght, maxSize)}
-        draggable={true}
-        fill={"#afaf"}
-        shadowBlur={5}
+        fill={"#87CEFA"}
+        stroke='#1976d2'
+        strokeWidth={2}
+        onMouseEnter={e => {
+          e.target._clearCache();
+          let mousePos = e.target.getAbsolutePosition();
+          setPos(mousePos)
+          setShelf(e.target.index)
+        }}
+        onMouseOut={e => {
+          setPos(null)
+          setShelf(null)
+        }}
       />
     );
   }
 
   return (
     <Fragment>
-      <Box sx={{ padding: '8px' }} className={classes.header}>
-        <Typography variant="h5" >
-          Tạo Mới Kho
-        </Typography>
+      <Box className={classes.warehousePage} >
+        <Grid container justifyContent="space-between" className={classes.headerBox} >
+          <Grid>
+            <Typography variant="h5">
+              Tạo Mới Kho
+            </Typography>
+          </Grid>
+          <Grid className={classes.buttonWrap}>
+            <Button variant="contained" className={classes.addButton} type="submit" onClick={handleSubmit(submitForm)} >Lưu</Button>
+          </Grid>
+        </Grid>
       </Box>
-      <Box
-        component="form"
-        onSubmit={handleSubmit(submitForm)}
-        sx={{ flexGrow: 1 }}>
-        <Box sx={{ flexGrow: 1, paddingTop: 30 }}>
-          <Grid container spacing={4} >
-            <Grid item xs={6}>
-              <Box
-                sx={{
-                  width: 800,
-                  maxWidth: '100%',
-                }}
-              >
-                <TextField
-                  fullWidth
-                  inputRef={register({ required: "Vui lòng điền tên kho" })}
-                  label="Tên Kho"
-                  name="name"
-                  error={!!errors.name}
-                  helperText={errors.name?.message}
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={6}>
-              <Box
-                sx={{
-                  width: 800,
-                  maxWidth: '100%',
-                }}
-              >
-                <TextField
-                  fullWidth
-                  inputRef={register({ required: "Vui lòng điền mã kho" })}
-                  label="Mã Kho"
-                  name="code"
-                  error={!!errors.code}
-                  helperText={errors.code?.message}
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={12}>
-              <Box
-                sx={{
-                  width: "100%",
-                  marginTop: 10,
-                  maxWidth: '100%',
-                }}
-              >
-                <TextField
-                  fullWidth
-                  inputRef={register({ required: "Vui lòng điền địa chỉ" })}
-                  label="Địa chỉ"
-                  name="address"
-                  error={!!errors.address}
-                  helperText={errors.address?.message}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-
-        <Box sx={{ backgroundColor: "#fefefe", width: "100%", height: "auto", marginTop: 30, }}>
-          <TextField
-            label=""
-            defaultValue="Chi tiết kho"
-            InputProps={{
-              readOnly: true,
-            }}
-            fullWidth
-            variant="standard"
-          />
-          <Grid container>
-            <Grid xs={4} sx={{ display: "flex", }} item className={classes.boxWrap}>
-              <Box className={classes.title}>
-                <Typography align="center">
-                  Kích thước
-                </Typography>
-              </Box>
-              <Box width={"100%"} display={"flex"} alignItems={"center"} marginTop={"16px"} padding={"8px"}>
-                <Box width={"120px"}>
-                  <Typography>Chiều dài</Typography>
-                </Box>
-                <Box style={{ width: `calc(100% - 120px` }} className={classes.rootInput}>
-                  <OutlinedInput
-                    fullWidth
-                    inputRef={register({ required: false })}
-                    name="facilityWidth"
-                    className={classes.settingInput}
-                    endAdornment={<InputAdornment position="end">{`(mét)`}</InputAdornment>}
-                  />
-                </Box>
-              </Box>
-              <Box width={"100%"} display={"flex"} alignItems={"center"} marginTop={"8px"} padding={"8px"}>
-                <Box width={"120px"}>
-                  <Typography>Chiều rộng</Typography>
-                </Box>
-                <Box style={{ width: `calc(100% - 120px` }} className={classes.rootInput}>
-                  <OutlinedInput
-                    fullWidth
-                    name="facilityLenght"
-                    inputRef={register({ required: false })}
-                    className={classes.settingInput}
-                    endAdornment={<InputAdornment position="end">{`(mét)`}</InputAdornment>}
-                    aria-describedby="outlined-weight-helper-text"
-                    inputProps={{
-                      'aria-label': 'weight',
-                    }}
-                  />
-                </Box>
-              </Box>
-
-              <Box className={classes.listWrap}>
-                {
-                  listShelf.map((data, index) => (
-                    <Box key={index} width={"100%"} display={"flex"} alignItems={"center"} marginTop={"8px"} padding={"8px"} >
-                      <Box className={classes.shelfInput} width={"100%"} display={"flex"} padding={"8px"}>
-                        <Box width={"100px"}>
-                          <Typography>Kệ số {index + 1}</Typography>
-                        </Box>
-
-                        <Button onClick={() => removeFormFields(index)} size="small" variant="contained" className={classes.icon} startIcon={<ClearIcon className={classes.iconColor} />} />
-                        <Box style={{ width: `calc(100% - 100px` }} className={classes.rootInput}>
-                          <Grid container spacing={2} >
-                            <Grid item xs={4} >
-                              <FormGroup>
-                                <Box
-                                  sx={{
-                                    width: "100%",
-                                    marginTop: 10,
-                                    maxWidth: '100%',
-                                    display: 'flex',
-                                  }}
-                                >
-                                  <Typography style={{ width: '40px' }}>X = </Typography>
-                                  <TextField fullWidth name="x" value={data.x} onChange={e => handleChange(index, e)} />
-                                </Box>
-                              </FormGroup>
-                            </Grid>
-                            <Grid item xs={8}>
-                              <FormGroup>
-                                <Box
-                                  sx={{
-                                    width: "100%",
-                                    marginTop: 10,
-                                    maxWidth: '100%',
-                                    display: 'flex',
-                                  }}
-                                >
-                                  <Typography style={{ width: '160px' }}>Chiều dài = </Typography>
-                                  <TextField fullWidth name={`width`} value={data.width} onChange={e => handleChange(index, e)} />
-                                </Box>
-                              </FormGroup>
-                            </Grid>
-                          </Grid>
-                          <Grid container spacing={2} >
-                            <Grid item xs={4} >
-                              <FormGroup>
-                                <Box
-                                  sx={{
-                                    width: "100%",
-                                    marginTop: 10,
-                                    maxWidth: '100%',
-                                    display: 'flex',
-                                  }}
-                                >
-                                  <Typography style={{ width: '40px' }}>Y = </Typography>
-                                  <TextField fullWidth name={`y`} value={data.y} onChange={e => handleChange(index, e)} />
-                                </Box>
-                              </FormGroup>
-                            </Grid>
-                            <Grid item xs={8}>
-                              <FormGroup>
-                                <Box
-                                  sx={{
-                                    width: "100%",
-                                    marginTop: 10,
-                                    maxWidth: '100%',
-                                    display: 'flex',
-                                  }}
-                                >
-                                  <Typography style={{ width: '180px' }}>Chiều Rộng = </Typography>
-                                  <TextField fullWidth name={`lenght`} value={data.lenght} onChange={e => handleChange(index, e)} />
-                                </Box>
-                              </FormGroup>
-                            </Grid>
-                          </Grid>
-                        </Box>
-                      </Box>
-                    </Box>
-                  ))
-                }
-              </Box>
-              <Box width={"100%"} display={"flex"} alignItems={"center"} marginTop={"8px"} padding={"8px"}>
-                <Button variant="contained" color="primary" fullWidth onClick={() => handleAddShelf()}>Thêm Kệ hàng</Button>
-              </Box>
-            </Grid>
-            <Grid xs={8} item sx={{ display: "flex", }} className={classes.boxWrap}>
-              <Box className={classes.title}>
-                <Typography>
-                  Mô phỏng
-                </Typography>
-                <Box className={classes.reserBtn} onClick={resetCanvas}>
-                  <Typography>
-                    Reset
+      <Box className={classes.bodyBox}>
+        <Box className={classes.formWrap}
+          component="form"
+          onSubmit={handleSubmit(addWareHouse)}>
+          <Box >
+            <Grid container spacing={2}>
+              <Grid item xs={8}>
+                <Box className={classes.boxInfor}>
+                  <Typography className={classes.inforTitle} variant="h6">
+                    Thông tin cơ bản
                   </Typography>
+                  <Grid container spacing={3} className={classes.inforWrap}>
+                    <Grid item xs={6}>
+                      <Box className={classes.inputWrap}>
+                        <Box className={classes.labelInput}>
+                          Tên kho
+                        </Box>
+                        <TextField
+                          fullWidth
+                          variant="outlined"
+                          size="small"
+                          inputRef={register({ required: "Vui lòng điền tên kho" })}
+                          name="name"
+                          error={!!errors.name}
+                          helperText={errors.name?.message}
+                        />
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box className={classes.inputWrap}>
+                        <Box className={classes.labelInput}>
+                          Mã kho
+                        </Box>
+                        <TextField
+                          fullWidth
+                          variant="outlined"
+                          size="small"
+                          inputRef={register({ required: "Vui lòng điền mã kho" })}
+                          name="code"
+                          error={!!errors.code}
+                          helperText={errors.code?.message}
+                        />
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Box className={classes.inputWrap}>
+                        <Box className={classes.labelInput}>
+                          Địa chỉ
+                        </Box>
+                        <TextField
+                          fullWidth
+                          className={classes.inputRight}
+                          style={{ flexGrow: 1, marginRight: 4 }}
+                          variant="outlined"
+                          size="small"
+                          inputRef={register({ required: "Vui lòng điền địa chỉ kho" })}
+                          name="address"
+                          error={!!errors.address}
+                          helperText={errors.address?.message}
+                        />
+                      </Box>
+                    </Grid>
+                  </Grid>
                 </Box>
-              </Box>
-              <Box className={classes.canvasWrap}>
-                <Stage
-                  width={1000}
-                  height={700}
-                >
-                  <Layer>
-                    {canvanData.map((data) => (
-                      warehouseBox(data, maxSize)
-                    ))}
-                  </Layer>
-                </Stage>
-              </Box>
+              </Grid>
+              <Grid item xs={4}>
+                <Box className={classes.boxInfor}>
+                  <Typography className={classes.inforTitle} variant="h6">
+                    Kích thước
+                  </Typography>
+                  <Grid container spacing={3} className={classes.inforWrap}>
+                    <Grid item xs={12}>
+                      <Box className={classes.inputWrap}>
+                        <Box className={classes.labelInput}>
+                          Chiều dài
+                        </Box>
+                        <OutlinedInput
+                          fullWidth
+                          inputRef={register({ required: false })}
+                          name="facilityWidth"
+                          className={classes.settingInput}
+                          endAdornment={<InputAdornment position="end">{`(mét)`}</InputAdornment>}
+                        />
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Box className={classes.inputWrap}>
+                        <Box className={classes.labelInput}>
+                          Chiều rộng
+                        </Box>
+                        <OutlinedInput
+                          fullWidth
+                          name="facilityLenght"
+                          inputRef={register({ required: false })}
+                          className={classes.settingInput}
+                          endAdornment={<InputAdornment position="end">{`(mét)`}</InputAdornment>}
+                        />
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Grid>
             </Grid>
-          </Grid>
-        </Box>
+          </Box>
+          <Box className={classes.boxInfor} style={{ margin: 0 }}>
+            <Typography className={classes.inforTitle} variant="h6">
+              Thông tin chi tiết kho
+            </Typography>
+            <Grid container className={classes.detailWrap}>
+              <Grid xs={3} sx={{ display: "flex", }} item className={classes.boxWrap}>
+                <Typography className={classes.inforTitle} style={{ fontWeight: 500 }}>
+                  Danh sách kệ hàng
+                </Typography>
+                <Box className={classes.listWrap}>
+                  {
+                    listShelf.map((data, index) => (
+                      <Box key={index} width={"100%"} display={"flex"} alignItems={"center"} padding={"8px"} >
+                        <Box className={classes.shelfInput} style={{ flexGrow: 1 }} display={"flex"} padding={"8px"}>
+                          <Box width={"75px"}>
+                            <Typography style={{ fontWeight: 500 }}>Kệ số {index + 1}</Typography>
+                          </Box>
+                          <Box style={{ width: `calc(100% - 75px` }} className={classes.rootInput}>
+                            <Grid container spacing={1} >
+                              <Grid item xs={6} >
+                                <TextField variant="outlined" size="small" label="Tọa độ x" fullWidth name="x" value={data.x} onChange={e => handleChange(index, e)} />
+                              </Grid>
+                              <Grid item xs={6} >
+                                <TextField variant="outlined" size="small" label="Chiều dài" fullWidth name={`width`} value={data.width} onChange={e => handleChange(index, e)} />
+                              </Grid>
+                              <Grid item xs={6} >
+                                <TextField variant="outlined" size="small" label="Tọa độ y" fullWidth name={`y`} value={data.y} onChange={e => handleChange(index, e)} />
+                              </Grid>
+                              <Grid item xs={6} >
+                                <TextField variant="outlined" size="small" label="Chiều Rộng" fullWidth name={`lenght`} value={data.lenght} onChange={e => handleChange(index, e)} />
+                              </Grid>
+                            </Grid>
 
-        <Box >
-          <Button className={classes.btnSubmit}
-            type="submit"
-          >
-            Tạo Kho
-          </Button>
+                          </Box>
+                          <Box className={classes.removeIconBox} onClick={() => removeFormFields(index)}  >
+                            <HighlightOffIcon className={classes.removeIcon} />
+                          </Box>
+                        </Box>
+
+                      </Box>
+                    ))
+                  }
+                </Box>
+                <Box className={classes.addIconBox} onClick={() => handleAddShelf()}>
+                  <Box className={classes.addIconWrap} >
+                    <AddCircleOutlineIcon className={classes.addIcon} />
+                    <Typography>Thêm kệ hàng</Typography>
+                  </Box>
+                </Box>
+              </Grid>
+
+
+              <Grid xs={9} item sx={{ display: "flex", }} className={classes.boxWrap}>
+                <Box className={classes.titleWap} >
+                  <Typography style={{ fontWeight: 500 }}>
+                    Mô phỏng
+                  </Typography>
+                  <Box className={classes.rerloadIconBox} onClick={resetCanvas}>
+                    <Box className={classes.reloadIconWrap} >
+                      <CachedIcon style={{ color: "#1976d2" }} />
+                      <Typography>Tải lại</Typography>
+                    </Box>
+                  </Box>
+                </Box>
+                <Box className={classes.canvasWrap}>
+                  <Box className={classes.stageWrap} ref={stageCanvasRef} >
+                    <Stage
+                      width={width}
+                      height={height}
+                    >
+                      <Layer>
+                        <Rect
+                          width={width}
+                          height={warehouseHeight}
+                          x={0} y={0}
+                          fill="#FFFEFA"
+                          strokeWidth={3}
+                          stroke="#89C4FA"
+                          cornerRadius={3}
+                        />
+                          {canvanData.map((data) => (
+                            warehouseBox(data, scale)
+                          ))}
+                      </Layer>
+
+                    </Stage>
+                    {
+                      shelf && pos &&
+                      <Typography style={{ position: "absolute", top: pos.y + 8 + "px", left: pos.x + 8 + "px", padding: "4px", boxShadow: "0px 2px 4px rgb(168 168 168 / 25%)", borderRadius: 3, background: "#FFF", }}>
+                        Kệ số {shelf}
+                      </Typography>
+                    }
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
         </Box>
       </Box>
     </Fragment>
