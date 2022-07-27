@@ -143,8 +143,10 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
     public List<EduQuizTest> getAllTestByCreateUser(String userLoginId) {
         log.info("getAllTestByCreateUser, user = " + userLoginId);
         if (userLoginId.equals("admin")) {
-            log.info("getAllTestByCreateUser, user_login_id = admin -> findAll");
-            return repo.findAll();
+
+            List<EduQuizTest> res = repo.findAll();
+            log.info("getAllTestByCreateUser, user_login_id = admin -> findAll, res = " + res.size());
+            return res;
         }
         return repo.findByCreateUser(userLoginId);
     }

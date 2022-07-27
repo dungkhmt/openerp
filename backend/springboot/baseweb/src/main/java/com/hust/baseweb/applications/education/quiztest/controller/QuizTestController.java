@@ -120,7 +120,9 @@ public class QuizTestController {
         Principal principal
     ) {
         log.info("getAllQuizTestByUserLogin, user = " + principal.getName());
-        return ResponseEntity.ok().body(quizTestService.getAllTestByCreateUser(principal.getName()));
+        List<EduQuizTest> res = quizTestService.getAllTestByCreateUser(principal.getName());
+        log.info("getAllQuizTestByUserLogin, user = " + principal.getName() + " res = " + res.size());
+        return ResponseEntity.ok().body(res);
     }
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
