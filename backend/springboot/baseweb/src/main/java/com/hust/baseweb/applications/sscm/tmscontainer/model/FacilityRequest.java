@@ -1,6 +1,5 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.model;
 
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.Shelves;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

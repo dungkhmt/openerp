@@ -4,6 +4,7 @@ import { Link, useRouteMatch } from "react-router-dom";
 import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { axiosGet, request } from "api";
+import moment from 'moment';
 
 export default function ListWarehouse() {
   const { path } = useRouteMatch();
@@ -15,12 +16,11 @@ export default function ListWarehouse() {
       "get",
       "/admin/wms/warehouse",
       (res) => {
-        console.log("res data", res.data);
         setListWarehouse(res.data);
       },
       {
         onError: (res) => {
-          console.log("getListWarehouse, error ", error)
+          console.log("getListWarehouse, error ", res)
         },
       }
     );
@@ -49,6 +49,12 @@ export default function ListWarehouse() {
     {
       title: "Địa chỉ", field: "address", render: (rowData) => (
         <p>{rowData["address"]}</p>
+      )
+    },
+    {
+      title: "Ngày khởi tạo", field: "createAt", render: (rowData) => (
+        // {moment(dateToBeFormate).format('DD/MM/YYYY')}
+        <p>{rowData["createAt"] ? moment(rowData["createAt"]).format('DD/MM/YYYY') : ""}</p>
       )
     },
   ];
