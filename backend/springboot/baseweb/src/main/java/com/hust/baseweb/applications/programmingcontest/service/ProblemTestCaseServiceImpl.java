@@ -899,8 +899,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     @Transactional
     @Override
     public ModelContestSubmissionResponse submitContestProblemTestCaseByTestCase(ModelContestSubmission modelContestSubmission, String userName) throws Exception {
-        log.info("submitContestProblem");
-        log.info("modelContestSubmission {}", modelContestSubmission);
+        //log.info("submitContestProblem");
+        //log.info("modelContestSubmission {}", modelContestSubmission);
         ProblemEntity problemEntity = problemRepo.findByProblemId(modelContestSubmission.getProblemId());
         ContestEntity contest = contestRepo.findContestByContestId(modelContestSubmission.getContestId());
 
@@ -910,7 +910,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         if(userRegistrationContests != null && userRegistrationContests.size() > 0)
             userRegistrationContest = userRegistrationContests.get(0);
 
-        log.info("userRegistrationContest {}", userRegistrationContest);
+        //log.info("userRegistrationContest {}", userRegistrationContest);
         if(userRegistrationContest == null){
             throw new MiniLeetCodeException("User not register contest");
         }
@@ -946,7 +946,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             List<Integer> points = L.stream().map(TestCaseEntity::getTestCasePoint).collect(Collectors.toList());
             ProblemSubmission problemSubmission = StringHandler.handleContestResponse(response, testCaseAns, points);
 
-            log.info("submitContestProblemTestCaseByTestCase, run tesecase " + (i+1) + " message = " + problemSubmission.getMessage());
+            //log.info("submitContestProblemTestCaseByTestCase, run tesecase " + (i+1) + " message = " + problemSubmission.getMessage());
             // check if there is error compile
             if(problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")){
                 message = problemSubmission.getMessage(); compileError = true; break;
@@ -2422,5 +2422,44 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
         }
         return cnt;
+    }
+
+    @Override
+    public ModelUploadTestCaseOutput addTestCase(String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName) {
+        // try to execute the solution code on this test-case, if pass then store in DB
+        // otherwise, ignore
+        String problemId = modelUploadTestCase.getProblemId();
+        ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
+        String tempName = tempDir.createRandomScriptFileName(userName + "-" + problemEntity.getProblemName() + "-" + problemEntity.getCorrectSolutionLanguage());
+        String output = "";
+        try {
+            output = runCode(problemEntity.getCorrectSolutionSourceCode(), problemEntity.getCorrectSolutionLanguage(), tempName,
+                    testCase, problemEntity.getTimeLimit(), "Correct Solution Language Not Found");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
+        if(output.contains("Time Limit Exceeded")){
+            res.setMessage("Time Limit Exceeded");
+            res.setStatus("TLE");
+            return res;
+        }
+        output = output.substring(0, output.length()-1);
+        int lastLinetIndexExpected = output.lastIndexOf("\n");
+        output = output.substring(0, lastLinetIndexExpected);
+//        output = output.replaceAll("\n", "");
+        log.info("addTestCase, output = {}", output);
+
+
+        TestCaseEntity tc = new TestCaseEntity();
+        tc.setTestCase(testCase);
+        tc.setProblemId(modelUploadTestCase.getProblemId());
+        tc.setIsPublic(modelUploadTestCase.getIsPublic());
+        tc.setTestCasePoint(modelUploadTestCase.getPoint());
+        tc.setCorrectAnswer(output);
+        tc = testCaseRepo.save(tc);
+        res.setMessage("Upload Successfully!");
+        res.setStatus("OK");
+        return res;
     }
 }

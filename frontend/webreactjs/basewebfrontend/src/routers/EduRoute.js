@@ -28,7 +28,7 @@ import QuizTestListAll from "../component/education/quiztest/QuizTestListAll";
 import CreateQuizTest from "../component/education/quiztest/CreateQuizTest";
 import QuizTestDetail from "../component/education/quiztest/QuizTestDetail";
 import QuizTestEdit from "../component/education/quiztest/QuizTestEdit";
-import QuizTestList from "../component/education/quiztest/QuizTestList";
+import QuizTestList from "../component/education/quiztest/QuizTestList-old-tmp";
 import StudentQuizDetail from "../component/education/quiztest/StudentQuizDetail";
 import StudentQuizList from "../component/education/quiztest/StudentQuizTestList";
 import ResourceCreate from "../component/education/resourcelink/ResourceCreate";

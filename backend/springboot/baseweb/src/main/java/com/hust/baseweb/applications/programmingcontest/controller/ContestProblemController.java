@@ -497,6 +497,36 @@ public class ContestProblemController {
 
         return ResponseEntity.ok().body(lst);
     }
+    @PostMapping("/upload-test-case")
+    public ResponseEntity<?> uploadTestCase(Principal principal,
+                                            @RequestParam("inputJson") String inputJson,
+                                            @RequestParam("file") MultipartFile file
+    ){
+        Gson gson = new Gson();
+        ModelProgrammingContestUploadTestCase modelUploadTestCase = gson.fromJson(inputJson,
+                                                                                  ModelProgrammingContestUploadTestCase.class);
+        String problemId = modelUploadTestCase.getProblemId();
+        log.info("uploadTestCase, problemId = " + problemId);
+        String testCase = "";
+        ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
+        try {
+            InputStream inputStream = file.getInputStream();
+            Scanner in = new Scanner(inputStream);
+            while (in.hasNext()) {
+                String line = in.nextLine();
+                testCase += line + "\n";
+                //System.out.println("contestSubmitProblemViaUploadFile: read line: " + line);
+            }
+            in.close();
+            res = problemTestCaseService.addTestCase(testCase, modelUploadTestCase, principal.getName());
+            return ResponseEntity.ok().body(res);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        res.setStatus("FAILURE");
+        res.setMessage("Exception!!");
+        return ResponseEntity.ok().body(res);
+    }
     @PostMapping("/contest-submit-problem-via-upload-file")
     public ResponseEntity<?> contestSubmitProblemViaUploadFile(Principal principal,
                                                                @RequestParam("inputJson") String inputJson,

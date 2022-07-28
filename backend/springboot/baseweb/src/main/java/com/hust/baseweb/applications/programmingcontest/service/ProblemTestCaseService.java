@@ -135,4 +135,6 @@ public interface ProblemTestCaseService {
     List<ModelGetContestResponse> getContestsUsingAProblem(String problemId);
 
     int addAdminToManagerAndParticipantAllContest();
+
+    ModelUploadTestCaseOutput addTestCase(String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName);
 }

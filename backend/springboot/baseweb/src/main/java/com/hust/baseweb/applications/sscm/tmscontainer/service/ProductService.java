@@ -43,15 +43,15 @@ public class ProductService {
 
 
     public ProductResponse createProduct(ProductRequest productRequest) {
-        var checkCode = productRepository.findProductByCode(productRequest.getCode());
+        Product checkCode = productRepository.findProductByCode(productRequest.getCode());
         if(checkCode != null){
             throw new RuntimeException("Mã sản phẩm đã tồn tại");
         }
 
         productRequest.setForCreate();
         Product product = new Product(productRequest);
-        var variantCurrentId = variantRepository.count();
-        for (var item : product.getVariants()) {
+        long variantCurrentId = variantRepository.count();
+        for (Variant item : product.getVariants()) {
             item.setProduct(product);
             setVariantSku(item, variantCurrentId);
             variantCurrentId = variantCurrentId + 1;
@@ -79,7 +79,7 @@ public class ProductService {
 
 
     public List<ProductResponse> getAllProducts() {
-        var productResponses = productRepository
+        List<ProductResponse> productResponses = productRepository
             .findAll()
             .stream()
             .map(product -> mapper.map(product, ProductResponse.class))
@@ -98,7 +98,7 @@ public class ProductService {
 
 
     public ProductResponse updateById(Integer id, ProductRequest productRequest) throws Exception {
-        var product = productRepository.findById(id).orElse(null);
+        Product product = productRepository.findById(id).orElse(null);
         if (product == null) {
             throw new Exception(
                 "khong tim thay san pham "
@@ -112,10 +112,10 @@ public class ProductService {
         product.setOpt2(productRequest.getOpt2());
         product.setOpt3(productRequest.getOpt3());
         product.setUpdateAt(new Date());
-        var variants = product.getVariants();
+        List<Variant> variants = product.getVariants();
         updateVariant(productRequest.getVariants(), variants);
         productRepository.save(product);
-        var productRes = mapper.map(product, ProductResponse.class);
+        ProductResponse productRes = mapper.map(product, ProductResponse.class);
         productRes.setQuantity();
         return productRes;
     }
@@ -129,17 +129,17 @@ public class ProductService {
             .filter(li -> li > 0)
             .collect(Collectors.toList());
 
-        for (var variantItem : variants) {
+        for (Variant variantItem : variants) {
             if (!variantIds.contains(variantItem.getId())) {
                 removeVariant(variants, variantItem);
             }
         }
 
-        for (var variantItem : variantRequests) {
+        for (Variant variantItem : variantRequests) {
             if (variantItem.getId() == 0) {
                 addVariant(variants, variantItem);
             } else {
-                var variantItemUpdate = variants
+                Variant variantItemUpdate = variants
                     .stream().filter(li -> li.getId() == variantItem.getId()).findFirst().orElse(null);
                 assert variantItemUpdate != null;
                 variantItemUpdate.update(variantItem);
