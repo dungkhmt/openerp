@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.service;
 
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.LineItem;
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.ShelfLineItem;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.ShelfLineItemResponse;
 import com.hust.baseweb.applications.sscm.tmscontainer.repository.LineItemRepository;
@@ -9,6 +10,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,18 +31,18 @@ public class ShelfLineItemService {
 
     public ShelfLineItemResponse putIntoShelf(ShelfLineItem shelfLineItem) throws Exception {
 // validate số lượng nhập vào phải <= số lượng có trong lineItem
-        var shelfLineItems = shelfLineItemRepository.findAllByShelfId(shelfLineItem.getShelfId());
+        List<ShelfLineItem> shelfLineItems = shelfLineItemRepository.findAllByShelfId(shelfLineItem.getShelfId());
 
-        var findVariant = shelfLineItems
+        ShelfLineItem findVariant = shelfLineItems
             .stream()
             .filter(lineItem -> lineItem.getLineItemId() == shelfLineItem.getLineItemId())
             .findAny()
             .orElse(null);
-        var shelfLineItemRes = new ShelfLineItem();
+        ShelfLineItem shelfLineItemRes = new ShelfLineItem();
 
         if (findVariant != null) {
-            var lineItem = lineItemRepository.findById(shelfLineItem.getLineItemId()).orElse(null);
-            var currentQuantity = lineItem.getCurrentQuantity();
+            LineItem lineItem = lineItemRepository.findById(shelfLineItem.getLineItemId()).orElse(null);
+            BigDecimal currentQuantity = lineItem.getCurrentQuantity();
             if(currentQuantity.compareTo(shelfLineItem.getQuantity()) < 0){
                 throw new Exception("số lượng không đủ");
             }
@@ -50,8 +53,8 @@ public class ShelfLineItemService {
 
 
             shelfLineItemRes = shelfLineItemRepository.save(findVariant);
-            var res = mapper.map(shelfLineItemRes, ShelfLineItemResponse.class);
-            var lineItems = shelfLineItems.stream().map(line -> line.getLineItemId()).map(id -> {
+            ShelfLineItemResponse res = mapper.map(shelfLineItemRes, ShelfLineItemResponse.class);
+            List<LineItem> lineItems = shelfLineItems.stream().map(line -> line.getLineItemId()).map(id -> {
                 return lineItemRepository.findById(id).orElse(null);
             }).collect(
                 Collectors.toList());
@@ -59,8 +62,8 @@ public class ShelfLineItemService {
             res.setLineItems(lineItems);
             return res;
         } else {
-            var lineItem = lineItemRepository.findById(shelfLineItem.getLineItemId()).orElse(null);
-            var currentQuantity = lineItem.getCurrentQuantity();
+            LineItem lineItem = lineItemRepository.findById(shelfLineItem.getLineItemId()).orElse(null);
+            BigDecimal currentQuantity = lineItem.getCurrentQuantity();
             if(currentQuantity.compareTo(shelfLineItem.getQuantity()) < 0){
                 throw new Exception("số lượng không đủ");
             }
@@ -70,9 +73,9 @@ public class ShelfLineItemService {
             productService.addVariantAvailable(lineItem.getVariantId(),shelfLineItem.getQuantity());
 
 
-            var res = mapper.map(shelfLineItemRes, ShelfLineItemResponse.class);
-            var newShelfLineItems = shelfLineItemRepository.findAllByShelfId(shelfLineItem.getShelfId());
-            var lineItems = newShelfLineItems.stream().map(line -> line.getLineItemId()).map(id -> {
+            ShelfLineItemResponse res = mapper.map(shelfLineItemRes, ShelfLineItemResponse.class);
+            List<ShelfLineItem> newShelfLineItems = shelfLineItemRepository.findAllByShelfId(shelfLineItem.getShelfId());
+            List<LineItem> lineItems = newShelfLineItems.stream().map(line -> line.getLineItemId()).map(id -> {
                 return lineItemRepository.findById(id).orElse(null);
             }).collect(
                 Collectors.toList());
@@ -87,7 +90,7 @@ public class ShelfLineItemService {
 
 
     private void addQuantity(ShelfLineItem shelfLineItem, ShelfLineItem shelfLineItemAdd) {
-        var currentquantity = shelfLineItem.getQuantity();
+        BigDecimal currentquantity = shelfLineItem.getQuantity();
         shelfLineItem.setQuantity(currentquantity.add(shelfLineItemAdd.getQuantity()));
     }
 

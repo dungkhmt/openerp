@@ -43,18 +43,18 @@ public class ShelvesService {
         List<Integer>  shelfIds = shelfRequests.stream().map(ShelfRequest::getShelf_id).filter(li -> li > 0).collect(
             Collectors.toList());
 
-        for (var shelfItem : shelfModel) {
+        for (Shelf shelfItem : shelfModel) {
             if (!shelfIds.contains(shelfItem.getShelfId())) {
                 removeShlef(shelfModel, shelfItem);
             }
         }
 
-        for(var shelfItem : shelfRequests){
+        for(ShelfRequest shelfItem : shelfRequests){
             if(shelfItem.getShelf_id() == 0){
-                var shelfItemAdded = new Shelf(shelfItem);
+                Shelf shelfItemAdded = new Shelf(shelfItem);
                 addShelf(shelfModel, shelfItemAdded);
             }else{
-                var shelfItemUpdate = shelfModel
+                Shelf shelfItemUpdate = shelfModel
                     .stream().filter(li -> li.getShelfId() == shelfItem.getShelf_id()).findFirst().orElse(null);
                 assert shelfItemUpdate != null;
                 shelfItemUpdate.update(shelfItem);
