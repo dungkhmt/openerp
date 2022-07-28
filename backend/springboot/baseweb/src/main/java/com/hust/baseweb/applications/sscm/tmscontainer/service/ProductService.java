@@ -59,20 +59,20 @@ public class ProductService {
 //        product.setVariants(product.getVariants().stream().map(variant -> {variant.setProduct(product); return variant;}).collect(
 //            Collectors.toList()));
         Product res = productRepository.save(product);
-        var productRes = mapper.map(res, ProductResponse.class);
+        ProductResponse productRes = mapper.map(res, ProductResponse.class);
         productRes.setQuantity();
 
         return productRes;
     }
 
     public ProductResponse getProductById(Integer id) throws Exception {
-        var product = productRepository.findById(id).orElse(null);
+        Product product = productRepository.findById(id).orElse(null);
         if (product == null) {
             throw new Exception(
                 "khong tim thay san pham "
             );
         }
-        var productRes = mapper.map(product, ProductResponse.class);
+        ProductResponse productRes = mapper.map(product, ProductResponse.class);
         productRes.setQuantity();
         return productRes;
     }
@@ -160,7 +160,7 @@ public class ProductService {
     }
 
     public void deleteProductById(Integer id) throws Exception {
-        var product = productRepository.findById(id).orElse(null);
+        Product product = productRepository.findById(id).orElse(null);
         if (product == null) {
             throw new Exception(
                 "khong tim thay san pham "
@@ -172,8 +172,8 @@ public class ProductService {
 
     // thêm sản phẩm vào kho
     public void addVariantOnHand(Integer variantId, BigDecimal quantity) {
-        var variant = variantRepository.getOne(variantId);
-        var currentOnhand = variant.getOnHand();
+        Variant  variant = variantRepository.getOne(variantId);
+        BigDecimal currentOnhand = variant.getOnHand();
         if (currentOnhand == null) {
             currentOnhand = BigDecimal.ZERO;
         }
@@ -183,8 +183,8 @@ public class ProductService {
 
     // lấy sản phẩm ra khỏi kho
     public void subVariantOnHand(Integer variantId, BigDecimal quantity) {
-        var variant = variantRepository.getOne(variantId);
-        var currentOnhand = variant.getOnHand();
+        Variant variant = variantRepository.getOne(variantId);
+        BigDecimal currentOnhand = variant.getOnHand();
         if (currentOnhand == null) {
             currentOnhand = BigDecimal.ZERO;
         }
@@ -194,8 +194,8 @@ public class ProductService {
 
     // thêm sản phẩm lên kệ
     public void addVariantAvailable(Integer variantId, BigDecimal quantity) {
-        var variant = variantRepository.getOne(variantId);
-        var currentAvailable = variant.getAvailable();
+        Variant variant = variantRepository.getOne(variantId);
+        BigDecimal currentAvailable = variant.getAvailable();
         if (currentAvailable == null) {
             currentAvailable = BigDecimal.ZERO;
         }
@@ -205,8 +205,8 @@ public class ProductService {
 
     // lấy sản phẩm ra khỏi kệ
     public void subVariantAvailable(Integer variantId, BigDecimal quantity) {
-        var variant = variantRepository.getOne(variantId);
-        var currentAvailable = variant.getAvailable();
+        Variant variant = variantRepository.getOne(variantId);
+        BigDecimal currentAvailable = variant.getAvailable();
         if (currentAvailable == null) {
             currentAvailable = BigDecimal.ZERO;
         }
@@ -219,15 +219,15 @@ public class ProductService {
     }
 
     public List<ProductResponse> getAllProductsByFacility(Integer id) {
-        var shelfIds = shelvesService.findShelfByFacilityId(id);// lấy id các shelf
-        var lineItemsIds = shelfLineItemRepository.findByShelfIds(shelfIds); // tìm lineItem trong shelf
-        var lineITems = lineItemRepository.findAllByIds(lineItemsIds); // lấy ra lineItem
-        var variantIds = lineITems.stream().map(lineItem -> lineItem.getVariantId()).collect(Collectors.toList());
-        var variants = variantRepository.findAllByIds(variantIds);
-        var products = variantRepository.findAllProductByVariantIds(variantIds);
+        List<Integer> shelfIds = shelvesService.findShelfByFacilityId(id);// lấy id các shelf
+        List<Integer> lineItemsIds = shelfLineItemRepository.findByShelfIds(shelfIds); // tìm lineItem trong shelf
+        List<LineItem> lineITems = lineItemRepository.findAllByIds(lineItemsIds); // lấy ra lineItem
+        List<Integer> variantIds = lineITems.stream().map(lineItem -> lineItem.getVariantId()).collect(Collectors.toList());
+        List<Variant> variants = variantRepository.findAllByIds(variantIds);
+        List<Product>  products = variantRepository.findAllProductByVariantIds(variantIds);
 
         for (Product product : products) {
-            var variantInProduct = product.getVariants();
+            List<Variant> variantInProduct = product.getVariants();
             for (Variant v : variantInProduct) {
                 for (LineItem item : lineITems) {
                     if (v.getId() == item.getVariantId()) {
@@ -244,7 +244,7 @@ public class ProductService {
             }
         }
 
-        var res = products.stream().map(product -> {
+        List<ProductResponse> res = products.stream().map(product -> {
             return mapper.map(product, ProductResponse.class);
         }).map(productResponse -> {
             productResponse.setQuantity();
@@ -254,12 +254,12 @@ public class ProductService {
     }
 
     public List<LineItemResponse> getAllProductInShelf(Integer id) {
-        var shelfLineItems= shelfLineItemRepository.findAllByShelfId(id);
+        List<ShelfLineItem> shelfLineItems= shelfLineItemRepository.findAllByShelfId(id);
 
         List<LineItem> lineItems = new ArrayList<LineItem>();
 
         for(ShelfLineItem item : shelfLineItems){
-            var lineItem  = lineItemRepository.findById(item.getLineItemId()).orElse(null);
+            LineItem lineItem  = lineItemRepository.findById(item.getLineItemId()).orElse(null);
             lineItem.setOnHand(item.getQuantity());
             lineItems.add(lineItem);
         }
@@ -268,15 +268,15 @@ public class ProductService {
 
 
     public List<LineItemResponse> getAllVariantImport(Integer id) {
-        var lineItems = lineItemRepository.findAllByVariantId(id);
-        var res = lineItems.stream().map(lineItem -> {return mapper.map(lineItem, LineItemResponse.class);}).collect(
+        List<LineItem> lineItems = lineItemRepository.findAllByVariantId(id);
+        List<LineItemResponse>  res = lineItems.stream().map(lineItem -> {return mapper.map(lineItem, LineItemResponse.class);}).collect(
             Collectors.toList());
         return res;
     }
 
     public LineItemResponse mapLineItemInShelf(LineItem lineItem){
-        var product = variantRepository.getOne(lineItem.getVariantId()).getProduct();
-        var res = mapper.map(lineItem, LineItemResponse.class);
+        Product product = variantRepository.getOne(lineItem.getVariantId()).getProduct();
+        LineItemResponse res = mapper.map(lineItem, LineItemResponse.class);
         res.setProductId(product.getId());
         return res;
     }

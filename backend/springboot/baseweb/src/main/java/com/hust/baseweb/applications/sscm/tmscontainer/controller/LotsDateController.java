@@ -2,6 +2,7 @@ package com.hust.baseweb.applications.sscm.tmscontainer.controller;
 
 
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.LotsDate;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.Product;
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.Variant;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.FacilityRequest;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.FacilityResponse;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,10 +58,10 @@ public class LotsDateController {
 
     @GetMapping("/product/{product_id}")
     public List<LotsDate> getByProduct(@PathVariable Integer id) throws Exception{
-        var product = productRepository.findById(id).orElse(null);
+        Product product = productRepository.findById(id).orElse(null);
         if(product == null ) throw  new Exception("khong tim thay san pham");
-        var lotsDates = new ArrayList<LotsDate>();
-        for(var v: product.getVariants()){
+        ArrayList<LotsDate> lotsDates = new ArrayList<LotsDate>();
+        for(Variant v: product.getVariants()){
             lotsDates.addAll(findLotsByVariant(v.getId()));
         }
         return lotsDates;
@@ -69,13 +71,13 @@ public class LotsDateController {
     // chỉ cho phép update số lượng của lotsDate, khi update thì update cả onhand và available
     @PutMapping("/{id}")
     public LotsDate updateLotsDate(@PathVariable Integer id, @RequestBody @Valid LotsDateUpdateRequest request) throws Exception {
-        var lots = lotsDateRepository.findById(id).orElse(null);
+        LotsDate lots = lotsDateRepository.findById(id).orElse(null);
         if(lots == null ) throw new Exception("lô sản phẩm không đúng");
-        var quantity = lots.getQuantity();
+        BigDecimal quantity = lots.getQuantity();
         lots.setQuantity(request.getQuantity());
         if(quantity != request.getQuantity()){
-            var adjusment = request.getQuantity().subtract(quantity);
-            var variant = variantRepository.getOne(lots.getVariantId());
+            BigDecimal adjusment = request.getQuantity().subtract(quantity);
+            Variant variant = variantRepository.getOne(lots.getVariantId());
             variant.setOnHand(variant.getOnHand().add(adjusment));
             variant.setAvailable(variant.getAvailable().add(adjusment));
             variantRepository.save(variant);
