@@ -1428,6 +1428,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .point(testCase.getTestCasePoint()).isPublic(testCase.getIsPublic())
                 .problemSolution(problem.getSolution())
                 .problemDescription(problem.getProblemDescription())
+                                     .description(testCase.getDescription())
                 .build();
     }
 
@@ -2185,6 +2186,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .isPublic(testCaseEntity.getIsPublic())
                 .viewMore(viewMore)
                 .testCaseId(testCaseEntity.getTestCaseId())
+                               .description(testCaseEntity.getDescription())
                 .build();
     }
 
@@ -2457,6 +2459,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         tc.setIsPublic(modelUploadTestCase.getIsPublic());
         tc.setTestCasePoint(modelUploadTestCase.getPoint());
         tc.setCorrectAnswer(output);
+        tc.setDescription(modelUploadTestCase.getDescription());
         tc = testCaseRepo.save(tc);
         res.setMessage("Upload Successfully!");
         res.setStatus("OK");

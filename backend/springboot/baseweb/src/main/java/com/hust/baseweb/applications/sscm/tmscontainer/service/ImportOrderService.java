@@ -1,8 +1,6 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.service;
 
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.ImportOrder;
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.ShelfLineItem;
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.Variant;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.*;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.ImportOrderResponse;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.LineItemResponse;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.ShelfLineItemResponse;
@@ -40,7 +38,7 @@ public class ImportOrderService {
 
     public ImportOrderResponse creatImportOrder(ImportOrder importOrder) {
         if (importOrder.getLineItems() != null) {
-            for (var item : importOrder.getLineItems()) {
+            for (LineItem item : importOrder.getLineItems()) {
                 item.setImportOrder(importOrder);
                 if (item.getQuantity() != null) {
                     item.setCurrentQuantity(item.getQuantity());
@@ -50,27 +48,27 @@ public class ImportOrderService {
         }
         setImportOrderCode(importOrder);
 
-        var importOrderRes = importOrderRepository.save(importOrder);
-        var res = mapper.map(importOrderRes, ImportOrderResponse.class);
+        ImportOrder importOrderRes = importOrderRepository.save(importOrder);
+        ImportOrderResponse res = mapper.map(importOrderRes, ImportOrderResponse.class);
         res.setFacility(facilitiesService.getById(res.getFacilityId()));
         res.updateStatusImport();
         return res;
     }
 
     public ImportOrderResponse getById(Integer id) throws Exception {
-        var importOrder = importOrderRepository.findById(id).orElse(null);
+        ImportOrder importOrder = importOrderRepository.findById(id).orElse(null);
         if (importOrder == null) {
             throw new Exception("khong tim thay don nhap hang");
         }
-        var lineItemsRes = importOrder.getLineItems().stream().map(lineItem -> {
+        List<LineItemResponse> lineItemsRes = importOrder.getLineItems().stream().map(lineItem -> {
             return mapper.map(lineItem, LineItemResponse.class);
         }).map(lineItemResponse -> {
-            var product = variantRepository.getOne(lineItemResponse.getVariantId()).getProduct();
+            Product product = variantRepository.getOne(lineItemResponse.getVariantId()).getProduct();
             lineItemResponse.setProductId(product.getId());
             return lineItemResponse;
         }).collect(Collectors.toList());
 
-        var res = mapper.map(importOrder, ImportOrderResponse.class);
+        ImportOrderResponse res = mapper.map(importOrder, ImportOrderResponse.class);
 
         res.setFacility(facilitiesService.getById(res.getFacilityId()));
         res.setLineItems(lineItemsRes);
@@ -79,7 +77,7 @@ public class ImportOrderService {
     }
 
     public List<ImportOrderResponse> getAllImportOrder() {
-        var res = importOrderRepository
+        List<ImportOrderResponse> res = importOrderRepository
             .findAll()
             .stream()
             .map(importOrder -> mapper.map(importOrder, ImportOrderResponse.class))
@@ -97,7 +95,7 @@ public class ImportOrderService {
 
 
     public void setImportOrderCode(ImportOrder importOrder) {
-        var currentCode = importOrderRepository.count();
+        long currentCode = importOrderRepository.count();
         importOrder.setCode("IMP00" + currentCode);
     }
 

@@ -34,6 +34,8 @@ public class TestCaseEntity {
     @Column(name="is_public")
     private String isPublic;
 
+    @Column(name="description")
+    private String description;
 
 //    @JoinColumn(name = "contest_problem_id", referencedColumnName = "problem_id")
 //    @ManyToOne(fetch = FetchType.LAZY)

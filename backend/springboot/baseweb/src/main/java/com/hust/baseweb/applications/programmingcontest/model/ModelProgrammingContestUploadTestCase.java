@@ -13,4 +13,5 @@ public class ModelProgrammingContestUploadTestCase {
     private String problemId;
     private String isPublic;
     private int point;
+    private String description;
 }

@@ -172,7 +172,7 @@ public class ProductService {
 
     // thêm sản phẩm vào kho
     public void addVariantOnHand(Integer variantId, BigDecimal quantity) {
-        Variant  variant = variantRepository.getOne(variantId);
+        Variant variant = variantRepository.getOne(variantId);
         BigDecimal currentOnhand = variant.getOnHand();
         if (currentOnhand == null) {
             currentOnhand = BigDecimal.ZERO;
@@ -224,7 +224,7 @@ public class ProductService {
         List<LineItem> lineITems = lineItemRepository.findAllByIds(lineItemsIds); // lấy ra lineItem
         List<Integer> variantIds = lineITems.stream().map(lineItem -> lineItem.getVariantId()).collect(Collectors.toList());
         List<Variant> variants = variantRepository.findAllByIds(variantIds);
-        List<Product>  products = variantRepository.findAllProductByVariantIds(variantIds);
+        List<Product> products = variantRepository.findAllProductByVariantIds(variantIds);
 
         for (Product product : products) {
             List<Variant> variantInProduct = product.getVariants();
@@ -269,7 +269,7 @@ public class ProductService {
 
     public List<LineItemResponse> getAllVariantImport(Integer id) {
         List<LineItem> lineItems = lineItemRepository.findAllByVariantId(id);
-        List<LineItemResponse>  res = lineItems.stream().map(lineItem -> {return mapper.map(lineItem, LineItemResponse.class);}).collect(
+        List<LineItemResponse> res = lineItems.stream().map(lineItem -> {return mapper.map(lineItem, LineItemResponse.class);}).collect(
             Collectors.toList());
         return res;
     }

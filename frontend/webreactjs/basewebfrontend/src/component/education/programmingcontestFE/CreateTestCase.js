@@ -33,6 +33,7 @@ export default function CreateTestCase(props) {
   const [isPublic, setIsPublic] = useState("N");
   const [isProcessing, setIsProcessing] = useState(false);
   const [filename, setFilename] = useState("");
+
   const dispatch = useDispatch();
   const [uploadMessage, setUploadMessage] = useState("");
   //const token = useSelector((state) => state.auth.token);
@@ -112,6 +113,7 @@ export default function CreateTestCase(props) {
       problemId: problemId,
       point: point,
       isPublic: isPublic,
+      description: description,
     };
     let formData = new FormData();
     formData.append("inputJson", JSON.stringify(body));
@@ -221,7 +223,19 @@ export default function CreateTestCase(props) {
               onChange={onFileChange}
             />
           </Grid>
-
+          <TextField
+            fullWidth
+            style={{
+              marginTop: "10px",
+              marginBottom: "24px",
+            }}
+            multiline
+            maxRows={10}
+            value={description}
+            onChange={(event) => {
+              setDescription(event.target.value);
+            }}
+          ></TextField>
           <Grid item xs={2}>
             <Button
               color="primary"

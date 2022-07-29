@@ -4,10 +4,7 @@ import com.hust.baseweb.applications.sscm.tmscontainer.entity.Facility;
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.LineItem;
 import com.hust.baseweb.applications.sscm.tmscontainer.service.FacilitiesService;
 import com.hust.baseweb.applications.sscm.tmscontainer.utils.LineItemStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -45,7 +42,7 @@ public class ImportOrderResponse {
 
 
     public void updateStatusImport() {
-        var changeList = lineItems.stream().map(lineItemResponse -> {
+        List<BigDecimal> changeList = lineItems.stream().map(lineItemResponse -> {
             if (lineItemResponse.getQuantity() == null) {
                 lineItemResponse.setQuantity(BigDecimal.ZERO);
             }
@@ -55,13 +52,13 @@ public class ImportOrderResponse {
             return lineItemResponse.getQuantity().subtract(lineItemResponse.getCurrentQuantity());
         }).collect(Collectors.toList());
 
-        var totalQuantity = lineItems.stream()
+        BigDecimal totalQuantity = lineItems.stream()
                             .map(LineItemResponse::getQuantity)
                             .filter(i -> (i != null))
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
 
-        var changeTotal = changeList.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal changeTotal = changeList.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
 
         if (changeTotal.compareTo(BigDecimal.ZERO) == 0) {
             status = LineItemStatus.INIT;

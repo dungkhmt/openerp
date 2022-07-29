@@ -1,10 +1,7 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.model;
 
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.Variant;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
@@ -79,7 +76,7 @@ public class ProductRequest {
     }
 
     private void setVariantItemOpt() {
-        var variantItem = new Variant();
+        Variant variantItem = new Variant();
         variantItem.setName(this.name);
         variantItem.setIsActive(true);
         variantItem.setWeightUnit(this.weightUnit);
@@ -91,9 +88,9 @@ public class ProductRequest {
     }
 
     public void setVariantItemTwoOpt() {
-        for (var opt1Item : opt1Val) {
-            for (var opt2Item : opt2Val) {
-                var variantItem = new Variant();
+        for (String opt1Item : opt1Val) {
+            for (String opt2Item : opt2Val) {
+                Variant variantItem = new Variant();
                 variantItem.setName(this.name + " " + opt1Item + " " + opt2Item);
                 variantItem.setIsActive(true);
                 variantItem.setWeightUnit(this.weightUnit);
@@ -109,8 +106,8 @@ public class ProductRequest {
     }
 
     public void setVariantItemOpt1() {
-        for (var opt1Item : opt1Val) {
-            var variantItem = new Variant();
+        for (String opt1Item : opt1Val) {
+            Variant variantItem = new Variant();
             variantItem.setName(this.name + " " + opt1Item);
             variantItem.setIsActive(true);
             variantItem.setWeightUnit(this.weightUnit);
@@ -124,8 +121,8 @@ public class ProductRequest {
     }
 
     public void setVariantItemOpt2() {
-        for (var opt2Item : opt2Val) {
-            var variantItem = new Variant();
+        for (String opt2Item : opt2Val) {
+            Variant variantItem = new Variant();
             variantItem.setName(this.name + " " + opt2Item);
             variantItem.setIsActive(true);
             variantItem.setWeightUnit(this.weightUnit);

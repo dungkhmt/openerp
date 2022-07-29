@@ -60,7 +60,7 @@ public class LotsDateController {
     public List<LotsDate> getByProduct(@PathVariable Integer id) throws Exception{
         Product product = productRepository.findById(id).orElse(null);
         if(product == null ) throw  new Exception("khong tim thay san pham");
-        ArrayList<LotsDate> lotsDates = new ArrayList<LotsDate>();
+        List<LotsDate> lotsDates = new ArrayList<LotsDate>();
         for(Variant v: product.getVariants()){
             lotsDates.addAll(findLotsByVariant(v.getId()));
         }

@@ -20,5 +20,5 @@ public class ModelGetTestCaseDetail {
     private String problemSolution;
     private int point;
     private String isPublic;
-
+    private String description;
 }

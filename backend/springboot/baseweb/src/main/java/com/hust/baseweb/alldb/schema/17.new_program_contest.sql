@@ -45,6 +45,7 @@ create table test_case_new
     correct_answer text,
     contest_problem_id varchar(60),
     is_public varchar(1),
+    description text,
     last_updated_stamp         timestamp DEFAULT current_date ,
     created_stamp              timestamp DEFAULT current_date ,
     constraint pk_contest_problem_test_case_new primary key (test_case_id),
