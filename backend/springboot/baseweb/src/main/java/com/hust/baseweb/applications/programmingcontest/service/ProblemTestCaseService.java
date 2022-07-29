@@ -137,4 +137,6 @@ public interface ProblemTestCaseService {
     int addAdminToManagerAndParticipantAllContest();
 
     ModelUploadTestCaseOutput addTestCase(String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName);
+
+    ModelUploadTestCaseOutput uploadUpdateTestCase(UUID testCaseId, String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName);
 }

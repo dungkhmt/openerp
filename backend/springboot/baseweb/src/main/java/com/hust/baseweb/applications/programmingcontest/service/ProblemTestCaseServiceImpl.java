@@ -1423,8 +1423,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         return ModelGetTestCaseDetail.builder()
                 .testCaseId(testCaseId)
-                .correctAns(testCase.getCorrectAnswer())
-                .testCase(testCase.getTestCase())
+                                     //.correctAns(testCase.getCorrectAnswer())
+                                     .correctAns(testCase.getCorrectAnswerShort(20))
+                //.testCase(testCase.getTestCase())
+                .testCase(testCase.getTestCaseShort(20))
                 .point(testCase.getTestCasePoint()).isPublic(testCase.getIsPublic())
                 .problemSolution(problem.getSolution())
                 .problemDescription(problem.getProblemDescription())
@@ -2462,6 +2464,44 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         tc.setDescription(modelUploadTestCase.getDescription());
         tc = testCaseRepo.save(tc);
         res.setMessage("Upload Successfully!");
+        res.setStatus("OK");
+        return res;
+    }
+    @Override
+    public ModelUploadTestCaseOutput uploadUpdateTestCase(UUID testCaseId, String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName){
+        TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(testCaseId);
+        if(testCase != null && !testCase.equals("")) {
+            String problemId = modelUploadTestCase.getProblemId();
+            ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
+            String tempName = tempDir.createRandomScriptFileName(userName + "-" + problemEntity.getProblemName() + "-" + problemEntity.getCorrectSolutionLanguage());
+            String output = "";
+            try {
+                output = runCode(problemEntity.getCorrectSolutionSourceCode(), problemEntity.getCorrectSolutionLanguage(), tempName,
+                                 testCase, problemEntity.getTimeLimit(), "Correct Solution Language Not Found");
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
+            if(output.contains("Time Limit Exceeded")){
+                res.setMessage("Time Limit Exceeded");
+                res.setStatus("TLE");
+                return res;
+            }
+            output = output.substring(0, output.length()-1);
+            int lastLinetIndexExpected = output.lastIndexOf("\n");
+            output = output.substring(0, lastLinetIndexExpected);
+//        output = output.replaceAll("\n", "");
+            //log.info("addTestCase, output = {}", output);
+
+            tc.setTestCase(testCase);
+            tc.setCorrectAnswer(output);
+        }
+        tc.setIsPublic(modelUploadTestCase.getIsPublic());
+        tc.setTestCasePoint(modelUploadTestCase.getPoint());
+        tc.setDescription(modelUploadTestCase.getDescription());
+        tc = testCaseRepo.save(tc);
+        ModelUploadTestCaseOutput res= new ModelUploadTestCaseOutput();
+        res.setMessage("Successfully");
         res.setStatus("OK");
         return res;
     }

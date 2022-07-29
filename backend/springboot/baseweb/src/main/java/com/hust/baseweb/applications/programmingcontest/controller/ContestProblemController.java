@@ -497,6 +497,68 @@ public class ContestProblemController {
 
         return ResponseEntity.ok().body(lst);
     }
+    @PostMapping("/upload-update-test-case/{testCaseId}")
+    public ResponseEntity<?> uploadUpdateTestCase(Principal principal,
+                                            @PathVariable String testCaseId,
+                                            @RequestParam("inputJson") String inputJson,
+                                            @RequestParam("file") MultipartFile file
+    ){
+
+        Gson gson = new Gson();
+        ModelProgrammingContestUploadTestCase modelUploadTestCase = gson.fromJson(inputJson,
+                                                                                  ModelProgrammingContestUploadTestCase.class);
+        String problemId = modelUploadTestCase.getProblemId();
+        UUID testCaseUUID = UUID.fromString(testCaseId);
+        log.info("uploadUpdateTestCase, problemId = " + problemId + " tesCaseId = " + testCaseId + " testCaseUUID = " + testCaseUUID);
+        String testCase = "";
+        ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
+        if(file != null) {
+            try {
+                InputStream inputStream = file.getInputStream();
+                Scanner in = new Scanner(inputStream);
+                while (in.hasNext()) {
+                    String line = in.nextLine();
+                    testCase += line + "\n";
+                    //System.out.println("contestSubmitProblemViaUploadFile: read line: " + line);
+                }
+                in.close();
+                log.info("uploadUpdateTestCase, testCase not null, testCase = " + testCase.length());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else{
+            log.info("uploadUpdateTestCase, multipart file is null");
+        }
+        //res = problemTestCaseService.addTestCase(testCase, modelUploadTestCase, principal.getName());
+        res = problemTestCaseService.uploadUpdateTestCase(testCaseUUID, testCase, modelUploadTestCase, principal.getName());
+        return ResponseEntity.ok().body(res);
+
+        //res.setStatus("FAILURE");
+        //res.setMessage("Exception!!");
+        //return ResponseEntity.ok().body(res);
+    }
+    @PostMapping("/update-test-case-without-file/{testCaseId}")
+    public ResponseEntity<?> uploadUpdateTestCaseWithoutFile(Principal principal,
+                                                  @PathVariable String testCaseId,
+                                                  @RequestParam("inputJson") String inputJson
+    ){
+
+        Gson gson = new Gson();
+        ModelProgrammingContestUploadTestCase modelUploadTestCase = gson.fromJson(inputJson,
+                                                                                  ModelProgrammingContestUploadTestCase.class);
+        String problemId = modelUploadTestCase.getProblemId();
+        UUID testCaseUUID = UUID.fromString(testCaseId);
+        log.info("uploadUpdateTestCaseWithoutFile, problemId = " + problemId + " tesCaseId = " + testCaseId + " testCaseUUID = " + testCaseUUID);
+        ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
+        //res = problemTestCaseService.addTestCase(testCase, modelUploadTestCase, principal.getName());
+        res = problemTestCaseService.uploadUpdateTestCase(testCaseUUID, null, modelUploadTestCase, principal.getName());
+        return ResponseEntity.ok().body(res);
+
+        //res.setStatus("FAILURE");
+        //res.setMessage("Exception!!");
+        //return ResponseEntity.ok().body(res);
+    }
+
     @PostMapping("/upload-test-case")
     public ResponseEntity<?> uploadTestCase(Principal principal,
                                             @RequestParam("inputJson") String inputJson,

@@ -37,6 +37,18 @@ public class TestCaseEntity {
     @Column(name="description")
     private String description;
 
+    public String getTestCaseShort(int sz){
+        String res = "";
+        if(sz > testCase.length()) sz = testCase.length();
+        for(int i = 0; i < sz; i++) res += testCase.charAt(i);
+        return res;
+    }
+    public String getCorrectAnswerShort(int sz){
+        String res = "";
+        if(sz > correctAnswer.length()) sz = correctAnswer.length();
+        for(int i = 0; i < sz; i++) res += correctAnswer.charAt(i);
+        return res;
+    }
 //    @JoinColumn(name = "contest_problem_id", referencedColumnName = "problem_id")
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private ProblemEntity problem;

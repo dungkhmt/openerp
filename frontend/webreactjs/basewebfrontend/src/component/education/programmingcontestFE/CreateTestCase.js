@@ -109,6 +109,7 @@ export default function CreateTestCase(props) {
   const handleFormSubmit = (event) => {
     event.preventDefault();
     setIsProcessing(true);
+    setUploadMessage("");
     let body = {
       problemId: problemId,
       point: point,
