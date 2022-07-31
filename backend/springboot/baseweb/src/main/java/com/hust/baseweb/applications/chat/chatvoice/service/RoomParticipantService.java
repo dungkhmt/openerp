@@ -12,6 +12,7 @@ import com.hust.baseweb.applications.chat.chatvoice.model.RoomParticipant;
 import com.hust.baseweb.applications.chat.chatvoice.repositoty.RoomParticipantRepository;
 import com.hust.baseweb.applications.chat.chatvoice.repositoty.RoomRepository;
 import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,10 +23,15 @@ import org.springframework.stereotype.Service;
 public class RoomParticipantService {
 
   private final RoomParticipantRepository roomParticipantRepository;
+  private final RoomService roomService;
+  private final UserService userService;
 
   @Autowired
-  public RoomParticipantService(RoomParticipantRepository roomParticipantRepository) {
+  public RoomParticipantService(RoomParticipantRepository roomParticipantRepository, RoomService roomService,
+      UserService userService) {
     this.roomParticipantRepository = roomParticipantRepository;
+    this.roomService = roomService;
+    this.userService = userService;
   }
 
   public String addOrUpdateParticipant(Room room, UserLogin participant, String peerId) {
@@ -46,7 +52,8 @@ public class RoomParticipantService {
     roomParticipantRepository.outMeet(room, participant);
   }
 
-  public List<Map<String, String>> getAllParticipantInThisRoom(Room room) {
+  public List<Map<String, String>> getAllParticipantInThisRoom(String roomId) {
+    Room room = roomService.findByRoomId(UUID.fromString(roomId));
     List<Object[]> listParticipant = roomParticipantRepository.getAllParticipantInThisRoom(room);
     List<Map<String, String>> res = new ArrayList<>();
     for (Object[] obj : listParticipant) {
@@ -59,7 +66,9 @@ public class RoomParticipantService {
     return res;
   }
 
-  public void inviteParticipant(Room r, UserLogin userLogin) {
+  public void inviteParticipant(UUID roomId, String userId) {
+    Room r = roomService.findByRoomId(roomId);
+    UserLogin userLogin = userService.findById(userId);
     Optional<RoomParticipant> rParticipant = roomParticipantRepository.findByParticipantAndRoom(userLogin, r);
     if (rParticipant.isPresent()) {
       rParticipant.get().setIsInvited(true);
@@ -72,11 +81,13 @@ public class RoomParticipantService {
     }
   }
 
-  public Page<String> searchUsersById(Pageable page, String searchString, Room room) {
+  public Page<String> searchUsersById(Pageable page, String searchString, String roomId) {
+    Room room = roomService.findByRoomId(UUID.fromString(roomId));
     return roomParticipantRepository.searchUsersById(page, searchString, room);
   }
 
-  public Page<Room> getListInvitedRoom(Pageable page, UserLogin u) {
+  public Page<Room> getListInvitedRoom(Pageable page, String userId) {
+    UserLogin u = userService.findById(userId);
     Page<Room> pageRoom = roomParticipantRepository.getListInvitedRoom(page, u);
     pageRoom.forEach((room) -> {
       room.setHost(null);
@@ -84,7 +95,9 @@ public class RoomParticipantService {
     return pageRoom;
   }
 
-  public Page<String> getInvitedFriends(Pageable page, Room r) {
+  public Page<String> getInvitedFriends(Pageable page, String roomId) {
+    UUID _roomId = UUID.fromString(roomId);
+    Room r = roomService.findByRoomId(_roomId);
     return roomParticipantRepository.getInvitedFriends(page, r);
   }
 }

@@ -16,20 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hust.baseweb.applications.chat.chatvoice.model.Room;
 import com.hust.baseweb.applications.chat.chatvoice.service.RoomService;
-import com.hust.baseweb.entity.UserLogin;
-import com.hust.baseweb.service.UserService;
 
 @RestController
 @RequestMapping("room")
 public class RoomController {
 
   private final RoomService roomService;
-  private final UserService userService;
 
   @Autowired
-  public RoomController(RoomService roomService, UserService userService) {
+  public RoomController(RoomService roomService) {
     this.roomService = roomService;
-    this.userService = userService;
   }
 
   @GetMapping("/name")
@@ -39,14 +35,14 @@ public class RoomController {
 
   @GetMapping(path = "/all")
   public ResponseEntity<?> getAllRoomsOfThisUser(Principal principal, Pageable page) {
-    UserLogin host = userService.findById(principal.getName());
-    return ResponseEntity.ok().body(roomService.getAllRoomsOfThisUser(page, host));
+    String hostId = principal.getName();
+    return ResponseEntity.ok().body(roomService.getAllRoomsOfThisUser(page, hostId));
   }
 
   @PostMapping("/create")
   public ResponseEntity<?> createRoom(Principal principal, @RequestBody Room room) {
-    UserLogin host = userService.findById(principal.getName());
-    String roomId = roomService.addNewRoom(host, room);
+    String hostId = principal.getName();
+    String roomId = roomService.addNewRoom(hostId, room);
     HashMap<String, String> res = new HashMap<>();
     res.put("success", "true");
     res.put("roomId", roomId);
@@ -55,15 +51,15 @@ public class RoomController {
 
   @DeleteMapping("/delete")
   public ResponseEntity<?> deleteRoom(Principal principal, @RequestBody Room room) {
-    UserLogin host = userService.findById(principal.getName());
-    roomService.deleteRoom(host, room);
+    String hostId = principal.getName();
+    roomService.deleteRoom(hostId, room);
     return ResponseEntity.ok().build();
   }
 
   @PutMapping("/update")
   public ResponseEntity<?> updateRoom(Principal principal, @RequestBody Room room) {
-    UserLogin host = userService.findById(principal.getName());
-    roomService.updateRoom(host, room);
+    String hostId = principal.getName();
+    roomService.updateRoom(hostId, room);
     return ResponseEntity.ok().build();
   }
 }

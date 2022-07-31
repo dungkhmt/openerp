@@ -27,7 +27,6 @@ export default function ParticipantVideo({
   };
 
   useEffect(() => {
-    console.log("participantVideo: ", data?.mediaStream?.getTracks());
     videoRef.current.srcObject = data?.mediaStream;
   }, [data]);
 
