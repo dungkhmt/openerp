@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface CodePlagiarismRepo extends JpaRepository<CodePlagiarism, UUID> {
     List<CodePlagiarism> findAllByContestId(String contestId);
+
 }

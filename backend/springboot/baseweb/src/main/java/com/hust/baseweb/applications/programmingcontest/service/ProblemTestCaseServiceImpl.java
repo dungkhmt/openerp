@@ -2357,6 +2357,38 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         List<CodePlagiarism> codePlagiarisms = codePlagiarismRepo.findAllByContestId(contestId);
         return codePlagiarisms;
     }
+    private boolean emptyString(String s){
+        return s == null || s.equals("");
+    }
+    @Override
+    public List<CodePlagiarism> findAllBy(ModelGetCodeSimilarityParams input) {
+        List<CodePlagiarism> codePlagiarisms = codePlagiarismRepo.findAllByContestId(input.getContestId());
+        List<CodePlagiarism> res = new ArrayList();
+        if(!emptyString(input.getProblemId()) && !emptyString(input.getUserId())){
+            for(CodePlagiarism e: codePlagiarisms){
+                if(e.getProblemId().equals(input.getProblemId())&&
+                   (e.getUserId1().equals(input.getUserId()) || e.getUserId2().equals(input.getUserId()))){
+                    res.add(e);
+                }
+            }
+        }else if(!emptyString(input.getProblemId()) && emptyString(input.getUserId())){
+            for(CodePlagiarism e: codePlagiarisms){
+                if(e.getProblemId().equals(input.getProblemId())){
+                    res.add(e);
+                }
+            }
+        }else if(emptyString(input.getProblemId()) && !emptyString(input.getUserId())){
+            for(CodePlagiarism e: codePlagiarisms){
+                if(e.getUserId1().equals(input.getUserId()) || e.getUserId2().equals(input.getUserId())){
+                    res.add(e);
+                }
+            }
+        }else{
+            return codePlagiarisms;
+        }
+
+        return res;
+    }
 
     @Transactional
     @Override

@@ -186,6 +186,33 @@ export default function CreateTestCase(props) {
         </TextField>
       </Box>
       <br />
+      <TextField
+        fullWidth
+        style={{
+          marginTop: "10px",
+          marginBottom: "24px",
+        }}
+        multiline
+        maxRows={4}
+        value={input}
+        onChange={(event) => {
+          setInput(event.target.value);
+        }}
+      ></TextField>
+      <Button variant="contained" color="light" onClick={getTestCaseResult}>
+        get testcase result
+      </Button>
+      <Box fullWidth style={{ height: "20px" }} />
+      <Typography variant={"h5"}>Result</Typography>
+      <Box fullWidth>{result}</Box>
+      <Button
+        variant="contained"
+        color="light"
+        style={{ marginTop: "10px" }}
+        onClick={saveTestCase}
+      >
+        save test case
+      </Button>
 
       <form onSubmit={handleFormSubmit}>
         <Grid container spacing={1} alignItems="flex-end">
