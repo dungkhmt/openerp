@@ -49,3 +49,13 @@ export const getInvitedFriends = async (meetId) => {
     );
   }
 };
+
+export const deleteMeet = async (params) => {
+  return await request(
+    "delete",
+    API_URL.DELETE_MEET,
+    undefined,
+    undefined,
+    params
+  );
+};

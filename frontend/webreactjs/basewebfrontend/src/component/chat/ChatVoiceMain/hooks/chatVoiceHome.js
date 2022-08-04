@@ -1,5 +1,10 @@
 import { useMutation, useQuery } from "react-query";
-import { getInvitedMeets, getOwnedMeets, scheduleMeet } from "../api";
+import {
+  deleteMeet,
+  getInvitedMeets,
+  getOwnedMeets,
+  scheduleMeet,
+} from "../api";
 import { QUERY_KEY } from "../utils/constant";
 
 export const useGetInvitedMeets = ({ params, onSuccess, onError }) => {
@@ -31,4 +36,11 @@ export const useScheduleMeet = ({ onSuccess, onError }) => {
       onError,
     }
   );
+};
+
+export const useDeleteMeet = ({ onSuccess, onError }) => {
+  return useMutation([QUERY_KEY.DELETE_MEET], (params) => deleteMeet(params), {
+    onSuccess,
+    onError,
+  });
 };

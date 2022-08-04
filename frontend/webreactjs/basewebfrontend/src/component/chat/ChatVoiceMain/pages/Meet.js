@@ -12,7 +12,7 @@ import {
   PEER_CONFIG,
   PEER_SERVER,
 } from "../utils/constant";
-import "../style/meet.css";
+import "../styles/meet.css";
 import {
   getDisplayMedia,
   getUserMedia,

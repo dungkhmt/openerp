@@ -49,14 +49,14 @@ public class RoomController {
     return ResponseEntity.ok().body(res);
   }
 
-  @DeleteMapping("/delete")
+  @DeleteMapping("")
   public ResponseEntity<?> deleteRoom(Principal principal, @RequestBody Room room) {
     String hostId = principal.getName();
     roomService.deleteRoom(hostId, room);
     return ResponseEntity.ok().build();
   }
 
-  @PutMapping("/update")
+  @PutMapping("")
   public ResponseEntity<?> updateRoom(Principal principal, @RequestBody Room room) {
     String hostId = principal.getName();
     roomService.updateRoom(hostId, room);

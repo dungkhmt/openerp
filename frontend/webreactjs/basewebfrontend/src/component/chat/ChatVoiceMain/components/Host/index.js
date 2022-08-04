@@ -17,7 +17,7 @@ import ButtonMeetNow from "./ButtonMeetNow";
 import ListMeet from "../ListMeet";
 import TertiaryButton from "component/button/TertiaryButton";
 import PrimaryButton from "component/button/PrimaryButton";
-import { useGetOwnedMeets } from "../../hooks/chatVoiceHome";
+import { useDeleteMeet, useGetOwnedMeets } from "../../hooks/chatVoiceHome";
 import { styleModal } from "../../utils/constant";
 import InviteFriend from "../InviteFriend";
 import { useGetInvitedFriends } from "../../hooks/meet";
@@ -29,6 +29,7 @@ export default function Host() {
   const { data: invitedFriends } = useGetInvitedFriends({
     meetId: modalContentData?.meetId,
   });
+  const { mutateAsync } = useDeleteMeet({});
   const history = useHistory();
   const listMeet = ownedMeets?.content.map((meet) => ({
     id: meet[0],
@@ -55,8 +56,14 @@ export default function Host() {
       pathname: `/chat/voice/main/${modalContentData.meetId}`,
     });
   }, [history, modalContentData?.meetId]);
+  const openModalUpdate = () => {};
+
   const renderModalContent = useMemo(() => {
     const { name, meetId } = modalContentData || {};
+    const deleteMeet = async (meetId) => {
+      await mutateAsync({ id: meetId });
+    };
+
     return (
       <Box sx={styleModal} className="host-modal">
         <div className="close-modal-button" onClick={handleClose}>
@@ -93,11 +100,21 @@ export default function Host() {
             <Typography>Mở rộng</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-              eget.
-            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <PrimaryButton
+                  className="delete"
+                  onClick={() => deleteMeet(meetId)}
+                >
+                  Xóa
+                </PrimaryButton>
+              </Grid>
+              <Grid item xs={6}>
+                <PrimaryButton onClick={openModalUpdate}>
+                  Cập nhật thông tin
+                </PrimaryButton>
+              </Grid>
+            </Grid>
           </AccordionDetails>
         </Accordion>
         <Grid container spacing={2}>
@@ -110,7 +127,7 @@ export default function Host() {
         </Grid>
       </Box>
     );
-  }, [modalContentData, invitedFriends, joinMeet]);
+  }, [modalContentData, invitedFriends, joinMeet, mutateAsync]);
 
   return (
     <>

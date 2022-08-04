@@ -180,3 +180,31 @@
 .host-model-extend.MuiAccordion-root:before {
   background-color: white !important;
 }
+
+.host-modal .MuiAccordionSummary-root {
+  padding: 0;
+  display: inline-flex;
+  height: 40px;
+  min-height: unset;
+}
+
+.host-modal .MuiAccordionSummary-content {
+  margin: 6px 0;
+}
+
+.host-modal .MuiTypography-body1 {
+  font-size: 12px;
+  color:rgb(92, 92, 92);  
+}
+
+.host-modal .MuiAccordionSummary-expandIcon {
+  padding: 6px;
+}
+
+.host-modal .delete {
+  background-color: rgb(219, 0, 0);
+}
+
+.host-modal .delete:hover {
+  background-color: rgb(219, 0, 0);
+}

@@ -4,7 +4,7 @@ import Join from "../components/Join";
 import Host from "../components/Host";
 import { CARD_LIST } from "../utils/constant";
 import { cardTitle } from "../utils/helpers";
-import "../style/chatVoiceHome.css";
+import "../styles/chatVoiceHome.css";
 
 const MEET_ICON = "M";
 const MEET_TITLE = "Meet";

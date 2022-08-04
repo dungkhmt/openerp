@@ -5,6 +5,8 @@ export const API_URL = {
   INVITED_MEET: "/roomParticipant/getListInvitedRoom",
   OWNED_MEET: "/room/all",
   SCHEDULE_MEET: "/room/create",
+  DELETE_MEET: "/room",
+  UPDATE_MEET: "/room",
 };
 
 export const QUERY_KEY = {
@@ -14,6 +16,8 @@ export const QUERY_KEY = {
   INVITED_MEET: "invitedMeet",
   OWNED_MEET: "ownedMeet",
   SCHEDULE_MEET: "scheduleMeet",
+  DELETE_MEET: "deleteMeet",
+  UPDATE_MEET: "updateMeet",
 };
 
 export const LIST_ICON = [
