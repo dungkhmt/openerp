@@ -239,20 +239,6 @@
   display: flex;
 }
 
-.invite-friend__snackbar {
-}
-
-.close-modal-button {
-  position: absolute;
-  right: 40px;
-  cursor: pointer;
-  color: rgb(78, 78, 78);
-}
-
-.close-modal-button:hover {
-  color: rgba(78, 78, 78, 0.8);
-}
-
 .invite-button {
   width: 45px !important;
   margin-left: 15px !important;

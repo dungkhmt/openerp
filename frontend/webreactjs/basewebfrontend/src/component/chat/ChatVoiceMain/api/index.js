@@ -59,3 +59,13 @@ export const deleteMeet = async (params) => {
     params
   );
 };
+
+export const updateMeet = async (params) => {
+  return await request(
+    "put",
+    API_URL.UPDATE_MEET,
+    undefined,
+    undefined,
+    params
+  );
+};
