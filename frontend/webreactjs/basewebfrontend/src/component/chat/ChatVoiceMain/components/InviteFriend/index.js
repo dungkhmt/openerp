@@ -71,6 +71,7 @@ export default function InviteFriend({ meetId }) {
       </PrimaryButton>
       <Snackbar
         open={displayMessage}
+        autoHideDuration={6000}
         onClose={handleCloseMessage}
         className="invite-friend__snackbar"
       >
