@@ -34,6 +34,10 @@
   padding: 15px 15px;
 }
 
+.meet__color-red {
+  color: red;
+}
+
 .card-meet-row {
   list-style-type: none;
   display: grid;
@@ -133,6 +137,7 @@
 .host-modal {
   width: 50% !important;
   max-width: 600px;
+  position: relative !important;
 }
 
 .host-modal .MuiButton-root {
@@ -166,4 +171,12 @@
 .host-modal-no-invite {
   text-align: center;
   padding: 30px 0 !important;
+}
+
+.host-model-extend {
+  box-shadow: none !important;
+}
+
+.host-model-extend.MuiAccordion-root:before {
+  background-color: white !important;
 }

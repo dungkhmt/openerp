@@ -51,7 +51,7 @@ export default function InviteFriend({ meetId }) {
     if (invitedName) {
       inviteFriendQuery.mutateAsync({ userId: invitedName });
     }
-  }, [invitedName]);
+  }, [invitedName, inviteFriendQuery]);
 
   return (
     <div className="invite-friend">
@@ -71,8 +71,8 @@ export default function InviteFriend({ meetId }) {
       </PrimaryButton>
       <Snackbar
         open={displayMessage}
-        autoHideDuration={6000}
         onClose={handleCloseMessage}
+        className="invite-friend__snackbar"
       >
         <Alert
           onClose={handleCloseMessage}

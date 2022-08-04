@@ -131,6 +131,7 @@ const Meet = () => {
       "/room/name",
       (res) => {
         setName(res.data);
+        localStorage.setItem("userId", res.data);
       },
       (err) => {
         console.log(err);
@@ -170,13 +171,11 @@ const Meet = () => {
     };
   }, []);
   useEffect(() => {
-    if (mediaStream) {
-      listParticipant.forEach((participant) => {
-        if (participant.peerId !== peerId) {
-          peer.call(participant.peerId, mediaStream);
-        }
-      });
-    }
+    listParticipant.forEach((participant) => {
+      if (participant.peerId !== peerId) {
+        peer.call(participant.peerId, mediaStream);
+      }
+    });
   }, [microStream, cameraStream, screenStream]);
   useEffect(() => {
     let interval;

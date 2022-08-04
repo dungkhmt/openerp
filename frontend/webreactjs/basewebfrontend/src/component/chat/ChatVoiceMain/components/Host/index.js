@@ -1,13 +1,24 @@
 import { useCallback, useMemo, useState } from "react";
-import { Backdrop, Box, Button, Fade, Grid, Modal } from "@material-ui/core";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Backdrop,
+  Box,
+  Fade,
+  Grid,
+  Modal,
+  Typography,
+} from "@material-ui/core";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useHistory } from "react-router";
 import ScheduleMeet from "./ScheduleMeet";
 import ButtonMeetNow from "./ButtonMeetNow";
 import ListMeet from "../ListMeet";
-import { useGetOwnedMeets } from "../../hooks/chatVoiceHome";
-import { styleModal } from "../../ultis/constant";
 import TertiaryButton from "component/button/TertiaryButton";
 import PrimaryButton from "component/button/PrimaryButton";
-import { useHistory } from "react-router";
+import { useGetOwnedMeets } from "../../hooks/chatVoiceHome";
+import { styleModal } from "../../ultis/constant";
 import InviteFriend from "../InviteFriend";
 import { useGetInvitedFriends } from "../../hooks/meet";
 
@@ -26,7 +37,13 @@ export default function Host() {
     closeIn: meet[3],
   }));
 
-  const handleClose = () => {
+  const handleClose = (event, reason) => {
+    if (reason === "backdropClick") {
+      return;
+    }
+    if (reason === "escapeKeyDown") {
+      return;
+    }
     setDisplayModal(false);
   };
   const handleClickMeet = (meetInfo) => {
@@ -42,11 +59,19 @@ export default function Host() {
     const { name, meetId } = modalContentData || {};
     return (
       <Box sx={styleModal} className="host-modal">
+        <div className="close-modal-button" onClick={handleClose}>
+          X
+        </div>
         <h2 className="host-modal-title">{name}</h2>
         <div className="host-modal-invited-friends-title">
           Danh sách người được mới
         </div>
-        <Grid className="host-modal-invited-friends" container spacing={2}>
+        <Grid
+          className="host-modal-invited-friends"
+          container
+          spacing={2}
+          style={{ width: "100%" }}
+        >
           {invitedFriends?.content?.length === 0 && (
             <Grid className="host-modal-no-invite" item xs={12}>
               Hiện tại chưa có ai được mời
@@ -59,6 +84,22 @@ export default function Host() {
           ))}
         </Grid>
         <InviteFriend meetId={meetId} />
+        <Accordion className="host-model-extend">
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography>Mở rộng</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
+              eget.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <TertiaryButton onClick={handleClose}>Đóng</TertiaryButton>
@@ -90,6 +131,7 @@ export default function Host() {
         BackdropProps={{
           timeout: 500,
         }}
+        disableRestoreFocus={true}
       >
         <Fade in={displayModal}>{renderModalContent}</Fade>
       </Modal>

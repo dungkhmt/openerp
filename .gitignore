@@ -39,3 +39,4 @@ HELP.md
 ./backend/springboot/baseweb/logs/
 ./backend/springboot/baseweb/*.yml
 ./backend/springboot/baseweb/.idea/
+**/node_modules/
