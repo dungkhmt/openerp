@@ -11,6 +11,7 @@ import java.util.UUID;
 
 public interface ContestSubmissionPagingAndSortingRepo extends PagingAndSortingRepository<ContestSubmissionEntity, UUID> {
     Page<ContestSubmissionEntity> findAllByContestId(Pageable pageable, String contestId);
+    Page<ContestSubmissionEntity> findAllByContestIdAndStatus(Pageable pageable, String contestId, String status);
     Page<ContestSubmissionEntity> findAllByUserId(Pageable pageable, String userId);
     Page<ContestSubmissionEntity> findAllByUserIdAndContestId(Pageable pageable, String userId, String contestId);
     List<ContestSubmissionEntity> findAllByUserIdAndContestId(String userId, String contestId);

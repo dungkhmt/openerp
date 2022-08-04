@@ -848,6 +848,7 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(page);
     }
 
+
     @GetMapping("/get-contest-submission-paging-of-a-user-and-contest/{contestId}")
     public ResponseEntity<?> getContestSubmissionPagingOfCurrentUser( Principal principal, @PathVariable String contestId, Pageable pageable){
         log.info("getContestSubmissionPagingOfCurrentUser, user = " + principal.getName() + " contestId = " + contestId);
@@ -865,6 +866,16 @@ public class ContestProblemController {
         log.info("page {}", page);
         return ResponseEntity.status(200).body(page);
     }
+    @GetMapping("/get-contest-not-evaluated-submission-paging/{contestId}")
+    public ResponseEntity<?> getContestNotEvaluatedSubmissionPaging(@PathVariable("contestId") String contestId, Pageable pageable){
+        log.info("getContestNotEvaluatedSubmissionPaging, contestId = " + contestId);
+        pageable = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), Sort.by("createdAt").descending());
+        Page<ContestSubmission> page = problemTestCaseService.findContestNotEvaluatedSubmissionByContestIdPaging(pageable, contestId);
+        log.info("page {}", page);
+        return ResponseEntity.status(200).body(page);
+    }
+
+
     @GetMapping("/get-contest-submission-of-a-user-paging/{contestId}/{userId}")
     public ResponseEntity<?> getContestSubmissionOfAUserPaging(@PathVariable("contestId") String contestId,
                                                                @PathVariable String userId, Pageable pageable){

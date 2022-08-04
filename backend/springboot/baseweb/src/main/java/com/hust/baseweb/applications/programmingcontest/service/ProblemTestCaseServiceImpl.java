@@ -1580,6 +1580,24 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public Page<ContestSubmission> findContestNotEvaluatedSubmissionByContestIdPaging(Pageable pageable, String contestId) {
+        //return contestSubmissionPagingAndSortingRepo.findAllByContestId(pageable, contestId)
+        return contestSubmissionPagingAndSortingRepo.findAllByContestIdAndStatus(pageable, contestId, ContestSubmissionEntity.SUBMISSION_STATUS_NOT_AVAILABLE)
+                                                    .map(contestSubmissionEntity -> ContestSubmission.builder()
+                                                                                                                                             .contestSubmissionId(contestSubmissionEntity.getContestSubmissionId())
+                                                                                                                                             .contestId(contestSubmissionEntity.getContestId())
+                                                                                                                                             .createAt(contestSubmissionEntity.getCreatedAt() != null ? DateTimeUtils.dateToString(contestSubmissionEntity.getCreatedAt(), DateTimeUtils.DateTimeFormat.DATE_TIME_ISO_FORMAT) : null)
+                                                                                                                                             .sourceCodeLanguage(contestSubmissionEntity.getSourceCodeLanguage())
+                                                                                                                                             .point(contestSubmissionEntity.getPoint())
+                                                                                                                                             .problemId(contestSubmissionEntity.getProblemId())
+                                                                                                                                             .testCasePass(contestSubmissionEntity.getTestCasePass())
+                                                                                                                                             .status(contestSubmissionEntity.getStatus()).message(contestSubmissionEntity.getMessage())
+                                                                                                                                             .userId(contestSubmissionEntity.getUserId())
+                                                                                                                                             .fullname(userService.findPersonByUserLoginId(contestSubmissionEntity.getUserId()).getFullName())
+                                                                                                                                             .build());
+    }
+
+    @Override
     public ContestSubmissionEntity getContestSubmissionDetail(UUID submissionId) {
         return contestSubmissionRepo.findContestSubmissionEntityByContestSubmissionId(submissionId);
     }
