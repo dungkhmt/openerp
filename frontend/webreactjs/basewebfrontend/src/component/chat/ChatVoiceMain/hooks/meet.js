@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getListSearchFriend, inviteFriend, getInvitedFriends } from "../api";
-import { QUERY_KEY } from "../ultis/constant";
+import { QUERY_KEY } from "../utils/constant";
 
 export const useGetListSearchFriend = ({ params, onSuccess, onError }) => {
   return useQuery(

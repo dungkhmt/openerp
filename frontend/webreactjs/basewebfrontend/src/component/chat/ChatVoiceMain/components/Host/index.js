@@ -18,7 +18,7 @@ import ListMeet from "../ListMeet";
 import TertiaryButton from "component/button/TertiaryButton";
 import PrimaryButton from "component/button/PrimaryButton";
 import { useGetOwnedMeets } from "../../hooks/chatVoiceHome";
-import { styleModal } from "../../ultis/constant";
+import { styleModal } from "../../utils/constant";
 import InviteFriend from "../InviteFriend";
 import { useGetInvitedFriends } from "../../hooks/meet";
 

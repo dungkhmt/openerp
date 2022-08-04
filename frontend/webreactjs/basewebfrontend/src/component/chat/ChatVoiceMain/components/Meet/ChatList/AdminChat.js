@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { ADMIN_CHAT_TYPE } from "../../../ultis/constant";
-import { handleTime } from "../../../ultis/helpers";
+import { ADMIN_CHAT_TYPE } from "../../../utils/constant";
+import { handleTime } from "../../../utils/helpers";
 
 const AdminChat = ({ data }) => {
   const userId = localStorage.getItem("userId");

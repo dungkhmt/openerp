@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "react-query";
 import { getInvitedMeets, getOwnedMeets, scheduleMeet } from "../api";
-import { QUERY_KEY } from "../ultis/constant";
+import { QUERY_KEY } from "../utils/constant";
 
 export const useGetInvitedMeets = ({ params, onSuccess, onError }) => {
   return useQuery(

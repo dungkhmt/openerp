@@ -1,5 +1,5 @@
 import { request } from "../../../../api";
-import { API_URL } from "../ultis/constant";
+import { API_URL } from "../utils/constant";
 
 export const getListSearchFriend = async (params) => {
   return await request(

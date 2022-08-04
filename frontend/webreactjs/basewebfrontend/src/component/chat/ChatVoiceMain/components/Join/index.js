@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useHistory } from "react-router";
 import PrimaryButton from "../../../../button/PrimaryButton";
 import { useGetInvitedMeets } from "../../hooks/chatVoiceHome";
-import { ENTER_KEY, styleModal } from "../../ultis/constant";
+import { ENTER_KEY, styleModal } from "../../utils/constant";
 import ListMeet from "../ListMeet";
 
 const Join = () => {

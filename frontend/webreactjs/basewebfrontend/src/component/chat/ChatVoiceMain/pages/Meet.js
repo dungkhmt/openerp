@@ -11,13 +11,13 @@ import {
   ADMIN_ID,
   PEER_CONFIG,
   PEER_SERVER,
-} from "../ultis/constant";
+} from "../utils/constant";
 import "../style/meet.css";
 import {
   getDisplayMedia,
   getUserMedia,
   stopAndSetMediaStream,
-} from "../ultis/helpers";
+} from "../utils/helpers";
 import useGetMediaStream from "../hooks/useGetMediaStream";
 import { useHistory } from "react-router";
 
