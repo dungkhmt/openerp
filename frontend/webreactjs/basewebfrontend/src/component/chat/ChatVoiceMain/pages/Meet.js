@@ -6,12 +6,7 @@ import Participant from "../components/Meet/Participant";
 import FooterControl from "../components/Meet/FooterControl";
 import Main from "../components/Meet/Main";
 import { API_URL } from "../../../../config/config";
-import {
-  ADMIN_CHAT_TYPE,
-  ADMIN_ID,
-  PEER_CONFIG,
-  PEER_SERVER,
-} from "../utils/constant";
+import { ADMIN_CHAT_TYPE, ADMIN_ID, PEER_SERVER } from "../utils/constant";
 import "../styles/meet.css";
 import {
   getDisplayMedia,

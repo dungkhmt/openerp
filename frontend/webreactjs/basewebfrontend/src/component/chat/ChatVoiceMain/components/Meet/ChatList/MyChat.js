@@ -9,10 +9,10 @@ const MyChat = ({ data }) => {
   return (
     <div>
       <div className="my-chat" title={title} onMouseEnter={handleChangeTime}>
-        <div className="chat-box my-chat-box">{data.content}</div>
+        <div className="chat-box my-chat-box">{data?.content}</div>
       </div>
       <div className="my-chat" title={title} onMouseEnter={handleChangeTime}>
-        <div className="chat-box my-chat-box-hidden">{data.content}</div>
+        <div className="chat-box my-chat-box-hidden">{data?.content}</div>
       </div>
     </div>
   );

@@ -49,6 +49,12 @@ public class WebSocketController {
         response.put("content", message.get("content"));
         return response;
       }
+      case "file": {
+        response.put("id", message.get("id"));
+        response.put("name", message.get("name"));
+        response.put("file", message.get("file"));
+        return response;
+      }
       case "join": {
         roomParticipantService.addOrUpdateParticipant(room, participant, message.get("content"));
         response.put("id", "0");
