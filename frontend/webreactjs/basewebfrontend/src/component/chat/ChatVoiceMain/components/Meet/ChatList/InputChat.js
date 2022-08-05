@@ -8,7 +8,7 @@ import { useUploadFile } from "component/chat/ChatVoiceMain/hooks/meet";
 const InputMess = (props) => {
   const [content, setContent] = useState("");
   const [file, setFile] = useState();
-  const [fileUrl, setFileUrl] = useState();
+  const [fileInfo, setFileInfo] = useState();
   const { mutateAsync: uploadFile, isLoading } = useUploadFile({});
 
   const submitOnEnter = (e) => {
@@ -19,13 +19,13 @@ const InputMess = (props) => {
   };
   const submit = () => {
     if (content.trim() !== "") {
-      props.sendMessage("chat", { content: content.trim() });
+      props.sendMessage("chat", content.trim());
       setContent("");
     }
-    if (fileUrl) {
-      props.sendMessage("file", { file: fileUrl });
+    if (fileInfo) {
+      props.sendMessage("file", undefined, fileInfo.url, fileInfo.fileType);
       setFile(undefined);
-      setFileUrl("");
+      setFileInfo("");
     }
   };
   const handleChangeFile = async (e) => {
@@ -35,7 +35,7 @@ const InputMess = (props) => {
       const formData = new FormData();
       formData.append("file", fileList[0]);
       const fileUrl = await uploadFile(formData);
-      setFileUrl(fileUrl);
+      setFileInfo(fileUrl?.data?.data);
     }
   };
   const handleDropFile = () => {

@@ -52,7 +52,8 @@ public class WebSocketController {
       case "file": {
         response.put("id", message.get("id"));
         response.put("name", message.get("name"));
-        response.put("file", message.get("file"));
+        response.put("fileUrl", message.get("url"));
+        response.put("fileType", message.get("fileType"));
         return response;
       }
       case "join": {

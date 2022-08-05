@@ -35,10 +35,7 @@ const storage = multer.memoryStorage({
 });
 
 const upload = multer({ storage }).single("file");
-const uploadFileToS3 = ({ originalname, buffer }) => {
-  const myFile = originalname.split(".");
-  const fileType = myFile[myFile.length - 1];
-
+const uploadFileToS3 = (fileType, { buffer }) => {
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: `${uuid()}.${fileType}`,
@@ -56,11 +53,12 @@ const downloadFromS3 = (fileKey) => {
 };
 const uploadFile = async (req, res, next) => {
   try {
-    // get file detail
-    const fileUploaded = await uploadFileToS3(req.file);
+    const myFile = req.file.originalname.split(".");
+    const fileType = myFile[myFile.length - 1];
+    const fileUploaded = await uploadFileToS3(fileType, req.file);
     const fileKey = fileUploaded.Key;
     const url = downloadFromS3(fileKey);
-    return res.status(200).json({ data: { url } });
+    return res.status(200).json({ data: { url, fileType } });
   } catch (e) {
     next(e);
   }

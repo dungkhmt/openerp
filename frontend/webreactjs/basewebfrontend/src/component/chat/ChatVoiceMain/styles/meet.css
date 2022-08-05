@@ -128,7 +128,7 @@
 }
 
 .chat-box {
-  border-radius: 40px;
+  border-radius: 8px;
   min-width: 20px;
   width: fit-content;
   max-width: 220px;

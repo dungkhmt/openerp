@@ -106,3 +106,14 @@ export const DISPLAY_HOST = {
   PART: "part",
   SMALL: "small",
 };
+
+export const IMG_TYPE = ["png", "jpeg", "gif", "jpg"];
+export const VID_TYPE = ["mp4", "mov", "wmv", "avi", "flv", "webm"];
+export const AUD_TYPE = ["m4a", "flac", "mp3", "wav", "wma", "aac"];
+
+export const FILE_TYPE = {
+  AUDIO: "audio",
+  VIDEO: "video",
+  IMAGE: "image",
+  OTHER: "other",
+};

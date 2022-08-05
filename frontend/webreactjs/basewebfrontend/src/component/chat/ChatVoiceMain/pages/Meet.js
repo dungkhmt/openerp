@@ -48,11 +48,11 @@ const Meet = () => {
   ]);
 
   const sendMessage = useCallback(
-    (type, content) => {
+    (type, content, url, fileType) => {
       stompClient?.send(
         "/app/chat/" + meetId,
         { "X-Auth-Token": localStorage.getItem("TOKEN") },
-        JSON.stringify({ id: name, name, type, content })
+        JSON.stringify({ id: name, name, type, content, url, fileType })
       );
     },
     [name, meetId, stompClient]
@@ -210,7 +210,6 @@ const Meet = () => {
             peer.call(content.peerId, mediaStream);
           }
         }
-
         // if leave, delete this participant from list of participants
         if (content.type === ADMIN_CHAT_TYPE.LEAVE) {
           const place = listParticipant.findIndex(
