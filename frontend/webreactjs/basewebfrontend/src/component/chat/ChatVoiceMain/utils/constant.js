@@ -76,9 +76,9 @@ export const MEDIA_TYPE = {
 
 export const PEER_SERVER = {
   secure: true,
-  host: "peer-server-nguyenbahoang.herokuapp.com",
-  port: "443",
-  path: "/",
+  host: "/",
+  port: "3001",
+  path: "/api/video-call/peer-server",
 };
 
 export const ENTER_KEY = "Enter";
