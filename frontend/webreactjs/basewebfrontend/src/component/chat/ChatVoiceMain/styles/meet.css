@@ -107,13 +107,13 @@
 
 .admin-chat {
   text-align: center;
-  color: rgb(105, 105, 105);
+  color: rgb(238, 238, 238);
   font-size: 14px;
   margin: 10px 5px;
 }
 
 .content-bar {
-  background-color: #f3f3f3;
+  background-color: #737373;
   overflow-y: auto;
 }
 
@@ -137,6 +137,8 @@
 .my-chat {
   margin: 5px;
   position: relative;
+  display: flex;
+  justify-content: right;
 }
 
 .other-chat {
@@ -146,29 +148,20 @@
 .my-chat-box {
   background-color: #2063ff;
   color: white;
-  position: absolute;
-  right: 0;
   border-top-right-radius: 5px;
   margin: 0 5px 0 15px;
   padding: 5px 15px 5px 15px;
   text-align: right;
 }
 
-.my-chat-box-hidden {
-  background-color: #2063ff;
-  color: white;
-  padding: 7px 14px;
-  width: fit-content;
-  visibility: hidden;
-}
-
 .chat-title {
   font-size: 14px;
-  color: #797979;
+  color: #dadada;
   margin-left: 10px;
 }
 
 .others-chat-box {
+  display: block;
   background-color: #d8d8d8;
   color: black;
   width: fit-content;

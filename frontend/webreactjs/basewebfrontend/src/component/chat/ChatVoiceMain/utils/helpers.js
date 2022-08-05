@@ -114,7 +114,7 @@ export const stopAndSetMediaStream = (setMediaStream) => {
 export const getFileType = (fileType) => {
   const _fileType = fileType.toLowerCase();
   if (IMG_TYPE.includes(_fileType)) return FILE_TYPE.IMAGE;
-  if (AUD_TYPE.includes(_fileType)) return FILE_TYPE.IMAGE;
-  if (VID_TYPE.includes(_fileType)) return FILE_TYPE.IMAGE;
+  if (AUD_TYPE.includes(_fileType)) return FILE_TYPE.AUDIO;
+  if (VID_TYPE.includes(_fileType)) return FILE_TYPE.VIDEO;
   return FILE_TYPE.OTHER;
 };

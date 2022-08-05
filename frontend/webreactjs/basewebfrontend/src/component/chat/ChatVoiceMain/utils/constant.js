@@ -117,3 +117,8 @@ export const FILE_TYPE = {
   IMAGE: "image",
   OTHER: "other",
 };
+
+export const MSG_TYPE = {
+  MY_CHAT: "myChat",
+  OTHERS_CHAT: "othersChat",
+};
