@@ -1,15 +1,28 @@
 import React, { useContext, useEffect, useState, useRef } from 'react'
 import { Circle, Layer } from 'react-konva'
 import { updateLocalStorageData } from '../../../../utils/whiteboard/localStorage'
-import { SOCKET_IO_EVENTS, EVENT_TYPE, TOOL, KEYS } from '../../../../utils/whiteboard/constants'
+import { SOCKET_IO_EVENTS, EVENT_TYPE, TOOL, KEYS, ROLE_STATUS } from '../../../../utils/whiteboard/constants'
 import { SocketContext } from '../../../../utils/whiteboard/context/SocketContext'
 import Konva from 'konva'
 import { nanoid } from 'nanoid'
 
+const LAYER_ID = 'circle'
+
 export const DrawCircle = React.memo(
   React.forwardRef(
     (
-      { eventPointer, scale, tool, currentPage, stageContainer, whiteboardId, onDrawDone, totalPage, strokeDraw },
+      {
+        eventPointer,
+        scale,
+        tool,
+        currentPage,
+        stageContainer,
+        whiteboardId,
+        onDrawDone,
+        totalPage,
+        strokeDraw,
+        roleStatus,
+      },
       ref,
     ) => {
       const { socket } = useContext(SocketContext)
@@ -18,17 +31,15 @@ export const DrawCircle = React.memo(
       const [currentAnnotation, setCurrentAnnotation] = useState(null)
 
       useEffect(() => {
-        socket.on(SOCKET_IO_EVENTS.ON_DRAW_CIRCLE_END, ({ data, currentDrawPage, currentWhiteboardId }) => {
-          if (whiteboardId !== currentWhiteboardId) {
-            return
-          }
+        socket.on(SOCKET_IO_EVENTS.ON_DRAW_CIRCLE_END, ({ data, currentDrawPage }) => {
           if (Number(currentPage) === Number(currentDrawPage)) {
+            const circleLayer = ref?.getLayers().find((layer) => layer.attrs.id === LAYER_ID)
             setAnnotations(data)
-            if (ref?.getLayers().length > 0 && ref?.getLayers()[3]?.getChildren().length !== data.length) {
-              ref?.getLayers()[3]?.clear()
-              ref?.getLayers()[3]?.destroyChildren()
+            if (ref?.getLayers().length > 0 && circleLayer?.getChildren().length !== data.length) {
+              circleLayer?.clear()
+              circleLayer?.destroyChildren()
               for (let i = 0; i < data.length; ++i) {
-                ref?.getLayers()[3]?.add(
+                circleLayer?.add(
                   new Konva.Circle({
                     x: data[i].x,
                     y: data[i].y,
@@ -43,7 +54,7 @@ export const DrawCircle = React.memo(
                   }),
                 )
               }
-              ref?.getLayers()[3]?.batchDraw()
+              circleLayer?.batchDraw()
             }
             // annotationsRef.current = data
           }
@@ -60,17 +71,7 @@ export const DrawCircle = React.memo(
           if (whiteboardId !== currentWhiteboardId) {
             return
           }
-          const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-          if (typeof drawData.circle !== 'undefined') {
-            const foundDrawData = drawData.circle.find((item) => Number(item.currentPage) === Number(currentPage))
-            if (typeof foundDrawData !== 'undefined') {
-              setAnnotations(foundDrawData.data)
-              // annotationsRef.current = foundDrawData.data
-            } else {
-              setAnnotations([])
-              // annotationsRef.current = []
-            }
-          }
+          updateDataFromLS()
         }
 
         setTimeout(() => onCheckLS(), 150)
@@ -84,21 +85,16 @@ export const DrawCircle = React.memo(
       }, [currentPage, totalPage])
 
       useEffect(() => {
-        const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-        if (typeof drawData.circle !== 'undefined') {
-          const foundDrawData = drawData.circle.find((item) => Number(item.currentPage) === Number(currentPage))
-          if (typeof foundDrawData !== 'undefined') {
-            setAnnotations(foundDrawData.data)
-            // annotationsRef.current = foundDrawData.data
-          } else {
-            setAnnotations([])
-            // annotationsRef.current = []
-          }
-        }
+        updateDataFromLS()
+        // const id = setInterval(() => updateDataFromLS(), 2000)
+
+        // return () => {
+        //   clearInterval(id)
+        // }
       }, [currentPage])
 
       useEffect(() => {
-        if (eventPointer.eventType === null || tool !== TOOL.CIRCLE) {
+        if (eventPointer.eventType === null || (tool !== TOOL.CIRCLE && tool !== TOOL.ERASER)) {
           return
         }
         if (eventPointer.eventType === EVENT_TYPE.MOUSE_DOWN) {
@@ -148,13 +144,13 @@ export const DrawCircle = React.memo(
             localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(drawData))
             socket.emit(SOCKET_IO_EVENTS.DRAW_CIRCLE_END, {
               data: newAnno,
-              currentDrawPage: currentPage,
-              currentWhiteboardId: whiteboardId,
+              currentDrawPage: Number(currentPage),
+              whiteboardPageId: `${whiteboardId}-${currentPage}`,
             })
             onDrawDone(TOOL.CIRCLE)
           }
         }
-      }, [eventPointer, annotations, currentPage])
+      }, [eventPointer, currentPage])
 
       useEffect(() => {
         if (!stageContainer) {
@@ -167,12 +163,20 @@ export const DrawCircle = React.memo(
           if (e.key === 'Delete' && currentAnnotation !== null) {
             const newAnnotations = annotations.filter((annotation) => annotation.key !== currentAnnotation.key)
             setAnnotations(newAnnotations)
+            setCurrentAnnotation(null)
             // annotationsRef.current = newAnnotations
 
+            const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
+            if (typeof drawData.circle !== 'undefined') {
+              drawData.circle = updateLocalStorageData(drawData.circle, newAnnotations, currentPage)
+            } else {
+              drawData.circle = [{ data: newAnnotations, currentPage }]
+            }
+            localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(drawData))
             socket.emit(SOCKET_IO_EVENTS.DRAW_CIRCLE_END, {
               data: newAnnotations,
               currentDrawPage: Number(currentPage),
-              currentWhiteboardId: whiteboardId,
+              whiteboardPageId: `${whiteboardId}-${currentPage}`,
             })
           }
         }
@@ -182,10 +186,27 @@ export const DrawCircle = React.memo(
         return () => {
           stageContainer.removeEventListener('keydown', listener)
         }
-      }, [stageContainer, currentAnnotation, annotations])
+      }, [stageContainer, currentAnnotation, tool])
 
       const onClickCircle = (key) => {
+        if (roleStatus.roleId === ROLE_STATUS.READ || roleStatus.statusId !== ROLE_STATUS.ACCEPTED) {
+          return
+        }
         setCurrentAnnotation(annotations.find((item) => item.key === key))
+      }
+
+      const updateDataFromLS = () => {
+        const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
+        if (typeof drawData.circle !== 'undefined') {
+          const foundDrawData = drawData.circle.find((item) => Number(item.currentPage) === Number(currentPage))
+          if (typeof foundDrawData !== 'undefined') {
+            setAnnotations(foundDrawData.data)
+            // annotationsRef.current = foundDrawData.data
+          } else {
+            setAnnotations([])
+            // annotationsRef.current = []
+          }
+        }
       }
 
       const annotationsToDraw = [...annotations, ...newAnnotation]
@@ -195,7 +216,7 @@ export const DrawCircle = React.memo(
       }
 
       return (
-        <Layer>
+        <Layer id={LAYER_ID}>
           {annotationsToDraw.map((value) => (
             <Circle
               key={value.key}
