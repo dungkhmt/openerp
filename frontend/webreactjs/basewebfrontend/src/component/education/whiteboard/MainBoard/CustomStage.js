@@ -50,9 +50,9 @@ export const CustomStage = React.memo(({ page, totalPage, strokeDraw, tool, role
   }, [tool, page])
 
   useEffect(() => {
-    if (gridLayerRef && gridLayerRef.current && stageRef.current.length > 0) {
+    if (gridLayerRef && gridLayerRef.current && stageRef.current) {
       // drawLines(gridLayerRef, stageRef.current[Number(queryString.get('page')) - 1], width, height)
-      drawLines(gridLayerRef, stageRef.current[page - 1], 1200, 595)
+      drawLines(gridLayerRef, stageRef.current, 1200, 595)
     }
   }, [totalPage, scale, page, width])
 
@@ -163,6 +163,21 @@ export const CustomStage = React.memo(({ page, totalPage, strokeDraw, tool, role
     setEventPointer((prev) => ({ ...prev, [tool]: { eventType: null, pointerPosition: { x: 0, y: 0 } } }))
   }
 
+  const onTouchStart = (e) => {
+    e.evt.preventDefault()
+    handleMouseDown(e)
+  }
+
+  const onTouchMove = (e) => {
+    e.evt.preventDefault()
+    handleMouseMove(e)
+  }
+
+  const onTouchEnd = (e) => {
+    e.evt.preventDefault()
+    handleMouseUp(e)
+  }
+
   return (
     <Stage
       ref={stageRef}
@@ -171,9 +186,9 @@ export const CustomStage = React.memo(({ page, totalPage, strokeDraw, tool, role
       onMouseDown={handleMouseDown}
       onMousemove={handleMouseMove}
       onMouseup={handleMouseUp}
-      onTouchStart={handleMouseDown}
-      onTouchMove={handleMouseMove}
-      onTouchEnd={handleMouseUp}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
       onWheel={handleWheel}
     >
       <Layer id="grid" ref={gridLayerRef} draggable={false} x={0} y={0} />

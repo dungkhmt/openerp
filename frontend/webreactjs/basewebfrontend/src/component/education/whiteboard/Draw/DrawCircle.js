@@ -86,11 +86,11 @@ export const DrawCircle = React.memo(
 
       useEffect(() => {
         updateDataFromLS()
-        // const id = setInterval(() => updateDataFromLS(), 2000)
+        const id = setInterval(() => updateDataFromLS(), 2000)
 
-        // return () => {
-        //   clearInterval(id)
-        // }
+        return () => {
+          clearInterval(id)
+        }
       }, [currentPage])
 
       useEffect(() => {
