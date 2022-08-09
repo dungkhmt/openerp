@@ -35,7 +35,7 @@ export default function ListWhiteBoard() {
     { title: 'Tổng số trang', field: 'page', render: (rowData) => <p>{rowData['totalPage']}</p> },
     { title: 'Người tạo', field: 'createdUser', render: (rowData) => <p>{rowData['createdBy']}</p> },
     {
-      title: 'Action',
+      title: 'Hành động',
       field: 'action',
       render: (rowData) => (
         <Tooltip title="Xóa bảng viết" aria-label="Xóa bảng viết" placement="top">
@@ -85,6 +85,7 @@ export default function ListWhiteBoard() {
           `/whiteboards/user/${whiteboardId}`,
           (res) => {
             if (res.status === 200) {
+              setWhiteboardName('')
               localStorage.setItem(KEYS.USER_ID, res?.data?.userId)
             }
             history.push(`${url}/whiteboard/${whiteboardId}?page=1`)
@@ -92,7 +93,6 @@ export default function ListWhiteBoard() {
           {},
           { roleId: ROLE_STATUS.WRITE, statusId: ROLE_STATUS.ACCEPTED },
         )
-        setWhiteboardName('')
       },
       {},
       { whiteboardId, classSessionId: sessionId, whiteboardName },

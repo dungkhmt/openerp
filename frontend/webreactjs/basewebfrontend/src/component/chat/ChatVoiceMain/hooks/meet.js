@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { getListSearchFriend, inviteFriend, getInvitedFriends } from "../api";
+import {
+  getListSearchFriend,
+  inviteFriend,
+  getInvitedFriends,
+  uploadFile,
+} from "../api";
 import { QUERY_KEY } from "../utils/constant";
 
 export const useGetListSearchFriend = ({ params, onSuccess, onError }) => {
@@ -35,6 +40,17 @@ export const useGetInvitedFriends = ({ meetId, onSuccess, onError }) => {
       onSuccess,
       onError,
       select: (res) => res?.data || {},
+    }
+  );
+};
+
+export const useUploadFile = ({ onSuccess, onError }) => {
+  return useMutation(
+    [QUERY_KEY.UPLOAD_FILE],
+    (formData) => uploadFile(formData),
+    {
+      onSuccess,
+      onError,
     }
   );
 };

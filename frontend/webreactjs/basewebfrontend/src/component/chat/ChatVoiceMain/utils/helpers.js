@@ -1,4 +1,12 @@
-import { CARD_LIST, DISPLAY_HOST, DISPLAY_TYPE } from "./constant";
+import {
+  AUD_TYPE,
+  CARD_LIST,
+  DISPLAY_HOST,
+  DISPLAY_TYPE,
+  FILE_TYPE,
+  IMG_TYPE,
+  VID_TYPE,
+} from "./constant";
 
 const MILISECOND_IN_ONE_DAY = 86400000;
 const MILISECOND_IN_ONE_HOUR = 3600000;
@@ -101,4 +109,12 @@ export const stopAndSetMediaStream = (setMediaStream) => {
   } catch (e) {
     console.error(e);
   }
+};
+
+export const getFileType = (fileType) => {
+  const _fileType = fileType.toLowerCase();
+  if (IMG_TYPE.includes(_fileType)) return FILE_TYPE.IMAGE;
+  if (AUD_TYPE.includes(_fileType)) return FILE_TYPE.AUDIO;
+  if (VID_TYPE.includes(_fileType)) return FILE_TYPE.VIDEO;
+  return FILE_TYPE.OTHER;
 };

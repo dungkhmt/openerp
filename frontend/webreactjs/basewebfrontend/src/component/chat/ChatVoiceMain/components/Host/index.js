@@ -3,11 +3,8 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Backdrop,
   Box,
-  Fade,
   Grid,
-  Modal,
   Typography,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -17,19 +14,27 @@ import ButtonMeetNow from "./ButtonMeetNow";
 import ListMeet from "../ListMeet";
 import TertiaryButton from "component/button/TertiaryButton";
 import PrimaryButton from "component/button/PrimaryButton";
-import { useDeleteMeet, useGetOwnedMeets } from "../../hooks/chatVoiceHome";
+import {
+  useDeleteMeet,
+  useGetOwnedMeets,
+  useUpdateMeet,
+} from "../../hooks/chatVoiceHome";
 import { styleModal } from "../../utils/constant";
 import InviteFriend from "../InviteFriend";
 import { useGetInvitedFriends } from "../../hooks/meet";
+import ModalMeet from "./Modal/ModalMeet";
+import ModalUpdateMeet from "./Modal/ModalUpdateMeet";
 
 export default function Host() {
   const [displayModal, setDisplayModal] = useState(false);
+  const [displayModalUpdate, setDisplayModalUpdate] = useState(false);
   const [modalContentData, setModalContentData] = useState();
   const { data: ownedMeets, refetch } = useGetOwnedMeets({ params: null });
   const { data: invitedFriends } = useGetInvitedFriends({
     meetId: modalContentData?.meetId,
   });
-  const { mutateAsync } = useDeleteMeet({});
+  const { mutateAsync: mutateDelete } = useDeleteMeet({});
+  const { mutateAsync: mutateUpdate } = useUpdateMeet({});
   const history = useHistory();
   const listMeet = ownedMeets?.content.map((meet) => ({
     id: meet[0],
@@ -56,19 +61,35 @@ export default function Host() {
       pathname: `/chat/voice/main/${modalContentData.meetId}`,
     });
   }, [history, modalContentData?.meetId]);
-  const openModalUpdate = () => {};
+  const openModalUpdate = () => {
+    setDisplayModal(false);
+    setDisplayModalUpdate(true);
+  };
+  const updateMeet = async (params) => {
+    await mutateUpdate(params);
+    handleCloseModalUpdate();
+    setModalContentData({
+      ...params,
+      meetId: params?.id,
+      name: params?.roomName,
+    });
+    refetch();
+  };
+  const handleCloseModalUpdate = () => {
+    setDisplayModalUpdate(false);
+    setDisplayModal(true);
+  };
 
   const renderModalContent = useMemo(() => {
     const { name, meetId } = modalContentData || {};
     const deleteMeet = async (meetId) => {
-      await mutateAsync({ id: meetId });
+      await mutateDelete({ id: meetId });
+      refetch();
+      setDisplayModal(false);
     };
 
     return (
       <Box sx={styleModal} className="host-modal">
-        <div className="close-modal-button" onClick={handleClose}>
-          X
-        </div>
         <h2 className="host-modal-title">{name}</h2>
         <div className="host-modal-invited-friends-title">
           Danh sách người được mới
@@ -127,7 +148,7 @@ export default function Host() {
         </Grid>
       </Box>
     );
-  }, [modalContentData, invitedFriends, joinMeet, mutateAsync]);
+  }, [modalContentData, invitedFriends, joinMeet, mutateDelete, refetch]);
 
   return (
     <>
@@ -138,20 +159,15 @@ export default function Host() {
         onClickMeet={handleClickMeet}
       />
       <ButtonMeetNow />
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={displayModal}
-        onClose={handleClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-        disableRestoreFocus={true}
-      >
-        <Fade in={displayModal}>{renderModalContent}</Fade>
-      </Modal>
+      <ModalMeet visible={displayModal} onClose={handleClose}>
+        {renderModalContent}
+      </ModalMeet>
+      <ModalUpdateMeet
+        {...modalContentData}
+        updateMeet={updateMeet}
+        visible={displayModalUpdate}
+        onClose={handleCloseModalUpdate}
+      />
     </>
   );
 }

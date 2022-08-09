@@ -7,83 +7,88 @@ import { SocketContext } from '../../../../utils/whiteboard/context/SocketContex
 import { nanoid } from 'nanoid'
 import Konva from 'konva'
 
+const LAYER_ID = 'text'
+
 export const DrawText = React.memo(
   React.forwardRef(
-    ({ eventPointer, offset, tool, currentPage, onUpdateTool, whiteboardId, onDrawDone, totalPage }, ref) => {
+    (
+      { eventPointer, offset, tool, currentPage, onUpdateTool, whiteboardId, onDrawDone, totalPage, roleStatus },
+      ref,
+    ) => {
       const { socket } = useContext(SocketContext)
       const [annotations, setAnnotations] = useState([])
       const textRef = useRef({})
-      const transformRef = useRef({})
+
+      const isInputtingRef = useRef('idle')
+      const intervalRef = useRef(null)
 
       useEffect(() => {
-        socket.on(SOCKET_IO_EVENTS.ON_ADD_TEXT_END, ({ data, currentDrawPage, currentWhiteboardId }) => {
-          if (whiteboardId !== currentWhiteboardId) {
-            return
-          }
+        socket.on(SOCKET_IO_EVENTS.ON_ADD_TEXT_END, ({ data, isInputting, currentDrawPage }) => {
           if (Number(currentDrawPage) === Number(currentPage)) {
-            if (
-              ref?.getLayers().length > 0 &&
-              ref?.getLayers()[4]?.getChildren().length / 2 !== data.length
-              // annotations.length === data.length
-            ) {
-              ref?.getLayers()[4]?.clear()
-              ref?.getLayers()[4]?.destroyChildren()
-              for (let i = 0; i < data.length; ++i) {
-                const newText = new Konva.Text({
-                  x: data[i].x,
-                  y: data[i].y,
-                  width: data[i].width,
-                  draggable: tool !== TOOL.POINTER ? false : true,
-                  rotation: data[i].rotation,
-                  text: data[i].text,
-                  verticalAlign: 'bottom',
-                  fontSize: data[i].fontSize,
-                  fontFamily: data[i].fontFamily,
-                  fill: data[i].fill,
-                  padding: data[i].padding,
-                  align: data[i].align,
-                })
-                textRef.current[data[i].id] = newText
-                // textRef.current[data[i].id].onClick = onClickText
-                ref?.getLayers()[4]?.add(newText)
+            // const textLayer = ref?.getLayers().find((layer) => layer.attrs.id === LAYER_ID)
+            // if (
+            //   (ref?.getLayers().length > 0 && textLayer?.getChildren().length / 2 !== data.length) ||
+            //   !textLayer
+            //   // annotations.length === data.length
+            // ) {
+            //   textLayer?.clear()
+            //   textLayer?.destroyChildren()
+            //   for (let i = 0; i < data.length; ++i) {
+            //     const newText = new Konva.Text({
+            //       x: data[i].x,
+            //       y: data[i].y,
+            //       width: data[i].width,
+            //       draggable: tool !== TOOL.POINTER ? false : true,
+            //       rotation: data[i].rotation,
+            //       text: data[i].text,
+            //       verticalAlign: 'bottom',
+            //       fontSize: data[i].fontSize,
+            //       fontFamily: data[i].fontFamily,
+            //       fill: data[i].fill,
+            //       padding: data[i].padding,
+            //       align: data[i].align,
+            //     })
+            //     textRef.current[data[i].key] = newText
+            //     // textRef.current[data[i].id].onClick = onClickText
+            //     textLayer?.add(newText)
 
-                const newTransform = new Konva.Transformer({
-                  boundBoxFunc: function (_, newBox) {
-                    newBox.width = Math.max(30, newBox.width)
-                    return newBox
-                  },
-                  rotation: 0,
-                  visible: false,
-                })
-                transformRef.current[data[i].id] = newTransform
-                ref?.getLayers()[4]?.add(newTransform)
-                newTransform.nodes([newText])
+            //     const newTransform = new Konva.Transformer({
+            //       boundBoxFunc: function (_, newBox) {
+            //         newBox.width = Math.max(30, newBox.width)
+            //         return newBox
+            //       },
+            //       rotation: 0,
+            //       visible: false,
+            //     })
+            //     transformRef.current[data[i].key] = newTransform
+            //     textLayer?.add(newTransform)
+            //     newTransform.nodes([newText])
 
-                newText.on('dblclick dbltap', () => onDblClickTextRect(newText, data[i]))
-                newText.on('click', () => onClickText(newText, data[i]))
-                newText.on('dragend', () => onDragTextEnd(newText, data[i]))
-                newText.on('transformend', () => onTextTransformEnd(newText, data[i]))
-              }
-              ref?.getLayers()[4]?.batchDraw()
-            }
+            //     newText.on('dblclick dbltap', () => onDblClickTextRect(newText, data[i]))
+            //     newText.on('click', () => onClickText(newText, data[i]))
+            //     newText.on('dragend', () => onDragTextEnd(newText, data[i]))
+            //     newText.on('transformend', () => onTextTransformEnd(newText, data[i]))
+            //   }
+            //   textLayer?.batchDraw()
+            // }
 
-            const newTransformRef = {}
-            for (const key of Object.keys(transformRef.current)) {
-              if (transformRef.current.hasOwnProperty(key)) {
-                if (textRef.current[key] !== null) {
-                  newTransformRef[key] = transformRef.current[key]
-                }
-              }
-            }
-            transformRef.current = newTransformRef
-            const newTextRef = {}
-            for (const key of Object.keys(textRef.current)) {
-              if (textRef.current.hasOwnProperty(key)) {
-                if (textRef.current[key] !== null) {
-                  newTextRef[key] = textRef.current[key]
-                }
-              }
-            }
+            // const newTransformRef = {}
+            // for (const key of Object.keys(transformRef.current)) {
+            //   if (transformRef.current.hasOwnProperty(key)) {
+            //     if (textRef.current[key] !== null) {
+            //       newTransformRef[key] = transformRef.current[key]
+            //     }
+            //   }
+            // }
+            // transformRef.current = newTransformRef
+            // const newTextRef = {}
+            // for (const key of Object.keys(textRef.current)) {
+            //   if (textRef.current.hasOwnProperty(key)) {
+            //     if (textRef.current[key] !== null) {
+            //       newTextRef[key] = textRef.current[key]
+            //     }
+            //   }
+            // }
             // textRef.current = newTextRef
             setAnnotations(data)
           }
@@ -94,6 +99,7 @@ export const DrawText = React.memo(
             drawData.text = [{ data, currentPage }]
           }
           localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(drawData))
+          isInputtingRef.current = isInputting
         })
 
         const onCheckLS = (currentWhiteboardId) => {
@@ -117,42 +123,38 @@ export const DrawText = React.memo(
 
         socket.on(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, ({ currentWhiteboardId }) => onCheckLS(currentWhiteboardId))
 
-        // socket.on(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE, ({ currentWhiteboardId, newPage, changePage }) => {
-        //   if (whiteboardId !== currentWhiteboardId || !changePage) {
-        //     return
-        //   }
-        //   console.log('changePage', newPage, changePage)
-        //   const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-        //   if (typeof drawData.text !== 'undefined') {
-        //     const foundDrawData = drawData.text.find((item) => Number(item.currentPage) === Number(newPage))
-        //     if (typeof foundDrawData !== 'undefined') {
-        //       setAnnotations(foundDrawData.data)
-        //       // annotationsRef.current = foundDrawData.data
-        //     } else {
-        //       setAnnotations([])
-        //       // annotationsRef.current = []
-        //     }
-        //   }
-        // })
-
         return () => {
           socket.off(SOCKET_IO_EVENTS.ON_ADD_TEXT_END)
           // socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
         }
       }, [currentPage, annotations, totalPage])
 
+      // useEffect(() => {
+      //   if (isInputtingRef.current !== 'processing') {
+      //     if (intervalRef && intervalRef.current) {
+      //       clearInterval(intervalRef.current)
+      //     }
+      //     intervalRef.current = setInterval(() => updateDataFromLS(), 2000)
+      //   } else {
+      //     if (intervalRef && intervalRef.current) {
+      //       clearInterval(intervalRef.current)
+      //     }
+      //   }
+
+      //   return () => {
+      //     if (intervalRef && intervalRef.current) {
+      //       clearInterval(intervalRef.current)
+      //     }
+      //   }
+      // }, [annotations])
+
       useEffect(() => {
-        const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-        if (typeof drawData.text !== 'undefined') {
-          const foundDrawData = drawData.text.find((item) => Number(item.currentPage) === Number(currentPage))
-          if (typeof foundDrawData !== 'undefined') {
-            setAnnotations(foundDrawData.data)
-            // annotationsRef.current = foundDrawData.data
-          } else {
-            setAnnotations([])
-            // annotationsRef.current = []
-          }
-        }
+        updateDataFromLS()
+        // const id = setInterval(() => updateDataFromLS(), 2000)
+
+        // return () => {
+        //   clearInterval(id)
+        // }
       }, [currentPage])
 
       useEffect(() => {
@@ -172,7 +174,7 @@ export const DrawText = React.memo(
           width: 200,
           height: 100,
           rotation: 0,
-          id: nanoid(),
+          key: nanoid(),
           tool,
         }
         const newAnno = [...annotations, annotationToAdd]
@@ -188,209 +190,49 @@ export const DrawText = React.memo(
         socket.emit(SOCKET_IO_EVENTS.ADD_TEXT, {
           data: newAnno,
           currentDrawPage: currentPage,
-          currentWhiteboardId: whiteboardId,
+          whiteboardPageId: `${whiteboardId}-${currentPage}`,
         })
         onDrawDone(TOOL.TEXT)
         onUpdateTool()
       }, [eventPointer, currentPage])
 
       const onUpdateText = async (updatedAnnotation) => {
-        const index = annotations.findIndex((ele) => ele.id === updatedAnnotation.id)
+        const index = annotations.findIndex((ele) => ele.key === updatedAnnotation.key)
         const newAnnotationArray = [...annotations.slice(0, index), updatedAnnotation, ...annotations.slice(index + 1)]
-        console.log('updateText', index, newAnnotationArray)
         setAnnotations(newAnnotationArray)
-        textRef.current[updatedAnnotation.id]?.text(updatedAnnotation.text)
+        textRef.current[updatedAnnotation.key]?.text(updatedAnnotation.text)
         // annotationsRef.current = newAnnotationArray
+        const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
+        if (typeof drawData.text !== 'undefined') {
+          drawData.text = updateLocalStorageData(drawData.text, newAnnotationArray, currentPage)
+        } else {
+          drawData.text = [{ data: newAnnotationArray, currentPage }]
+        }
+        localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(drawData))
 
         socket.emit(SOCKET_IO_EVENTS.ADD_TEXT, {
           data: newAnnotationArray,
           currentDrawPage: currentPage,
-          currentWhiteboardId: whiteboardId,
+          isInputting: isInputtingRef.current,
+          whiteboardPageId: `${whiteboardId}-${currentPage}`,
         })
       }
 
-      // useEffect(() => {
-      //   if (tool === TOOL.POINTER) {
-      //     for (let i = 0; i < annotations.length; ++i) {
-      //       transformRef.current[annotations[i].id]?.nodes([textRef.current[annotations[i].id]])
-      //       transformRef.current[annotations[i].id]?.hide()
-      //       transformRef.current[annotations[i].id]?.getLayer()?.batchDraw()
-      //     }
-      //   }
-      // }, [tool, annotations])
-
-      const onDragTextEnd = (e, value) => {
-        const node = textRef.current[value.id]
-        onUpdateText({
-          ...value,
-          x: node?.x(),
-          y: node?.y(),
-        })
-
-        // e.setAttrs({
-        //   width: e.width() * e.scaleX(),
-        //   scaleX: 1,
-        // })
-        // const newAnnotation: AddTextInterface = {
-        //   ...value,
-        //   width: e.width() * e.scaleX(),
-        // }
-        // onUpdateText(newAnnotation)
-      }
-
-      const onTextTransformEnd = (e, value) => {
-        if (tool !== TOOL.POINTER) {
+      const updateDataFromLS = () => {
+        if (isInputtingRef.current === 'processing') {
           return
         }
-        const node = textRef.current[value.id]
-        const scaleX = node?.scaleX()
-        const scaleY = node?.scaleY()
-
-        // we will reset it back
-        node?.scaleX(1)
-        node?.scaleY(1)
-        onUpdateText({
-          ...value,
-          x: node?.x(),
-          y: node?.y(),
-          rotation: node?.rotation(),
-          // set minimal value
-          width: Math.max(5, node?.width() * scaleX),
-          height: Math.max(node?.height() * scaleY),
-        })
-      }
-
-      const onDblClickTextRect = (e, value) => {
-        if (tool !== TOOL.POINTER) {
-          return
-        }
-
-        e.hide()
-        transformRef.current[value.id]?.hide()
-        // Create text area
-        const textPosition = e.absolutePosition()
-        const areaPosition = {
-          x: textPosition.x,
-          y: textPosition.y,
-        }
-        const textarea = document.createElement('textarea')
-        document.body.querySelector('#slider-grand').appendChild(textarea)
-        textarea.value = value.text
-        textarea.style.position = 'absolute'
-        textarea.style.top = `${areaPosition.y}px`
-        textarea.style.left = `${areaPosition.x}px`
-        textarea.style.width = `${value.width - value.padding * 2}px`
-        textarea.style.height = `${value.height - value.padding * 2 + 5}px`
-        textarea.style.fontSize = `${value.fontSize}px`
-        textarea.style.border = 'none'
-        textarea.style.padding = '0px'
-        textarea.style.margin = '0px'
-        textarea.style.overflow = 'hidden'
-        textarea.style.background = 'none'
-        textarea.style.outline = 'none'
-        textarea.style.resize = 'none'
-        textarea.style.fontFamily = value.fontFamily
-        textarea.style.transformOrigin = 'left top'
-        textarea.style.textAlign = value.align
-        textarea.style.color = value.fill
-        const rotation = e.rotation()
-        let transform = ''
-        if (rotation) {
-          transform = `rotateZ(${rotation}deg)`
-        }
-
-        let px = 0
-        // also we need to slightly move textarea on firefox
-        // because it jumps a bit
-        const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1
-        if (isFirefox) {
-          px += 2 + Math.round(e.fontSize() / 20)
-        }
-        transform = `translateY(-${px}px)`
-
-        textarea.style.transform = transform
-
-        // reset height
-        textarea.style.height = 'auto'
-        // after browsers resized it we can set actual value
-        textarea.style.height = `${textarea.scrollHeight + 3}px`
-
-        textarea.focus()
-
-        textarea.onchange = (event) => {
-          const newAnnotation = {
-            ...value,
-            x: textPosition.x,
-            y: textPosition.y,
-            text: event.target.value,
+        const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
+        if (typeof drawData.text !== 'undefined') {
+          const foundDrawData = drawData.text.find((item) => Number(item.currentPage) === Number(currentPage))
+          if (typeof foundDrawData !== 'undefined') {
+            setAnnotations(foundDrawData.data)
+            // annotationsRef.current = foundDrawData.data
+          } else {
+            setAnnotations([])
+            // annotationsRef.current = []
           }
-          onUpdateText(newAnnotation)
         }
-
-        function removeTextarea() {
-          textarea.parentNode?.removeChild(textarea)
-          window.removeEventListener('click', handleOutsideClick)
-          e.show()
-          console.log('sdebuig', value.id, transformRef.current, transformRef.current[value.id])
-          transformRef.current[value.id]?.show()
-          // transformRef.current[value.id]?.forceUpdate()
-        }
-
-        function setTextareaWidth(newWidth) {
-          if (!newWidth) {
-            // set width for placeholder
-            newWidth = e.placeholder.length * e.fontSize()
-          }
-          // some extra fixes on different browsers
-          const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-          const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1
-          if (isSafari || isFirefox) {
-            newWidth = Math.ceil(newWidth)
-          }
-
-          const isEdge = document.documentMode || /Edge/.test(navigator.userAgent)
-          if (isEdge) {
-            newWidth += 1
-          }
-          textarea.style.width = `${newWidth}px`
-        }
-
-        textarea.addEventListener('keydown', function (event) {
-          // hide on enter
-          // but don't hide on shift + enter
-          if (event.key === 'Enter' && !event.shiftKey) {
-            void e.text(textarea.value)
-            removeTextarea()
-          }
-          // on esc do not set value back to node
-          if (event.key === 'Esc') {
-            removeTextarea()
-          }
-        })
-
-        textarea.addEventListener('keydown', function () {
-          const scale = e.getAbsoluteScale().x
-          setTextareaWidth(e.width() * scale)
-          textarea.style.height = 'auto'
-          textarea.style.height = `${textarea.scrollHeight + e.fontSize()}px`
-        })
-
-        function handleOutsideClick(event) {
-          if (event.target !== textarea) {
-            void e.text(textarea.value)
-            removeTextarea()
-          }
-          onClickText(e, value)
-        }
-        setTimeout(() => {
-          window.addEventListener('click', handleOutsideClick)
-        })
-      }
-
-      const onClickText = (e, value) => {
-        transformRef.current[value.id]?.isVisible()
-          ? transformRef.current[value.id]?.hide()
-          : transformRef.current[value.id]?.show()
       }
 
       if (annotations.length === 0) {
@@ -398,9 +240,17 @@ export const DrawText = React.memo(
       }
 
       return (
-        <Layer>
+        <Layer id={LAYER_ID}>
           {annotations.map((value) => (
-            <TransformerText key={value.id} value={value} offset={offset} tool={tool} onUpdateText={onUpdateText} />
+            <TransformerText
+              key={value.key}
+              ref={isInputtingRef}
+              value={value}
+              offset={offset}
+              tool={tool}
+              roleStatus={roleStatus}
+              onUpdateText={onUpdateText}
+            />
           ))}
         </Layer>
       )

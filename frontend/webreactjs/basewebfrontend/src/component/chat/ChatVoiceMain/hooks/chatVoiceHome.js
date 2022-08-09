@@ -4,6 +4,7 @@ import {
   getInvitedMeets,
   getOwnedMeets,
   scheduleMeet,
+  updateMeet,
 } from "../api";
 import { QUERY_KEY } from "../utils/constant";
 
@@ -40,6 +41,13 @@ export const useScheduleMeet = ({ onSuccess, onError }) => {
 
 export const useDeleteMeet = ({ onSuccess, onError }) => {
   return useMutation([QUERY_KEY.DELETE_MEET], (params) => deleteMeet(params), {
+    onSuccess,
+    onError,
+  });
+};
+
+export const useUpdateMeet = ({ onSuccess, onError }) => {
+  return useMutation([QUERY_KEY.UPDATE_MEET], (params) => updateMeet(params), {
     onSuccess,
     onError,
   });

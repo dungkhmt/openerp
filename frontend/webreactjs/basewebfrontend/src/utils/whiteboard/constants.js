@@ -1,5 +1,6 @@
 export const SOCKET_IO_EVENTS = {
   CONNECT_TO_WHITEBOARD: 'connect_to_whiteboard',
+  CONNECT_TO_WHITEBOARD_PAGE: 'connect_to_whiteboard_page',
   REQUEST_DRAW: 'request_draw',
   ON_REQUEST_DRAW: 'on_request_draw',
 
@@ -28,6 +29,7 @@ export const KEYS = {
   CURRENT_PAGE: '@current_page',
   TOTAL_PAGE: '@total_page',
   USER_ID: '@user_id',
+  CURRENT_STAGE_ID: '@current_stage_id',
 }
 
 export const POLLING_INTERVAL = 500

@@ -2,7 +2,7 @@ import { request } from "../../../../api";
 import { API_URL } from "../utils/constant";
 
 export const getListSearchFriend = async (params) => {
-  return await request(
+  return request(
     "get",
     API_URL.SEARCH_FRIEND,
     undefined,
@@ -13,7 +13,7 @@ export const getListSearchFriend = async (params) => {
 };
 
 export const inviteFriend = async ({ userId, meetId, onSuccess, onError }) => {
-  return await request(
+  return request(
     "post",
     API_URL.INVITE_FRIEND,
     onSuccess,
@@ -34,12 +34,12 @@ export const getOwnedMeets = async (params) => {
 };
 
 export const scheduleMeet = async (params) => {
-  return await request("post", "/room/create", undefined, undefined, params);
+  return request("post", "/room/create", undefined, undefined, params);
 };
 
 export const getInvitedFriends = async (meetId) => {
   if (meetId) {
-    return await request(
+    return request(
       "get",
       API_URL.INVITED_FRIENDS,
       undefined,
@@ -51,11 +51,13 @@ export const getInvitedFriends = async (meetId) => {
 };
 
 export const deleteMeet = async (params) => {
-  return await request(
-    "delete",
-    API_URL.DELETE_MEET,
-    undefined,
-    undefined,
-    params
-  );
+  return request("delete", API_URL.DELETE_MEET, undefined, undefined, params);
+};
+
+export const updateMeet = async (params) => {
+  return request("put", API_URL.UPDATE_MEET, undefined, undefined, params);
+};
+
+export const uploadFile = async (formData) => {
+  return request("post", API_URL.UPLOAD_FILE, undefined, undefined, formData);
 };
