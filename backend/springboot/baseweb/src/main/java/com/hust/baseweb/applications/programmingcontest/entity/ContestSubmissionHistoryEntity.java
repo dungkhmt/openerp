@@ -28,6 +28,12 @@ public class ContestSubmissionHistoryEntity {
     @Column(name="language")
     private String language;
 
+    @Column(name="problem_id")
+    private String problemId;
+
+    @Column(name="contest_id")
+    private String contestId;
+
     @Column(name="created_stamp")
     private Date createdStamp;
 

@@ -893,6 +893,11 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(contestSubmission);
     }
 
+    @GetMapping("/get-contest-infos-of-a-subsmission/{submissionId}")
+    public ResponseEntity<?> getContestInfosOfASubmission(@PathVariable("submissionId") UUID submissionId){
+        ModelGetContestInfosOfSubmissionOutput res = problemTestCaseService.getContestInfosOfASubmission(submissionId);
+        return ResponseEntity.ok().body(res);
+    }
     @GetMapping("/get-contest-problem-submission-detail-viewed-by-manager/{submissionId}")
     public ResponseEntity<?> getContestSubmissionDetailViewedByManager(@PathVariable("submissionId") UUID submissionId){
         log.info("get contest submission detail");

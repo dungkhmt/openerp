@@ -1603,6 +1603,22 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public ModelGetContestInfosOfSubmissionOutput getContestInfosOfASubmission(UUID submissionId) {
+        ContestSubmissionEntity sub = contestSubmissionRepo.findContestSubmissionEntityByContestSubmissionId(submissionId);
+        String contestId = sub.getContestId();
+        ContestEntity contest = contestRepo.findContestByContestId(contestId);
+        ModelGetContestInfosOfSubmissionOutput res = new ModelGetContestInfosOfSubmissionOutput();
+        res.setSubmissionId(submissionId);
+        res.setContestId(contestId);
+        List<String> problemIds = new ArrayList();
+        for(ProblemEntity p: contest.getProblems()){
+            problemIds.add(p.getProblemId());
+        }
+        res.setProblemIds(problemIds);
+        return res;
+    }
+
+    @Override
     @Transactional
     public void deleteProblem(String problemId, String userId) throws MiniLeetCodeException {
         ProblemEntity problem = problemRepo.findByProblemId(problemId);
@@ -2414,6 +2430,11 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         ContestSubmissionEntity sub = contestSubmissionRepo.findById(input.getContestSubmissionId()).orElse(null);
         if(sub != null){
             sub.setSourceCode(input.getModifiedSourceCodeSubmitted());
+            if(input.getProblemId() != null && !input.getProblemId().equals(""))
+                sub.setProblemId(input.getProblemId());
+            if(input.getContestId() != null && !input.getContestId().equals(""))
+                sub.setContestId(input.getContestId());
+
             sub.setUpdateAt(new Date());
             sub = contestSubmissionRepo.save(sub);
 
@@ -2421,6 +2442,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             e.setContestSubmissionId(sub.getContestSubmissionId());
             e.setModifiedSourceCodeSubmitted(input.getModifiedSourceCodeSubmitted());
             e.setLanguage(sub.getSourceCodeLanguage());
+            e.setProblemId(sub.getProblemId());
+
+            if(input.getContestId() != null && !input.getContestId().equals(""))
+                e.setContestId(sub.getContestId());
             e.setCreatedStamp(new Date());
             e = contestSubmissionHistoryRepo.save(e);
             return sub;

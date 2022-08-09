@@ -5,16 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModelUpdateContestSubmission {
-    private UUID contestSubmissionId;
-    private String modifiedSourceCodeSubmitted;
-    private String language;
-    private String problemId;
+public class ModelGetContestInfosOfSubmissionOutput {
+    private UUID submissionId;
     private String contestId;
+    private List<String> problemIds;
 }

@@ -5,7 +5,7 @@ import { API_URL } from "../../../config/config";
 import * as React from "react";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
-import { Grid, TextField, Button } from "@material-ui/core";
+import { Grid, TextField, Button, MenuItem } from "@material-ui/core";
 import CodeMirror from "@uiw/react-codemirror";
 import { cppLanguage } from "@codemirror/lang-cpp";
 import { StreamLanguage } from "@codemirror/stream-parser";
@@ -19,7 +19,9 @@ import ManagerViewParticipantProgramSubmissionDetailTestCaseByTestCase from "./M
 export default function ContestProblemSubmissionDetailViewedByManager() {
   const { problemSubmissionId } = useParams();
   const [memoryUsage, setMemoryUsage] = useState();
+  const [contestId, setContestId] = useState();
   const [problemId, setProblemId] = useState();
+  const [listProblemIds, setListProblemIds] = useState([]);
   const [runTime, setRunTime] = useState();
   const [score, setScore] = useState();
   const [submissionLanguage, setSubmissionLanguage] = useState();
@@ -48,6 +50,8 @@ export default function ContestProblemSubmissionDetailViewedByManager() {
     let body = {
       contestSubmissionId: problemSubmissionId,
       modifiedSourceCodeSubmitted: submissionSource,
+      problemId: problemId,
+      contestId: contestId,
     };
 
     request(
@@ -77,6 +81,16 @@ export default function ContestProblemSubmissionDetailViewedByManager() {
         setTestCasePass(res.data.testCasePass);
         setStatus(res.data.status);
         setMessage(res.data.message);
+      },
+      {}
+    ).then();
+
+    request(
+      "get",
+      "/get-contest-infos-of-a-subsmission/" + problemSubmissionId,
+      (res) => {
+        setListProblemIds(res.data.problemIds);
+        setContestId(res.data.contestId);
       },
       {}
     ).then();
@@ -147,6 +161,24 @@ export default function ContestProblemSubmissionDetailViewedByManager() {
         }}
       ></TextField>
       <h3>Compile Message:{message}</h3>
+      <TextField
+        autoFocus
+        // required
+        select
+        id="problemId"
+        label="Problem"
+        placeholder="Problem"
+        onChange={(event) => {
+          setProblemId(event.target.value);
+        }}
+        value={problemId}
+      >
+        {listProblemIds.map((item) => (
+          <MenuItem key={item} value={item}>
+            {item}
+          </MenuItem>
+        ))}
+      </TextField>
       <Button onClick={updateCode}>Update Code</Button>
       {/*
       <CodeMirror

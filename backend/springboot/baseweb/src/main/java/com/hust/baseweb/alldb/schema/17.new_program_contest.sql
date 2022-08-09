@@ -135,9 +135,13 @@ create table contest_submission_history(
     contest_submission_id uuid NOT NULL,
     modified_source_code_submitted text,
     language varchar(10),
+    contest_id varchar(100),
+    problem_id varchar(100),
     last_updated_stamp         timestamp default current_date ,
     created_stamp              timestamp default current_date ,
     constraint pk_contest_submission_history_id primary key (contest_submission_history_id),
+    constraint fk_contest_submission_history_problem_id foreign key(problem_id) references contest_problem_new(problem_id),
+    constraint fk_contest_submission_history_contest_id foreign key(contest_id) references contest_new(contest_id),
     constraint fk_contest_submission_history_submission_id foreign key (contest_submission_id) references  contest_submission_new(contest_submission_id)
 
 );

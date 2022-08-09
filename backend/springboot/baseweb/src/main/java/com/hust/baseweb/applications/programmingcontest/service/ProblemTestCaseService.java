@@ -112,6 +112,8 @@ public interface ProblemTestCaseService {
 
     ContestSubmissionEntity getContestSubmissionDetail(UUID submissionId);
 
+    ModelGetContestInfosOfSubmissionOutput getContestInfosOfASubmission(UUID submissionId);
+
     void deleteProblem(String problemId, String userId) throws MiniLeetCodeException;
 
     void deleteContest(String contestId, String userId) throws MiniLeetCodeException;

@@ -48,8 +48,8 @@ export default function StudentViewProblemList() {
 
   const columns = [
     {
-      title: t("problemId"),
-      field: "problemId",
+      title: t("problem"),
+      field: "problemName",
       render: (rowData) => (
         <Link
           to={
@@ -59,13 +59,15 @@ export default function StudentViewProblemList() {
             rowData.problemId
           }
         >
-          {rowData["problemId"]}
+          {rowData["problemName"]}
         </Link>
       ),
     },
     {
+      /*
       title: t("problem"),
       field: "problemName",
+      */
     },
     {
       title: t("level"),
