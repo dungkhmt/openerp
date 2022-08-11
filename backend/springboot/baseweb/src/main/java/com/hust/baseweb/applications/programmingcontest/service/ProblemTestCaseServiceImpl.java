@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
-    private ProblemRepo problemRepo;
+    private final ProblemRepo problemRepo;
     private TestCaseRepo testCaseRepo;
     private ProblemSourceCodeRepo problemSourceCodeRepo;
     private DockerClientBase dockerClientBase;
@@ -1615,6 +1615,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             problemIds.add(p.getProblemId());
         }
         res.setProblemIds(problemIds);
+        res.setProblems(contest.getProblems());
         return res;
     }
 
@@ -2394,6 +2395,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private boolean emptyString(String s){
         return s == null || s.equals("");
     }
+
     @Override
     public List<CodePlagiarism> findAllBy(ModelGetCodeSimilarityParams input) {
         List<CodePlagiarism> codePlagiarisms = codePlagiarismRepo.findAllByContestId(input.getContestId());
@@ -2419,6 +2421,100 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             }
         }else{
             return codePlagiarisms;
+        }
+
+        return res;
+    }
+    class DFS{
+        private Set<String> V;
+        private Map<String, Set<String>> A;
+        private Map<String,Integer> idxCC;
+        private int nbCC;
+        private List<List<String>> connectedComponents;
+        public DFS(Set<String> V, Map<String, Set<String>> A){
+            this.V = V; this.A = A;
+            /*
+            for(String e: V){
+                String a = "";
+                for(String u: A.get(e)) a = a + u + ", ";
+                log.info("DFS, node e = " + e + ": " + a);
+            }
+            */
+        }
+        private void Try(String u){
+            idxCC.put(u,nbCC);
+            //log.info("DFS.Try(" + u + "), nbCC = " + nbCC + " idxCC.put(" + u + "," + nbCC + ")");
+            for(String v: A.get(u)){
+                if(idxCC.get(v) == null){
+                    Try(v);
+                }
+            }
+        }
+        public void solve(){
+            nbCC = 0;
+            idxCC = new HashMap();
+            connectedComponents= new ArrayList();
+            for(String v: V)if(idxCC.get(v) == null){
+                nbCC ++;
+                Try(v);
+            }
+            for(int i = 1; i <= nbCC; i++){
+                List<String> cc = new ArrayList<String>();
+                for(String e: V) if(idxCC.get(e) == i){
+                    cc.add(e);
+                    //log.info("DFS.solve, cc i   = " + i + " add e = " + e);
+                }
+                connectedComponents.add(cc);
+            }
+        }
+        public List<List<String>> getConnectedComponents(){
+            return connectedComponents;
+        }
+    }
+    @Override
+    public List<ModelSimilarityClusterOutput> computeSimilarityClusters(ModelGetCodeSimilarityParams input) {
+        ContestEntity contest= contestRepo.findContestByContestId(input.getContestId());
+        List<CodePlagiarism> codePlagiarisms = codePlagiarismRepo.findAllByContestId(input.getContestId());
+        double threshold = input.getThreshold()*0.01;
+        List<ModelSimilarityClusterOutput> res = new ArrayList();
+        for(ProblemEntity p: contest.getProblems()){
+            // build graph and compute connected component related to the selected problem p
+            Map<String, Set<String>> A = new HashMap();
+            Set<String> V = new HashSet();
+            List<CodePlagiarism> EP = new ArrayList();
+            for(CodePlagiarism cp: codePlagiarisms){
+                //log.info("computeSimilarityClusters, problem " + p.getProblemId() + " user1 " + cp.getUserId1() + " user2 = "
+                //         + cp.getUserId2() + " score = " + cp.getScore() + " threshold = " + threshold);
+                if(cp.getProblemId().equals(p.getProblemId()) && cp.getScore() >= threshold){
+                    EP.add(cp);
+                    //log.info("computeSimilarityClusters, problem " + p.getProblemId() + "ADD edge (" + cp.getUserId1() + ","
+                    //         + cp.getUserId2() + ")");
+
+                    String u1 = cp.getUserId1();
+                    String u2 = cp.getUserId2();
+                    V.add(u1);
+                    V.add(u2);
+                    if(A.get(u1)==null) A.put(u1, new HashSet());
+                    if(A.get(u2)==null) A.put(u2, new HashSet());
+                    A.get(u1).add(u2);
+                    A.get(u2).add(u1);
+                }
+
+            }
+            DFS dfs = new DFS(V,A);
+            dfs.solve();
+            List<List<String>> connectedComponents = dfs.getConnectedComponents();
+            //ModelSimilarityClusterOutput c = new ModelSimilarityClusterOutput();
+            //c.setProblemId(p.getProblemId());
+            //c.setClusters(connectedComponents);
+            for(List<String> cc: connectedComponents) {
+                ModelSimilarityClusterOutput c = new ModelSimilarityClusterOutput();
+                c.setProblemId(p.getProblemId());
+                String userIds = "";
+                for(String s: cc) userIds = userIds + s + ", ";
+                c.setUserIds(userIds);
+                res.add(c);
+            }
         }
 
         return res;

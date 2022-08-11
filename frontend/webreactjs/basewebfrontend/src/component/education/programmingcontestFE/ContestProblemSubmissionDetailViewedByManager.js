@@ -22,6 +22,7 @@ export default function ContestProblemSubmissionDetailViewedByManager() {
   const [contestId, setContestId] = useState();
   const [problemId, setProblemId] = useState();
   const [listProblemIds, setListProblemIds] = useState([]);
+  const [listProblems, setListProblems] = useState([]);
   const [runTime, setRunTime] = useState();
   const [score, setScore] = useState();
   const [submissionLanguage, setSubmissionLanguage] = useState();
@@ -90,6 +91,7 @@ export default function ContestProblemSubmissionDetailViewedByManager() {
       "/get-contest-infos-of-a-subsmission/" + problemSubmissionId,
       (res) => {
         setListProblemIds(res.data.problemIds);
+        setListProblems(res.data.problems);
         setContestId(res.data.contestId);
       },
       {}
@@ -173,9 +175,9 @@ export default function ContestProblemSubmissionDetailViewedByManager() {
         }}
         value={problemId}
       >
-        {listProblemIds.map((item) => (
-          <MenuItem key={item} value={item}>
-            {item}
+        {listProblems.map((item) => (
+          <MenuItem key={item.problemId} value={item.problemId}>
+            {item.problemName}
           </MenuItem>
         ))}
       </TextField>
