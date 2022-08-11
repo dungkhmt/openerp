@@ -1,9 +1,9 @@
-import express from "express";
-import "dotenv/config";
-import cors from "cors";
-import peer from "peer";
-import multer from "multer";
 import AWS from "aws-sdk";
+import cors from "cors";
+import "dotenv/config";
+import express from "express";
+import multer from "multer";
+import peer from "peer";
 import { v4 as uuid } from "uuid";
 
 const app = express();
