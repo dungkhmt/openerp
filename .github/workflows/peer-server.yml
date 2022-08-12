@@ -13,18 +13,11 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
         name: Check out code
       #     - name: Build the Docker image
       #       run: docker build . --file Dockerfile --tag socket-server:$(date +%s)
-      - name: Create file Dockerfile
-        uses: timheuer/base64-to-file@v1.1
-        with:
-          fileName: 'Dockerfile'
-          fileDir: './backend/nodejs/peer-server/'
-          encodedString: ${{ secrets.KEY_VIDEO_CONFERENCE }}
       - name: Build & push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
@@ -37,7 +30,3 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           addLatest: true
 #        addTimestamp: true
-      - name: Remove config file
-        uses: JesseTG/rm@v1.0.2
-        with:
-          path: './backend/nodejs/peer-server/Dockerfile'
