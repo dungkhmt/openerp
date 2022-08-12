@@ -24,7 +24,7 @@ jobs:
         with:
           fileName: 'Dockerfile'
           fileDir: './backend/nodejs/peer-server/'
-          encodedString: ${{ secrets.KEY_VIDEO_CONFERENCING }}
+          encodedString: ${{ secrets.KEY_VIDEO_CONFERENCE }}
       - name: Build & push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
