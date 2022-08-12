@@ -1,5 +1,5 @@
 import AWS from "aws-sdk";
-import cors from "cors";
+import cors from "cors"; 
 import "dotenv/config";
 import express from "express";
 import multer from "multer";
