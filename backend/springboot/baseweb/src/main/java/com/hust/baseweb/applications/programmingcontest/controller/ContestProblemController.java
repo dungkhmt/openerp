@@ -279,8 +279,12 @@ public class ContestProblemController {
         //String problemId = input.getProblemId();
         //List<CodePlagiarism> codePlagiarism = problemTestCaseService.findAllByContestId(contestId);
         List<CodePlagiarism> codePlagiarism = problemTestCaseService.findAllBy(input);
-
         return ResponseEntity.ok().body(codePlagiarism);
+    }
+    @PostMapping("/get-code-similarity-cluster")
+    public ResponseEntity<?> getCodeSimilarityCluster(Principal principal, @RequestBody ModelGetCodeSimilarityParams input){
+        List<ModelSimilarityClusterOutput> res = problemTestCaseService.computeSimilarityClusters(input);
+        return ResponseEntity.ok().body(res);
     }
 
     @PostMapping("/check-code-similarity/{contestId}")

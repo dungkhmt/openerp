@@ -77,7 +77,7 @@ export const MEDIA_TYPE = {
 export const PEER_SERVER = {
   secure: true,
   host: "/",
-  port: "3001",
+  port: "443",
   path: "/api/video-call/peer-server",
 };
 

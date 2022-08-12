@@ -11,6 +11,12 @@ export default function CodeSimilarityCheck(props) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [userId, setUserId] = useState(null);
   const [problemId, setProblemId] = useState(null);
+  const [clusters, setClusters] = useState([]);
+
+  const columnCluster = [
+    { title: "Problem", field: "problemId" },
+    { title: "UserIds", field: "userIds" },
+  ];
 
   const columns = [
     { title: "Source1", field: "sourceCode1" },
@@ -43,6 +49,27 @@ export default function CodeSimilarityCheck(props) {
         //setCodeSimilarity(res.data.codeSimilarityElementList);
         console.log("map data = ", data);
         setCodeSimilarity(data);
+      },
+      {},
+      body
+    );
+
+    request(
+      "post",
+      //"/get-code-similarity/" + contestId,
+      "/get-code-similarity-cluster",
+      (res) => {
+        console.log("getCodeChecking Plagiarism, res = ", res.data);
+        /*
+        let data = res.data.map((c) => ({
+          ...c,
+          date1: toFormattedDateTime(c.submitDate1),
+          date2: toFormattedDateTime(c.submitDate2),
+        }));
+        */
+        //setCodeSimilarity(res.data.codeSimilarityElementList);
+        console.log("map data = ", res.data);
+        setClusters(res.data);
       },
       {},
       body
@@ -115,6 +142,7 @@ export default function CodeSimilarityCheck(props) {
       </Button>
       {isProcessing ? <CircularProgress /> : ""}
       <MaterialTable columns={columns} data={codeSimilarity}></MaterialTable>
+      <MaterialTable columns={columnCluster} data={clusters}></MaterialTable>
     </div>
   );
 }
