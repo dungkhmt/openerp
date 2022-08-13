@@ -99,7 +99,7 @@ export const DrawText = React.memo(
             drawData.text = [{ data, currentPage }]
           }
           localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(drawData))
-          isInputtingRef.current = isInputting
+          // isInputtingRef.current = isInputting
         })
 
         const onCheckLS = (currentWhiteboardId) => {
@@ -219,9 +219,9 @@ export const DrawText = React.memo(
       }
 
       const updateDataFromLS = () => {
-        if (isInputtingRef.current === 'processing') {
-          return
-        }
+        // if (isInputtingRef.current === 'processing') {
+        //   return
+        // }
         const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
         if (typeof drawData.text !== 'undefined') {
           const foundDrawData = drawData.text.find((item) => Number(item.currentPage) === Number(currentPage))

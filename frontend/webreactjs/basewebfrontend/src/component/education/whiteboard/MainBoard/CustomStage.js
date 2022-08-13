@@ -43,34 +43,6 @@ export const CustomStage = React.memo(({ page, totalPage, strokeDraw, tool, role
   }, [page])
 
   useEffect(() => {
-    const listener = (event) => {
-      // Call the appropriate pointer type handler
-      switch (event.pointerType) {
-        case 'mouse':
-          console.log('mouse pointer type')
-          break
-        case 'pen':
-          console.log('pen pointer type')
-          break
-        case 'touch':
-          console.log('touch pointer type')
-          break
-        default:
-          console.log(`pointerType ${event.pointerType} is not supported`)
-      }
-    }
-    if (stageContainer) {
-      stageContainer.addEventListener('pointerdown', listener)
-    }
-
-    return () => {
-      if (stageContainer) {
-        stageContainer.removeEventListener('pointerdown', listener)
-      }
-    }
-  }, [stageContainer])
-
-  useEffect(() => {
     setEventPointer({
       [TOOL.PEN]: { eventType: null, pointerPosition: { x: 0, y: 0 } },
       [TOOL.RECTANGLE]: { eventType: null, pointerPosition: { x: 0, y: 0 } },
@@ -87,8 +59,10 @@ export const CustomStage = React.memo(({ page, totalPage, strokeDraw, tool, role
   }, [totalPage, scale, page, width])
 
   const handleMouseDown = (e) => {
-    e.evt.preventDefault()
-    e.evt.stopPropagation()
+    if (tool !== TOOL.TEXT && tool !== TOOL.POINTER) {
+      e.evt.preventDefault()
+      e.evt.stopPropagation()
+    }
     isDrawing.current = true
     let pos = e.target.getStage()?.getPointerPosition()
     if (scale !== 1) {
@@ -120,8 +94,10 @@ export const CustomStage = React.memo(({ page, totalPage, strokeDraw, tool, role
   }
 
   const handleMouseMove = (e) => {
-    e.evt.preventDefault()
-    e.evt.stopPropagation()
+    if (tool !== TOOL.TEXT && tool !== TOOL.POINTER) {
+      e.evt.preventDefault()
+      e.evt.stopPropagation()
+    }
     // no drawing - skipping
     if (!isDrawing.current) {
       return
@@ -151,8 +127,10 @@ export const CustomStage = React.memo(({ page, totalPage, strokeDraw, tool, role
   }
 
   const handleMouseUp = (e) => {
-    e.evt.preventDefault()
-    e.evt.stopPropagation()
+    if (tool !== TOOL.TEXT && tool !== TOOL.POINTER) {
+      e.evt.preventDefault()
+      e.evt.stopPropagation()
+    }
     isDrawing.current = false
     let point = e.target.getStage()?.getPointerPosition()
     if (scale !== 1) {
@@ -178,8 +156,10 @@ export const CustomStage = React.memo(({ page, totalPage, strokeDraw, tool, role
   }
 
   const handleWheel = (e) => {
-    e.evt.preventDefault()
-    e.evt.stopPropagation()
+    if (tool !== TOOL.TEXT && tool !== TOOL.POINTER) {
+      e.evt.preventDefault()
+      e.evt.stopPropagation()
+    }
     const stage = e.target.getStage()
     // const layer = e.target.g()
 
@@ -222,20 +202,26 @@ export const CustomStage = React.memo(({ page, totalPage, strokeDraw, tool, role
   }
 
   const onTouchStart = (e) => {
-    e.evt.preventDefault()
-    e.evt.stopPropagation()
+    if (tool !== TOOL.TEXT && tool !== TOOL.POINTER) {
+      e.evt.preventDefault()
+      e.evt.stopPropagation()
+    }
     handleMouseDown(e)
   }
 
   const onTouchMove = (e) => {
-    e.evt.preventDefault()
-    e.evt.stopPropagation()
+    if (tool !== TOOL.TEXT && tool !== TOOL.POINTER) {
+      e.evt.preventDefault()
+      e.evt.stopPropagation()
+    }
     handleMouseMove(e)
   }
 
   const onTouchEnd = (e) => {
-    e.evt.preventDefault()
-    e.evt.stopPropagation()
+    if (tool !== TOOL.TEXT && tool !== TOOL.POINTER) {
+      e.evt.preventDefault()
+      e.evt.stopPropagation()
+    }
     handleMouseUp(e)
   }
 
