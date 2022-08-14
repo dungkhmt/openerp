@@ -21,8 +21,8 @@ app.use(cors())
 io.on("connection", async (socket) => {
   console.log(`${socket.id} has connected`)
 
-  socket.on(SOCKET_IO_EVENTS.CONNECT_TO_WHITEBOARD, async ({ whiteboardId }) => {
-    await socket.join(whiteboardId)
+  socket.on(SOCKET_IO_EVENTS.CONNECT_TO_WHITEBOARD, async ({ currentWhiteboardId }) => {
+    await socket.join(currentWhiteboardId)
   })
 
   socket.on(SOCKET_IO_EVENTS.CONNECT_TO_WHITEBOARD_PAGE, async ({ whiteboardPageId }) => {
