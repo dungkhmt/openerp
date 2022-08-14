@@ -281,6 +281,7 @@ export const CustomStage = React.memo(({ page, totalPage, strokeDraw, tool, role
         offset={offset}
         tool={tool}
         currentPage={page}
+        stageContainer={stageContainer}
         onUpdateTool={onSetDefaultTool}
         whiteboardId={whiteboardId}
         onDrawDone={onDrawDone}

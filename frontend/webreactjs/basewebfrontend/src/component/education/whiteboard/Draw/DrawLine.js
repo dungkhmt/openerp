@@ -21,28 +21,28 @@ export const DrawLine = React.memo(
         socket.on(SOCKET_IO_EVENTS.ON_DRAW_LINE_END, ({ data, currentDrawPage }) => {
           if (currentDrawPage === Number(currentPage)) {
             setLines(data)
-            const lineLayer = ref?.getLayers().find((layer) => layer.attrs.id === LAYER_ID)
-            // layerRef.current?.batchDraw()
-            if ((ref?.getLayers().length > 0 && lineLayer?.getChildren().length !== data.length) || !lineLayer) {
-              lineLayer?.clear()
-              lineLayer?.destroyChildren()
-              for (let i = 0; i < data.length; ++i) {
-                lineLayer?.add(
-                  new Konva.Line({
-                    points: data[i].points,
-                    stroke: data[i].strokeDraw.color,
-                    strokeWidth: data[i].strokeWidth * scale,
-                    tension: 0.5,
-                    lineCap: 'round',
-                    lineJoin: 'round',
-                    globalCompositeOperation: data[i].tool === TOOL.ERASER ? 'destination-out' : 'source-over',
-                  }),
-                )
-              }
-              lineLayer?.batchDraw()
-              // lineLayer?.draw()
-              // ref?.getLayer()?.batchDraw()
-            }
+            // const lineLayer = ref?.getLayers().find((layer) => layer.attrs.id === LAYER_ID)
+            // // layerRef.current?.batchDraw()
+            // if ((ref?.getLayers().length > 0 && lineLayer?.getChildren().length !== data.length) || !lineLayer) {
+            //   lineLayer?.clear()
+            //   lineLayer?.destroyChildren()
+            //   for (let i = 0; i < data.length; ++i) {
+            //     lineLayer?.add(
+            //       new Konva.Line({
+            //         points: data[i].points,
+            //         stroke: data[i].strokeDraw.color,
+            //         strokeWidth: data[i].strokeWidth * scale,
+            //         tension: 0.5,
+            //         lineCap: 'round',
+            //         lineJoin: 'round',
+            //         globalCompositeOperation: data[i].tool === TOOL.ERASER ? 'destination-out' : 'source-over',
+            //       }),
+            //     )
+            //   }
+            //   lineLayer?.batchDraw()
+            // lineLayer?.draw()
+            // ref?.getLayer()?.batchDraw()
+            // }
             // linesRef.current = data
           }
           const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')

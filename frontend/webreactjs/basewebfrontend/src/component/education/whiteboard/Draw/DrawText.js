@@ -12,11 +12,23 @@ const LAYER_ID = 'text'
 export const DrawText = React.memo(
   React.forwardRef(
     (
-      { eventPointer, offset, tool, currentPage, onUpdateTool, whiteboardId, onDrawDone, totalPage, roleStatus },
+      {
+        eventPointer,
+        offset,
+        tool,
+        currentPage,
+        stageContainer,
+        onUpdateTool,
+        whiteboardId,
+        onDrawDone,
+        totalPage,
+        roleStatus,
+      },
       ref,
     ) => {
       const { socket } = useContext(SocketContext)
       const [annotations, setAnnotations] = useState([])
+      const [currentAnnotation, setCurrentAnnotation] = useState(null)
       const textRef = useRef({})
 
       const isInputtingRef = useRef('idle')
@@ -129,24 +141,24 @@ export const DrawText = React.memo(
         }
       }, [currentPage, annotations, totalPage])
 
-      // useEffect(() => {
-      //   if (isInputtingRef.current !== 'processing') {
-      //     if (intervalRef && intervalRef.current) {
-      //       clearInterval(intervalRef.current)
-      //     }
-      //     intervalRef.current = setInterval(() => updateDataFromLS(), 2000)
-      //   } else {
-      //     if (intervalRef && intervalRef.current) {
-      //       clearInterval(intervalRef.current)
-      //     }
-      //   }
+      useEffect(() => {
+        if (isInputtingRef.current !== 'processing') {
+          if (intervalRef && intervalRef.current) {
+            clearInterval(intervalRef.current)
+          }
+          intervalRef.current = setInterval(() => updateDataFromLS(), 2000)
+        } else {
+          if (intervalRef && intervalRef.current) {
+            clearInterval(intervalRef.current)
+          }
+        }
 
-      //   return () => {
-      //     if (intervalRef && intervalRef.current) {
-      //       clearInterval(intervalRef.current)
-      //     }
-      //   }
-      // }, [annotations])
+        return () => {
+          if (intervalRef && intervalRef.current) {
+            clearInterval(intervalRef.current)
+          }
+        }
+      }, [annotations])
 
       useEffect(() => {
         updateDataFromLS()
@@ -195,6 +207,42 @@ export const DrawText = React.memo(
         onDrawDone(TOOL.TEXT)
         onUpdateTool()
       }, [eventPointer, currentPage])
+
+      useEffect(() => {
+        if (!stageContainer && tool !== TOOL.ERASER) {
+          return
+        }
+        stageContainer.tabIndex = 1
+        stageContainer.focus()
+
+        const listener = (e) => {
+          if (e.key === 'Delete' && currentAnnotation !== null) {
+            const newAnnotations = annotations.filter((annotation) => annotation.key !== currentAnnotation.key)
+            setAnnotations(newAnnotations)
+            setCurrentAnnotation(null)
+            // annotationsRef.current = newAnnotations
+
+            const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
+            if (typeof drawData.text !== 'undefined') {
+              drawData.text = updateLocalStorageData(drawData.text, newAnnotations, currentPage)
+            } else {
+              drawData.text = [{ data: newAnnotations, currentPage }]
+            }
+            localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(drawData))
+            socket.emit(SOCKET_IO_EVENTS.ADD_TEXT, {
+              data: newAnnotations,
+              currentDrawPage: Number(currentPage),
+              whiteboardPageId: `${whiteboardId}-${currentPage}`,
+            })
+          }
+        }
+
+        stageContainer.addEventListener('keydown', listener)
+
+        return () => {
+          stageContainer.removeEventListener('keydown', listener)
+        }
+      }, [stageContainer, currentAnnotation, tool])
 
       const onUpdateText = async (updatedAnnotation) => {
         const index = annotations.findIndex((ele) => ele.key === updatedAnnotation.key)
@@ -249,7 +297,9 @@ export const DrawText = React.memo(
               offset={offset}
               tool={tool}
               roleStatus={roleStatus}
+              annotations={annotations}
               onUpdateText={onUpdateText}
+              setCurrentAnnotation={setCurrentAnnotation}
             />
           ))}
         </Layer>

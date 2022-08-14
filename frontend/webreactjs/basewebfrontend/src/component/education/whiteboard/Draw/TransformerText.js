@@ -4,7 +4,7 @@ import { ROLE_STATUS, SOCKET_IO_EVENTS, TOOL } from '../../../../utils/whiteboar
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
 export const TransformerText = React.memo(
-  React.forwardRef(({ value, tool, roleStatus, onUpdateText }, ref) => {
+  React.forwardRef(({ value, tool, roleStatus, annotations, onUpdateText, setCurrentAnnotation }, ref) => {
     const textRef = useRef(null)
     const transformRef = useRef(null)
 
@@ -261,8 +261,13 @@ export const TransformerText = React.memo(
       })
     }
 
-    const onClickText = () =>
+    const onClickText = (key) => {
       transformRef.current?.isVisible() ? transformRef.current.hide() : transformRef.current?.show()
+      if (roleStatus.roleId === ROLE_STATUS.READ || roleStatus.statusId !== ROLE_STATUS.ACCEPTED) {
+        return
+      }
+      setCurrentAnnotation(annotations.find((item) => item.key === key))
+    }
 
     return (
       <>
@@ -286,7 +291,7 @@ export const TransformerText = React.memo(
           fill={value.fill}
           padding={value.padding}
           align={value.align}
-          onClick={onClickText}
+          onClick={() => onClickText(value.key)}
           onDblClick={onDblClickTextRect}
           onDblTap={onDblClickTextRect}
           onDragStart={onDragTextStart}
