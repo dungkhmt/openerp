@@ -119,7 +119,7 @@ export const MainBoard = React.memo(() => {
       if (whiteboardId !== currentWhiteboardId) {
         return
       }
-      setStrokeDraw(data.strokeDraw)
+      setStrokeDraw(data)
     })
 
     // add user to whiteboard here
@@ -534,7 +534,7 @@ export const MainBoard = React.memo(() => {
       [e.target.name]: e.target.value.includes('#') ? e.target.value : Number(e.target.value),
     }))
     socket.emit(SOCKET_IO_EVENTS.CHANGE_STROKE_DRAW, {
-      data: { ...strokeDraw, [e.target.name]: e.target.value },
+      data: { ...strokeDraw, [e.target.name]: e.target.value.includes('#') ? e.target.value : Number(e.target.value) },
       currentWhiteboardId: whiteboardId,
     })
   }

@@ -73,6 +73,9 @@ export const DrawLine = React.memo(
 
       useEffect(() => {
         if (!isDrawingRef.current) {
+          if (intervalRef && intervalRef.current) {
+            clearInterval(intervalRef.current)
+          }
           intervalRef.current = setInterval(() => updateDataFromLS(), 2000)
         } else {
           if (intervalRef && intervalRef.current) {
