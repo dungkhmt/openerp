@@ -72,18 +72,18 @@ const tabsLabel = [
 ];
 
 const objectives = [
-  // {
-  //   value: "SCORES",
-  //   label: "Tối ưu thói quen",
-  // },
-  // {
-  //   value: "PRIORITY",
-  //   label: "Tối ưu độ ưu tiên",
-  // },
-  // {
-  //   value: "WORKDAYS",
-  //   label: "Tối ưu ngày dạy",
-  // },
+  {
+    value: "SCORES",
+    label: "Tối ưu thói quen",
+  },
+  {
+    value: "PRIORITY",
+    label: "Tối ưu độ ưu tiên",
+  },
+  {
+    value: "WORKDAYS",
+    label: "Tối ưu ngày dạy",
+  },
   {
     value: "LOAD_BALANCING_DURATION_CONSIDERATION",
     label: "Cân bằng tải tính đến thời lượng",
@@ -192,7 +192,7 @@ export default function PlanDetail() {
       <Typography variant="h5">{`${plan.planName}`}</Typography>
 
       <Box display="flex" justifyContent="flex-end" alignItems="center">
-        {[solvers, models, objectives].map((config, index) => (
+        {[objectives].map((config, index) => (
           <TextField
             id="outlined-select-assignment-mode"
             select
