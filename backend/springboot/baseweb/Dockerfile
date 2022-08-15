@@ -12,8 +12,10 @@ COPY src src
 RUN ./mvnw install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
-FROM openjdk:8-jdk-alpine
+FROM openjdk:8-jdk
 RUN apk update && apk add --no-cache gcompat # For ortools
+#RUN ln -s /lib/libc.musl-x86_64.so.1 /usr/lib/libc.musl-x86_64.so.1
+#ENV LD_LIBRARY_PATH /usr/lib
 
 VOLUME /tmp
 ARG DEPENDENCY=/workspace/app/target/dependency
