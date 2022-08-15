@@ -1,6 +1,9 @@
 package com.hust.baseweb.applications.chat.chatvoice.service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +13,6 @@ import java.util.UUID;
 import com.hust.baseweb.applications.chat.chatvoice.model.Room;
 import com.hust.baseweb.applications.chat.chatvoice.model.RoomParticipant;
 import com.hust.baseweb.applications.chat.chatvoice.repositoty.RoomParticipantRepository;
-import com.hust.baseweb.applications.chat.chatvoice.repositoty.RoomRepository;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.service.UserService;
 
@@ -91,6 +93,18 @@ public class RoomParticipantService {
     Page<Room> pageRoom = roomParticipantRepository.getListInvitedRoom(page, u);
     pageRoom.forEach((room) -> {
       room.setHost(null);
+    });
+    return pageRoom;
+  }
+
+  public Page<Room> getListPresentRoom(Pageable page, String userId) {
+    UserLogin u = userService.findById(userId);
+    LocalDateTime currentTime = LocalDateTime.now();
+    Date now = Date.from(currentTime.atZone(ZoneId.systemDefault()).toInstant());
+    Page<Room> pageRoom = roomParticipantRepository.getListPresentRoom(page, u, now);
+    pageRoom.forEach((room) -> {
+      room.setHost(null);
+      System.out.println("room: " + room.toString());
     });
     return pageRoom;
   }

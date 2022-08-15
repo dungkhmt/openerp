@@ -28,6 +28,7 @@ export const useInviteFriend = ({ meetId, onSuccess, onError }) => {
       onSuccess: () => {
         queryClient.refetchQueries([QUERY_KEY.INVITED_FRIENDS]);
       },
+      onError,
     }
   );
 };

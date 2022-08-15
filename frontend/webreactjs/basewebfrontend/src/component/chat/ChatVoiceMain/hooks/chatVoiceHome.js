@@ -5,6 +5,7 @@ import {
   getOwnedMeets,
   scheduleMeet,
   updateMeet,
+  getPresentMeets,
 } from "../api";
 import { QUERY_KEY } from "../utils/constant";
 
@@ -50,5 +51,13 @@ export const useUpdateMeet = ({ onSuccess, onError }) => {
   return useMutation([QUERY_KEY.UPDATE_MEET], (params) => updateMeet(params), {
     onSuccess,
     onError,
+  });
+};
+
+export const useGetPresentMeets = ({ onSuccess, onError }) => {
+  return useQuery([QUERY_KEY.PRESENT_MEET], () => getPresentMeets(), {
+    onError,
+    onSuccess,
+    select: (res) => res?.data,
   });
 };

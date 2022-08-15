@@ -60,4 +60,10 @@ public class RoomParticipantController {
     String userId = principal.getName();
     return ResponseEntity.ok().body(roomParticipantService.getListInvitedRoom(page, userId));
   }
+
+  @GetMapping(path = "/getListPresentMeet")
+  public ResponseEntity<?> getListPresentRoom(Principal principal, Pageable page) {
+    String userId = principal.getName();
+    return ResponseEntity.ok().body(roomParticipantService.getListPresentRoom(page, userId));
+  }
 }

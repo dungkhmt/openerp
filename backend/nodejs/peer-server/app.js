@@ -60,7 +60,7 @@ const uploadFile = async (req, res, next) => {
     const url = downloadFromS3(fileKey);
     return res.status(200).json({ data: { url, fileType } });
   } catch (e) {
-    next(e);
+    res.status(400).json({ error: "Upload file failed" });
   }
 };
 

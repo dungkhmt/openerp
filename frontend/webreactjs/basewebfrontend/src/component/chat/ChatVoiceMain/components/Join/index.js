@@ -10,7 +10,10 @@ import {
 import { useState } from "react";
 import { useHistory } from "react-router";
 import PrimaryButton from "../../../../button/PrimaryButton";
-import { useGetInvitedMeets } from "../../hooks/chatVoiceHome";
+import {
+  useGetInvitedMeets,
+  useGetPresentMeets,
+} from "../../hooks/chatVoiceHome";
 import { ENTER_KEY, styleModal } from "../../utils/constant";
 import ListMeet from "../ListMeet";
 
@@ -20,6 +23,7 @@ const Join = () => {
   const [inputCode, setInputCode] = useState("");
 
   const { data } = useGetInvitedMeets({ params: null });
+  const { data: presentMeets } = useGetPresentMeets({ params: null });
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleChangeInputCode = (e) => {
@@ -41,6 +45,10 @@ const Join = () => {
           <ListMeet
             title="Danh sách cuộc gặp mà bạn được mời"
             listMeet={data?.content || []}
+          />
+          <ListMeet
+            title="Cuộc gặp đang diễn ra"
+            listMeet={presentMeets?.content || []}
           />
           <PrimaryButton onClick={handleOpen} id="button-meet-now">
             Tham gia một cuộc gặp khác
