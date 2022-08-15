@@ -2,7 +2,8 @@
 
 FROM openjdk:8-jdk-alpine as build
 WORKDIR /workspace/app
-
+RUN ln -s /lib/libc.musl-x86_64.so.1 /usr/lib/libc.musl-x86_64.so.1
+ENV LD_LIBRARY_PATH /usr/lib
 COPY mvnw .
 RUN chmod +x mvnw
 COPY .mvn .mvn
