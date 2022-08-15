@@ -194,12 +194,12 @@ export default function PlanDetail() {
       <Typography variant="h5">{`${plan.planName}`}</Typography>
 
       <Box display="flex" justifyContent="flex-end" alignItems="center">
-        {[solvers, models, objectives].map((config, index) => (
+        {[objectives].map((config, index) => (
           <TextField
             id="outlined-select-assignment-mode"
             select
             className={classes.selectMode}
-            label={label[index]}
+            label={"Mục tiêu phân công"}
             value={configParams[index]}
             onChange={(e) => handleChange(e, index)}
             variant="outlined"
