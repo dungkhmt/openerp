@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.3
 
-FROM openjdk:8-jdk as build
+FROM openjdk:8-jdk-alpine as build
 WORKDIR /workspace/app
 
 COPY mvnw .
@@ -12,7 +12,7 @@ COPY src src
 RUN ./mvnw install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
-FROM openjdk:8-jdk
+FROM openjdk:8-jdk-alpine
 RUN apk update && apk add --no-cache gcompat # For ortools
 #RUN ln -s /lib/libc.musl-x86_64.so.1 /usr/lib/libc.musl-x86_64.so.1
 #ENV LD_LIBRARY_PATH /usr/lib
