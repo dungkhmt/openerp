@@ -112,6 +112,8 @@ const solvers = [
   },
 ];
 
+const label = ["Solver", "Mô hình", "Mục tiêu phân công"];
+
 // A custom hook that builds on useLocation to parse
 // the query string for you.
 function useQuery() {
@@ -157,7 +159,7 @@ export default function PlanDetail() {
 
     let data = {
       planId: planId,
-      config: { solver: solver, model: model, objective: objective },
+      config: { solver: "ORTOOLS", model: "MIP", objective: objective },
     };
     // console.log(data);
 
@@ -192,12 +194,12 @@ export default function PlanDetail() {
       <Typography variant="h5">{`${plan.planName}`}</Typography>
 
       <Box display="flex" justifyContent="flex-end" alignItems="center">
-        {[objectives].map((config, index) => (
+        {[solvers, models, objectives].map((config, index) => (
           <TextField
             id="outlined-select-assignment-mode"
             select
             className={classes.selectMode}
-            label="Mục tiêu phân công"
+            label={label[index]}
             value={configParams[index]}
             onChange={(e) => handleChange(e, index)}
             variant="outlined"
