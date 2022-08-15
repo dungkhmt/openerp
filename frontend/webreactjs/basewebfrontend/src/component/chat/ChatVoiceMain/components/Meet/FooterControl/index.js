@@ -8,8 +8,8 @@ import ParticipantIcon from "../../../icon/Participant";
 import ShareScreenIcon from "../../../icon/ShareScreen";
 import ShareMeetIcon from "../../../icon/ShareMeet";
 import CopyIcon from "../../../icon/Copy";
-import { BAR_TYPE, MEDIA_TYPE, styleModal } from "../../../ultis/constant";
-import { getDisplayMedia, getUserMedia } from "../../../ultis/helpers";
+import { BAR_TYPE, MEDIA_TYPE, styleModal } from "../../../utils/constant";
+import { getDisplayMedia, getUserMedia } from "../../../utils/helpers";
 import {
   Backdrop,
   Box,

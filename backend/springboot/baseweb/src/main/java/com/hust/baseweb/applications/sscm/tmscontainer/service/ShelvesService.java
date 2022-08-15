@@ -1,18 +1,18 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.service;
 
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.Facilities;
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.Shelves;
-import com.hust.baseweb.applications.sscm.tmscontainer.model.FacilityRequest;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.LineItem;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.Shelf;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.FacilityResponse;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.ShelfRequest;
-import com.hust.baseweb.applications.sscm.tmscontainer.repository.FacilitiesRepository;
-import com.hust.baseweb.applications.sscm.tmscontainer.repository.ShelvesRepository;
+import com.hust.baseweb.applications.sscm.tmscontainer.repository.ShelfRepository;
+import com.hust.baseweb.applications.sscm.tmscontainer.utils.Status;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ShelvesService {
@@ -20,25 +20,62 @@ public class ShelvesService {
     ModelMapper mapper = new ModelMapper();
 
     @Autowired
-    private ShelvesRepository shelvesRepository;
+    private ShelfRepository shelfRepository;
 
-    public List<Shelves> createShelf( Integer facilitiesID, List<ShelfRequest> shelfRequests){
+    public List<Shelf> createShelf(Integer facilitiesID, List<ShelfRequest> shelfRequests){
 
-        ArrayList<Shelves> shelves = new ArrayList<>();
+        ArrayList<Shelf> shelves = new ArrayList<>();
 
         for (ShelfRequest shelf: shelfRequests
              ) {
             shelf.setFacilityId(facilitiesID);
-            shelves.add(new Shelves(shelf));
+            shelves.add(new Shelf(shelf));
         }
-        return shelvesRepository.saveAll(shelves);
+        return shelfRepository.saveAll(shelves);
     }
 
-    public List<Shelves> getListShelves( Integer facilitiesID){
+    public List<Shelf> getListShelves(Integer facilitiesID){
 
-        return shelvesRepository.findUserByFacilityID(facilitiesID);
+        return shelfRepository.findShelvesByFacilityID(facilitiesID);
     }
 
+    public void updateListShelve(List<ShelfRequest> shelfRequests, List<Shelf> shelfModel){
+        List<Integer>  shelfIds = shelfRequests.stream().map(ShelfRequest::getShelf_id).filter(li -> li > 0).collect(
+            Collectors.toList());
+
+        for (Shelf shelfItem : shelfModel) {
+            if (!shelfIds.contains(shelfItem.getShelfId())) {
+                removeShlef(shelfModel, shelfItem);
+            }
+        }
+
+        for(ShelfRequest shelfItem : shelfRequests){
+            if(shelfItem.getShelf_id() == 0){
+                Shelf shelfItemAdded = new Shelf(shelfItem);
+                addShelf(shelfModel, shelfItemAdded);
+            }else{
+                Shelf shelfItemUpdate = shelfModel
+                    .stream().filter(li -> li.getShelfId() == shelfItem.getShelf_id()).findFirst().orElse(null);
+                assert shelfItemUpdate != null;
+                shelfItemUpdate.update(shelfItem);
+            }
+        }
+        shelfRepository.saveAll(shelfModel);
+    }
+
+    public void removeShlef(List<Shelf> shelves, Shelf shelfItem) {
+        shelves.remove(shelfItem);
+        shelfItem.setFacilityId(null);
+        shelfItem.setStatus(Status.DELETED);
+    }
+    public void addShelf(List<Shelf> shelfModel, Shelf shelfAdd){
+        shelfAdd.setStatus(Status.ACTIVE);
+        shelfModel.add(shelfAdd);
+    }
+
+    public List<Integer> findShelfByFacilityId(Integer id){
+        return shelfRepository.findAllByFacilityId(id);
+    }
 
 
 }

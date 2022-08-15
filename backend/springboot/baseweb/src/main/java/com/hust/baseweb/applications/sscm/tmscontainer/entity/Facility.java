@@ -1,8 +1,6 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.entity;
 
-
 import com.hust.baseweb.applications.sscm.tmscontainer.model.FacilityRequest;
-import com.hust.baseweb.applications.sscm.tmscontainer.model.ShelfRequest;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,28 +13,28 @@ import java.util.Date;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "shelves")
+@Table(name = "facilities")
 @EntityListeners(AuditingEntityListener.class)
+public class Facility {
 
-public class Shelves {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int shelfId;
-
-    @Column(name="facility_id")
     private int facilityId;
 
-    @Column(name= "x")
-    private int x;
+    @Column(name= "code")
+    private String code;
 
-    @Column(name= "y")
-    private int y;
+    @Column(name= "name")
+    private String name;
 
-    @Column(name= "width")
-    private int width;
+    @Column(name= "facility_width")
+    private int facilityWidth;
 
-    @Column(name= "lenght")
-    private int lenght;
+    @Column(name= "facility_lenght")
+    private int facilityLenght;
+
+    @Column(name= "address")
+    private String address;
 
     @LastModifiedDate
     private Date updateAt;
@@ -44,11 +42,11 @@ public class Shelves {
     @CreatedDate
     private Date createAt;
 
-    public Shelves(ShelfRequest shelfRequest){
-        this.facilityId = shelfRequest.getFacilityId();
-        this.x = shelfRequest.getX();
-        this.y = shelfRequest.getY();
-        this.width = shelfRequest.getWidth();
-        this.lenght = shelfRequest.getLenght();
+    public Facility(FacilityRequest facilityRequest){
+        this.code = facilityRequest.getCode();
+        this.name = facilityRequest.getName();
+        this.address = facilityRequest.getAddress();
+        this.facilityLenght = facilityRequest.getFacilityLenght();
+        this.facilityWidth = facilityRequest.getFacilityWidth();
     }
 }

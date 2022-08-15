@@ -1,12 +1,21 @@
-import { Box, Button, MenuItem, TextField } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  MenuItem,
+  TextField,
+  CircularProgress,
+  Grid,
+} from "@material-ui/core";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+//import { useSelector } from "react-redux";
 //import CodeMirror from "@uiw/react-codemirror";
 import { useHistory, useParams } from "react-router-dom";
 import { successNoti, warningNoti } from "../../../utils/notification";
 import { request } from "./Request";
+import { authPostMultiPart } from "../../../api";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function CreateTestCase(props) {
   const history = useHistory();
@@ -22,6 +31,12 @@ export default function CreateTestCase(props) {
   const [showSubmitWarming, setShowSubmitWarming] = useState(false);
   const [point, setPoint] = useState(0);
   const [isPublic, setIsPublic] = useState("N");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [filename, setFilename] = useState("");
+
+  const dispatch = useDispatch();
+  const [uploadMessage, setUploadMessage] = useState("");
+  //const token = useSelector((state) => state.auth.token);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -91,6 +106,44 @@ export default function CreateTestCase(props) {
     */
   }, []);
 
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    setIsProcessing(true);
+    setUploadMessage("");
+    let body = {
+      problemId: problemId,
+      point: point,
+      isPublic: isPublic,
+      description: description,
+    };
+    let formData = new FormData();
+    formData.append("inputJson", JSON.stringify(body));
+    formData.append("file", filename);
+
+    authPostMultiPart(dispatch, token, "/upload-test-case", formData)
+      .then((res) => {
+        setIsProcessing(false);
+        console.log("handleFormSubmit, res = ", res);
+        setUploadMessage(res.message);
+        //if (res.status == "TIME_OUT") {
+        //  alert("Time Out!!!");
+        //} else {
+        //}
+      })
+      .catch((e) => {
+        setIsProcessing(false);
+        console.error(e);
+        //alert("Time Out!!!");
+      });
+  };
+  function onFileChange(event) {
+    setFilename(event.target.files[0]);
+  }
+  const onInputChange = (event) => {
+    let name = event.target.value;
+    setFilename(name);
+  };
+
   return (
     <Box>
       <Typography variant={"h4"}>Create new Test case</Typography>
@@ -133,37 +186,46 @@ export default function CreateTestCase(props) {
         </TextField>
       </Box>
       <br />
-      <TextField
-        fullWidth
-        style={{
-          marginTop: "10px",
-          marginBottom: "24px",
-        }}
-        multiline
-        maxRows={4}
-        value={input}
-        onChange={(event) => {
-          setInput(event.target.value);
-        }}
-      ></TextField>
-      <Button
-        variant="contained"
-        color="light"
-        onClick={getTestCaseResult}
-      >
-        get testcase result
-      </Button>
-      <Box fullWidth style={{ height: "20px" }} />
-      <Typography variant={"h5"}>Result</Typography>
-      <Box fullWidth>{result}</Box>
-      <Button
-        variant="contained"
-        color="light"
-        style={{ marginTop: "10px" }}
-        onClick={saveTestCase}
-      >
-        save test case
-      </Button>
+
+      <form onSubmit={handleFormSubmit}>
+        <Grid container spacing={1} alignItems="flex-end">
+          <Grid item xs={3}>
+            <input
+              type="file"
+              accept=".c, .cpp, .java, .py"
+              id="selected-upload-file"
+              onChange={onFileChange}
+            />
+          </Grid>
+          <TextField
+            fullWidth
+            style={{
+              marginTop: "10px",
+              marginBottom: "24px",
+            }}
+            multiline
+            maxRows={10}
+            value={description}
+            onChange={(event) => {
+              setDescription(event.target.value);
+            }}
+          ></TextField>
+          <Grid item xs={2}>
+            <Button
+              color="primary"
+              variant="contained"
+              type="submit"
+              onChange={onInputChange}
+              width="100%"
+            >
+              SUBMIT
+            </Button>
+            <h2> Status: {uploadMessage}</h2>
+          </Grid>
+
+          {isProcessing ? <CircularProgress /> : ""}
+        </Grid>
+      </form>
     </Box>
   );
 }

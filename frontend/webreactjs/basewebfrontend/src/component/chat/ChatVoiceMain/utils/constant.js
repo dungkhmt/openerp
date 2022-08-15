@@ -5,6 +5,9 @@ export const API_URL = {
   INVITED_MEET: "/roomParticipant/getListInvitedRoom",
   OWNED_MEET: "/room/all",
   SCHEDULE_MEET: "/room/create",
+  DELETE_MEET: "/room",
+  UPDATE_MEET: "/room",
+  UPLOAD_FILE: "/video-call/upload-file",
 };
 
 export const QUERY_KEY = {
@@ -14,6 +17,9 @@ export const QUERY_KEY = {
   INVITED_MEET: "invitedMeet",
   OWNED_MEET: "ownedMeet",
   SCHEDULE_MEET: "scheduleMeet",
+  DELETE_MEET: "deleteMeet",
+  UPDATE_MEET: "updateMeet",
+  UPLOAD_FILE: "uploadFile",
 };
 
 export const LIST_ICON = [
@@ -70,9 +76,9 @@ export const MEDIA_TYPE = {
 
 export const PEER_SERVER = {
   secure: true,
-  host: "peer-server-nguyenbahoang.herokuapp.com",
+  host: "/",
   port: "443",
-  path: "/",
+  path: "/api/video-call/peer-server",
 };
 
 export const ENTER_KEY = "Enter";
@@ -99,4 +105,20 @@ export const DISPLAY_HOST = {
   FULL: "full",
   PART: "part",
   SMALL: "small",
+};
+
+export const IMG_TYPE = ["png", "jpeg", "gif", "jpg"];
+export const VID_TYPE = ["mp4", "mov", "wmv", "avi", "flv", "webm"];
+export const AUD_TYPE = ["m4a", "flac", "mp3", "wav", "wma", "aac"];
+
+export const FILE_TYPE = {
+  AUDIO: "audio",
+  VIDEO: "video",
+  IMAGE: "image",
+  OTHER: "other",
+};
+
+export const MSG_TYPE = {
+  MY_CHAT: "myChat",
+  OTHERS_CHAT: "othersChat",
 };

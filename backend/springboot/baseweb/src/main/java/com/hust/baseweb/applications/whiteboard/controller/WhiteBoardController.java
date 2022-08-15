@@ -25,7 +25,7 @@ public class WhiteBoardController {
         @RequestBody CreateWhiteboardModel input){
 
         UserLogin u = userService.findById(principal.getName());
-        whiteboardService.createWhiteboard(u.getUserLoginId(), input.getWhiteboardId(), input.getClassSessionId());
+        whiteboardService.createWhiteboard(u.getUserLoginId(), input.getWhiteboardId(), input.getWhiteboardName(), input.getClassSessionId());
     }
 
     @GetMapping("/whiteboards/{sessionId}")
@@ -100,9 +100,13 @@ public class WhiteBoardController {
     }
 
     @DeleteMapping("/whiteboards")
-    public void deleteWhiteboard(
+    public ResponseEntity<DeleteWhiteboardResultModel> deleteWhiteboard(
+        Principal principal,
         @RequestBody DeleteWhiteboardModel input){
 
-       whiteboardService.deleteWhiteboard(input);
+        UserLogin u = userService.findById(principal.getName());
+        DeleteWhiteboardResultModel result = whiteboardService.deleteWhiteboard(u.getUserLoginId(), input);
+
+        return ResponseEntity.ok().body(result);
     }
 }

@@ -28,18 +28,20 @@ export default function ContestManagerRankingNew(props) {
 
     var wbcols = [];
 
-    wbcols.push({ wpx: 50 });
+    wbcols.push({ wpx: 80 });
+    wbcols.push({ wpx: 120 });
     let numOfProblem = ranking[0].mapProblemsToPoints.length;
     for (let i = 0; i < numOfProblem; i++) {
-      wbcols.push({ wpx: 20 });
+      wbcols.push({ wpx: 50 });
     }
-    wbcols.push({ wpx: 40 });
+    wbcols.push({ wpx: 50 });
 
     let datas = [];
 
     for (let i = 0; i < ranking.length; i++) {
       let data = {};
       data["Username"] = ranking[i].userId;
+      data["Fullname"] = ranking[i].fullname;
       for (let j = 0; j < numOfProblem; j++) {
         const problem = ranking[i].mapProblemsToPoints[j].problemId;
         const problemPoint = ranking[i].mapProblemsToPoints[j].point;

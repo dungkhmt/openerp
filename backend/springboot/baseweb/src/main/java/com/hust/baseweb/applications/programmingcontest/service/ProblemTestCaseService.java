@@ -104,12 +104,15 @@ public interface ProblemTestCaseService {
     void deleteUserContest(ModelAddUserToContest modelAddUserToContest) throws MiniLeetCodeException;
 
     Page<ContestSubmission> findContestSubmissionByContestIdPaging(Pageable pageable, String contestId);
+    Page<ContestSubmission> findContestNotEvaluatedSubmissionByContestIdPaging(Pageable pageable, String contestId);
     Page<ContestSubmission> findContestSubmissionByUserLoginIdPaging(Pageable pageable, String userLoginId);
     Page<ContestSubmission> findContestSubmissionByUserLoginIdAndContestIdPaging(Pageable pageable, String userLoginId, String contestId);
     List<ContestSubmission> getNewestSubmissionResults(String userLoginId);
 
 
     ContestSubmissionEntity getContestSubmissionDetail(UUID submissionId);
+
+    ModelGetContestInfosOfSubmissionOutput getContestInfosOfASubmission(UUID submissionId);
 
     void deleteProblem(String problemId, String userId) throws MiniLeetCodeException;
 
@@ -124,13 +127,21 @@ public interface ProblemTestCaseService {
     ModelEvaluateBatchSubmissionResponse judgeAllSubmissionsOfContest(String contestId);
 
     ModelContestSubmissionResponse evaluateSubmission(UUID submisionId);
-    ModelContestSubmissionResponse evaluateSubmission(ContestSubmissionEntity sub);
+    ModelContestSubmissionResponse evaluateSubmission(ContestSubmissionEntity sub, ContestEntity contest);
 
     List<ModelContestByRoleResponse> getContestsByRoleOfUser(String userLoginId);
 
     List<CodePlagiarism> findAllByContestId(String contestId);
+    List<CodePlagiarism> findAllBy(ModelGetCodeSimilarityParams input);
+    List<ModelSimilarityClusterOutput> computeSimilarityClusters(ModelGetCodeSimilarityParams input);
 
     ContestSubmissionEntity updateContestSubmissionSourceCode(ModelUpdateContestSubmission input);
 
     List<ModelGetContestResponse> getContestsUsingAProblem(String problemId);
+
+    int addAdminToManagerAndParticipantAllContest();
+
+    ModelUploadTestCaseOutput addTestCase(String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName);
+
+    ModelUploadTestCaseOutput uploadUpdateTestCase(UUID testCaseId, String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName);
 }

@@ -13,6 +13,7 @@ import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.repo.UserLoginRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,10 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @Service
@@ -41,10 +39,11 @@ public class ThesisImpl implements ThesisService {
 
     @Override
     public Thesis createThesis(ThesisIM thesis) {
+        Thesis rs = new Thesis();
         // check request
 
         if( thesis.getName()==""||thesis.getProgram_name()==""||thesis.getThesisPlanName()==""
-            || thesis.getStudent_name()==""||thesis.getSupervisor_name()==""||thesis.getDefense_jury_name()==""
+            || thesis.getStudent_name()==""||thesis.getSupervisor_name()==""
             ||thesis.getUserLoginID()==""||thesis.getKeyword().size() == 0 ){
             log.info("invalid request");
             return null;
@@ -65,10 +64,14 @@ public class ThesisImpl implements ThesisService {
             log.info("not found supervisor teacher name");
             return null;
         }
-        List<DefenseJury> defenseJury  = defenseJuryRepo.findByName(thesis.getDefense_jury_name());
-        if (defenseJury.size() == 0) {
-            log.info("not found defense jury name");
-            return null;
+        List<DefenseJury> defenseJury = new ArrayList<DefenseJury>();
+        if (thesis.getDefense_jury_name() != ""){
+            defenseJury  = defenseJuryRepo.findByName(thesis.getDefense_jury_name());
+            if (defenseJury.size() == 0) {
+                log.info("not found defense jury name");
+                return null;
+            }
+            rs.setDefenseJury(defenseJury.get(0).getId());
         }
         // if reviewer name exist
         Optional<EduTeacher> reviewer = Optional.of(new EduTeacher());
@@ -78,6 +81,7 @@ public class ThesisImpl implements ThesisService {
                 log.info("not found reviewer teacher name");
                 return null;
             }
+            rs.setScheduled_reviewer_id(reviewer.get().getId());
         }
         // check UserId exist
         UserLogin userLogin = userLoginRepo.findByUserLoginId(thesis.getUserLoginID());
@@ -95,7 +99,7 @@ public class ThesisImpl implements ThesisService {
 
         // maping fields and
         // insert or update thesis to db
-        Thesis rs = new Thesis();
+
         rs.setThesisName(thesis.getName());
         rs.setThesisAbstract(thesis.getThesis_abstract());
         rs.setProgramId(traningProgram.get().getId());
@@ -103,8 +107,8 @@ public class ThesisImpl implements ThesisService {
         rs.setStudentName(thesis.getStudent_name());
         rs.setSupervisor(eduTeacher.get().getId());
         rs.setUserLogin(thesis.getUserLoginID());
-        rs.setDefenseJury(defenseJury.get(0).getId());
-        rs.setScheduled_reviewer_id(reviewer.get().getId());
+
+
 //        rs.setThesisKeyword(thesis.getKeyword());
         thesisRepo.save(rs);
 

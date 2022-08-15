@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { stopMediaStream } from "../ultis/helpers";
+import { stopMediaStream } from "../utils/helpers";
 
 export default function useGetMediaStream(listStream) {
   const mediaStream = useMemo(() => {

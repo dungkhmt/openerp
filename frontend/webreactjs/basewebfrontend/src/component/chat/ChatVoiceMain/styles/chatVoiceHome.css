@@ -34,6 +34,10 @@
   padding: 15px 15px;
 }
 
+.meet__color-red {
+  color: red;
+}
+
 .card-meet-row {
   list-style-type: none;
   display: grid;
@@ -133,6 +137,7 @@
 .host-modal {
   width: 50% !important;
   max-width: 600px;
+  position: relative !important;
 }
 
 .host-modal .MuiButton-root {
@@ -166,4 +171,40 @@
 .host-modal-no-invite {
   text-align: center;
   padding: 30px 0 !important;
+}
+
+.host-model-extend {
+  box-shadow: none !important;
+}
+
+.host-model-extend.MuiAccordion-root:before {
+  background-color: white !important;
+}
+
+.host-modal .MuiAccordionSummary-root {
+  padding: 0;
+  display: inline-flex;
+  height: 40px;
+  min-height: unset;
+}
+
+.host-modal .MuiAccordionSummary-content {
+  margin: 6px 0;
+}
+
+.host-modal .MuiTypography-body1 {
+  font-size: 12px;
+  color:rgb(92, 92, 92);  
+}
+
+.host-modal .MuiAccordionSummary-expandIcon {
+  padding: 6px;
+}
+
+.host-modal .delete {
+  background-color: rgb(219, 0, 0);
+}
+
+.host-modal .delete:hover {
+  background-color: rgb(219, 0, 0);
 }

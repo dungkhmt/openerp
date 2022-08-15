@@ -28,6 +28,7 @@ export default function ContestManagerUserSubmission(props) {
   const pageSizes = [10, 20, 50, 100, 150];
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   function handleCloseDialog() {
     setIsOpen(false);
@@ -61,6 +62,29 @@ export default function ContestManagerUserSubmission(props) {
       console.log("evaluate submission", res.data);
     }).then();
   }
+  function ViewAllSubmissions() {
+    alert("view all submission");
+  }
+  function getSubmissionOfUser() {
+    //alert('view submission of user ' + userId);
+    request(
+      "get",
+      "/get-contest-submission-of-a-user-paging/" +
+        contestId +
+        "/" +
+        userId +
+        "?size=" +
+        pageSubmissionSize +
+        "&page=" +
+        (pageSubmission - 1),
+      (res) => {
+        console.log("res submission", res.data);
+        setContestSubmissions(res.data.content);
+        console.log("contest submission", contestSubmissions);
+        setTotalPageSubmission(res.data.totalPages);
+      }
+    ).then();
+  }
   useEffect(() => {
     getSubmission(pageSubmissionSize, 1);
   }, []);
@@ -74,6 +98,31 @@ export default function ContestManagerUserSubmission(props) {
         >
           User Submission
         </Typography>
+        <TextField
+          autoFocus
+          required
+          id="userId"
+          label="userId"
+          placeholder="userId"
+          value={userId}
+          onChange={(event) => {
+            setUserId(event.target.value);
+          }}
+        ></TextField>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={getSubmissionOfUser}
+        >
+          View of user
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={ViewAllSubmissions}
+        >
+          View All
+        </Button>
       </section>
 
       <TableContainer component={Paper}>

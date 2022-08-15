@@ -198,6 +198,12 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(modelProblemSubmissionDetailResponse);
     }
 
+    @GetMapping("/add-admin-to-manager-all-contest")
+    public ResponseEntity<?> addAdminToManagerAndParticipantAllContest(Principal principal){
+        int cnt = problemTestCaseService.addAdminToManagerAndParticipantAllContest();
+        log.info("addAdminToManagerAndParticipantAllContest, cnt = " + cnt);
+        return ResponseEntity.ok().body(cnt);
+    }
     @PostMapping("/create-contest")
     public ResponseEntity<?> createContest(@RequestBody ModelCreateContest modelCreateContest, Principal principal) throws Exception {
         log.info("createContest {}", modelCreateContest);
@@ -266,10 +272,19 @@ public class ContestProblemController {
         ContestSubmissionEntity sub = problemTestCaseService.updateContestSubmissionSourceCode(input);
         return ResponseEntity.ok().body(sub);
     }
-    @GetMapping("/get-code-similarity/{contestId}")
-    public ResponseEntity<?> getCodeSimilarity(Principal principal, @PathVariable String contestId){
-        List<CodePlagiarism> codePlagiarism = problemTestCaseService.findAllByContestId(contestId);
+    @PostMapping("/get-code-similarity")
+    public ResponseEntity<?> getCodeSimilarity(Principal principal, @RequestBody ModelGetCodeSimilarityParams input){
+        //String contestId = input.getContestId();
+        //String userId = input.getUserId();
+        //String problemId = input.getProblemId();
+        //List<CodePlagiarism> codePlagiarism = problemTestCaseService.findAllByContestId(contestId);
+        List<CodePlagiarism> codePlagiarism = problemTestCaseService.findAllBy(input);
         return ResponseEntity.ok().body(codePlagiarism);
+    }
+    @PostMapping("/get-code-similarity-cluster")
+    public ResponseEntity<?> getCodeSimilarityCluster(Principal principal, @RequestBody ModelGetCodeSimilarityParams input){
+        List<ModelSimilarityClusterOutput> res = problemTestCaseService.computeSimilarityClusters(input);
+        return ResponseEntity.ok().body(res);
     }
 
     @PostMapping("/check-code-similarity/{contestId}")
@@ -490,6 +505,98 @@ public class ContestProblemController {
             .getContestProblemSubmissionDetailByTestCase(sortedByCreatedStampDsc);
 
         return ResponseEntity.ok().body(lst);
+    }
+    @PostMapping("/upload-update-test-case/{testCaseId}")
+    public ResponseEntity<?> uploadUpdateTestCase(Principal principal,
+                                            @PathVariable String testCaseId,
+                                            @RequestParam("inputJson") String inputJson,
+                                            @RequestParam("file") MultipartFile file
+    ){
+
+        Gson gson = new Gson();
+        ModelProgrammingContestUploadTestCase modelUploadTestCase = gson.fromJson(inputJson,
+                                                                                  ModelProgrammingContestUploadTestCase.class);
+        String problemId = modelUploadTestCase.getProblemId();
+        UUID testCaseUUID = UUID.fromString(testCaseId);
+        log.info("uploadUpdateTestCase, problemId = " + problemId + " tesCaseId = " + testCaseId + " testCaseUUID = " + testCaseUUID);
+        String testCase = "";
+        ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
+        if(file != null) {
+            try {
+                InputStream inputStream = file.getInputStream();
+                Scanner in = new Scanner(inputStream);
+                while (in.hasNext()) {
+                    String line = in.nextLine();
+                    testCase += line + "\n";
+                    //System.out.println("contestSubmitProblemViaUploadFile: read line: " + line);
+                }
+                in.close();
+                log.info("uploadUpdateTestCase, testCase not null, testCase = " + testCase.length());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else{
+            log.info("uploadUpdateTestCase, multipart file is null");
+        }
+        //res = problemTestCaseService.addTestCase(testCase, modelUploadTestCase, principal.getName());
+        res = problemTestCaseService.uploadUpdateTestCase(testCaseUUID, testCase, modelUploadTestCase, principal.getName());
+        return ResponseEntity.ok().body(res);
+
+        //res.setStatus("FAILURE");
+        //res.setMessage("Exception!!");
+        //return ResponseEntity.ok().body(res);
+    }
+    @PostMapping("/update-test-case-without-file/{testCaseId}")
+    public ResponseEntity<?> uploadUpdateTestCaseWithoutFile(Principal principal,
+                                                  @PathVariable String testCaseId,
+                                                  @RequestParam("inputJson") String inputJson
+    ){
+
+        Gson gson = new Gson();
+        ModelProgrammingContestUploadTestCase modelUploadTestCase = gson.fromJson(inputJson,
+                                                                                  ModelProgrammingContestUploadTestCase.class);
+        String problemId = modelUploadTestCase.getProblemId();
+        UUID testCaseUUID = UUID.fromString(testCaseId);
+        log.info("uploadUpdateTestCaseWithoutFile, problemId = " + problemId + " tesCaseId = " + testCaseId + " testCaseUUID = " + testCaseUUID);
+        ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
+        //res = problemTestCaseService.addTestCase(testCase, modelUploadTestCase, principal.getName());
+        res = problemTestCaseService.uploadUpdateTestCase(testCaseUUID, null, modelUploadTestCase, principal.getName());
+        return ResponseEntity.ok().body(res);
+
+        //res.setStatus("FAILURE");
+        //res.setMessage("Exception!!");
+        //return ResponseEntity.ok().body(res);
+    }
+
+    @PostMapping("/upload-test-case")
+    public ResponseEntity<?> uploadTestCase(Principal principal,
+                                            @RequestParam("inputJson") String inputJson,
+                                            @RequestParam("file") MultipartFile file
+    ){
+        Gson gson = new Gson();
+        ModelProgrammingContestUploadTestCase modelUploadTestCase = gson.fromJson(inputJson,
+                                                                                  ModelProgrammingContestUploadTestCase.class);
+        String problemId = modelUploadTestCase.getProblemId();
+        log.info("uploadTestCase, problemId = " + problemId);
+        String testCase = "";
+        ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
+        try {
+            InputStream inputStream = file.getInputStream();
+            Scanner in = new Scanner(inputStream);
+            while (in.hasNext()) {
+                String line = in.nextLine();
+                testCase += line + "\n";
+                //System.out.println("contestSubmitProblemViaUploadFile: read line: " + line);
+            }
+            in.close();
+            res = problemTestCaseService.addTestCase(testCase, modelUploadTestCase, principal.getName());
+            return ResponseEntity.ok().body(res);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        res.setStatus("FAILURE");
+        res.setMessage("Exception!!");
+        return ResponseEntity.ok().body(res);
     }
     @PostMapping("/contest-submit-problem-via-upload-file")
     public ResponseEntity<?> contestSubmitProblemViaUploadFile(Principal principal,
@@ -745,6 +852,7 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(page);
     }
 
+
     @GetMapping("/get-contest-submission-paging-of-a-user-and-contest/{contestId}")
     public ResponseEntity<?> getContestSubmissionPagingOfCurrentUser( Principal principal, @PathVariable String contestId, Pageable pageable){
         log.info("getContestSubmissionPagingOfCurrentUser, user = " + principal.getName() + " contestId = " + contestId);
@@ -762,6 +870,16 @@ public class ContestProblemController {
         log.info("page {}", page);
         return ResponseEntity.status(200).body(page);
     }
+    @GetMapping("/get-contest-not-evaluated-submission-paging/{contestId}")
+    public ResponseEntity<?> getContestNotEvaluatedSubmissionPaging(@PathVariable("contestId") String contestId, Pageable pageable){
+        log.info("getContestNotEvaluatedSubmissionPaging, contestId = " + contestId);
+        pageable = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), Sort.by("createdAt").descending());
+        Page<ContestSubmission> page = problemTestCaseService.findContestNotEvaluatedSubmissionByContestIdPaging(pageable, contestId);
+        log.info("page {}", page);
+        return ResponseEntity.status(200).body(page);
+    }
+
+
     @GetMapping("/get-contest-submission-of-a-user-paging/{contestId}/{userId}")
     public ResponseEntity<?> getContestSubmissionOfAUserPaging(@PathVariable("contestId") String contestId,
                                                                @PathVariable String userId, Pageable pageable){
@@ -779,6 +897,11 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(contestSubmission);
     }
 
+    @GetMapping("/get-contest-infos-of-a-subsmission/{submissionId}")
+    public ResponseEntity<?> getContestInfosOfASubmission(@PathVariable("submissionId") UUID submissionId){
+        ModelGetContestInfosOfSubmissionOutput res = problemTestCaseService.getContestInfosOfASubmission(submissionId);
+        return ResponseEntity.ok().body(res);
+    }
     @GetMapping("/get-contest-problem-submission-detail-viewed-by-manager/{submissionId}")
     public ResponseEntity<?> getContestSubmissionDetailViewedByManager(@PathVariable("submissionId") UUID submissionId){
         log.info("get contest submission detail");

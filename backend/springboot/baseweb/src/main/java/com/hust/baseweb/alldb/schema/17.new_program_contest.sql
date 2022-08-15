@@ -45,6 +45,7 @@ create table test_case_new
     correct_answer text,
     contest_problem_id varchar(60),
     is_public varchar(1),
+    description text,
     last_updated_stamp         timestamp DEFAULT current_date ,
     created_stamp              timestamp DEFAULT current_date ,
     constraint pk_contest_problem_test_case_new primary key (test_case_id),
@@ -89,6 +90,7 @@ create table contest_new
     participant_view_result_mode varchar(200),
     use_cache_contest_problem varchar(1),
     max_source_code_length int,
+    evaluate_both_public_private_testcase varchar(1);
     last_updated_stamp         timestamp DEFAULT current_date ,
     created_stamp              timestamp DEFAULT current_date ,
     constraint pk_contest_id_new primary key (contest_id),
@@ -133,9 +135,13 @@ create table contest_submission_history(
     contest_submission_id uuid NOT NULL,
     modified_source_code_submitted text,
     language varchar(10),
+    contest_id varchar(100),
+    problem_id varchar(100),
     last_updated_stamp         timestamp default current_date ,
     created_stamp              timestamp default current_date ,
     constraint pk_contest_submission_history_id primary key (contest_submission_history_id),
+    constraint fk_contest_submission_history_problem_id foreign key(problem_id) references contest_problem_new(problem_id),
+    constraint fk_contest_submission_history_contest_id foreign key(contest_id) references contest_new(contest_id),
     constraint fk_contest_submission_history_submission_id foreign key (contest_submission_id) references  contest_submission_new(contest_submission_id)
 
 );

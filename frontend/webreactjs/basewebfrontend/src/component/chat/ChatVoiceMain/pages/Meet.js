@@ -6,18 +6,13 @@ import Participant from "../components/Meet/Participant";
 import FooterControl from "../components/Meet/FooterControl";
 import Main from "../components/Meet/Main";
 import { API_URL } from "../../../../config/config";
-import {
-  ADMIN_CHAT_TYPE,
-  ADMIN_ID,
-  PEER_CONFIG,
-  PEER_SERVER,
-} from "../ultis/constant";
-import "../style/meet.css";
+import { ADMIN_CHAT_TYPE, ADMIN_ID, PEER_SERVER } from "../utils/constant";
+import "../styles/meet.css";
 import {
   getDisplayMedia,
   getUserMedia,
   stopAndSetMediaStream,
-} from "../ultis/helpers";
+} from "../utils/helpers";
 import useGetMediaStream from "../hooks/useGetMediaStream";
 import { useHistory } from "react-router";
 
@@ -53,11 +48,11 @@ const Meet = () => {
   ]);
 
   const sendMessage = useCallback(
-    (type, content) => {
+    (type, content, url, fileType) => {
       stompClient?.send(
         "/app/chat/" + meetId,
         { "X-Auth-Token": localStorage.getItem("TOKEN") },
-        JSON.stringify({ id: name, name, type, content })
+        JSON.stringify({ id: name, name, type, content, url, fileType })
       );
     },
     [name, meetId, stompClient]
@@ -131,6 +126,7 @@ const Meet = () => {
       "/room/name",
       (res) => {
         setName(res.data);
+        localStorage.setItem("userId", res.data);
       },
       (err) => {
         console.log(err);
@@ -170,13 +166,11 @@ const Meet = () => {
     };
   }, []);
   useEffect(() => {
-    if (mediaStream) {
-      listParticipant.forEach((participant) => {
-        if (participant.peerId !== peerId) {
-          peer.call(participant.peerId, mediaStream);
-        }
-      });
-    }
+    listParticipant.forEach((participant) => {
+      if (participant.peerId !== peerId) {
+        peer.call(participant.peerId, mediaStream);
+      }
+    });
   }, [microStream, cameraStream, screenStream]);
   useEffect(() => {
     let interval;
@@ -216,7 +210,6 @@ const Meet = () => {
             peer.call(content.peerId, mediaStream);
           }
         }
-
         // if leave, delete this participant from list of participants
         if (content.type === ADMIN_CHAT_TYPE.LEAVE) {
           const place = listParticipant.findIndex(

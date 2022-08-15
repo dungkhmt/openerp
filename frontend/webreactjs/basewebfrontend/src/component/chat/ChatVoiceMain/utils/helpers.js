@@ -1,9 +1,16 @@
-import { CARD_LIST, DISPLAY_HOST, DISPLAY_TYPE } from "./constant";
+import {
+  AUD_TYPE,
+  CARD_LIST,
+  DISPLAY_HOST,
+  DISPLAY_TYPE,
+  FILE_TYPE,
+  IMG_TYPE,
+  VID_TYPE,
+} from "./constant";
 
 const MILISECOND_IN_ONE_DAY = 86400000;
 const MILISECOND_IN_ONE_HOUR = 3600000;
 const MILISECOND_IN_ONE_MINUTE = 60000;
-const MILISECOND_IN_ONE_SECOND = 1000;
 
 export const handleTime = (time) => {
   const currentTime = new Date().getTime();
@@ -15,13 +22,6 @@ export const handleTime = (time) => {
   const min = Math.floor(
     (timeGap - day * MILISECOND_IN_ONE_DAY - hour * MILISECOND_IN_ONE_HOUR) /
       MILISECOND_IN_ONE_MINUTE
-  );
-  const second = Math.floor(
-    (timeGap -
-      day * MILISECOND_IN_ONE_DAY -
-      hour * MILISECOND_IN_ONE_HOUR -
-      min * MILISECOND_IN_ONE_MINUTE) /
-      MILISECOND_IN_ONE_SECOND
   );
   if (day > 0) return `Hơn ${day} ngày trước`;
   else if (hour > 0) return `Hơn ${hour} giờ trước`;
@@ -71,13 +71,13 @@ export const getUserMedia = async (type) => {
     return await navigator.mediaDevices.getUserMedia(constraints);
   } catch (err) {
     console.error(err);
-    alert("We need your permission to use the camera and microphone!");
+    alert("Chúng tôi cần sự cho phép của bạn để sử dụng máy ảnh và micro!");
   }
 };
 
 export const cardTitle = {
-  [CARD_LIST[0]]: "Tạo một cuộc họp",
-  [CARD_LIST[1]]: "Tham gia một cuộc họp",
+  [CARD_LIST[0]]: "Quản lý cuộc gặp của bạn",
+  [CARD_LIST[1]]: "Tham gia một cuộc gặp khác",
 };
 
 export const displayHostMedia = (listParticipantMedia, displayType) => {
@@ -109,4 +109,12 @@ export const stopAndSetMediaStream = (setMediaStream) => {
   } catch (e) {
     console.error(e);
   }
+};
+
+export const getFileType = (fileType) => {
+  const _fileType = fileType.toLowerCase();
+  if (IMG_TYPE.includes(_fileType)) return FILE_TYPE.IMAGE;
+  if (AUD_TYPE.includes(_fileType)) return FILE_TYPE.AUDIO;
+  if (VID_TYPE.includes(_fileType)) return FILE_TYPE.VIDEO;
+  return FILE_TYPE.OTHER;
 };

@@ -67,6 +67,8 @@ export default function AllContestsManager() {
                   <StyledTableCell></StyledTableCell>
                   <StyledTableCell align="left">Title</StyledTableCell>
                   <StyledTableCell align="left">Status</StyledTableCell>
+                  <StyledTableCell align="left">Created By</StyledTableCell>
+                  <StyledTableCell align="left">Created Date</StyledTableCell>
                   <StyledTableCell align="center">Detail</StyledTableCell>
                   <StyledTableCell align="center">Edit</StyledTableCell>
                   {/*<StyledTableCell align="center">Delete</StyledTableCell>*/}
@@ -95,6 +97,12 @@ export default function AllContestsManager() {
                     </StyledTableCell>
                     <StyledTableCell align="left">
                       <b>{contest.statusId}</b>
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <b>{contest.userId}</b>
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <b>{contest.createdAt}</b>
                     </StyledTableCell>
 
                     <StyledTableCell align="left">

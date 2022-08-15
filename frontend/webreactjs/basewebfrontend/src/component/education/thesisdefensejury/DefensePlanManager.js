@@ -7,6 +7,7 @@ import { a11yProps, TabPanelVertical } from "../programmingcontestFE/TabPanel";
 import DefenseJuryBelongPlan from './DefenseJuryBelongPlan'
 import DefensePlanDetail from './DefensePlanDetail'
 import ThesisBelongPlan from './ThesisBelongPlan'
+import TeacherBelongToPlan from './TeacherBelongToPlan'
 
 
 export default function DefensePlanManager() {
@@ -63,6 +64,7 @@ export default function DefensePlanManager() {
         />
         <Tab label="List Thesis Defense" {...a11yProps(1)} style={{ width: "10%" }} />
         <Tab label="List Thesis" {...a11yProps(2)} style={{ width: "10%" }} />
+        <Tab label="List Teacher" {...a11yProps(3)} style={{ width: "10%" }} />
         {/* <Tab label="List Student" {...a11yProps(3)} style={{ width: "10%" }} /> */}
       
       </Tabs>
@@ -78,11 +80,11 @@ export default function DefensePlanManager() {
       <TabPanelVertical value={value} index={2}>
         <ThesisBelongPlan defensePlanId = {params.id} />
       </TabPanelVertical>
-    
+      <TabPanelVertical value={value} index={3}>
+        <TeacherBelongToPlan defensePlanId = {params.id} />
+      </TabPanelVertical>
 
-      {/* <TabPanelVertical value={value} index={3}>
-        <ContestManagerAddMember defensePlanId = {defensePlanId} />
-      </TabPanelVertical> */}
+     
     </div>
   );
 }

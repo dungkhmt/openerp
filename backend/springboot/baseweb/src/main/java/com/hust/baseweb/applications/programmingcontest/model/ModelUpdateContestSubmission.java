@@ -15,4 +15,6 @@ public class ModelUpdateContestSubmission {
     private UUID contestSubmissionId;
     private String modifiedSourceCodeSubmitted;
     private String language;
+    private String problemId;
+    private String contestId;
 }

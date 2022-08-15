@@ -22,6 +22,7 @@ public class ModelGetContestDetailResponse {
     private String participantViewResultMode;
     private String problemDescriptionViewType;
     private String useCacheContestProblem;
+    private String evaluateBothPublicPrivateTestcase;
     private int maxSourceCodeLength;
     private List<String> listStatusIds;
     private List<String> listSubmissionActionTypes;
@@ -29,4 +30,5 @@ public class ModelGetContestDetailResponse {
     private List<Integer> listMaxNumberSubmissions;
     private List<String> listProblemDescriptionViewTypes;
     private List<String> listUseCacheContestProblems;
+    private List<String> listEvaluateBothPublicPrivateTestcases;
 }

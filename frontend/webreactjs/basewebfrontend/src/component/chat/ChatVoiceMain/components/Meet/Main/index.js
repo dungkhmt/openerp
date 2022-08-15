@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 import ParticipantVideo from "../ParticipantVideo";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
-import { displayHostMedia } from "../../../ultis/helpers";
-import { BAR_TYPE, DISPLAY_TYPE } from "../../../ultis/constant";
+import { displayHostMedia } from "../../../utils/helpers";
+import { BAR_TYPE, DISPLAY_TYPE } from "../../../utils/constant";
 
 const Main = ({ mediaStream, listParticipant, display }) => {
   const hostRef = useRef();

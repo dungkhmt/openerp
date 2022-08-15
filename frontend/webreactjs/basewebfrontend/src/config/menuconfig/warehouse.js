@@ -22,6 +22,14 @@ export const warehouse = {
       child: [],
     },
     {
+      id: "MENU_WAREHOUSE_VIEW",
+      path: "/wms/warehouse/products",
+      isPublic: false,
+      icon: "StarBorder",
+      text: "Danh sách sản phẩm",
+      child: [],
+    },
+    {
       id: "MENU_WAREHOUSE_IMPORT",
       path: "/wms/inventory/import",
       isPublic: false,

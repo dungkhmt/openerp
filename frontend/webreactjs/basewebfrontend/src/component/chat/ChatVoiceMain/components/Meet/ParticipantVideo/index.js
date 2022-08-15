@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { useEffect, useRef, useState } from "react";
 import { ZoomOutMap, ZoomInMap } from "@mui/icons-material";
-import { DISPLAY_TYPE } from "component/chat/ChatVoiceMain/ultis/constant";
+import { DISPLAY_TYPE } from "component/chat/ChatVoiceMain/utils/constant";
 
 export default function ParticipantVideo({
   data,
@@ -27,7 +27,6 @@ export default function ParticipantVideo({
   };
 
   useEffect(() => {
-    console.log("participantVideo: ", data?.mediaStream?.getTracks());
     videoRef.current.srcObject = data?.mediaStream;
   }, [data]);
 

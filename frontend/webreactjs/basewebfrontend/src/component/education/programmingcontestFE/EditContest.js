@@ -255,6 +255,15 @@ export default function EditContest(props) {
   const [useCacheContestProblem, setUseCacheContestProblem] = useState(null);
   const [listUseCacheContestProblems, setListUseCacheContestProblems] =
     useState([]);
+  const [
+    evaluateBothPublicPrivateTestcase,
+    setEvaluateBothPublicPrivateTestcase,
+  ] = useState(null);
+
+  const [
+    listEvaluateBothPublicPrivateTestcases,
+    setListEvaluateBothPublicPrivateTestcases,
+  ] = useState([]);
 
   const [maxSourceCodeLength, setMaxSourceCodeLength] = useState(50000);
 
@@ -297,6 +306,7 @@ export default function EditContest(props) {
       problemDescriptionViewType: problemDescriptionViewType,
       useCacheContestProblem: useCacheContestProblem,
       maxSourceCodeLength: maxSourceCodeLength,
+      evaluateBothPublicPrivateTestcase: evaluateBothPublicPrivateTestcase,
     };
     request(
       "post",
@@ -349,8 +359,14 @@ export default function EditContest(props) {
         res.data.listProblemDescriptionViewTypes
       );
       setUseCacheContestProblem(res.data.useCacheContestProblem);
+      setEvaluateBothPublicPrivateTestcase(
+        res.data.evaluateBothPublicPrivateTestcase
+      );
       setMaxSourceCodeLength(res.data.maxSourceCodeLength);
       setListUseCacheContestProblems(res.data.listUseCacheContestProblems);
+      setListEvaluateBothPublicPrivateTestcases(
+        res.data.listEvaluateBothPublicPrivateTestcases
+      );
       console.log("res ", res.data);
     }).then();
   }, [page]);
@@ -519,6 +535,24 @@ export default function EditContest(props) {
                 value={useCacheContestProblem}
               >
                 {listUseCacheContestProblems.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                autoFocus
+                // required
+                select
+                id="evaluateBothPublicPrivateTestcase"
+                label="evaluateBothPublicPrivateTestcase"
+                placeholder="evaluateBothPublicPrivateTestcase"
+                onChange={(event) => {
+                  setEvaluateBothPublicPrivateTestcase(event.target.value);
+                }}
+                value={evaluateBothPublicPrivateTestcase}
+              >
+                {listEvaluateBothPublicPrivateTestcases.map((item) => (
                   <MenuItem key={item} value={item}>
                     {item}
                   </MenuItem>

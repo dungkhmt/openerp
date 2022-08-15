@@ -1,12 +1,24 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Text, Transformer } from 'react-konva'
-import { SOCKET_IO_EVENTS, TOOL } from '../../../../utils/whiteboard/constants'
+import { ROLE_STATUS, SOCKET_IO_EVENTS, TOOL } from '../../../../utils/whiteboard/constants'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
 export const TransformerText = React.memo(
-  React.forwardRef(({ value, offset, tool, onUpdateText, annotations, whiteboardId, currentPage }, ref) => {
+  React.forwardRef(({ value, tool, roleStatus, annotations, onUpdateText, setCurrentAnnotation }, ref) => {
     const textRef = useRef(null)
     const transformRef = useRef(null)
+
+    // useEffect(() => {
+    //   return () => {
+    //     const textarea = document.getElementsByTagName('textarea')
+    //     if (textarea) {
+    //       textarea.forEach((ele) => {
+    //         ele.removeEventListener('input')
+    //         ele.removeEventListener('keydown')
+    //       })
+    //     }
+    //   }
+    // }, [])
 
     useEffect(() => {
       if (tool === TOOL.POINTER) {
@@ -16,8 +28,27 @@ export const TransformerText = React.memo(
       }
     }, [tool])
 
+    const onDragTextStart = () => {
+      if (
+        tool !== TOOL.POINTER ||
+        roleStatus.roleId === ROLE_STATUS.READ ||
+        roleStatus.statusId !== ROLE_STATUS.ACCEPTED
+      ) {
+        return
+      }
+      ref.current = 'processing'
+    }
+
     const onDragTextEnd = () => {
+      if (
+        tool !== TOOL.POINTER ||
+        roleStatus.roleId === ROLE_STATUS.READ ||
+        roleStatus.statusId !== ROLE_STATUS.ACCEPTED
+      ) {
+        return
+      }
       const node = textRef.current
+      ref.current = 'done'
       onUpdateText({
         ...value,
         x: node?.x(),
@@ -35,8 +66,23 @@ export const TransformerText = React.memo(
       // onUpdateText(newAnnotation)
     }
 
+    const onTransformingText = () => {
+      if (
+        tool !== TOOL.POINTER ||
+        roleStatus.roleId === ROLE_STATUS.READ ||
+        roleStatus.statusId !== ROLE_STATUS.ACCEPTED
+      ) {
+        return
+      }
+      ref.current = 'processing'
+    }
+
     const onTextTransformEnd = () => {
-      if (tool !== TOOL.POINTER) {
+      if (
+        tool !== TOOL.POINTER ||
+        roleStatus.roleId === ROLE_STATUS.READ ||
+        roleStatus.statusId !== ROLE_STATUS.ACCEPTED
+      ) {
         return
       }
       const node = textRef.current
@@ -46,6 +92,7 @@ export const TransformerText = React.memo(
       // we will reset it back
       node?.scaleX(1)
       node?.scaleY(1)
+      ref.current = 'done'
       onUpdateText({
         ...value,
         x: node?.x(),
@@ -58,7 +105,11 @@ export const TransformerText = React.memo(
     }
 
     const onDblClickTextRect = (e) => {
-      if (tool !== TOOL.POINTER) {
+      if (
+        tool !== TOOL.POINTER ||
+        roleStatus.roleId === ROLE_STATUS.READ ||
+        roleStatus.statusId !== ROLE_STATUS.ACCEPTED
+      ) {
         return
       }
 
@@ -115,15 +166,28 @@ export const TransformerText = React.memo(
 
       textarea.focus()
 
-      textarea.onchange = (event) => {
+      textarea.addEventListener('input', (event) => {
         const newAnnotation = {
           ...value,
           x: textPosition.x,
           y: textPosition.y,
           text: event.target.value,
         }
+        ref.current = 'processing'
         onUpdateText(newAnnotation)
-      }
+      })
+
+      // textarea.onchange = (event) => {
+      //   const newAnnotation = {
+      //     ...value,
+      //     x: textPosition.x,
+      //     y: textPosition.y,
+      //     text: event.target.value,
+      //   }
+      //   ref.current = true
+      //   console.log('onchange', ref.current)
+      //   onUpdateText(newAnnotation)
+      // }
 
       function removeTextarea() {
         textarea.parentNode?.removeChild(textarea)
@@ -157,10 +221,17 @@ export const TransformerText = React.memo(
         // but don't hide on shift + enter
         if (event.key === 'Enter' && !event.shiftKey) {
           void e.target.text(textarea.value)
+          ref.current = 'done'
+          const newAnnotation = {
+            ...value,
+            text: textarea.value,
+          }
+          onUpdateText(newAnnotation)
           removeTextarea()
         }
         // on esc do not set value back to node
         if (event.key === 'Esc') {
+          ref.current = 'done'
           removeTextarea()
         }
       })
@@ -176,6 +247,12 @@ export const TransformerText = React.memo(
         if (event.target !== textarea) {
           void e.target.text(textarea.value)
           removeTextarea()
+          ref.current = 'done'
+          const newAnnotation = {
+            ...value,
+            text: textarea.value,
+          }
+          onUpdateText(newAnnotation)
         }
         onClickText()
       }
@@ -184,8 +261,13 @@ export const TransformerText = React.memo(
       })
     }
 
-    const onClickText = () =>
+    const onClickText = (key) => {
       transformRef.current?.isVisible() ? transformRef.current.hide() : transformRef.current?.show()
+      if (roleStatus.roleId === ROLE_STATUS.READ || roleStatus.statusId !== ROLE_STATUS.ACCEPTED) {
+        return
+      }
+      setCurrentAnnotation(annotations.find((item) => item.key === key))
+    }
 
     return (
       <>
@@ -194,7 +276,13 @@ export const TransformerText = React.memo(
           x={value.x}
           y={value.y}
           width={value.width}
-          draggable={tool !== TOOL.POINTER ? false : true}
+          draggable={
+            tool !== TOOL.POINTER ||
+            roleStatus.roleId === ROLE_STATUS.READ ||
+            roleStatus.statusId !== ROLE_STATUS.ACCEPTED
+              ? false
+              : true
+          }
           rotation={value.rotation}
           text={value.text}
           verticalAlign="bottom"
@@ -203,10 +291,12 @@ export const TransformerText = React.memo(
           fill={value.fill}
           padding={value.padding}
           align={value.align}
-          onClick={onClickText}
+          onClick={() => onClickText(value.key)}
           onDblClick={onDblClickTextRect}
           onDblTap={onDblClickTextRect}
+          onDragStart={onDragTextStart}
           onDragEnd={onDragTextEnd}
+          onTransforming={onTransformingText}
           onTransformEnd={onTextTransformEnd}
         />
         <Transformer

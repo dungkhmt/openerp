@@ -9,6 +9,15 @@ export default function CodeSimilarityCheck(props) {
   const [codeSimilarity, setCodeSimilarity] = useState([]);
   const [threshold, setThreshold] = useState(50);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [problemId, setProblemId] = useState(null);
+  const [clusters, setClusters] = useState([]);
+
+  const columnCluster = [
+    { title: "Problem", field: "problemId" },
+    { title: "UserIds", field: "userIds" },
+  ];
+
   const columns = [
     { title: "Source1", field: "sourceCode1" },
     { title: "user1", field: "userId1" },
@@ -21,12 +30,15 @@ export default function CodeSimilarityCheck(props) {
   ];
   function getCodeChecking() {
     let body = {
+      contestId: contestId,
       threshold: threshold,
+      userId: userId,
+      problemId: problemId,
     };
     request(
-      "get",
-      "/get-code-similarity/" + contestId,
-
+      "post",
+      //"/get-code-similarity/" + contestId,
+      "/get-code-similarity",
       (res) => {
         console.log("getCodeChecking Plagiarism, res = ", res.data);
         let data = res.data.map((c) => ({
@@ -37,6 +49,27 @@ export default function CodeSimilarityCheck(props) {
         //setCodeSimilarity(res.data.codeSimilarityElementList);
         console.log("map data = ", data);
         setCodeSimilarity(data);
+      },
+      {},
+      body
+    );
+
+    request(
+      "post",
+      //"/get-code-similarity/" + contestId,
+      "/get-code-similarity-cluster",
+      (res) => {
+        console.log("getCodeChecking Plagiarism, res = ", res.data);
+        /*
+        let data = res.data.map((c) => ({
+          ...c,
+          date1: toFormattedDateTime(c.submitDate1),
+          date2: toFormattedDateTime(c.submitDate2),
+        }));
+        */
+        //setCodeSimilarity(res.data.codeSimilarityElementList);
+        console.log("map data = ", res.data);
+        setClusters(res.data);
       },
       {},
       body
@@ -82,11 +115,34 @@ export default function CodeSimilarityCheck(props) {
         }}
       ></TextField>
       (%)
+      <TextField
+        autoFocus
+        required
+        id="userId"
+        label="userId"
+        placeholder="UserId"
+        value={userId}
+        onChange={(event) => {
+          setUserId(event.target.value);
+        }}
+      ></TextField>
+      <TextField
+        autoFocus
+        required
+        id="problemId"
+        label="problemId"
+        placeholder="ProblemId"
+        value={problemId}
+        onChange={(event) => {
+          setProblemId(event.target.value);
+        }}
+      ></TextField>
       <Button variant="contained" color="secondary" onClick={getCodeChecking}>
         View Code Similarity
       </Button>
       {isProcessing ? <CircularProgress /> : ""}
       <MaterialTable columns={columns} data={codeSimilarity}></MaterialTable>
+      <MaterialTable columns={columnCluster} data={clusters}></MaterialTable>
     </div>
   );
 }

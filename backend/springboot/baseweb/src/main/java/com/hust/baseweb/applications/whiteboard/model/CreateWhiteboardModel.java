@@ -14,4 +14,5 @@ import java.util.UUID;
 public class CreateWhiteboardModel {
     private String whiteboardId;
     private UUID classSessionId;
+    private String whiteboardName;
 }

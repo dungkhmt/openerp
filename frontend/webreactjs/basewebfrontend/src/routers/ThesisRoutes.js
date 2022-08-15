@@ -8,6 +8,7 @@ import EditThesis from "../component/education/thesisdefensejury/EditThesis";
 import DefensePlanManager from "../component/education/thesisdefensejury/DefensePlanManager";
 import ThesisDetail from "component/education/thesisdefensejury/ThesisDetail";
 import ThesisDefensePlans from "component/education/thesisdefensejury/ThesisDefensePlans";
+import AssginTeacherToPlan from "component/education/thesisdefensejury/AssignTeacherToPlan";
 
 export default function ThesisRoutes() {
   let { path } = useRouteMatch();
@@ -46,6 +47,12 @@ export default function ThesisRoutes() {
       <Route
           component={DefensePlanManager}
           path={`${path}/thesis_defense_plan/:id`}
+          exact
+        />
+
+        <Route
+          component={AssginTeacherToPlan}
+          path={`${path}/defensePlan/:id/assignTeacher`}
           exact
         />
      

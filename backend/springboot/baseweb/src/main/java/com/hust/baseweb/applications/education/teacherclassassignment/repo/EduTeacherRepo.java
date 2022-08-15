@@ -18,4 +18,6 @@ public interface EduTeacherRepo extends JpaRepository<EduTeacher, String> {
     
     Optional<EduTeacher> findByUserLoginId(String userLoginId);
     Optional<EduTeacher> findByTeacherName(String teacherName);
+    @Query(value = "select * from teacher t where t.id = :id", nativeQuery = true)
+    EduTeacher findByTeacherID(String id);
 }

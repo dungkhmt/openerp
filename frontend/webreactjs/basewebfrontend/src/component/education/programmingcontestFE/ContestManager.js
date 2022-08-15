@@ -14,6 +14,7 @@ import ContestManagerListRequestingParticipant from "./ContestManagerListRequest
 import ContestManagerAddMember from "./ContestManagerAddMember";
 import ContestManagerRanking from "./ContestManagerRanking";
 import ContestManagerUserSubmission from "./ContestManagerUserSubmission";
+import ContestManagerUserSubmissionNotEvaluated from "./ContestManagerUserSubmissionNotEvaluated";
 import ContestManagerRankingNew from "./ContestManagerRankingNew";
 
 export function ContestManager() {
@@ -246,18 +247,23 @@ export function ContestManager() {
         <Tab label="Ranking" {...a11yProps(4)} style={{ width: "10%" }} />
         <Tab label="Ranking (New)" {...a11yProps(5)} style={{ width: "10%" }} />
         <Tab
-          label="User Submission"
+          label="User Submission (NA)"
           {...a11yProps(6)}
           style={{ width: "10%" }}
         />
         <Tab
-          label="Submission Detail by TestCase"
+          label="User Submission"
           {...a11yProps(7)}
           style={{ width: "10%" }}
         />
         <Tab
-          label="Check Code Plagiarism"
+          label="Submission Detail by TestCase"
           {...a11yProps(8)}
+          style={{ width: "10%" }}
+        />
+        <Tab
+          label="Check Code Plagiarism"
+          {...a11yProps(9)}
           style={{ width: "10%" }}
         />
       </Tabs>
@@ -287,14 +293,18 @@ export function ContestManager() {
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={6}>
-        <ContestManagerUserSubmission contestId={contestId} />
+        <ContestManagerUserSubmissionNotEvaluated contestId={contestId} />
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={7}>
-        <ContestManagerViewListContestProblemSubmissionDetailByTestCase />
+        <ContestManagerUserSubmission contestId={contestId} />
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={8}>
+        <ContestManagerViewListContestProblemSubmissionDetailByTestCase />
+      </TabPanelVertical>
+
+      <TabPanelVertical value={value} index={9}>
         <CodeSimilarityCheck contestId={contestId} />
       </TabPanelVertical>
     </div>

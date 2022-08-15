@@ -1,18 +1,17 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.service;
 
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.Facilities;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.Facility;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.Shelf;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.FacilityRequest;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.FacilityResponse;
-import com.hust.baseweb.applications.sscm.tmscontainer.repository.FacilitiesRepository;
+import com.hust.baseweb.applications.sscm.tmscontainer.repository.FacilityRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class FacilitiesService {
@@ -20,46 +19,65 @@ public class FacilitiesService {
     ModelMapper mapper = new ModelMapper();
 
     @Autowired
-    private FacilitiesRepository facilitiesRepository;
+    private FacilityRepository facilityRepository;
 
     @Autowired
     private ShelvesService shelvesService;
 
-    public FacilityResponse createFacility(FacilityRequest facilityRequest){
 
-        Facilities facilities = new Facilities(facilityRequest);
+    public FacilityResponse createFacility(FacilityRequest facilityRequest) {
 
-        Facilities res = facilitiesRepository.save(facilities);
+        Facility facility = new Facility(facilityRequest);
+
+        Facility res = facilityRepository.save(facility);
 
         FacilityResponse facilityResponse = mapper.map(res, FacilityResponse.class);
 
-        facilityResponse.setListShelf(shelvesService.createShelf(facilityResponse.getId(), facilityRequest.getListShelf()));
+        facilityResponse.setListShelf(shelvesService.createShelf(
+            facilityResponse.getId(),
+            facilityRequest.getListShelf()));
 
         return facilityResponse;
     }
 
-    public  FacilityResponse getById(Integer id){
-        Facilities facility = facilitiesRepository.getOne(id);
+    public FacilityResponse getById(Integer id) {
+        Facility facility = facilityRepository.getOne(id);
         FacilityResponse facilityResponse = mapper.map(facility, FacilityResponse.class);
         facilityResponse.setListShelf(shelvesService.getListShelves(id));
         return facilityResponse;
     }
 
-    public List<Facilities> getAllFacilities(){
-        return  facilitiesRepository.findAll();
+    public List<Facility> getAllFacilities() {
+        return facilityRepository.findAll();
     }
 
-    public FacilityResponse updateById(Integer id, FacilityRequest facilityRequest){
-        Optional<Facilities> facility = facilitiesRepository.findById(id);
-        Facilities facilities = facility.get();
-//        facilities.set
-//        Facilities facility = facilitiesRepository.getOne(id);
+    @Transactional
+    public FacilityResponse updateById(Integer id, FacilityRequest facilityRequest) throws Exception {
+
+        Facility facility = facilityRepository.findById(id).orElse(null);
+        if (facility == null) {
+            throw new Exception("không tìm thấy kho");
+        }
+
+        facility.setCode(facilityRequest.getCode());
+        facility.setName(facilityRequest.getName());
+        facility.setFacilityLenght(facilityRequest.getFacilityLenght());
+        facility.setFacilityWidth(facilityRequest.getFacilityWidth());
+        facility.setAddress(facilityRequest.getAddress());
+        facility.setUpdateAt(new Date());
+
+        List<Shelf> shelves = shelvesService.getListShelves(facility.getFacilityId());
+        shelvesService.updateListShelve(facilityRequest.getListShelf(), shelves);
+        facilityRepository.save(facility);
+
         FacilityResponse facilityResponse = mapper.map(facility, FacilityResponse.class);
         facilityResponse.setListShelf(shelvesService.getListShelves(id));
+
         return facilityResponse;
     }
-    public void deleteById(Integer id){
-        facilitiesRepository.deleteById(id);
+
+    public void deleteById(Integer id) {
+        facilityRepository.deleteById(id);
     }
 
 }

@@ -1,5 +1,6 @@
 export const SOCKET_IO_EVENTS = {
   CONNECT_TO_WHITEBOARD: 'connect_to_whiteboard',
+  CONNECT_TO_WHITEBOARD_PAGE: 'connect_to_whiteboard_page',
   REQUEST_DRAW: 'request_draw',
   ON_REQUEST_DRAW: 'on_request_draw',
 
@@ -22,3 +23,4 @@ export const SOCKET_IO_EVENTS = {
   CHECK_LOCAL_STORAGE: 'check_local_storage',
   ON_CHECK_LOCAL_STORAGE: 'on_check_local_storage',
 }
+

@@ -103,6 +103,7 @@ public class QuizTestController {
 
     @GetMapping("/get-quiz-tests-of-user-login")
     public ResponseEntity<?> getQuizTestsOfUserLogin(Principal principal){
+        log.info("getQuizTestsOfUserLogin, user = " + principal.getName());
         List<QuizTestParticipantRoleModel> res = eduQuizTestParticipantRoleService.getQuizTestsOfUser(principal.getName());
         return ResponseEntity.ok().body(res);
     }
@@ -118,7 +119,10 @@ public class QuizTestController {
     public ResponseEntity<?> getAllQuizTestByUserLogin(
         Principal principal
     ) {
-        return ResponseEntity.ok().body(quizTestService.getAllTestByCreateUser(principal.getName()));
+        log.info("getAllQuizTestByUserLogin, user = " + principal.getName());
+        List<EduQuizTest> res = quizTestService.getAllTestByCreateUser(principal.getName());
+        log.info("getAllQuizTestByUserLogin, user = " + principal.getName() + " res = " + res.size());
+        return ResponseEntity.ok().body(res);
     }
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})

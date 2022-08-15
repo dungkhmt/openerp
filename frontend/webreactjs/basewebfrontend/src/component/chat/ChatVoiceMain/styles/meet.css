@@ -107,13 +107,13 @@
 
 .admin-chat {
   text-align: center;
-  color: rgb(105, 105, 105);
+  color: rgb(238, 238, 238);
   font-size: 14px;
   margin: 10px 5px;
 }
 
 .content-bar {
-  background-color: #f3f3f3;
+  background-color: #737373;
   overflow-y: auto;
 }
 
@@ -128,7 +128,7 @@
 }
 
 .chat-box {
-  border-radius: 40px;
+  border-radius: 8px;
   min-width: 20px;
   width: fit-content;
   max-width: 220px;
@@ -137,6 +137,8 @@
 .my-chat {
   margin: 5px;
   position: relative;
+  display: flex;
+  justify-content: right;
 }
 
 .other-chat {
@@ -146,29 +148,20 @@
 .my-chat-box {
   background-color: #2063ff;
   color: white;
-  position: absolute;
-  right: 0;
   border-top-right-radius: 5px;
   margin: 0 5px 0 15px;
   padding: 5px 15px 5px 15px;
   text-align: right;
 }
 
-.my-chat-box-hidden {
-  background-color: #2063ff;
-  color: white;
-  padding: 7px 14px;
-  width: fit-content;
-  visibility: hidden;
-}
-
 .chat-title {
   font-size: 14px;
-  color: #797979;
+  color: #dadada;
   margin-left: 10px;
 }
 
 .others-chat-box {
+  display: block;
   background-color: #d8d8d8;
   color: black;
   width: fit-content;
@@ -383,4 +376,44 @@
 .extend-zoom-icon {
   cursor: pointer;
   margin-left: 10px;
+}
+
+.chat-button {
+  color: #2063ff;
+  font-size: 20px; 
+  margin: 7px 0 0 5px;
+  position: absolute;
+  cursor: pointer; 
+}
+
+.chat-button.attach-file {
+  margin-left: 30px;
+}
+
+.upload-file-chat {
+  position: absolute;
+  margin: 4px 6px 2px 6px;
+  padding: 4px 2px;
+  background-color: #c9c9c9;
+  border-radius: 2px;
+  display: flex;
+}
+
+.upload-file-chat__close {
+  position: absolute;
+  right: 0;
+  font-weight: 700;
+  margin-top: -12px;
+  margin-right: -4px;
+  padding: 0 2px 1px;
+  line-height: 12px;
+  background-color: #ff9b9b;
+  cursor: pointer;
+  border-radius: 10px;
+  color: #797979;
+}
+
+.upload-file-chat__close:hover {
+  background-color: rgb(255, 155, 155, 0.8);
+  color: #5a5a5a;
 }

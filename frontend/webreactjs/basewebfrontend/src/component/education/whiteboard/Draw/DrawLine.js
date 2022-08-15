@@ -6,40 +6,43 @@ import { SocketContext } from '../../../../utils/whiteboard/context/SocketContex
 import Konva from 'konva'
 import { nanoid } from 'nanoid'
 
+const LAYER_ID = 'line'
+
 export const DrawLine = React.memo(
   React.forwardRef(
     ({ eventPointer, scale, tool, currentPage, whiteboardId, onDrawDone, totalPage, strokeDraw }, ref) => {
       const { socket } = useContext(SocketContext)
       const [lines, setLines] = useState([])
 
+      const isDrawingRef = useRef(false)
+      const intervalRef = useRef(null)
+
       useEffect(() => {
-        socket.on(SOCKET_IO_EVENTS.ON_DRAW_LINE_END, ({ data, currentDrawPage, currentWhiteboardId }) => {
-          if (whiteboardId !== currentWhiteboardId) {
-            return
-          }
+        socket.on(SOCKET_IO_EVENTS.ON_DRAW_LINE_END, ({ data, currentDrawPage }) => {
           if (currentDrawPage === Number(currentPage)) {
             setLines(data)
-            // layerRef.current?.batchDraw()
-            if (ref?.getLayers().length > 0 && ref?.getLayers()[1]?.getChildren().length !== data.length) {
-              ref?.getLayers()[1]?.clear()
-              ref?.getLayers()[1]?.destroyChildren()
-              for (let i = 0; i < data.length; ++i) {
-                ref?.getLayers()[1]?.add(
-                  new Konva.Line({
-                    points: data[i].points,
-                    stroke: data[i].strokeDraw.color,
-                    strokeWidth: data[i].strokeDraw.strokeWidth * scale,
-                    tension: 0.5,
-                    lineCap: 'round',
-                    lineJoin: 'round',
-                    globalCompositeOperation: data[i].tool === TOOL.ERASER ? 'destination-out' : 'source-over',
-                  }),
-                )
-              }
-              ref?.getLayers()[1]?.batchDraw()
-              // ref?.getLayers()[1]?.draw()
-              // ref?.getLayer()?.batchDraw()
-            }
+            // const lineLayer = ref?.getLayers().find((layer) => layer.attrs.id === LAYER_ID)
+            // // layerRef.current?.batchDraw()
+            // if ((ref?.getLayers().length > 0 && lineLayer?.getChildren().length !== data.length) || !lineLayer) {
+            //   lineLayer?.clear()
+            //   lineLayer?.destroyChildren()
+            //   for (let i = 0; i < data.length; ++i) {
+            //     lineLayer?.add(
+            //       new Konva.Line({
+            //         points: data[i].points,
+            //         stroke: data[i].strokeDraw.color,
+            //         strokeWidth: data[i].strokeWidth * scale,
+            //         tension: 0.5,
+            //         lineCap: 'round',
+            //         lineJoin: 'round',
+            //         globalCompositeOperation: data[i].tool === TOOL.ERASER ? 'destination-out' : 'source-over',
+            //       }),
+            //     )
+            //   }
+            //   lineLayer?.batchDraw()
+            // lineLayer?.draw()
+            // ref?.getLayer()?.batchDraw()
+            // }
             // linesRef.current = data
           }
           const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
@@ -55,67 +58,41 @@ export const DrawLine = React.memo(
           if (whiteboardId !== currentWhiteboardId) {
             return
           }
-          const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-          if (typeof drawData.lines !== 'undefined') {
-            const foundDrawData = drawData.lines.find((item) => Number(item.currentPage) === Number(currentPage))
-            if (typeof foundDrawData !== 'undefined') {
-              setLines(foundDrawData.data)
-              // linesRef.current = foundDrawData.data
-            } else {
-              setLines([])
-              // linesRef.current = []
-            }
-          }
+          updateDataFromLS()
         }
 
-        onCheckLS()
+        // onCheckLS()
 
         socket.on(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE, ({ currentWhiteboardId }) => onCheckLS(currentWhiteboardId))
 
         return () => {
           socket.off(SOCKET_IO_EVENTS.ON_DRAW_LINE_END)
-          socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
+          // socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
         }
       }, [currentPage, totalPage])
 
       useEffect(() => {
-        const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-        if (typeof drawData.lines !== 'undefined') {
-          const foundDrawData = drawData.lines.find((item) => Number(item.currentPage) === Number(currentPage))
-          if (typeof foundDrawData !== 'undefined') {
-            setLines(foundDrawData.data)
-            // linesRef.current = foundDrawData.data
-          } else {
-            setLines([])
-            // linesRef.current = []
+        if (!isDrawingRef.current) {
+          if (intervalRef && intervalRef.current) {
+            clearInterval(intervalRef.current)
+          }
+          intervalRef.current = setInterval(() => updateDataFromLS(), 2000)
+        } else {
+          if (intervalRef && intervalRef.current) {
+            clearInterval(intervalRef.current)
           }
         }
-      }, [currentPage])
 
-      // useEffect(() => {
-      //   if (ref) {
-      //     if (ref?.getLayers().length > 0) {
-      //       ref?.getLayers()[1]?.clear()
-      //       ref?.getLayers()[1]?.destroyChildren()
-      //       for (let i = 0; i < lines.length; ++i) {
-      //         ref?.getLayers()[1]?.add(
-      //           new Konva.Line({
-      //             points: lines.points,
-      //             stroke: "#df4b26",
-      //             strokeWidth: 5 * scale,
-      //             tension: 0.5,
-      //             lineCap: "round",
-      //             lineJoin: "round",
-      //             globalCompositeOperation: lines[i].tool === TOOL.ERASER ? 'destination-out' : 'source-over',
-      //           })
-      //           )
-      //       }
-      //       ref?.getLayers()[1]?.batchDraw()
-      //       ref?.getLayers()[1]?.draw()
-      //       ref?.getLayer()?.batchDraw()
-      //     }
-      //   }
-      // }, [lines, ref])
+        return () => {
+          if (intervalRef && intervalRef.current) {
+            clearInterval(intervalRef.current)
+          }
+        }
+      }, [lines])
+
+      useEffect(() => {
+        updateDataFromLS()
+      }, [currentPage])
 
       useEffect(() => {
         if (eventPointer.eventType === null || (tool !== TOOL.PEN && tool !== TOOL.ERASER)) {
@@ -123,10 +100,17 @@ export const DrawLine = React.memo(
         }
 
         if (eventPointer.eventType === EVENT_TYPE.MOUSE_DOWN) {
+          isDrawingRef.current = true
           const { x, y } = eventPointer.pointerPosition
           // linesRef.current = [...linesRef.current, { tool, points: [x, y] }]
-          setLines([...lines, { tool, points: [x, y], strokeDraw, key: nanoid() }])
+          setLines([
+            ...lines,
+            { tool, points: [x, y], strokeDraw: strokeDraw.color, strokeWidth: strokeDraw.strokeWidth, key: nanoid() },
+          ])
         } else if (eventPointer.eventType === EVENT_TYPE.MOUSE_MOVE) {
+          if (!isDrawingRef.current) {
+            return
+          }
           const { x, y } = eventPointer.pointerPosition
           const lastLine = lines[lines.length - 1]
           // add point
@@ -149,23 +133,40 @@ export const DrawLine = React.memo(
           socket.emit(SOCKET_IO_EVENTS.DRAW_LINE_END, {
             data: lines,
             currentDrawPage: Number(currentPage),
-            currentWhiteboardId: whiteboardId,
+            whiteboardPageId: `${whiteboardId}-${currentPage}`,
           })
           onDrawDone(TOOL.PEN)
+          isDrawingRef.current = false
         }
       }, [eventPointer, currentPage, strokeDraw])
 
-      // console.log(ref)
+      const updateDataFromLS = () => {
+        const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
+        if (typeof drawData.lines !== 'undefined') {
+          const foundDrawData = drawData.lines.find((item) => Number(item.currentPage) === Number(currentPage))
+          if (typeof foundDrawData !== 'undefined') {
+            setLines(foundDrawData.data)
+            // linesRef.current = foundDrawData.data
+          } else {
+            setLines([])
+            // linesRef.current = []
+          }
+        }
+      }
+
+      if (lines.length === 0) {
+        return null
+      }
 
       return (
-        <Layer>
+        <Layer id={LAYER_ID}>
           <Group>
             {lines.map((line, i) => (
               <Line
-                key={i}
+                key={line.key}
                 points={line.points}
-                stroke={line.strokeDraw.color}
-                strokeWidth={line.strokeDraw.strokeWidth * scale}
+                stroke={line.strokeDraw}
+                strokeWidth={line.strokeWidth * scale}
                 tension={0.5}
                 lineCap="round"
                 lineJoin="round"

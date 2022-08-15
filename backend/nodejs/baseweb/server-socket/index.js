@@ -21,24 +21,28 @@ app.use(cors())
 io.on("connection", async (socket) => {
   console.log(`${socket.id} has connected`)
 
-  socket.on(SOCKET_IO_EVENTS.CONNECT_TO_WHITEBOARD, async ({ whiteboardId }) => {
-    await socket.join(whiteboardId)
+  socket.on(SOCKET_IO_EVENTS.CONNECT_TO_WHITEBOARD, async ({ currentWhiteboardId }) => {
+    await socket.join(currentWhiteboardId)
+  })
+
+  socket.on(SOCKET_IO_EVENTS.CONNECT_TO_WHITEBOARD_PAGE, async ({ whiteboardPageId }) => {
+    await socket.join(whiteboardPageId)
   })
 
   socket.on(SOCKET_IO_EVENTS.DRAW_LINE_END, (data) => {
-    socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_DRAW_LINE_END, data)
+    socket.in(data.whiteboardPageId).emit(SOCKET_IO_EVENTS.ON_DRAW_LINE_END, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.DRAW_RECT_END, (data) => {
-    socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_DRAW_RECT_END, data)
+    socket.in(data.whiteboardPageId).emit(SOCKET_IO_EVENTS.ON_DRAW_RECT_END, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.DRAW_CIRCLE_END, (data) => {
-    socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_DRAW_CIRCLE_END, data)
+    socket.in(data.whiteboardPageId).emit(SOCKET_IO_EVENTS.ON_DRAW_CIRCLE_END, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.ADD_TEXT, (data) => {
-    socket.in(data.currentWhiteboardId).emit(SOCKET_IO_EVENTS.ON_ADD_TEXT_END, data)
+    socket.in(data.whiteboardPageId).emit(SOCKET_IO_EVENTS.ON_ADD_TEXT_END, data)
   })
 
   socket.on(SOCKET_IO_EVENTS.ADD_NEW_PAGE, (data) => {

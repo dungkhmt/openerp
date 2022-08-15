@@ -1,15 +1,28 @@
 import React, { useContext, useEffect, useState, useRef } from 'react'
 import { Layer, Rect } from 'react-konva'
 import { updateLocalStorageData } from '../../../../utils/whiteboard/localStorage'
-import { EVENT_TYPE, TOOL, SOCKET_IO_EVENTS, KEYS } from '../../../../utils/whiteboard/constants'
+import { EVENT_TYPE, TOOL, SOCKET_IO_EVENTS, KEYS, ROLE_STATUS } from '../../../../utils/whiteboard/constants'
 import { SocketContext } from '../../../../utils/whiteboard/context/SocketContext'
 import Konva from 'konva'
 import { nanoid } from 'nanoid'
 
+const LAYER_ID = 'rectangle'
+
 export const DrawRectangle = React.memo(
   React.forwardRef(
     (
-      { eventPointer, scale, tool, currentPage, stageContainer, whiteboardId, onDrawDone, totalPage, strokeDraw },
+      {
+        eventPointer,
+        scale,
+        tool,
+        currentPage,
+        stageContainer,
+        whiteboardId,
+        onDrawDone,
+        totalPage,
+        strokeDraw,
+        roleStatus,
+      },
       ref,
     ) => {
       const { socket } = useContext(SocketContext)
@@ -18,17 +31,15 @@ export const DrawRectangle = React.memo(
       const [currentAnnotation, setCurrentAnnotation] = useState(null)
 
       useEffect(() => {
-        socket.on(SOCKET_IO_EVENTS.ON_DRAW_RECT_END, ({ data, currentDrawPage, currentWhiteboardId }) => {
-          if (whiteboardId !== currentWhiteboardId) {
-            return
-          }
+        socket.on(SOCKET_IO_EVENTS.ON_DRAW_RECT_END, ({ data, currentDrawPage }) => {
           if (currentDrawPage === Number(currentPage)) {
+            const rectangleLayer = ref?.getLayers().find((layer) => layer.attrs.id === LAYER_ID)
             setAnnotations(data)
-            if (ref?.getLayers().length > 0 && ref?.getLayers()[2]?.getChildren().length !== data.length) {
-              ref?.getLayers()[2]?.clear()
-              ref?.getLayers()[2]?.destroyChildren()
+            if (ref?.getLayers().length > 0 && rectangleLayer?.getChildren().length !== data.length) {
+              rectangleLayer?.clear()
+              rectangleLayer?.destroyChildren()
               for (let i = 0; i < data.length; ++i) {
-                ref?.getLayers()[2]?.add(
+                rectangleLayer?.add(
                   new Konva.Rect({
                     x: data[i].x,
                     y: data[i].y,
@@ -44,9 +55,8 @@ export const DrawRectangle = React.memo(
                   }),
                 )
               }
-              ref?.getLayers()[2]?.batchDraw()
+              rectangleLayer?.batchDraw()
             }
-            // annotationsRef.current = data
           }
           const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
           if (typeof drawData.rectangle !== 'undefined') {
@@ -61,17 +71,7 @@ export const DrawRectangle = React.memo(
           if (whiteboardId !== currentWhiteboardId) {
             return
           }
-          const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-          if (typeof drawData.rectangle !== 'undefined') {
-            const foundDrawData = drawData.rectangle.find((item) => Number(item.currentPage) === Number(currentPage))
-            if (typeof foundDrawData !== 'undefined') {
-              setAnnotations(foundDrawData.data)
-              // annotationsRef.current = foundDrawData.data
-            } else {
-              setAnnotations([])
-              // annotationsRef.current = []
-            }
-          }
+          updateDataFromLS()
         }
 
         setTimeout(() => onCheckLS(), 150)
@@ -80,22 +80,17 @@ export const DrawRectangle = React.memo(
 
         return () => {
           socket.off(SOCKET_IO_EVENTS.ON_DRAW_RECT_END)
-          socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
-          // socket.off(SOCKET_IO_EVENTS.ON_ADD_NEW_PAGE)
+          // socket.off(SOCKET_IO_EVENTS.ON_CHECK_LOCAL_STORAGE)
+          // socket.off(SOCKET_IO_EVENTS.ON_RECTANGLE_CHECK_LOCAL_STORAGE)
         }
       }, [currentPage, whiteboardId, annotations, socket, totalPage])
 
       useEffect(() => {
-        const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
-        if (typeof drawData.rectangle !== 'undefined') {
-          const foundDrawData = drawData.rectangle.find((item) => Number(item.currentPage) === Number(currentPage))
-          if (typeof foundDrawData !== 'undefined') {
-            setAnnotations(foundDrawData.data)
-            // annotationsRef.current = foundDrawData.data
-          } else {
-            setAnnotations([])
-            // annotationsRef.current = []
-          }
+        updateDataFromLS()
+        const id = setInterval(() => updateDataFromLS(), 2000)
+
+        return () => {
+          clearInterval(id)
         }
       }, [currentPage])
 
@@ -163,12 +158,12 @@ export const DrawRectangle = React.memo(
             socket.emit(SOCKET_IO_EVENTS.DRAW_RECT_END, {
               data: newAnno,
               currentDrawPage: Number(currentPage),
-              currentWhiteboardId: whiteboardId,
+              whiteboardPageId: `${whiteboardId}-${currentPage}`,
             })
             onDrawDone(TOOL.RECTANGLE)
           }
         }
-      }, [eventPointer, annotations, currentPage])
+      }, [eventPointer, currentPage])
 
       useEffect(() => {
         if (!stageContainer && tool !== TOOL.ERASER) {
@@ -191,11 +186,10 @@ export const DrawRectangle = React.memo(
               drawData.rectangle = [{ data: newAnnotations, currentPage }]
             }
             localStorage.setItem(KEYS.DRAW_DATA_LOCAL_STORAGE, JSON.stringify(drawData))
-
             socket.emit(SOCKET_IO_EVENTS.DRAW_RECT_END, {
               data: newAnnotations,
               currentDrawPage: Number(currentPage),
-              currentWhiteboardId: whiteboardId,
+              whiteboardPageId: `${whiteboardId}-${currentPage}`,
             })
           }
         }
@@ -208,13 +202,35 @@ export const DrawRectangle = React.memo(
       }, [stageContainer, currentAnnotation, tool])
 
       const onClickRect = (key) => {
+        //     roleId: ROLE_STATUS.READ,
+        // statusId: ROLE_STATUS.IDLE,
+        // isCreatedUser: false
+        if (roleStatus.roleId === ROLE_STATUS.READ || roleStatus.statusId !== ROLE_STATUS.ACCEPTED) {
+          return
+        }
         setCurrentAnnotation(annotations.find((item) => item.key === key))
+      }
+
+      const updateDataFromLS = () => {
+        const drawData = JSON.parse(localStorage.getItem(KEYS.DRAW_DATA_LOCAL_STORAGE) || '{}')
+        if (typeof drawData.rectangle !== 'undefined') {
+          const foundDrawData = drawData.rectangle.find((item) => Number(item.currentPage) === Number(currentPage))
+          if (typeof foundDrawData !== 'undefined') {
+            setAnnotations(foundDrawData.data)
+          } else {
+            setAnnotations([])
+          }
+        }
       }
 
       const annotationsToDraw = [...annotations, ...newAnnotation]
 
+      if (annotationsToDraw.length === 0) {
+        return null
+      }
+
       return (
-        <Layer>
+        <Layer id={LAYER_ID}>
           {annotationsToDraw.map((value) => (
             <Rect
               key={value.key}

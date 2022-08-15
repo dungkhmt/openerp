@@ -26,11 +26,11 @@ public class WhiteboardServiceImpl implements  WhiteboardService {
     private UserLoginRepo userLoginRepo;
 
     @Override
-    public void createWhiteboard(String userId, String whiteboardId, UUID classSessionId) {
+    public void createWhiteboard(String userId, String whiteboardId, String name, UUID classSessionId) {
         Whiteboard whiteboard = new Whiteboard();
         EduClassSession eduClassSession = eduClassSessionRepo.findBySessionId(classSessionId);
         whiteboard.setId(whiteboardId);
-        whiteboard.setName("Whiteboard " + whiteboardId);
+        whiteboard.setName(name);
         whiteboard.setEduClassSession(eduClassSession);
         whiteboard.setTotalPage(1);
         whiteboard.setCreatedBy(userId);
@@ -193,6 +193,11 @@ public class WhiteboardServiceImpl implements  WhiteboardService {
                 usersInWhiteboardModel.setRoleId(userWhiteboard.getRoleId());
                 usersInWhiteboardModel.setStatusId(userWhiteboard.getStatusId());
                 usersInWhiteboardModel.setUserId(userWhiteboard.getUserLogin().getUserLoginId());
+                if (userWhiteboard.getUserLogin().getUserLoginId().equals(whiteboard.getCreatedBy())) {
+                    usersInWhiteboardModel.setIsCreatedUser(true);
+                } else {
+                    usersInWhiteboardModel.setIsCreatedUser(false);
+                }
 
                 usersInWhiteboardModelList.add(usersInWhiteboardModel);
             }
@@ -201,12 +206,22 @@ public class WhiteboardServiceImpl implements  WhiteboardService {
     }
 
     @Override
-    public void deleteWhiteboard(DeleteWhiteboardModel input) {
-        Whiteboard whiteboard = whiteboardRepo.findWhiteboardById(input.getWhiteboardId());
-        List<UserWhiteboard> userWhiteboardList = userWhiteboardRepo.findAllByWhiteboard(whiteboard);
-        userWhiteboardRepo.deleteAll(userWhiteboardList);
-        whiteboardRepo.delete(whiteboard);
+    public DeleteWhiteboardResultModel deleteWhiteboard(String userId, DeleteWhiteboardModel input) {
+        DeleteWhiteboardResultModel deleteWhiteboardResultModel = new DeleteWhiteboardResultModel();
 
-        return;
+        Whiteboard whiteboard = whiteboardRepo.findWhiteboardById(input.getWhiteboardId());
+        if (!whiteboard.getCreatedBy().equals(userId)) {
+            deleteWhiteboardResultModel.setSuccess(false);
+            deleteWhiteboardResultModel.setMessage("Bạn không phải người tạo bảng viết này.");
+        } else {
+            List<UserWhiteboard> userWhiteboardList = userWhiteboardRepo.findAllByWhiteboard(whiteboard);
+            userWhiteboardRepo.deleteAll(userWhiteboardList);
+            whiteboardRepo.delete(whiteboard);
+            deleteWhiteboardResultModel.setSuccess(true);
+            deleteWhiteboardResultModel.setMessage("Xoá bảng viết thàng công.");
+        }
+
+
+        return deleteWhiteboardResultModel;
     }
 }
