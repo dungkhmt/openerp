@@ -61,3 +61,7 @@ export const updateMeet = async (params) => {
 export const uploadFile = async (formData) => {
   return request("post", API_URL.UPLOAD_FILE, undefined, undefined, formData);
 };
+
+export const getPresentMeets = async () => {
+  return request("get", API_URL.PRESENT_MEET);
+};
