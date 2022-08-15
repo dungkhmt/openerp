@@ -37,8 +37,8 @@ public class TeacherCourse {
     @Column(name = "priority")
     private int priority;
 
-    @Column(name = "score")
-    private double score;
+//    @Column(name = "score")
+//    private double score;
 
     @Column(name = "last_updated_stamp")
     private Date lastUpdatedStamp;

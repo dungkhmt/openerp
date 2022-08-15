@@ -29,7 +29,7 @@ public class MaxAssignedClassOrtoolsCPSolver {
 
     final int[][] preAssignments;
 
-    long timeLimit = 10000;
+    long timeLimit = 900;
 
     //
     IntVar[][] x; // x[j,i] = 1 indicates that class i is assigned to teacher j, = 0 otherwise

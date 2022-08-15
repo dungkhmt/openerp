@@ -9,6 +9,7 @@ public class OrtoolsMIPSolver extends BaseSolver {
 
     @Override
     public boolean solve(SolverConfig config) {
+        long start, end;
         MaxAssignedClassOrtoolsMIPSolver maxAssignedClassSolver = new MaxAssignedClassOrtoolsMIPSolver(
             input);
 
@@ -16,7 +17,11 @@ public class OrtoolsMIPSolver extends BaseSolver {
                  " with model " + config.getModel() +
                  " target " + config.getObjective());
 
+        start = System.nanoTime();
         boolean isOptimal = maxAssignedClassSolver.solve();
+        end = System.nanoTime();
+        System.out.println("OrtoolsMIPSolver Phase 1, time = " +
+                           ((double) (end - start) / 1_000_000_000));
         assignment = maxAssignedClassSolver.getAssignments();
         notAssignedClasses = maxAssignedClassSolver.getNotAssignedClasses();
         int numAssignedClasses = input.n - notAssignedClasses.size();
@@ -30,7 +35,11 @@ public class OrtoolsMIPSolver extends BaseSolver {
                 input);
             loadBalancingSolver.setNumAssignedClasses(numAssignedClasses);
 
+            start = end;
             loadBalancingSolver.solve();
+            end = System.nanoTime();
+            System.out.println("OrtoolsMIPSolver Phase 2, time = " +
+                               ((double) (end - start) / 1_000_000_000));
             assignment = loadBalancingSolver.getAssignments();
             notAssignedClasses = loadBalancingSolver.getNotAssignedClasses();
 
@@ -41,7 +50,11 @@ public class OrtoolsMIPSolver extends BaseSolver {
             maxAssignedTeacherSolver.setNumAssignedClasses(numAssignedClasses);
             maxAssignedTeacherSolver.setLoadBalancingObjValue(loadBalancingSolver.getObjectiveValue());
 
+            start = end;
             isOptimal = maxAssignedTeacherSolver.solve();
+            end = System.nanoTime();
+            System.out.println("OrtoolsMIPSolver Phase 3, time = " +
+                               ((double) (end - start) / 1_000_000_000));
             assignment = maxAssignedTeacherSolver.getAssignments();
             notAssignedClasses = maxAssignedTeacherSolver.getNotAssignedClasses();
 

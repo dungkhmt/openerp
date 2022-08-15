@@ -48,7 +48,7 @@ public class MaxAssignedTeacherOrtoolsMIPSolver extends LoadBalancingDurationCon
         super.createSolverAndVariables();
         super.createConstraints();
         createObjective();
-
+        solver.setTimeLimit(900 * 1000);
         // Solves the model.
         final MPSolver.ResultStatus resultStatus = solver.solve();
         if (resultStatus == MPSolver.ResultStatus.OPTIMAL) {

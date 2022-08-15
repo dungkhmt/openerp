@@ -383,7 +383,7 @@ public class MaxAssignedClassOrtoolsMIPSolver extends MaxAssignedClassBaseSolver
 
         // Solves.
         log.info("Model created, start solving...");
-
+        solver.setTimeLimit(900 * 1000);
         final MPSolver.ResultStatus resultStatus = solver.solve();
         if (resultStatus == MPSolver.ResultStatus.OPTIMAL) {
             log.info("Solution status = OPTIMAL");

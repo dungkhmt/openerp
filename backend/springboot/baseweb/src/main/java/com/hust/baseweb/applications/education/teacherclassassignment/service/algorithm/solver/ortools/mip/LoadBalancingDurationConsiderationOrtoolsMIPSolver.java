@@ -160,7 +160,7 @@ public class LoadBalancingDurationConsiderationOrtoolsMIPSolver extends MaxAssig
         createSolverAndVariables();
         createConstraints();
         createObjective();
-
+        solver.setTimeLimit(900 * 1000);
         // Solves.
         final MPSolver.ResultStatus resultStatus = solver.solve();
         if (resultStatus == MPSolver.ResultStatus.OPTIMAL) {

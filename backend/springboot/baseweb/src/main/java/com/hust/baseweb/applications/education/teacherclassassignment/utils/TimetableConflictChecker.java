@@ -161,6 +161,7 @@ public class TimetableConflictChecker {
 
             return new TimeTableStartAndDuration(dayOfWeek, startSlot, endSlot, duration);
         } catch (Exception e) {
+            System.out.println(timeTable);
             e.printStackTrace();
             return null;
         }
@@ -173,6 +174,7 @@ public class TimetableConflictChecker {
      * @return
      */
     public static HashSet<Integer> extractDayOfTimeTable(String timetable) {
+        timetable = timetable.replaceAll("\\s", "");
         String[] learningSessions = timetable.split(";"); // ["1,325,326,2-9,11-18,B1-402", "2,221,222,2-9,11-18,B1-402"]
         HashSet<Integer> daysOfWeek = new HashSet<>();
 

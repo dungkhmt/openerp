@@ -467,7 +467,7 @@ public class ClassTeacherAssignmentPlanServiceImpl implements ClassTeacherAssign
                 teacherCourse.setCourseId(courseId);
                 teacherCourse.setTeacherId(teacherId);
                 teacherCourse.setClassType(classType);
-                teacherCourse.setPriority(0);
+//                teacherCourse.setPriority(0);
                 teacherCourse.setCreatedStamp(new Date());
 
 //                TeacherCourseId id = new TeacherCourseId(teacherId, courseId, classType);
