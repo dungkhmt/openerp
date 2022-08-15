@@ -83,6 +83,7 @@ public class ClassTeacherAssignmentSolutionExcelExporter {
 
         CellStyle style = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
+        font.setFontName("Arial");
         font.setBold(true);
         font.setFontHeight(16);
         style.setFont(font);
