@@ -1,5 +1,5 @@
 import { Box, CircularProgress, Typography } from "@material-ui/core/";
-import { teal } from "@material-ui/core/colors";
+import { green, teal } from "@material-ui/core/colors";
 import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
@@ -10,6 +10,7 @@ import { a11yProps, AntTab, AntTabs, TabPanel } from "component/tab";
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";
 import { Link } from "react-router-dom";
+import { errorNoti, successNoti } from "utils/notification";
 import TeacherCourseList from "../TeacherCourseList";
 import TeacherList from "../TeacherList";
 import AssignmentStatistic from "./AssignmentStatistic";
@@ -59,6 +60,18 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 11,
     backgroundColor: "#fafafa",
   },
+  wrapper: {
+    margin: theme.spacing(1),
+    position: "relative",
+  },
+  buttonProgress: {
+    color: green[500],
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: -12,
+    marginLeft: -12,
+  },
 }));
 
 const tabsLabel = [
@@ -73,9 +86,13 @@ const tabsLabel = [
 
 const objectives = [
   {
-    value: "SCORES",
-    label: "Tối ưu thói quen",
+    value: "LOAD_BALANCING_DURATION_CONSIDERATION",
+    label: "Cân bằng tải tính đến thời lượng",
   },
+  // {
+  //   value: "SCORES",
+  //   label: "Tối ưu thói quen",
+  // },
   {
     value: "PRIORITY",
     label: "Tối ưu độ ưu tiên",
@@ -83,10 +100,6 @@ const objectives = [
   {
     value: "WORKDAYS",
     label: "Tối ưu ngày dạy",
-  },
-  {
-    value: "LOAD_BALANCING_DURATION_CONSIDERATION",
-    label: "Cân bằng tải tính đến thời lượng",
   },
 ];
 
@@ -129,14 +142,14 @@ export default function PlanDetail() {
 
   //
   const [plan, setPlan] = useState();
-  const [objective, setObjective] = React.useState(
+  const [solver, setSolver] = useState("ORTOOLS");
+  const [model, setModel] = useState("MIP");
+  const [objective, setObjective] = useState(
     "LOAD_BALANCING_DURATION_CONSIDERATION"
   );
-  const [solver, setSolver] = React.useState("ORTOOLS");
-  const [model, setModel] = React.useState("MIP");
 
   //
-  const configParams = [solver, model, objective];
+  // const configParams = [solver, model, objective];
   const setter = [setSolver, setModel, setObjective];
 
   //
@@ -161,15 +174,21 @@ export default function PlanDetail() {
       planId: planId,
       config: { solver: "ORTOOLS", model: "MIP", objective: objective },
     };
-    // console.log(data);
 
     request(
       "post",
       "auto-assign-teacher-2-class",
       (res) => {
+        successNoti("Đã hoàn thành phân công tự động.");
         setIsProcessing(false);
       },
-      { 401: () => {} },
+      {
+        onError: () => {
+          setIsProcessing(false);
+          errorNoti("Đã có lỗi xảy ra.");
+        },
+        401: () => {},
+      },
       data
     );
   };
@@ -193,15 +212,24 @@ export default function PlanDetail() {
     <>
       <Typography variant="h5">{`${plan.planName}`}</Typography>
 
-      <Box display="flex" justifyContent="flex-end" alignItems="center">
-        {[objectives].map((config, index) => (
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="center"
+        mt={2}
+        mb={2}
+      >
+        {[
+          // solvers, models,
+          objectives,
+        ].map((config, index) => (
           <TextField
-            id="outlined-select-assignment-mode"
+            key={"Mục tiêu phân công"}
             select
             className={classes.selectMode}
             label={"Mục tiêu phân công"}
-            value={configParams[index]}
-            onChange={(e) => handleChange(e, index)}
+            value={objective}
+            onChange={(event) => setObjective(event.target.value)}
             variant="outlined"
             size="small"
             SelectProps={{
@@ -220,12 +248,20 @@ export default function PlanDetail() {
             ))}
           </TextField>
         ))}
-        <PrimaryButton onClick={() => assignTeacher2Class()}>
-          Phân công
-        </PrimaryButton>
+        <div className={classes.wrapper}>
+          <PrimaryButton
+            disabled={isProcessing}
+            onClick={() => assignTeacher2Class()}
+          >
+            Phân công
+          </PrimaryButton>
+          {isProcessing && (
+            <CircularProgress size={24} className={classes.buttonProgress} />
+          )}
+        </div>
       </Box>
 
-      {isProcessing ? <CircularProgress /> : ""}
+      {/* {isProcessing ? <CircularProgress /> : ""} */}
       <AntTabs
         className={classes.tabs}
         value={selectedTab}
@@ -282,7 +318,12 @@ export default function PlanDetail() {
     // Loading screen
     <>
       <Typography variant="h5" className={classes.courseName}>
-        <Skeleton width={400} variant="rect" animation="wave" />
+        <Skeleton
+          width={400}
+          variant="rect"
+          animation="wave"
+          style={{ marginBottom: 8 }}
+        />
       </Typography>
       <Typography variant="subtitle1" className={classes.testName}>
         <Skeleton width={200} variant="rect" animation="wave" />

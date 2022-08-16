@@ -9,12 +9,17 @@ import { request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { processingNoti, updateErrorNoti } from "utils/notification";
 import SuggestedTeacherListForSelectedClassDialog from "../SuggestedTeacherListForSelectedClassDialog";
 import { useStyles } from "./ClassInPlan";
 
 function ClassTeacherAssignmentSolutionList(props) {
   const classes = useStyles();
   const { planId, planName } = props;
+
+  //
+  const toastId = React.useRef(null);
 
   // Command delete button
   const [selectedRows, setSelectedRows] = useState([]);
@@ -213,13 +218,18 @@ function ClassTeacherAssignmentSolutionList(props) {
   };
 
   function exportExcel() {
+    processingNoti(toastId, false, "Chúng tôi đang chuẩn bị file...");
     request(
       "GET",
       `/edu/teaching-assignment/plan/${planId}/solution/export-excel`,
       (res) => {
+        toast.dismiss(toastId.current);
         saveFile(planName + ".xlsx", res.data);
       },
-      {},
+      {
+        onError: () =>
+          updateErrorNoti(toastId, "Đã xảy ra lỗi với yêu cầu này."),
+      },
       {},
       { responseType: "blob" }
     );

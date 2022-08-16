@@ -161,6 +161,7 @@ function TeacherCourseList(props) {
         "POST",
         `edu/teaching-assignment/plan/${planId}/teacher-course`,
         (res) => {
+          successNoti("Đã thêm vào kế hoạch.");
           const toRemove = new Set(selectedRows.map((tc) => tc.refId));
           const difference = teacherCourses.filter(
             (tc) => !toRemove.has(tc.refId)

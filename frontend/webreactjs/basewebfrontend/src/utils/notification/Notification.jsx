@@ -1,12 +1,11 @@
 import { Box, Icon, Typography } from "@material-ui/core";
 import CheckCircleRoundedIcon from "@material-ui/icons/CheckCircleRounded";
-import React from "react";
+import TertiaryButton from "component/button/TertiaryButton";
 import { FiCheckCircle } from "react-icons/fi";
 import { GiInfo } from "react-icons/gi";
 import { IconContext } from "react-icons/lib/cjs";
 import { MdCancel, MdWarning } from "react-icons/md";
 import { toast } from "react-toastify";
-import TertiaryButton from "../../component/button/TertiaryButton";
 
 // Snackbar
 
@@ -27,10 +26,10 @@ export const processingNoti = (toastId, autoClose) =>
     }
   ));
 
-export const updateSuccessNoti = (toastId, message) =>
+export const updateSuccessNoti = (toastId, message, autoClose) =>
   toast.update(toastId.current, {
     type: toast.TYPE.SUCCESS,
-    autoClose: 2000,
+    autoClose: autoClose,
     render: (
       <Box display="flex" alignItems="center">
         <IconContext.Provider>

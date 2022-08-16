@@ -8,7 +8,12 @@ import { request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
-import { errorNoti, successNoti } from "utils/notification";
+import {
+  errorNoti,
+  processingNoti,
+  updateErrorNoti,
+  updateSuccessNoti,
+} from "utils/notification";
 import UpdateClassForAssignmentDialog from "../UpdateClassForAssignmentDialog";
 
 export const useStyles = makeStyles((theme) => ({
@@ -39,6 +44,9 @@ export const Input = styled("input")({
 
 function ClassInPlan({ planId }) {
   const classes = useStyles();
+
+  //
+  const toastId = React.useRef(null);
 
   // Command delete button
   const [selectedRows, setSelectedRows] = useState([]);
@@ -114,6 +122,7 @@ function ClassInPlan({ planId }) {
     const data = new FormData();
     data.append("file", selectedFile);
 
+    processingNoti(toastId, false);
     request(
       "POST",
       `edu/teaching-assignment/plan/${planId}/class/upload-excel`,
@@ -121,11 +130,13 @@ function ClassInPlan({ planId }) {
         e.target.value = "";
 
         if (res.data === true) {
-          successNoti("Đã tải lên.");
+          updateSuccessNoti(toastId, "Đã tải lên.", false);
+
           getClasses();
         } else {
-          errorNoti(
-            "Đã có lỗi xảy ra. Vui lòng kiểm tra định dạng file excel và thử lại."
+          updateErrorNoti(
+            toastId,
+            "Đã xảy ra lỗi với yêu cầu này. Vui lòng kiểm tra định dạng file excel và thử lại."
           );
         }
       },
