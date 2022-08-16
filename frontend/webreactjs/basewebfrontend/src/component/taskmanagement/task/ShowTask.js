@@ -41,6 +41,12 @@ import ChangeStatusModal from './ChangeStatusModal';
 import { useForm } from "react-hook-form";
 import { useHistory } from 'react-router-dom';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import CommentSection from './CommentSection';
+import {
+    infoNoti,
+    processingNoti,
+    successNoti
+} from "utils/notification";
 
 const ShowTask = () => {
     const { taskId } = useParams();
@@ -52,13 +58,6 @@ const ShowTask = () => {
     const [listComment, setListComment] = useState([]);
     const [loadComments, setLoadComments] = useState(false);
     const [isLoadTask, setIsLoadTask] = useState(false);
-
-    const [typeAlert, setTypeAlert] = useState("success");
-    const [message, setMessage] = useState("Đã thêm mới thành công");
-    const [open, setOpen] = useState(false);
-
-    const [commentDelete, setCommentDelete] = useState("");
-    const [commentUpdate, setCommentUpdate] = useState("");
 
     const [fileName, setFileName] = useState(null);
     const [fileId, setFileId] = useState(null);
@@ -95,35 +94,15 @@ const ShowTask = () => {
             `tasks/${taskId}/comment`,
             (res) => {
                 console.log(res.data);
-                setOpen(true);
-                setTypeAlert("success");
-                setMessage("Đã thêm mới thành công");
+                successNoti("Đã thêm mới bình luận thành công!", true);
                 setLoadComments(!loadComments);
                 setValue('comment', '');
             },
             (err) => {
                 console.log(err);
-                setOpen(true);
-                setTypeAlert("error");
-                setMessage("Đã thêm mới bị lỗi");
             },
             dataForm
         );
-    }
-
-    const onDeleteComment = (id) => {
-        request('delete', `comments/${id}`, res => {
-            setOpen(true);
-            setTypeAlert("success");
-            setMessage("Đã xóa bình luận thành công");
-            setLoadComments(!loadComments);
-        }, err => {
-            console.log(err);
-        });
-    }
-
-    const onUpdateComment = (id) => {
-        
     }
 
     const onHandleDownload = () => {
@@ -333,28 +312,7 @@ const ShowTask = () => {
                                 </Box>
                             }
                         </Box>
-                        <Box mb={3}>
-                            <Box mb={2}>
-                                <Typography variant='body2'>
-                                    Bình luận ({listComment.length})
-                                </Typography>
-                            </Box>
-                            {listComment.length > 0 &&
-                                <Box sx={boxChildComponent} px={3}>
-                                    {listComment.map((item, index) => {
-                                        if (index === (listComment.length - 1)) {
-                                            return (
-                                                <CommentItem key={item.id} comment={item} onBottom={true} onDeleteComment={onDeleteComment} />
-                                            );
-                                        } else {
-                                            return (
-                                                <CommentItem key={item.id} comment={item} onBottom={false} onDeleteComment={onDeleteComment} />
-                                            )
-                                        }
-                                    })}
-                                </Box>
-                            }
-                        </Box>
+                        <CommentSection listComment={listComment} loadComments={loadComments} setLoadCommentsCallBack={(cmt) => setLoadComments(cmt)} projectId={task.project.id}/>
                         <Box>
                             <TextField
                                 variant='standard'
@@ -371,12 +329,6 @@ const ShowTask = () => {
                             </Box>
                         </Box>
                     </Box>
-                    <BasicAlert
-                        openModal={open}
-                        handleClose={handleClose}
-                        typeAlert={typeAlert}
-                        message={message}
-                    />
                     <Menu
                         anchorEl={anchorEl}
                         open={openMenu}

@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.taskmanagement.service;
 
+import com.hust.baseweb.applications.taskmanagement.dto.dao.PersonDao;
 import com.hust.baseweb.applications.taskmanagement.dto.form.TaskForm;
 import com.hust.baseweb.applications.taskmanagement.dto.form.TaskStatusForm;
 import com.hust.baseweb.applications.taskmanagement.entity.Task;
@@ -32,4 +33,6 @@ public interface TaskService {
     Task updateTask(UUID taskId, TaskForm taskForm, String createdByUserLoginId);
 
     void addTaskSkill(UUID taskId, String skillId);
+
+    List<PersonDao> suggestAssignTask(UUID projectId, List<String> skillIds);
 }

@@ -25,4 +25,14 @@ public class TaskPriorityServiceImplement implements TaskPriorityService {
     public List<TaskPriority> getAll() {
         return taskPriorityRepository.findAll();
     }
+
+    @Override
+    public TaskPriority create(TaskPriority taskPriority) {
+        return taskPriorityRepository.save(taskPriority);
+    }
+
+    @Override
+    public void delete(String priorityId) {
+        taskPriorityRepository.deleteById(priorityId);
+    }
 }

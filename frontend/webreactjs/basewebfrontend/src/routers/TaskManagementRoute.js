@@ -9,6 +9,7 @@ import ListTasks from "../component/taskmanagement/task/ListTasks";
 import ListAssignedTasks from "component/taskmanagement/assignedtasks/ListAssignedTasks";
 import ShowTask from "component/taskmanagement/task/ShowTask";
 import Board from "component/taskmanagement/board/Board";
+import CommonManager from "component/taskmanagement/projects/CommonManager";
 
 export default function TaskManagementRoute() {
   let { path } = useRouteMatch();
@@ -31,9 +32,9 @@ export default function TaskManagementRoute() {
           path={`${path}/project/tasks/create/:projectIdUrl?`}
         ></Route>
         <Route
-          component={AddUserToProject}
+          component={CommonManager}
           exact
-          path={`${path}/project/members/add`}
+          path={`${path}/common-manager`}
         ></Route>
         <Route
           component={ListTasks}

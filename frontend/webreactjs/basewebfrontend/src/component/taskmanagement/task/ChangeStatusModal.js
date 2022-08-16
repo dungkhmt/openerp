@@ -14,6 +14,11 @@ import {
 import { useState, useEffect } from 'react';
 import { request } from "../../../api";
 import DateTimePickerBasic from '../datetimepicker/DateTimePickerBasic';
+import {
+    infoNoti,
+    processingNoti,
+    successNoti
+} from "utils/notification";
 
 const ChangeStatusModal = ({
     open,
@@ -59,7 +64,7 @@ const ChangeStatusModal = ({
             'put',
             `/tasks/${taskId}/status`,
             (res) => {
-                alert("Cập nhật thành công!");
+                successNoti("Cập nhật trạng thái thành công!", true);
                 handleClose();
                 onLoadTask();
             },

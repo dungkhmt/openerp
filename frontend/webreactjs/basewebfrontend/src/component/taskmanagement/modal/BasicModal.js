@@ -13,7 +13,6 @@ const style = {
     bgcolor: 'background.paper',
     boxShadow: "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px",
     minWidth: '650px',
-    p: 4,
     overflow: 'auto',
     maxHeight: '600px',
     borderColor: '#fff',

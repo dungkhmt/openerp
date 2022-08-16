@@ -98,6 +98,7 @@ CREATE TABLE backlog_task_execution
     task_id                  uuid,
     created_by_user_login_id varchar(60),
     execution_tags           varchar(200),
+    comment_id               uuid,
     comment                  text,
     created_stamp            timestamp DEFAULT CURRENT_TIMESTAMP,
     project_id               uuid NOT NULL,
@@ -140,3 +141,22 @@ create table backlog_user_login_skill
     constraint fk_backlog_user_login_skill_user_login_id foreign key (user_login_id) references user_login (user_login_id),
     constraint fk_backlog_user_login_skill_id foreign key (backlog_skill_id) references backlog_skill (backlog_skill_id)
 )
+
+create table backlog_task_comment
+(
+    backlog_task_comment_id  uuid not null,
+    comment                  text,
+    task_id                  uuid,
+    status                   boolean,
+    created_by_user_login_id varchar(60),
+    created_stamp            timestamp DEFAULT CURRENT_TIMESTAMP,
+    last_updated_stamp       timestamp DEFAULT CURRENT_TIMESTAMP,
+    constraint pk_backlog_task_comment primary key (backlog_task_comment_id),
+    constraint fk_backlog_task_comment_task_id foreign key (task_id) references backlog_task (backlog_task_id)
+)
+
+alter table backlog_task_execution
+    add comment_id UUID
+
+alter table backlog_task_execution
+    add constraint fk_backlog_task_execution_comment_id foreign key (comment_id) references backlog_task_comment (backlog_task_comment_id)

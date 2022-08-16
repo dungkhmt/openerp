@@ -32,5 +32,8 @@ public interface TaskExecutionRepository
         @Param("endDate") Date endDate,
         @Param("projectId") UUID projectId
     );
+
+    @Query(value = "SELECT e.* FROM backlog_task_execution e WHERE e.comment_id = :commentId", nativeQuery = true)
+    TaskExecution findByCommentId(@Param("commentId") UUID commentId);
 }
 

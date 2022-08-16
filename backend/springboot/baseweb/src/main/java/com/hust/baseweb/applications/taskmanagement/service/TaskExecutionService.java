@@ -1,6 +1,9 @@
 package com.hust.baseweb.applications.taskmanagement.service;
 
 import com.hust.baseweb.applications.taskmanagement.dto.dao.TaskExecutionDao;
+import com.hust.baseweb.applications.taskmanagement.dto.form.CommentForm;
+import com.hust.baseweb.applications.taskmanagement.entity.Comment;
+import com.hust.baseweb.applications.taskmanagement.entity.Task;
 import com.hust.baseweb.applications.taskmanagement.entity.TaskExecution;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +13,7 @@ import java.util.UUID;
 
 @Service
 public interface TaskExecutionService {
+
     TaskExecution create(TaskExecution taskExecution);
 
     boolean delete(UUID taskExecutionId);
@@ -20,9 +24,13 @@ public interface TaskExecutionService {
 
     TaskExecution save(TaskExecution taskExecution);
 
-    List<TaskExecution> getAllCommentsByTaskId(UUID taskId);
+    List<Comment> getAllCommentsByTaskId(UUID taskId);
 
     List<Object[]> getAllDistinctDay(UUID projectId);
 
-    public List<TaskExecutionDao> getAllTaskExecutionByDate(Date date, UUID projectId);
+    List<TaskExecutionDao> getAllTaskExecutionByDate(Date date, UUID projectId);
+
+    TaskExecution createTaskComment(Task task, CommentForm commentForm, String userLoginId);
+
+    void updateTaskComment(UUID commentId, CommentForm commentForm);
 }

@@ -26,5 +26,13 @@ public class TaskCategoryServiceImplement implements TaskCategoryService {
         return taskCategoryRepository.findAll();
     }
 
+    @Override
+    public TaskCategory create(TaskCategory taskCategory) {
+        return taskCategoryRepository.save(taskCategory);
+    }
 
+    @Override
+    public void delete(String categoryId) {
+        taskCategoryRepository.deleteById(categoryId);
+    }
 }

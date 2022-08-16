@@ -20,7 +20,7 @@ import CategoryElement from "../common/CategoryElement";
 import StatusElement from "../common/StatusElement";
 import { Link } from "react-router-dom";
 
-const AssignedTaskItem = ({ task, taskStatus, handleUpdateStatus }) => {
+const AssignedTaskItem = ({ task }) => {
     const [statusId, setStatusId] = useState(task.statusItem?.statusId);
 
     const category = task.taskCategory.categoryName;

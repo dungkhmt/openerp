@@ -4,6 +4,7 @@ import com.hust.baseweb.entity.Person;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 @Getter
@@ -13,6 +14,7 @@ public class PersonDao {
     private UUID partyId;
     private String fullName;
     private String userLoginId;
+    private String createdStamp;
 
     public PersonDao(Person person, String userLoginId) {
         this.partyId = person.getPartyId();

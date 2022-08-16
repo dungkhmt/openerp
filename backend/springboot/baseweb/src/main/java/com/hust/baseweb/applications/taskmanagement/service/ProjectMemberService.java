@@ -20,4 +20,6 @@ public interface ProjectMemberService {
     ProjectMember addMemberToProject(ProjectMemberForm projectMemberForm);
 
     ProjectMember create(ProjectMember projectMember);
+
+    boolean checkAddedMemberInProject(UUID partyId, UUID projectId);
 }

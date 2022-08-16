@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.taskmanagement.dto.dao;
 
+import com.hust.baseweb.applications.taskmanagement.entity.Comment;
 import com.hust.baseweb.applications.taskmanagement.entity.TaskExecution;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,17 +15,21 @@ public class CommentDao {
     private UUID id;
     private UUID taskId;
     private String createdByUserId;
-    private String executionTag;
     private String comment;
+    private boolean status;
+    private boolean isModify;
     private String createdDate;
 
-    public CommentDao(TaskExecution taskExecution){
-        SimpleDateFormat sdf = new SimpleDateFormat("E, dd MMM yyyy H:m:s");
-        this.setId(taskExecution.getId());
-        this.setTaskId(taskExecution.getTask().getId());
-        this.setCreatedByUserId(taskExecution.getCreatedByUserLoginId());
-        this.setExecutionTag(taskExecution.getExecutionTags());
-        this.setComment(taskExecution.getComment());
-        this.setCreatedDate(taskExecution.getCreatedStamp() != null ? sdf.format(taskExecution.getCreatedStamp()) : null);
+    public CommentDao(Comment comment, boolean isModify){
+        SimpleDateFormat sdf = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss");
+        this.setId(comment.getCommentId());
+        this.setTaskId(comment.getTaskId());
+        this.setStatus(comment.isStatus());
+        this.setModify(isModify);
+        this.setCreatedByUserId(comment.getCreatedByUserLoginId());
+        this.setComment(comment.getComment());
+        this.setCreatedDate(comment.getCreatedStamp() != null ? sdf.format(comment.getCreatedStamp()) : null);
     }
+
+
 }

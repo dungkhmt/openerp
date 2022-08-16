@@ -38,6 +38,9 @@ public class TaskExecution {
     @Column(name = "comment")
     private String comment;
 
+    @Column(name = "comment_id")
+    private UUID commentId;
+
     @CreationTimestamp
     @Column(name = "created_stamp")
     private Date createdStamp;

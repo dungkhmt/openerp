@@ -16,6 +16,8 @@ import lombok.AllArgsConstructor;
 import okhttp3.Response;
 import org.bouncycastle.cert.ocsp.RespID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -114,11 +116,18 @@ public class NghiaLMController {
         @PathVariable("projectId") UUID projectId, @RequestBody
         ProjectMemberForm projectMemberForm
     ) {
+        if (projectMemberService.checkAddedMemberInProject(
+            UUID.fromString(projectMemberForm.getPartyId()),
+            UUID.fromString(projectMemberForm.getProjectId()))) {
+            Map<String, String> map = new HashMap<>();
+            map.put("error", "Thành viên đã trong dự án !");
+            return ResponseEntity.ok(map);
+        }
         return ResponseEntity.ok(projectMemberService.addMemberToProject(projectMemberForm));
     }
 
 
-    @GetMapping("/tasks")
+    @GetMapping("/tasks")   
     public ResponseEntity<Object> getAllTasks() {
         List<Task> tasks = taskService.getAllTasks();
 
@@ -130,12 +139,12 @@ public class NghiaLMController {
         List<Task> tasks = taskService.getAllTaskInProject(projectId);
         List<TaskDao> taskDaoList = new ArrayList<>();
         for (Task task : tasks) {
-            TaskAssignable taskAssignable = taskAssignableService.getByTaskId(task.getId());
+            TaskAssignment taskAssignment = taskAssignableService.getByTaskId(task.getId());
             String userLoginIdTemp = "";
             UUID partyId = null;
             String fullName = "Không xác định";
-            if (taskAssignable != null) {
-                partyId = taskAssignable.getPartyId();
+            if (taskAssignment != null) {
+                partyId = taskAssignment.getPartyId();
                 userLoginIdTemp = projectMemberService.getUserLoginByPartyId(partyId).getUserLoginId();
                 fullName = new PersonDao(personService.findByPartyId(partyId), userLoginIdTemp).getFullName();
             }
@@ -164,10 +173,10 @@ public class NghiaLMController {
         task.setCreatedByUserLoginId(principal.getName());
         Task taskRes = taskService.createTask(task);
 
-        TaskAssignable taskAssignable = new TaskAssignable();
-        taskAssignable.setTask(task);
-        taskAssignable.setPartyId(taskForm.getPartyId());
-        taskAssignableService.create(taskAssignable);
+        TaskAssignment taskAssignment = new TaskAssignment();
+        taskAssignment.setTask(task);
+        taskAssignment.setPartyId(taskForm.getPartyId());
+        taskAssignableService.create(taskAssignment);
 
         TaskExecution taskExecution = new TaskExecution();
         taskExecution.setTask(taskRes);
@@ -203,28 +212,20 @@ public class NghiaLMController {
         return ResponseEntity.ok(personDaos);
     }
 
-    @GetMapping("/assigned-tasks-user-login")
-    public ResponseEntity<Object> getAssignedTasksUserLogin(Principal principal) {
+    @GetMapping("/assigned-tasks-user-login/page={pageNo}/size={pageSize}")
+    public ResponseEntity<Object> getAssignedTasksUserLogin(
+        Principal principal,
+        @PathVariable("pageNo") int pageNo,
+        @PathVariable("pageSize") int pageSize
+    ) {
         String userLoginId = principal.getName();
         UserLogin userLogin = userService.findById(userLoginId);
         UUID partyId = userLogin.getParty().getPartyId();
-        List<TaskAssignable> taskAssignableList = taskAssignableService.getByPartyId(partyId);
-        List<TaskDao> taskDaoList = new ArrayList<>();
-        for (TaskAssignable taskAssignable : taskAssignableList) {
-            String userLoginIdTemp = projectMemberService
-                .getUserLoginByPartyId(taskAssignable.getPartyId())
-                .getUserLoginId();
-            PersonDao personDao = new PersonDao(
-                personService.findByPartyId(taskAssignable.getPartyId()),
-                userLoginIdTemp);
-            taskDaoList.add(
-                new TaskDao(
-                    taskAssignable.getTask(),
-                    personDao.getUserLoginId() + " (" + personDao.getFullName() + ")",
-                    partyId)
-            );
-        }
-        return ResponseEntity.ok(taskDaoList);
+        AssignedTaskPagination assignedTaskPagination = taskAssignableService.getAssignedTaskPaginated(
+            partyId,
+            pageNo,
+            pageSize);
+        return ResponseEntity.ok(assignedTaskPagination);
     }
 
     @GetMapping("/projects/{projectId}/statics/{type}")
@@ -311,14 +312,9 @@ public class NghiaLMController {
         @PathVariable("taskId") UUID taskId,
         @RequestBody CommentForm commentForm
     ) {
-        TaskExecution taskExecution = new TaskExecution();
-        taskExecution.setComment(commentForm.getComment());
         Task task = taskService.getTask(taskId);
-        taskExecution.setTask(task);
-        taskExecution.setCreatedByUserLoginId(principal.getName());
-        taskExecution.setProjectId(commentForm.getProjectId());
-        taskExecution.setExecutionTags("comment");
-        return ResponseEntity.ok(taskExecutionService.create(taskExecution));
+        String userLoginId = principal.getName();
+        return ResponseEntity.ok(taskExecutionService.createTaskComment(task, commentForm, userLoginId));
     }
 
     @DeleteMapping("/comments/{commentId}")
@@ -332,17 +328,18 @@ public class NghiaLMController {
         @PathVariable("commentId") UUID commentId,
         @RequestBody CommentForm commentForm
     ) {
-        TaskExecution taskExecution = taskExecutionService.findById(commentId);
-        taskExecution.setComment(commentForm.getComment());
-        return ResponseEntity.ok(taskExecutionService.save(taskExecution));
+        taskExecutionService.updateTaskComment(commentId, commentForm);
+        return ResponseEntity.ok("update comment success!");
     }
 
     @GetMapping("/tasks/{taskId}/comments")
-    public ResponseEntity<Object> getAllComments(@PathVariable("taskId") UUID taskId) {
-        List<TaskExecution> taskExecutions = taskExecutionService.getAllCommentsByTaskId(taskId);
+    public ResponseEntity<Object> getAllComments(@PathVariable("taskId") UUID taskId, Principal principal) {
+        List<Comment> comments = taskExecutionService.getAllCommentsByTaskId(taskId);
         List<CommentDao> commentDaos = new ArrayList<>();
-        for (TaskExecution taskExecution : taskExecutions) {
-            commentDaos.add(new CommentDao(taskExecution));
+        String userLoginId = principal.getName();
+        for (Comment comment : comments) {
+            boolean isModify = userLoginId.equals(comment.getCreatedByUserLoginId());
+            commentDaos.add(new CommentDao(comment, isModify));
         }
         return ResponseEntity.ok(commentDaos);
     }
@@ -391,5 +388,59 @@ public class NghiaLMController {
     @GetMapping("/skills")
     public ResponseEntity<Object> getList() {
         return ResponseEntity.ok(skillService.getAllSkills());
+    }
+
+    // Quản lý danh mục
+
+    @PostMapping("/task-categories")
+    public ResponseEntity<Object> postCategory(@RequestBody CategoryForm categoryForm){
+        TaskCategory taskCategory = new TaskCategory();
+        taskCategory.setCategoryId(categoryForm.getCategoryId());
+        taskCategory.setCategoryName(categoryForm.getCategoryName());
+        return ResponseEntity.ok(taskCategoryService.create(taskCategory));
+    }
+
+    @DeleteMapping("/task-category/{categoryId}")
+    public ResponseEntity<Object> deleteCategory(@PathVariable("categoryId") String categoryId){
+        taskCategoryService.delete(categoryId);
+        return ResponseEntity.ok("delete category success!");
+    }
+
+    // Quản lý độ ưu tiên
+
+    @PostMapping("/task-priorities")
+    public ResponseEntity<Object> postPriority(@RequestBody PriorityForm priorityForm){
+        TaskPriority taskPriority = new TaskPriority();
+        taskPriority.setPriorityId(priorityForm.getPriorityId());
+        taskPriority.setPriorityName(priorityForm.getPriorityName());
+        return ResponseEntity.ok(taskPriorityService.create(taskPriority));
+    }
+
+    @DeleteMapping("/task-priority/{priorityId}")
+    public ResponseEntity<Object> deletePriority(@PathVariable("priorityId") String priorityId){
+        taskPriorityService.delete(priorityId);
+        return ResponseEntity.ok("delete priority success!");
+    }
+
+    //Quản lý kỹ năng
+
+    @PostMapping("/skills")
+    public ResponseEntity<Object> postSkill(@RequestBody SkillForm skillForm){
+        Skill skill = new Skill();
+        skill.setSkillId(skillForm.getSkillId());
+        skill.setName(skillForm.getSkillName());
+        skill.setDescription(skillForm.getSkillDescription());
+        return ResponseEntity.ok(skillService.create(skill));
+    }
+
+    @DeleteMapping("/skill/{skillId}")
+    public ResponseEntity<Object> deleteSkill(@PathVariable("skillId") String skillId){
+        skillService.delete(skillId);
+        return ResponseEntity.ok("delete skill success!");
+    }
+
+    @PostMapping("/suggest-assign-task")
+    public ResponseEntity<Object> suggestAssignTask(@RequestBody SuggestForm suggestForm){
+        return ResponseEntity.ok(taskService.suggestAssignTask(suggestForm.getProjectId(), suggestForm.getSkillIds()));
     }
 }

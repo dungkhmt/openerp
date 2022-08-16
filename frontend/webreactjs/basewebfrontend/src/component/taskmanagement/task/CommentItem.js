@@ -24,7 +24,7 @@ import {
 import React, { useState } from 'react';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 
-const CommentItem = ({ comment, onBottom, onDeleteComment, getCommentUpdate }) => {
+const CommentItem = ({ comment, onBottom, onDeleteComment, onUpdateComment }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -38,6 +38,12 @@ const CommentItem = ({ comment, onBottom, onDeleteComment, getCommentUpdate }) =
         onDeleteComment(id);
         setAnchorEl(null);
     }
+
+    const onUpdate = (id, comment) => {
+        onUpdateComment(id, comment);
+        setAnchorEl(null);
+    }
+
     return (
         <>
             <Box py={2} borderBottom={!onBottom ? 1 : 0} borderColor={!onBottom ? "#cdb8b8" : "#fff"}>
@@ -58,13 +64,19 @@ const CommentItem = ({ comment, onBottom, onDeleteComment, getCommentUpdate }) =
                             </Box>
                         </Box>
                     </Box>
-                    <IconButton aria-label="delete" size="large" onClick={handleClick}>
-                        <SettingsOutlinedIcon />
-                    </IconButton>
+                    {comment.modify &&
+                        <IconButton aria-label="delete" size="large" onClick={handleClick}>
+                            <SettingsOutlinedIcon />
+                        </IconButton>
+                    }
                 </Box>
                 <Box>
                     <Typography variant="body2">
                         {comment.comment}
+                    </Typography>
+
+                    <Typography variant="caption" sx={{ color: "#9a9191" }}>
+                        {comment.status ? <>[edited]</> : <></>}
                     </Typography>
                 </Box>
             </Box>
@@ -81,7 +93,7 @@ const CommentItem = ({ comment, onBottom, onDeleteComment, getCommentUpdate }) =
                     horizontal: 'left',
                 }}
             >
-                <MenuItem onClick={handleClose}>Chỉnh sửa bình luận</MenuItem>
+                <MenuItem onClick={() => onUpdate(comment.id, comment.comment)}>Chỉnh sửa bình luận</MenuItem>
                 <MenuItem onClick={() => onDelete(comment.id)}>Xóa bình luận</MenuItem>
             </Menu>
         </>

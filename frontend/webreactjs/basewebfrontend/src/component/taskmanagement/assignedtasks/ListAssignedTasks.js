@@ -3,6 +3,15 @@ import {
     Grid,
     Typography
 } from "@material-ui/core";
+import {
+    Button,
+    TextField,
+    IconButton,
+    MenuItem,
+    Stack,
+    Skeleton,
+    Pagination
+} from '@mui/material';
 import AssignedTaskItem from "./AssignedTaskItem";
 import { request } from "../../../api";
 import { useState, useEffect } from "react";
@@ -15,56 +24,22 @@ import BasicAlert from "../alert/BasicAlert";
 import { useHistory } from "react-router";
 
 const ListAssignedTasks = () => {
-    const history = useHistory();
-    const [open, setOpen] = useState(false);
-    const [typeAlert, setTypeAlert] = useState("success");
-    const [message, setMessage] = useState("Đã thêm mới thành công");
-    const [state, setState] = useState({
-        taskId: "",
-        statusId: ""
-    })
-
+    const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [total, setTotal] = useState(1);
     const [taskAssigned, setTaskAssigned] = useState([]);
-    const [taskStatus, setTaskStatus] = useState([]);
+
+    const url = `/assigned-tasks-user-login/page=${page - 1}/size=5`;
 
     useEffect(() => {
-        request('get', '/task-status-list', res => {
-            setTaskStatus(res.data);
-        }, err => {
-            console.log(err);
-        })
-    }, [])
-
-    useEffect(() => {
-        request('get', `/assigned-tasks-user-login`, res => {
-            setTaskAssigned(res.data);
-            console.log(res.data);
+        request('get', url, res => {
+            setLoading(false);
+            setTaskAssigned(res.data.data);
+            setTotal(res.data.totalPage);
         }, err => {
             console.log(err);
         });
-    }, [state])
-
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-          return;
-        }
-    
-        setOpen(false);
-      };
-
-    const handleUpdateStatus = (taskId, statusId) => {
-        request('get', `/tasks/${taskId}/status/${statusId}`, res => {
-            setState({
-                taskId: taskId,
-                statusId: statusId
-            });
-            setOpen(true);
-            setTypeAlert("success");
-            setMessage("Đã cập nhật trạng thái thành công!");
-        }, err => {
-            console.log(err);
-        });
-    }
+    }, [url]);
 
     return (
         <>
@@ -74,21 +49,28 @@ const ListAssignedTasks = () => {
                         Danh sách các nhiệm vụ được giao
                     </Typography>
                 </Box>
+                {loading && 
+                    <Typography variant="body2">
+                        Loading......
+                    </Typography>
+                }
                 {taskAssigned.map(task => (
                     <AssignedTaskItem
                         key={task.id}
                         task={task}
-                        taskStatus={taskStatus}
-                        handleUpdateStatus={handleUpdateStatus}
                     />
                 ))}
             </Box>
-            <BasicAlert
-                openModal={open}
-                handleClose={handleClose}
-                typeAlert={typeAlert}
-                message={message}
-            />
+            <Box display={'flex'} justifyContent="center">
+                <Stack spacing={2}>
+                    <Pagination
+                        count={total}
+                        page={page}
+                        onChange={(e, value) => setPage(value)}
+                        color="primary"
+                    />
+                </Stack>
+            </Box>
         </>
     );
 }

@@ -18,12 +18,12 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "backlog_task_assignable")
+@Table(name = "backlog_task_assignment")
 public class TaskAssignable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "backlog_task_assignable_id")
+    @Column(name = "backlog_task_assignment_id")
     private UUID id;
 
     @OneToOne

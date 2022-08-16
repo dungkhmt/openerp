@@ -1,14 +1,14 @@
 export const taskmanagement = {
   id: "MENU_BACKLOG",
   path: "",
-  isPublic: false,
+  isPublic: true,
   icon: "AssignmentOutlinedIcon",
   text: "Theo dõi dự án",
   child: [
     {
       id: "MENU_BACKLOG_VIEW_LIST_PROJECT",
       path: "/taskmanagement/project/list",
-      isPublic: false,
+      isPublic: true,
       icon: "StarBorder",
       text: "Danh sách dự án",
       child: [],
@@ -22,19 +22,19 @@ export const taskmanagement = {
       child: [],
     },
     {
-      id: "MENU_BACKLOG_ADD_MEMBER_TO_PROJECT",
-      path: "/taskmanagement/project/members/add",
-      isPublic: true,
-      icon: "StarBorder",
-      text: "Thêm thành viên dự án",
-      child: [],
-    },
-    {
       id: "MENU_BACKLOG_MEMBER_ASSIGNED_TO_TASKs",
       path: "/taskmanagement/tasks/members/assigned",
       isPublic: true,
       icon: "StarBorder",
       text: "Danh sách nhiệm vụ được giao",
+      child: [],
+    },
+    {
+      id: "MENU_BACKLOG_COMMON_MANAGER",
+      path: "/taskmanagement/common-manager",
+      isPublic: true,
+      icon: "StarBorder",
+      text: "Quản lý chung",
       child: [],
     }
   ],

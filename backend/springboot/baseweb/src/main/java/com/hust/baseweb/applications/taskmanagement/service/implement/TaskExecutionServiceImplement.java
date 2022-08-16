@@ -1,15 +1,17 @@
 package com.hust.baseweb.applications.taskmanagement.service.implement;
 
 import com.hust.baseweb.applications.taskmanagement.dto.dao.TaskExecutionDao;
+import com.hust.baseweb.applications.taskmanagement.dto.form.CommentForm;
+import com.hust.baseweb.applications.taskmanagement.entity.Comment;
 import com.hust.baseweb.applications.taskmanagement.entity.Task;
 import com.hust.baseweb.applications.taskmanagement.entity.TaskExecution;
+import com.hust.baseweb.applications.taskmanagement.repository.TaskCommentRepository;
 import com.hust.baseweb.applications.taskmanagement.repository.TaskExecutionRepository;
 import com.hust.baseweb.applications.taskmanagement.service.TaskExecutionService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ import java.util.UUID;
 public class TaskExecutionServiceImplement implements TaskExecutionService {
 
     private final TaskExecutionRepository taskExecutionRepository;
+
+    private final TaskCommentRepository taskCommentRepository;
 
     @Override
     public TaskExecution create(TaskExecution taskExecution) {
@@ -36,9 +40,12 @@ public class TaskExecutionServiceImplement implements TaskExecutionService {
 
     @Override
     public void deleteComment(UUID commentId) {
-        TaskExecution taskExecution = taskExecutionRepository.findByTaskExecutionId(commentId);
+        TaskExecution taskExecution = taskExecutionRepository.findByCommentId(commentId);
         taskExecution.setComment("");
+        taskExecution.setCommentId(null);
         taskExecutionRepository.save(taskExecution);
+        //delete comment
+        taskCommentRepository.deleteById(commentId);
     }
 
     @Override
@@ -52,8 +59,8 @@ public class TaskExecutionServiceImplement implements TaskExecutionService {
     }
 
     @Override
-    public List<TaskExecution> getAllCommentsByTaskId(UUID taskId) {
-        return taskExecutionRepository.getAllCommentsByTaskId(taskId);
+    public List<Comment> getAllCommentsByTaskId(UUID taskId) {
+        return taskCommentRepository.getAllCommentsByTaskId(taskId);
     }
 
     @Override
@@ -72,12 +79,43 @@ public class TaskExecutionServiceImplement implements TaskExecutionService {
             e.printStackTrace();
         }
 
-        List<TaskExecution> taskExecutionList = taskExecutionRepository.getAllTaskExecutionByDate(startDate, endDate, projectId);
+        List<TaskExecution> taskExecutionList = taskExecutionRepository.getAllTaskExecutionByDate(
+            startDate,
+            endDate,
+            projectId);
         List<TaskExecutionDao> taskExecutionDaoList = new ArrayList<>();
-        for(TaskExecution taskExecution : taskExecutionList){
+        for (TaskExecution taskExecution : taskExecutionList) {
             taskExecutionDaoList.add(new TaskExecutionDao(taskExecution));
         }
 
         return taskExecutionDaoList;
+    }
+
+    @Override
+    public TaskExecution createTaskComment(Task task, CommentForm commentForm, String userLoginId) {
+        Comment comment = new Comment();
+        comment.setComment(commentForm.getComment());
+        comment.setTaskId(task.getId());
+        comment.setStatus(false);
+        comment.setCreatedByUserLoginId(userLoginId);
+        Comment comment1 = taskCommentRepository.save(comment);
+
+        TaskExecution taskExecution = new TaskExecution();
+        taskExecution.setTask(task);
+        taskExecution.setExecutionTags("comment");
+        taskExecution.setCreatedByUserLoginId(userLoginId);
+        taskExecution.setCommentId(comment1.getCommentId());
+        taskExecution.setComment(commentForm.getComment());
+        taskExecution.setProjectId(commentForm.getProjectId());
+
+        return taskExecutionRepository.save(taskExecution);
+    }
+
+    @Override
+    public void updateTaskComment(UUID commentId, CommentForm commentForm) {
+        Comment comment = taskCommentRepository.getOne(commentId);
+        comment.setComment(commentForm.getComment());
+        comment.setStatus(true);
+        taskCommentRepository.save(comment);
     }
 }

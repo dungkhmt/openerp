@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,20 +35,49 @@ public interface TaskRepository extends JpaRepository<Task, UUID>, CrudRepositor
                    "group by s.status_id\n", nativeQuery = true)
     List<Object[]> getTaskStaticsStatusInProject(@Param("projectId") UUID projectId);
 
-    @Query(value = "Select e.* from backlog_task e left join backlog_task_assignable b on e.backlog_task_id = b.backlog_task_id where e.backlog_project_id = :projectId and b.assigned_to_party_id = CAST(:partyId AS uuid) and (:categoryId = '' or e.backlog_task_category_id = CAST(:categoryId AS varchar)) and e.status_id = :statusId",
+    @Query(value = "Select e.* from backlog_task e left join backlog_task_assignable b on e.backlog_task_id = b.backlog_task_id where e.backlog_project_id = :projectId and b.assigned_to_party_id = CAST(:partyId AS uuid) and (:categoryId = '' or e.backlog_task_category_id = CAST(:categoryId AS varchar)) and (e.status_id = CAST(:statusId AS varchar)) and (:priorityId = '' or e.priority_id = CAST(:priorityId AS varchar)) and (:keyName = '' or e.backlog_task_name like :keyName%)",
            nativeQuery = true)
     List<Task> getAllTaskByFiltersWithPartyId(
         @Param("projectId") UUID projectId,
         @Param("statusId") String statusId,
         @Param("categoryId") String categoryId,
-        @Param("partyId") UUID partyId
+        @Param("partyId") UUID partyId,
+        @Param("priorityId") String priorityId,
+        @Param("keyName") String keyName
     );
 
-    @Query(value = "Select e.* from backlog_task e left join backlog_task_assignable b on e.backlog_task_id = b.backlog_task_id where e.backlog_project_id = :projectId and (:categoryId = '' or e.backlog_task_category_id = CAST(:categoryId AS varchar)) and e.status_id = :statusId",
+    @Query(value = "Select e.* from backlog_task e left join backlog_task_assignable b on e.backlog_task_id = b.backlog_task_id where e.backlog_project_id = :projectId and b.assigned_to_party_id = CAST(:partyId AS uuid) and (:categoryId = '' or e.backlog_task_category_id = CAST(:categoryId AS varchar)) and (e.status_id = CAST(:statusId AS varchar)) and (:priorityId = '' or e.priority_id = CAST(:priorityId AS varchar)) and (:keyName = '' or e.backlog_task_name like :keyName%) and (e.due_date between :startDate and :endDate)",
+           nativeQuery = true)
+    List<Task> getAllTaskByFiltersWithPartyIdAndRangeDate(
+        @Param("projectId") UUID projectId,
+        @Param("statusId") String statusId,
+        @Param("categoryId") String categoryId,
+        @Param("partyId") UUID partyId,
+        @Param("priorityId") String priorityId,
+        @Param("keyName") String keyName,
+        @Param("startDate") Date startDate,
+        @Param("endDate") Date endDate
+    );
+
+    @Query(value = "Select e.* from backlog_task e left join backlog_task_assignable b on e.backlog_task_id = b.backlog_task_id where e.backlog_project_id = :projectId and (:categoryId = '' or e.backlog_task_category_id = CAST(:categoryId AS varchar)) and e.status_id = :statusId and (:priorityId = '' or e.priority_id = CAST(:priorityId AS varchar)) and (:keyName = '' or e.backlog_task_name like :keyName%)",
            nativeQuery = true)
     List<Task> getAllTaskByFiltersWithoutPartyId(
         @Param("projectId") UUID projectId,
         @Param("statusId") String statusId,
-        @Param("categoryId") String categoryId
+        @Param("categoryId") String categoryId,
+        @Param("priorityId") String priorityId,
+        @Param("keyName") String keyName
+    );
+
+    @Query(value = "Select e.* from backlog_task e left join backlog_task_assignable b on e.backlog_task_id = b.backlog_task_id where e.backlog_project_id = :projectId and (:categoryId = '' or e.backlog_task_category_id = CAST(:categoryId AS varchar)) and e.status_id = :statusId and (:priorityId = '' or e.priority_id = CAST(:priorityId AS varchar)) and (:keyName = '' or e.backlog_task_name like :keyName%) and (e.due_date between :startDate and :endDate)",
+           nativeQuery = true)
+    List<Task> getAllTaskByFiltersWithoutPartyIdAndRangeDate(
+        @Param("projectId") UUID projectId,
+        @Param("statusId") String statusId,
+        @Param("categoryId") String categoryId,
+        @Param("priorityId") String priorityId,
+        @Param("keyName") String keyName,
+        @Param("startDate") Date startDate,
+        @Param("endDate") Date endDate
     );
 }

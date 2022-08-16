@@ -15,6 +15,7 @@ import {
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import { Link } from 'react-router-dom';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import ApartmentIcon from '@mui/icons-material/Apartment';
 const ProjectItem = ({ name, id }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -29,7 +30,7 @@ const ProjectItem = ({ name, id }) => {
             <Box sx={boxChildComponent} mb={3}>
                 <Box sx={{ display: 'flex' }}>
                     <Box sx={centerBox}>
-                        <AccountTreeIcon />
+                        <ApartmentIcon />
                     </Box>
                     <Box px={3} sx={{ width: '100%' }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>

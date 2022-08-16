@@ -1,16 +1,17 @@
 package com.hust.baseweb.applications.taskmanagement.service;
 
+import com.hust.baseweb.applications.taskmanagement.dto.dao.AssignedTaskPagination;
 import com.hust.baseweb.applications.taskmanagement.entity.TaskAssignable;
+import com.hust.baseweb.applications.taskmanagement.entity.TaskAssignment;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
 public interface TaskAssignableService {
-    TaskAssignable create(TaskAssignable taskAssignable);
+    TaskAssignment create(TaskAssignment taskAssignment);
 
-    List<TaskAssignable> getByPartyId(UUID partyId);
+    TaskAssignment getByTaskId(UUID taskId);
 
-    TaskAssignable getByTaskId(UUID taskId);
+    AssignedTaskPagination getAssignedTaskPaginated(UUID partyId, int pageNo, int pageSize);
 }

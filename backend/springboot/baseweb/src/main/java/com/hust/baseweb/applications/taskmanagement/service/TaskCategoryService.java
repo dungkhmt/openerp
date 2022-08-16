@@ -13,4 +13,8 @@ public interface TaskCategoryService {
     TaskCategory getTaskCategory(String taskCategoryId);
 
     List<TaskCategory> getAllTaskCategory();
+
+    TaskCategory create(TaskCategory taskCategory);
+
+    void delete(String categoryId);
 }

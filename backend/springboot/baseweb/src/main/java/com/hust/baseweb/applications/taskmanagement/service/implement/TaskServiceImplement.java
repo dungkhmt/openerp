@@ -1,20 +1,22 @@
 package com.hust.baseweb.applications.taskmanagement.service.implement;
 
+import com.hust.baseweb.applications.taskmanagement.dto.dao.PersonDao;
 import com.hust.baseweb.applications.taskmanagement.dto.form.TaskForm;
 import com.hust.baseweb.applications.taskmanagement.dto.form.TaskStatusForm;
 import com.hust.baseweb.applications.taskmanagement.entity.*;
 import com.hust.baseweb.applications.taskmanagement.repository.*;
 import com.hust.baseweb.applications.taskmanagement.service.*;
+import com.hust.baseweb.entity.Person;
 import com.hust.baseweb.entity.StatusItem;
+import com.hust.baseweb.repo.UserLoginRepo;
+import com.hust.baseweb.service.PersonService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.hust.baseweb.repo.StatusItemRepo;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -24,7 +26,7 @@ public class TaskServiceImplement implements TaskService {
 
     private final StatusItemRepo statusItemRepo;
 
-    private TaskAssignableRepository taskAssignableRepository;
+    private TaskAssignmentRepository taskAssignmentRepository;
 
     private ProjectService projectService;
 
@@ -37,6 +39,12 @@ public class TaskServiceImplement implements TaskService {
     private ProjectMemberService projectMemberService;
 
     private TaskSkillRepository taskSkillRepository;
+
+    private PersonService personService;
+
+    private UserLoginRepo userLoginRepo;
+
+    private UserLoginSkillRepository userLoginSkillRepository;
 
     @Override
     public Task createTask(Task task) {
@@ -88,14 +96,12 @@ public class TaskServiceImplement implements TaskService {
         task.setDueDate(taskStatusForm.getDueDate());
         Task taskRes = taskRepository.save(task);
 
-        /* fixed by PQD
-        TaskAssignable taskAssignable = taskAssignableRepository.getByTaskId(taskId);
-        UUID partyIdOld = taskAssignable.getPartyId();
-        if(!taskAssignable.getPartyId().toString().equals(taskStatusForm.getPartyId().toString())){
-            taskAssignable.setPartyId(taskStatusForm.getPartyId());
+        TaskAssignment taskAssignment = taskAssignmentRepository.getByTaskId(taskId);
+        UUID partyIdOld = taskAssignment.getPartyId();
+        if (!taskAssignment.getPartyId().toString().equals(taskStatusForm.getPartyId().toString())) {
+            taskAssignment.setPartyId(taskStatusForm.getPartyId());
         }
-        taskAssignableRepository.save(taskAssignable);
-        */
+        taskAssignmentRepository.save(taskAssignment);
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         String assignee = projectMemberService.getUserLoginByPartyId(taskStatusForm.getPartyId()).getUserLoginId();
@@ -109,10 +115,9 @@ public class TaskServiceImplement implements TaskService {
             taskExecution.setStatus(statusItem.getDescription());
         }
 
-        // fixed by PQD
-        //if(!partyIdOld.toString().equals(taskStatusForm.getPartyId().toString())){
-        taskExecution.setAssignee(assignee);
-        //}
+        if (!partyIdOld.toString().equals(taskStatusForm.getPartyId().toString())) {
+            taskExecution.setAssignee(assignee);
+        }
 
         if (!sdf.format(taskStatusForm.getDueDate()).equals(sdf.format(oldDueDate))) {
             taskExecution.setDueDate(dueDate);
@@ -145,12 +150,12 @@ public class TaskServiceImplement implements TaskService {
 
         Task taskRes = taskRepository.save(task);
 
-        TaskAssignable taskAssignable = taskAssignableRepository.getByTaskId(taskId);
-        UUID oldPartyId = taskAssignable.getPartyId();
-        if (taskAssignable.getPartyId() != taskForm.getPartyId()) {
-            taskAssignable.setPartyId(taskForm.getPartyId());
+        TaskAssignment taskAssignment = taskAssignmentRepository.getByTaskId(taskId);
+        UUID oldPartyId = taskAssignment.getPartyId();
+        if (taskAssignment.getPartyId() != taskForm.getPartyId()) {
+            taskAssignment.setPartyId(taskForm.getPartyId());
         }
-        taskAssignableRepository.save(taskAssignable);
+        taskAssignmentRepository.save(taskAssignment);
 
         TaskExecution taskExecution = new TaskExecution();
         taskExecution.setTask(taskRes);
@@ -202,5 +207,65 @@ public class TaskServiceImplement implements TaskService {
         taskSkill.setTaskId(taskId);
         taskSkill.setSkillId(skillId);
         taskSkillRepository.save(taskSkill);
+    }
+
+    @Override
+    public List<PersonDao> suggestAssignTask(UUID projectId, List<String> skillIds) {
+        List<Person> personList = projectMemberService.getMemberIdJoinedProject(projectId);
+        List<PersonDao> personRs = new ArrayList<>();
+        List<String> userLoginRs = new ArrayList<>();
+        List<String> userLoginIds = new ArrayList<>();
+        HashMap<String, Integer> rs = new HashMap<>();
+        HashMap<String, List<String>> collection = new HashMap<>();
+        for(int i=0; i<personList.size(); i++){
+            userLoginIds.add(projectMemberService.getUserLoginByPartyId(personList.get(i).getPartyId()).getUserLoginId());
+            rs.put(userLoginIds.get(i), 0);
+        }
+
+        for(int i=0; i<userLoginIds.size(); i++){
+            String userLoginId = userLoginIds.get(i);
+            List<UserloginSkill> userLoginSkills = userLoginSkillRepository.getListUserLoginSkill(userLoginIds.get(i));
+            List<String> tmp = new ArrayList<>();
+            for(UserloginSkill userloginSkill: userLoginSkills){
+                tmp.add(userloginSkill.getBacklogSkillId());
+            }
+            collection.put(userLoginIds.get(i), tmp);
+        }
+
+        for(int i=0; i<skillIds.size(); i++){
+            for(int j=0; j<userLoginIds.size(); j++){
+                int dem = rs.get(userLoginIds.get(j));
+                List<String> arrTmp = collection.get(userLoginIds.get(j));
+                for(int k=0; k<arrTmp.size(); k++){
+                    if(skillIds.get(i).equals(arrTmp.get(k))){
+                        dem++;
+                    }
+                }
+                rs.put(userLoginIds.get(j), dem);
+            }
+        }
+
+        Collection<Integer> rsArr = rs.values();
+        int max = 0;
+        for (Integer i: rsArr){
+            if(max < i){
+                max = i;
+            }
+        }
+
+        if(max == 0){
+            return personRs;
+        }
+
+        for(Map.Entry<String, Integer> entry : rs.entrySet()){
+            if(entry.getValue() == max){
+                userLoginRs.add(entry.getKey());
+            }
+        }
+
+        for(String userLoginId: userLoginRs){
+            personRs.add(new PersonDao(personService.findByPartyId(userLoginRepo.findByUserLoginId(userLoginId).getParty().getPartyId()), userLoginId));
+        }
+        return personRs;
     }
 }

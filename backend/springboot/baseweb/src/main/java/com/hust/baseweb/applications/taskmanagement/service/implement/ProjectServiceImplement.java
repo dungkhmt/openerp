@@ -26,10 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -73,7 +70,7 @@ public class ProjectServiceImplement implements ProjectService {
     @Override
     public ProjectPagination findPaginated(int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<Project> pagedResult = projectRepository.findAll(pageable);
+        Page<Project> pagedResult = projectRepository.getAll(pageable);
 
         ProjectPagination pagination = new ProjectPagination();
         List<Project> projects = pagedResult.toList();
@@ -97,17 +94,67 @@ public class ProjectServiceImplement implements ProjectService {
                 continue;
             }
             List<Task> taskList = null;
-            if (boardFilterInputForm.getPartyId() != null) {
-                taskList = taskRepository.getAllTaskByFiltersWithPartyId(
-                    boardFilterInputForm.getProjectId(),
-                    statusItem.getStatusId(),
-                    boardFilterInputForm.getCategoryId(),
-                    boardFilterInputForm.getPartyId());
+            if (boardFilterInputForm.getPartyId() != null ) {
+                if(boardFilterInputForm.getStartDate() == null){
+                    taskList = taskRepository.getAllTaskByFiltersWithPartyId(
+                        boardFilterInputForm.getProjectId(),
+                        statusItem.getStatusId(),
+                        boardFilterInputForm.getCategoryId(),
+                        boardFilterInputForm.getPartyId(),
+                        boardFilterInputForm.getPriorityId(),
+                        boardFilterInputForm.getKeyName());
+                }else if(boardFilterInputForm.getEndDate() == null){
+                    taskList = taskRepository.getAllTaskByFiltersWithPartyIdAndRangeDate(
+                        boardFilterInputForm.getProjectId(),
+                        statusItem.getStatusId(),
+                        boardFilterInputForm.getCategoryId(),
+                        boardFilterInputForm.getPartyId(),
+                        boardFilterInputForm.getPriorityId(),
+                        boardFilterInputForm.getKeyName(),
+                        boardFilterInputForm.getStartDate(),
+                        new Date()
+                    );
+                }else {
+                    taskList = taskRepository.getAllTaskByFiltersWithPartyIdAndRangeDate(
+                        boardFilterInputForm.getProjectId(),
+                        statusItem.getStatusId(),
+                        boardFilterInputForm.getCategoryId(),
+                        boardFilterInputForm.getPartyId(),
+                        boardFilterInputForm.getPriorityId(),
+                        boardFilterInputForm.getKeyName(),
+                        boardFilterInputForm.getStartDate(),
+                        boardFilterInputForm.getEndDate()
+                    );
+                }
             } else {
-                taskList = taskRepository.getAllTaskByFiltersWithoutPartyId(
-                    boardFilterInputForm.getProjectId(),
-                    statusItem.getStatusId(),
-                    boardFilterInputForm.getCategoryId());
+                if(boardFilterInputForm.getStartDate() == null){
+                    taskList = taskRepository.getAllTaskByFiltersWithoutPartyId(
+                        boardFilterInputForm.getProjectId(),
+                        statusItem.getStatusId(),
+                        boardFilterInputForm.getCategoryId(),
+                        boardFilterInputForm.getPriorityId(),
+                        boardFilterInputForm.getKeyName());
+                }else if(boardFilterInputForm.getEndDate() == null){
+                    taskList = taskRepository.getAllTaskByFiltersWithoutPartyIdAndRangeDate(
+                        boardFilterInputForm.getProjectId(),
+                        statusItem.getStatusId(),
+                        boardFilterInputForm.getCategoryId(),
+                        boardFilterInputForm.getPriorityId(),
+                        boardFilterInputForm.getKeyName(),
+                        boardFilterInputForm.getStartDate(),
+                        new Date()
+                    );
+                }else {
+                    taskList = taskRepository.getAllTaskByFiltersWithoutPartyIdAndRangeDate(
+                        boardFilterInputForm.getProjectId(),
+                        statusItem.getStatusId(),
+                        boardFilterInputForm.getCategoryId(),
+                        boardFilterInputForm.getPriorityId(),
+                        boardFilterInputForm.getKeyName(),
+                        boardFilterInputForm.getStartDate(),
+                        boardFilterInputForm.getEndDate()
+                    );
+                }
             }
             List<TaskDao> taskDaoList = new ArrayList<>();
             for (Task task : taskList) {

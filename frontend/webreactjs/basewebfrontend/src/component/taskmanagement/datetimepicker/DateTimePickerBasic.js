@@ -12,6 +12,7 @@ export default function DateTimePickerBasic({ label, onChange, value }) {
                 label={label}
                 value={value}
                 onChange={onChange}
+                sx={{ backgroundColor: "#fff" }}
             />
         </LocalizationProvider>
     );

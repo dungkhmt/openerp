@@ -5,8 +5,8 @@ function PieChart({labels, datasets}) {
   return (
     <Pie
       options={{
-        width: "400",
-        height: "400"
+        width: "1200",
+        height: "1200"
       }}
       data={{
         labels: labels,

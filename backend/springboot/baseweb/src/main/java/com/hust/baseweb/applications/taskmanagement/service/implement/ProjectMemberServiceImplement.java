@@ -85,13 +85,17 @@ public class ProjectMemberServiceImplement implements ProjectMemberService {
 
         // send mail to anounce user to join project
         UserRegister userRegister = userRegisterRepo.findById(userLoginId).orElse(null);
-        String emailUser = userRegister.getEmail();
-        mailService.sendSimpleMail(
-            new String[]{emailUser},
-            "OPEN ERP - Thông báo bạn đã được thêm vào dự án mới",
-            "Bạn đã được thêm dự án " + project.getName() + ". Đây là email tự động, bạn không trả lời lại email này!",
-            "OpenERP"
-        );
+        if (userRegister != null) {
+            String emailUser = userRegister.getEmail();
+            mailService.sendSimpleMail(
+                new String[]{emailUser},
+                "OPEN ERP - Thông báo bạn đã được thêm vào dự án mới",
+                "Bạn đã được thêm dự án " +
+                project.getName() +
+                ". Đây là email tự động, bạn không trả lời lại email này!",
+                "OpenERP"
+            );
+        }
 
         return projectMemberRes;
     }
@@ -99,6 +103,11 @@ public class ProjectMemberServiceImplement implements ProjectMemberService {
     @Override
     public ProjectMember create(ProjectMember projectMember) {
         return projectMemberRepository.save(projectMember);
+    }
+
+    @Override
+    public boolean checkAddedMemberInProject(UUID partyId, UUID projectId) {
+        return projectMemberRepository.isAddedMemberInProject(partyId, projectId) > 0 ? true : false;
     }
 
 }

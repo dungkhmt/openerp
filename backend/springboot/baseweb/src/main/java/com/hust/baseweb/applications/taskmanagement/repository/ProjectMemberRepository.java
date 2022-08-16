@@ -15,4 +15,7 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Pr
     @Query(value = "SELECT e.* FROM backlog_project_member e WHERE e.backlog_project_id = :projectId",
            nativeQuery = true)
     List<ProjectMember> findAllProjectMemberByProjectId(@Param("projectId") UUID projectId);
+
+    @Query(value = "SELECT COUNT(e.*)\\:\\:int FROM backlog_project_member e WHERE e.backlog_project_id = :projectId AND e.member_party_id = :partyId", nativeQuery = true)
+    int isAddedMemberInProject(@Param("partyId") UUID partyId, @Param("projectId") UUID projectId);
 }

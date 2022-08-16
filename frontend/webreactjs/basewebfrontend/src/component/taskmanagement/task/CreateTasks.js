@@ -18,6 +18,7 @@ import {
     Stack,
     Autocomplete
 } from '@mui/material';
+import { errorNoti, successNoti } from "utils/notification";
 
 import BasicAlert from "../alert/BasicAlert";
 import { useForm } from "react-hook-form";
@@ -50,6 +51,7 @@ export default function CreateTask() {
 
     const [skills, setSkills] = useState([]);
     const [selectedSkills, setSelectedSkills] = useState([]);
+    const [suggestAssign, setSuggestAssign] = useState([]);
 
     useEffect(() => {
         request('get', '/task-categories', res => {
@@ -180,6 +182,29 @@ export default function CreateTask() {
         setOpen(false);
     };
 
+    const handleSuggest = () => {
+        const projectIdTmp = projectIdUrl ? projectIdUrl : projectId;
+        if(projectIdTmp == ""){
+            errorNoti("Cần chọn dự án trước!", true);
+        } 
+        const dataForm = {
+            projectId: projectIdTmp,
+            skillIds: selectedSkills.map(item => item.skillId)
+        }
+        
+        request(
+            'post',
+            '/suggest-assign-task',
+            res => {
+                setSuggestAssign(res.data);
+            },
+            err => {
+                console.log(err);
+            },
+            dataForm
+        );
+    }
+
     return (
         <>
             <Box sx={boxComponentStyle}>
@@ -286,9 +311,9 @@ export default function CreateTask() {
                                             options={persons}
                                             value={person}
                                             onChange={(e, value) => setPerson(value)}
-                                            getOptionLabel={(option) => {return `${option.userLoginId} (${option.fullName})`}}
+                                            getOptionLabel={(option) => { return `${option.userLoginId} (${option.fullName})` }}
                                             fullWidth
-                                            renderInput={(params) => <TextField {...params} label="Danh mục" placeholder=""/>}
+                                            renderInput={(params) => <TextField {...params} label="Danh mục" placeholder="" />}
                                         />
                                         {/* <TextField
                                             select
@@ -351,7 +376,7 @@ export default function CreateTask() {
                                 </Grid>
                             }
                             <Grid item={true} xs={12} p={2}>
-                                <Grid container rowSpacing={2}>
+                                <Grid container spacing={2}>
                                     <Grid item={true} xs={12}>
                                         <Typography variant="body1">
                                             Yêu cầu các kỹ năng
@@ -377,6 +402,18 @@ export default function CreateTask() {
                                                 )}
                                             />
                                         </Stack>
+                                    </Grid>
+                                    <Grid item={true} xs={12}>
+                                        <Box display={'flex'} alignItems={'center'}>
+                                            <Button variant="contained" onClick={handleSuggest}>
+                                                Gợi ý gán
+                                            </Button>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item={true} xs={12}>
+                                        {suggestAssign.map((item) => (
+                                            <Box>{item.fullName} ({item.userLoginId})</Box>
+                                        ))}
                                     </Grid>
                                 </Grid>
                             </Grid>

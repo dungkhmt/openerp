@@ -1,9 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Box, Grid, IconButton } from "@material-ui/core";
-import DeleteIcon from '@mui/icons-material/Delete';
+import ApartmentIcon from '@mui/icons-material/Apartment';
 import {
   Button,
   Typography,
@@ -35,13 +34,13 @@ export default function ListProject() {
       console.log(err);
     });
   }, [url]);
-  console.log('render');
+  
   return (
     <>
       <Box sx={boxComponentStyle}>
         <Box display={'flex'} alignItems="center" justifyContent={'space-between'}>
           <Typography variant="h4" mb={4} component={'h4'}>
-            Danh sách dự án mới
+            Danh sách dự án
           </Typography>
           <Link to="/taskmanagement/project/type/create" style={{ textDecoration: "none" }} ><Button variant="contained" color="primary" sx={{ mr: 3 }}>Thêm mới dự án</Button></Link>
         </Box>

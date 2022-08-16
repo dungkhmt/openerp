@@ -19,4 +19,14 @@ public class SkillServiceImplement implements SkillService {
     public List<Skill> getAllSkills() {
         return skillRepository.findAll();
     }
+
+    @Override
+    public Skill create(Skill skill) {
+        return skillRepository.save(skill);
+    }
+
+    @Override
+    public void delete(String skillId) {
+        skillRepository.deleteById(skillId);
+    }
 }

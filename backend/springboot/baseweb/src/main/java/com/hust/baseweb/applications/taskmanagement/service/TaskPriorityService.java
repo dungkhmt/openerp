@@ -12,4 +12,8 @@ public interface TaskPriorityService {
     TaskPriority getTaskPriorityById(String taskPriorityId);
 
     List<TaskPriority> getAll();
+
+    TaskPriority create(TaskPriority taskPriority);
+
+    void delete(String priorityId);
 }
