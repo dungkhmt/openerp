@@ -1,8 +1,3 @@
 export default function End() {
-
-  return (
-    <div className='end-icon'>
-      End
-    </div>
-  );
+  return <div className="end-icon">Thoát</div>;
 }

@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RoomParticipantService {
 
+  private String unnamedRoom = "Unnamed";
   private final RoomParticipantRepository roomParticipantRepository;
   private final RoomService roomService;
   private final UserService userService;
@@ -90,7 +91,7 @@ public class RoomParticipantService {
 
   public Page<Room> getListInvitedRoom(Pageable page, String userId) {
     UserLogin u = userService.findById(userId);
-    Page<Room> pageRoom = roomParticipantRepository.getListInvitedRoom(page, u);
+    Page<Room> pageRoom = roomParticipantRepository.getListInvitedRoom(page, u, unnamedRoom);
     pageRoom.forEach((room) -> {
       room.setHost(null);
     });
@@ -101,10 +102,9 @@ public class RoomParticipantService {
     UserLogin u = userService.findById(userId);
     LocalDateTime currentTime = LocalDateTime.now();
     Date now = Date.from(currentTime.atZone(ZoneId.systemDefault()).toInstant());
-    Page<Room> pageRoom = roomParticipantRepository.getListPresentRoom(page, u, now);
+    Page<Room> pageRoom = roomParticipantRepository.getListPresentRoom(page, u, now, unnamedRoom);
     pageRoom.forEach((room) -> {
       room.setHost(null);
-      System.out.println("room: " + room.toString());
     });
     return pageRoom;
   }
