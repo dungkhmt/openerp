@@ -52,7 +52,7 @@ const Chat = (props) => {
         <div className="close-bar" onClick={closeBar}>
           <AiOutlineDoubleRight />
         </div>
-        <div className="title-bar">Group Chat</div>
+        <div className="title-bar">Trò chuyện</div>
         <div className="content-bar chat-bar-content">
           <div className="list-mess">{renderListMsg()}</div>
           <div className="input-chat">

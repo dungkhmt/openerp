@@ -8,6 +8,7 @@ export const API_URL = {
   DELETE_MEET: "/room",
   UPDATE_MEET: "/room",
   UPLOAD_FILE: "/video-call/upload-file",
+  PRESENT_MEET: "/roomParticipant/getListPresentMeet",
 };
 
 export const QUERY_KEY = {
@@ -20,6 +21,7 @@ export const QUERY_KEY = {
   DELETE_MEET: "deleteMeet",
   UPDATE_MEET: "updateMeet",
   UPLOAD_FILE: "uploadFile",
+  PRESENT_MEET: "presentMeet",
 };
 
 export const LIST_ICON = [

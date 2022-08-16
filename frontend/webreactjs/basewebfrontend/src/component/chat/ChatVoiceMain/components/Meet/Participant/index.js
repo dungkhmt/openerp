@@ -30,7 +30,7 @@ const Participant = ({ meetId, display, setDisplay, listParticipant }) => {
         <AiOutlineDoubleRight />
       </div>
       <div className="title-bar" onClick={closeBar}>
-        Participants
+        Người tham gia
       </div>
       <div className="content-bar participant-bar-content">
         {renderListParticipant()}

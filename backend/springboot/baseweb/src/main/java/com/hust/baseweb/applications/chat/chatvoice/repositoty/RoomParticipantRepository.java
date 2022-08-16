@@ -38,11 +38,11 @@ public interface RoomParticipantRepository extends JpaRepository<RoomParticipant
   @Query("SELECT u.userLoginId from UserLogin u WHERE u.userLoginId LIKE concat('%', :searchString, '%') AND u NOT IN (SELECT r.participant FROM RoomParticipant r WHERE r.isInvited = false AND r.room = :room)")
   Page<String> searchUsersById(Pageable page, String searchString, Room room);
 
-  @Query("SELECT p.room FROM RoomParticipant p INNER JOIN Room r ON p.room = r WHERE p.participant = :u AND p.isInvited = true ORDER BY p.room.openIn DESC")
-  Page<Room> getListInvitedRoom(Pageable page, UserLogin u);
+  @Query("SELECT p.room FROM RoomParticipant p INNER JOIN Room r ON p.room = r WHERE p.participant = :u AND p.isInvited = true AND p.room.isDeleted = false AND r.roomName != :unnamedRoom ORDER BY p.room.openIn DESC")
+  Page<Room> getListInvitedRoom(Pageable page, UserLogin u, String unnamedRoom);
 
-  @Query("SELECT p.room FROM RoomParticipant p INNER JOIN Room r ON p.room = r WHERE p.participant = :u AND p.isInvited = true AND :currentTime BETWEEN p.room.openIn AND p.room.closeIn")
-  Page<Room> getListPresentRoom(Pageable page, UserLogin u, Date currentTime);
+  @Query("SELECT p.room FROM RoomParticipant p INNER JOIN Room r ON p.room = r WHERE p.participant = :u AND p.isInvited = true AND p.room.isDeleted = false AND r.roomName != :unnamedRoom AND :currentTime BETWEEN p.room.openIn AND p.room.closeIn")
+  Page<Room> getListPresentRoom(Pageable page, UserLogin u, Date currentTime, String unnamedRoom);
 
   @Query("SELECT r.participant.userLoginId FROM RoomParticipant r WHERE r.room = :r AND isInvited = true")
   Page<String> getInvitedFriends(Pageable page, Room r);
