@@ -212,7 +212,12 @@ public class ClassTeacherAssignmentSolutionExcelExporter {
             cell.setCellValue((String) value);
         }
 
-        sheet.addMergedRegion(rangeAddress);
+        try {
+            sheet.addMergedRegion(rangeAddress);
+        } catch (Exception e) {
+            System.out.println("DETECTED INVALID MERGED REGION!");
+        }
+
         setBorderStyles(cellStyle);
         cell = row.getCell(column);
         cell.setCellStyle(cellStyle);

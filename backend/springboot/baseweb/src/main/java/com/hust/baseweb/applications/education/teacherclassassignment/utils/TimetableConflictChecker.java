@@ -103,6 +103,7 @@ public class TimetableConflictChecker {
      * @return 3 digits format
      */
     public static String extractPeriod(String timeTableCode) {
+        timeTableCode = timeTableCode.replaceAll("\\s", "");
         if (timeTableCode.length() < 9) {
             return null;
         }
