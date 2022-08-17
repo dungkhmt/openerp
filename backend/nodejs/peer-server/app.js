@@ -35,31 +35,25 @@ const storage = multer.memoryStorage({
 });
 
 const upload = multer({ storage }).single("file");
-const uploadFileToS3 = (fileType, { buffer }) => {
+const uploadFileToS3 = (fileType, { buffer, mimetype }) => {
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: `${uuid()}.${fileType}`,
     Body: buffer,
+    ContentEncoding: 'base64',
+    ContentType: mimetype,
+    ACL: 'public-read',
   };
   return s3.upload(params).promise();
-};
-const downloadFromS3 = (fileKey) => {
-  const params = {
-    Bucket: process.env.AWS_BUCKET_NAME,
-    Key: fileKey,
-    Expires: 0,
-  };
-  return s3.getSignedUrl("getObject", params);
 };
 const uploadFile = async (req, res, next) => {
   try {
     const myFile = req.file.originalname.split(".");
     const fileType = myFile[myFile.length - 1];
     const fileUploaded = await uploadFileToS3(fileType, req.file);
-    const fileKey = fileUploaded.Key;
-    const url = downloadFromS3(fileKey);
-    return res.status(200).json({ data: { url, fileType } });
+    return res.status(200).json({ data: { url: fileUploaded.Location, fileType } });
   } catch (e) {
+    console.error("ERROR_UPLOAD_FILE: ", e)
     res.status(400).json({ error: "Upload file failed" });
   }
 };
