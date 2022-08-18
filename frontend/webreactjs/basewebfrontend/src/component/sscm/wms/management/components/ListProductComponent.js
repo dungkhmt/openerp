@@ -76,32 +76,32 @@ function ListProductComponent({products}) {
           <TableCell component="th" scope="row" className={classes.imgWrap}>
             <img style={{ width: 40 }} src={require("../../common/image/default.jpg").default} alt="" />
           </TableCell>
-          <TableCell align="right">
+          <TableCell align="left">
             {/* {row.name} */}
             <Link href={`${path}/${row.id}`} underline="none">
             {row.name}
       </Link>
             </TableCell>
-          <TableCell align="right">{getType(row.type)}</TableCell>
-          <TableCell align="right">{row.code}</TableCell>
-          <TableCell align="right">{getQuantity(row.available)}</TableCell>
-          <TableCell align="right">{getQuantity(row.onHand)}</TableCell>
-          <TableCell align="right">{getStatus(row.isActive)}</TableCell>
+          <TableCell align="left">{getType(row.type)}</TableCell>
+          <TableCell align="left">{row.code}</TableCell>
+          <TableCell align="left">{getQuantity(row.available)}</TableCell>
+          <TableCell align="left">{getQuantity(row.onHand)}</TableCell>
+          <TableCell align="left">{getStatus(row.isActive)}</TableCell>
         </TableRow>
         <TableRow style={{ backgroundColor: "#fafafa" }}>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0, borderBottom: "none" }} colSpan={12}>
             <Collapse in={open} timeout="auto" unmountOnExit style={{ padding: "30px 300px 30px 60px" }}>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">
-                  Variants
+                  Phiên bản sản phẩm
                 </Typography>
                 <Table size="small" aria-label="purchases">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Tên variant</TableCell>
+                      <TableCell>Tên phiên bản </TableCell>
                       <TableCell>Mã </TableCell>
-                      <TableCell align="right">Có thể bán</TableCell>
-                      <TableCell align="right">Tồn kho</TableCell>
+                      <TableCell align="left">Có thể bán</TableCell>
+                      <TableCell align="left">Tồn kho</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -110,8 +110,8 @@ function ListProductComponent({products}) {
                         <TableRow key={row.id} hover >
                           <TableCell component="th" scope="row">{row.name}</TableCell>
                           <TableCell>{row.sku}</TableCell>
-                          <TableCell align="right">{row.available}</TableCell>
-                          <TableCell align="right">{row.onHand}</TableCell>
+                          <TableCell align="left">{row.available}</TableCell>
+                          <TableCell align="left">{row.onHand}</TableCell>
                         </TableRow>
                       )
                     }
@@ -149,6 +149,7 @@ function ListProductComponent({products}) {
         <SearchBar
         style={{height: 42}}
           value={searched}
+          placeholder= {"Tìm kiếm sản phẩm"}
           onChange={(searchVal) => {requestSearch(searchVal)}}
           onCancelSearch={() => cancelSearch()}
         />
@@ -158,12 +159,12 @@ function ListProductComponent({products}) {
               <TableRow>
                 <TableCell style={{ width: 50 }}></TableCell>
                 <TableCell>Ảnh</TableCell>
-                <TableCell align="right">Sản phẩm</TableCell>
-                <TableCell align="right">Loại</TableCell>
-                <TableCell align="right">Mã sản phẩm</TableCell>
-                <TableCell align="right">Có thể bán</TableCell>
-                <TableCell align="right">Tồn kho</TableCell>
-                <TableCell align="right">Trạng thái</TableCell>
+                <TableCell align="left">Tên Sản phẩm</TableCell>
+                <TableCell align="left">Loại</TableCell>
+                <TableCell align="left">Mã sản phẩm</TableCell>
+                <TableCell align="left">Có thể bán</TableCell>
+                <TableCell align="left">Tồn kho</TableCell>
+                <TableCell align="left">Trạng thái</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

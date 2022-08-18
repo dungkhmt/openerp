@@ -3,6 +3,7 @@ package com.hust.baseweb.applications.sscm.tmscontainer.model;
 
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.Facility;
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.Shelf;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.ShelfVariant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,8 @@ public class FacilityResponse {
     private Date createAt;
 
     private List<Shelf> listShelf;
+
+    private List<ShelfVariant> shelfVariants;
 
     private Date updateAt;
 

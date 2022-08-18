@@ -161,9 +161,9 @@ function CreateProduct() {
                       variant="outlined"
                       size="small"
                       inputRef={register(false)}
-                      name="weight"
-                      error={!!errors.weight}
-                      helperText={errors.weight?.message}
+                      name="weightValue"
+                      error={!!errors.weightValue}
+                      helperText={errors.weightValue?.message}
                     />
                     <FormControl size="small" sx={{ m: 1 }} >
                     <Select
@@ -337,7 +337,7 @@ function CreateProduct() {
                         fullWidth
                         variant="outlined"
                         size="small"
-                        inputRef={register({ required: "Vui lòng điền tên kho" })}
+                        inputRef={register({ required: "Vui lòng điền tên thuộc tính" })}
                         name="opt2"
                         value={opt2}
                         onChange={handleChangeOpt2}

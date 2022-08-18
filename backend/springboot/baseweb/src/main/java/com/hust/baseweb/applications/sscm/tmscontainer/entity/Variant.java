@@ -101,7 +101,11 @@ public class Variant {
         this.opt1 = variant.getOpt1();
         this.opt2 = variant.getOpt2();
         this.opt3 = variant.getOpt3();
-
+    }
+    public Boolean checkStatus(Variant variant){
+        if(variant.getIsActive() == null){
+            return false;
+        }else return variant.getIsActive();
     }
 //    public Variant mapLineItem(LineItem lineItem){
 //        this.id = lineItem.getVariantId();

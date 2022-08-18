@@ -64,7 +64,7 @@ export default function ListWarehouse() {
       <MaterialTable
         title="Danh sách kho"
         columns={columns}
-        data={listWarehouse}
+        data={listWarehouse.sort((a, b) => (b.facilityId - a.facilityId))}
         onRowClick={(event, rowData) => {
           history.push(`${path.replace('/list', '')}/${rowData["facilityId"]}`);
         }}

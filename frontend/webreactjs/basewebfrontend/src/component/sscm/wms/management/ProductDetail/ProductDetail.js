@@ -6,6 +6,7 @@ import { request } from 'api';
 import MoreInforProduct from './MoreInforProduct';
 import { getStatus, getType } from '../../utilities';
 import VariantInfor from './VariantInfor';
+import { successNoti } from 'utils/notification';
 
 
 function ProductDetail() {
@@ -44,7 +45,19 @@ function ProductDetail() {
     history.push(`${path.replace(`/:id`, "")}`);
   }
   const deleteProduct = () => {
-    history.push(`${path.replace(`/:id`, "")}`);
+    request(
+      "delete",
+      `/admin/wms/warehouse/products/${id}`,
+      (res) => {
+        history.push(`${path.replace(`/:id`, "")}`);
+        successNoti("Xóa sản phẩm thành công")
+      },
+      {
+        onError: (res) => {
+          console.log("getAllVariantActive")
+        },
+      }
+    );
   }
 
   return (
@@ -61,12 +74,16 @@ function ProductDetail() {
             <Grid className={classes.exitBtnWrap}>
               <Button variant="outlined" className={classes.exitBtn} onClick={exitProduct} >Thoát</Button>
             </Grid>
+          {product.isActive && 
+            <>
             <Grid className={classes.deleteBtnWrap}>
               <Button variant="contained" className={classes.deleteBtn} onClick={deleteProduct} >Xóa</Button>
             </Grid>
             <Grid className={classes.editBtnWrap}>
               <Button variant="contained" className={classes.addButton} onClick={editProduct} >Sửa sản phẩm</Button>
             </Grid>
+            </>
+          }
           </Grid>
         </Grid>
 

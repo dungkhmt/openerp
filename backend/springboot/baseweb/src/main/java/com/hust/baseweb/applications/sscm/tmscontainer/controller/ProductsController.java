@@ -1,10 +1,11 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.controller;
 
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.LineItem;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.ShelfVariant;
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.Variant;
-import com.hust.baseweb.applications.sscm.tmscontainer.model.LineItemResponse;
+import com.hust.baseweb.applications.sscm.tmscontainer.model.ImportLineItemResponse;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.ProductRequest;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.ProductResponse;
+import com.hust.baseweb.applications.sscm.tmscontainer.model.ShelfVariantResponse;
 import com.hust.baseweb.applications.sscm.tmscontainer.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,11 @@ public class ProductsController {
         return productService.getAllVariants();
     }
 
+    @GetMapping("/variant-active")
+    public List<Variant> getAllVariantsActive(){
+        return productService.getAllVariantsActive();
+    }
+
     @PutMapping("/{id}")
     public ProductResponse updateProduct(@PathVariable Integer id, @RequestBody @Valid ProductRequest productRequest) throws Exception {
         return productService.updateById(id, productRequest);
@@ -65,14 +71,28 @@ public class ProductsController {
     public List<ProductResponse> getAllProductByFacility(@PathVariable Integer id){
         return productService.getAllProductsByFacility(id);
     }
+    @GetMapping("/facility/{id}/variant")
+    public List<Variant> getAllVariantsByFacilityId(@PathVariable Integer id){
+        return productService.getAllVariantsByFacilityId(id);
+    }
 
+//    @GetMapping("/shelf/{id}")
+//    public List<ImportLineItemResponse> getAllProductInShelf(@PathVariable Integer id){
+//        return productService.getAllProductInShelf(id);
+//    }
     @GetMapping("/shelf/{id}")
-    public List<LineItemResponse> getAllProductInShelf(@PathVariable Integer id){
-        return productService.getAllProductInShelf(id);
+    public List<ShelfVariantResponse> getAllVariantInShelf(@PathVariable Integer id){
+        return productService.getAllVariantInShelf(id);
+    }
+    @GetMapping("/shelf/facility/{id}")
+//    @GetMapping("/shelf/variant/{id}")
+
+    public List<ShelfVariant> getAllShelfVariantInFacility(@PathVariable Integer id){
+        return productService.getAllShelfVariantInFacility(id);
     }
 
     @GetMapping("/variant/{id}")
-    public List<LineItemResponse> getAllVariantImport(@PathVariable Integer id){
+    public List<ImportLineItemResponse> getAllVariantImport(@PathVariable Integer id){
         return productService.getAllVariantImport(id);
     }
 

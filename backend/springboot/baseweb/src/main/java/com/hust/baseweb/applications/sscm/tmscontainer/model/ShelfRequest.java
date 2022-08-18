@@ -10,10 +10,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShelfRequest {
-    private int shelf_id;
+    private int shelfId;
     private int facilityId;
     private int x;
     private int y;
+    private int num;
+    private String status;
     private int width;
     private int lenght;
 }

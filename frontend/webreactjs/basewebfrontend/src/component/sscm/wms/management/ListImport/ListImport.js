@@ -11,7 +11,7 @@ import moment from 'moment';
 import { Link } from '@mui/material';
 
 import PropTypes from 'prop-types';
-import { getQuantity, getStatus, getType } from "../../utilities";
+import { formatCurrency, getImportStatus, getQuantity, getStatus, getType } from "../../utilities";
 
 function ListImport() {
   const classes = useStyles();
@@ -187,10 +187,12 @@ function ListImport() {
           <Table className={classes.table} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell align="left">Mã Đơn</TableCell>
-                <TableCell align="left">Mã Kho</TableCell>
-                <TableCell align="left">Thời gian tạo đơn</TableCell>
-                <TableCell align="left">Tổng giá trị</TableCell>
+                <TableCell width={"10%"}  align="left">Mã Đơn</TableCell>
+                <TableCell width={"10%"} align="left">Mã Kho</TableCell>
+                <TableCell width={"30%"} align="left">Tên Kho</TableCell>
+                <TableCell width={"20%"} align="left">Thời gian tạo đơn</TableCell>
+                <TableCell width={"15%"} align="center">Tổng giá trị</TableCell>
+                <TableCell width={"15%"} align="center">Trạng thái</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -202,8 +204,11 @@ function ListImport() {
                     </Link>
                   </TableCell>
                   <TableCell align="left">{row.facility?.code}</TableCell>
+                  <TableCell align="left">{row.facility?.name}</TableCell>
                   <TableCell align="left">{row.createAt ? moment(row.createAt).format('DD/MM/YYYY') : ""}</TableCell>
-                  <TableCell align="left">{row.total}</TableCell>
+                  <TableCell align="right">{formatCurrency(row.total)}</TableCell>
+                  <TableCell align="center">{getImportStatus(row?.status, 26)}</TableCell>
+
                 </TableRow>
               ))}
 

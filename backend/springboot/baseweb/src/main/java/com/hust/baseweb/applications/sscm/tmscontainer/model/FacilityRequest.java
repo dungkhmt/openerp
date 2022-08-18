@@ -15,11 +15,11 @@ import java.util.List;
 @NoArgsConstructor
 public class FacilityRequest{
     @NotBlank
-    private String code;
+    private String code; // Mã kho
     @NotBlank
-    private String name;
+    private String name; // Tên kho
     @NotBlank
-    private String address;
+    private String address; // Địa chỉ kho
     @NotNull(message = "Chiều rộng kho không được bỏ trống")
     private int facilityWidth;
     @NotNull(message = "Chiều dài kho không được bỏ trống")

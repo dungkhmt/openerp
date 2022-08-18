@@ -2,11 +2,9 @@ package com.hust.baseweb.applications.sscm.tmscontainer.service;
 
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.*;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.ImportOrderResponse;
-import com.hust.baseweb.applications.sscm.tmscontainer.model.LineItemResponse;
-import com.hust.baseweb.applications.sscm.tmscontainer.model.ShelfLineItemResponse;
-import com.hust.baseweb.applications.sscm.tmscontainer.repository.FacilityRepository;
+import com.hust.baseweb.applications.sscm.tmscontainer.model.ImportLineItemResponse;
 import com.hust.baseweb.applications.sscm.tmscontainer.repository.ImportOrderRepository;
-import com.hust.baseweb.applications.sscm.tmscontainer.repository.ShelfLineItemRepository;
+import com.hust.baseweb.applications.sscm.tmscontainer.repository.ShelfVariantRepository;
 import com.hust.baseweb.applications.sscm.tmscontainer.repository.VariantRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +28,7 @@ public class ImportOrderService {
     private ProductService productService;
 
     @Autowired
-    private ShelfLineItemRepository shelfLineItemRepository;
+    private ShelfVariantRepository shelfVariantRepository;
 
     @Autowired
     private VariantRepository variantRepository;
@@ -38,10 +36,12 @@ public class ImportOrderService {
 
     public ImportOrderResponse creatImportOrder(ImportOrder importOrder) {
         if (importOrder.getLineItems() != null) {
-            for (LineItem item : importOrder.getLineItems()) {
+            for (ImportLineItem item : importOrder.getLineItems()) {
                 item.setImportOrder(importOrder);
                 if (item.getQuantity() != null) {
                     item.setCurrentQuantity(item.getQuantity());
+                    item.setOnHand(item.getQuantity());
+//                    item.setAvailable();
                     productService.addVariantOnHand(item.getVariantId(), item.getQuantity());
                 }
             }
@@ -60,12 +60,12 @@ public class ImportOrderService {
         if (importOrder == null) {
             throw new Exception("khong tim thay don nhap hang");
         }
-        List<LineItemResponse> lineItemsRes = importOrder.getLineItems().stream().map(lineItem -> {
-            return mapper.map(lineItem, LineItemResponse.class);
-        }).map(lineItemResponse -> {
-            Product product = variantRepository.getOne(lineItemResponse.getVariantId()).getProduct();
-            lineItemResponse.setProductId(product.getId());
-            return lineItemResponse;
+        List<ImportLineItemResponse> lineItemsRes = importOrder.getLineItems().stream().map(lineItem -> {
+            return mapper.map(lineItem, ImportLineItemResponse.class);
+        }).map(importLineItemResponse -> {
+            Product product = variantRepository.getOne(importLineItemResponse.getVariantId()).getProduct();
+            importLineItemResponse.setProductId(product.getId());
+            return importLineItemResponse;
         }).collect(Collectors.toList());
 
         ImportOrderResponse res = mapper.map(importOrder, ImportOrderResponse.class);
@@ -92,7 +92,6 @@ public class ImportOrderService {
             }).collect(Collectors.toList());
 //        return res;
     }
-
 
     public void setImportOrderCode(ImportOrder importOrder) {
         long currentCode = importOrderRepository.count();

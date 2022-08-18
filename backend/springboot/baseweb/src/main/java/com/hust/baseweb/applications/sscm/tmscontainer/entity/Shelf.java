@@ -40,6 +40,9 @@ public class Shelf {
     @Column(name= "status")
     private String status;
 
+    @Column(name= "num")
+    private Integer num;
+
     @LastModifiedDate
     private Date updateAt;
 
@@ -47,10 +50,11 @@ public class Shelf {
     private Date createAt;
 
     public Shelf(ShelfRequest shelfRequest){
-        this.shelfId = shelfRequest.getShelf_id();
+        this.shelfId = shelfRequest.getShelfId();
         this.facilityId = shelfRequest.getFacilityId();
         this.x = shelfRequest.getX();
         this.y = shelfRequest.getY();
+        this.num = shelfRequest.getNum();
         this.width = shelfRequest.getWidth();
         this.lenght = shelfRequest.getLenght();
     }
@@ -61,6 +65,7 @@ public class Shelf {
         this.x = shelfRequest.getX();
         this.y = shelfRequest.getY();
         this.width = shelfRequest.getWidth();
+        this.num = shelfRequest.getNum();
         this.lenght = shelfRequest.getLenght();
     }
 }

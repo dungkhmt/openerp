@@ -75,7 +75,7 @@ function ListProduct() {
       <React.Fragment>
         <TableRow hover  sx={{ '& > *': { borderBottom: 'unset' } }}>
           {
-            (row.variants.length > 0 ?
+            (row.variants.length > 1 ?
               <TableCell>
                 <IconButton
                   aria-label="expand row"
