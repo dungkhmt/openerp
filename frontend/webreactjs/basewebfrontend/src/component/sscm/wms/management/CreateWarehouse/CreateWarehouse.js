@@ -17,7 +17,7 @@ import { ColorLensRounded } from "@mui/icons-material";
 export default function CreateWarehouse() {
 
   const classes = useStyles();
-  const [listShelf, setListShelf] = useState([{ x: "", y: "", width: "", lenght: "" }]);
+  const [listShelf, setListShelf] = useState([{ x: "", y: "", width: "", lenght: "", num: "" }]);
   const [canvanData, setCanvasData] = useState([]);
   const [scale, setScale] = useState();
   const { register, errors, handleSubmit, watch, getValues } = useForm();
@@ -32,7 +32,7 @@ export default function CreateWarehouse() {
 
 
   const handleAddShelf = () => {
-    setListShelf([...listShelf, { x: "", y: "", width: "", lenght: "" }])
+    setListShelf([...listShelf, { x: "", y: "", width: "", lenght: "", num: "" }])
   }
 
   let removeFormFields = (i) => {
@@ -44,6 +44,17 @@ export default function CreateWarehouse() {
 
   const addWareHouse = () => {
   }
+
+  const addFile = (e) => {
+    e.preventDefault();
+    const reader = new FileReader();
+    reader.readAsText(e.target.files[0],"UTF-8");
+    reader.onload = (e) => {
+      const text = e.target.result;
+      setListShelf(JSON.parse(text))
+    };
+  };
+
 
   let submitForm = (data) => {
     data.listShelf = listShelf;
@@ -64,17 +75,26 @@ export default function CreateWarehouse() {
     const { name, value } = e.target;
     const list = [...listShelf];
     list[i][name] = value;
+    list[i]["num"] = i + 1;
     setListShelf(list);
   };
 
   const resetCanvas = () => {
-    setCanvasData(listShelf)
     const data = getValues();
-        if(stageCanvasRef.current){
-        setWidth(stageCanvasRef.current.offsetWidth);
-        setHeight(stageCanvasRef.current.offsetHeight);
-        setWarehouseHeight(stageCanvasRef.current.offsetWidth * data.facilityLenght / data.facilityWidth)
-        setScale(stageCanvasRef.current.offsetWidth / data.facilityWidth)
+    const width = parseInt(data.facilityWidth)
+    const lenght = parseInt(data.facilityLenght)
+    if(isNaN(width) || isNaN(lenght) ||width <=0 || lenght <=0 ){
+      errorNoti(
+        "Vui lòng điền kích thước kho"
+      );
+    }
+    setCanvasData(listShelf)
+    // const data = getValues();
+    if (stageCanvasRef.current) {
+      setWidth(stageCanvasRef.current.offsetWidth);
+      setHeight(stageCanvasRef.current.offsetHeight);
+      setWarehouseHeight(stageCanvasRef.current.offsetWidth * data.facilityLenght / data.facilityWidth)
+      setScale(stageCanvasRef.current.offsetWidth / data.facilityWidth)
     }
   };
 
@@ -224,6 +244,18 @@ export default function CreateWarehouse() {
           <Box className={classes.boxInfor} style={{ margin: 0 }}>
             <Typography className={classes.inforTitle} variant="h6">
               Thông tin chi tiết kho
+
+              <input
+                    style={{ display: 'none' }}
+                    id="raised-button-file"
+                    onChange={addFile}
+                    type="file"
+                  />
+                  <label htmlFor="raised-button-file">
+                    <Button variant="raised" component="span" style={{fontSize:"18px !important", color: "#1976d2", marginLeft: 94, textTransform:"none"}}>
+                      Tải file lên
+                    </Button>
+                  </label>
             </Typography>
             <Grid container className={classes.detailWrap}>
               <Grid xs={3} sx={{ display: "flex", }} item className={classes.boxWrap}>
@@ -236,7 +268,7 @@ export default function CreateWarehouse() {
                       <Box key={index} width={"100%"} display={"flex"} alignItems={"center"} padding={"8px"} >
                         <Box className={classes.shelfInput} style={{ flexGrow: 1 }} display={"flex"} padding={"8px"}>
                           <Box width={"75px"}>
-                            <Typography style={{ fontWeight: 500 }}>Kệ số {index + 1}</Typography>
+                            <Typography style={{ fontWeight: 500 }}>Kệ số {data.num}</Typography>
                           </Box>
                           <Box style={{ width: `calc(100% - 75px` }} className={classes.rootInput}>
                             <Grid container spacing={1} >
@@ -269,7 +301,18 @@ export default function CreateWarehouse() {
                     <AddCircleOutlineIcon className={classes.addIcon} />
                     <Typography>Thêm kệ hàng</Typography>
                   </Box>
-                </Box>
+                  </Box>
+                  {/* <input
+                    style={{ display: 'none' }}
+                    id="raised-button-file"
+                    onChange={addFile}
+                    type="file"
+                  />
+                  <label htmlFor="raised-button-file">
+                    <Button variant="raised" component="span" className={classes.addIcon}>
+                      Upload
+                    </Button>
+                  </label> */}
               </Grid>
 
 
@@ -301,9 +344,9 @@ export default function CreateWarehouse() {
                           stroke="#89C4FA"
                           cornerRadius={3}
                         />
-                          {canvanData.map((data) => (
-                            warehouseBox(data, scale)
-                          ))}
+                        {canvanData.map((data) => (
+                          warehouseBox(data, scale)
+                        ))}
                       </Layer>
 
                     </Stage>

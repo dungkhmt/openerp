@@ -1,11 +1,11 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.controller;
 
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.ImportOrder;
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.ShelfLineItem;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.ShelfVariant;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.ImportOrderResponse;
-import com.hust.baseweb.applications.sscm.tmscontainer.model.ShelfLineItemResponse;
+import com.hust.baseweb.applications.sscm.tmscontainer.model.ShelfVariantResponse;
 import com.hust.baseweb.applications.sscm.tmscontainer.service.ImportOrderService;
-import com.hust.baseweb.applications.sscm.tmscontainer.service.ShelfLineItemService;
+import com.hust.baseweb.applications.sscm.tmscontainer.service.ShelfVariantService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,7 +25,7 @@ public class ImportOrderController {
     private ImportOrderService importOrderService;
 
     @Autowired
-    private ShelfLineItemService shelfLineItemService;
+    private ShelfVariantService shelfVariantService;
 
     @PostMapping("")
     public ImportOrderResponse create(@RequestBody @Valid ImportOrder importOrder) {
@@ -43,7 +43,7 @@ public class ImportOrderController {
     }
 
     @PostMapping("/put-to-shelf")
-    public ShelfLineItemResponse putIntoShelf(@RequestBody @Valid ShelfLineItem shelfLineItem) throws Exception {
-        return shelfLineItemService.putIntoShelf(shelfLineItem);
+    public ShelfVariantResponse putIntoShelf(@RequestBody @Valid ShelfVariant shelfVariant) throws Exception {
+        return shelfVariantService.putIntoShelf(shelfVariant);
     }
 }

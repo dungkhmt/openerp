@@ -2,7 +2,6 @@ package com.hust.baseweb.applications.sscm.tmscontainer.controller;
 
 
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.Facility;
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.LineItem;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.FacilityRequest;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.FacilityResponse;
 import com.hust.baseweb.applications.sscm.tmscontainer.service.FacilitiesService;

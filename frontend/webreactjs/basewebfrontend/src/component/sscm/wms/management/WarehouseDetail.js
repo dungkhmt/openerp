@@ -64,6 +64,18 @@ const useStyles = makeStyles((theme) => ({
   btnWrap: {
     display: "flex",
   },
+  exitBtnWrap:{
+    marginLeft: 10,
+    "& .MuiButton-contained:hover" :{
+      backgroundColor : "#fcdcdc"
+    }
+  },
+  exitBtn:{
+    color: "#de4343",
+    border: "1px solid #de4343",
+    margin: "10px 0",
+    textTransform: "none",
+  },
   tabWrap: {
     backgroundColor: "#FFF",
     "& .MuiTab-textColorInherit.Mui-selected": {
@@ -147,8 +159,6 @@ function WarehouseDetail() {
 
   let { id } = useParams();
   const { path } = useRouteMatch();
-  console.log("id", id)
-  console.log("path", path)
 
   const getWarehouseDetail = () => {
     request(
@@ -159,7 +169,6 @@ function WarehouseDetail() {
         setListShelf(res.data.listShelf)
         setShelfId(res.data.listShelf[0].shelfId)
         getLineItem(res.data.listShelf[0].shelfId)
-        console.log("res.data.listShelf", res.data.listShelf)
       },
       {
         onError: (res) => {
@@ -174,7 +183,6 @@ function WarehouseDetail() {
       "get",
       `/admin/wms/warehouse/products/facility/${id}`,
       (res) => {
-        console.log("res data", res.data);
         setProducts(res.data);
       },
       {
@@ -190,7 +198,6 @@ function WarehouseDetail() {
       "get",
       `/admin/wms/warehouse/products/shelf/${id}`,
       (res) => {
-        console.log("res data", res.data);
         setLineItems(res.data);
       },
       {
@@ -203,21 +210,20 @@ function WarehouseDetail() {
 
   const stageCanvasRef = useCallback((node) => {
     if (node) {
-      console.log("node", node)
       setHeight(node.getBoundingClientRect().height);
       setWidth(node.getBoundingClientRect().width);
       setWarehouseHeight(node.getBoundingClientRect().width * warehouesData.facilityLenght / warehouesData.facilityWidth)
       setScale(node.getBoundingClientRect().width / warehouesData.facilityWidth)
-      console.log("width", node.getBoundingClientRect().width)
-      console.log("height", node.getBoundingClientRect().height)
     }
   }, [warehouesData]);
 
   const handleImport = () => {
     history.push(`${path.replace("/warehouse/:id", "/inventory/import/create")}`);
   }
+  const handleExit = () => {
+    history.push(`${path.replace("/:id", "/list")}`);  }
   const handleEdit = () => {
-
+    history.push(`${path.replace("/:id", `/update/${id}`)}`);  
   }
 
   useEffect(() => {
@@ -246,12 +252,10 @@ function WarehouseDetail() {
           let mousePos = e.target.getAbsolutePosition();
           // let mousePos = e.target.getStage().getPointerPosition();
           setPos(mousePos)
-          setShelf(e.target.index)
-          console.log("mousePos", mousePos)
-          console.log("setShelf", e.target.index)
+          setShelf(data.num? data.num : e.target.index)
         }}
         onClick={e => {
-          setFacilityNum(e.target.index)
+          setFacilityNum(data.num? data.num : e.target.index)
           setShelfId(data.shelfId)
           // getLineItem(shelfId)
         }}
@@ -271,6 +275,9 @@ function WarehouseDetail() {
           </Typography>
         </Grid>
         <Grid className={classes.btnWrap}>
+        <Grid className={classes.exitBtnWrap}>
+              <Button variant="outlined" className={classes.exitBtn} onClick={handleExit} >Thoát</Button>
+            </Grid>
           <Grid className={classes.buttonWrap}>
             <Button variant="contained" className={classes.addButton} onClick={handleImport} >Nhập kho</Button>
           </Grid>
@@ -379,18 +386,18 @@ function WarehouseDetail() {
                         <TableBody className={classes.tableBody}>
                           {
                             lineItems &&
-                            lineItems.map((row, index) => (
+                            lineItems.filter(item => (item.quantity > 0)).map((row, index) => (
                               <TableRow
                                 key={index}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                               >
                                 <TableCell align="left">
                                   <Link style={{ marginLeft: 3 }} href={`${path.replace('/:id', '/products')}/${row.productId}`} underline="none">
-                                    {row?.sku}
+                                    {row?.variant?.sku}
                                   </Link>
                                 </TableCell>
-                                <TableCell align="left">{row.name}</TableCell>
-                                <TableCell align="center">{row.onHand}</TableCell>
+                                <TableCell align="left">{row.variant?.name}</TableCell>
+                                <TableCell align="center">{row.quantity}</TableCell>
                               </TableRow>
                             ))}
                         </TableBody>

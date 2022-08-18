@@ -1,7 +1,7 @@
 import { Box, Button, FormControl, FormControlLabel, FormLabel, Grid, makeStyles, Radio, RadioGroup, Switch, TextField, Typography } from '@material-ui/core';
 import { request } from 'api';
 import React, { Fragment, useEffect, useMemo, useState } from 'react'
-import { getStatus, readPropProduct, readWeightProduct } from '../../utilities';
+import { formatCurrency, getStatus, readPropProduct, readWeightProduct } from '../../utilities';
 import ProductInImport from './ProductInImport';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,6 +23,12 @@ const useStyles = makeStyles((theme) => ({
   },
   label: {
     padding: "4px 0",
+  },
+  labelName: {
+    padding: "4px 0",
+    overflow: "hidden",
+    textOverflow : "ellipsis",
+    whiteSpace: "nowrap"
   },
   variantWrap: {
 
@@ -137,7 +143,7 @@ function VariantInfor({ variants, product }) {
               <Typography className={classes.label}>Có thể bán</Typography>
             </Grid>
             <Grid item xs={4} direction="column">
-              <Typography className={classes.label}>
+              <Typography className={classes.labelName}>
                 <b style={{ marginRight: 20 }}>:</b>  {currentVariant?.name}
               </Typography>
               <Typography className={classes.label}>
@@ -156,19 +162,31 @@ function VariantInfor({ variants, product }) {
                 </Typography>
               }
               {
+                 !currentVariant.opt1 &&
+                <Typography className={classes.label}>
+                  <b style={{ marginRight: 20 }}>:</b> 
+                </Typography>
+              }
+              {
                 product.opt2 && currentVariant.opt2 &&
                 <Typography className={classes.label}>
                   <b style={{ marginRight: 20 }}>:</b>  {currentVariant?.opt2}
                 </Typography>
               }
+              {
+                 !currentVariant.opt2 &&
+                <Typography className={classes.label}>
+                  <b style={{ marginRight: 20 }}>:</b>  
+                </Typography>
+              }
               <Typography className={classes.label}>
-                <b style={{ marginRight: 20 }}>:</b> {currentVariant?.importPrice}
+                <b style={{ marginRight: 20 }}>:</b> {formatCurrency(currentVariant?.importPrice)} đồng 
               </Typography>
               <Typography className={classes.label}>
-                <b style={{ marginRight: 20 }}>:</b> {currentVariant?.wholePrice}
+                <b style={{ marginRight: 20 }}>:</b> {formatCurrency(currentVariant?.wholePrice)} đồng 
               </Typography>
               <Typography className={classes.label}>
-                <b style={{ marginRight: 20 }}>:</b> {currentVariant?.retailPrice}
+                <b style={{ marginRight: 20 }}>:</b> {formatCurrency(currentVariant?.retailPrice)} đồng 
               </Typography>
               <Typography className={classes.label}>
                 <b style={{ marginRight: 20 }}>:</b> {currentVariant?.onHand}

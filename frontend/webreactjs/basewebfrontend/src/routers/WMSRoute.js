@@ -8,8 +8,12 @@ import ListProduct from "component/sscm/wms/management/ListProduct/ListProduct";
 import CreateProduct from "component/sscm/wms/management/CreateProduct/CreateProduct";
 import ProductDetail from "component/sscm/wms/management/ProductDetail/ProductDetail";
 import ListImport from "component/sscm/wms/management/ListImport/ListImport";
-import ImportDetail from "component/sscm/wms/management/Import/ImportDetail";
-import CreateImport from "component/sscm/wms/management/Import/CreateImport";
+import ImportDetail from "component/sscm/wms/management/ImportOrder/ImportDetail";
+import CreateImport from "component/sscm/wms/management/ImportOrder/CreateImport";
+import CreateExport from "component/sscm/wms/management/ExportOrder/CreateExport";
+import ListExport from "component/sscm/wms/management/ListExport/ListExport";
+import ExportDetail from "component/sscm/wms/management/ExportOrder/ExportDetail";
+import UpdateWarehouse from "component/sscm/wms/management/UpdateWarehouse/UpdateWarehouse";
 
 export default function WMSRoute() {
   let { path } = useRouteMatch();
@@ -25,6 +29,11 @@ export default function WMSRoute() {
           component={CreateWarehouse}
           exact
           path={`${path}/warehouse/create`}
+        ></Route>
+        <Route
+          component={UpdateWarehouse}
+          exact
+          path={`${path}/warehouse/update/:id`}
         ></Route>
         <Route
           component={ListWarehouse}
@@ -60,6 +69,21 @@ export default function WMSRoute() {
           component={ImportDetail}
           exact
           path={`${path}/inventory/import/:id`}
+        ></Route>
+        <Route
+          component={CreateExport}
+          exact
+          path={`${path}/inventory/export/create`}
+        ></Route>
+        <Route
+          component={ListExport}
+          exact
+          path={`${path}/inventory/export`}
+        ></Route>
+        <Route
+          component={ExportDetail}
+          exact
+          path={`${path}/inventory/export/:id`}
         ></Route>
         <Route
           component={WarehouseDetail}

@@ -43,16 +43,16 @@ function CreateImport() {
     );
   };
 
-  const getAllVariant = () => {
+  const getAllVariantActive = () => {
     request(
       "get",
-      "/admin/wms/warehouse/products/variant",
+      "/admin/wms/warehouse/products/variant-active",
       (res) => {
         setVariant(res.data);
       },
       {
         onError: (res) => {
-          console.log("getAllVariant")
+          console.log("getAllVariantActive")
         },
       }
     );
@@ -61,7 +61,7 @@ function CreateImport() {
 
   useEffect(() => {
     getListWarehouse();
-    getAllVariant();
+    getAllVariantActive();
   }, []);
 
   const updateTotal = (lineItems) => {
@@ -75,15 +75,22 @@ function CreateImport() {
     setTotal(lineItems.total)
   }
 
-  const changeQuantity = (index, value) => {
+  const changeQuantity = (lineItem, value) => {
     const list = [...lineItems];
-    list[index].quantity = value
+    const find = list.findIndex(item => {
+      return item.id === lineItem.id
+    });
+    list[find].quantity = value
     setLineItems(list)
     updateTotal(lineItems)
   }
-  const changeImportPrice = (index, value) => {
+  const changeImportPrice = (lineItem, value) => {
     const list = [...lineItems];
-    list[index].importPrice = value
+    const find = list.findIndex(item => {
+      return item.id === lineItem.id
+    });
+
+    list[find].importPrice = value
     setLineItems(list)
     updateTotal(lineItems)
   }
@@ -94,9 +101,23 @@ function CreateImport() {
     if (!find) {
       list.push(value)
       setLineItems(list)
+      updateTotal(list)
     }
-
   }
+
+  const removeVariant = (value) => {
+    const list = [...lineItems]
+    const find = list.find(({ id }) => id === value.id);
+    if (find) {
+      var filtered = list.filter(function (value, index, arr) {
+        return value.id != find.id;
+      });
+
+      setLineItems(filtered);
+      updateTotal(filtered)
+    }
+  }
+
   const createImport = (data) => {
     let newArray = lineItems.map(function (item) {
       item.variantId = item.id
@@ -123,8 +144,7 @@ function CreateImport() {
       (res) => {
         let id = res.data.id;
         successNoti("Tạo đơn nhập hàng thành công")
-        history.push(`${path.replace('/create', '')}`);
-        // history.push(`${path.replace('/create', '')}/${id}`);
+        history.push(`${path.replace('/create', '')}/${id}`);
       },
       { 401: () => { } },
       data
@@ -185,14 +205,14 @@ function CreateImport() {
                     <Autocomplete
                       className={classes.searchBox}
                       id="search-warehouse"
-                      options={listWarehouse}
+                      options={listWarehouse.sort((a, b) => (b.facilityId - a.facilityId))}
                       getOptionLabel={(option) => option.name}
                       onChange={(event, newValue) => {
                         setCurrentWH(newValue);
                       }}
                       renderOption={(props, option) => {
                         return (
-                          <Card {...props} style={{ width: "100%" }}>
+                          <Card {...props} key={option.facilityId} style={{ width: "100%" }}>
                             <Box style={{ padding: "0px" }}>
                               <Typography variant="h6">
                                 {option.name}
@@ -227,7 +247,7 @@ function CreateImport() {
                 <Autocomplete
                   className={classes.searchBox}
                   id="search-variant"
-                  options={variant}
+                  options={variant.sort((a, b) => (b.id - a.id))}
                   getOptionLabel={(option) => option.name}
                   onChange={(event, newValue) => {
                     if (newValue != null) {
@@ -251,7 +271,7 @@ function CreateImport() {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      placeholder="Chọn kho nhập hàng"
+                      placeholder="Chọn sản phẩm"
                       variant="outlined"
                       fullWidth
                       size="small"
@@ -263,10 +283,11 @@ function CreateImport() {
                     <TableHead  >
                       <TableRow>
                         <TableCell style={{ width: '10%' }} align="left">SKU</TableCell>
-                        <TableCell style={{ width: '30%' }} align="left">Tên sản phẩm</TableCell>
+                        <TableCell style={{ width: '25%' }} align="left">Tên sản phẩm</TableCell>
                         <TableCell style={{ width: '20%' }} align="left">Số lượng</TableCell>
                         <TableCell style={{ width: '20%' }} align="left">Giá nhập</TableCell>
                         <TableCell style={{ width: '20%' }} align="center">Tổng tiền</TableCell>
+                        <TableCell style={{ width: '5%' }} align="center"></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody className={classes.tableBody}>
@@ -286,7 +307,7 @@ function CreateImport() {
                                 currencySymbol=""
                                 decimalPlaces={0}
                                 value={row.quantity}
-                                onChange={(event, value) => changeQuantity(index, value)}
+                                onChange={(event, value) => changeQuantity(row, value)}
                                 size="small"
                                 maximumValue={1000000000}
                               />
@@ -298,7 +319,7 @@ function CreateImport() {
                                 currencySymbol=""
                                 decimalPlaces={0}
                                 value={row.importPrice}
-                                onChange={(event, value) => changeImportPrice(index, value)}
+                                onChange={(event, value) => changeImportPrice(row, value)}
                                 size="small"
                                 maximumValue={1000000000}
                               />
@@ -315,6 +336,11 @@ function CreateImport() {
                                 }}
                               />
                             </TableCell>
+                            <TableCell align="left">
+                              <Box className={classes.removeIconBox} onClick={() => removeVariant(row)}  >
+                                <HighlightOffIcon className={classes.removeIcon} />
+                              </Box>
+                            </TableCell>
                           </TableRow>
                         ))}
                     </TableBody>
@@ -322,33 +348,33 @@ function CreateImport() {
                 </TableContainer>
 
                 <Box className={classes.boxTotal}>
-                  <Grid container className={classes.grid} style={{justifyContent: "flex-end"}} >
+                  <Grid container className={classes.grid} style={{ justifyContent: "flex-end" }} >
                     <Grid item xs={2} container direction="column">
                       <Typography className={classes.label}>Số lượng sản phẩm</Typography>
                       <Typography className={classes.label}>Tổng giá trị</Typography>
                     </Grid>
                     <Grid item xs={3} container direction="column">
-                        <TextField
-                          className={classes.inputEnd}
-                          variant="standard"
-                          fullWidth
-                          name="total"
-                          value={`${lineItems.length}` + " sản phẩm"}
-                          InputProps={{
-                            disableUnderline: true,
-                          }}
-                        />
-                        <TextField
-                          className={classes.inputEnd}
-                          variant="standard"
-                          fullWidth
-                          name="total"
-                          value={`${formatCurrency(total)}` + " đồng"}
-                          InputProps={{
-                            disableUnderline: true,
-                          }}
-                        />
-                        
+                      <TextField
+                        className={classes.inputEnd}
+                        variant="standard"
+                        fullWidth
+                        name="total"
+                        value={`${lineItems.length}` + " sản phẩm"}
+                        InputProps={{
+                          disableUnderline: true,
+                        }}
+                      />
+                      <TextField
+                        className={classes.inputEnd}
+                        variant="standard"
+                        fullWidth
+                        name="total"
+                        value={`${formatCurrency(total)}` + " đồng"}
+                        InputProps={{
+                          disableUnderline: true,
+                        }}
+                      />
+
                     </Grid>
                   </Grid>
                 </Box>

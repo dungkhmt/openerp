@@ -82,11 +82,7 @@ function OrderPickupPlanning() {
     )
       .then((res) => {
         setIsProcessing(false);
-        console.log("result submit = ", res);
         setRoutes(res.routes);
-        //var f = document.getElementById("selected-upload-file");
-        //f.value = null;
-        //setSelectedFile(null);
       })
       .catch((e) => {
         setIsProcessing(false);
@@ -100,7 +96,6 @@ function OrderPickupPlanning() {
   };
   function onFileChange(event) {
     setFilename(event.target.files[0]);
-    console.log(event.target.files[0].name);
   }
 
   return (

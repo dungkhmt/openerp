@@ -1,19 +1,11 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.model;
 
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.Facility;
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.LineItem;
-import com.hust.baseweb.applications.sscm.tmscontainer.service.FacilitiesService;
 import com.hust.baseweb.applications.sscm.tmscontainer.utils.LineItemStatus;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
@@ -24,7 +16,7 @@ public class ImportOrderResponse {
 
     private int id;
 
-    private List<LineItemResponse> lineItems;
+    private List<ImportLineItemResponse> lineItems;
 
     private String code;
 
@@ -42,18 +34,18 @@ public class ImportOrderResponse {
 
 
     public void updateStatusImport() {
-        List<BigDecimal> changeList = lineItems.stream().map(lineItemResponse -> {
-            if (lineItemResponse.getQuantity() == null) {
-                lineItemResponse.setQuantity(BigDecimal.ZERO);
+        List<BigDecimal> changeList = lineItems.stream().map(importLineItemResponse -> {
+            if (importLineItemResponse.getQuantity() == null) {
+                importLineItemResponse.setQuantity(BigDecimal.ZERO);
             }
-            if (lineItemResponse.getCurrentQuantity() == null) {
-                lineItemResponse.setCurrentQuantity(BigDecimal.ZERO);
+            if (importLineItemResponse.getCurrentQuantity() == null) {
+                importLineItemResponse.setCurrentQuantity(BigDecimal.ZERO);
             }
-            return lineItemResponse.getQuantity().subtract(lineItemResponse.getCurrentQuantity());
+            return importLineItemResponse.getQuantity().subtract(importLineItemResponse.getCurrentQuantity());
         }).collect(Collectors.toList());
 
         BigDecimal totalQuantity = lineItems.stream()
-                            .map(LineItemResponse::getQuantity)
+                            .map(ImportLineItemResponse::getQuantity)
                             .filter(i -> (i != null))
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 

@@ -1,9 +1,9 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.service;
 
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.LineItem;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.Facility;
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.Shelf;
-import com.hust.baseweb.applications.sscm.tmscontainer.model.FacilityResponse;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.ShelfRequest;
+import com.hust.baseweb.applications.sscm.tmscontainer.repository.FacilityRepository;
 import com.hust.baseweb.applications.sscm.tmscontainer.repository.ShelfRepository;
 import com.hust.baseweb.applications.sscm.tmscontainer.utils.Status;
 import org.modelmapper.ModelMapper;
@@ -22,6 +22,9 @@ public class ShelvesService {
     @Autowired
     private ShelfRepository shelfRepository;
 
+    @Autowired
+    private FacilityRepository facilityRepository;
+
     public List<Shelf> createShelf(Integer facilitiesID, List<ShelfRequest> shelfRequests){
 
         ArrayList<Shelf> shelves = new ArrayList<>();
@@ -39,23 +42,31 @@ public class ShelvesService {
         return shelfRepository.findShelvesByFacilityID(facilitiesID);
     }
 
-    public void updateListShelve(List<ShelfRequest> shelfRequests, List<Shelf> shelfModel){
-        List<Integer>  shelfIds = shelfRequests.stream().map(ShelfRequest::getShelf_id).filter(li -> li > 0).collect(
+    public void updateListShelve(List<ShelfRequest> shelfRequests, List<Shelf> shelfModel, Integer facilityId){
+        List<Integer>  shelfIds = shelfRequests.stream().map(shelfRequest -> shelfRequest.getShelfId()).filter(id -> id > 0).collect(
             Collectors.toList());
 
         for (Shelf shelfItem : shelfModel) {
             if (!shelfIds.contains(shelfItem.getShelfId())) {
-                removeShlef(shelfModel, shelfItem);
+//                removeShlef(shelfModel, shelfItem);
+                shelfRepository.deleteById(shelfItem.getShelfId());
             }
+        }
+        List<Shelf> shelfModelNew = getListShelves(facilityId);
+
+        if(shelfModel.size() > shelfModelNew.size()){
+            shelfModel = shelfModelNew;
         }
 
         for(ShelfRequest shelfItem : shelfRequests){
-            if(shelfItem.getShelf_id() == 0){
+            if(shelfItem.getShelfId() == 0){
                 Shelf shelfItemAdded = new Shelf(shelfItem);
-                addShelf(shelfModel, shelfItemAdded);
+                shelfItemAdded.setFacilityId(facilityId);
+                shelfModel.add(shelfItemAdded);
+//                addShelf(shelfModel, shelfItemAdded);
             }else{
                 Shelf shelfItemUpdate = shelfModel
-                    .stream().filter(li -> li.getShelfId() == shelfItem.getShelf_id()).findFirst().orElse(null);
+                    .stream().filter(li -> li.getShelfId() == shelfItem.getShelfId()).findFirst().orElse(null);
                 assert shelfItemUpdate != null;
                 shelfItemUpdate.update(shelfItem);
             }
@@ -65,11 +76,12 @@ public class ShelvesService {
 
     public void removeShlef(List<Shelf> shelves, Shelf shelfItem) {
         shelves.remove(shelfItem);
-        shelfItem.setFacilityId(null);
-        shelfItem.setStatus(Status.DELETED);
+//        shelfItem.setFacilityId(null);
+//        shelfItem.setStatus(Status.DELETED);
     }
+
     public void addShelf(List<Shelf> shelfModel, Shelf shelfAdd){
-        shelfAdd.setStatus(Status.ACTIVE);
+//        shelfAdd.setStatus(Status.ACTIVE);
         shelfModel.add(shelfAdd);
     }
 

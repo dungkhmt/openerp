@@ -50,8 +50,8 @@ public class ProductRequest {
 
     private List<Variant> variants;
 
-    public void setForCreate(){
-        if(this.isActive == null){
+    public void setForCreate() {
+        if (this.isActive == null) {
             this.setIsActive(true);
         }
         setVariantsCreate();
@@ -61,16 +61,23 @@ public class ProductRequest {
 
         this.variants = new ArrayList<Variant>();
         if (opt1Val != null && opt2Val != null) {
-            setVariantItemTwoOpt();
+            if (opt1Val.size() == 0 && opt2Val.size() == 0) {
+                setVariantItemOpt();
+            } else if (opt1Val != null && opt2Val.size() == 0) {
+                setVariantItemOpt1();
+            } else if (opt1Val.size() == 0 && opt2Val != null) {
+                setVariantItemOpt2();
+            } else {
+                setVariantItemTwoOpt();
+            }
         }
-
         if (opt1Val != null && opt2Val == null) {
             setVariantItemOpt1();
         }
         if (opt1Val == null && opt2Val != null) {
             setVariantItemOpt2();
         }
-        if(opt1Val == null && opt2Val == null){
+        if (opt1Val == null && opt2Val == null) {
             setVariantItemOpt();
         }
     }

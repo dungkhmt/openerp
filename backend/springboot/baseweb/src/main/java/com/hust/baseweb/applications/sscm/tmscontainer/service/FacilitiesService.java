@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FacilitiesService {
@@ -43,7 +45,9 @@ public class FacilitiesService {
     public FacilityResponse getById(Integer id) {
         Facility facility = facilityRepository.getOne(id);
         FacilityResponse facilityResponse = mapper.map(facility, FacilityResponse.class);
-        facilityResponse.setListShelf(shelvesService.getListShelves(id));
+        List<Shelf> shelves =  shelvesService.getListShelves(id).stream().sorted(Comparator.comparingInt(Shelf::getShelfId)).collect(
+            Collectors.toList());
+        facilityResponse.setListShelf(shelves);
         return facilityResponse;
     }
 
@@ -51,7 +55,7 @@ public class FacilitiesService {
         return facilityRepository.findAll();
     }
 
-    @Transactional
+
     public FacilityResponse updateById(Integer id, FacilityRequest facilityRequest) throws Exception {
 
         Facility facility = facilityRepository.findById(id).orElse(null);
@@ -67,7 +71,7 @@ public class FacilitiesService {
         facility.setUpdateAt(new Date());
 
         List<Shelf> shelves = shelvesService.getListShelves(facility.getFacilityId());
-        shelvesService.updateListShelve(facilityRequest.getListShelf(), shelves);
+        shelvesService.updateListShelve(facilityRequest.getListShelf(), shelves, id);
         facilityRepository.save(facility);
 
         FacilityResponse facilityResponse = mapper.map(facility, FacilityResponse.class);

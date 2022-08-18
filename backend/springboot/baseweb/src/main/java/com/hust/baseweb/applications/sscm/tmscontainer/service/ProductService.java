@@ -1,13 +1,13 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.service;
 
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.LineItem;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.ImportLineItem;
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.Product;
-import com.hust.baseweb.applications.sscm.tmscontainer.entity.ShelfLineItem;
+import com.hust.baseweb.applications.sscm.tmscontainer.entity.ShelfVariant;
 import com.hust.baseweb.applications.sscm.tmscontainer.entity.Variant;
-import com.hust.baseweb.applications.sscm.tmscontainer.model.LineItemResponse;
+import com.hust.baseweb.applications.sscm.tmscontainer.model.ImportLineItemResponse;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.ProductRequest;
 import com.hust.baseweb.applications.sscm.tmscontainer.model.ProductResponse;
-import com.hust.baseweb.applications.sscm.tmscontainer.model.ShelfLineItemResponse;
+import com.hust.baseweb.applications.sscm.tmscontainer.model.ShelfVariantResponse;
 import com.hust.baseweb.applications.sscm.tmscontainer.repository.*;
 import com.hust.baseweb.applications.sscm.tmscontainer.utils.Const;
 import org.modelmapper.ModelMapper;
@@ -36,10 +36,13 @@ public class ProductService {
     private ShelvesService shelvesService;
 
     @Autowired
-    private LineItemRepository lineItemRepository;
+    private ImportLineItemRepository importLineItemRepository;
 
     @Autowired
-    private ShelfLineItemRepository shelfLineItemRepository;
+    private ShelfVariantRepository shelfVariantRepository;
+
+    @Autowired
+    private ShelfVariantService shelfVariantService;
 
 
     public ProductResponse createProduct(ProductRequest productRequest) {
@@ -96,6 +99,10 @@ public class ProductService {
         return variantRepository.findAll();
     }
 
+    public List<Variant> getAllVariantsActive() {
+        List<Variant> res =  variantRepository.findAll().stream().filter(variant -> variant.checkStatus(variant) == true).collect(Collectors.toList());
+        return res;
+    }
 
     public ProductResponse updateById(Integer id, ProductRequest productRequest) throws Exception {
         Product product = productRepository.findById(id).orElse(null);
@@ -113,7 +120,7 @@ public class ProductService {
         product.setOpt3(productRequest.getOpt3());
         product.setUpdateAt(new Date());
         List<Variant> variants = product.getVariants();
-        updateVariant(productRequest.getVariants(), variants);
+        updateVariant(productRequest.getVariants(), variants, product);
         productRepository.save(product);
         ProductResponse productRes = mapper.map(product, ProductResponse.class);
         productRes.setQuantity();
@@ -121,7 +128,7 @@ public class ProductService {
     }
 
 
-    private void updateVariant(List<Variant> variantRequests, List<Variant> variants) {
+    private void updateVariant(List<Variant> variantRequests, List<Variant> variants, Product product) throws Exception {
 
         List<Integer> variantIds = variantRequests
             .stream()
@@ -131,13 +138,18 @@ public class ProductService {
 
         for (Variant variantItem : variants) {
             if (!variantIds.contains(variantItem.getId())) {
-                removeVariant(variants, variantItem);
+                Variant variant = variantRepository.getOne(variantItem.getId());
+                if( variant.getAvailable().compareTo(BigDecimal.ZERO) > 0 ||  variant.getOnHand().compareTo(BigDecimal.ZERO) > 0){
+                    throw new Exception("Không thể xóa phiên bản sản phẩm đang còn hàng");
+                }else{
+                removeVariant(variants, variantItem, product);
+                }
             }
         }
 
         for (Variant variantItem : variantRequests) {
             if (variantItem.getId() == 0) {
-                addVariant(variants, variantItem);
+                addVariant(variants, variantItem, product);
             } else {
                 Variant variantItemUpdate = variants
                     .stream().filter(li -> li.getId() == variantItem.getId()).findFirst().orElse(null);
@@ -148,14 +160,17 @@ public class ProductService {
     }
 
 
-    private void removeVariant(List<Variant> variants, Variant variantItem) {
+    private void removeVariant(List<Variant> variants, Variant variantItem,Product product) {
         variants.remove(variantItem);
         variantItem.setProduct(null);
         variantItem.setIsActive(false);
     }
 
-    private void addVariant(List<Variant> variants, Variant variantItem) {
+    private void addVariant(List<Variant> variants, Variant variantItem, Product product) {
+        long variantCurrentId = variantRepository.count();
+        setVariantSku(variantItem,variantCurrentId + 1);
         variantItem.setIsActive(true);
+        variantItem.setProduct(product);
         variants.add(variantItem);
     }
 
@@ -210,7 +225,7 @@ public class ProductService {
         if (currentAvailable == null) {
             currentAvailable = BigDecimal.ZERO;
         }
-        variant.setAvailable(currentAvailable.add(quantity));
+        variant.setAvailable(currentAvailable.subtract(quantity));
         variantRepository.save(variant);
     }
 
@@ -220,29 +235,29 @@ public class ProductService {
 
     public List<ProductResponse> getAllProductsByFacility(Integer id) {
         List<Integer> shelfIds = shelvesService.findShelfByFacilityId(id);// lấy id các shelf
-        List<Integer> lineItemsIds = shelfLineItemRepository.findByShelfIds(shelfIds); // tìm lineItem trong shelf
-        List<LineItem> lineITems = lineItemRepository.findAllByIds(lineItemsIds); // lấy ra lineItem
-        List<Integer> variantIds = lineITems.stream().map(lineItem -> lineItem.getVariantId()).collect(Collectors.toList());
+        List<Integer> lineItemsIds = shelfVariantRepository.findByShelfIds(shelfIds); // tìm lineItem trong shelf
+        List<ImportLineItem> importLineITems = importLineItemRepository.findAllByIds(lineItemsIds); // lấy ra lineItem
+        List<Integer> variantIds = importLineITems.stream().map(lineItem -> lineItem.getVariantId()).collect(Collectors.toList());
         List<Variant> variants = variantRepository.findAllByIds(variantIds);
         List<Product> products = variantRepository.findAllProductByVariantIds(variantIds);
 
-        for (Product product : products) {
-            List<Variant> variantInProduct = product.getVariants();
-            for (Variant v : variantInProduct) {
-                for (LineItem item : lineITems) {
-                    if (v.getId() == item.getVariantId()) {
-                        if (item.getQuantity() == null) {
-                            item.setQuantity(BigDecimal.ZERO);
-                        }
-                        if (item.getCurrentQuantity() == null) {
-                            item.setCurrentQuantity(BigDecimal.ZERO);
-                        }
-                        v.setAvailable(item.getQuantity().subtract(item.getCurrentQuantity()));
-                        v.setOnHand(item.getQuantity());
-                    }
-                }
-            }
-        }
+//        for (Product product : products) {
+//            List<Variant> variantInProduct = product.getVariants();
+//            for (Variant v : variantInProduct) {
+//                for (ImportLineItem item : importLineITems) {
+//                    if (v.getId() == item.getVariantId()) {
+//                        if (item.getQuantity() == null) {
+//                            item.setQuantity(BigDecimal.ZERO);
+//                        }
+//                        if (item.getCurrentQuantity() == null) {
+//                            item.setCurrentQuantity(BigDecimal.ZERO);
+//                        }
+//                        v.setAvailable(item.getQuantity().subtract(item.getCurrentQuantity()));
+//                        v.setOnHand(item.getQuantity());
+//                    }
+//                }
+//            }
+//        }
 
         List<ProductResponse> res = products.stream().map(product -> {
             return mapper.map(product, ProductResponse.class);
@@ -253,31 +268,68 @@ public class ProductService {
         return res;
     }
 
-    public List<LineItemResponse> getAllProductInShelf(Integer id) {
-        List<ShelfLineItem> shelfLineItems= shelfLineItemRepository.findAllByShelfId(id);
+    public List<Variant> getAllVariantsByFacilityId(Integer id) {
+        List<Integer> shelfIds = shelvesService.findShelfByFacilityId(id);// lấy id các shelf
 
-        List<LineItem> lineItems = new ArrayList<LineItem>();
+        List<Variant> variants = shelfVariantService.getAllVariantByShelfIds(shelfIds);
 
-        for(ShelfLineItem item : shelfLineItems){
-            LineItem lineItem  = lineItemRepository.findById(item.getLineItemId()).orElse(null);
-            lineItem.setOnHand(item.getQuantity());
-            lineItems.add(lineItem);
+        return variants;
+    }
+
+    public List<ImportLineItemResponse> getAllProductInShelf(Integer id) {
+        List<ShelfVariant> shelfLineItems= shelfVariantRepository.findAllByShelfId(id);
+
+        List<ImportLineItem> importLineItems = new ArrayList<ImportLineItem>();
+
+        for(ShelfVariant item : shelfLineItems){
+            ImportLineItem importLineItem = importLineItemRepository.findById(item.getLineItemId()).orElse(null);
+            importLineItems.add(importLineItem);
         }
-        return  lineItems.stream().map(lineItem -> mapLineItemInShelf(lineItem)).sorted(Comparator.comparingInt(LineItemResponse::getId)).collect(Collectors.toList());
+        return  importLineItems
+            .stream().map(lineItem -> mapLineItemInShelf(lineItem)).sorted(Comparator.comparingInt(
+                ImportLineItemResponse::getId)).collect(Collectors.toList());
+    }
+
+    public List<ShelfVariantResponse> getAllVariantInShelf(Integer id) {
+        List<ShelfVariant> shelfVariants = shelfVariantRepository.findAllByShelfId(id);
+
+        List<ShelfVariantResponse> res = shelfVariants.stream().map(shelfVariant -> {
+           return mapper.map(shelfVariant,ShelfVariantResponse.class);
+        }).map(shelfVariantResponse -> {
+            Variant variant = variantRepository.getOne(shelfVariantResponse.getVariantId());
+            shelfVariantResponse.setVariant(variant);
+            shelfVariantResponse.setProductId(variant.getProduct().getId());
+            return shelfVariantResponse;
+        }).collect(Collectors.toList());
+        return res;
     }
 
 
-    public List<LineItemResponse> getAllVariantImport(Integer id) {
-        List<LineItem> lineItems = lineItemRepository.findAllByVariantId(id);
-        List<LineItemResponse> res = lineItems.stream().map(lineItem -> {return mapper.map(lineItem, LineItemResponse.class);}).collect(
+
+
+
+    public List<ImportLineItemResponse> getAllVariantImport(Integer id) {
+        List<ImportLineItem> importLineItems = importLineItemRepository.findAllByVariantId(id);
+        List<ImportLineItemResponse> res = importLineItems
+            .stream().map(lineItem -> {return mapper.map(lineItem, ImportLineItemResponse.class);}).collect(
             Collectors.toList());
         return res;
     }
 
-    public LineItemResponse mapLineItemInShelf(LineItem lineItem){
-        Product product = variantRepository.getOne(lineItem.getVariantId()).getProduct();
-        LineItemResponse res = mapper.map(lineItem, LineItemResponse.class);
+    public ImportLineItemResponse mapLineItemInShelf(ImportLineItem importLineItem){
+        Product product = variantRepository.getOne(importLineItem.getVariantId()).getProduct();
+        ImportLineItemResponse res = mapper.map(importLineItem, ImportLineItemResponse.class);
         res.setProductId(product.getId());
         return res;
+    }
+
+    public List<ShelfVariant> getAllShelfVariantInFacility(Integer id) {
+        // lây danh sách shelf id
+        List<Integer> shelfIds = shelvesService.findShelfByFacilityId(id);// lấy id các shelf
+        // lấy danh sách sản phẩm trong shelf id
+        List<ShelfVariant> shelfVariants = shelfVariantRepository.findAllByShelfIds(shelfIds);
+        // lưu tất cả vào 1 mảng
+
+    return shelfVariants;
     }
 }

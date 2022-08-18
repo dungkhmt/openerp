@@ -1,8 +1,5 @@
 package com.hust.baseweb.applications.sscm.tmscontainer.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.hust.baseweb.applications.sscm.tmscontainer.model.ProductRequest;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,7 +24,7 @@ public class ImportOrder {
     private int id;
 
     @OneToMany(mappedBy = "importOrder", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LineItem> lineItems;
+    private List<ImportLineItem> lineItems;
 
     @Column(name= "code")
     private String code;

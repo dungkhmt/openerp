@@ -79,6 +79,7 @@ function ImportDetail() {
   let submitForm = (data) => {
     data.shelfId = shelfId
     data.lineItemId = currentLineItem.id
+    data.variantId = currentLineItem.variantId
     request(
       "post",
       "/admin/wms/import/put-to-shelf",
@@ -256,7 +257,7 @@ function ImportDetail() {
               <TableBody className={classes.tableBody}>
                 {
                   lineItems &&
-                  lineItems.map((row, index) => (
+                  lineItems.sort((a, b) => (b.productId - a.productId)).map((row, index) => (
                     <TableRow
                       key={index}
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -321,7 +322,7 @@ function ImportDetail() {
                     <b style={{ marginRight: 20 }}>:</b> {currentLineItem?.sku}
                   </Typography>
                   <Typography className={classes.label}>
-                    <b style={{ marginRight: 20 }}>:</b> {currentLineItem?.quantity -  currentLineItem?.currentQuantity}
+                    <b style={{ marginRight: 20 }}>:</b> {currentLineItem?.currentQuantity}
                   </Typography>
                 </Grid>
                 {/* </Box> */}
