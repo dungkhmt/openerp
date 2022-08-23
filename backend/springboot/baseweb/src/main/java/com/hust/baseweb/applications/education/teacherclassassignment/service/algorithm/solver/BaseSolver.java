@@ -2,6 +2,8 @@ package com.hust.baseweb.applications.education.teacherclassassignment.service.a
 
 import com.hust.baseweb.applications.education.teacherclassassignment.model.SolverConfig;
 import com.hust.baseweb.applications.education.teacherclassassignment.service.MapDataInput;
+//import com.hust.baseweb.applications.education.teacherclassassignment.service.algorithm.solver.cplex.cp.CplexCPSolver;
+//import com.hust.baseweb.applications.education.teacherclassassignment.service.algorithm.solver.cplex.mip.CplexMIPSolver;
 import com.hust.baseweb.applications.education.teacherclassassignment.service.algorithm.solver.ortools.cp.OrtoolsCPSolver;
 import com.hust.baseweb.applications.education.teacherclassassignment.service.algorithm.solver.ortools.mip.OrtoolsMIPSolver;
 
@@ -49,7 +51,12 @@ public class BaseSolver implements ISolver {
 //        }
 
         solver.setInput(input);
+        long start, end;
+        start = System.nanoTime();
         boolean status = solver.solve(config);
+        end = System.nanoTime();
+        System.out.println("Total time = " +
+                           ((double) (end - start) / 1_000_000_000));
         this.assignment = solver.getAssignment();
         this.notAssignedClasses = solver.getNotAssignedClasses();
 
