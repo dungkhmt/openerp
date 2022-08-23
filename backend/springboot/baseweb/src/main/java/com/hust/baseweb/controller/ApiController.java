@@ -172,8 +172,10 @@ public class ApiController {
         return ResponseEntity.ok().body(res.get("sessionAttr:SPRING_SECURITY_CONTEXT"));*/
 
     @GetMapping("/ping")
-    public ResponseEntity<?> ping() {
-        return ResponseEntity.ok().body("Validated");
+    public ResponseEntity<?> ping(@CurrentSecurityContext(expression = "authentication.name") String name) {
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("user", name);
+        return ResponseEntity.ok().body(responseBody);
     }
 }
 
