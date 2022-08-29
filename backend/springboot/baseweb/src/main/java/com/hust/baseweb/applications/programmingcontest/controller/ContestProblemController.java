@@ -379,6 +379,14 @@ public class ContestProblemController {
         ModelGetContestPageResponse resp = problemTestCaseService.getContestPagingByUserManagerContest(principal.getName(), pageable);
         return ResponseEntity.status(200).body(resp);
     }
+    @Secured("ROLE_TEACHER")
+    @GetMapping("/get-contest-by-user-role")
+    public ResponseEntity<?> getContestPagingByUserRole(Principal principal){
+        String userId = principal.getName();
+        List<ModelGetContestResponse> resp = problemTestCaseService
+            .getContestByUserRole(principal.getName());
+        return ResponseEntity.status(200).body(resp);
+    }
 
     @Secured("ROLE_TEACHER")
     @GetMapping("/get-contest-paging-by-user-create")

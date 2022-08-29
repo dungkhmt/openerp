@@ -1266,6 +1266,31 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public List<ModelGetContestResponse> getContestByUserRole(String userName) {
+        List<UserRegistrationContestEntity> L = userRegistrationContestRepo.findAllByUserId(userName);
+
+        List<ModelGetContestResponse> res = new ArrayList();
+        for(UserRegistrationContestEntity e: L){
+            ContestEntity contest = contestRepo.findContestByContestId(e.getContestId());
+            ModelGetContestResponse modelGetContestResponse = ModelGetContestResponse.builder()
+                                                                                     .contestId(contest.getContestId())
+                                                                                     .contestName(contest.getContestName())
+                                                                                     .contestTime(contest.getContestSolvingTime())
+                                                                                     .countDown(contest.getCountDown())
+                                                                                     .startAt(contest.getStartedAt())
+                                                                                     .isPublic(contest.getIsPublic())
+                                                                                     .statusId(contest.getStatusId())
+                                                                                     .userId(contest.getUserId())
+                                                                                     .createdAt(contest.getCreatedAt())
+                                                                                     .roleId(e.getRoleId())
+                                                                                     .registrationStatusId(e.getStatus())
+                                                                                     .build();
+            res.add(modelGetContestResponse);
+        }
+        return res;
+    }
+
+    @Override
     public ListModelUserRegisteredContestInfo getListUserRegisterContestSuccessfulPaging(Pageable pageable, String contestId) {
 //        ContestEntity contest = contestRepo.findContestByContestId(contestId);
         Page<ModelUserRegisteredClassInfo> list = userRegistrationContestPagingAndSortingRepo.getAllUserRegisteredByContestIdAndStatusInfo(pageable, contestId, Constants.RegistrationType.SUCCESSFUL.getValue());

@@ -29,7 +29,12 @@ public class PlanService {
 
 
     public List<PlanResponseItem> searchPlan(String string) {
+        // TO BE REVISED
+        return null;
+
 //        return CpSatExample.searchSolution(string);
+
+        /*
         List<PickupPoint> solution = PlanSolution.searchSolution(string);
 
         List<PlanResponseItem> res = solution.stream().map(point -> {
@@ -50,5 +55,6 @@ public class PlanService {
             return item;
         }).collect(Collectors.toList());
         return  res;
+         */
     }
 }

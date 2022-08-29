@@ -16,6 +16,7 @@ import TableRow from "@material-ui/core/TableRow";
 import { StyledTableCell, StyledTableRow } from "./lib";
 import { Link } from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
+import MaterialTable from "material-table";
 
 export function ListContestManagerByRegistration() {
   const [page, setPage] = useState(1);
@@ -24,6 +25,27 @@ export function ListContestManagerByRegistration() {
   const pageSizes = [20, 50, 100];
   const [contests, setContests] = useState([]);
 
+  const columns = [
+    {
+      title: "Name",
+      field: "contestName",
+      render: (rowData) => (
+        <Link
+          to={{
+            pathname:
+              "/programming-contest/contest-manager/" + rowData["contestId"],
+          }}
+        >
+          {rowData["contestId"]}
+        </Link>
+      ),
+    },
+    { title: "Created By", field: "userId" },
+    { title: "Created Date", field: "createdAt" },
+    { title: "Contest Status", field: "statusId" },
+    { title: "Role", field: "roleId" },
+    { title: "Reg. Status", field: "registrationStatusId" },
+  ];
   const handlePageChange = (event, value) => {
     setPage(value);
   };
@@ -34,6 +56,11 @@ export function ListContestManagerByRegistration() {
     // getProblemContestList();
   };
 
+  function getContestListByUserRole() {
+    request("get", "/get-contest-by-user-role", (res) => {
+      setContests(res.data);
+    }).then();
+  }
   async function getContestList() {
     request(
       "get",
@@ -49,159 +76,23 @@ export function ListContestManagerByRegistration() {
     ).then();
   }
 
+  /*
   useEffect(() => {
     console.log("use effect");
     getContestList().then();
   }, [page, pageSize]);
+  */
+  useEffect(() => {
+    getContestListByUserRole();
+  }, []);
 
   return (
     <div>
-      <h2>Contests được phân quyền </h2>
-
-      <div>
-        <div>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 100 }} aria-label="customized table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell></StyledTableCell>
-                  <StyledTableCell align="left">Title</StyledTableCell>
-                  <StyledTableCell align="left">Status</StyledTableCell>
-                  <StyledTableCell align="left">Created By</StyledTableCell>
-                  <StyledTableCell align="left">Created Date</StyledTableCell>
-
-                  <StyledTableCell align="center">Detail</StyledTableCell>
-                  <StyledTableCell align="center">Edit</StyledTableCell>
-                  {/*<StyledTableCell align="center">Delete</StyledTableCell>*/}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {contests.map((contest, index) => (
-                  <StyledTableRow>
-                    <StyledTableCell component="th" scope="row">
-                      {pageSize * (page - 1) + index + 1}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      <Link
-                        to={
-                          "/programming-contest/contest-manager/" +
-                          contest.contestId
-                        }
-                        style={{
-                          textDecoration: "none",
-                          color: "#000000",
-                          hover: { color: "#00D8FF", textPrimary: "#00D8FF" },
-                        }}
-                      >
-                        <b>{contest.contestName}</b>
-                      </Link>
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      <b>{contest.statusId}</b>
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      <b>{contest.userId}</b>
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      <b>{contest.createdAt}</b>
-                    </StyledTableCell>
-
-                    <StyledTableCell align="left">
-                      <Link
-                        to={
-                          "/programming-contest/contest-manager/" +
-                          contest.contestId
-                        }
-                        style={{
-                          textDecoration: "none",
-                          color: "#000000",
-                          hover: { color: "#00D8FF", textPrimary: "#00D8FF" },
-                        }}
-                      >
-                        <Button variant="contained" color="light">
-                          Detail
-                        </Button>
-                      </Link>
-                    </StyledTableCell>
-
-                    <StyledTableCell align="center">
-                      <Link
-                        to={
-                          "/programming-contest/contest-edit/" +
-                          contest.contestId
-                        }
-                        style={{
-                          textDecoration: "none",
-                          color: "black",
-                          cursor: "",
-                        }}
-                      >
-                        <Button variant="contained" color="light">
-                          Edit
-                        </Button>
-                      </Link>
-                    </StyledTableCell>
-                    {/*<StyledTableCell align="center">*/}
-                    {/*  <Button*/}
-                    {/*    variant="contained"*/}
-                    {/*    color="light"*/}
-                    {/*    onClick={*/}
-                    {/*      ()=>{*/}
-                    {/*        request(*/}
-                    {/*          "delete",*/}
-                    {/*          "/delete-contest/"+contest.contestId,*/}
-                    {/*          (res)=>{*/}
-                    {/*            // window.location.reload();*/}
-                    {/*            getContestList().then();*/}
-                    {/*          }*/}
-                    {/*        ).then();*/}
-                    {/*      }*/}
-                    {/*    }*/}
-                    {/*  >*/}
-                    {/*    Delete*/}
-                    {/*  </Button>*/}
-                    {/*</StyledTableCell>*/}
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
-        <br></br>
-        <Grid container spacing={12}>
-          <Grid item xs={6}>
-            <TextField
-              variant={"outlined"}
-              autoFocus
-              size={"small"}
-              required
-              select
-              id="pageSize"
-              value={pageSize}
-              onChange={handlePageSizeChange}
-            >
-              {pageSizes.map((item) => (
-                <MenuItem key={item} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid item>
-            <Pagination
-              className="my-3"
-              count={totalPages}
-              page={page}
-              siblingCount={1}
-              boundaryCount={1}
-              variant="outlined"
-              shape="rounded"
-              onChange={handlePageChange}
-            />
-          </Grid>
-        </Grid>
-      </div>
+      <MaterialTable
+        title="DS Contests được phân quyền"
+        columns={columns}
+        data={contests}
+      ></MaterialTable>
     </div>
   );
 }

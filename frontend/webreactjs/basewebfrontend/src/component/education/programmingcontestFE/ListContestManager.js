@@ -58,6 +58,7 @@ export function ListContestManager() {
 
   return (
     <div>
+      <ListContestManagerByRegistration />
       <div>
         <div>
           <TableContainer component={Paper}>
@@ -201,7 +202,7 @@ export function ListContestManager() {
           </Grid>
         </Grid>
       </div>
-      <ListContestManagerByRegistration />
+
       {/*
       <ListContestByRole />
       */}

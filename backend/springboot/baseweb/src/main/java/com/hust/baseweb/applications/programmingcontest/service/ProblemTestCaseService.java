@@ -75,6 +75,7 @@ public interface ProblemTestCaseService {
 
     ModelGetContestPageResponse getContestPagingByUserManagerContest(String userName, Pageable pageable);
     ModelGetContestPageResponse getAllContestsPagingByAdmin(String userName, Pageable pageable);
+    List<ModelGetContestResponse> getContestByUserRole(String userName);
 
     ListModelUserRegisteredContestInfo getListUserRegisterContestSuccessfulPaging(Pageable pageable, String contestId);
 

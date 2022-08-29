@@ -198,6 +198,71 @@ export default function EditTestCase(props) {
     <div>
       <Grid container spacing={12}>
         <Grid item xs={6}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <Toolbar
+              style={{
+                height: "0px",
+                marginTop: "-12px",
+                marginBottom: "-8px",
+                border: "1px solid transparent",
+                position: "relative",
+                width: "100%",
+              }}
+              color={"default"}
+            >
+              <Tabs
+                value={value}
+                onChange={handleChange}
+                indicatorColor={"primary"}
+                autoFocus
+                style={{
+                  width: "100%",
+                  display: "inline-table",
+                  border: "1px solid transparent ",
+                  position: "relative",
+                  borderBottom: "none",
+                }}
+                variant={"fullWidth"}
+                aria-label="basic tabs example"
+              >
+                <Tab
+                  label="Description"
+                  {...a11yProps(0)}
+                  style={{ width: "50%" }}
+                />
+                <Tab
+                  label="Solution"
+                  {...a11yProps(1)}
+                  style={{ width: "50%" }}
+                />
+              </Tabs>
+            </Toolbar>
+          </Box>
+          <TabPanelVertical value={value} index={0}>
+            <ScrollBox
+              style={{
+                width: "100%",
+                overflow: "auto",
+                height: window.innerHeight - 180 + "px",
+              }}
+            >
+              <Markup content={description} />
+            </ScrollBox>
+          </TabPanelVertical>
+
+          <TabPanelVertical value={value} index={1}>
+            <ScrollBox
+              style={{
+                width: "100%",
+                overflow: "auto",
+                height: window.innerHeight - 180 + "px",
+              }}
+            >
+              <Markup content={solution} />
+            </ScrollBox>
+          </TabPanelVertical>
+        </Grid>
+        <Grid item xs={6}>
           <Typography variant={"h5"}>Testcase</Typography>
           <TextField
             autoFocus
@@ -210,6 +275,7 @@ export default function EditTestCase(props) {
               setPoint(event.target.value);
             }}
           ></TextField>
+          <br /> <br />
           <TextField
             autoFocus
             // required
@@ -230,6 +296,58 @@ export default function EditTestCase(props) {
             </MenuItem>
           </TextField>
           <br />
+          {/*
+          <CodeMirror
+            height={"200px"}
+            width="100%"
+            onChange={(value, viewUpdate) => {
+              setInput(value);
+            }}
+            autoFocus={false}
+            value={input}
+          />
+          */}
+          <TextField
+            style={{
+              width: 1.0 * window.innerWidth,
+
+              margin: 20,
+            }}
+            multiline
+            maxRows={4}
+            value={input}
+            onChange={(event) => {
+              setInput(event.target.value);
+            }}
+          ></TextField>
+          <br />
+          <br />
+          <Typography variant={"h5"}>Result</Typography>
+          {result}
+          {/*
+          <OutputWithLoading
+            load={load}
+            output={result}
+            extension={[]}
+            color={"light"}
+          />
+          */}
+          <Button
+            variant="contained"
+            color="light"
+            onClick={getTestCaseResult}
+            style={{ marginTop: "10px", marginLeft: "50px" }}
+          >
+            get testcase result
+          </Button>
+          <Button
+            variant="contained"
+            color="light"
+            style={{ marginLeft: "50px", marginTop: "10px" }}
+            onClick={saveTestCase}
+          >
+            save test case
+          </Button>
         </Grid>
       </Grid>
       <form onSubmit={handleFormSubmit}>

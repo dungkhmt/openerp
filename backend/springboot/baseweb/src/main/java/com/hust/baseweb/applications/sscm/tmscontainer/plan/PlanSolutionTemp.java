@@ -7,14 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.*;
+//import org.json.*;
 
 
 /**
  * MIP example with a variable array.
  */
-public class PlanSolution {
-
+public class PlanSolutionTemp {
+    /*
     public static List<PickupPoint> get_all_candidate(
         int current_shelf, // vị trí ban đầu, mặc định là index = 0, có tọa độ (0,0)
         int number_shelf, // số lượng kệ hàng có chứa sản phẩm cần lấy
@@ -230,4 +230,6 @@ public class PlanSolution {
 //        List<PickupPoint> a = searchSolution(string);
 //        System.out.println(a);
 //    }
+
+     */
 }

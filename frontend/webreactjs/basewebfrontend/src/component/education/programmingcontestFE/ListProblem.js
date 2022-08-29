@@ -62,10 +62,10 @@ function ListProblem() {
           <Table sx={{ minWidth: 750 }} aria-label="customized table">
             <TableHead>
               <TableRow>
-                <StyledTableCell>{t("status")}</StyledTableCell>
+                <StyledTableCell>{t("index")}</StyledTableCell>
                 <StyledTableCell align="left">{t("title")}</StyledTableCell>
                 <StyledTableCell align="left">
-                  {t("created by UserID")}
+                  {t("created by User")}
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   {t("created date")}
@@ -102,8 +102,6 @@ function ListProblem() {
                       {problem.problemName}
                     </Link>
                   </StyledTableCell>
-
-                  <StyledTableCell align="left"></StyledTableCell>
 
                   <StyledTableCell align="left">
                     <span>{`${problem.userId}`}</span>

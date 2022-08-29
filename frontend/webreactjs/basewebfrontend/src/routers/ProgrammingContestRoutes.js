@@ -6,9 +6,11 @@ import ContestProblemSubmissionDetailViewedByManager from "../component/educatio
 import AllContestsManager from "../component/education/programmingcontestFE/AllContestsManager";
 import CreateContest from "../component/education/programmingcontestFE/CreateContest";
 import CreateProblem from "../component/education/programmingcontestFE/CreateProblem";
-import CreateTestCase from "../component/education/programmingcontestFE/CreateTestCase-old-temp";
+//import CreateTestCase from "../component/education/programmingcontestFE/CreateTestCase-old-temp";
+import CreateTestCase from "../component/education/programmingcontestFE/CreateTestCase";
 import EditContest from "../component/education/programmingcontestFE/EditContest";
 import EditProblem from "../component/education/programmingcontestFE/EditProblem";
+//import EditTestCase from "../component/education/programmingcontestFE/EditTestCase-old-temp";
 import EditTestCase from "../component/education/programmingcontestFE/EditTestCase";
 import IDE from "../component/education/programmingcontestFE/IDE";
 import ListContest from "../component/education/programmingcontestFE/ListContest";
