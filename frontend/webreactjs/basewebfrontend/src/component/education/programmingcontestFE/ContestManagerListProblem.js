@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import Table from "@mui/material/Table";
-
+import { useHistory } from "react-router-dom";
 import {
   Button,
   TableHead,
@@ -25,6 +25,8 @@ export function ContestManagerListProblem(props) {
   const [timeLimit, setTimeLimit] = useState();
   const [isProcessing, setIsProcessing] = useState(false);
   const [threshold, setThreshold] = useState(50);
+  const history = useHistory();
+
   useEffect(() => {
     request("get", "/get-contest-detail/" + contestId, (res) => {
       setContestTime(res.data.contestTime);
@@ -34,6 +36,9 @@ export function ContestManagerListProblem(props) {
     }).then();
   }, []);
 
+  function handleEdit() {
+    history.push("/programming-contest/contest-edit/" + contestId);
+  }
   function handleRejudgeContest(event) {
     //alert("Rejudge");
     event.preventDefault();
@@ -92,6 +97,10 @@ export function ContestManagerListProblem(props) {
         Time Limit: {timeLimit} minutes
       </Typography>
       <Typography variant="h5" component="h2">
+        <Button variant="contained" color="primary" onClick={handleEdit}>
+          {" "}
+          EDIT
+        </Button>
         <Button
           variant="contained"
           color="primary"

@@ -59,6 +59,7 @@ export function ListContestManager() {
   return (
     <div>
       <ListContestManagerByRegistration />
+      {/*
       <div>
         <div>
           <TableContainer component={Paper}>
@@ -72,7 +73,6 @@ export function ListContestManager() {
                   <StyledTableCell align="left">Created Date</StyledTableCell>
                   <StyledTableCell align="center">Detail</StyledTableCell>
                   <StyledTableCell align="center">Edit</StyledTableCell>
-                  {/*<StyledTableCell align="center">Delete</StyledTableCell>*/}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -141,26 +141,6 @@ export function ListContestManager() {
                         </Button>
                       </Link>
                     </StyledTableCell>
-                    {/*<StyledTableCell align="center">*/}
-                    {/*  <Button*/}
-                    {/*    variant="contained"*/}
-                    {/*    color="light"*/}
-                    {/*    onClick={*/}
-                    {/*      ()=>{*/}
-                    {/*        request(*/}
-                    {/*          "delete",*/}
-                    {/*          "/delete-contest/"+contest.contestId,*/}
-                    {/*          (res)=>{*/}
-                    {/*            // window.location.reload();*/}
-                    {/*            getContestList().then();*/}
-                    {/*          }*/}
-                    {/*        ).then();*/}
-                    {/*      }*/}
-                    {/*    }*/}
-                    {/*  >*/}
-                    {/*    Delete*/}
-                    {/*  </Button>*/}
-                    {/*</StyledTableCell>*/}
                   </StyledTableRow>
                 ))}
               </TableBody>
@@ -202,7 +182,7 @@ export function ListContestManager() {
           </Grid>
         </Grid>
       </div>
-
+              */}
       {/*
       <ListContestByRole />
       */}
