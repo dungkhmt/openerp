@@ -6,8 +6,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { default as MenuIcon } from "@material-ui/icons/Menu";
 import clsx from "clsx";
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { ReactComponent as Logo } from "../assets/icons/logo.svg";
 import bgImage from "../assets/img/sidebar-2.webp";
 import { useAuthState } from "../state/AuthState";
@@ -81,8 +81,8 @@ const useStyles = makeStyles((theme) => ({
 
 function Layout({ children }) {
   const classes = useStyles();
-  const history = useHistory();
-  const isMeeting = history?.location?.pathname?.startsWith('/chat/voice/main/');
+  const { pathname } = useLocation();
+  const isMeeting = pathname.startsWith("/chat/voice/main");
 
   //
   const { isAuthenticated } = useAuthState();
@@ -91,6 +91,10 @@ function Layout({ children }) {
   const [open, setOpen] = React.useState(true);
   const [image] = useState(bgImage);
   const [color] = useState("blue");
+
+  useEffect(() => {
+    if (isMeeting) setOpen(false);
+  }, [isMeeting]);
 
   return (
     <div className={classes.root}>
@@ -126,10 +130,10 @@ function Layout({ children }) {
           </div>
         </Toolbar>
       </AppBar>
-      <SideBar open={isMeeting ? false : open} image={image} color={color} />
+      <SideBar open={open} image={image} color={color} />
       <main
         className={clsx(classes.content, {
-          [classes.contentShift]: isMeeting ? false : open,
+          [classes.contentShift]: open,
         })}
       >
         <Offset />
