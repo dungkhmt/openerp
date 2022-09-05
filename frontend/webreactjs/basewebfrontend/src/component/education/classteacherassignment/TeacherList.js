@@ -1,12 +1,15 @@
-import { Typography } from "@material-ui/core/";
 import AddIcon from "@material-ui/icons/Add";
 import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
 import { request } from "api";
-import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import { useEffect, useState } from "react";
-import { successNoti } from "utils/notification";
-import { Input, useStyles } from "./assignmentPlan/ClassInPlan";
+import { errorNoti, successNoti } from "utils/notification";
+import {
+  CommandBarButton,
+  commandBarStyles,
+  Input,
+  NumSelectedRows,
+} from "./assignmentPlan/ClassInPlan";
 
 const columns = [
   { title: "Email", field: "id" },
@@ -15,7 +18,6 @@ const columns = [
 
 function TeacherList(props) {
   const planId = props.planId;
-  const classes = useStyles();
 
   // Command delete button
   const [selectedRows, setSelectedRows] = useState([]);
@@ -26,35 +28,36 @@ function TeacherList(props) {
 
   // Funcs
   function uploadExcel(e) {
-    setTimeout(() => {
-      successNoti("Đã tải lên.");
-      e.target.value = "";
-    }, Math.random() * 3);
-    // const selectedFile = e.target.files[0];
+    // setTimeout(() => {
+    //   successNoti("Đã tải lên.");
+    //   e.target.value = "";
+    // }, Math.random() * 3);
+
+    const selectedFile = e.target.files[0];
     // console.log("upload file " + selectedFile.name);
 
-    // const data = new FormData();
-    // data.append("file", selectedFile);
+    const data = new FormData();
+    data.append("file", selectedFile);
 
-    // request(
-    //   "POST",
-    //   `edu/teaching-assignment/plan/${planId}/teacher/upload-excel`,
-    //   (res) => {
-    //     e.target.value = "";
-    //     successNoti("Đã tải lên.");
-    //     getTeacherList()
-    //   },
-    //   {
-    //     onError: (error) => {
-    //       e.target.value = "";
-    //       console.error(error);
-    //       errorNoti(
-    //         "Đã có lỗi xảy ra. Vui lòng kiểm tra định dạng file excel và thử lại."
-    //       );
-    //     },
-    //   },
-    //   data
-    // );
+    request(
+      "POST",
+      `edu/teaching-assignment/plan/${planId}/teacher/upload-excel`,
+      (res) => {
+        e.target.value = "";
+        successNoti("Đã tải lên.");
+        getTeacherList();
+      },
+      {
+        onError: (error) => {
+          e.target.value = "";
+          console.error(error);
+          errorNoti(
+            "Đã có lỗi xảy ra. Vui lòng kiểm tra định dạng file excel và thử lại."
+          );
+        },
+      },
+      data
+    );
   }
 
   const onUpload = (e) => {
@@ -111,7 +114,9 @@ function TeacherList(props) {
         title={"Danh sách giáo viên"}
         columns={columns}
         data={teacherList}
-        classNames={{ commandBar: classes.commandBar }}
+        sx={{
+          commandBar: commandBarStyles,
+        }}
         onSelectionChange={(selectedRows) => setSelectedRows(selectedRows)}
         commandBarComponents={
           <>
@@ -123,29 +128,22 @@ function TeacherList(props) {
                   id="upload-excel-teacher"
                   onChange={onUpload}
                 />
-                <TertiaryButton
-                  // className={classes.uploadExcelBtn}
-                  color="default"
+                <CommandBarButton
                   startIcon={<PublishRoundedIcon />}
                   component="span"
                 >
                   Tải lên Excel
-                </TertiaryButton>
+                </CommandBarButton>
               </label>
             ) : (
               <>
-                <TertiaryButton
-                  // className={classes.uploadExcelBtn}
-                  color="default"
+                <CommandBarButton
                   startIcon={<AddIcon />}
                   onClick={addTeacherToAssignmentPlan}
                 >
                   Thêm vào kế hoạch
-                </TertiaryButton>
-                <Typography
-                  component="span"
-                  style={{ marginLeft: "auto", marginRight: 32 }}
-                >{`Đã chọn ${selectedRows.length} mục`}</Typography>
+                </CommandBarButton>
+                <NumSelectedRows numSelected={selectedRows.length} />
               </>
             )}
           </>

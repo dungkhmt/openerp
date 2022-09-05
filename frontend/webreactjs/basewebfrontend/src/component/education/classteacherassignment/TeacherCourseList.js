@@ -2,12 +2,12 @@ import AddIcon from "@mui/icons-material/Add";
 // import EditIcon from "@mui/icons-material/Edit";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import { request } from "api";
-import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import { useEffect, useState } from "react";
 import { errorNoti, successNoti } from "utils/notification";
 // import UpdateTeacherCourseModel from "../UpdateTeacherCourseModel";
 import {
+  CommandBarButton,
   commandBarStyles,
   Input,
   NumSelectedRows,
@@ -201,25 +201,21 @@ function TeacherCourseList(props) {
                   id="upload-excel-teacher-course"
                   onChange={onUpload}
                 />
-                <TertiaryButton
-                  // className={classes.uploadExcelBtn}
-                  color="default"
-                  startIcon={<PublishRoundedIcon />}
+                <CommandBarButton
                   component="span"
+                  startIcon={<PublishRoundedIcon />}
                 >
                   Tải lên Excel
-                </TertiaryButton>
+                </CommandBarButton>
               </label>
             ) : (
               <>
-                <TertiaryButton
-                  // className={classes.uploadExcelBtn}
-                  color="default"
+                <CommandBarButton
                   startIcon={<AddIcon />}
                   onClick={addTeacherCourseToAssignmentPlan}
                 >
                   Thêm vào kế hoạch
-                </TertiaryButton>
+                </CommandBarButton>
                 <NumSelectedRows numSelected={selectedRows.length} />
               </>
             )}

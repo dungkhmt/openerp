@@ -2,11 +2,14 @@ import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import { request } from "api";
-import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
 import UpdateTeacherForAssignmentDialog from "../UpdateTeacherForAssignmentDialog";
-import { commandBarStyles, NumSelectedRows } from "./ClassInPlan";
+import {
+  CommandBarButton,
+  commandBarStyles,
+  NumSelectedRows,
+} from "./ClassInPlan";
 
 function TeacherInPlan(props) {
   const planId = props.planId;
@@ -128,15 +131,13 @@ function TeacherInPlan(props) {
         onSelectionChange={(selectedRows) => setSelectedRows(selectedRows)}
         commandBarComponents={
           <>
-            <TertiaryButton
-              // className={classes.uploadExcelBtn}
-              color="default"
+            <CommandBarButton
               startIcon={<DeleteRoundedIcon />}
               onClick={removeTeacherFromAssignmentPlan}
               disabled={selectedRows.length === 0}
             >
               Xoá
-            </TertiaryButton>
+            </CommandBarButton>
             {selectedRows.length > 0 && (
               <NumSelectedRows numSelected={selectedRows.length} />
             )}

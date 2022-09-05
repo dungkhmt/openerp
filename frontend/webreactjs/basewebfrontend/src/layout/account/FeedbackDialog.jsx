@@ -10,12 +10,12 @@ import {
   Typography,
 } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
-import { makeStyles } from "@material-ui/core/styles";
 import FeedbackIcon from "@material-ui/icons/Feedback";
 import KeyboardBackspaceRoundedIcon from "@material-ui/icons/KeyboardBackspaceRounded";
 import ReportProblemIcon from "@material-ui/icons/ReportProblemRounded";
+import { makeStyles } from "@mui/styles";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useState } from "react";
+import { useState } from "react";
 import PrimaryButton from "../../component/button/PrimaryButton";
 import TertiaryButton from "../../component/button/TertiaryButton";
 import CustomizedDialogs from "../../component/dialog/CustomizedDialogs";
@@ -67,8 +67,8 @@ const useStyles = makeStyles((theme) => ({
     width: 40,
     height: 40,
     position: "absolute",
-    top: theme.spacing(1) * 1.5,
-    left: theme.spacing(2),
+    top: 8 * 1.5,
+    left: 16,
     color: "rgba(0, 0, 0, 0.5)",
     background: grey[300],
     "&:hover": {

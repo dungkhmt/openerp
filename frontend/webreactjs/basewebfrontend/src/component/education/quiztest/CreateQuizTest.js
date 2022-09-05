@@ -18,7 +18,7 @@ import {
   KeyboardTimePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -745,7 +745,7 @@ function CreateQuizTest() {
           <Grid item xs={6} sm={3}>
             <Button
               variant="contained"
-              color="default"
+              color="inherit"
               fullWidth
               onClick={(e) => {
                 if (

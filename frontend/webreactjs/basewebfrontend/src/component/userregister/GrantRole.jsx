@@ -10,8 +10,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import { grey, pink, red } from "@material-ui/core/colors";
-import { makeStyles } from "@material-ui/core/styles";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import { FcApproval } from "react-icons/fc";
 import SimpleBar from "simplebar-react";
@@ -64,9 +64,6 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       background: grey[200],
     },
-  },
-  addRoleBtn: {
-    marginLeft: "auto",
   },
   ListItemIcon: {
     minWidth: 32,
@@ -136,7 +133,7 @@ function GrantRole({ grantedRoles, roles, setRoles }) {
           aria-controls="simple-menu"
           aria-haspopup="true"
           onClick={handleClick}
-          className={classes.addRoleBtn}
+          sx={{ ml: "auto" }}
         >
           Thêm quyền
         </TertiaryButton>

@@ -1,4 +1,3 @@
-import { makeStyles } from "@material-ui/core/styles";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import EditIcon from "@mui/icons-material/Edit";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
@@ -16,22 +15,6 @@ import {
   updateSuccessNoti,
 } from "utils/notification";
 import UpdateClassForAssignmentDialog from "../UpdateClassForAssignmentDialog";
-
-export const useStyles = makeStyles((theme) => ({
-  uploadExcelBtn: {
-    fontWeight: theme.typography.fontWeightRegular,
-    "&:hover": {
-      color: theme.palette.primary.main,
-    },
-  },
-  // commandBar: {
-  //   position: "sticky",
-  //   top: 123,
-  //   zIndex: 11,
-  //   marginTop: -theme.spacing(3),
-  //   marginBottom: theme.spacing(3),
-  // },
-}));
 
 const cellStyles = { headerStyle: { padding: 8 }, cellStyle: { padding: 8 } };
 const alignRightCellStyles = {
@@ -58,24 +41,22 @@ export const Input = styled("input")({
   display: "none",
 });
 
-// const StyledButton = (props) => (
-//   <TertiaryButton
-//     sx={{
-//       fontWeight: (theme) => theme.typography.fontWeightLight,
-//       "&:hover": {
-//         color: "primary.main",
-//       },
-//     }}
-//     color="default"
-//     {...props}
-//   >
-//     {props.children}
-//   </TertiaryButton>
-// );
+export const CommandBarButton = (props) => (
+  <TertiaryButton
+    sx={{
+      fontWeight: (theme) => theme.typography.fontWeightLight,
+      "&:hover": {
+        color: "primary.main",
+      },
+    }}
+    color="inherit"
+    {...props}
+  >
+    {props.children}
+  </TertiaryButton>
+);
 
 function ClassInPlan({ planId }) {
-  const classes = useStyles();
-
   //
   const toastId = React.useRef(null);
 
@@ -276,32 +257,22 @@ function ClassInPlan({ planId }) {
                   id="upload-excel-class-in-plan"
                   onChange={onUpload}
                 />
-                {/* <StyledButton
+                <CommandBarButton
                   component="span"
                   startIcon={<PublishRoundedIcon />}
                   // onClick={handleModalOpenModelExcel}
                 >
                   Tải lên Excel
-                </StyledButton> */}
-                <TertiaryButton
-                  // className={classes.uploadExcelBtn}
-                  color="default"
-                  component="span"
-                  startIcon={<PublishRoundedIcon />}
-                >
-                  Tải lên Excel
-                </TertiaryButton>
+                </CommandBarButton>
               </label>
             ) : (
               <>
-                <TertiaryButton
-                  // className={classes.uploadExcelBtn}
-                  color="default"
+                <CommandBarButton
                   startIcon={<DeleteRoundedIcon />}
                   onClick={removeClassesFromAssignmentPlan}
                 >
                   Xoá
-                </TertiaryButton>
+                </CommandBarButton>
                 <NumSelectedRows numSelected={selectedRows.length} />
               </>
             )}

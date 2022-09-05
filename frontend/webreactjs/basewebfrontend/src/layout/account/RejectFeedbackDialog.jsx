@@ -1,9 +1,8 @@
 import { Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import React from "react";
-import PrimaryButton from "../../component/button/PrimaryButton";
-import TertiaryButton from "../../component/button/TertiaryButton";
-import CustomizedDialogs from "../../component/dialog/CustomizedDialogs";
+import makeStyles from "@mui/styles/makeStyles";
+import PrimaryButton from "component/button/PrimaryButton";
+import TertiaryButton from "component/button/TertiaryButton";
+import CustomizedDialogs from "component/dialog/CustomizedDialogs";
 
 const useStyles = makeStyles(() => ({
   btn: { margin: 4, width: 148 },

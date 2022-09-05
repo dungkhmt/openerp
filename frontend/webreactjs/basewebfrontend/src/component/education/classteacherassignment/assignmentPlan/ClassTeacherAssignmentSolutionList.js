@@ -5,13 +5,16 @@ import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
 import IconButton from "@mui/material/IconButton";
 import { request } from "api";
-import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { processingNoti, updateErrorNoti } from "utils/notification";
 import SuggestedTeacherListForSelectedClassDialog from "../SuggestedTeacherListForSelectedClassDialog";
-import { commandBarStyles, NumSelectedRows } from "./ClassInPlan";
+import {
+  CommandBarButton,
+  commandBarStyles,
+  NumSelectedRows,
+} from "./ClassInPlan";
 
 function ClassTeacherAssignmentSolutionList(props) {
   const { planId, planName } = props;
@@ -299,25 +302,21 @@ function ClassTeacherAssignmentSolutionList(props) {
           <>
             {selectedRows.length === 0 ? (
               <>
-                <TertiaryButton
-                  // className={classes.uploadExcelBtn}
-                  color="default"
+                <CommandBarButton
                   startIcon={<PublishRoundedIcon />}
                   onClick={exportExcel}
                 >
                   Xuất excel
-                </TertiaryButton>
+                </CommandBarButton>
               </>
             ) : (
               <>
-                <TertiaryButton
-                  // className={classes.uploadExcelBtn}
-                  color="default"
+                <CommandBarButton
                   startIcon={<DeleteRoundedIcon />}
                   onClick={removeAssignmentSolution}
                 >
                   Xoá
-                </TertiaryButton>
+                </CommandBarButton>
                 <NumSelectedRows numSelected={selectedRows.length} />
               </>
             )}

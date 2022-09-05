@@ -1,17 +1,20 @@
 import { Box, Typography } from "@material-ui/core/";
 import { teal } from "@material-ui/core/colors";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { useTheme } from "@material-ui/core/styles";
 import { Skeleton } from "@material-ui/lab";
-import React, { useEffect, useState } from "react";
+import makeStyles from "@mui/styles/makeStyles";
+import { authGet, request } from "api";
+import PrimaryButton from "component/button/PrimaryButton";
+import TertiaryButton from "component/button/TertiaryButton";
+import { a11yProps, AntTab, AntTabs, TabPanel } from "component/tab";
+import { useEffect, useState } from "react";
 import { FcCalendar, FcClock } from "react-icons/fc";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import { authGet, request } from "../../../api";
-import { addZeroBefore } from "../../../utils/dateutils";
-import PrimaryButton from "../../button/PrimaryButton";
-import TertiaryButton from "../../button/TertiaryButton";
-import { a11yProps, AntTab, AntTabs, TabPanel } from "../../tab";
+import { addZeroBefore } from "utils/dateutils";
+import withScreenSecurity from "../../withScreenSecurity";
+import ParticipantRolesOfQuizTest from "./ParticipantRolesOfQuizTest";
 import QuizListForAssignment from "./QuizListForAssignment";
 import QuizQuestionsInQuizTest from "./QuizQuestionsInQuizTest";
 import QuizTestGroupList from "./QuizTestGroupList";
@@ -20,19 +23,12 @@ import QuizTestJoinRequestList from "./QuizTestJoinRequestList";
 import QuizTestResultChart from "./QuizTestResultChart";
 import QuizTestStudentListResult from "./QuizTestResultList";
 import QuizTestStudentList from "./QuizTestStudentList";
-import ParticipantRolesOfQuizTest from "./ParticipantRolesOfQuizTest";
-
-import withScreenSecurity from "../../withScreenSecurity";
 
 const useStyles = makeStyles((theme) => ({
   btn: {
     marginLeft: theme.spacing(1),
   },
   courseName: { fontWeight: theme.typography.fontWeightMedium },
-  editBtn: {
-    marginLeft: theme.spacing(2),
-    fontWeight: theme.typography.fontWeightRegular,
-  },
   testName: { fontSize: "1.25rem", paddingTop: theme.spacing(1) },
   time: {
     paddingLeft: 6,
@@ -210,7 +206,10 @@ function QuizTestDetail() {
         >{`${testInfo.scheduleDateTime}`}</Typography>
 
         <TertiaryButton
-          className={classes.editBtn}
+          sx={{
+            marginLeft: (theme) => theme.spacing(2),
+            fontWeight: (theme) => theme.typography.fontWeightRegular,
+          }}
           component={RouterLink}
           to={`/edu/class/quiztest/edit/${testId}`}
         >
