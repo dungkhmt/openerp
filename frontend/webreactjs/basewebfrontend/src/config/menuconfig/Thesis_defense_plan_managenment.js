@@ -3,7 +3,7 @@ export const ThesisDefensePlanManagement = {
   path: "",
   isPublic: true,
   icon: "Schedule",
-  text: "HĐ bảo vệ đồ án tốt nghiệp",
+  text: "Kế hoạch bảo vệ ĐATN",
   child: [
     {
       id: "MENU_EDUCATION_THESIS_DEFENSE_PLAN_MANAGEMENT_LIST",

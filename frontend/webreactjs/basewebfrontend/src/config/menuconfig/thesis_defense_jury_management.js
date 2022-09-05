@@ -3,7 +3,7 @@ export const ThesisDefenseJuryManagement = {
   path: "",
   isPublic: false,
   icon: "Schedule",
-  text: "HĐ bảo vệ đồ án tốt nghiệp",
+  text: "Hội đồng bảo vệ ĐATN",
   child: [
     {
       id: "MENU_EDUCATION_THESIS_DEFENSE_JURY_MANAGEMENT_LIST",
