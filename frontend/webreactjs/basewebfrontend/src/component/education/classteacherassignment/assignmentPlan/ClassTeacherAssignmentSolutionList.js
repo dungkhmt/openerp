@@ -1,10 +1,9 @@
-import { Typography } from "@material-ui/core";
-import { IconButton } from "@material-ui/core/";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import EditIcon from "@material-ui/icons/Edit";
-import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import EditIcon from "@mui/icons-material/Edit";
+import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
+import IconButton from "@mui/material/IconButton";
 import { request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
@@ -12,10 +11,9 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { processingNoti, updateErrorNoti } from "utils/notification";
 import SuggestedTeacherListForSelectedClassDialog from "../SuggestedTeacherListForSelectedClassDialog";
-import { useStyles } from "./ClassInPlan";
+import { commandBarStyles, NumSelectedRows } from "./ClassInPlan";
 
 function ClassTeacherAssignmentSolutionList(props) {
-  const classes = useStyles();
   const { planId, planName } = props;
 
   //
@@ -293,14 +291,16 @@ function ClassTeacherAssignmentSolutionList(props) {
         title={"Danh sách lớp được phân công"}
         columns={columns}
         data={assignments}
-        classNames={{ commandBar: classes.commandBar }}
+        sx={{
+          commandBar: commandBarStyles,
+        }}
         onSelectionChange={(selectedRows) => setSelectedRows(selectedRows)}
         commandBarComponents={
           <>
             {selectedRows.length === 0 ? (
               <>
                 <TertiaryButton
-                  className={classes.uploadExcelBtn}
+                  // className={classes.uploadExcelBtn}
                   color="default"
                   startIcon={<PublishRoundedIcon />}
                   onClick={exportExcel}
@@ -311,17 +311,14 @@ function ClassTeacherAssignmentSolutionList(props) {
             ) : (
               <>
                 <TertiaryButton
-                  className={classes.uploadExcelBtn}
+                  // className={classes.uploadExcelBtn}
                   color="default"
                   startIcon={<DeleteRoundedIcon />}
                   onClick={removeAssignmentSolution}
                 >
                   Xoá
                 </TertiaryButton>
-                <Typography
-                  component="span"
-                  style={{ marginLeft: "auto", marginRight: 32 }}
-                >{`Đã chọn ${selectedRows.length} mục`}</Typography>
+                <NumSelectedRows numSelected={selectedRows.length} />
               </>
             )}
           </>

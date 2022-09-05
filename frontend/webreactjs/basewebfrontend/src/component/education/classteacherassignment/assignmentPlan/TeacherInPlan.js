@@ -1,15 +1,14 @@
-import { IconButton, Typography } from "@material-ui/core";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import EditIcon from "@material-ui/icons/Edit";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import EditIcon from "@mui/icons-material/Edit";
+import IconButton from "@mui/material/IconButton";
 import { request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
 import UpdateTeacherForAssignmentDialog from "../UpdateTeacherForAssignmentDialog";
-import { useStyles } from "./ClassInPlan";
+import { commandBarStyles, NumSelectedRows } from "./ClassInPlan";
 
 function TeacherInPlan(props) {
-  const classes = useStyles();
   const planId = props.planId;
 
   // Command delete button
@@ -123,12 +122,14 @@ function TeacherInPlan(props) {
         title={"Danh sách giáo viên trong kế hoạch"}
         columns={columns}
         data={teacherList}
-        classNames={{ commandBar: classes.commandBar }}
+        sx={{
+          commandBar: commandBarStyles,
+        }}
         onSelectionChange={(selectedRows) => setSelectedRows(selectedRows)}
         commandBarComponents={
           <>
             <TertiaryButton
-              className={classes.uploadExcelBtn}
+              // className={classes.uploadExcelBtn}
               color="default"
               startIcon={<DeleteRoundedIcon />}
               onClick={removeTeacherFromAssignmentPlan}
@@ -137,10 +138,7 @@ function TeacherInPlan(props) {
               Xoá
             </TertiaryButton>
             {selectedRows.length > 0 && (
-              <Typography
-                component="span"
-                style={{ marginLeft: "auto", marginRight: 32 }}
-              >{`Đã chọn ${selectedRows.length} mục`}</Typography>
+              <NumSelectedRows numSelected={selectedRows.length} />
             )}
           </>
         }

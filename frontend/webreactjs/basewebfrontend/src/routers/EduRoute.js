@@ -4,7 +4,7 @@ import ClassCreate from "../component/education/class/ClassCreate";
 import { MainBoard } from "../component/education/whiteboard/MainBoard";
 // import ClassesList from "../component/education/class/ClassesList";
 import PlanDetail from "../component/education/classteacherassignment/assignmentPlan/PlanDetail";
-import ClassTeacherAssignmentPlanList from "../component/education/classteacherassignment/PlanList";
+import PlanList from "../component/education/classteacherassignment/PlanList";
 import AddNewCourse from "../component/education/course/AddNewCourse";
 import CourseDetail from "../component/education/course/CourseDetail";
 import CourseList from "../component/education/course/CourseList";
@@ -24,11 +24,11 @@ import TeacherCourseQuizDetail from "../component/education/course/TeacherCourse
 import TeacherCourseTopicDetail from "../component/education/course/TeacherCourseTopicDetail";
 import TeacherViewCourseQuizDetail from "../component/education/course/TeacherViewCourseQuizDetail";
 // import CreateSemester from "../component/education/CreateSemester";
-import QuizTestListAll from "../component/education/quiztest/QuizTestListAll";
 import CreateQuizTest from "../component/education/quiztest/CreateQuizTest";
 import QuizTestDetail from "../component/education/quiztest/QuizTestDetail";
 import QuizTestEdit from "../component/education/quiztest/QuizTestEdit";
 import QuizTestList from "../component/education/quiztest/QuizTestList-old-tmp";
+import QuizTestListAll from "../component/education/quiztest/QuizTestListAll";
 import StudentQuizDetail from "../component/education/quiztest/StudentQuizDetail";
 import StudentQuizList from "../component/education/quiztest/StudentQuizTestList";
 import ResourceCreate from "../component/education/resourcelink/ResourceCreate";
@@ -39,6 +39,7 @@ import ResourceList from "../component/education/resourcelink/ResourceList";
 import AddTeacher from "../component/education/teacher/AddTeacher";
 import TeacherDetail from "../component/education/teacher/TeacherDetail";
 // import TeacherList from "../component/education/teacher/TeacherList";
+import TeacherViewQuestionsOfParticipant from "../component/education/quiztest/TeacherViewQuestionsOfParticipant";
 import ClassRegistration from "../views/Education/ClassManagement/Student/ClassRegistration";
 import SAssignmentDetail from "../views/Education/ClassManagement/Student/SAssignmentDetail";
 import SClassDetail from "../views/Education/ClassManagement/Student/SClassDetail";
@@ -51,10 +52,9 @@ import TClassDetail from "../views/Education/ClassManagement/Teacher/TClassDetai
 import TClassList from "../views/Education/ClassManagement/Teacher/TClassList";
 import TeacherViewDetailClass from "../views/Education/ClassManagement/Teacher/TeacherViewDetailClass";
 import TeacherViewLearningSessionDetail from "../views/Education/ClassManagement/Teacher/TeacherViewLearningSessionDetail";
-import TeacherViewQuestionsOfParticipant from "../component/education/quiztest/TeacherViewQuestionsOfParticipant";
 
-import NotFound from "../views/errors/NotFound";
 import StudentCreateThesis from "../component/education/thesisdefensejury/StudentCreateThesis";
+import NotFound from "../views/errors/NotFound";
 
 export default function EduRoute() {
   let { path } = useRouteMatch();
@@ -172,10 +172,7 @@ export default function EduRoute() {
           path={`${path}/teaching-assignment/plan/:planId/`}
         />
 
-        <Route
-          component={ClassTeacherAssignmentPlanList}
-          path={`${path}/teaching-assignment/plan`}
-        />
+        <Route component={PlanList} path={`${path}/teaching-assignment/plan`} />
 
         <Route component={ClassCreate} path={`${path}/class/add`} />
 

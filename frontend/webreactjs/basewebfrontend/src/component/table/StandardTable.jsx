@@ -1,5 +1,5 @@
-import { Box } from "@material-ui/core/";
 import { makeStyles, MuiThemeProvider, styled } from "@material-ui/core/styles";
+import { Box } from "@mui/material";
 import MaterialTable, { MTableToolbar } from "material-table";
 import PropTypes from "prop-types";
 import { useCallback } from "react";
@@ -38,15 +38,18 @@ function StandardTable(props) {
       {!props.hideCommandBar && (
         <>
           <Box
-            className={props.classNames?.commandBar}
-            width="100%"
-            height={40}
-            display="flex"
-            justifyContent="flex-start"
-            alignItems="center"
-            borderBottom={"1px solid rgb(224, 224, 224)"}
-            pl={2}
-            style={{ backgroundColor: "#f5f5f5" }}
+            sx={{
+              width: "100%",
+              height: 40,
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              borderBottom: "1px solid rgb(224, 224, 224)",
+              pl: 2,
+              backgroundColor: "#f5f5f5",
+              ...props.sx?.commandBar,
+            }}
+            // className={props.classNames?.commandBar}
           >
             {props.commandBarComponents}
           </Box>

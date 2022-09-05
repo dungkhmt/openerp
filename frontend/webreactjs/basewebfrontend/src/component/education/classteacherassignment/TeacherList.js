@@ -124,7 +124,7 @@ function TeacherList(props) {
                   onChange={onUpload}
                 />
                 <TertiaryButton
-                  className={classes.uploadExcelBtn}
+                  // className={classes.uploadExcelBtn}
                   color="default"
                   startIcon={<PublishRoundedIcon />}
                   component="span"
@@ -135,7 +135,7 @@ function TeacherList(props) {
             ) : (
               <>
                 <TertiaryButton
-                  className={classes.uploadExcelBtn}
+                  // className={classes.uploadExcelBtn}
                   color="default"
                   startIcon={<AddIcon />}
                   onClick={addTeacherToAssignmentPlan}

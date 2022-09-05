@@ -1,16 +1,14 @@
-import { Typography } from "@material-ui/core/";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 // import EditIcon from "@material-ui/icons/Edit";
 import { request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import { useEffect, useState } from "react";
 // import UpdateTeacherCourseForAssignmentModel from "../UpdateTeacherCourseForAssignmentModel";
-import { useStyles } from "./ClassInPlan";
+import { commandBarStyles, NumSelectedRows } from "./ClassInPlan";
 
 function TeacherCourseInPlan(props) {
   const planId = props.planId;
-  const classes = useStyles();
 
   // Command delete button
   const [selectedRows, setSelectedRows] = useState([]);
@@ -135,12 +133,14 @@ function TeacherCourseInPlan(props) {
         title={"Danh sách giáo viên"}
         columns={columns}
         data={teacherCourses}
-        classNames={{ commandBar: classes.commandBar }}
+        sx={{
+          commandBar: commandBarStyles,
+        }}
         onSelectionChange={(selectedRows) => setSelectedRows(selectedRows)}
         commandBarComponents={
           <>
             <TertiaryButton
-              className={classes.uploadExcelBtn}
+              // className={classes.uploadExcelBtn}
               color="default"
               startIcon={<DeleteRoundedIcon />}
               onClick={removeTeacherCourseFromAssignmentPlan}
@@ -149,10 +149,7 @@ function TeacherCourseInPlan(props) {
               Xoá
             </TertiaryButton>
             {selectedRows.length > 0 && (
-              <Typography
-                component="span"
-                style={{ marginLeft: "auto", marginRight: 32 }}
-              >{`Đã chọn ${selectedRows.length} mục`}</Typography>
+              <NumSelectedRows numSelected={selectedRows.length} />
             )}
           </>
         }

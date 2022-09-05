@@ -1,8 +1,9 @@
-import { Card, Tooltip, Typography } from "@material-ui/core/";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
 // import { makeStyles } from "@material-ui/core/styles";
-import { withStyles } from "@material-ui/core/styles";
-import { TablePagination } from "@mui/material";
+import { styled, TablePagination } from "@mui/material";
+import Typography from "@mui/material/Typography";
 import { request } from "api";
 import map from "lodash/map";
 import range from "lodash/range";
@@ -161,8 +162,11 @@ const TimeTableSpace = memo(({ sz }) => {
   );
 });
 
-const HtmlTooltip = withStyles((theme) => ({
-  tooltip: {
+const HtmlTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    maxWidth: "none",
     paddingTop: 6,
     backgroundColor: theme.palette.common.white,
     color: "rgba(0, 0, 0, 0.87)",
@@ -175,7 +179,24 @@ const HtmlTooltip = withStyles((theme) => ({
       color: theme.palette.common.white,
     },
   },
-}))(Tooltip);
+}));
+
+// This is component in MUI v4
+// const HtmlTooltip = withStyles((theme) => ({
+//   tooltip: {
+//     paddingTop: 6,
+//     backgroundColor: theme.palette.common.white,
+//     color: "rgba(0, 0, 0, 0.87)",
+//     borderRadius: 6,
+//     boxShadow:
+//       "0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5)",
+//     // fontSize: theme.typography.pxToRem(12),
+//     // border: "1px solid #dadde9",
+//     "& .MuiTooltip-arrow": {
+//       color: theme.palette.common.white,
+//     },
+//   },
+// }))(Tooltip);
 
 const TimeTableRow = memo((props) => {
   const { planId, root, list, remainEmptySlots, teacherId } = props;
@@ -210,15 +231,30 @@ const TimeTableRow = memo((props) => {
           </>
         }
         PopperProps={{
-          popperOptions: {
-            modifiers: {
-              flip: { enabled: false },
-              offset: {
-                enabled: true,
-                offset: "0, -16px",
+          modifiers: [
+            {
+              name: "flip",
+              enabled: false,
+            },
+            {
+              name: "offset",
+              enabled: true,
+              options: {
+                offset: [0, -16],
               },
             },
-          },
+            // {
+            //   name: 'preventOverflow',
+            //   enabled: true,
+            //   options: {
+            //     altAxis: true,
+            //     altBoundary: true,
+            //     tether: true,
+            //     rootBoundary: 'document',
+            //     padding: 8,
+            //   },
+            // },
+          ],
         }}
       >
         <BoxClass
@@ -434,7 +470,7 @@ function TeacherBasedTimeTableAssignmentInSolution(props) {
           marginTop: 48,
         }}
       >
-        <Box display="flex" pt={1} paddingBottom={2}>
+        <Box display="flex" pt={1} pb={2}>
           <Typography component="h6" style={{ fontSize: "1.25rem" }}>
             Biểu đồ lịch giảng dạy theo tuần
           </Typography>

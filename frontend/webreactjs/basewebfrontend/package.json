@@ -23,6 +23,7 @@
     "@mui/icons-material": "^5.0.3",
     "@mui/lab": "^5.0.0-alpha.75",
     "@mui/material": "^5.0.3",
+    "@mui/styles": "^5.10.3",
     "@mui/system": "^5.8.1",
     "@mui/x-date-pickers": "^5.0.0-alpha.5",
     "@react-pdf/renderer": "^2.3.0",

@@ -1,9 +1,10 @@
-import { IconButton, Typography } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import EditIcon from "@material-ui/icons/Edit";
-import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import EditIcon from "@mui/icons-material/Edit";
+import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
+import IconButton from "@mui/material/IconButton";
 import { styled } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 import { request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
@@ -23,13 +24,13 @@ export const useStyles = makeStyles((theme) => ({
       color: theme.palette.primary.main,
     },
   },
-  commandBar: {
-    position: "sticky",
-    top: 112,
-    zIndex: 11,
-    marginTop: -theme.spacing(3),
-    marginBottom: theme.spacing(3),
-  },
+  // commandBar: {
+  //   position: "sticky",
+  //   top: 123,
+  //   zIndex: 11,
+  //   marginTop: -theme.spacing(3),
+  //   marginBottom: theme.spacing(3),
+  // },
 }));
 
 const cellStyles = { headerStyle: { padding: 8 }, cellStyle: { padding: 8 } };
@@ -38,9 +39,39 @@ const alignRightCellStyles = {
   cellStyle: { padding: 8, textAlign: "right" },
 };
 
+export const commandBarStyles = {
+  position: "sticky",
+  top: 124,
+  zIndex: 11,
+  mt: -3,
+  mb: 3,
+};
+
+export const NumSelectedRows = ({ numSelected }) => (
+  <Typography
+    component="span"
+    style={{ marginLeft: "auto", marginRight: 32 }}
+  >{`Đã chọn ${numSelected} mục`}</Typography>
+);
+
 export const Input = styled("input")({
   display: "none",
 });
+
+// const StyledButton = (props) => (
+//   <TertiaryButton
+//     sx={{
+//       fontWeight: (theme) => theme.typography.fontWeightLight,
+//       "&:hover": {
+//         color: "primary.main",
+//       },
+//     }}
+//     color="default"
+//     {...props}
+//   >
+//     {props.children}
+//   </TertiaryButton>
+// );
 
 function ClassInPlan({ planId }) {
   const classes = useStyles();
@@ -90,8 +121,8 @@ function ClassInPlan({ planId }) {
       sorting: false,
       render: (rowData) => (
         <IconButton
-          color="primary"
           aria-label="edit"
+          color="primary"
           onClick={() => {
             onUpdateHourLoad(rowData["classId"]);
           }}
@@ -231,7 +262,9 @@ function ClassInPlan({ planId }) {
         title={"Danh sách lớp trong kế hoạch"}
         columns={columns}
         data={classList}
-        classNames={{ commandBar: classes.commandBar }}
+        sx={{
+          commandBar: commandBarStyles,
+        }}
         onSelectionChange={(selectedRows) => setSelectedRows(selectedRows)}
         commandBarComponents={
           <>
@@ -243,12 +276,18 @@ function ClassInPlan({ planId }) {
                   id="upload-excel-class-in-plan"
                   onChange={onUpload}
                 />
-                <TertiaryButton
-                  className={classes.uploadExcelBtn}
-                  color="default"
-                  startIcon={<PublishRoundedIcon />}
+                {/* <StyledButton
                   component="span"
+                  startIcon={<PublishRoundedIcon />}
                   // onClick={handleModalOpenModelExcel}
+                >
+                  Tải lên Excel
+                </StyledButton> */}
+                <TertiaryButton
+                  // className={classes.uploadExcelBtn}
+                  color="default"
+                  component="span"
+                  startIcon={<PublishRoundedIcon />}
                 >
                   Tải lên Excel
                 </TertiaryButton>
@@ -256,17 +295,14 @@ function ClassInPlan({ planId }) {
             ) : (
               <>
                 <TertiaryButton
-                  className={classes.uploadExcelBtn}
+                  // className={classes.uploadExcelBtn}
                   color="default"
                   startIcon={<DeleteRoundedIcon />}
                   onClick={removeClassesFromAssignmentPlan}
                 >
                   Xoá
                 </TertiaryButton>
-                <Typography
-                  component="span"
-                  style={{ marginLeft: "auto", marginRight: 32 }}
-                >{`Đã chọn ${selectedRows.length} mục`}</Typography>
+                <NumSelectedRows numSelected={selectedRows.length} />
               </>
             )}
           </>

@@ -1,17 +1,19 @@
-import { Typography } from "@material-ui/core/";
-import AddIcon from "@material-ui/icons/Add";
-// import EditIcon from "@material-ui/icons/Edit";
-import PublishRoundedIcon from "@material-ui/icons/PublishRounded";
+import AddIcon from "@mui/icons-material/Add";
+// import EditIcon from "@mui/icons-material/Edit";
+import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import { request } from "api";
 import TertiaryButton from "component/button/TertiaryButton";
 import StandardTable from "component/table/StandardTable";
 import { useEffect, useState } from "react";
 import { errorNoti, successNoti } from "utils/notification";
 // import UpdateTeacherCourseModel from "../UpdateTeacherCourseModel";
-import { Input, useStyles } from "./assignmentPlan/ClassInPlan";
+import {
+  commandBarStyles,
+  Input,
+  NumSelectedRows,
+} from "./assignmentPlan/ClassInPlan";
 
 function TeacherCourseList(props) {
-  const classes = useStyles();
   const planId = props.planId;
 
   // Command add button
@@ -185,7 +187,9 @@ function TeacherCourseList(props) {
         title={"Danh sách giáo viên - môn"}
         columns={columns}
         data={teacherCourses}
-        classNames={{ commandBar: classes.commandBar }}
+        sx={{
+          commandBar: commandBarStyles,
+        }}
         onSelectionChange={(selectedRows) => setSelectedRows(selectedRows)}
         commandBarComponents={
           <>
@@ -198,7 +202,7 @@ function TeacherCourseList(props) {
                   onChange={onUpload}
                 />
                 <TertiaryButton
-                  className={classes.uploadExcelBtn}
+                  // className={classes.uploadExcelBtn}
                   color="default"
                   startIcon={<PublishRoundedIcon />}
                   component="span"
@@ -209,17 +213,14 @@ function TeacherCourseList(props) {
             ) : (
               <>
                 <TertiaryButton
-                  className={classes.uploadExcelBtn}
+                  // className={classes.uploadExcelBtn}
                   color="default"
                   startIcon={<AddIcon />}
                   onClick={addTeacherCourseToAssignmentPlan}
                 >
                   Thêm vào kế hoạch
                 </TertiaryButton>
-                <Typography
-                  component="span"
-                  style={{ marginLeft: "auto", marginRight: 32 }}
-                >{`Đã chọn ${selectedRows.length} mục`}</Typography>
+                <NumSelectedRows numSelected={selectedRows.length} />
               </>
             )}
           </>

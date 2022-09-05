@@ -1,5 +1,5 @@
-import { IconButton } from "@material-ui/core/";
-import EditIcon from "@material-ui/icons/Edit";
+import EditIcon from "@mui/icons-material/Edit";
+import IconButton from "@mui/material/IconButton";
 import { request } from "api";
 import StandardTable from "component/table/StandardTable";
 import { useEffect, useState } from "react";

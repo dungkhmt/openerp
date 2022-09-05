@@ -1,11 +1,13 @@
-import { Button, Card } from "@material-ui/core/";
+import { Stack } from "@mui/material";
 import { request } from "api";
-import MaterialTable, { MTableToolbar } from "material-table";
+import PrimaryButton from "component/button/PrimaryButton";
+import StandardTable from "component/table/StandardTable";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toFormattedDateTime } from "utils/dateutils";
 import CreatePlanModal from "./CreatePlanModal";
 
-function ClassTeacherAssignmentPlanList() {
+function PlanList() {
   const [plans, setPlans] = useState([]);
   const [open, setOpen] = React.useState(false);
 
@@ -31,14 +33,18 @@ function ClassTeacherAssignmentPlanList() {
         </Link>
       ),
     },
-    { title: "Tên Plan", field: "planName" },
     { title: "Người tạo", field: "createdByUserLoginId" },
     { title: "Ngày tạo", field: "createdStamp" },
   ];
 
   function getClassTeacherAssignmentList() {
     request("GET", "/get-all-class-teacher-assignment-plan", (res) => {
-      setPlans(res.data);
+      const data = res.data.map((plan) => {
+        const created = toFormattedDateTime(plan.createdStamp);
+        return { ...plan, createdStamp: created };
+      });
+
+      setPlans(data);
     });
   }
 
@@ -77,24 +83,20 @@ function ClassTeacherAssignmentPlanList() {
   }, []);
 
   return (
-    <Card>
-      <MaterialTable
-        title={"Danh sách bản kế hoach phân công"}
+    <Stack spacing={2}>
+      <PrimaryButton onClick={handleModalOpen} sx={{ alignSelf: "flex-end" }}>
+        Thêm mới
+      </PrimaryButton>
+      <StandardTable
+        title={"Kế hoach phân công"}
         columns={columns}
         data={plans}
-        components={{
-          Toolbar: (props) => (
-            <div style={{ position: "relative" }}>
-              <MTableToolbar {...props} />
-              <div
-                style={{ position: "absolute", top: "16px", right: "350px" }}
-              >
-                <Button onClick={handleModalOpen} color="primary">
-                  Thêm mới
-                </Button>
-              </div>
-            </div>
-          ),
+        hideCommandBar
+        options={{
+          selection: false,
+          pageSize: 10,
+          search: false,
+          sorting: false,
         }}
       />
 
@@ -103,8 +105,8 @@ function ClassTeacherAssignmentPlanList() {
         onClose={handleModalClose}
         onCreate={customCreateHandle}
       />
-    </Card>
+    </Stack>
   );
 }
 
-export default ClassTeacherAssignmentPlanList;
+export default PlanList;

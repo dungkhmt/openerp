@@ -1,9 +1,12 @@
-import { Box, CircularProgress, Typography } from "@material-ui/core/";
-import { green, teal } from "@material-ui/core/colors";
-import MenuItem from "@material-ui/core/MenuItem";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import { Skeleton } from "@material-ui/lab";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import { green, teal } from "@mui/material/colors";
+import { menuClasses } from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import { popoverClasses } from "@mui/material/Popover";
+import Skeleton from "@mui/material/Skeleton";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { request } from "api";
 import PrimaryButton from "component/button/PrimaryButton";
 import { a11yProps, AntTab, AntTabs, TabPanel } from "component/tab";
@@ -23,63 +26,12 @@ import TeacherBasedTimeTableAssignmentInSolution from "./TeacherBasedTimeTableAs
 import TeacherCourseInPlan from "./TeacherCourseInPlan";
 import TeacherInPlan from "./TeacherInPlan";
 
-const useStyles = makeStyles((theme) => ({
-  courseName: { fontWeight: theme.typography.fontWeightMedium },
-  time: {
-    paddingLeft: 6,
-    color: teal[800],
-    fontWeight: theme.typography.fontWeightMedium,
-    fontSize: "1rem",
-  },
-  selectMode: {
-    minWidth: 300,
-    marginRight: 16,
-  },
-  popoverPaper: {
-    minWidth: 300,
-    borderRadius: 8,
-    boxShadow:
-      "0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5)",
-  },
-  modeList: {
-    paddingLeft: 8,
-    paddingRight: 8,
-    "& .MuiListItem-root": {
-      paddingLeft: 8,
-      paddingRight: 8,
-      borderRadius: 6,
-    },
-    "& .Mui-selected, .Mui-selected:hover": {
-      color: "#ffffff",
-      backgroundColor: "#1976d2", // updated backgroundColor
-    },
-  },
-  tabs: {
-    position: "sticky",
-    top: 64,
-    zIndex: 11,
-    backgroundColor: "#fafafa",
-  },
-  wrapper: {
-    margin: theme.spacing(1),
-    position: "relative",
-  },
-  buttonProgress: {
-    color: green[500],
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    marginTop: -12,
-    marginLeft: -12,
-  },
-}));
-
 const tabsLabel = [
-  "DS lớp",
+  "Lớp",
   "Giảng viên",
-  "Giảng viên trong KH",
+  "Giảng viên trong kế hoạch",
   "Giảng viên-Môn",
-  "Giảng viên-Môn trong KH",
+  "Giảng viên-Môn trong kế hoạch",
   "Kết quả phân công",
   "Lớp chưa được phân công",
 ];
@@ -93,14 +45,14 @@ const objectives = [
   //   value: "SCORES",
   //   label: "Tối ưu thói quen",
   // },
-  {
-    value: "PRIORITY",
-    label: "Tối ưu độ ưu tiên",
-  },
-  {
-    value: "WORKDAYS",
-    label: "Tối ưu ngày dạy",
-  },
+  // {
+  //   value: "PRIORITY",
+  //   label: "Tối ưu độ ưu tiên",
+  // },
+  // {
+  //   value: "WORKDAYS",
+  //   label: "Tối ưu ngày dạy",
+  // },
 ];
 
 const models = [
@@ -137,8 +89,6 @@ function useQuery() {
 export default function PlanDetail() {
   let planId = useParams().planId;
   let query = useQuery();
-  const classes = useStyles();
-  const theme = useTheme();
 
   //
   const [plan, setPlan] = useState();
@@ -210,14 +160,18 @@ export default function PlanDetail() {
 
   return plan ? (
     <>
-      <Typography variant="h5">{`${plan.planName}`}</Typography>
-
+      <Typography
+        variant="h5"
+        sx={{ display: "inline" }}
+      >{`${plan.planName}`}</Typography>
       <Box
-        display="flex"
-        justifyContent="flex-end"
-        alignItems="center"
-        mt={2}
-        mb={2}
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          mt: 2,
+          mb: 2,
+        }}
       >
         {[
           // solvers, models,
@@ -225,30 +179,46 @@ export default function PlanDetail() {
         ].map((config, index) => (
           <TextField
             key={"Mục tiêu phân công"}
-            select
-            className={classes.selectMode}
             label={"Mục tiêu phân công"}
             value={objective}
             onChange={(event) => setObjective(event.target.value)}
-            variant="outlined"
             size="small"
+            select
+            sx={{ minWidth: 300, mr: 2 }}
             SelectProps={{
               MenuProps: {
-                classes: { list: classes.modeList },
-                PopoverClasses: {
-                  paper: classes.popoverPaper,
+                sx: {
+                  [`& .${menuClasses.list}`]: {
+                    paddingLeft: 1,
+                    paddingRight: 1,
+                    "& .Mui-selected, .Mui-selected:hover": {
+                      color: "#ffffff",
+                      backgroundColor: "#1976d2", // updated backgroundColor
+                      "&.Mui-focusVisible": { background: "#1976d2" },
+                    },
+                  },
+                  [`& .${popoverClasses.paper}`]: {
+                    minWidth: 300,
+                    borderRadius: 2,
+                    boxShadow:
+                      "0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5)",
+                  },
                 },
               },
             }}
           >
             {config.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
+              <MenuItem
+                key={option.value}
+                value={option.value}
+                sx={{ px: 1, borderRadius: 1.5 }}
+              >
                 {option.label}
               </MenuItem>
             ))}
           </TextField>
         ))}
-        <div className={classes.wrapper}>
+        <div style={{ position: "relative" }}>
           <PrimaryButton
             disabled={isProcessing}
             onClick={() => assignTeacher2Class()}
@@ -256,14 +226,29 @@ export default function PlanDetail() {
             Phân công
           </PrimaryButton>
           {isProcessing && (
-            <CircularProgress size={24} className={classes.buttonProgress} />
+            <CircularProgress
+              size={24}
+              sx={{
+                color: green[500],
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                mt: -1.5,
+                ml: -1.5,
+              }}
+            />
           )}
         </div>
       </Box>
 
       {/* {isProcessing ? <CircularProgress /> : ""} */}
       <AntTabs
-        className={classes.tabs}
+        sx={{
+          position: "sticky",
+          top: 64,
+          zIndex: 11,
+          backgroundColor: "#fafafa",
+        }}
         value={selectedTab}
         onChange={handleChangeTab}
         aria-label="ant example"
@@ -277,30 +262,31 @@ export default function PlanDetail() {
             component={Link}
             to={`/edu/teaching-assignment/plan/${planId}/?tab=${index}`}
             {...a11yProps(index)}
+            sx={{ maxWidth: 160 }}
           />
         ))}
       </AntTabs>
 
-      <TabPanel value={selectedTab} index={0} dir={theme.direction}>
+      <TabPanel value={selectedTab} index={0} dir={"ltr"}>
         <ClassInPlan planId={planId} />
         <PairConflictTimetableClass planId={planId} />
       </TabPanel>
 
-      <TabPanel value={selectedTab} index={1} dir={theme.direction}>
+      <TabPanel value={selectedTab} index={1} dir={"ltr"}>
         <TeacherList planId={planId} />
       </TabPanel>
-      <TabPanel value={selectedTab} index={2} dir={theme.direction}>
+      <TabPanel value={selectedTab} index={2} dir={"ltr"}>
         <TeacherInPlan planId={planId} />
       </TabPanel>
 
-      <TabPanel value={selectedTab} index={3} dir={theme.direction}>
+      <TabPanel value={selectedTab} index={3} dir={"ltr"}>
         <TeacherCourseList planId={planId} />
       </TabPanel>
-      <TabPanel value={selectedTab} index={4} dir={theme.direction}>
+      <TabPanel value={selectedTab} index={4} dir={"ltr"}>
         <TeacherCourseInPlan planId={planId} />
       </TabPanel>
 
-      <TabPanel value={selectedTab} index={5} dir={theme.direction}>
+      <TabPanel value={selectedTab} index={5} dir={"ltr"}>
         <ClassTeacherAssignmentSolutionList
           planId={planId}
           planName={plan.planName}
@@ -310,28 +296,34 @@ export default function PlanDetail() {
         <AssignmentStatistic planId={planId} />
       </TabPanel>
 
-      <TabPanel value={selectedTab} index={6} dir={theme.direction}>
+      <TabPanel value={selectedTab} index={6} dir={"ltr"}>
         <NotAssignedClassInSolutionList planId={planId} />
       </TabPanel>
     </>
   ) : (
     // Loading screen
     <>
-      <Typography variant="h5" className={classes.courseName}>
-        <Skeleton
-          width={400}
-          variant="rect"
-          animation="wave"
-          style={{ marginBottom: 8 }}
-        />
+      <Typography
+        variant="h5"
+        sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
+      >
+        <Skeleton width={400} variant="rect" animation="wave" sx={{ mb: 1 }} />
       </Typography>
-      <Typography variant="subtitle1" className={classes.testName}>
+      <Typography variant="subtitle1">
         <Skeleton width={200} variant="rect" animation="wave" />
       </Typography>
 
       <Box display="flex" alignItems="center" pt={2}>
-        <Skeleton width={24} height={24} variant="circle" animation="wave" />
-        <Typography component="span" className={classes.time}>
+        <Skeleton width={24} height={24} variant="circular" animation="wave" />
+        <Typography
+          component="span"
+          sx={{
+            pl: 1,
+            color: teal[800],
+            fontWeight: (theme) => theme.typography.fontWeightMedium,
+            fontSize: "1rem",
+          }}
+        >
           <Skeleton width={80} variant="rect" animation="wave" />
         </Typography>
       </Box>
