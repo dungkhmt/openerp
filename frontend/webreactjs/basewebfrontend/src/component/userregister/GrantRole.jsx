@@ -1,3 +1,4 @@
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import {
   Box,
   Divider,
@@ -8,71 +9,69 @@ import {
   Menu,
   MenuItem,
   Typography,
-} from "@material-ui/core";
-import { grey, pink, red } from "@material-ui/core/colors";
-import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
+} from "@mui/material";
+import { grey, pink, red } from "@mui/material/colors";
+import { useTheme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
+import TertiaryButton from "component/button/TertiaryButton";
 import React from "react";
 import { FcApproval } from "react-icons/fc";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
-import TertiaryButton from "../button/TertiaryButton";
 
-const useStyles = makeStyles((theme) => ({
-  grantedRoles: {
-    position: "relative",
-    width: "100%",
-    padding: "1rem",
-    paddingRight: 50,
-  },
-  grantedRolesList: {
-    "& li": {
-      "& svg": {
-        display: "none",
-      },
+const useStyles = makeStyles(() => {
+  const theme = useTheme();
+  return {
+    grantedRoles: {
+      position: "relative",
+      width: "100%",
+      padding: "1rem",
+      paddingRight: 50,
     },
-    "&:hover": {
+    grantedRolesList: {
       "& li": {
         "& svg": {
-          display: "block",
-          "&:hover": {
-            color: red["A700"],
+          display: "none",
+        },
+      },
+      "&:hover": {
+        "& li": {
+          "& svg": {
+            display: "block",
+            "&:hover": {
+              color: red["A700"],
+            },
           },
         },
       },
     },
-  },
-  removeIcon: {
-    fontSize: 42,
-    color: pink[400],
-    position: "absolute",
-    right: 0,
-    top: "50%",
-    marginTop: -20,
-    padding: 8,
-  },
-  menu: {
-    borderRadius: 8,
-    boxShadow:
-      "0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5)",
-  },
-  role: {
-    borderRadius: 8,
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    paddingLeft: theme.spacing(1),
-    "&:hover": {
-      background: grey[200],
+    removeIcon: {
+      fontSize: 42,
+      color: pink[400],
+      position: "absolute",
+      right: 0,
+      top: "50%",
+      marginTop: -20,
+      padding: 8,
     },
-  },
-  ListItemIcon: {
-    minWidth: 32,
-  },
-  listItem: {
-    paddingTop: 0,
-    paddingBottom: 0,
-  },
-}));
+    role: {
+      borderRadius: 8,
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+      paddingLeft: theme.spacing(1),
+      "&:hover": {
+        background: grey[200],
+      },
+    },
+    ListItemIcon: {
+      minWidth: 32,
+    },
+    listItem: {
+      paddingTop: 0,
+      paddingBottom: 0,
+    },
+  };
+});
 
 function GrantRole({ grantedRoles, roles, setRoles }) {
   const classes = useStyles();
@@ -144,7 +143,13 @@ function GrantRole({ grantedRoles, roles, setRoles }) {
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
-        className={classes.menu}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            boxShadow:
+              "0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5)",
+          },
+        }}
       >
         <SimpleBar
           style={{
@@ -184,7 +189,15 @@ function GrantRole({ grantedRoles, roles, setRoles }) {
                 <ListItemText>{role.name}</ListItemText>
                 <RemoveCircleIcon
                   onClick={() => onRemoveRole(role)}
-                  className={classes.removeIcon}
+                  sx={{
+                    fontSize: 42,
+                    color: pink[400],
+                    position: "absolute",
+                    right: 0,
+                    top: "50%",
+                    marginTop: -2.5,
+                    p: 1,
+                  }}
                 />
               </ListItem>
             )

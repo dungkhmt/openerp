@@ -13,7 +13,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import ChevronRightRoundedIcon from "@material-ui/icons/ChevronRightRounded";
 import { Skeleton } from "@material-ui/lab";
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import TertiaryButton from "component/button/TertiaryButton";
+import { useEffect, useState } from "react";
 import { request } from "../../api";
 import { getRandomIntInclusive } from "../../layout/notification/Notification";
 import { errorNoti } from "../../utils/notification";
@@ -264,19 +265,20 @@ function RegistrationDetail(props) {
           </Grid>
 
           <div>
+            <TertiaryButton
+              disabled={disabled}
+              style={approveBtnStyle}
+              onClick={handleDisable}
+              sx={{ mr: 1 }}
+            >
+              Hủy
+            </TertiaryButton>
             <PrimaryButton
               disabled={disabled}
               style={approveBtnStyle}
               onClick={handleApprove}
             >
               Phê duyệt
-            </PrimaryButton>
-            <PrimaryButton
-              disabled={disabled}
-              style={approveBtnStyle}
-              onClick={handleDisable}
-            >
-              Hủy
             </PrimaryButton>
           </div>
         </div>
