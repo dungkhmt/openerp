@@ -32,7 +32,11 @@ Khi đã sẵn sàng cho quá trình cài đặt project, thực hiện lần l�
 
 Sau lần chạy thành công đầu tiên, ở các lần chạy sau chỉ cần thực hiện bước 2
 
-### 3. Cấu hình Visual Studio Code
+### 3. Lưu ý quan trọng
+
+Không sử dụng package sau trong project: <b>@mui/styles</b>.
+
+### 4. Cấu hình Visual Studio Code
 
 Bước này nhằm cài đặt và cấu hình một số extension hữu ích cho trải nghiệm và quá trình phát triển ứng dụng, ví dụ: tiện ích refactor, format code tự động, tiện ích làm việc với Git,... Vì vậy, bước này giữ vai trò cực kì <b>QUAN TRỌNG</b> và là <b>BẮT BUỘC</b> để giữ cho code base chuyên nghiệp, thống nhất xuyên suốt project.
 
@@ -54,15 +58,15 @@ Thực hiện lần lượt theo các bước sau:
 - Thêm các [cấu hình](https://drive.google.com/file/d/1QMVt9ZhpRbvikHA05sTEp4tg9ehwklCt/view?usp=sharing) sau vào file <b>settings.json</b> ở vị trí cuối file, điều này đảm bảo
   ghi đè các cấu hình tương ứng (nếu có) được định nghĩa trước đó
 
-### 4. Một số component
+### 5. Một số component
 
 - <b>Tab:</b> src/component/tab <br/>
-  👉 Ví dụ: src/component/education/classteacherassignment/assignmentPlan/ClassTeacherAssignmentPlanDetail.js
+  👉 Ví dụ: src/component/education/classteacherassignment/assignmentPlan/PlanDetail.js
 - <b>Button:</b> src/component/button
 - <b>Dialog:</b> src/component/dialog
 - <b>Table:</b> src/component/table <br/>
-  👉 Ví dụ: src/component/education/classteacherassignment/assignmentPlan/ClassForAssignmentList.js
+  👉 Ví dụ: src/component/education/classteacherassignment/assignmentPlan/ClassInPlan.js
 
-### 5. Tips cấu hình IDEs
+### 6. Tips cấu hình IDEs
 
 - [Tips cấu hình IDEs](https://drive.google.com/file/d/1fKf7MTXCSlk1VpL6iACoHWCvqeE6Ldgc/view?usp=sharing)
