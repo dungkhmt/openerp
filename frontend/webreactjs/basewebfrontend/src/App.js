@@ -1,6 +1,7 @@
 import { CssBaseline } from "@material-ui/core";
 import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
-import React, { useEffect } from "react";
+import StylesEngineProvider from "@material-ui/core/StylesEngineProvider";
+import { useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useDispatch } from "react-redux";
@@ -64,31 +65,33 @@ function App() {
   }, []);
 
   return (
-    <I18nextProvider i18n={i18n}>
-      <QueryClientProvider client={queryClient}>
-        <MuiThemeProvider theme={theme}>
-          <CssBaseline />
-          {/* <Router> */}
-          <Router history={history}>
-            <Routes />
-            <ToastContainer
-              position="bottom-center"
-              transition={Slide}
-              autoClose={3000}
-              limit={3}
-              hideProgressBar={true}
-              newestOnTop
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-            />
-          </Router>
-          {/* </Router> */}
-        </MuiThemeProvider>
-      </QueryClientProvider>
-    </I18nextProvider>
+    <StylesEngineProvider injectFirst>
+      <I18nextProvider i18n={i18n}>
+        <QueryClientProvider client={queryClient}>
+          <MuiThemeProvider theme={theme}>
+            <CssBaseline />
+            {/* <Router> */}
+            <Router history={history}>
+              <Routes />
+              <ToastContainer
+                position="bottom-center"
+                transition={Slide}
+                autoClose={3000}
+                limit={3}
+                hideProgressBar={true}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+              />
+            </Router>
+            {/* </Router> */}
+          </MuiThemeProvider>
+        </QueryClientProvider>
+      </I18nextProvider>
+    </StylesEngineProvider>
   );
 }
 
