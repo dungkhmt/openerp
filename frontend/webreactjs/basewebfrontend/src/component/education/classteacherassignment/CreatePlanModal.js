@@ -1,5 +1,5 @@
+import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@mui/material/TextField";
-import makeStyles from "@mui/styles/makeStyles";
 import PrimaryButton from "component/button/PrimaryButton";
 import CustomizedDialogs from "component/dialog/CustomizedDialogs";
 import React from "react";

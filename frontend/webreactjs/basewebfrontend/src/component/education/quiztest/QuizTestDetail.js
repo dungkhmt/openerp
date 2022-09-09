@@ -2,7 +2,6 @@ import { Box, Typography } from "@material-ui/core/";
 import { teal } from "@material-ui/core/colors";
 import { useTheme } from "@material-ui/core/styles";
 import { Skeleton } from "@material-ui/lab";
-import makeStyles from "@mui/styles/makeStyles";
 import { authGet, request } from "api";
 import PrimaryButton from "component/button/PrimaryButton";
 import TertiaryButton from "component/button/TertiaryButton";
@@ -11,7 +10,7 @@ import { useEffect, useState } from "react";
 import { FcCalendar, FcClock } from "react-icons/fc";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { addZeroBefore } from "utils/dateutils";
 import withScreenSecurity from "../../withScreenSecurity";
 import ParticipantRolesOfQuizTest from "./ParticipantRolesOfQuizTest";
@@ -24,19 +23,19 @@ import QuizTestResultChart from "./QuizTestResultChart";
 import QuizTestStudentListResult from "./QuizTestResultList";
 import QuizTestStudentList from "./QuizTestStudentList";
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
   btn: {
-    marginLeft: theme.spacing(1),
+    ml: 1,
   },
-  courseName: { fontWeight: theme.typography.fontWeightMedium },
-  testName: { fontSize: "1.25rem", paddingTop: theme.spacing(1) },
+  courseName: { fontWeight: (theme) => theme.typography.fontWeightMedium },
+  testName: { fontSize: "1.25rem", pt: 1 },
   time: {
-    paddingLeft: 6,
+    pl: 0.75,
     color: teal[800],
-    fontWeight: theme.typography.fontWeightMedium,
+    fontWeight: (theme) => theme.typography.fontWeightMedium,
     fontSize: "1rem",
   },
-}));
+};
 
 const tabsLabel = [
   "Thí sinh",
@@ -64,8 +63,7 @@ const weekDay = [
 function QuizTestDetail() {
   let param = useParams();
   let testId = param.id;
-  const history = useHistory();
-  const classes = useStyles();
+
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 
@@ -84,12 +82,10 @@ function QuizTestDetail() {
   //   history.push("/edu/class/quiztest/edit/" + testId);
   // }
 
-  async function handleAssignStudents2QuizGroup() {
+  function handleAssignStudents2QuizGroup() {
     let data = { quizTestId: testId };
 
     request(
-      // token,
-      // history,
       "post",
       "auto-assign-participants-2-quiz-test-group",
       (res) => {
@@ -103,12 +99,10 @@ function QuizTestDetail() {
     // console.log(datasend);
   }
 
-  async function handleAssignQuestions2QuizGroup() {
+  function handleAssignQuestions2QuizGroup() {
     let data = { quizTestId: testId, numberQuestions: 10 };
 
     request(
-      // token,
-      // history,
       "post",
       "auto-assign-question-2-quiz-group",
       (res) => {
@@ -177,37 +171,37 @@ function QuizTestDetail() {
     <>
       <Typography
         variant="h5"
-        className={classes.courseName}
+        sx={styles.courseName}
       >{`${courseInfo.courseName} (${courseInfo.id})`}</Typography>
       <Typography
         variant="subtitle1"
-        className={classes.testName}
+        sx={styles.testName}
       >{`Kỳ thi: ${testInfo.testName}`}</Typography>
       <Typography
         variant="subtitle1"
-        className={classes.testName}
+        sx={styles.testName}
       >{`Mã kỳ thi: ${testInfo.testId}`}</Typography>
       <Typography
         variant="subtitle1"
-        className={classes.testName}
+        sx={styles.testName}
       >{`Trạng thái: ${testInfo.statusId}`}</Typography>
 
       <Box display="flex" alignItems="center" pt={2}>
         <FcClock size={24} />
         <Typography
           component="span"
-          className={classes.time}
+          sx={styles.time}
         >{`${testInfo.duration} phút`}</Typography>
 
         <FcCalendar size={24} style={{ marginLeft: 40 }} />
         <Typography
           component="span"
-          className={classes.time}
+          sx={styles.time}
         >{`${testInfo.scheduleDateTime}`}</Typography>
 
         <TertiaryButton
           sx={{
-            marginLeft: (theme) => theme.spacing(2),
+            ml: 2,
             fontWeight: (theme) => theme.typography.fontWeightRegular,
           }}
           component={RouterLink}
@@ -222,7 +216,7 @@ function QuizTestDetail() {
 
       <Box display="flex" justifyContent="flex-end">
         <PrimaryButton
-          className={classes.btn}
+          sx={styles.btn}
           onClick={(e) => {
             handleAssignStudents2QuizGroup(e);
           }}
@@ -231,7 +225,7 @@ function QuizTestDetail() {
         </PrimaryButton>
 
         <PrimaryButton
-          className={classes.btn}
+          sx={styles.btn}
           onClick={(e) => {
             handleAssignQuestions2QuizGroup(e);
           }}
@@ -289,10 +283,10 @@ function QuizTestDetail() {
   ) : (
     // Loading screen
     <>
-      <Typography variant="h5" className={classes.courseName}>
+      <Typography variant="h5" sx={styles.courseName}>
         <Skeleton width={400} variant="rect" animation="wave" />
       </Typography>
-      <Typography variant="subtitle1" className={classes.testName}>
+      <Typography variant="subtitle1" sx={styles.testName}>
         <Skeleton width={200} variant="rect" animation="wave" />
       </Typography>
 
@@ -300,7 +294,7 @@ function QuizTestDetail() {
       <Box display="flex" alignItems="center" pt={2}>
         {/*  */}
         <Skeleton width={24} height={24} variant="circle" animation="wave" />
-        <Typography component="span" className={classes.time}>
+        <Typography component="span" sx={styles.time}>
           <Skeleton width={80} variant="rect" animation="wave" />
         </Typography>
       </Box>

@@ -10,15 +10,15 @@ import {
   Typography,
 } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
+import { makeStyles } from "@material-ui/core/styles";
 import FeedbackIcon from "@material-ui/icons/Feedback";
 import KeyboardBackspaceRoundedIcon from "@material-ui/icons/KeyboardBackspaceRounded";
 import ReportProblemIcon from "@material-ui/icons/ReportProblemRounded";
-import { makeStyles } from "@mui/styles";
+import PrimaryButton from "component/button/PrimaryButton";
+import TertiaryButton from "component/button/TertiaryButton";
+import CustomizedDialogs from "component/dialog/CustomizedDialogs";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import PrimaryButton from "../../component/button/PrimaryButton";
-import TertiaryButton from "../../component/button/TertiaryButton";
-import CustomizedDialogs from "../../component/dialog/CustomizedDialogs";
 import RejectFeedbackDialog from "./RejectFeedbackDialog";
 
 const heightVariants = {

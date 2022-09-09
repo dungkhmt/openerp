@@ -1,3 +1,4 @@
+import { makeStyles } from "@material-ui/core/styles";
 import {
   Avatar,
   Divider,
@@ -8,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import makeStyles from "@mui/styles/makeStyles";
 import PrimaryButton from "component/button/PrimaryButton";
 import TertiaryButton from "component/button/TertiaryButton";
 import CustomizedDialogs from "component/dialog/CustomizedDialogs";
@@ -17,17 +17,17 @@ import SimpleBar from "simplebar-react";
 
 const useStyles = makeStyles((theme) => ({
   dialogContent: {
-    // paddingTop: 8 / 2,
+    // paddingTop: theme.spacing(1) / 2,
     minWidth: 480,
     minHeight: 64,
   },
   listItem: {
-    paddingLeft: 8,
-    paddingRight: 8,
-    paddingTop: 8 * 1.5,
-    paddingBottom: 8 * 1.5,
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    paddingTop: theme.spacing(1) * 1.5,
+    paddingBottom: theme.spacing(1) * 1.5,
   },
-  btn: { marginRight: 8 },
+  btn: { marginRight: theme.spacing(1) },
   applyBtn: { minWidth: 72 },
 }));
 

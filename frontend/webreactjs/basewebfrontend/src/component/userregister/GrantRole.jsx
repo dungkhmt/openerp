@@ -11,71 +11,60 @@ import {
   Typography,
 } from "@mui/material";
 import { grey, pink, red } from "@mui/material/colors";
-import { useTheme } from "@mui/material/styles";
-import makeStyles from "@mui/styles/makeStyles";
 import TertiaryButton from "component/button/TertiaryButton";
 import React from "react";
 import { FcApproval } from "react-icons/fc";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 
-const useStyles = makeStyles(() => {
-  const theme = useTheme();
-  return {
-    grantedRoles: {
-      position: "relative",
-      width: "100%",
-      padding: "1rem",
-      paddingRight: 50,
+const styles = {
+  grantedRole: {
+    position: "relative",
+    width: "100%",
+    pl: 2,
+    pr: 6.25,
+  },
+  grantedRolesList: {
+    "& li": {
+      "& svg": {
+        display: "none",
+      },
     },
-    grantedRolesList: {
+    "&:hover": {
       "& li": {
         "& svg": {
-          display: "none",
-        },
-      },
-      "&:hover": {
-        "& li": {
-          "& svg": {
-            display: "block",
-            "&:hover": {
-              color: red["A700"],
-            },
+          display: "block",
+          "&:hover": {
+            color: red["A700"],
           },
         },
       },
     },
-    removeIcon: {
-      fontSize: 42,
-      color: pink[400],
-      position: "absolute",
-      right: 0,
-      top: "50%",
-      marginTop: -20,
-      padding: 8,
+  },
+  removeIcon: {
+    fontSize: 42,
+    color: pink[400],
+    position: "absolute",
+    right: 0,
+    top: "50%",
+    marginTop: -2.5,
+    p: 1,
+  },
+  role: {
+    borderRadius: 2,
+    mx: 1,
+    pl: 1,
+    "&:hover": {
+      background: grey[200],
     },
-    role: {
-      borderRadius: 8,
-      marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(1),
-      paddingLeft: theme.spacing(1),
-      "&:hover": {
-        background: grey[200],
-      },
-    },
-    ListItemIcon: {
-      minWidth: 32,
-    },
-    listItem: {
-      paddingTop: 0,
-      paddingBottom: 0,
-    },
-  };
-});
+  },
+  listItemIcon: {
+    minWidth: 32,
+  },
+  listItem: { py: 0 },
+};
 
 function GrantRole({ grantedRoles, roles, setRoles }) {
-  const classes = useStyles();
-
   // Menu.
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -107,13 +96,11 @@ function GrantRole({ grantedRoles, roles, setRoles }) {
   return grantedRoles ? (
     <>
       <Typography variant="h6">Phân quyền</Typography>
-
       <Divider />
-
       <List>
         {grantedRoles.map((role) => (
-          <ListItem key={role} className={classes.listItem}>
-            <ListItemIcon className={classes.ListItemIcon}>
+          <ListItem key={role} sx={styles.listItem}>
+            <ListItemIcon sx={styles.listItemIcon}>
               <FcApproval size={24} />
             </ListItemIcon>
             <ListItemText primary={role} />
@@ -167,7 +154,7 @@ function GrantRole({ grantedRoles, roles, setRoles }) {
                     key={role.id}
                     data-role-id={role.id}
                     onClick={onAddRole}
-                    className={classes.role}
+                    sx={styles.role}
                   >
                     <Typography variant="inherit" noWrap>
                       {role.name}
@@ -178,26 +165,16 @@ function GrantRole({ grantedRoles, roles, setRoles }) {
           </List>
         </SimpleBar>
       </Menu>
-
       <Divider />
-
-      <List className={classes.grantedRolesList}>
+      <List sx={styles.grantedRolesList}>
         {roles?.map(
           (role) =>
             role.granted && (
-              <ListItem key={role.id} divider className={classes.grantedRole}>
+              <ListItem key={role.id} divider sx={styles.grantedRole}>
                 <ListItemText>{role.name}</ListItemText>
                 <RemoveCircleIcon
                   onClick={() => onRemoveRole(role)}
-                  sx={{
-                    fontSize: 42,
-                    color: pink[400],
-                    position: "absolute",
-                    right: 0,
-                    top: "50%",
-                    marginTop: -2.5,
-                    p: 1,
-                  }}
+                  sx={styles.removeIcon}
                 />
               </ListItem>
             )

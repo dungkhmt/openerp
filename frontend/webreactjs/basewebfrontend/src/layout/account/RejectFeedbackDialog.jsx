@@ -1,16 +1,11 @@
 import { Typography } from "@material-ui/core";
-import makeStyles from "@mui/styles/makeStyles";
 import PrimaryButton from "component/button/PrimaryButton";
 import TertiaryButton from "component/button/TertiaryButton";
 import CustomizedDialogs from "component/dialog/CustomizedDialogs";
 
-const useStyles = makeStyles(() => ({
-  btn: { margin: 4, width: 148 },
-}));
+const styles = { btn: { m: 0.5, width: 148 } };
 
 function RejectFeedbackDialog({ open, handleContinue, handleReject }) {
-  const classes = useStyles();
-
   return (
     <CustomizedDialogs
       open={open}
@@ -25,11 +20,11 @@ function RejectFeedbackDialog({ open, handleContinue, handleReject }) {
       }
       actions={
         <>
-          <TertiaryButton className={classes.btn} onClick={handleContinue}>
+          <TertiaryButton sx={styles.btn} onClick={handleContinue}>
             Tiếp tục chỉnh sửa
           </TertiaryButton>
           <PrimaryButton
-            className={classes.btn}
+            sx={styles.btn}
             onClick={handleReject}
             style={{ marginLeft: 4 }}
           >
