@@ -18,14 +18,39 @@ import Paper from "@material-ui/core/Paper";
 import { getColorLevel, StyledTableCell, StyledTableRow } from "./lib";
 import { useTranslation } from "react-i18next";
 import { toFormattedDateTime } from "../../../utils/dateutils";
+import MaterialTable from "material-table";
+
 function ListProblem() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPage] = useState(0);
   const pageSizes = [20, 50, 100];
   const [contestProblems, setContestProblems] = useState([]);
+  const [problems, setProblems] = useState([]);
 
   const { t } = useTranslation("education/programmingcontest/listproblem");
+
+  const columns = [
+    {
+      title: "ID",
+      field: "problemId",
+      render: (rowData) => (
+        <Link
+          to={{
+            pathname:
+              "/programming-contest/manager-view-problem-detail/" +
+              rowData["problemId"],
+          }}
+        >
+          {rowData["problemId"]}
+        </Link>
+      ),
+    },
+    { title: "Name", field: "problemName" },
+    { title: "Created By", field: "userId" },
+    { title: "Created Date", field: "createdAt" },
+    { title: "Level", field: "levelId" },
+  ];
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -37,6 +62,11 @@ function ListProblem() {
     // getProblemContestList();
   };
 
+  function getProblems() {
+    request("get", "/get-all-contest-problems", (res) => {
+      setProblems(res.data);
+    }).then();
+  }
   async function getProblemContestList() {
     console.log("p ", page);
     request(
@@ -52,11 +82,17 @@ function ListProblem() {
 
   useEffect(() => {
     console.log("use effect");
+    getProblems();
     getProblemContestList().then();
   }, [page, pageSize]);
 
   return (
     <div>
+      <MaterialTable
+        title="Problems"
+        columns={columns}
+        data={problems}
+      ></MaterialTable>
       <div>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 750 }} aria-label="customized table">

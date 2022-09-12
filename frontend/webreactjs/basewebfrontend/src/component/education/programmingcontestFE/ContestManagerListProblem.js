@@ -22,6 +22,7 @@ export function ContestManagerListProblem(props) {
   const [contestName, setContestName] = useState();
   const [contestTime, setContestTime] = useState();
   const [problems, setProblems] = useState([]);
+  const [userSubmissions, setUserSubmissions] = useState([]);
   const [timeLimit, setTimeLimit] = useState();
   const [isProcessing, setIsProcessing] = useState(false);
   const [threshold, setThreshold] = useState(50);
@@ -71,6 +72,23 @@ export function ContestManagerListProblem(props) {
       }
     ).then();
   }
+  function handleExportParticipantSubmission() {
+    // TODO
+    request(
+      "get",
+      "/get-user-judged-problem-submission/" + contestId,
+      (res) => {
+        console.log("handleJudgeContest", res.data);
+        //alert("Rejudge DONE!!!");
+        setIsProcessing(false);
+        setUserSubmissions(res.data);
+        //setSuccessful(res.data.contents.content);
+        //setTotalPageSuccessful(res.data.contents.totalPages);
+      }
+    ).then();
+
+    // build and download PDF from data userSubmissions
+  }
   function handleCheckPlagiarism(event) {
     event.preventDefault();
     setIsProcessing(true);
@@ -116,6 +134,14 @@ export function ContestManagerListProblem(props) {
         >
           {" "}
           Judge
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleExportParticipantSubmission}
+        >
+          {" "}
+          Export participant submissions
         </Button>
         <Button
           variant="contained"
