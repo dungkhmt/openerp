@@ -14,4 +14,6 @@ public interface ProblemPagingAndSortingRepo extends PagingAndSortingRepository<
 
     @Query(value = "select p from ProblemEntity p where p.isPublicProblem = true ")
     Page<ProblemEntity> findAllByPublicIs(Pageable pageable);
+
+
 }

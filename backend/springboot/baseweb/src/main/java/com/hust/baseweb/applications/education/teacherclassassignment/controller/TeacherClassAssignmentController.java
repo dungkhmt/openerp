@@ -55,6 +55,7 @@ public class TeacherClassAssignmentController {
         if (result.equals("OK")) {
             return ResponseEntity.ok(result);
         }
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 

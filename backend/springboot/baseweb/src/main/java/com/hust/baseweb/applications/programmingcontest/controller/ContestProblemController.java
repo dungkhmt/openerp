@@ -71,7 +71,11 @@ public class ContestProblemController {
     }
 
 
-
+    @GetMapping("/get-all-contest-problems")
+    public ResponseEntity<?> getAllContestProblems(Principal principal){
+        List<ProblemEntity> problems = problemTestCaseService.getAllProblems();
+        return ResponseEntity.ok().body(problems);
+    }
     @GetMapping("/get-contest-problem-paging")
     public ResponseEntity<?> getContestProblemPaging(Pageable pageable, @Param("sortBy") String sortBy, @Param("desc") String desc){
         log.info("getContestProblemPaging pageable {}", pageable);
@@ -939,4 +943,9 @@ public class ContestProblemController {
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
+    @GetMapping("/get-user-judged-problem-submission/{contestId}")
+    public ResponseEntity<?> getUserJudgedProblemSubmission(@PathVariable String contestId){
+        List<ModelUserJudgedProblemSubmissionResponse> res = problemTestCaseService.getUserJudgedProblemSubmissions(contestId);
+        return ResponseEntity.ok().body(res);
+    }
 }

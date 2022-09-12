@@ -19,6 +19,7 @@ public interface ProblemTestCaseService {
     void updateProblemSourceCode(ModelAddProblemLanguageSourceCode modelAddProblemLanguageSourceCode, String problemId);
 
     Page<ProblemEntity> getContestProblemPaging(Pageable pageable);
+    List<ProblemEntity> getAllProblems();
 
     ProblemEntity findContestProblemByProblemId(String problemId) throws Exception;
 
@@ -145,4 +146,7 @@ public interface ProblemTestCaseService {
     ModelUploadTestCaseOutput addTestCase(String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName);
 
     ModelUploadTestCaseOutput uploadUpdateTestCase(UUID testCaseId, String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName);
+
+    public List<ModelUserJudgedProblemSubmissionResponse> getUserJudgedProblemSubmissions(String contestId);
+
 }

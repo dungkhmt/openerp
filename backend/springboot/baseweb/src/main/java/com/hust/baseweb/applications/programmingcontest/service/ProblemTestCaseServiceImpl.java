@@ -140,6 +140,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public List<ProblemEntity> getAllProblems() {
+        List<ProblemEntity> problems = problemRepo.findAll();
+        return problems;
+    }
+
+    @Override
     public ProblemEntity findContestProblemByProblemId(String problemId) throws Exception {
         try {
             return problemRepo.findByProblemId(problemId);
@@ -2699,6 +2705,22 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         ModelUploadTestCaseOutput res= new ModelUploadTestCaseOutput();
         res.setMessage("Successfully");
         res.setStatus("OK");
+        return res;
+    }
+
+    @Override
+    public List<ModelUserJudgedProblemSubmissionResponse> getUserJudgedProblemSubmissions(String contestId) {
+        List<ContestSubmissionEntity> submissions = contestSubmissionRepo.findAllByContestId(contestId);
+        List<ModelUserJudgedProblemSubmissionResponse> res = new ArrayList();
+        for(ContestSubmissionEntity s: submissions){
+            ModelUserJudgedProblemSubmissionResponse e = new ModelUserJudgedProblemSubmissionResponse();
+            PersonModel person = userService.findPersonByUserLoginId(s.getUserId());
+            e.setUserId(s.getUserId());
+            e.setFullName(person.getFullName());
+            e.setProblemId(s.getProblemId());
+            e.setPoint(s.getPoint());
+            res.add(e);
+        }
         return res;
     }
 }
