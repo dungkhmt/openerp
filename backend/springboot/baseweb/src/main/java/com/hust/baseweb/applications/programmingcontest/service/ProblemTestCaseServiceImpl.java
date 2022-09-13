@@ -2727,7 +2727,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }else{
             // scan list problem & submission and update max point
             ModelUserJudgedProblemSubmissionResponse maxP = null;
-            int maxPoint = 0;
+            int maxPoint = -1000;
             for(ModelUserJudgedProblemSubmissionResponse e: mUserId2Submission.get(s.getUserId())){
                 if(e.getProblemId().equals(s.getProblemId())){
                     if(e.getPoint() > maxPoint){
