@@ -2708,18 +2708,83 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         return res;
     }
 
-    @Override
-    public List<ModelUserJudgedProblemSubmissionResponse> getUserJudgedProblemSubmissions(String contestId) {
-        List<ContestSubmissionEntity> submissions = contestSubmissionRepo.findAllByContestId(contestId);
-        List<ModelUserJudgedProblemSubmissionResponse> res = new ArrayList();
-        for(ContestSubmissionEntity s: submissions){
+    private void updateMaxPoint(ContestSubmissionEntity s,
+                                HashMap<String, List<ModelUserJudgedProblemSubmissionResponse>> mUserId2Submission,
+                                HashMap<String, ProblemEntity> mID2Problem){
+        if(mUserId2Submission.get(s.getUserId()) == null){
+            mUserId2Submission.put(s.getUserId(), new ArrayList<ModelUserJudgedProblemSubmissionResponse>());
             ModelUserJudgedProblemSubmissionResponse e = new ModelUserJudgedProblemSubmissionResponse();
             PersonModel person = userService.findPersonByUserLoginId(s.getUserId());
             e.setUserId(s.getUserId());
             e.setFullName(person.getFullName());
             e.setProblemId(s.getProblemId());
+            e.setSubmissionSourceCode(s.getSourceCode());
             e.setPoint(s.getPoint());
-            res.add(e);
+            e.setProblemName(mID2Problem.get(s.getProblemId()).getProblemName());
+            e.setTestCasePassed(s.getTestCasePass());
+            e.setStatus(s.getStatus());
+            mUserId2Submission.get(s.getUserId()).add(e);
+        }else{
+            // scan list problem & submission and update max point
+            ModelUserJudgedProblemSubmissionResponse maxP = null;
+            int maxPoint = 0;
+            for(ModelUserJudgedProblemSubmissionResponse e: mUserId2Submission.get(s.getUserId())){
+                if(e.getProblemId().equals(s.getProblemId())){
+                    if(e.getPoint() > maxPoint){
+                        maxP = e; maxPoint = e.getPoint();
+                    }
+                }
+            }
+            if(maxP == null){
+                ModelUserJudgedProblemSubmissionResponse e = new ModelUserJudgedProblemSubmissionResponse();
+                PersonModel person = userService.findPersonByUserLoginId(s.getUserId());
+                e.setUserId(s.getUserId());
+                e.setFullName(person.getFullName());
+                e.setProblemId(s.getProblemId());
+                e.setSubmissionSourceCode(s.getSourceCode());
+                e.setPoint(s.getPoint());
+                e.setProblemName(mID2Problem.get(s.getProblemId()).getProblemName());
+                e.setTestCasePassed(s.getTestCasePass());
+                e.setStatus(s.getStatus());
+                mUserId2Submission.get(s.getUserId()).add(e);
+            }else{
+                if(maxP.getPoint() < s.getPoint()){// update max point submission
+                    maxP.setPoint(s.getPoint());
+                    maxP.setSubmissionSourceCode(s.getSourceCode());
+                    maxP.setStatus(s.getStatus());
+                    maxP.setTestCasePassed(s.getTestCasePass());
+                }
+            }
+        }
+    }
+    @Override
+    public List<ModelUserJudgedProblemSubmissionResponse> getUserJudgedProblemSubmissions(String contestId) {
+        List<ContestSubmissionEntity> submissions = contestSubmissionRepo.findAllByContestId(contestId);
+        List<ModelUserJudgedProblemSubmissionResponse> res = new ArrayList();
+        HashMap<String, List<ModelUserJudgedProblemSubmissionResponse>> mUserId2Submission = new HashMap();
+        HashMap<String, ProblemEntity> mID2Problem = new HashMap();
+        ContestEntity contest = contestRepo.findContestByContestId(contestId);
+        List<ProblemEntity> problems = contest.getProblems();
+        for(ProblemEntity p: problems){
+            mID2Problem.put(p.getProblemId(), p);
+        }
+        for(ContestSubmissionEntity s: submissions){
+            updateMaxPoint(s,mUserId2Submission, mID2Problem);
+            //ModelUserJudgedProblemSubmissionResponse e = new ModelUserJudgedProblemSubmissionResponse();
+            //PersonModel person = userService.findPersonByUserLoginId(s.getUserId());
+            //e.setUserId(s.getUserId());
+            //e.setFullName(person.getFullName());
+            //e.setProblemId(s.getProblemId());
+            //e.setSubmissionSourceCode(s.getSourceCode());
+            //e.setPoint(s.getPoint());
+            //res.add(e);
+        }
+        for(String userId: mUserId2Submission.keySet()){
+            if(mUserId2Submission.get(userId) != null) {
+                for (ModelUserJudgedProblemSubmissionResponse m : mUserId2Submission.get(userId)) {
+                    res.add(m);
+                }
+            }
         }
         return res;
     }
