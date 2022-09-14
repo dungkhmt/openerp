@@ -12,6 +12,8 @@ import { ContestManagerListProblem } from "./ContestManagerListProblem";
 import ContestManagerListParticipant from "./ContestManagerListParticipant";
 import ContestManagerListRequestingParticipant from "./ContestManagerListRequestingParticipant";
 import ContestManagerAddMember from "./ContestManagerAddMember";
+import ContestManagerAddMember2Contest from "./ContestManagerAddMember2Contest";
+
 import ContestManagerRanking from "./ContestManagerRanking";
 import ContestManagerUserSubmission from "./ContestManagerUserSubmission";
 import ContestManagerUserSubmissionNotEvaluated from "./ContestManagerUserSubmissionNotEvaluated";
@@ -281,6 +283,7 @@ export function ContestManager() {
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={3}>
+        <ContestManagerAddMember2Contest contestId={contestId} />
         <ContestManagerAddMember contestId={contestId} />
       </TabPanelVertical>
 

@@ -18,6 +18,7 @@ public interface UserRegistrationContestRepo extends JpaRepository<UserRegistrat
 //    List<ModelUserRegisteredClassInfo> getAllUserRegisteredContestInfo()
 
     List<UserRegistrationContestEntity> findAllByUserIdAndRoleId(String userId, String roleId);
+    List<UserRegistrationContestEntity> findAllByUserIdAndRoleIdAndStatus(String userId, String roleId, String status);
 
     List<UserRegistrationContestEntity> findAllByUserId(String userId);
 

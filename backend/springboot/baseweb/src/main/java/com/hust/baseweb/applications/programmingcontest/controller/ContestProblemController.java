@@ -27,7 +27,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.ws.rs.Path;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -458,7 +461,11 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(cnt);
     }
 
-
+    @GetMapping("/get-contest-registered-student")
+    public ResponseEntity<?> getContestRegisteredStudent(Principal principal){
+        ModelGetContestPageResponse res = problemTestCaseService.getRegisteredContestsByUser(principal.getName());
+        return ResponseEntity.ok().body(res);
+    }
     @GetMapping("/get-contest-paging-registered")
     public ResponseEntity<?> getContestRegisteredByStudentPaging(Pageable pageable, @Param("sortBy") String sortBy, Principal principal){
         log.info("getContestRegisteredByStudentPaging sortBy {} pageable {}", sortBy, pageable);
@@ -948,4 +955,6 @@ public class ContestProblemController {
         List<ModelUserJudgedProblemSubmissionResponse> res = problemTestCaseService.getUserJudgedProblemSubmissions(contestId);
         return ResponseEntity.ok().body(res);
     }
+
+
 }

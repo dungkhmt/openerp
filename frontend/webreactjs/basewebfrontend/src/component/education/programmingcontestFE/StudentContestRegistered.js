@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
 import { successNoti } from "../../../utils/notification";
 import { Timer } from "./Timer";
+import ContestStudentList from "./ContestStudentList";
 
 export function StudentContestRegistered() {
   const [page, setPage] = useState(1);
@@ -65,6 +66,7 @@ export function StudentContestRegistered() {
 
   return (
     <div>
+      <ContestStudentList />
       <div>
         <div>
           <TableContainer component={Paper}>

@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.service;
 
+import com.google.gson.Gson;
 import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.docker.DockerClientBase;
@@ -25,6 +26,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1331,6 +1334,36 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         //Page<ContestEntity> list = userRegistrationContestPagingAndSortingRepo.getContestByUserAndStatusSuccessfulInSolvingTime(pageable, userName, currentDate);
         Page<ContestEntity> list = userRegistrationContestPagingAndSortingRepo.getContestByUser(pageable, userName);
         return getModelGetContestPageResponse(list);
+    }
+
+    @Override
+    public ModelGetContestPageResponse getRegisteredContestsByUser(String userName) {
+        List<UserRegistrationContestEntity> lst = userRegistrationContestRepo
+            .findAllByUserIdAndRoleIdAndStatus(userName,UserRegistrationContestEntity.ROLE_PARTICIPANT, UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+
+        List<ModelGetContestResponse> lists = new ArrayList<>();
+        if(lst != null){
+            lst.forEach(ur -> {
+                ContestEntity contest = contestRepo.findContestByContestId(ur.getContestId());
+                ModelGetContestResponse modelGetContestResponse = ModelGetContestResponse.builder()
+                                                                                         .contestId(contest.getContestId())
+                                                                                         .contestName(contest.getContestName())
+                                                                                         .contestTime(contest.getContestSolvingTime())
+                                                                                         .countDown(contest.getCountDown())
+                                                                                         .startAt(contest.getStartedAt())
+                                                                                         .isPublic(contest.getIsPublic())
+                                                                                         .statusId(contest.getStatusId())
+                                                                                         .userId(contest.getUserId())
+                                                                                         .createdAt(contest.getCreatedAt())
+                                                                                         .build();
+                lists.add(modelGetContestResponse);
+            });
+        }
+
+        return ModelGetContestPageResponse.builder()
+                                          .contents(lists)
+                                          .build();
+
     }
 
     @Override
@@ -2788,4 +2821,5 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         return res;
     }
+
 }

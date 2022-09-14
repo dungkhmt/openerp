@@ -1,0 +1,86 @@
+import React, { useState } from "react";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Box from "@mui/material/Box";
+import SearchIcon from "@mui/icons-material/Search";
+import { request } from "./Request";
+import { Search, SearchIconWrapper } from "./lib";
+import { InputBase } from "@mui/material";
+import StandardTable from "component/table/StandardTable";
+
+export default function ContestManagerAddMember2Contest(props) {
+  const contestId = props.contestId;
+  const [searchUsers, setSearchUsers] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [keyword, setKeyword] = useState("");
+  const [pageSearchSize, setPageSearchSize] = useState(10);
+  const [totalPageSearch, setTotalPageSearch] = useState(0);
+  const [pageSearch, setPageSearch] = useState(1);
+
+  const columns = [
+    { title: "Index", field: "index" },
+    { title: "UserID", field: "userName" },
+    { title: "FullName", field: "fullName" },
+  ];
+  function searchUser(keyword, s, p) {
+    request(
+      "get",
+      "/search-user/" +
+        contestId +
+        "?size=" +
+        s +
+        "&page=" +
+        (p - 1) +
+        "&keyword=" +
+        keyword,
+      (res) => {
+        console.log("res search", res);
+        //setSearchUsers(res.data.contents.content);
+        const data = res.data.contents.content.map((e, index) => ({
+          index: index + 1,
+          userName: e.userName,
+          fullName: e.lastName + " " + e.middleName + " " + e.firstName,
+        }));
+        setSearchUsers(data);
+        setTotalPageSearch(res.data.contents.totalPages);
+      }
+    ).then();
+  }
+
+  return (
+    <div>
+      <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
+        <AppBar position="static" color={"transparent"}>
+          <Toolbar>
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <InputBase
+                style={{ paddingLeft: 50 }}
+                placeholder={"search..."}
+                onChange={(event) => {
+                  setKeyword(event.target.value);
+                  searchUser(event.target.value, pageSearchSize, pageSearch);
+                }}
+              />
+            </Search>
+          </Toolbar>
+        </AppBar>
+      </Box>
+
+      <StandardTable
+        title={"DS Users"}
+        columns={columns}
+        data={searchUsers}
+        hideCommandBar
+        options={{
+          selection: false,
+          pageSize: 20,
+          search: false,
+          sorting: false,
+        }}
+      />
+    </div>
+  );
+}

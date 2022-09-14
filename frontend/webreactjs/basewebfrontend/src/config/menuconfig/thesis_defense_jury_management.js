@@ -24,7 +24,7 @@ export const ThesisDefenseJuryManagement = {
     {
       id: "MENU_EDUCATION_THESIS_MANAGEMENT_CREATE",
       path: "/thesis/create",
-      isPublic: true,
+      isPublic: false,
       icon: "StarBorder",
       text: "Tạo mới Đề tài  tốt nghiệp ",
       child: [],

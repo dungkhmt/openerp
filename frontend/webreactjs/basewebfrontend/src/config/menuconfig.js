@@ -50,7 +50,7 @@ MENU_LIST.push(eduLearningManagement);
 MENU_LIST.push(DataAdministration);
 //MENU_LIST.push(WMS);
 MENU_LIST.push(ThesisDefensePlanManagement);
-MENU_LIST.push(ThesisDefenseJuryManagement);
+//MENU_LIST.push(ThesisDefenseJuryManagement);
 MENU_LIST.push(taskmanagement);
 MENU_LIST.push(whiteboard);
 MENU_LIST.push(Chat);
