@@ -17,7 +17,7 @@ public class ModelUserRegisteredClassInfo {
     private String firstName;
     private String lastName;
     private String status;
-
+    //private String roleId;
 //    public ModelUserRegisteredClassInfo(String email, String userName, String middleName, String firstName, String lastName) {
 //        this.email = email;
 //        this.userName = userName;

@@ -10,6 +10,7 @@ public interface UserRegistrationContestRepo extends JpaRepository<UserRegistrat
 //    UserRegistrationContestEntity findUserRegistrationContestByContestAndUserLogin(ContestEntity contest, UserLogin userLogin);
 
     UserRegistrationContestEntity findUserRegistrationContestEntityByContestIdAndUserId(String contestId, String userId);
+    UserRegistrationContestEntity findUserRegistrationContestEntityByContestIdAndUserIdAndRoleId(String contestId, String userId, String roleId);
 
 //    UserRegistrationContestEntity findUserRegistrationContestEntityByContestAndUserLoginAndStatus(ContestEntity contest, UserLogin userLogin, String status);
 

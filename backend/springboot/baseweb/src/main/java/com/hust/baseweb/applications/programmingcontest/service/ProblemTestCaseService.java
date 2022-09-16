@@ -70,6 +70,8 @@ public interface ProblemTestCaseService {
 
     int teacherManageStudentRegisterContest(String teacherId, ModelTeacherManageStudentRegisterContest modelTeacherManageStudentRegisterContest) throws MiniLeetCodeException;
 
+    boolean approveRegisteredUser2Contest(String teacherId, ModelApproveRegisterUser2ContestInput input) throws MiniLeetCodeException;
+
     void calculateContestResult(String contestId);
 
     ModelGetContestPageResponse getContestPagingByUserCreatedContest(String userName, Pageable pageable);
@@ -79,8 +81,10 @@ public interface ProblemTestCaseService {
     List<ModelGetContestResponse> getContestByUserRole(String userName);
 
     ListModelUserRegisteredContestInfo getListUserRegisterContestSuccessfulPaging(Pageable pageable, String contestId);
+    List<ModelMemberOfContestResponse> getListMemberOfContest(String contestId);
 
     ListModelUserRegisteredContestInfo getListUserRegisterContestPendingPaging(Pageable pageable, String contestId);
+    List<ModelMemberOfContestResponse> getPendingRegisteredUsersOfContest(String contestId);
 
     ListModelUserRegisteredContestInfo searchUser(Pageable pageable, String contestId, String keyword);
 
@@ -150,4 +154,7 @@ public interface ProblemTestCaseService {
 
     public List<ModelUserJudgedProblemSubmissionResponse> getUserJudgedProblemSubmissions(String contestId);
 
+    public ModelGetRolesOfUserInContestResponse getRolesOfUserInContest(String userId, String contestId);
+
+    public boolean removeMemberFromContest(UUID id);
 }

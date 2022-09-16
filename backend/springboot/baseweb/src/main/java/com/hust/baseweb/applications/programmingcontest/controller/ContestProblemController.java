@@ -416,6 +416,18 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(resp);
     }
 
+    @Secured("ROLE_TEACHER")
+    @GetMapping("/get-members-of-contest/{contestId}")
+    public ResponseEntity<?> getMembersOfContest(Principal principal, @PathVariable String contestId){
+        List<ModelMemberOfContestResponse> res = problemTestCaseService.getListMemberOfContest(contestId);
+        return ResponseEntity.ok().body(res);
+    }
+    @Secured("ROLE_TEACHER")
+    @PostMapping("/remove-member-from-contest")
+    public ResponseEntity<?> removeMemberFromContest(Principal principal, @RequestBody ModelRemoveMemberFromContestInput input){
+        boolean res = problemTestCaseService.removeMemberFromContest(input.getId());
+        return ResponseEntity.ok().body(res);
+    }
 
     @Secured("ROLE_TEACHER")
     @GetMapping("/get-user-register-pending-contest/{contestId}")
@@ -423,6 +435,12 @@ public class ContestProblemController {
         log.info("get User Register Pending Contest pageable {} size {} page {} contest id {}", pageable, size, page, contestId);
         ListModelUserRegisteredContestInfo resp = problemTestCaseService.getListUserRegisterContestPendingPaging(pageable, contestId);
         return ResponseEntity.status(200).body(resp);
+    }
+    @Secured("ROLE_TEACHER")
+    @GetMapping("/get-pending-registered-users-of-contest/{contestId}")
+    public ResponseEntity<?> getPendingRegisteredUserOfContest(Principal principal, @PathVariable String contestId){
+        List<ModelMemberOfContestResponse> res = problemTestCaseService.getPendingRegisteredUsersOfContest(contestId);
+        return ResponseEntity.ok().body(res);
     }
 
     @Secured("ROLE_TEACHER")
@@ -445,6 +463,18 @@ public class ContestProblemController {
         problemTestCaseService.teacherManageStudentRegisterContest(principal.getName(), request);
         return ResponseEntity.status(200).body(null);
     }
+    @Secured("ROLE_TEACHER")
+    @PostMapping("/approve-registered-user-2-contest")
+    public ResponseEntity<?> approveRegisteredUser2Contest(Principal principal, @RequestBody ModelApproveRegisterUser2ContestInput input){
+        try {
+            boolean ok = problemTestCaseService.approveRegisteredUser2Contest(principal.getName(), input);
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.ok().body("");
+        }
+        return ResponseEntity.ok().body(true);
+    }
+
     @Secured("ROLE_TEACHER")
     @PostMapping("/teacher-manager-all-student-register-contest")
     public ResponseEntity<?> teacherManagerAllStudentRegisterContest(Principal principal, @RequestBody ModelTeacherManageStudentRegisterContest request) throws MiniLeetCodeException {
@@ -957,4 +987,10 @@ public class ContestProblemController {
     }
 
 
+    @GetMapping("/get-roles-user-approved-notapproved-in-contest/{userId}/{contestId}")
+    public ResponseEntity<?> getRolesUserParrovedNotApprovedInContest(Principal principal, @PathVariable String userId
+        , @PathVariable String contestId){
+        ModelGetRolesOfUserInContestResponse res = problemTestCaseService.getRolesOfUserInContest(userId, contestId);
+        return ResponseEntity.ok().body(res);
+    }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
@@ -7,7 +7,8 @@ import { request } from "./Request";
 import { Search, SearchIconWrapper } from "./lib";
 import { InputBase } from "@mui/material";
 import StandardTable from "component/table/StandardTable";
-
+import { TextField, MenuItem, Button } from "@mui/material/";
+import AddMember2ContestDialog from "./AddMember2ContestDialog";
 export default function ContestManagerAddMember2Contest(props) {
   const contestId = props.contestId;
   const [searchUsers, setSearchUsers] = useState([]);
@@ -16,12 +17,64 @@ export default function ContestManagerAddMember2Contest(props) {
   const [pageSearchSize, setPageSearchSize] = useState(10);
   const [totalPageSearch, setTotalPageSearch] = useState(0);
   const [pageSearch, setPageSearch] = useState(1);
+  const [open, setOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [rolesApproved, setRolesApproved] = useState([]);
+  const [rolesNotApproved, setRolesNotApproved] = useState([]);
 
   const columns = [
     { title: "Index", field: "index" },
     { title: "UserID", field: "userName" },
     { title: "FullName", field: "fullName" },
+    {
+      title: "Action",
+      render: (row) => (
+        <Button onClick={() => handleClick(row["userName"])}>Select</Button>
+      ),
+    },
   ];
+  function handleModalClose() {
+    setOpen(false);
+  }
+  function onUpdateInfo(selectRole, selectedUserId) {
+    //alert("onUpdateInfo " + selectRole + ":" + selectedUserId);
+    let body = {
+      contestId: contestId,
+      userId: selectedUserId,
+      role: selectRole,
+    };
+
+    request(
+      "post",
+      "/add-user-to-contest",
+      (res) => {
+        alert("Add successully");
+        setOpen(false);
+      },
+      {},
+      body
+    ).then();
+  }
+  function handleClick(u) {
+    //alert("click " + u);
+    request(
+      "get",
+      "/get-roles-user-approved-notapproved-in-contest/" + u + "/" + contestId,
+      (res) => {
+        console.log("role in - notin contest ", res.data);
+        setRolesApproved(res.data.rolesApprovedInContest);
+        setRolesNotApproved(res.data.rolesNotInContest);
+        setSelectedUserId(u);
+        setOpen(true);
+      }
+    );
+  }
+  function getRoles() {
+    request("get", "/get-list-roles-contest", (res) => {
+      console.log("getRoles, res.data = ", res.data);
+      setRoles(res.data);
+    }).then();
+  }
   function searchUser(keyword, s, p) {
     request(
       "get",
@@ -46,7 +99,9 @@ export default function ContestManagerAddMember2Contest(props) {
       }
     ).then();
   }
-
+  useEffect(() => {
+    getRoles();
+  }, []);
   return (
     <div>
       <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
@@ -77,9 +132,17 @@ export default function ContestManagerAddMember2Contest(props) {
         options={{
           selection: false,
           pageSize: 20,
-          search: false,
-          sorting: false,
+          search: true,
+          sorting: true,
         }}
+      />
+      <AddMember2ContestDialog
+        open={open}
+        onClose={handleModalClose}
+        onUpdateInfo={onUpdateInfo}
+        selectedUserId={selectedUserId}
+        rolesApproved={rolesApproved}
+        rolesNotApproved={rolesNotApproved}
       />
     </div>
   );

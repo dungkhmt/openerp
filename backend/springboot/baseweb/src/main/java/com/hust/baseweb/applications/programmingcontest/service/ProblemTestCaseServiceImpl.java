@@ -1167,6 +1167,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     .contestId(contestId)
                     .userId(userId)
                     .status(Constants.RegistrationType.PENDING.getValue())
+                    .roleId(UserRegistrationContestEntity.ROLE_PARTICIPANT)
                     .build();
             userRegistrationContestRepo.save(userRegistrationContestEntity);
 
@@ -1231,6 +1232,22 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             throw new MiniLeetCodeException("Status not found");
         }
         return cnt;
+    }
+
+    @Override
+    public boolean approveRegisteredUser2Contest(
+        String teacherId,
+        ModelApproveRegisterUser2ContestInput input
+    ) throws MiniLeetCodeException {
+
+        UserRegistrationContestEntity u = userRegistrationContestRepo.findById(input.getId()).orElse(null);
+        if(u != null){
+            u.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+            u = userRegistrationContestRepo.save(u);
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -1309,12 +1326,46 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public List<ModelMemberOfContestResponse> getListMemberOfContest(String contestId) {
+        List<UserRegistrationContestEntity> lst = userRegistrationContestRepo.findAllByContestIdAndStatus(contestId, UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+        List<ModelMemberOfContestResponse> res = new ArrayList();
+        for(UserRegistrationContestEntity u: lst){
+            PersonModel person = userService.findPersonByUserLoginId(u.getUserId());
+            ModelMemberOfContestResponse m = new ModelMemberOfContestResponse();
+            m.setId(u.getId());
+            m.setContestId(contestId);
+            m.setUserId(u.getUserId());
+            m.setRoleId(u.getRoleId());
+            m.setFullName(person.getFullName());
+            res.add(m);
+        }
+        return res;
+    }
+
+    @Override
     public ListModelUserRegisteredContestInfo getListUserRegisterContestPendingPaging(Pageable pageable, String contestId) {
 //        ContestEntity contest = contestRepo.findContestByContestId(contestId);
         Page<ModelUserRegisteredClassInfo> list = userRegistrationContestPagingAndSortingRepo.getAllUserRegisteredByContestIdAndStatusInfo(pageable, contestId, Constants.RegistrationType.PENDING.getValue());
         return ListModelUserRegisteredContestInfo.builder()
                 .contents(list)
                 .build();
+    }
+
+    @Override
+    public List<ModelMemberOfContestResponse> getPendingRegisteredUsersOfContest(String contestId) {
+        List<UserRegistrationContestEntity> lst = userRegistrationContestRepo.findAllByContestIdAndStatus(contestId, UserRegistrationContestEntity.STATUS_PENDING);
+        List<ModelMemberOfContestResponse> res = new ArrayList();
+        for(UserRegistrationContestEntity u: lst){
+            PersonModel person = userService.findPersonByUserLoginId(u.getUserId());
+            ModelMemberOfContestResponse m = new ModelMemberOfContestResponse();
+            m.setId(u.getId());
+            m.setContestId(contestId);
+            m.setUserId(u.getUserId());
+            m.setRoleId(u.getRoleId());
+            m.setFullName(person.getFullName());
+            res.add(m);
+        }
+        return res;
     }
 
     @Override
@@ -1514,7 +1565,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
     @Override
     public int addUserToContest(ModelAddUserToContest modelAddUserToContest) {
-        UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserId(modelAddUserToContest.getContestId(), modelAddUserToContest.getUserId());
+        UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo
+            .findUserRegistrationContestEntityByContestIdAndUserIdAndRoleId(modelAddUserToContest.getContestId(),
+                                                                   modelAddUserToContest.getUserId(), modelAddUserToContest.getRole());
         if(userRegistrationContest == null) {
             userRegistrationContestRepo.save(UserRegistrationContestEntity.builder()
                     .contestId(modelAddUserToContest.getContestId())
@@ -2820,6 +2873,42 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             }
         }
         return res;
+    }
+
+    @Override
+    public ModelGetRolesOfUserInContestResponse getRolesOfUserInContest(String userId, String contestId) {
+        List<UserRegistrationContestEntity> lst = userRegistrationContestRepo
+            .findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userId, UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+        List<String> roles = UserRegistrationContestEntity.getListRoles();
+        List<String> rolesApproved = new ArrayList();
+        List<String> rolesNotApproved = new ArrayList();
+        log.info("getRolesOfUserInContest, userId = " + userId + " contestId = " + contestId + " lst.sz = " + lst.size());
+        for(String role: roles) {
+            boolean approved = false;
+            for (UserRegistrationContestEntity e : lst) {
+                String r = e.getRoleId();
+                log.info("getRolesOfUserInContest, userId = " + userId + " contestId = " + contestId + " lst.sz = " + lst.size()
+                +" role approved r = " + r + " consider role = " + role);
+                if(role.equals(r)){
+                    approved = true; break;
+                }
+            }
+            if(approved){
+                rolesApproved.add(role);
+            }else{
+                rolesNotApproved.add(role);
+            }
+        }
+        return new ModelGetRolesOfUserInContestResponse(userId, contestId, rolesApproved, rolesNotApproved);
+    }
+
+    @Override
+    public boolean removeMemberFromContest(UUID id) {
+        UserRegistrationContestEntity u = userRegistrationContestRepo.findById(id).orElse(null);
+        if(u != null){
+            userRegistrationContestRepo.delete(u); return true;
+        }
+        return false;
     }
 
 }

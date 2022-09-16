@@ -10,7 +10,10 @@ import ContestManagerViewListContestProblemSubmissionDetailByTestCase from "./Co
 import CodeSimilarityCheck from "./CodeSimilarityCheck";
 import { ContestManagerListProblem } from "./ContestManagerListProblem";
 import ContestManagerListParticipant from "./ContestManagerListParticipant";
+import ContestManagerListMember from "./ContestManagerListMember";
 import ContestManagerListRequestingParticipant from "./ContestManagerListRequestingParticipant";
+import ContestManagerListRegisteredParticipant from "./ContestManagerListRegisteredParticipant";
+
 import ContestManagerAddMember from "./ContestManagerAddMember";
 import ContestManagerAddMember2Contest from "./ContestManagerAddMember2Contest";
 
@@ -275,10 +278,12 @@ export function ContestManager() {
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={1}>
+        <ContestManagerListMember contestId={contestId} />
         <ContestManagerListParticipant contestId={contestId} />
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={2}>
+        <ContestManagerListRegisteredParticipant contestId={contestId} />
         <ContestManagerListRequestingParticipant contestId={contestId} />
       </TabPanelVertical>
 
