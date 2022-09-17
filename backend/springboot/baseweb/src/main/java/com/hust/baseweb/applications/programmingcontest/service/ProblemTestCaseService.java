@@ -157,4 +157,7 @@ public interface ProblemTestCaseService {
     public ModelGetRolesOfUserInContestResponse getRolesOfUserInContest(String userId, String contestId);
 
     public boolean removeMemberFromContest(UUID id);
+    public boolean forbidMemberFromSubmitToContest(UUID id);
+
+    public boolean updatePermissionMemberToContest(String userId, ModelUpdatePermissionMemberToContestInput input);
 }

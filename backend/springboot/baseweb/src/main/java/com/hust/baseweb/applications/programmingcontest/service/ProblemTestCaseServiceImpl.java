@@ -1157,7 +1157,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
 //
 //        UserLogin userLogin = userLoginRepo.findByUserLoginId(userId);
-        UserRegistrationContestEntity existed = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserId(contestId, userId);
+        //UserRegistrationContestEntity existed = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserId(contestId, userId);
+        UserRegistrationContestEntity existed = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndRoleId(contestId, userId, UserRegistrationContestEntity.ROLE_PARTICIPANT);
         log.info("existed {}", existed);
 //        if(existed != null && Constants.RegisterCourseStatus.SUCCESSES.getValue().equals(existed.getStatus())){
 //            throw new MiniLeetCodeException("You are already register course successful");
@@ -1167,7 +1168,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     .contestId(contestId)
                     .userId(userId)
                     .status(Constants.RegistrationType.PENDING.getValue())
-                    .roleId(UserRegistrationContestEntity.ROLE_PARTICIPANT)
+                    .roleId(UserRegistrationContestEntity.ROLE_PARTICIPANT).createdStamp(new Date())
+.permissionId(UserRegistrationContestEntity.PERMISSION_SUBMIT)
                     .build();
             userRegistrationContestRepo.save(userRegistrationContestEntity);
 
@@ -1243,6 +1245,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         UserRegistrationContestEntity u = userRegistrationContestRepo.findById(input.getId()).orElse(null);
         if(u != null){
             u.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
+            u.setLastUpdated(new Date());
+            u.setUpdatedByUserLogin_id(teacherId);
             u = userRegistrationContestRepo.save(u);
             return true;
         }
@@ -1337,6 +1341,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             m.setUserId(u.getUserId());
             m.setRoleId(u.getRoleId());
             m.setFullName(person.getFullName());
+            m.setLastUpdatedDate(u.getLastUpdated());
+            m.setUpdatedByUserId(u.getUpdatedByUserLogin_id());
+            m.setPermissionId(u.getPermissionId());
             res.add(m);
         }
         return res;
@@ -2907,6 +2914,28 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         UserRegistrationContestEntity u = userRegistrationContestRepo.findById(id).orElse(null);
         if(u != null){
             userRegistrationContestRepo.delete(u); return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean forbidMemberFromSubmitToContest(UUID id) {
+        UserRegistrationContestEntity u = userRegistrationContestRepo.findById(id).orElse(null);
+        if(u != null){
+            u.setPermissionId(UserRegistrationContestEntity.PERMISSION_FORBIDDEN_SUBMIT);
+            userRegistrationContestRepo.save(u); return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updatePermissionMemberToContest(String userId, ModelUpdatePermissionMemberToContestInput input) {
+        UserRegistrationContestEntity u = userRegistrationContestRepo.findById(input.getUserRegisId()).orElse(null);
+        if(u != null){
+            u.setPermissionId(input.getPermissionId());
+            u.setLastUpdated(new Date());
+            u.setUpdatedByUserLogin_id(userId);
+            userRegistrationContestRepo.save(u); return true;
         }
         return false;
     }

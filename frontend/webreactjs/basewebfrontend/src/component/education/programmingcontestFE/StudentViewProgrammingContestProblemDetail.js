@@ -27,7 +27,7 @@ import { request } from "./Request";
 import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import FileSaver from "file-saver";
-
+import StudentViewSubmission from "./StudentViewSubmission";
 const editorStyle = {
   toolbar: {
     background: "#FFFFFF",
@@ -428,6 +428,10 @@ export default function StudentViewProgrammingContestProblemDetail() {
         <div>
           <h2>RunTime : {runTime}(ms)</h2>
         </div>
+      </div>
+      <div>
+        <br></br>
+        <StudentViewSubmission />
       </div>
     </div>
   );

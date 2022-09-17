@@ -17,5 +17,8 @@ public class ModelMemberOfContestResponse {
     private String userId;
     private String fullName;
     private String roleId;
+    private String updatedByUserId;
+    private Date lastUpdatedDate;
+    private String permissionId;
     private Date date;
 }

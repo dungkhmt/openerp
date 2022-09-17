@@ -1,5 +1,5 @@
 import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,8 +10,31 @@ import {
   themeTable,
 } from "../../../utils/MaterialTableUtils";
 import { request } from "./Request";
-const useStyles = makeStyles((theme) => ({}));
+import StandardTable from "component/table/StandardTable";
+import TertiaryButton from "component/button/TertiaryButton";
 
+const useStyles = makeStyles((theme) => ({}));
+const commandBarStyles = {
+  position: "sticky",
+  top: 124,
+  zIndex: 11,
+  mt: -3,
+  mb: 3,
+};
+const CommandBarButton = (props) => (
+  <TertiaryButton
+    sx={{
+      fontWeight: (theme) => theme.typography.fontWeightLight,
+      "&:hover": {
+        color: "primary.main",
+      },
+    }}
+    color="inherit"
+    {...props}
+  >
+    {props.children}
+  </TertiaryButton>
+);
 export default function StudentViewSubmission() {
   const { t } = useTranslation(
     "education/programmingcontest/studentviewcontestdetail"
@@ -77,10 +100,20 @@ export default function StudentViewSubmission() {
     { title: t("submissionList.at"), field: "createAt" },
   ];
 
+  function handleRefresh() {
+    getSubmissions();
+  }
   return (
     <Box>
+      {/*
       <MuiThemeProvider theme={themeTable}>
-        CONTEST: {contestId}
+        <Button
+          onClick={() => {
+            handleRefresh();
+          }}
+        >
+          Refresh
+        </Button>
         <MaterialTable
           title={<h1>{t("submissionList.title")}</h1>}
           columns={columns}
@@ -108,6 +141,35 @@ export default function StudentViewSubmission() {
           }}
         />
       </MuiThemeProvider>
+        */}
+      <div>
+        <StandardTable
+          title={"Submissions"}
+          columns={columns}
+          data={submissions}
+          options={{
+            selection: false,
+            pageSize: 20,
+            search: true,
+            sorting: true,
+          }}
+          sx={{
+            commandBar: commandBarStyles,
+          }}
+          commandBarComponents={
+            <>
+              <TertiaryButton
+                onClick={() => {
+                  handleRefresh();
+                }}
+              >
+                {" "}
+                REFRESH
+              </TertiaryButton>
+            </>
+          }
+        />
+      </div>
     </Box>
   );
 }

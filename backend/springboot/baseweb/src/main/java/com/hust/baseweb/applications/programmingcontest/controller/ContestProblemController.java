@@ -8,6 +8,7 @@ import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeEx
 import com.hust.baseweb.applications.programmingcontest.model.ModelCreateContestProblem;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
+import com.hust.baseweb.applications.programmingcontest.repo.UserRegistrationContestRepo;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.model.PersonModel;
@@ -45,6 +46,7 @@ public class ContestProblemController {
     ContestRepo contestRepo;
     ContestSubmissionRepo contestSubmissionRepo;
     UserService userService;
+    UserRegistrationContestRepo userRegistrationContestRepo;
 
     //public static List<ModelGetContestDetailResponse> runningContests = new ArrayList();
     public static ConcurrentMap<String, ModelGetContestDetailResponse> runningContests = new ConcurrentHashMap();
@@ -430,6 +432,21 @@ public class ContestProblemController {
     }
 
     @Secured("ROLE_TEACHER")
+    @PostMapping("/forbid-member-from-submit-to-contest")
+    public ResponseEntity<?> forbidMemberFromSubmitToContest(Principal principal, @RequestBody ModelRemoveMemberFromContestInput input){
+        boolean res = problemTestCaseService.forbidMemberFromSubmitToContest(input.getId());
+        return ResponseEntity.ok().body(res);
+    }
+    @Secured("ROLE_TEACHER")
+    @PostMapping("/update-permission-of-member-to-contest")
+    public ResponseEntity<?> updatePermissionOfMemberToContest(Principal principal,
+                                                               @RequestBody ModelUpdatePermissionMemberToContestInput input){
+        boolean res = problemTestCaseService.updatePermissionMemberToContest(principal.getName(),input);
+        return ResponseEntity.ok().body(res);
+    }
+
+
+    @Secured("ROLE_TEACHER")
     @GetMapping("/get-user-register-pending-contest/{contestId}")
     public ResponseEntity<?> getUserRegisterPendingContest(@PathVariable("contestId") String contestId, Pageable pageable, @Param("size") String size, @Param("page") String page){
         log.info("get User Register Pending Contest pageable {} size {} page {} contest id {}", pageable, size, page, contestId);
@@ -687,6 +704,49 @@ public class ContestProblemController {
                                           .totalNumberTestCase(0)
                                           .build();
             return ResponseEntity.ok().body(resp);
+        }
+
+        List<UserRegistrationContestEntity> userRegistrations = userRegistrationContestRepo
+            .findUserRegistrationContestEntityByContestIdAndUserIdAndStatusAndRoleId(model.getContestId(),principal.getName()
+                ,UserRegistrationContestEntity.STATUS_SUCCESSFUL,UserRegistrationContestEntity.ROLE_PARTICIPANT);
+        if(userRegistrations == null || userRegistrations.size() == 0){
+            ModelContestSubmissionResponse resp = ModelContestSubmissionResponse.builder()
+                                                                                .status("PARTICIPANT_NOT_APPROVED_OR_REGISTERED")
+                                                                                .message("Participant is not approved or not registered")
+                                                                                .testCasePass("0")
+                                                                                .runtime(new Long(0))
+                                                                                .memoryUsage(new Float(0))
+                                                                                .problemName("")
+                                                                                .contestSubmissionID(null)
+                                                                                .submittedAt(null)
+                                                                                .score(0)
+                                                                                .numberTestCasePassed(0)
+                                                                                .totalNumberTestCase(0)
+                                                                                .build();
+            log.info("contestSubmitProblemViaUploadFile: Participant not approved or registered");
+            return ResponseEntity.ok().body(resp);
+
+        }
+
+        for(UserRegistrationContestEntity u: userRegistrations){
+            if(u.getPermissionId() != null && u.getPermissionId().equals(UserRegistrationContestEntity.PERMISSION_FORBIDDEN_SUBMIT)){
+                ModelContestSubmissionResponse resp = ModelContestSubmissionResponse.builder()
+                                                                                    .status("PARTICIPANT_HAS_NOT_PERMISSION_TO_SUBMIT")
+                                                                                    .message("Participant has not permission to submit")
+                                                                                    .testCasePass("0")
+                                                                                    .runtime(new Long(0))
+                                                                                    .memoryUsage(new Float(0))
+                                                                                    .problemName("")
+                                                                                    .contestSubmissionID(null)
+                                                                                    .submittedAt(null)
+                                                                                    .score(0)
+                                                                                    .numberTestCasePassed(0)
+                                                                                    .totalNumberTestCase(0)
+                                                                                    .build();
+                log.info("contestSubmitProblemViaUploadFile: Participant has not permission to submit");
+                return ResponseEntity.ok().body(resp);
+
+            }
         }
 
         List<ContestSubmissionEntity> submissions = contestSubmissionRepo
@@ -992,5 +1052,10 @@ public class ContestProblemController {
         , @PathVariable String contestId){
         ModelGetRolesOfUserInContestResponse res = problemTestCaseService.getRolesOfUserInContest(userId, contestId);
         return ResponseEntity.ok().body(res);
+    }
+    @GetMapping("/get-permissions-of-members-of-contest")
+    public ResponseEntity<?> getPermissionsOfMemberOfContest(){
+        List<String> perms = UserRegistrationContestEntity.getListPermissions();
+        return ResponseEntity.ok().body(perms);
     }
 }

@@ -190,6 +190,10 @@ create table user_registration_contest_new
     contest_id varchar (100) not null ,
     status varchar (20) not null,
     role_id varchar(100),
+    created_date timestamp,
+    last_updated timestamp,
+    updated_by_user_login_id varchar(60),
+    permission_id varchar(200),
     constraint fk_user_id_user_registration_contest_new foreign key (user_id) references user_login(user_login_id),
     constraint fk_contest_id_user_registration_contest_new foreign key (contest_id) references contest_new(contest_id)
 );
