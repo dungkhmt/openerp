@@ -7,7 +7,7 @@ export function* studentGetClassAssignmentListSaga(action) {
   console.log('studentGetClassAssignmentListSaga: enter, action=' + JSON.stringify(action));
   try {
     const {studentClassId} = action.payload;
-    const response = yield AxiosService.get('edu/class/' + studentClassId + '/assignments/student');
+    const response = yield AxiosService.get('/edu/class/' + studentClassId + '/assignments/student');
     yield put({type: types.STUDENT_GET_CLASS_ASSIGNMENT_LIST_SUCCESS, assignmentList: response.data});
   } catch (err) {
     console.log('studentGetClassAssignmentListSaga: ' + err);

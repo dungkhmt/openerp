@@ -23,7 +23,7 @@ const SplashScreen = ({navigation}) => {
           );
         }
       });
-    }, 3000);
+    }, 2000);
   }, []);
 
   return (

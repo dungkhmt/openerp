@@ -18,6 +18,9 @@ import studentGetClassQuizListReducer from './StudentGetClassQuizListReducer';
 import studentPostActiveQuizOfSessionReducer from './StudentPostActiveQuizOfSessionReducer';
 import studentGetRegisterClassListReducer from './StudentGetRegisterClassListReducer';
 import studentAttendClassReducer from './StudentAttendClassReducer';
+import getMyMeetingListReducer from './GetMyMeetingListReducer';
+import getInvitedMeetingListReducer from './GetInvitedMeetingListReducer';
+import getMeetingParticipantListReducer from './GetMeetingParticipantListReducer';
 
 const rootReducer = combineReducers({
   getMenuReducer,
@@ -39,6 +42,9 @@ const rootReducer = combineReducers({
   studentPostActiveQuizOfSessionReducer,
   studentGetRegisterClassListReducer,
   studentAttendClassReducer,
+  getMyMeetingListReducer,
+  getInvitedMeetingListReducer,
+  getMeetingParticipantListReducer,
 });
 
 export default rootReducer;

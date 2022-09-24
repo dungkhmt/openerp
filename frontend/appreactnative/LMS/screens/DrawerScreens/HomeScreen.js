@@ -18,6 +18,7 @@ import {
   MenuEduTeachingManagement,
   MenuProgrammingContestTeacher,
   MenuProgrammingContestStudent,
+  MenuChat,
   getRouteNameByMenuId,
 } from '../../configurations/Menus';
 import CarouselCards from '../Components/CarouselCards';
@@ -27,6 +28,7 @@ const makeMenuModel = menuList => {
   const menuEduTeachingManagement = MenuEduTeachingManagement();
   const menuProgrammingContestTeacher = MenuProgrammingContestTeacher();
   const menuProgrammingContestStudent = MenuProgrammingContestStudent();
+  const menuChat = MenuChat();
 
   menuEduLearningManagement.child = menuEduLearningManagement.child.filter(
     child => menuList.includes('' + child.id),
@@ -48,6 +50,7 @@ const makeMenuModel = menuList => {
     menuEduTeachingManagement,
     menuProgrammingContestTeacher,
     menuProgrammingContestStudent,
+    menuChat,
   ].filter(element => element.child.length > 0);
   var output = [];
   input.forEach(element => {

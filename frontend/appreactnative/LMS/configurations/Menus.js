@@ -247,6 +247,38 @@ export const MenuEduTeachingManagement = () => {
   };
 };
 
+export const MenuChat = () => {
+  return {
+    id: 'MENU_CHAT',
+    path: '',
+    isPublic: true,
+    icon: 'iconChat',
+    text: 'Chat',
+    child: [
+      {
+        id: 'MENU_CHAT_MESSENGER',
+        path: '',
+        isPublic: true,
+        icon: null,
+        text: 'Chat Messenger',
+        child: [],
+        color: '#EFBBFF',
+        description: 'Chat Messenger',
+      },
+      {
+        id: 'MENU_CHAT_LIVE',
+        path: '',
+        isPublic: true,
+        icon: null,
+        text: 'Chat Live',
+        child: [],
+        color: '#800080',
+        description: 'Chat Live',
+      },
+    ],
+  };
+};
+
 export const getRouteNameByMenuId = menuId => {
   const RouteMap = [
     {menuId: 'MENU_PROGRAMMING_CONTEST_MANAGER', routeName: null},
@@ -274,6 +306,10 @@ export const getRouteNameByMenuId = menuId => {
     {menuId: 'MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_CREATE_CLASS', routeName: 'TeacherCreateClassScreen'},
     {menuId: 'MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_QUIZ_TEST_LIST', routeName: 'TeacherQuizTestScreen'},
     {menuId: 'MENU_EDUCATION_MANAGEMENT_PROGRAMMING_CONTEST', routeName: 'TeacherProgrammingContestScreen'},
+
+    {menuId: 'MENU_CHAT', routeName: null},
+    {menuId: 'MENU_CHAT_MESSENGER', routeName: 'ChatMessengerScreen'},
+    {menuId: 'MENU_CHAT_LIVE', routeName: 'ChatLiveScreen'},
   ];
 
   return RouteMap.find(x => x.menuId === menuId).routeName;

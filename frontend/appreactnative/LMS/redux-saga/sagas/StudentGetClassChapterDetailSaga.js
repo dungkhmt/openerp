@@ -7,7 +7,7 @@ export function* studentGetClassChapterDetailSaga(action) {
   console.log('studentGetClassChapterDetailSaga: enter, action=' + JSON.stringify(action));
   try {
     const {chapterId} = action.payload;
-    const response = yield AxiosService.get('edu/class/get-chapter-materials-of-course/' + chapterId);
+    const response = yield AxiosService.get('/edu/class/get-chapter-materials-of-course/' + chapterId);
     yield put({type: types.STUDENT_GET_CLASS_CHAPTER_DETAIL_SUCCESS, chapterDetail: response.data});
   } catch (err) {
     console.log('studentGetClassChapterDetailSaga: ' + err);

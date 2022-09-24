@@ -18,6 +18,9 @@ import watchStudentGetQuizTestQuestionList from './StudentGetQuizTestQuestionLis
 import watchStudentGetRegisterClassList from './StudentGetRegisterClassListSaga';
 import watchStudentPostActiveQuizOfSession from './StudentPostActiveQuizOfSessionSaga';
 import watchStudentPostQuizTestQuestion from './StudentPostQuizTestQuestionSaga';
+import watchGetMyMeetingList from './GetMyMeetingListSaga';
+import watchGetInvitedMeetingList from './GetInvitedMeetingListSaga';
+import watchgetMeetingParticipantList from './GetMeetingParticipantListSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -40,5 +43,8 @@ export default function* rootSaga() {
     watchStudentGetRegisterClassList(),
     watchStudentPostActiveQuizOfSession(),
     watchStudentPostQuizTestQuestion(),
+    watchGetMyMeetingList(),
+    watchGetInvitedMeetingList(),
+    watchgetMeetingParticipantList(),
   ]);
 }

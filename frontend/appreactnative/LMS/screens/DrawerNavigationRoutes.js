@@ -27,6 +27,11 @@ import StudentProblemListScreen from '../screens/Student/StudentProblemListScree
 import StudentIDEScreen from '../screens/Student/StudentIDEScreen';
 import StudentRegisteredProgrammingContestScreen from '../screens/Student/StudentRegisteredProgrammingContestScreen';
 import StudentNotRegisteredProgrammingContestScreen from '../screens/Student/StudentNotRegisteredProgrammingContestScreen';
+import ChatMessengerScreen from './Chat/Messenger/ChatMessengerScreen';
+import ChatLiveScreen from './Chat/Live/ChatLiveScreen';
+import ChatLiveParticipantListScreen from './Chat/Live/ChatLiveParticipantListScreen';
+import ChatLiveDiscussionScreen from './Chat/Live/ChatLiveDiscussionScreen';
+import JoinMeetingRoomScreen from './Chat/Live/JoinMeetingRoomScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -309,6 +314,77 @@ const HomeScreenStack = ({navigation}) => {
         component={StudentNotRegisteredProgrammingContestScreen}
         options={{
           title: 'Not Registered Programming Contest',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      {/* Chat */}
+      <Stack.Screen
+        name="ChatMessengerScreen"
+        component={ChatMessengerScreen}
+        options={{
+          title: 'Chat Messenger',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="ChatLiveScreen"
+        component={ChatLiveScreen}
+        options={{
+          title: 'Chat Live',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="ChatLiveParticipantListScreen"
+        component={ChatLiveParticipantListScreen}
+        options={{
+          title: 'Participant List',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="ChatLiveDiscussionScreen"
+        component={ChatLiveDiscussionScreen}
+        options={{
+          title: 'Discussion',
+          headerStyle: {
+            backgroundColor: Colors.controlBackground,
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="JoinMeetingRoomScreen"
+        component={JoinMeetingRoomScreen}
+        options={{
+          title: 'Join Meeting Room',
           headerStyle: {
             backgroundColor: Colors.controlBackground,
           },
