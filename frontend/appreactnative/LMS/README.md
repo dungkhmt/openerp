@@ -9,6 +9,7 @@ https://reactnative.dev/docs/environment-setup
 npm install @react-navigation/native \
 npm install react-native-screens react-native-safe-area-context \
 npm install @react-navigation/stack \
+npm install @react-navigation/native-stack \
 npm install @react-navigation/drawer \
 npm install react-native-gesture-handler react-native-reanimated \
 npm install react-native-base64 \
@@ -69,6 +70,9 @@ https://reactnative.dev/docs/upgrading
 
 rm -rf node_modules \
 rm package-lock.json \
+rm yarn.lock \
+rm -rf ios/Pods \
+rm ios/Podfile.lock \
 npm install \
 npx pod-install ios \
 npx react-native start --reset-cache
