@@ -25,7 +25,7 @@
     "@mui/material": "^5.0.3",
     "@mui/system": "^5.8.1",
     "@mui/x-date-pickers": "^5.0.0-alpha.5",
-    "@react-pdf/renderer": "^2.3.0",
+    "@react-pdf/renderer": "^3.0.0",
     "@uiw/react-codemirror": "^4.7.0",
     "@unicef/material-ui-currency-textfield": "^0.8.6",
     "@welldone-software/why-did-you-render": "^6.2.0",
@@ -101,6 +101,10 @@
     "socket.io-client": "^4.5.0",
     "xlsx": "^0.14.5",
     "yup": "^0.29.3"
+  },
+  "overrides": {
+    "@react-pdf/font": "2.2.1",
+    "@react-pdf/pdfkit": "2.1.0"
   },
   "scripts": {
     "start": "craco start",
