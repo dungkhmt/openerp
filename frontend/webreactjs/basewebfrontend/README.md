@@ -25,6 +25,7 @@ Khi đã sẵn sàng cho quá trình cài đặt project, thực hiện lần l�
 
 - Thêm thư mục project <b>basewebfrontend</b> vào Workspace trong Visual Studio Code
 - Mở Git Bash tại thư mục project, chạy lệnh: `npm i`
+- Nếu chạy `npm i` bị lỗi conflict version, chạy `npm i --force` (https://stackoverflow.com/questions/66020820/npm-when-to-use-force-and-legacy-peer-deps)
 
 ### 2. Chạy project
 
