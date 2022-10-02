@@ -16,6 +16,9 @@ import {
 import TableRow from "@material-ui/core/TableRow";
 import { getColorLevel, StyledTableCell, StyledTableRow } from "./lib";
 import TableBody from "@mui/material/TableBody";
+import { pdf } from "@react-pdf/renderer";
+import FileSaver from "file-saver";
+import SubmissionOfParticipantPDFDocument from "./template/SubmissionOfParticipantPDFDocument";
 
 export function ContestManagerListProblem(props) {
   const contestId = props.contestId;
@@ -27,6 +30,15 @@ export function ContestManagerListProblem(props) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [threshold, setThreshold] = useState(50);
   const history = useHistory();
+
+  const generatePdfDocument = async (documentData, fileName) => {
+    const blob = await pdf(
+      <SubmissionOfParticipantPDFDocument data={documentData} />
+    ).toBlob();
+  
+    FileSaver.saveAs(blob, fileName);
+  };
+  
 
   useEffect(() => {
     request("get", "/get-contest-detail/" + contestId, (res) => {
@@ -82,6 +94,7 @@ export function ContestManagerListProblem(props) {
         //alert("Rejudge DONE!!!");
         setIsProcessing(false);
         setUserSubmissions(res.data);
+        generatePdfDocument(res.data, `USER_JUDGED_SUBMISSION-${contestId}.pdf`);
         //setSuccessful(res.data.contents.content);
         //setTotalPageSuccessful(res.data.contents.totalPages);
       }
