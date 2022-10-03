@@ -935,6 +935,15 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         else testCaseEntityList =  testCaseRepo
             .findAllByProblemIdAndIsPublic(modelContestSubmission.getProblemId(),"N");
 
+        List<TestCaseEntity> lstFiltered = new ArrayList();
+        for(TestCaseEntity tc : testCaseEntityList){
+            if(tc.getStatusId() != null && tc.getStatusId().equals(TestCaseEntity.STATUS_DISABLED)){
+                continue;
+            }
+            lstFiltered.add(tc);
+        }
+        testCaseEntityList = lstFiltered;
+
         String tempName = tempDir.createRandomScriptFileName(userName+"-"+modelContestSubmission.getContestId()+"-"+modelContestSubmission.getProblemId());
 
         int runtime  = 0;
@@ -1783,7 +1792,14 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         if(!problem.getUserId().equals(userId)){
             throw new MiniLeetCodeException("permission denied");
         }
-        testCaseRepo.deleteTestCaseEntityByTestCaseId(testcaseId);
+        if(testCase == null){
+            return;
+        }
+        testCase.setStatusId(TestCaseEntity.STATUS_DISABLED);
+        testCase = testCaseRepo.save(testCase);
+
+        //testCaseRepo.deleteTestCaseEntityByTestCaseId(testcaseId);
+
     }
 
     class CodeSimilatiryComparator implements Comparator<CodeSimilarityElement>{
@@ -2345,6 +2361,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .testCase(testCase)
                 .point(point)
                 .isPublic(testCaseEntity.getIsPublic())
+                               .status(testCaseEntity.getStatusId())
                 .viewMore(viewMore)
                 .testCaseId(testCaseEntity.getTestCaseId())
                                .description(testCaseEntity.getDescription())
@@ -2762,6 +2779,36 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         res.setStatus("OK");
         return res;
     }
+
+    @Override
+    public ModelUploadTestCaseOutput rerunCreateTestCaseSolution(String problemId, UUID testCaseId, String userId) {
+        ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
+        ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
+
+        TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(testCaseId);
+        String testCase = tc.getTestCase();
+        String tempName = tempDir.createRandomScriptFileName(userId+ "-" + problemEntity.getProblemName() + "-" + problemEntity.getCorrectSolutionLanguage());
+        String output = "";
+        try {
+            output = runCode(problemEntity.getCorrectSolutionSourceCode(), problemEntity.getCorrectSolutionLanguage(), tempName,
+                             testCase, problemEntity.getTimeLimit(), "Correct Solution Language Not Found");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        if(output.contains("Time Limit Exceeded")){
+            res.setMessage("Time Limit Exceeded");
+            res.setStatus("TLE");
+            return res;
+        }
+
+        tc.setCorrectAnswer(output);
+        tc = testCaseRepo.save(tc);
+        res.setMessage("Upload Successfully!");
+        res.setStatus("OK");
+
+        return res;
+    }
+
     @Override
     public ModelUploadTestCaseOutput uploadUpdateTestCase(UUID testCaseId, String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName){
         TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(testCaseId);

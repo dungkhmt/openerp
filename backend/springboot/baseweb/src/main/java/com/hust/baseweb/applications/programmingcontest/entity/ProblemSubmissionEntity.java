@@ -55,6 +55,9 @@ public class ProblemSubmissionEntity {
     @Column(name = "test_case_pass")
     private String testCasePass;
 
+    @Column(name="disable_status")
+    private String disableStatus; // Y or N
+
     @PrePersist
     protected void onCreate() throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");

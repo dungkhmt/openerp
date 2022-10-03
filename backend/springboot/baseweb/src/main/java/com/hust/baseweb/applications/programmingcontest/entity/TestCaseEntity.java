@@ -14,6 +14,9 @@ import java.util.UUID;
 //@Table(name = "test_case")
 @Table(name = "test_case_new")
 public class TestCaseEntity {
+    public static final String STATUS_DISABLED = "DISABLED";
+    public static final String STATUS_ENABLED = "ENABLED";
+
     @Id
     @Column(name = "test_case_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -36,6 +39,9 @@ public class TestCaseEntity {
 
     @Column(name="description")
     private String description;
+
+    @Column(name="status_id")
+    private String statusId;
 
     public String getTestCaseShort(int sz){
         String res = "";

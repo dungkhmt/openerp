@@ -1,5 +1,6 @@
 package com.hust.baseweb.utils;
 
+import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -294,6 +295,23 @@ public class DateTimeUtils {
     }
 
     public static void main(String[] args) {
+        try {
+            PrintWriter out = new PrintWriter("C:/DungPQ/tmp/dates.txt");
+            String startDate = "2020-01-01 00:00:00";
+
+            for (int i = 1; i <= 1000; i++) {
+                startDate = next(startDate, 1);
+                String[] s = startDate.split(" ");
+                System.out.println(s[0]);
+                out.println(s[0]);
+            }
+            out.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        if(true) return;
+
+
         String fromDate = "2020-01-01 00:00:00";
         String toDate = "2020-03-04 00:00:00";
         String effectiveStartDate = "2020-01-10 00:00:00";

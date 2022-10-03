@@ -56,9 +56,9 @@ export default function ContestStudentList() {
         hideCommandBar
         options={{
           selection: false,
-          pageSize: 10,
-          search: false,
-          sorting: false,
+          pageSize: 20,
+          search: true,
+          sorting: true,
         }}
       />
     </div>

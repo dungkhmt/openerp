@@ -149,6 +149,7 @@ public interface ProblemTestCaseService {
     int addAdminToManagerAndParticipantAllContest();
 
     ModelUploadTestCaseOutput addTestCase(String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName);
+    public ModelUploadTestCaseOutput rerunCreateTestCaseSolution(String problemId, UUID testCaseId, String userId);
 
     ModelUploadTestCaseOutput uploadUpdateTestCase(UUID testCaseId, String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName);
 
@@ -160,4 +161,6 @@ public interface ProblemTestCaseService {
     public boolean forbidMemberFromSubmitToContest(UUID id);
 
     public boolean updatePermissionMemberToContest(String userId, ModelUpdatePermissionMemberToContestInput input);
+
+
 }

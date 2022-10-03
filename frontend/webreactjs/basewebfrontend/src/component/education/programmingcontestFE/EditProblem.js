@@ -173,6 +173,9 @@ function EditProblem() {
     );
   }, [problemId]);
 
+  function rerunTestCase(problemId, testCaseId) {
+    //alert("rerun testcase " + testCaseId + "problem " + problemId);
+  }
   const onChangeEditorStateDescription = (editorState) => {
     setEditorStateDescription(editorState);
   };
@@ -513,7 +516,9 @@ function EditProblem() {
                   <StyledTableCell align="left">Point</StyledTableCell>
                   <StyledTableCell align="left">Public</StyledTableCell>
                   <StyledTableCell align="left">Description</StyledTableCell>
+                  <StyledTableCell align="left">Status</StyledTableCell>
                   <StyledTableCell align="left">Edit</StyledTableCell>
+                  <StyledTableCell align="left">Rerun</StyledTableCell>
                   <StyledTableCell align="left">Delete</StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -555,6 +560,9 @@ function EditProblem() {
                     <StyledTableCell align="left">
                       {testCase.description}
                     </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {testCase.status}
+                    </StyledTableCell>
 
                     <StyledTableCell align="left">
                       <Link
@@ -574,6 +582,17 @@ function EditProblem() {
                           Edit
                         </Button>
                       </Link>
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <Button
+                        variant="contained"
+                        color="light"
+                        onClick={() => {
+                          rerunTestCase(problemId, testCase.testCaseId);
+                        }}
+                      >
+                        Rerun
+                      </Button>
                     </StyledTableCell>
                     <StyledTableCell align="left">
                       <Button

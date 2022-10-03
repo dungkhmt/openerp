@@ -1058,4 +1058,11 @@ public class ContestProblemController {
         List<String> perms = UserRegistrationContestEntity.getListPermissions();
         return ResponseEntity.ok().body(perms);
     }
+
+    @GetMapping("/rerun-create-testcase-solution/{problemId}/{testCaseId}")
+    public ResponseEntity<?> rerunCreateTestCaseSolution(Principal principal, @PathVariable String problemId, @PathVariable UUID testCaseId){
+        log.info("rerunCreateTestCaseSolution problem " + problemId + " testCaseId " + testCaseId);
+        ModelUploadTestCaseOutput res = problemTestCaseService.rerunCreateTestCaseSolution(problemId, testCaseId, principal.getName());
+        return ResponseEntity.ok().body(res);
+    }
 }

@@ -192,7 +192,6 @@ export default function CreateTestCase(props) {
           <Grid item xs={3}>
             <input
               type="file"
-              accept=".c, .cpp, .java, .py"
               id="selected-upload-file"
               onChange={onFileChange}
             />

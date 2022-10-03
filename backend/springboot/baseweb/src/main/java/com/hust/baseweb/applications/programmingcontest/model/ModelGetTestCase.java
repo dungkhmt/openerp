@@ -18,5 +18,6 @@ public class ModelGetTestCase {
     private int point;
     private UUID testCaseId;
     private String isPublic;
+    private String status;
     private String description;
 }

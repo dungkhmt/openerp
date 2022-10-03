@@ -67,6 +67,7 @@ export function StudentContestRegistered() {
   return (
     <div>
       <ContestStudentList />
+      {/*
       <div>
         <div>
           <TableContainer component={Paper}>
@@ -108,25 +109,6 @@ export function StudentContestRegistered() {
                         </Button>
                       </Link>
                     </StyledTableCell>
-                    {/*
-                    <StyledTableCell align="center">
-                      <Link
-                        to={
-                          "/programming-contest/solving-contest/" +
-                          contest.contestId
-                        }
-                        style={{
-                          textDecoration: "none",
-                          color: "black",
-                          cursor: "",
-                        }}
-                      >
-                        <Button variant="contained" color="light">
-                          Solve
-                        </Button>
-                      </Link>
-                    </StyledTableCell>
-                      */}
                     <StyledTableCell align="left">
                       {isCountDowns[index] ? (
                         <Timer
@@ -181,6 +163,7 @@ export function StudentContestRegistered() {
           </Grid>
         </Grid>
       </div>
+              */}
     </div>
   );
 }
