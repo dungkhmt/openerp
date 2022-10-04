@@ -25,7 +25,7 @@
     "@mui/material": "^5.0.3",
     "@mui/system": "^5.8.1",
     "@mui/x-date-pickers": "^5.0.0-alpha.5",
-    "@react-pdf/renderer": "^2.3.0",
+    "@react-pdf/renderer": "2.1.1",
     "@react-pdf/font": "2.2.0",
     "@uiw/react-codemirror": "^4.7.0",
     "@unicef/material-ui-currency-textfield": "^0.8.6",
