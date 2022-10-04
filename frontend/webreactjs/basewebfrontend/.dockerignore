@@ -4,3 +4,4 @@ docs
 .editorconfig
 .gitignore
 README.md
+node_modules
