@@ -128,7 +128,8 @@ public class ClassServiceImpl implements ClassService {
                       filterParams.getDepartmentId())
                   .allMatch(StringUtils::isBlank) && null == filterParams.getCode()) {
             log.info("getClassesOfCurrentSemester -> call classRepo.findBySemester");
-            classes = classRepo.findBySemester(semester.getId(), EduClass.STATUS_OPEN, pageable);
+            //classes = classRepo.findBySemester(semester.getId(), EduClass.STATUS_OPEN, pageable);
+            classes = classRepo.findByStatus(EduClass.STATUS_OPEN, pageable);
         } else {
             log.info("getClassesOfCurrentSemester -> call classRepo.classRepo.findBySemesterWithFilters");
             classes = classRepo.findBySemesterWithFilters(

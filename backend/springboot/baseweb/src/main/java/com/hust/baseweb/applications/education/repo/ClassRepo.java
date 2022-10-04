@@ -84,6 +84,37 @@ public interface ClassRepo extends JpaRepository<EduClass, UUID> {
                    "inner join edu_department as d on\n" +
                    "\tcl.department_id = d.id\n" +
                    "where\n" +
+                   "\t cl.status_id = ?1\n" +
+                   "order by\n" +
+                   "\tco.id",
+           countQuery = "select\n" +
+                        "\tcount(cl.id)\n" +
+                        "from\n" +
+                        "\tedu_class as cl\n" +
+                        "inner join edu_course as co on\n" +
+                        "\tcl.course_id = co.id\n" +
+                        "inner join edu_department as d on\n" +
+                        "\tcl.department_id = d.id\n" +
+                        "where\n" +
+                        "\t cl.status_id = ?1",
+           nativeQuery = true)
+    Page<ClassOM> findByStatus(String status, Pageable pageable);
+
+    @Query(value = "select\n" +
+                   "\tcast(cl.id as varchar) id,\n" +
+                   "\tcode,\n" +
+                   "\tclass_code classCode,\n" +
+                   "\tco.id courseId,\n" +
+                   "\tco.course_name courseName,\n" +
+                   "\tcl.class_type classType,\n" +
+                   "\td.id departmentId\n" +
+                   "from\n" +
+                   "\tedu_class as cl\n" +
+                   "inner join edu_course as co on\n" +
+                   "\tcl.course_id = co.id\n" +
+                   "inner join edu_department as d on\n" +
+                   "\tcl.department_id = d.id\n" +
+                   "where\n" +
                    "\tcl.semester_id = ?1\n" +
                    "\tand cast(code as varchar) like concat('%', lower(unaccent(?2)), '%')\n" +
                    "\tand lower(unaccent(co.id)) like concat('%', lower(unaccent(?3)), '%')\n" +
