@@ -2800,7 +2800,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             res.setStatus("TLE");
             return res;
         }
-
+        output = output.substring(0, output.length()-1);
+        int lastLinetIndexExpected = output.lastIndexOf("\n");
+        output = output.substring(0, lastLinetIndexExpected);
+        log.info("rerunCreateTestCaseSolution, output " + output);
         tc.setCorrectAnswer(output);
         tc = testCaseRepo.save(tc);
         res.setMessage("Upload Successfully!");
