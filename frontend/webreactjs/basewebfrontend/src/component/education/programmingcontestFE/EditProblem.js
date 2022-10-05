@@ -161,6 +161,7 @@ function EditProblem() {
       {}
     ).then();
 
+    /*
     request(
       "GET",
       "/get-test-case-list-by-problem/" + problemId,
@@ -171,10 +172,34 @@ function EditProblem() {
       },
       {}
     );
+    */
+    getTestCases();
   }, [problemId]);
+
+  function getTestCases() {
+    request(
+      "GET",
+      "/get-test-case-list-by-problem/" + problemId,
+
+      (res) => {
+        console.log("res", res.data);
+        setTestCases(res.data);
+      },
+      {}
+    );
+  }
 
   function rerunTestCase(problemId, testCaseId) {
     //alert("rerun testcase " + testCaseId + "problem " + problemId);
+    request(
+      "GET",
+      "/rerun-create-testcase-solution/" + problemId + "/" + testCaseId,
+
+      (res) => {
+        getTestCases();
+      },
+      {}
+    );
   }
   const onChangeEditorStateDescription = (editorState) => {
     setEditorStateDescription(editorState);
