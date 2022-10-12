@@ -229,7 +229,7 @@ export default function EditContest(props) {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [contestProblems, setContestProblems] = useState([]);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(50);
   const [problemSelected, setProblemSelected] = useState([]);
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const isSelected = (name) => problemSelected.indexOf(name) !== -1;

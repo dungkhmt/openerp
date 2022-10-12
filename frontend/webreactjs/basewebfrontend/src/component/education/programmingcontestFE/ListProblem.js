@@ -19,7 +19,7 @@ import { getColorLevel, StyledTableCell, StyledTableRow } from "./lib";
 import { useTranslation } from "react-i18next";
 import { toFormattedDateTime } from "../../../utils/dateutils";
 import MaterialTable from "material-table";
-
+import StandardTable from "component/table/StandardTable";
 function ListProblem() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -64,7 +64,15 @@ function ListProblem() {
 
   function getProblems() {
     request("get", "/get-all-contest-problems", (res) => {
-      setProblems(res.data);
+      const data = res.data.map((e) => ({
+        problemId: e.problemId,
+        problemName: e.problemName,
+        userId: e.userId,
+        createdAt: toFormattedDateTime(e.createdAt),
+        levelId: e.levelId,
+      }));
+      //setProblems(res.data);
+      setProblems(data);
     }).then();
   }
   async function getProblemContestList() {
@@ -88,11 +96,19 @@ function ListProblem() {
 
   return (
     <div>
-      <MaterialTable
+      <StandardTable
         title="Problems"
         columns={columns}
         data={problems}
-      ></MaterialTable>
+        hideCommandBar
+        options={{
+          selection: false,
+          pageSize: 20,
+          search: true,
+          sorting: true,
+        }}
+      ></StandardTable>
+      {/*
       <div>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 750 }} aria-label="customized table">
@@ -113,7 +129,6 @@ function ListProblem() {
                   {t("addTestCase")}
                 </StyledTableCell>
                 <StyledTableCell align="left">{t("edit")}</StyledTableCell>
-                {/*<StyledTableCell align="left">Delete</StyledTableCell>*/}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -181,26 +196,6 @@ function ListProblem() {
                       </Button>
                     </Link>
                   </StyledTableCell>
-                  {/*<StyledTableCell align="left">*/}
-                  {/*    <Button*/}
-                  {/*      variant="contained"*/}
-                  {/*      color="light"*/}
-                  {/*      onClick={*/}
-                  {/*        ()=>{*/}
-                  {/*          request(*/}
-                  {/*            "delete",*/}
-                  {/*            "/delete-problem/"+problem.problemId,*/}
-                  {/*            (res)=>{*/}
-                  {/*              // window.location.reload();*/}
-                  {/*              getProblemContestList().then();*/}
-                  {/*            }*/}
-                  {/*          ).then();*/}
-                  {/*        }*/}
-                  {/*      }*/}
-                  {/*    >*/}
-                  {/*      Delete*/}
-                  {/*    </Button>*/}
-                  {/*</StyledTableCell>*/}
                 </StyledTableRow>
               ))}
             </TableBody>
@@ -241,6 +236,7 @@ function ListProblem() {
           />
         </Grid>
       </Grid>
+      */}
     </div>
   );
 }

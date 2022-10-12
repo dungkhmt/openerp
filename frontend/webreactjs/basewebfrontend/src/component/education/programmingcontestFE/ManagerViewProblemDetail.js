@@ -1,5 +1,5 @@
 import {
-  Button,
+  //Button,
   CircularProgress,
   Grid,
   MenuItem,
@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import InfoIcon from "@mui/icons-material/Info";
-import { IconButton } from "@mui/material";
+import { IconButton, Button } from "@mui/material";
 import Paper from "@material-ui/core/Paper";
 import TableRow from "@material-ui/core/TableRow";
 import Table from "@mui/material/Table";
@@ -19,6 +19,7 @@ import htmlToDraft from "html-to-draftjs";
 import React, { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { authPostMultiPart } from "../../../api";
@@ -41,6 +42,7 @@ const editorStyle = {
 export default function ManagerViewProblemDetail() {
   const params = useParams();
   const problemId = params.problemId;
+  const history = useHistory();
   const [problem, setProblem] = useState(null);
   const [testCases, setTestCases] = useState([]);
   const [filename, setFilename] = useState("");
@@ -157,8 +159,31 @@ export default function ManagerViewProblemDetail() {
     );
   };
 
+  function handleEdit() {
+    //alert("edit problem");
+    history.push("/programming-contest/edit-problem/" + problemId);
+  }
+  function addTestCase() {
+    history.push(
+      "/programming-contest/problem-detail-create-test-case/" + problemId
+    );
+  }
   return (
     <div>
+      <Button
+        onClick={() => {
+          handleEdit();
+        }}
+      >
+        Edit
+      </Button>
+      <Button
+        onClick={() => {
+          addTestCase();
+        }}
+      >
+        Add TestCase
+      </Button>
       <div>
         <h3>Name: {problem ? problem.problemName : ""}</h3>
       </div>
