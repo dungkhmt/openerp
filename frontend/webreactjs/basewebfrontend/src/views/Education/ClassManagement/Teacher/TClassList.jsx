@@ -93,22 +93,6 @@ function TClassList() {
         </CardContent>
 
         <CardContent>
-          {/*<MaterialTable*/}
-          {/*  title=""*/}
-          {/*  columns={columns}*/}
-          {/*  icons={tableIcons}*/}
-          {/*  //tableRef={tableRef}*/}
-          {/*  //localization={localization}*/}
-          {/*  data={classesOfUser}*/}
-          {/*  onRowClick={(event, rowData) => {*/}
-          {/*    // console.log(rowData);*/}
-          {/*    history.push({*/}
-          {/*      //pathname: `/edu/teacher/class/${rowData.id}`,*/}
-          {/*      pathname: `/edu/teacher/class/detail/${rowData.classId}`,*/}
-          {/*      state: {},*/}
-          {/*    });*/}
-          {/*  }}*/}
-          {/*/>*/}
           <CurrentUserClassList />
         </CardContent>
       </Card>
