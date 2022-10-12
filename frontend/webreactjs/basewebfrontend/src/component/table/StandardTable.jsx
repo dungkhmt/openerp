@@ -77,6 +77,7 @@ function StandardTable(props) {
           onSelectionChange={(rows) => {
             props.onSelectionChange(rows);
           }}
+          onRowClick={props.onRowClick}
           components={{
             ...components,
             Toolbar: (props) => (
@@ -105,6 +106,7 @@ StandardTable.propTypes = {
   localization: PropTypes.object,
   options: PropTypes.object,
   onSelectionChange: PropTypes.func,
+  onRowClick: PropTypes.func,
   components: PropTypes.object,
   title: PropTypes.string,
   columns: PropTypes.array.isRequired,
