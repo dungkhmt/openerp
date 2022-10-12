@@ -20,6 +20,8 @@ import changePageSize, {
   tableIcons,
 } from "../../../../utils/MaterialTableUtils";
 import withScreenSecurity from "../../../../component/withScreenSecurity";
+import CurrentTeacherClassList from "../../../../component/education/class/CurrentTeacherClassList";
+import CurrentUserClassList from "../../../../component/education/class/CurrentUserClassList";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -30,9 +32,6 @@ const useStyles = makeStyles((theme) => ({
 function TClassList() {
   const classes = useStyles();
   const history = useHistory();
-  //const token = useSelector((state) => state.auth.token);
-
-  // Table.
 
   const columns = [
     {
@@ -63,57 +62,7 @@ function TClassList() {
     },
   ];
 
-  const cols = [
-    {
-      field: "classCode",
-      title: "Mã lớp",
-    },
-    {
-      field: "courseId",
-      title: "Mã học phần",
-    },
-    {
-      field: "name",
-      title: "Tên học phần",
-    },
-    {
-      field: "classType",
-      title: "Loại lớp",
-    },
-    {
-      field: "department",
-      title: "Khoa/Viện",
-    },
-    {
-      field: "semester",
-      title: "Học kỳ",
-    },
-    {
-      field: "statusId",
-      title: "Trạng thái",
-    },
-  ];
-
-  const [data, setData] = useState([]);
   const [classesOfUser, setClassesOfUser] = useState([]);
-  const tableRef = useRef(null);
-
-  // Functions.
-
-  //function onUpdateClass(classId) {
-  //  alert("Edit Class ", classId);
-  //}
-  const getClasses = () => {
-    request(
-      // token, history,
-      "get",
-      "/edu/class/list/teacher",
-      (res) => {
-        changePageSize(res.data.length, tableRef);
-        setData(res.data);
-      }
-    );
-  };
 
   function getClassesOfUser() {
     request(
@@ -133,67 +82,18 @@ function TClassList() {
   }
 
   useEffect(() => {
-    getClasses();
     getClassesOfUser();
   }, []);
 
   return (
     <MuiThemeProvider>
       <Card className={classes.card}>
-        <CardHeader
-          avatar={
-            <Avatar style={{ background: "#ff7043" }}>
-              <FaListUl size={24} />
-            </Avatar>
-          }
-          title={<Typography variant="h5">Danh sách lớp</Typography>}
-        />
         <CardContent>
-          <MaterialTable
-            title=""
-            columns={cols}
-            icons={tableIcons}
-            tableRef={tableRef}
-            localization={localization}
-            data={data}
-            components={{
-              Toolbar: () => null,
-              Container: (props) => <Paper {...props} elevation={0} />,
-            }}
-            options={{
-              filtering: true,
-              search: false,
-              pageSize: 10,
-              debounceInterval: 500,
-            }}
-            onRowClick={(event, rowData) => {
-              // console.log(rowData);
-              history.push({
-                //pathname: `/edu/teacher/class/${rowData.id}`,
-                pathname: `/edu/teacher/class/detail/${rowData.id}`,
-                state: {},
-              });
-            }}
-          />
+          <CurrentTeacherClassList/>
         </CardContent>
 
         <CardContent>
-          <MaterialTable
-            title=""
-            columns={columns}
-            icons={tableIcons}
-            //tableRef={tableRef}
-            //localization={localization}
-            data={classesOfUser}
-            onRowClick={(event, rowData) => {
-              // console.log(rowData);
-              history.push({
-                //pathname: `/edu/teacher/class/${rowData.id}`,
-                pathname: `/edu/teacher/class/detail/${rowData.classId}`,
-                state: {},
-              });
-            }}
-          />
+          <CurrentUserClassList />
         </CardContent>
       </Card>
     </MuiThemeProvider>
