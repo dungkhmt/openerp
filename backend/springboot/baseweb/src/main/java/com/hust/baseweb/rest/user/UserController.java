@@ -1,9 +1,11 @@
 package com.hust.baseweb.rest.user;
 
+import com.hust.baseweb.applications.education.exception.SimpleResponse;
 import com.hust.baseweb.entity.Party;
 import com.hust.baseweb.entity.SecurityGroup;
 import com.hust.baseweb.entity.SecurityPermission;
 import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.model.ModelAssignGroupAllUsersInput;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.model.PersonUpdateModel;
 import com.hust.baseweb.model.UpdatePasswordModel;
@@ -199,5 +201,11 @@ public class UserController {
         DPersonDetailModel detailModel = new DPersonDetailModel(p);
         UserLogin u = userService.updatePassword2(detailModel.getUserLoginId(), input.getPassword());
         return ResponseEntity.ok().body(u);
+    }
+
+    @PostMapping("/user/assign-group-all-users")
+    public ResponseEntity<?> assignGroup2AllUsers(Principal principal, @RequestBody ModelAssignGroupAllUsersInput I){
+        SimpleResponse res = userService.assignGroup2AllUsers(I);
+        return ResponseEntity.ok().body(res.getMessage());
     }
 }

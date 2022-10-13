@@ -90,4 +90,10 @@ public class UserLogin {
         this.password = PASSWORD_ENCODER.encode(password);
     }
 
+    public boolean hasRole(String groupId){
+        for(SecurityGroup g: roles){
+            if(g.getGroupId().equals(groupId)) return true;
+        }
+        return false;
+    }
 }

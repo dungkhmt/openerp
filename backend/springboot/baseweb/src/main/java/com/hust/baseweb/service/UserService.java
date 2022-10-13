@@ -65,6 +65,8 @@ public interface UserService {
 
     SimpleResponse resetPassword(String userLoginId);
 
+    SimpleResponse assignGroup2AllUsers(ModelAssignGroupAllUsersInput I);
+
 //    UserRegister.OutputModel registerUser(UserRegister.InputModel inputModel);
 
 //    boolean approveRegisterUser(String userLoginId);

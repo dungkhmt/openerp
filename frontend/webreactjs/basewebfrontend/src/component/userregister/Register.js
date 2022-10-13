@@ -104,16 +104,22 @@ export default function Register() {
 
       {textField(
         "userLoginId",
-        "Tên đăng nhập",
+        "User Name",
         "search",
         userLoginId,
         setUserLoginId
       )}
-      {textField("password", "Mật khẩu", "password", password, setPassword)}
-      {textField("email", "Địa chỉ email", "search", email, setEmail)}
-      {textField("lastName", "Họ", "search", lastName, setLastName)}
-      {textField("middleName", "Tên đệm", "search", middleName, setMiddleName)}
-      {textField("firstName", "Tên", "search", firstName, setFirstName)}
+      {textField("password", "Password", "password", password, setPassword)}
+      {textField("email", "Email", "search", email, setEmail)}
+      {textField("lastName", "Last Name", "search", lastName, setLastName)}
+      {textField(
+        "middleName",
+        "Middle Name",
+        "search",
+        middleName,
+        setMiddleName
+      )}
+      {textField("firstName", "First Name", "search", firstName, setFirstName)}
 
       <AlertDialog
         title={alertTitle}
@@ -124,7 +130,7 @@ export default function Register() {
       />
 
       <Button variant="contained" color="primary" onClick={handleSubmit}>
-        Đăng ký
+        Register
       </Button>
     </div>
   );
