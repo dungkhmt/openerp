@@ -78,7 +78,7 @@ export const ProgrammingContestMenuStudent = {
       path: "/programming-contest/student-list-contest-not-registered",
       isPublic: false,
       icon: null,
-      text: "Tham gia contest",
+      text: "Join contest",
       child: [],
     },
     {
@@ -86,7 +86,7 @@ export const ProgrammingContestMenuStudent = {
       path: "/programming-contest/student-list-contest-registered",
       isPublic: false,
       icon: null,
-      text: "DS Contest",
+      text: "My Contests",
       child: [],
     },
     /*

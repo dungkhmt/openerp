@@ -3,14 +3,14 @@ export const eduTeachingManagement = {
   path: "",
   isPublic: false,
   icon: "GiTeacher",
-  text: "Giảng dạy",
+  text: "Teaching",
   child: [
     {
       id: "MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_VIEW_LIST_COURSE",
       path: "/edu/teacher/course/list",
       isPublic: false,
       icon: null,
-      text: "Môn học",
+      text: "Courses",
       child: [],
     },
     {
@@ -18,7 +18,7 @@ export const eduTeachingManagement = {
       path: "/edu/teacher/class/list",
       isPublic: false,
       icon: null,
-      text: "Lớp",
+      text: "Classes",
       child: [],
     },
     {
@@ -26,7 +26,7 @@ export const eduTeachingManagement = {
       path: "/edu/class/add",
       isPublic: false,
       icon: null,
-      text: "Tạo lớp",
+      text: "Create Class",
       child: [],
     },
     {
@@ -53,7 +53,7 @@ export const eduTeachingManagement = {
       path: "/edu/teach/resource-links/list",
       isPublic: true,
       icon: null,
-      text: "Link hữu ích",
+      text: "Resource Links",
       child: [],
     },
     /*
