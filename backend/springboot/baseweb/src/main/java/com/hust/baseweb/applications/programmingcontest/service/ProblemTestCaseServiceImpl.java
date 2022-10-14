@@ -1,6 +1,9 @@
 package com.hust.baseweb.applications.programmingcontest.service;
 
 import com.google.gson.Gson;
+import com.hust.baseweb.applications.contentmanager.model.ContentHeaderModel;
+import com.hust.baseweb.applications.contentmanager.model.ContentModel;
+import com.hust.baseweb.applications.contentmanager.repo.MongoContentService;
 import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.docker.DockerClientBase;
@@ -20,14 +23,21 @@ import com.hust.baseweb.repo.UserLoginRepo;
 import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,13 +69,39 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private CodePlagiarismRepo codePlagiarismRepo;
     private ContestSubmissionHistoryRepo contestSubmissionHistoryRepo;
     private ContestProblemRepo contestProblemRepo;
+    private MongoContentService mongoContentService;
 
 
     @Override
-    public void createContestProblem(ModelCreateContestProblem modelCreateContestProblem, String userId) throws MiniLeetCodeException {
+    public void createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException {
+        Gson gson = new Gson();
+        ModelCreateContestProblem modelCreateContestProblem = gson.fromJson(json, ModelCreateContestProblem.class);
+
         if(problemRepo.findByProblemId(modelCreateContestProblem.getProblemId()) != null){
             throw new MiniLeetCodeException("problem id already exist");
         }
+
+        List<String> attachmentId = new ArrayList<>();
+        String[] fileId = modelCreateContestProblem.getFileId();
+        List<MultipartFile> fileArray = Arrays.asList(files);
+
+        fileArray.forEach((file) -> {
+            ContentModel model = new ContentModel(fileId[fileArray.indexOf(file)], file);
+
+            ObjectId id = null;
+            try {
+                id = mongoContentService.storeFileToGridFs(model);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            if (id != null) {
+                ContentHeaderModel rs = new ContentHeaderModel(id.toHexString());
+                attachmentId.add(rs.getId());
+            }
+        });
+
         ProblemEntity problemEntity = ProblemEntity.builder()
                 .problemId(modelCreateContestProblem.getProblemId())
                 .problemName(modelCreateContestProblem.getProblemName())
@@ -82,7 +118,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .createdAt(new Date())
                 .isPublicProblem(modelCreateContestProblem.getIsPublic())
                 .levelOrder(constants.getMapLevelOrder().get(modelCreateContestProblem.getLevelId()))
-                .userId(userId)
+                .attachment(String.join(";", attachmentId))
+                .userId(userID)
                 .build();
         problemRepo.save(problemEntity);
 
@@ -175,14 +212,55 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public ProblemEntity getContestProblem(String problemId) throws Exception {
+    public ModelCreateContestProblemResponse getContestProblem(String problemId) throws Exception {
         ProblemEntity problemEntity;
+        ModelCreateContestProblemResponse problemResponse = new ModelCreateContestProblemResponse();
         try {
             problemEntity = problemRepo.findByProblemId(problemId);
-            if(problemEntity == null){
+            if (problemEntity == null){
                 throw new MiniLeetCodeException("Problem not found");
             }
-            return problemEntity;
+            problemResponse.setProblemId(problemEntity.getProblemId());
+            problemResponse.setProblemName(problemEntity.getProblemName());
+            problemResponse.setProblemDescription(problemEntity.getProblemDescription());
+            problemResponse.setUserId(problemEntity.getUserId());
+            problemResponse.setTimeLimit(problemEntity.getTimeLimit());
+            problemResponse.setMemoryLimit(problemEntity.getMemoryLimit());
+            problemResponse.setLevelId(problemEntity.getLevelId());
+            problemResponse.setCategoryId(problemEntity.getCategoryId());
+            problemResponse.setCorrectSolutionSourceCode(problemEntity.getCorrectSolutionSourceCode());
+            problemResponse.setCorrectSolutionLanguage(problemEntity.getCorrectSolutionLanguage());
+            problemResponse.setSolutionCheckerSourceCode(problemEntity.getSolutionCheckerSourceCode());
+            problemResponse.setSolutionCheckerSourceLanguage(problemEntity.getSolutionCheckerSourceLanguage());
+            problemResponse.setSolution(problemEntity.getSolution());
+            problemResponse.setLevelOrder(problemEntity.getLevelOrder());
+            problemResponse.setCreatedAt(problemEntity.getCreatedAt());
+            problemResponse.setPublicProblem(problemEntity.isPublicProblem());
+
+            if (problemEntity.getAttachment() != null) {
+                String[] fileId = problemEntity.getAttachment().split(";", -1);
+                if (fileId.length != 0) {
+                    List<byte[]> fileArray = new ArrayList<>();
+                    for (String s : fileId) {
+                        try {
+                            GridFsResource content = mongoContentService.getById(s);
+                            if (content != null) {
+                                InputStream inputStream = content.getInputStream();
+                                fileArray.add(IOUtils.toByteArray(inputStream));
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    problemResponse.setAttachment(fileArray);
+                } else {
+                    problemResponse.setAttachment(null);
+                }
+            } else {
+                problemResponse.setAttachment(null);
+            }
+
+            return problemResponse;
         }catch (Exception e){
             throw new Exception(e.getMessage());
         }

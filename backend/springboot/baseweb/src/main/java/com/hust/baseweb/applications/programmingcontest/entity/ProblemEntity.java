@@ -75,6 +75,9 @@ public class ProblemEntity {
 
     @Column(name = "is_public")
     private boolean isPublicProblem;
+
+    @Column(name = "attachment")
+    private String attachment;
 //    @OneToMany(mappedBy = "contestProblem")
 //    private Set<TestCase> testCases;
 //    @JoinTable(name = "contest_problem_test_case",
