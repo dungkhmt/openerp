@@ -143,6 +143,7 @@ public class ContestProblemController {
             model.setProblemStatement(problemEntity.getProblemDescription());
             model.setProblemName(problemEntity.getProblemName());
             model.setCreatedStamp(problemEntity.getCreatedAt());
+            model.setAttachment(problemEntity.getAttachment());
             PersonModel person = userService.findPersonByUserLoginId(problemEntity.getUserId());
             model.setCreatedByUserFullName(person.getFullName());
             return ResponseEntity.ok().body(model);
@@ -168,6 +169,7 @@ public class ContestProblemController {
                 model.setProblemStatement(problemEntity.getProblemDescription());
 
             model.setProblemName(problemEntity.getProblemName());
+            model.setAttachment(problemEntity.getAttachment());
             return ResponseEntity.ok().body(model);
         } catch (Exception e) {
             e.printStackTrace();
@@ -176,12 +178,13 @@ public class ContestProblemController {
     }
 
     @PostMapping("/update-problem-detail/{problemId}")
-    public ResponseEntity<?> updateProblemDetails(@RequestBody ModelCreateContestProblem modelCreateContestProblem,
-            @PathVariable("problemId") String problemId, Principal principal) throws Exception {
+    public ResponseEntity<?> updateProblemDetails(
+            @PathVariable("problemId") String problemId, Principal principal,
+            @RequestParam("ModelCreateContestProblem") String json, @RequestParam("files") MultipartFile[] files)
+        throws Exception {
         log.info("updateProblemDetails problemId {}", problemId);
-        ProblemEntity problemEntity = problemTestCaseService.updateContestProblem(modelCreateContestProblem, problemId,
-                principal.getName());
-        return ResponseEntity.status(HttpStatus.OK).body(problemEntity);
+        ProblemEntity problemResponse = problemTestCaseService.updateContestProblem(problemId, principal.getName(), json, files);
+        return ResponseEntity.status(HttpStatus.OK).body(problemResponse);
     }
 
     @PostMapping("/problem-detail-run-code/{problemId}")

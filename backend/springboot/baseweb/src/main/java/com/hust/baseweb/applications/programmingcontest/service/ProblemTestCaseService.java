@@ -15,7 +15,7 @@ public interface ProblemTestCaseService {
 
     void createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException;
 
-    ProblemEntity updateContestProblem(ModelCreateContestProblem modelCreateContestProblem, String problemId, String userId) throws Exception;
+    ProblemEntity updateContestProblem(String problemId, String userId, String json, MultipartFile[] files) throws Exception;
 
     void updateProblemSourceCode(ModelAddProblemLanguageSourceCode modelAddProblemLanguageSourceCode, String problemId);
 

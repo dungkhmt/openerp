@@ -16,7 +16,7 @@ import { Editor } from "react-draft-wysiwyg";
 import { ContentState, convertToRaw, EditorState } from "draft-js";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { authGet, authPost } from "../../../api";
+import { authGet, authPost, authPostMultiPart } from "../../../api";
 import { Button, TableHead } from "@material-ui/core";
 import draftToHtml from "draftjs-to-html";
 import { API_URL } from "../../../config/config";
@@ -287,6 +287,24 @@ function EditProblem() {
       convertToRaw(editorStateSolution.getCurrentContent())
     );
 
+    const fetchedFileArray = [];
+    for (const fetchedFile of fetchedImageArray) {
+      const file = dataUrlToFile(
+        `data:image/jpeg;base64,${fetchedFile.url}`,
+        fetchedFile.id
+      );
+      fetchedFileArray.push(file);
+    }
+
+    const newAttachmentFiles = [...fetchedFileArray, ...attachmentFiles];
+
+    const fileId = newAttachmentFiles.map((file) => {
+      if (typeof file.name !== "undefined") {
+        return file.name;
+      }
+      return file.id;
+    });
+
     let body = {
       problemName: problemName,
       problemDescription: description,
@@ -299,21 +317,32 @@ function EditProblem() {
       correctSolutionSourceCode: codeSolution,
       solutionChecker: codeChecker,
       isPublic: isPublic,
+      fileId,
     };
 
-    request(
-      "post",
+    let formData = new FormData();
+    formData.append("ModelCreateContestProblem", JSON.stringify(body));
+    for (const file of newAttachmentFiles) {
+      formData.append("files", file);
+    }
+
+    authPostMultiPart(
+      dispatch,
+      token,
       "/update-problem-detail/" + problemId,
+      formData
+    ).then(
       (res) => {
-        console.log("res ", res);
         setShowSubmitSuccess(true);
         sleep(1000).then((r) => {
           history.push("/programming-contest/list-problems");
         });
       },
       {},
-      body
-    ).then();
+      () => {
+        alert("Cập nhật thất bại");
+      }
+    )
   }
 
   return (

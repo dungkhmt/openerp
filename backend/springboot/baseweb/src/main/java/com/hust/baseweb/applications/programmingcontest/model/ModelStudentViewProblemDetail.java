@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.Date;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,4 +17,5 @@ public class ModelStudentViewProblemDetail {
     private String createdByUserLoginId;
     private String createdByUserFullName;
     private Date createdStamp;
+    private List<byte[]> attachment;
 }

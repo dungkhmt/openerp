@@ -21,13 +21,17 @@ import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { authPostMultiPart } from "../../../api";
+import { authGet, authPostMultiPart } from "../../../api";
 import { StyledTableCell, StyledTableRow } from "./lib";
 import { request } from "./Request";
 import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import FileSaver from "file-saver";
 import ContestsUsingAProblem from "./ContestsUsingAProblem";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import { makeStyles } from "@material-ui/core/styles";
+import { randomImageName } from "utils/FileUpload/covert";
+
 const editorStyle = {
   toolbar: {
     background: "#FFFFFF",
@@ -38,8 +42,32 @@ const editorStyle = {
   },
 };
 
+const useStyles = makeStyles((theme) => ({
+  imageContainer: {
+    marginTop: "12px",
+  },
+  imageWrapper: {
+    position: "relative",
+  },
+  imageQuiz: {
+    maxWidth: "100%",
+  },
+  buttonClearImage: {
+    position: "absolute",
+    top: "12px",
+    right: "12px",
+    zIndex: 3,
+    color: "red",
+    width: 32,
+    height: 32,
+    cursor: "pointer",
+  },
+}));
+
 export default function ManagerViewProblemDetail() {
   const params = useParams();
+  const classes = useStyles();
+
   const problemId = params.problemId;
   const [problem, setProblem] = useState(null);
   const [testCases, setTestCases] = useState([]);
@@ -59,6 +87,7 @@ export default function ManagerViewProblemDetail() {
   const [editorStateDescription, setEditorStateDescription] = useState(
     EditorState.createEmpty()
   );
+  const [fetchedImageArray, setFetchedImageArray] = useState([]);
 
   function onFileChange(event) {
     setFilename(event.target.files[0]);
@@ -81,26 +110,32 @@ export default function ManagerViewProblemDetail() {
   }
 
   function getProblemDetail() {
-    request(
-      "GET",
-      //"/get-problem-detail-view-by-student/" + problemId,
-      "/get-problem-detail-view-by-manager/" + problemId,
-      (res) => {
-        setProblem(res.data);
-        //setProblemStatement(res.data.problemStatement);
-        let problemDescriptionHtml = htmlToDraft(res.data.problemStatement);
-        let { contentBlocks, entityMap } = problemDescriptionHtml;
-        let contentDescriptionState = ContentState.createFromBlockArray(
-          contentBlocks,
-          entityMap
-        );
-        let statementDescription = EditorState.createWithContent(
-          contentDescriptionState
-        );
-        setEditorStateDescription(statementDescription);
-      },
-      {}
-    );
+    authGet(
+      dispatch,
+      token,
+      "/get-problem-detail-view-by-manager/" + problemId
+    ).then((res) => {
+      setProblem(res);
+      console.log(res);
+      if (res.attachment && res.attachment.length !== 0) {
+        const newFileURLArray = res.attachment.map((url) => ({
+          id: randomImageName(),
+          url,
+        }));
+        setFetchedImageArray(newFileURLArray);
+      }
+      //setProblemStatement(res.data.problemStatement);
+      let problemDescriptionHtml = htmlToDraft(res.problemStatement);
+      let { contentBlocks, entityMap } = problemDescriptionHtml;
+      let contentDescriptionState = ContentState.createFromBlockArray(
+        contentBlocks,
+        entityMap
+      );
+      let statementDescription = EditorState.createWithContent(
+        contentDescriptionState
+      );
+      setEditorStateDescription(statementDescription);
+    }, {});
   }
 
   useEffect(() => {
@@ -173,6 +208,18 @@ export default function ManagerViewProblemDetail() {
           toolbarStyle={editorStyle.toolbar}
           editorStyle={editorStyle.editor}
         />
+        {fetchedImageArray.length !== 0 &&
+          fetchedImageArray.map((file) => (
+            <div key={file.id} className={classes.imageContainer}>
+              <div className={classes.imageWrapper}>
+                <img
+                  src={`data:image/jpeg;base64,${file.url}`}
+                  alt="quiz test"
+                  className={classes.imageQuiz}
+                />
+              </div>
+            </div>
+          ))}
       </div>
 
       <TableContainer component={Paper}>

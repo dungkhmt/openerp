@@ -20,14 +20,16 @@ import React, { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { Link } from "react-router-dom";
-import { authPostMultiPart } from "../../../api";
+import { authGet, authPostMultiPart } from "../../../api";
 import { StyledTableCell, StyledTableRow } from "./lib";
 import { request } from "./Request";
 import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import FileSaver from "file-saver";
 import StudentViewSubmission from "./StudentViewSubmission";
+import { randomImageName } from "utils/FileUpload/covert";
+import { makeStyles } from "@material-ui/core/styles";
+
 const editorStyle = {
   toolbar: {
     background: "#FFFFFF",
@@ -37,9 +39,32 @@ const editorStyle = {
     minHeight: "300px",
   },
 };
+const useStyles = makeStyles((theme) => ({
+  imageContainer: {
+    marginTop: "12px",
+  },
+  imageWrapper: {
+    position: "relative",
+  },
+  imageQuiz: {
+    maxWidth: "100%",
+  },
+  buttonClearImage: {
+    position: "absolute",
+    top: "12px",
+    right: "12px",
+    zIndex: 3,
+    color: "red",
+    width: 32,
+    height: 32,
+    cursor: "pointer",
+  },
+}));
 
 export default function StudentViewProgrammingContestProblemDetail() {
   const params = useParams();
+  const classes = useStyles();
+
   const problemId = params.problemId;
   const contestId = params.contestId;
   const [problem, setProblem] = useState(null);
@@ -60,6 +85,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const [editorStateDescription, setEditorStateDescription] = useState(
     EditorState.createEmpty()
   );
+  const [fetchedImageArray, setFetchedImageArray] = useState([]);
 
   function onFileChange(event) {
     setFilename(event.target.files[0]);
@@ -126,30 +152,34 @@ export default function StudentViewProgrammingContestProblemDetail() {
   }
 
   function getProblemDetail() {
-    request(
-      "GET",
-      //"/get-problem-detail-view-by-student/" + problemId,
-      "/get-problem-detail-view-by-student-in-contest/" +
-        problemId +
-        "/" +
-        contestId,
+    authGet(
+      dispatch,
+      token,
+      "/get-problem-detail-view-by-student-in-contest/" + problemId + "/" + contestId
+    ).then((res) => {
+      setProblem(res);
+      console.log(res);
+      //setProblemStatement(res.data.problemStatement);
+      if (res.attachment && res.attachment.length !== 0) {
+        const newFileURLArray = res.attachment.map((url) => ({
+          id: randomImageName(),
+          url,
+        }));
+        setFetchedImageArray(newFileURLArray);
+      }
 
-      (res) => {
-        setProblem(res.data);
-        //setProblemStatement(res.data.problemStatement);
-        let problemDescriptionHtml = htmlToDraft(res.data.problemStatement);
-        let { contentBlocks, entityMap } = problemDescriptionHtml;
-        let contentDescriptionState = ContentState.createFromBlockArray(
-          contentBlocks,
-          entityMap
-        );
-        let statementDescription = EditorState.createWithContent(
-          contentDescriptionState
-        );
-        setEditorStateDescription(statementDescription);
-      },
-      {}
-    );
+      let problemDescriptionHtml = htmlToDraft(res.problemStatement);
+      let { contentBlocks, entityMap } = problemDescriptionHtml;
+      let contentDescriptionState = ContentState.createFromBlockArray(
+        contentBlocks,
+        entityMap
+      );
+      let statementDescription = EditorState.createWithContent(
+        contentDescriptionState
+      );
+      setEditorStateDescription(statementDescription);
+    }, (e) => console.log(e))
+    .then();
   }
 
   useEffect(() => {
@@ -249,10 +279,21 @@ export default function StudentViewProgrammingContestProblemDetail() {
           toolbarStyle={editorStyle.toolbar}
           editorStyle={editorStyle.editor}
         />
+        {fetchedImageArray.length !== 0 &&
+          fetchedImageArray.map((file) => (
+            <div key={file.id} className={classes.imageContainer}>
+              <div className={classes.imageWrapper}>
+                <img
+                  src={`data:image/jpeg;base64,${file.url}`}
+                  alt="quiz test"
+                  className={classes.imageQuiz}
+                />
+              </div>
+            </div>
+          ))}
       </div>
 
       <TableContainer component={Paper}>
-        {console.log(testCases)}
         <Table sx={{ minWidth: 750 }} aria-label="customized table">
           <TableHead>
             <TableRow>
@@ -420,10 +461,10 @@ export default function StudentViewProgrammingContestProblemDetail() {
           <h2>Score: {score}</h2>
         </div>
         <div>
-          <h2>Number TestCases Passed: {nbTestCasePassed}</h2>
+          <h2>Number of Test Cases Passed: {nbTestCasePassed}</h2>
         </div>
         <div>
-          <h2>Total TestCases : {nbTotalTestCase}</h2>
+          <h2>Total number of Test Cases : {nbTotalTestCase}</h2>
         </div>
         <div>
           <h2>RunTime : {runTime}(ms)</h2>

@@ -34,8 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -127,16 +125,40 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public ProblemEntity updateContestProblem(ModelCreateContestProblem modelCreateContestProblem, String problemId, String userId) throws Exception {
+    public ProblemEntity updateContestProblem(String problemId, String userId, String json, MultipartFile[] files) throws Exception {
 
         if(!problemRepo.existsById(problemId)){
             throw new MiniLeetCodeException("problem id not found");
         }
 
+        Gson gson = new Gson();
+        ModelCreateContestProblem modelCreateContestProblem = gson.fromJson(json, ModelCreateContestProblem.class);
+
         ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
         if(!userId.equals(problemEntity.getUserId())){
             throw new MiniLeetCodeException("permission denied");
         }
+
+        List<String> attachmentId = new ArrayList<>();
+        String[] fileId = modelCreateContestProblem.getFileId();
+        List<MultipartFile> fileArray = Arrays.asList(files);
+
+        fileArray.forEach((file) -> {
+            ContentModel model = new ContentModel(fileId[fileArray.indexOf(file)], file);
+
+            ObjectId id = null;
+            try {
+                id = mongoContentService.storeFileToGridFs(model);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (id != null) {
+                ContentHeaderModel rs = new ContentHeaderModel(id.toHexString());
+                attachmentId.add(rs.getId());
+            }
+        });
+
         problemEntity.setProblemName(modelCreateContestProblem.getProblemName());
         problemEntity.setProblemDescription(modelCreateContestProblem.getProblemDescription());
         problemEntity.setLevelId(modelCreateContestProblem.getLevelId());
@@ -147,8 +169,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         problemEntity.setCorrectSolutionSourceCode(modelCreateContestProblem.getCorrectSolutionSourceCode());
         problemEntity.setSolutionCheckerSourceCode(modelCreateContestProblem.getSolutionChecker());
         problemEntity.setPublicProblem(modelCreateContestProblem.getIsPublic());
-        return problemRepo.save(problemEntity);
+        problemEntity.setAttachment(String.join(";", attachmentId));
+        problemRepo.save(problemEntity);
 
+        return problemEntity;
     }
 
 
