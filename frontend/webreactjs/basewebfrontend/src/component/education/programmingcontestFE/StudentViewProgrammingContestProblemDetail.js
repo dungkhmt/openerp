@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import InfoIcon from "@mui/icons-material/Info";
-import { IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import Paper from "@material-ui/core/Paper";
 import TableRow from "@material-ui/core/TableRow";
 import Table from "@mui/material/Table";
@@ -27,7 +27,7 @@ import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import FileSaver from "file-saver";
 import StudentViewSubmission from "./StudentViewSubmission";
-import { randomImageName } from "utils/FileUpload/covert";
+import { getFileType, randomImageName, saveByteArray } from "utils/FileUpload/covert";
 import { makeStyles } from "@material-ui/core/styles";
 
 const editorStyle = {
@@ -40,24 +40,27 @@ const editorStyle = {
   },
 };
 const useStyles = makeStyles((theme) => ({
-  imageContainer: {
+  fileContainer: {
     marginTop: "12px",
   },
-  imageWrapper: {
+  fileWrapper: {
     position: "relative",
   },
-  imageQuiz: {
-    maxWidth: "100%",
+  fileDownload: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: "16px",
+    alignItems: "center"
   },
-  buttonClearImage: {
-    position: "absolute",
-    top: "12px",
-    right: "12px",
-    zIndex: 3,
-    color: "red",
-    width: 32,
-    height: 32,
-    cursor: "pointer",
+  fileName: {
+    fontStyle: "italic",
+    paddingRight: "12px",
+  },
+  downloadButton: {
+    marginLeft: "12px",
+  },
+  imageQuiz: {
+    maxWidth: "70%",
   },
 }));
 
@@ -163,8 +166,11 @@ export default function StudentViewProgrammingContestProblemDetail() {
       if (res.attachment && res.attachment.length !== 0) {
         const newFileURLArray = res.attachment.map((url) => ({
           id: randomImageName(),
-          url,
+          content: url,
         }));
+        newFileURLArray.forEach((file, idx) => {
+          file.fileName = res.attachmentNames[idx];
+        });
         setFetchedImageArray(newFileURLArray);
       }
 
@@ -281,13 +287,60 @@ export default function StudentViewProgrammingContestProblemDetail() {
         />
         {fetchedImageArray.length !== 0 &&
           fetchedImageArray.map((file) => (
-            <div key={file.id} className={classes.imageContainer}>
-              <div className={classes.imageWrapper}>
-                <img
-                  src={`data:image/jpeg;base64,${file.url}`}
-                  alt="quiz test"
-                  className={classes.imageQuiz}
-                />
+            <div key={file.id} className={classes.fileContainer}>
+              <div className={classes.fileWrapper}>
+                {getFileType(file.fileName) === "img" && (
+                  <img
+                    src={`data:image/jpeg;base64,${file.content}`}
+                    alt={file.fileName}
+                    className={classes.imageQuiz}
+                  />
+                )}
+                {getFileType(file.fileName) === "pdf" && (
+                  <Box className={classes.fileDownload}>
+                    <Typography variant="subtitle2" className={classes.fileName}>{file.fileName}</Typography>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      className={classes.downloadButton}
+                      onClick={() =>
+                        saveByteArray(file.fileName, file.content, "pdf")
+                      }
+                    >
+                      Download
+                    </Button>
+                  </Box>
+                )}
+                {getFileType(file.fileName) === "word" && (
+                  <Box className={classes.fileDownload}>
+                    <Typography variant="subtitle2" className={classes.fileName}>{file.fileName}</Typography>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      className={classes.downloadButton}
+                      onClick={() =>
+                        saveByteArray(file.fileName, file.content, "word")
+                      }
+                    >
+                      Download
+                    </Button>
+                  </Box>
+                )}
+                {getFileType(file.fileName) === "txt" && (
+                  <Box className={classes.fileDownload}>
+                    <Typography variant="subtitle2" className={classes.fileName}>{file.fileName}</Typography>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      className={classes.downloadButton}
+                      onClick={() =>
+                        saveByteArray(file.fileName, file.content, "txt")
+                      }
+                    >
+                      Download
+                    </Button>
+                  </Box>
+                )}
               </div>
             </div>
           ))}

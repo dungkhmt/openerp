@@ -201,10 +201,17 @@ function CreateProblem() {
     for (const file of attachmentFiles) {
       formData.append("files", file);
     }
-
-    authPostMultiPart(dispatch, token, "/create-problem", formData);
-
-    history.push("/programming-contest/list-problems");
+    try {
+      authPostMultiPart(dispatch, token, "/create-problem", formData).then(
+        (res) => {
+          sleep(1000).then(() => {
+            history.push("/programming-contest/list-problems");
+          });
+        }
+      );
+    } catch (error) {
+      alert(error);
+    }
 
     // request(
     //   "post",
@@ -352,7 +359,7 @@ function CreateProblem() {
                 <Typography
                   variant="subtitle1"
                   display="block"
-                  style={{ margin: "5px 0 0 7px", width: "100%" }}
+                  style={{ margin: "5px 10px 0 5px", width: "100%" }}
                 >
                   File đính kèm
                 </Typography>
@@ -363,7 +370,7 @@ function CreateProblem() {
                   showPreviewsInDropzone={false}
                   useChipsForPreview
                   dropzoneText="Kéo thả tệp vào đây hoặc nhấn để chọn tệp"
-                  previewText="Xem trước:"
+                  previewText="Danh sách tệp tải lên:"
                   previewChipProps={{
                     variant: "outlined",
                     color: "primary",
@@ -376,7 +383,7 @@ function CreateProblem() {
                     `Tệp ${fileName} đã loại bỏ`
                   }
                   getFileLimitExceedMessage={(filesLimit) =>
-                    `Vượt quá số lượng tệp tối đa được cho phép. Chỉ được phép tải lên tối đa ${filesLimit} tệp.`
+                    `Vượt quá số lượng tệp tối đa cho phép. Chỉ được phép tải lên tối đa ${filesLimit} tệp.`
                   }
                   alertSnackbarProps={{
                     anchorOrigin: { vertical: "bottom", horizontal: "right" },

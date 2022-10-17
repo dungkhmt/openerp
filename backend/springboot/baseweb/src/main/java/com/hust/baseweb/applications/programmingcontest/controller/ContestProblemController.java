@@ -144,6 +144,7 @@ public class ContestProblemController {
             model.setProblemName(problemEntity.getProblemName());
             model.setCreatedStamp(problemEntity.getCreatedAt());
             model.setAttachment(problemEntity.getAttachment());
+            model.setAttachmentNames(problemEntity.getAttachmentNames());
             PersonModel person = userService.findPersonByUserLoginId(problemEntity.getUserId());
             model.setCreatedByUserFullName(person.getFullName());
             return ResponseEntity.ok().body(model);
@@ -170,6 +171,7 @@ public class ContestProblemController {
 
             model.setProblemName(problemEntity.getProblemName());
             model.setAttachment(problemEntity.getAttachment());
+            model.setAttachmentNames(problemEntity.getAttachmentNames());
             return ResponseEntity.ok().body(model);
         } catch (Exception e) {
             e.printStackTrace();
@@ -180,7 +182,7 @@ public class ContestProblemController {
     @PostMapping("/update-problem-detail/{problemId}")
     public ResponseEntity<?> updateProblemDetails(
             @PathVariable("problemId") String problemId, Principal principal,
-            @RequestParam("ModelCreateContestProblem") String json, @RequestParam("files") MultipartFile[] files)
+            @RequestParam("ModelUpdateContestProblem") String json, @RequestParam("files") MultipartFile[] files)
         throws Exception {
         log.info("updateProblemDetails problemId {}", problemId);
         ProblemEntity problemResponse = problemTestCaseService.updateContestProblem(problemId, principal.getName(), json, files);

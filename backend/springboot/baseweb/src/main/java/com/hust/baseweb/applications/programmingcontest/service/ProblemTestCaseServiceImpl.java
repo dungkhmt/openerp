@@ -69,7 +69,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private ContestProblemRepo contestProblemRepo;
     private MongoContentService mongoContentService;
 
-
     @Override
     public void createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException {
         Gson gson = new Gson();
@@ -131,8 +130,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             throw new MiniLeetCodeException("problem id not found");
         }
 
+        ProblemEntity oldProblem = problemRepo.findByProblemId(problemId);
+
         Gson gson = new Gson();
-        ModelCreateContestProblem modelCreateContestProblem = gson.fromJson(json, ModelCreateContestProblem.class);
+        ModelUpdateContestProblem modelUpdateContestProblem = gson.fromJson(json, ModelUpdateContestProblem.class);
 
         ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
         if(!userId.equals(problemEntity.getUserId())){
@@ -140,8 +141,24 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
 
         List<String> attachmentId = new ArrayList<>();
-        String[] fileId = modelCreateContestProblem.getFileId();
+        attachmentId.add(oldProblem.getAttachment());
+        String[] fileId = modelUpdateContestProblem.getFileId();
         List<MultipartFile> fileArray = Arrays.asList(files);
+
+        List<String> removedFilesId = modelUpdateContestProblem.getRemovedFilesId();
+        List<String> oldAttachmentIds = Arrays.asList(oldProblem.getAttachment().split(";"));
+        for (String s : oldAttachmentIds) {
+            try {
+                GridFsResource content = mongoContentService.getById(s);
+                if (content != null) {
+                    if(removedFilesId.contains(content.getFilename())) {
+                        mongoContentService.deleteFilesById(s);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         fileArray.forEach((file) -> {
             ContentModel model = new ContentModel(fileId[fileArray.indexOf(file)], file);
@@ -159,16 +176,16 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             }
         });
 
-        problemEntity.setProblemName(modelCreateContestProblem.getProblemName());
-        problemEntity.setProblemDescription(modelCreateContestProblem.getProblemDescription());
-        problemEntity.setLevelId(modelCreateContestProblem.getLevelId());
-        problemEntity.setCategoryId(modelCreateContestProblem.getCategoryId());
-        problemEntity.setSolution(modelCreateContestProblem.getSolution());
-        problemEntity.setTimeLimit(modelCreateContestProblem.getTimeLimit());
-        problemEntity.setCorrectSolutionLanguage(modelCreateContestProblem.getCorrectSolutionLanguage());
-        problemEntity.setCorrectSolutionSourceCode(modelCreateContestProblem.getCorrectSolutionSourceCode());
-        problemEntity.setSolutionCheckerSourceCode(modelCreateContestProblem.getSolutionChecker());
-        problemEntity.setPublicProblem(modelCreateContestProblem.getIsPublic());
+        problemEntity.setProblemName(modelUpdateContestProblem.getProblemName());
+        problemEntity.setProblemDescription(modelUpdateContestProblem.getProblemDescription());
+        problemEntity.setLevelId(modelUpdateContestProblem.getLevelId());
+        problemEntity.setCategoryId(modelUpdateContestProblem.getCategoryId());
+        problemEntity.setSolution(modelUpdateContestProblem.getSolution());
+        problemEntity.setTimeLimit(modelUpdateContestProblem.getTimeLimit());
+        problemEntity.setCorrectSolutionLanguage(modelUpdateContestProblem.getCorrectSolutionLanguage());
+        problemEntity.setCorrectSolutionSourceCode(modelUpdateContestProblem.getCorrectSolutionSourceCode());
+        problemEntity.setSolutionCheckerSourceCode(modelUpdateContestProblem.getSolutionChecker());
+        problemEntity.setPublicProblem(modelUpdateContestProblem.getIsPublic());
         problemEntity.setAttachment(String.join(";", attachmentId));
         problemRepo.save(problemEntity);
 
@@ -265,23 +282,28 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 String[] fileId = problemEntity.getAttachment().split(";", -1);
                 if (fileId.length != 0) {
                     List<byte[]> fileArray = new ArrayList<>();
+                    List<String> fileNames = new ArrayList<>();
                     for (String s : fileId) {
                         try {
                             GridFsResource content = mongoContentService.getById(s);
                             if (content != null) {
                                 InputStream inputStream = content.getInputStream();
                                 fileArray.add(IOUtils.toByteArray(inputStream));
+                                fileNames.add(content.getFilename());
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                     problemResponse.setAttachment(fileArray);
+                    problemResponse.setAttachmentNames(fileNames);
                 } else {
                     problemResponse.setAttachment(null);
+                    problemResponse.setAttachmentNames(null);
                 }
             } else {
                 problemResponse.setAttachment(null);
+                problemResponse.setAttachmentNames(null);
             }
 
             return problemResponse;

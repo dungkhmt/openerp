@@ -41,9 +41,12 @@ import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@mui/material/TableBody";
 import {
   dataUrlToFile,
+  getFileType,
   randomImageName,
+  saveByteArray,
 } from "../../../utils/FileUpload/covert";
 import { DropzoneArea } from "material-ui-dropzone";
+import { Box } from "@mui/material";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,14 +62,27 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 120,
     maxWidth: 300,
   },
-  imageContainer: {
+  fileContainer: {
     marginTop: "12px",
   },
-  imageWrapper: {
+  fileWrapper: {
     position: "relative",
   },
+  fileDownload: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: "16px",
+    alignItems: "center",
+  },
+  fileName: {
+    fontStyle: "italic",
+    paddingRight: "12px",
+  },
+  downloadButton: {
+    marginLeft: "12px",
+  },
   imageQuiz: {
-    maxWidth: "100%",
+    maxWidth: "70%",
   },
   buttonClearImage: {
     position: "absolute",
@@ -139,6 +155,7 @@ function EditProblem() {
   const [compileMessage, setCompileMessage] = useState("");
   const [attachmentFiles, setAttachmentFiles] = useState([]);
   const [fetchedImageArray, setFetchedImageArray] = useState([]);
+  const [removedFilesId, setRemovedFileIds] = useState([]);
 
   const handleAttachmentFiles = (files) => {
     setAttachmentFiles(files);
@@ -146,8 +163,9 @@ function EditProblem() {
 
   const handleDeleteImageAttachment = async (fileId) => {
     setFetchedImageArray(
-      fetchedImageArray.filter((file) => file.id !== fileId)
+      fetchedImageArray.filter((file) => file.fileName !== fileId)
     );
+    setRemovedFileIds([...removedFilesId, fileId])
   };
 
   useEffect(() => {
@@ -159,8 +177,11 @@ function EditProblem() {
         if (res.attachment && res.attachment.length !== 0) {
           const newFileURLArray = res.attachment.map((url) => ({
             id: randomImageName(),
-            url,
+            content: url,
           }));
+          newFileURLArray.forEach((file, idx) => {
+            file.fileName = res.attachmentNames[idx];
+          });
           setFetchedImageArray(newFileURLArray);
         }
 
@@ -287,23 +308,20 @@ function EditProblem() {
       convertToRaw(editorStateSolution.getCurrentContent())
     );
 
-    const fetchedFileArray = [];
-    for (const fetchedFile of fetchedImageArray) {
-      const file = dataUrlToFile(
-        `data:image/jpeg;base64,${fetchedFile.url}`,
-        fetchedFile.id
-      );
-      fetchedFileArray.push(file);
-    }
 
-    const newAttachmentFiles = [...fetchedFileArray, ...attachmentFiles];
-
-    const fileId = newAttachmentFiles.map((file) => {
+    let fileId = [];
+    if (attachmentFiles.length > 0) {
+      fileId = attachmentFiles.map((file) => {
       if (typeof file.name !== "undefined") {
         return file.name;
       }
+      if (typeof file.fileName !== "undefined") {
+        return file.fileName;
+      }
       return file.id;
     });
+    }
+    
 
     let body = {
       problemName: problemName,
@@ -317,32 +335,37 @@ function EditProblem() {
       correctSolutionSourceCode: codeSolution,
       solutionChecker: codeChecker,
       isPublic: isPublic,
-      fileId,
+      fileId: fileId,
+      removedFilesId: removedFilesId,
     };
 
     let formData = new FormData();
-    formData.append("ModelCreateContestProblem", JSON.stringify(body));
-    for (const file of newAttachmentFiles) {
+    formData.append("ModelUpdateContestProblem", JSON.stringify(body));
+    for (const file of attachmentFiles) {
       formData.append("files", file);
     }
 
-    authPostMultiPart(
-      dispatch,
-      token,
-      "/update-problem-detail/" + problemId,
-      formData
-    ).then(
-      (res) => {
-        setShowSubmitSuccess(true);
-        sleep(1000).then((r) => {
-          history.push("/programming-contest/list-problems");
-        });
-      },
-      {},
-      () => {
-        alert("Cập nhật thất bại");
-      }
-    )
+    try {
+      authPostMultiPart(
+        dispatch,
+        token,
+        "/update-problem-detail/" + problemId,
+        formData
+      ).then(
+        (res) => {
+          setShowSubmitSuccess(true);
+          sleep(1000).then((r) => {
+            history.push("/programming-contest/list-problems");
+          });
+        },
+        {},
+        () => {
+          alert("Cập nhật thất bại");
+        }
+      );
+    } catch (error) {
+      alert(error);
+    }
   }
 
   return (
@@ -466,9 +489,17 @@ function EditProblem() {
                   toolbarStyle={editorStyle.toolbar}
                   editorStyle={editorStyle.editor}
                 />
+                <Typography
+                  variant="subtitle1"
+                  display="block"
+                  style={{ margin: "5px 10px 0 5px", width: "100%" }}
+                >
+                  File đính kèm
+                </Typography>
                 <DropzoneArea
                   dropzoneClass={classes.dropZone}
                   filesLimit={20}
+                  maxFileSize={10 * 1024 * 1024}
                   showPreviews={true}
                   showPreviewsInDropzone={false}
                   useChipsForPreview
@@ -497,16 +528,90 @@ function EditProblem() {
 
                 {fetchedImageArray.length !== 0 &&
                   fetchedImageArray.map((file) => (
-                    <div key={file.id} className={classes.imageContainer}>
-                      <div className={classes.imageWrapper}>
+                    <div key={file.id} className={classes.fileContainer}>
+                      <div className={classes.fileWrapper}>
+                        {getFileType(file.fileName) === "img" && (
+                          <img
+                            src={`data:image/jpeg;base64,${file.content}`}
+                            alt={file.fileName}
+                            className={classes.imageQuiz}
+                          />
+                        )}
+                        {getFileType(file.fileName) === "pdf" && (
+                          <Box className={classes.fileDownload}>
+                            <Typography
+                              variant="subtitle2"
+                              className={classes.fileName}
+                            >
+                              {file.fileName}
+                            </Typography>
+                            <Button
+                              variant="contained"
+                              color="success"
+                              className={classes.downloadButton}
+                              onClick={() =>
+                                saveByteArray(
+                                  file.fileName,
+                                  file.content,
+                                  "pdf"
+                                )
+                              }
+                            >
+                              Download
+                            </Button>
+                          </Box>
+                        )}
+                        {getFileType(file.fileName) === "word" && (
+                          <Box className={classes.fileDownload}>
+                            <Typography
+                              variant="subtitle2"
+                              className={classes.fileName}
+                            >
+                              {file.fileName}
+                            </Typography>
+                            <Button
+                              variant="contained"
+                              color="success"
+                              className={classes.downloadButton}
+                              onClick={() =>
+                                saveByteArray(
+                                  file.fileName,
+                                  file.content,
+                                  "word"
+                                )
+                              }
+                            >
+                              Download
+                            </Button>
+                          </Box>
+                        )}
+                        {getFileType(file.fileName) === "txt" && (
+                          <Box className={classes.fileDownload}>
+                            <Typography
+                              variant="subtitle2"
+                              className={classes.fileName}
+                            >
+                              {file.fileName}
+                            </Typography>
+                            <Button
+                              variant="contained"
+                              color="success"
+                              className={classes.downloadButton}
+                              onClick={() =>
+                                saveByteArray(
+                                  file.fileName,
+                                  file.content,
+                                  "txt"
+                                )
+                              }
+                            >
+                              Download
+                            </Button>
+                          </Box>
+                        )}
                         <HighlightOffIcon
                           className={classes.buttonClearImage}
-                          onClick={() => handleDeleteImageAttachment(file.id)}
-                        />
-                        <img
-                          src={`data:image/jpeg;base64,${file.url}`}
-                          alt="quiz test"
-                          className={classes.imageQuiz}
+                          onClick={() => handleDeleteImageAttachment(file.fileName)}
                         />
                       </div>
                     </div>

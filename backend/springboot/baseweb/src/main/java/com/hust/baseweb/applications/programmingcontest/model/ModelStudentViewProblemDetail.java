@@ -18,4 +18,5 @@ public class ModelStudentViewProblemDetail {
     private String createdByUserFullName;
     private Date createdStamp;
     private List<byte[]> attachment;
+    private List<String> attachmentNames;
 }
