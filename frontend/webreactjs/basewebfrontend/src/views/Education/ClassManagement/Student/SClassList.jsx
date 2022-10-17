@@ -47,27 +47,27 @@ function SClassList() {
   const columns = [
     {
       field: "classCode",
-      title: "Mã lớp",
+      title: "Class Code",
     },
     {
       field: "courseId",
-      title: "Mã học phần",
+      title: "Course Code",
     },
     {
       field: "name",
-      title: "Tên học phần",
+      title: "Course Name",
     },
     {
       field: "classType",
-      title: "Loại lớp",
+      title: "Class Type",
     },
     {
       field: "semester",
-      title: "Học kỳ",
+      title: "Semester",
     },
     {
       field: "status",
-      title: "Trạng thái",
+      title: "Status",
       filtering: false,
       headerStyle: {
         textAlign: "center",
@@ -77,14 +77,14 @@ function SClassList() {
           {rowData.status === "APPROVED" ? (
             <Chip
               icon={<FcApproval size={24} />}
-              label="Đã phê duyệt"
+              label="Approved"
               variant="outlined"
               className={classes.approved}
             />
           ) : (
             <Chip
               icon={<GiSandsOfTime size={24} />}
-              label="Chờ phê duyệt"
+              label="Pending"
               color="primary"
               variant="outlined"
               className={classes.pendingApproval}

@@ -1,4 +1,7 @@
-import { TableHead, Typography } from "@material-ui/core";
+
+import {
+  TableHead, Typography
+} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import TableRow from "@material-ui/core/TableRow";
@@ -16,10 +19,11 @@ import React, { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
+import { useHistory } from "react-router-dom";
 import {
   getFileType,
   randomImageName,
-  saveByteArray,
+  saveByteArray
 } from "utils/FileUpload/covert";
 import { authGet } from "../../../api";
 import ContestsUsingAProblem from "./ContestsUsingAProblem";
@@ -76,6 +80,7 @@ export default function ManagerViewProblemDetail() {
   const classes = useStyles();
 
   const problemId = params.problemId;
+  const history = useHistory();
   const [problem, setProblem] = useState(null);
   const [testCases, setTestCases] = useState([]);
   const [filename, setFilename] = useState("");
@@ -202,8 +207,31 @@ export default function ManagerViewProblemDetail() {
     );
   };
 
+  function handleEdit() {
+    //alert("edit problem");
+    history.push("/programming-contest/edit-problem/" + problemId);
+  }
+  function addTestCase() {
+    history.push(
+      "/programming-contest/problem-detail-create-test-case/" + problemId
+    );
+  }
   return (
     <div>
+      <Button
+        onClick={() => {
+          handleEdit();
+        }}
+      >
+        Edit
+      </Button>
+      <Button
+        onClick={() => {
+          addTestCase();
+        }}
+      >
+        Add TestCase
+      </Button>
       <div>
         <h3>Name: {problem ? problem.problemName : ""}</h3>
       </div>

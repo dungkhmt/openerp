@@ -48,23 +48,23 @@ function ClassRegistration() {
   const columns = [
     {
       field: "classCode",
-      title: "Mã lớp",
+      title: "Class Code",
     },
     {
       field: "courseId",
-      title: "Mã học phần",
+      title: "CourseCode",
     },
     {
       field: "courseName",
-      title: "Tên học phần",
+      title: "Course Name",
     },
     {
       field: "classType",
-      title: "Loại lớp",
+      title: "Course Type",
     },
     {
       field: "departmentId",
-      title: "Khoa/Viện",
+      title: "Faculty",
     },
     {
       field: "",
@@ -73,7 +73,7 @@ function ClassRegistration() {
       render: (rowData) =>
         registeredClasses.has(rowData.id) ? null : (
           <PositiveButton
-            label="Tham gia"
+            label="Join"
             disableRipple
             className={classes.registrationBtn}
             onClick={() => onRegist(rowData)}
@@ -181,7 +181,7 @@ function ClassRegistration() {
           avatar={<Avatar style={{ background: "#ff5722" }}>R</Avatar>}
           title={
             <Typography variant="h5">
-              Đăng ký lớp học - Học kỳ {semester}
+              Registration - Semester {semester}
             </Typography>
           }
         />
