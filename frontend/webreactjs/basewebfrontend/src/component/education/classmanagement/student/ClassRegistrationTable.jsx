@@ -3,12 +3,18 @@ import {request} from "../../../../api";
 import {errorNoti, successNoti} from "../../../../utils/notification";
 import StandardTable from "../../../table/StandardTable";
 import PositiveButton from "../PositiveButton";
+import {useTranslation} from "react-i18next";
+
+let translator;
 
 function ClassRegistrationTable(props) {
   const [semesterId, setSemesterId] = useState(0);
   const [openingClasses, setOpeningClasses] = useState([]);
   const [registeredClassesOfCurrentUser, setRegisteredClassesOfCurrentUser] = useState(new Set());
   const [filterParams, setFilterParams] = useState({ page: 0, pageSize: 20, searchText: '' });
+
+  const { t } = useTranslation("education/classmanagement/student/classregistration")
+  translator = t;
 
   useEffect(() => getClassRegistrationData(filterParams, setClassRegistrationData), [filterParams]);
 
@@ -20,15 +26,15 @@ function ClassRegistrationTable(props) {
   }
 
   const columns = [
-    { title: "Class Code", field: "classCode" },
-    { title: "Course Code", field: "courseId" },
-    { title: "Course Name", field: "courseName" },
-    { title: "Course Type", field: "classType" },
-    { title: "Faculty", field: "departmentId" },
+    { title: t('columns.classCode'), field: "classCode" },
+    { title: t('columns.courseId'), field: "courseId" },
+    { title: t('columns.name'), field: "courseName" },
+    { title: t('columns.classType'), field: "classType" },
+    { title: t('columns.departmentId'), field: "departmentId" },
     { title: "", field: "",
       render: aClass => (registeredClassesOfCurrentUser.has(aClass.id) ? null :
         <PositiveButton
-          label="Join"
+          label={ t('columns.join') }
           disableRipple
           onClick={() => registerClass(aClass.id, setRegisteredClassesOfCurrentUser)} />
       )
@@ -37,7 +43,7 @@ function ClassRegistrationTable(props) {
 
   return (
     <StandardTable
-      title={"Registration  - Semester " + semesterId}
+      title={t('title') + semesterId}
       columns={columns}
       data={openingClasses}
       hideCommandBar
@@ -60,7 +66,7 @@ function getClassRegistrationData({ page, pageSize, searchText }, setClassRegist
   let errorHandlers = {
     onError: (e) => {
       console.log(e);
-      errorNoti("An error occurred while registering the class. Retry", 3000);
+      errorNoti(translator('registerNoti.error'), 3000);
     }
   }
   request("post", url, setClassRegistrationData, errorHandlers, { courseName: searchText });
@@ -68,7 +74,7 @@ function getClassRegistrationData({ page, pageSize, searchText }, setClassRegist
 
 function registerClass(classId, setRegisteredClasses) {
   let successHandler = () => {
-    successNoti("Register success. Please wait for the teacher's approval.", 3000);
+    successNoti(translator('registerNoti.success'), 3000);
     setRegisteredClasses(oldRegisteredClasses => new Set([...oldRegisteredClasses, classId]))
   }
   let errorHandlers = {
