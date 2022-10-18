@@ -7,16 +7,18 @@ import {request} from "../../../../api";
 import {useHistory} from "react-router-dom";
 import {infoNoti} from "../../../../utils/notification";
 import StandardTable from "../../../table/StandardTable";
+import {useTranslation} from "react-i18next";
 
 function CurrentStudentClassList(props) {
+  const { t } = useTranslation("education/classmanagement/student/currentstudentclasslist");
   const columns = [
-    { title: "Class Code", field: "classCode" },
-    { title: "Course Code", field: "courseId" },
-    { title: "Course Name", field: "name" },
-    { title: "Course Type", field: "classType" },
-    { title: "Semester", field: "semester" },
+    { title: t("columns.classCode"), field: "classCode" },
+    { title: t("columns.courseId"), field: "courseId" },
+    { title: t("columns.name"), field: "name" },
+    { title: t("columns.classType"), field: "classType" },
+    { title: t("columns.semester"), field: "semester" },
     {
-      title: "Status",
+      title: t("columns.status"),
       field: "status",
       render: aClass => <RegisterStatusBox status={aClass.status}/>
     }
@@ -37,13 +39,13 @@ function CurrentStudentClassList(props) {
     if (aClass.status === "APPROVED") {
       history.push(`/edu/student/class/${aClass.id}`);
     } else {
-      infoNoti(`Please wait for the teacher's approval to view details of class ${aClass.name}.`, 3000);
+      infoNoti(t("notiWhenClickingNonApprovedClass") + aClass.name, 3000);
     }
   }
 
   return (
     <StandardTable
-      title="Class List"
+      title={ t("title") }
       columns={columns}
       data={classesOfCurrentStudent}
       onRowClick={ (event, aClass) => viewClassDetailsIfApproved(aClass) }
@@ -73,12 +75,14 @@ const useRegisterStatusBoxStyles = makeStyles((theme) => ({
 /** Private component, do not expose it */
 function RegisterStatusBox({ status }) {
   const classes = useRegisterStatusBoxStyles();
+  const { t } = useTranslation("education/classmanagement/student/currentstudentclasslist");
+
   return (
     <Box display="flex" justifyContent="center">
       { status === "APPROVED" &&
         <Chip
           icon={<FcApproval size={24} />}
-          label="Đã phê duyệt"
+          label={ t("classStatus.approved") }
           variant="outlined"
           className={classes.approved}
         />
@@ -87,7 +91,7 @@ function RegisterStatusBox({ status }) {
       { status === "WAITING_FOR_APPROVAL" &&
         <Chip
         icon={<GiSandsOfTime size={24} />}
-        label="Chờ phê duyệt"
+        label={ t("classStatus.pendingApproval") }
         color="primary"
         variant="outlined"
         className={classes.pendingApproval}
