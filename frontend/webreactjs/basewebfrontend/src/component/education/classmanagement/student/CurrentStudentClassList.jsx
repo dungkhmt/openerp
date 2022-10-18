@@ -10,13 +10,13 @@ import StandardTable from "../../../table/StandardTable";
 
 function CurrentStudentClassList(props) {
   const columns = [
-    { title: "Mã lớp", field: "classCode" },
-    { title: "Mã học phần", field: "courseId" },
-    { title: "Tên học phần", field: "name" },
-    { title: "Loại lớp", field: "classType" },
-    { title: "Học kỳ", field: "semester" },
+    { title: "Class Code", field: "classCode" },
+    { title: "Course Code", field: "courseId" },
+    { title: "Course Name", field: "name" },
+    { title: "Course Type", field: "classType" },
+    { title: "Semester", field: "semester" },
     {
-      title: "Trạng thái",
+      title: "Status",
       field: "status",
       render: aClass => <RegisterStatusBox status={aClass.status}/>
     }
@@ -37,13 +37,13 @@ function CurrentStudentClassList(props) {
     if (aClass.status === "APPROVED") {
       history.push(`/edu/student/class/${aClass.id}`);
     } else {
-      infoNoti(`Vui lòng chờ giảng viên phê duyệt để xem thông tin của lớp ${aClass.name}.`, 3000);
+      infoNoti(`Please wait for the teacher's approval to view details of class ${aClass.name}.`, 3000);
     }
   }
 
   return (
     <StandardTable
-      title="Danh sách lớp"
+      title="Class List"
       columns={columns}
       data={classesOfCurrentStudent}
       onRowClick={ (event, aClass) => viewClassDetailsIfApproved(aClass) }

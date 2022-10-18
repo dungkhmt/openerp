@@ -20,15 +20,15 @@ function ClassRegistrationTable(props) {
   }
 
   const columns = [
-    { title: "Mã lớp", field: "classCode" },
-    { title: "Mã học phần", field: "courseId" },
-    { title: "Tên học phần", field: "courseName" },
-    { title: "Loại lớp", field: "classType" },
-    { title: "Khoa/Viện", field: "departmentId" },
+    { title: "Class Code", field: "classCode" },
+    { title: "Course Code", field: "courseId" },
+    { title: "Course Name", field: "courseName" },
+    { title: "Course Type", field: "classType" },
+    { title: "Faculty", field: "departmentId" },
     { title: "", field: "",
       render: aClass => (registeredClassesOfCurrentUser.has(aClass.id) ? null :
         <PositiveButton
-          label="Tham gia"
+          label="Join"
           disableRipple
           onClick={() => registerClass(aClass.id, setRegisteredClassesOfCurrentUser)} />
       )
@@ -37,7 +37,7 @@ function ClassRegistrationTable(props) {
 
   return (
     <StandardTable
-      title={"Đăng ký lớp học - Học kỳ " + semesterId}
+      title={"Registration  - Semester " + semesterId}
       columns={columns}
       data={openingClasses}
       hideCommandBar
@@ -60,7 +60,7 @@ function getClassRegistrationData({ page, pageSize, searchText }, setClassRegist
   let errorHandlers = {
     onError: (e) => {
       console.log(e);
-      errorNoti("Đã có lỗi xảy ra trong quá trình tải dữ liệu. Thử lại", 3000);
+      errorNoti("An error occurred while registering the class. Retry", 3000);
     }
   }
   request("post", url, setClassRegistrationData, errorHandlers, { courseName: searchText });
@@ -68,7 +68,7 @@ function getClassRegistrationData({ page, pageSize, searchText }, setClassRegist
 
 function registerClass(classId, setRegisteredClasses) {
   let successHandler = () => {
-    successNoti("Đăng ký thành công. Vui lòng chờ giảng viên phê duyệt.", 3000);
+    successNoti("Register success. Please wait for the teacher's approval.", 3000);
     setRegisteredClasses(oldRegisteredClasses => new Set([...oldRegisteredClasses, classId]))
   }
   let errorHandlers = {
