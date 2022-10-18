@@ -176,7 +176,7 @@ export default function SignIn(props) {
               required
               fullWidth
               id="user"
-              label="Tên đăng nhập"
+              label="User Name"
               name="user"
               onChange={handleUserNameChange}
               error={
@@ -192,7 +192,7 @@ export default function SignIn(props) {
               required
               fullWidth
               name="password"
-              label="Mật khẩu"
+              label="Password"
               type="password"
               id="password"
               onChange={handlePasswordChange}
@@ -216,7 +216,7 @@ export default function SignIn(props) {
                 type="submit"
                 className={classes.submitBtn}
               >
-                Đăng nhập
+                LogIn
               </Button>
               {isRequesting && (
                 <CircularProgress
@@ -240,7 +240,7 @@ export default function SignIn(props) {
                 variant="body2"
                 style={{ position: "relative", fontSize: "18px" }}
               >
-                {"Tạo tài khoản"}
+                {"Sign Up"}
               </Link>
               <Link
                 component={NavLink}
@@ -248,7 +248,7 @@ export default function SignIn(props) {
                 variant="body2"
                 style={{ position: "relative", fontSize: "18px" }}
               >
-                {"Quên mật khẩu"}
+                {"Forget Password"}
               </Link>
             </div>
 

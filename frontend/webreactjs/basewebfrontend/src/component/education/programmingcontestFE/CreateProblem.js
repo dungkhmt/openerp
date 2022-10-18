@@ -18,19 +18,22 @@ import { makeStyles } from "@material-ui/core/styles";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { convertToRaw, EditorState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
+import { DropzoneArea } from "material-ui-dropzone";
 import React, { useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { CompileStatus } from "./CompileStatus";
 import { sleep } from "./lib";
 import { request } from "./Request";
 import { SubmitSuccess } from "./SubmitSuccess";
 import { SubmitWarming } from "./SubmitWarming";
+import { authPostMultiPart } from "../../../api";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(4),
+    padding: theme.spacing(2),
     "& .MuiTextField-root": {
       margin: theme.spacing(1),
       width: "40%",
@@ -71,6 +74,9 @@ const editorStyle = {
 
 function CreateProblem() {
   const history = useHistory();
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
+
   const [problemId, setProblemID] = useState();
   const [problemName, setProblemName] = useState();
   const [problemDescriptions, setProblemDescription] = useState();
@@ -95,10 +101,16 @@ function CreateProblem() {
   const computerLanguageList = ["CPP", "GOLANG", "JAVA", "PYTHON3"];
   const [showSubmitWarming, setShowSubmitWarming] = useState(false);
   const [showCompile, setShowCompile] = useState(false);
-  const [statusSuccessful, setStatusSuccessful] = useState(false);
+  const [statusSuccessful, setStatusSuccessful] = useState(true);
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
   const [compileMessage, setCompileMessage] = useState("");
+  const [attachmentFiles, setAttachmentFiles] = useState([]);
+
+  const handleAttachmentFiles = (files) => {
+    setAttachmentFiles(files);
+  };
+
   const onChangeEditorStateDescription = (editorState) => {
     console.log(problemDescriptions);
     setEditorStateDescription(editorState);
@@ -142,6 +154,8 @@ function CreateProblem() {
         } else {
           setShowCompile(true);
           setStatusSuccessful(false);
+          // setShowSubmitWarming(false);
+          // setStatusSuccessful(true);
         }
         setCompileMessage(res.data.message);
       },
@@ -161,6 +175,9 @@ function CreateProblem() {
     let solution = draftToHtml(
       convertToRaw(editorStateSolution.getCurrentContent())
     );
+
+    const fileId = attachmentFiles.map((file) => file.name);
+
     let body = {
       problemId: problemId,
       problemName: problemName,
@@ -175,20 +192,40 @@ function CreateProblem() {
       solutionChecker: solutionChecker,
       solutionCheckerLanguage: solutionCheckerLanguage,
       isPublic: isPublic,
+      fileId: fileId,
     };
-    request(
-      "post",
-      "/create-problem",
-      (res) => {
-        console.log("res ", res);
-        setShowSubmitSuccess(true);
-        sleep(1000).then((r) => {
-          history.push("/programming-contest/list-problems");
-        });
-      },
-      {},
-      body
-    ).then();
+
+    let formData = new FormData();
+    formData.append("ModelCreateContestProblem", JSON.stringify(body));
+
+    for (const file of attachmentFiles) {
+      formData.append("files", file);
+    }
+    try {
+      authPostMultiPart(dispatch, token, "/create-problem", formData).then(
+        (res) => {
+          sleep(1000).then(() => {
+            history.push("/programming-contest/list-problems");
+          });
+        }
+      );
+    } catch (error) {
+      alert(error);
+    }
+
+    // request(
+    //   "post",
+    //   "/create-problem",
+    //   (res) => {
+    //     console.log("res ", res);
+    //     setShowSubmitSuccess(true);
+    //     sleep(1000).then((r) => {
+    //       history.push("/programming-contest/list-problems");
+    //     });
+    //   },
+    //   {},
+    //   body
+    // ).then();
   }
 
   return (
@@ -249,8 +286,8 @@ function CreateProblem() {
                   required
                   select
                   id="levelId"
-                  label="Level ID"
-                  placeholder="Level ID"
+                  label="Level"
+                  placeholder="Level"
                   onChange={(event) => {
                     setLevelId(event.target.value);
                   }}
@@ -317,6 +354,43 @@ function CreateProblem() {
                   toolbarStyle={editorStyle.toolbar}
                   editorStyle={editorStyle.editor}
                 />
+              </div>
+              <div>
+                <Typography
+                  variant="subtitle1"
+                  display="block"
+                  style={{ margin: "5px 10px 0 5px", width: "100%" }}
+                >
+                  File đính kèm
+                </Typography>
+                <DropzoneArea
+                  dropzoneClass={classes.dropZone}
+                  filesLimit={20}
+                  showPreviews={true}
+                  showPreviewsInDropzone={false}
+                  useChipsForPreview
+                  dropzoneText="Kéo thả tệp vào đây hoặc nhấn để chọn tệp"
+                  previewText="Danh sách tệp tải lên:"
+                  previewChipProps={{
+                    variant: "outlined",
+                    color: "primary",
+                    size: "medium",
+                  }}
+                  getFileAddedMessage={(fileName) =>
+                    `Tệp ${fileName} tải lên thành công`
+                  }
+                  getFileRemovedMessage={(fileName) =>
+                    `Tệp ${fileName} đã loại bỏ`
+                  }
+                  getFileLimitExceedMessage={(filesLimit) =>
+                    `Vượt quá số lượng tệp tối đa cho phép. Chỉ được phép tải lên tối đa ${filesLimit} tệp.`
+                  }
+                  alertSnackbarProps={{
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                    autoHideDuration: 1800,
+                  }}
+                  onChange={(files) => handleAttachmentFiles(files)}
+                ></DropzoneArea>
               </div>
               <div>
                 <Typography>

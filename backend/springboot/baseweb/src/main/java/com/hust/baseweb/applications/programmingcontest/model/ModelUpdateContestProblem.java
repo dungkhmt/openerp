@@ -1,5 +1,7 @@
 package com.hust.baseweb.applications.programmingcontest.model;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -7,7 +9,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ModelCreateContestProblem {
+public class ModelUpdateContestProblem {
     private String problemId;
     private String problemName;
     private String problemDescription;
@@ -22,4 +24,5 @@ public class ModelCreateContestProblem {
     private String solution;
     private Boolean isPublic;
     private String[] fileId;
+    private List<String> removedFilesId;
 }

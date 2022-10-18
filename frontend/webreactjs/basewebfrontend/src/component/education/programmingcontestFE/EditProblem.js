@@ -14,8 +14,9 @@ import { Link, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Editor } from "react-draft-wysiwyg";
 import { ContentState, convertToRaw, EditorState } from "draft-js";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { authPost } from "../../../api";
+import { authGet, authPost, authPostMultiPart } from "../../../api";
 import { Button, TableHead } from "@material-ui/core";
 import draftToHtml from "draftjs-to-html";
 import { API_URL } from "../../../config/config";
@@ -38,6 +39,14 @@ import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@mui/material/TableBody";
+import {
+  dataUrlToFile,
+  getFileType,
+  randomImageName,
+  saveByteArray,
+} from "../../../utils/FileUpload/covert";
+import { DropzoneArea } from "material-ui-dropzone";
+import { Box } from "@mui/material";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +61,38 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 120,
     maxWidth: 300,
+  },
+  fileContainer: {
+    marginTop: "12px",
+  },
+  fileWrapper: {
+    position: "relative",
+  },
+  fileDownload: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: "16px",
+    alignItems: "center",
+  },
+  fileName: {
+    fontStyle: "italic",
+    paddingRight: "12px",
+  },
+  downloadButton: {
+    marginLeft: "12px",
+  },
+  imageQuiz: {
+    maxWidth: "70%",
+  },
+  buttonClearImage: {
+    position: "absolute",
+    top: "12px",
+    right: "12px",
+    zIndex: 3,
+    color: "red",
+    width: 32,
+    height: 32,
+    cursor: "pointer",
   },
 }));
 const descriptionStyles = makeStyles((theme) => ({
@@ -112,31 +153,51 @@ function EditProblem() {
   const [isPublic, setIsPublic] = useState(false);
   const [testCases, setTestCases] = useState([]);
   const [compileMessage, setCompileMessage] = useState("");
+  const [attachmentFiles, setAttachmentFiles] = useState([]);
+  const [fetchedImageArray, setFetchedImageArray] = useState([]);
+  const [removedFilesId, setRemovedFileIds] = useState([]);
+
+  const handleAttachmentFiles = (files) => {
+    setAttachmentFiles(files);
+  };
+
+  const handleDeleteImageAttachment = async (fileId) => {
+    setFetchedImageArray(
+      fetchedImageArray.filter((file) => file.fileName !== fileId)
+    );
+    setRemovedFileIds([...removedFilesId, fileId])
+  };
 
   useEffect(() => {
-    console.log("problemid ", problemId);
-    let url = "/problem-details/" + problemId;
-    console.log("url ", url);
-    request(
-      "get",
-      "/problem-details/" + problemId,
-      (res) => {
-        console.log("res data", res.data);
-        console.log(res.data.levelId);
+    authGet(dispatch, token, "/problem-details/" + problemId)
+      .then((res) => {
+        console.log("PROBLEM DETAIL", res.attachment);
         // setEditorStateDescription(EditorState.set(res.data.problemDescription));
-        setProblemName(res.data.problemName);
-        setLevelId(res.data.levelId);
-        setMemoryLimit(res.data.memoryLimit);
-        setCodeSolution(res.data.correctSolutionSourceCode);
+
+        if (res.attachment && res.attachment.length !== 0) {
+          const newFileURLArray = res.attachment.map((url) => ({
+            id: randomImageName(),
+            content: url,
+          }));
+          newFileURLArray.forEach((file, idx) => {
+            file.fileName = res.attachmentNames[idx];
+          });
+          setFetchedImageArray(newFileURLArray);
+        }
+
+        setProblemName(res.problemName);
+        setLevelId(res.levelId);
+        setMemoryLimit(res.memoryLimit);
+        setCodeSolution(res.correctSolutionSourceCode);
 
         setCodeChecker(
-          res.data.solutionCheckerSourceCode != null
-            ? res.data.solutionCheckerSourceCode
+          res.solutionCheckerSourceCode != null
+            ? res.solutionCheckerSourceCode
             : " "
         );
-        setTimeLimit(res.data.timeLimit);
-        setIsPublic(res.data.publicProblem);
-        let problemDescriptionHtml = htmlToDraft(res.data.problemDescription);
+        setTimeLimit(res.timeLimit);
+        setIsPublic(res.publicProblem);
+        let problemDescriptionHtml = htmlToDraft(res.problemDescription);
         let { contentBlocks, entityMap } = problemDescriptionHtml;
         let contentDescriptionState = ContentState.createFromBlockArray(
           contentBlocks,
@@ -146,8 +207,8 @@ function EditProblem() {
           contentDescriptionState
         );
         setEditorStateDescription(statementDescription);
-        console.log("statementDescription ", statementDescription);
-        let solutionHtml = htmlToDraft(res.data.solution);
+
+        let solutionHtml = htmlToDraft(res.solution);
         let contentBlocks1 = solutionHtml.contentBlocks;
         let entityMap1 = solutionHtml.entityMap;
         let contentSolutionState = ContentState.createFromBlockArray(
@@ -157,22 +218,9 @@ function EditProblem() {
         let statementSolution =
           EditorState.createWithContent(contentSolutionState);
         setEditorStateSolution(statementSolution);
-      },
-      {}
-    ).then();
+      }, {})
+      .then();
 
-    /*
-    request(
-      "GET",
-      "/get-test-case-list-by-problem/" + problemId,
-
-      (res) => {
-        console.log("res", res.data);
-        setTestCases(res.data);
-      },
-      {}
-    );
-    */
     getTestCases();
   }, [problemId]);
 
@@ -190,7 +238,6 @@ function EditProblem() {
   }
 
   function rerunTestCase(problemId, testCaseId) {
-    //alert("rerun testcase " + testCaseId + "problem " + problemId);
     request(
       "GET",
       "/rerun-create-testcase-solution/" + problemId + "/" + testCaseId,
@@ -201,6 +248,7 @@ function EditProblem() {
       {}
     );
   }
+
   const onChangeEditorStateDescription = (editorState) => {
     setEditorStateDescription(editorState);
   };
@@ -225,7 +273,6 @@ function EditProblem() {
   };
 
   function checkCompile() {
-    console.log("check compile");
     let body = {
       source: codeSolution,
       computerLanguage: languageSolution,
@@ -261,6 +308,21 @@ function EditProblem() {
       convertToRaw(editorStateSolution.getCurrentContent())
     );
 
+
+    let fileId = [];
+    if (attachmentFiles.length > 0) {
+      fileId = attachmentFiles.map((file) => {
+      if (typeof file.name !== "undefined") {
+        return file.name;
+      }
+      if (typeof file.fileName !== "undefined") {
+        return file.fileName;
+      }
+      return file.id;
+    });
+    }
+    
+
     let body = {
       problemName: problemName,
       problemDescription: description,
@@ -273,20 +335,37 @@ function EditProblem() {
       correctSolutionSourceCode: codeSolution,
       solutionChecker: codeChecker,
       isPublic: isPublic,
+      fileId: fileId,
+      removedFilesId: removedFilesId,
     };
-    request(
-      "post",
-      "/update-problem-detail/" + problemId,
-      (res) => {
-        console.log("res ", res);
-        setShowSubmitSuccess(true);
-        sleep(1000).then((r) => {
-          history.push("/programming-contest/list-problems");
-        });
-      },
-      {},
-      body
-    ).then();
+
+    let formData = new FormData();
+    formData.append("ModelUpdateContestProblem", JSON.stringify(body));
+    for (const file of attachmentFiles) {
+      formData.append("files", file);
+    }
+
+    try {
+      authPostMultiPart(
+        dispatch,
+        token,
+        "/update-problem-detail/" + problemId,
+        formData
+      ).then(
+        (res) => {
+          setShowSubmitSuccess(true);
+          sleep(1000).then((r) => {
+            history.push("/programming-contest/list-problems");
+          });
+        },
+        {},
+        () => {
+          alert("Cập nhật thất bại");
+        }
+      );
+    } catch (error) {
+      alert(error);
+    }
   }
 
   return (
@@ -410,6 +489,133 @@ function EditProblem() {
                   toolbarStyle={editorStyle.toolbar}
                   editorStyle={editorStyle.editor}
                 />
+                <Typography
+                  variant="subtitle1"
+                  display="block"
+                  style={{ margin: "5px 10px 0 5px", width: "100%" }}
+                >
+                  File đính kèm
+                </Typography>
+                <DropzoneArea
+                  dropzoneClass={classes.dropZone}
+                  filesLimit={20}
+                  maxFileSize={10 * 1024 * 1024}
+                  showPreviews={true}
+                  showPreviewsInDropzone={false}
+                  useChipsForPreview
+                  dropzoneText="Kéo thả tệp vào đây hoặc nhấn để chọn tệp"
+                  previewText="Xem trước:"
+                  previewChipProps={{
+                    variant: "outlined",
+                    color: "primary",
+                    size: "medium",
+                  }}
+                  getFileAddedMessage={(fileName) =>
+                    `Tệp ${fileName} tải lên thành công`
+                  }
+                  getFileRemovedMessage={(fileName) =>
+                    `Tệp ${fileName} đã loại bỏ`
+                  }
+                  getFileLimitExceedMessage={(filesLimit) =>
+                    `Vượt quá số lượng tệp tối đa được cho phép. Chỉ được phép tải lên tối đa ${filesLimit} tệp.`
+                  }
+                  alertSnackbarProps={{
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                    autoHideDuration: 1800,
+                  }}
+                  onChange={(files) => handleAttachmentFiles(files)}
+                ></DropzoneArea>
+
+                {fetchedImageArray.length !== 0 &&
+                  fetchedImageArray.map((file) => (
+                    <div key={file.id} className={classes.fileContainer}>
+                      <div className={classes.fileWrapper}>
+                        {getFileType(file.fileName) === "img" && (
+                          <img
+                            src={`data:image/jpeg;base64,${file.content}`}
+                            alt={file.fileName}
+                            className={classes.imageQuiz}
+                          />
+                        )}
+                        {getFileType(file.fileName) === "pdf" && (
+                          <Box className={classes.fileDownload}>
+                            <Typography
+                              variant="subtitle2"
+                              className={classes.fileName}
+                            >
+                              {file.fileName}
+                            </Typography>
+                            <Button
+                              variant="contained"
+                              color="success"
+                              className={classes.downloadButton}
+                              onClick={() =>
+                                saveByteArray(
+                                  file.fileName,
+                                  file.content,
+                                  "pdf"
+                                )
+                              }
+                            >
+                              Download
+                            </Button>
+                          </Box>
+                        )}
+                        {getFileType(file.fileName) === "word" && (
+                          <Box className={classes.fileDownload}>
+                            <Typography
+                              variant="subtitle2"
+                              className={classes.fileName}
+                            >
+                              {file.fileName}
+                            </Typography>
+                            <Button
+                              variant="contained"
+                              color="success"
+                              className={classes.downloadButton}
+                              onClick={() =>
+                                saveByteArray(
+                                  file.fileName,
+                                  file.content,
+                                  "word"
+                                )
+                              }
+                            >
+                              Download
+                            </Button>
+                          </Box>
+                        )}
+                        {getFileType(file.fileName) === "txt" && (
+                          <Box className={classes.fileDownload}>
+                            <Typography
+                              variant="subtitle2"
+                              className={classes.fileName}
+                            >
+                              {file.fileName}
+                            </Typography>
+                            <Button
+                              variant="contained"
+                              color="success"
+                              className={classes.downloadButton}
+                              onClick={() =>
+                                saveByteArray(
+                                  file.fileName,
+                                  file.content,
+                                  "txt"
+                                )
+                              }
+                            >
+                              Download
+                            </Button>
+                          </Box>
+                        )}
+                        <HighlightOffIcon
+                          className={classes.buttonClearImage}
+                          onClick={() => handleDeleteImageAttachment(file.fileName)}
+                        />
+                      </div>
+                    </div>
+                  ))}
               </div>
               <div>
                 <Typography>

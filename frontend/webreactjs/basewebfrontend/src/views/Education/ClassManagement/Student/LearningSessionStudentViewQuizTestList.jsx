@@ -102,7 +102,7 @@ export default function LearningSessionStudentViewQuizTestList(props) {
       {
         401: () => {},
         406: () => {
-          setMessageRequest("Quá thời gian làm bài!");
+          setMessageRequest("Time Out!");
           setErrorRequest(true);
         },
       }
@@ -202,7 +202,7 @@ export default function LearningSessionStudentViewQuizTestList(props) {
             color="primary"
             onClick={handleClickGetQuiz}
           >
-            Xem câu hỏi
+            View Question
           </Button>
         </div>
         <Grid container spacing={3}>
@@ -271,7 +271,7 @@ export default function LearningSessionStudentViewQuizTestList(props) {
                             handleClick(element["questionId"]);
                           }}
                         >
-                          Chọn
+                          Select
                         </Button>
                       </div>
                     </Paper>

@@ -668,6 +668,27 @@ public class UserServiceImpl implements UserService {
         return new SimpleResponse(404, null, "Tài khoản " + userLoginId + " không tồn tài");
     }
 
+    @Override
+    public SimpleResponse assignGroup2AllUsers(ModelAssignGroupAllUsersInput I) {
+        SimpleResponse res = new SimpleResponse(200,"OK","OK");
+        List<UserLogin> users = userLoginRepo.findAll();
+        SecurityGroup g = securityGroupRepo.findById(I.getGroupId()).orElse(null);
+        int cnt = 0;
+        log.info("assignGroup2AllUsers, groupId = " + I.getGroupId() + " g = " + g);
+        if(g == null) return res;
+        for(UserLogin u: users){
+            if(!u.hasRole(I.getGroupId())) {
+                u.getRoles().add(g);
+                u = userLoginRepo.save(u);
+                cnt += 1;
+                log.info("assignGroup2AllUsers: OK " + cnt + " add group to user " + u.getUserLoginId());
+            }
+
+        }
+        res.setMessage("numbr of updates = " + cnt);
+        return res;
+    }
+
 //    @Override
 //    public UserRegister.OutputModel registerUser(UserRegister.InputModel inputModel) {
 //        String userLoginId = inputModel.getUserLoginId();

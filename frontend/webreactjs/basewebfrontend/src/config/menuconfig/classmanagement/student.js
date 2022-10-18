@@ -3,14 +3,14 @@ export const eduLearningManagement = {
   path: "",
   isPublic: false,
   icon: "LocalLibraryIcon",
-  text: "Học tập",
+  text: "Learning",
   child: [
     {
       id: "MENU_EDUCATION_LEARNING_MANAGEMENT_STUDENT_REGISTER_CLASS",
       path: "/edu/class/register",
       isPublic: false,
       icon: null,
-      text: "Đăng ký lớp",
+      text: "Class Registration",
       child: [],
     },
     {
@@ -18,7 +18,7 @@ export const eduLearningManagement = {
       path: "/edu/student/class/list",
       isPublic: false,
       icon: null,
-      text: "Danh sách lớp",
+      text: "Classes",
       child: [],
     },
     {
@@ -35,7 +35,7 @@ export const eduLearningManagement = {
       path: "/edu/student/thesis/create",
       isPublic: true,
       icon: null,
-      text: "Thêm mới Đồ án",
+      text: "Create Thesis",
       child: [],
     },
   ],
