@@ -507,7 +507,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                              .useCacheContestProblem(ContestEntity.USE_CACHE_CONTEST_PROBLEM_YES)
                                              .submissionActionType(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)
                                              .problemDescriptionViewType(ContestEntity.CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_VISIBLE)
-                                             .participantViewResultMode(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER)
+                                             //.participantViewResultMode(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER)
+                                             .participantViewResultMode(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT)
                                              .evaluateBothPublicPrivateTestcase(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_NO)
                                              .createdAt(new Date())
                                                            .build();
@@ -870,17 +871,29 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public List<ModelProblemSubmissionDetailByTestCaseResponse> getContestProblemSubmissionDetailByTestCaseOfASubmission(
         UUID submissionId
     ) {
+        ContestSubmissionEntity sub = contestSubmissionRepo.findById(submissionId).orElse(null);
+        ContestEntity contest = null;
+        if(sub != null){
+            contest = contestRepo.findContestByContestId(sub.getContestId());
+        }
         List<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId((submissionId));
-        log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
+        //log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
         List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = new ArrayList();
         for(ContestSubmissionTestCaseEntity e: L){
             TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
             String testCase = "";
             String correctAnswer = "";
+            String testCaseOutput = e.getTestCaseOutput();
+            String participantSolutionOutput = e.getParticipantSolutionOtput();
             if(tc != null){
                 testCase = tc.getTestCase(); correctAnswer = tc.getCorrectAnswer();
             }
-
+            if(contest != null){
+                if(contest.getParticipantViewResultMode().equals(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT)){
+                    testCaseOutput = StringHandler.shorthen(testCaseOutput,100);
+                    participantSolutionOutput = StringHandler.shorthen(participantSolutionOutput,100);
+                }
+            }
             retLst.add(new ModelProblemSubmissionDetailByTestCaseResponse(e.getContestSubmissionTestcaseId(),
                                                                           e.getContestId(),
                                                                           e.getProblemId(),
@@ -890,8 +903,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                           correctAnswer,
                                                                           e.getStatus(),
                                                                           e.getPoint(),
-                                                                          e.getTestCaseOutput(),
-                                                                          e.getParticipantSolutionOtput(),
+                                                                          //e.getTestCaseOutput(),
+                                                                          testCaseOutput,
+                                                                          //e.getParticipantSolutionOtput(),
+                                                                          participantSolutionOutput,
                                                                           e.getCreatedStamp()
             ));
         }
@@ -907,18 +922,36 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             contest = contestRepo.findContestByContestId(sub.getContestId());
 
         List<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId((submissionId));
-        log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
+        //log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
         List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = new ArrayList();
         for(ContestSubmissionTestCaseEntity e: L){
 
             String testCase = "";
             String correctAnswer = "";
-            if(contest != null && contest.getParticipantViewResultMode().equals(ContestEntity
-                                                                 .CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE)) {
-                TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
-                if (tc != null) {
-                    testCase = tc.getTestCase();
-                    correctAnswer = tc.getCorrectAnswer();
+            String testCaseOutput = e.getTestCaseOutput();
+            String participantSolutionOutput = e.getParticipantSolutionOtput();
+            if(contest != null){
+                //log.info("getContestProblemSubmissionDetailByTestCaseOfASubmissionViewedByParticipant, mode = " + contest.getParticipantViewResultMode());
+                if(contest.getParticipantViewResultMode().equals(ContestEntity
+                                                                  .CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE)
+                ){
+                    TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
+                    if (tc != null) {
+                        testCase = tc.getTestCase();
+                        correctAnswer = tc.getCorrectAnswer();
+                    }
+                }else if(contest.getParticipantViewResultMode().equals(ContestEntity
+                                                                                            .CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT)
+                ){
+                    TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
+                    if (tc != null) {
+                        testCase = tc.getTestCase();
+                        correctAnswer = tc.getCorrectAnswer();
+                        //testCase = StringHandler.shorthen(testCase,100);
+                        //correctAnswer = StringHandler.shorthen(correctAnswer,100);
+                        testCaseOutput = StringHandler.shorthen(testCaseOutput,100);
+                        participantSolutionOutput = StringHandler.shorthen(participantSolutionOutput,100);
+                    }
                 }
             }
             retLst.add(new ModelProblemSubmissionDetailByTestCaseResponse(e.getContestSubmissionTestcaseId(),
@@ -930,8 +963,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                           correctAnswer,
                                                                           e.getStatus(),
                                                                           e.getPoint(),
-                                                                          e.getTestCaseOutput(),
-                                                                          e.getParticipantSolutionOtput(),
+                                                                          //e.getTestCaseOutput(),
+                                                                          testCaseOutput,
+                                                                          //e.getParticipantSolutionOtput(),
+                                                                          participantSolutionOutput,
                                                                           e.getCreatedStamp()
             ));
         }

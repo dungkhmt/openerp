@@ -114,5 +114,15 @@ public class StringHandler {
         return s.replaceAll("( +)", " ").trim();
 
     }
+
+    public static String shorthen(String s, int len){
+        if(s == null || s.equals("")) return s;
+        if(len >= s.length()) return s;
+        return s.substring(0,len) + "...";
+    }
+
+    public static void main(String[] args){
+        System.out.println(StringHandler.shorthen("pham quang dung",5));
+    }
 }
 
