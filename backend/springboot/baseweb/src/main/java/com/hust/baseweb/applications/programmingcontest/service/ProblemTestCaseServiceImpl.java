@@ -146,20 +146,21 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         List<MultipartFile> fileArray = Arrays.asList(files);
 
         List<String> removedFilesId = modelUpdateContestProblem.getRemovedFilesId();
-        List<String> oldAttachmentIds = Arrays.asList(oldProblem.getAttachment().split(";"));
-        for (String s : oldAttachmentIds) {
-            try {
-                GridFsResource content = mongoContentService.getById(s);
-                if (content != null) {
-                    if(removedFilesId.contains(content.getFilename())) {
-                        mongoContentService.deleteFilesById(s);
+        if(oldProblem.getAttachment() != null && !oldProblem.getAttachment().equals("")) {
+            List<String> oldAttachmentIds = Arrays.asList(oldProblem.getAttachment().split(";"));
+            for (String s : oldAttachmentIds) {
+                try {
+                    GridFsResource content = mongoContentService.getById(s);
+                    if (content != null) {
+                        if (removedFilesId.contains(content.getFilename())) {
+                            mongoContentService.deleteFilesById(s);
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
-
         fileArray.forEach((file) -> {
             ContentModel model = new ContentModel(fileId[fileArray.indexOf(file)], file);
 
