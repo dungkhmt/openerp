@@ -103,6 +103,7 @@ create table contest_contest_problem_new
 (
     contest_id varchar (100) not null ,
     problem_id varchar (100) not null ,
+    submission_mode varchar(100),
     last_updated_stamp         timestamp DEFAULT current_date ,
     created_stamp              timestamp DEFAULT current_date ,
     constraint fk_contest_id_contest_contest_problem_new foreign key (contest_id) references contest_new(contest_id),

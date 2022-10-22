@@ -7,6 +7,7 @@ import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
 import com.hust.baseweb.applications.programmingcontest.model.ModelCreateContestProblem;
 import com.hust.baseweb.applications.programmingcontest.model.ModelCreateContestProblemResponse;
+import com.hust.baseweb.applications.programmingcontest.repo.ContestProblemRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.UserRegistrationContestRepo;
@@ -46,6 +47,7 @@ public class ContestProblemController {
     ProblemTestCaseService problemTestCaseService;
     ContestRepo contestRepo;
     ContestSubmissionRepo contestSubmissionRepo;
+    ContestProblemRepo contestProblemRepo;
     UserService userService;
     UserRegistrationContestRepo userRegistrationContestRepo;
 
@@ -160,6 +162,10 @@ public class ContestProblemController {
             @PathVariable("problemId") String problemId, @PathVariable("contestId") String contestId) {
         try {
             ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+            ContestProblem cp = contestProblemRepo.findByContestIdAndProblemId(contestId, problemId);
+            if(cp == null){
+                return ResponseEntity.ok().body("NOTFOUND");
+            }
             ModelCreateContestProblemResponse problemEntity = problemTestCaseService.getContestProblem(problemId);
             ModelStudentViewProblemDetail model = new ModelStudentViewProblemDetail();
             if (contestEntity.getProblemDescriptionViewType() != null &&
@@ -169,6 +175,7 @@ public class ContestProblemController {
             else
                 model.setProblemStatement(problemEntity.getProblemDescription());
 
+            model.setSubmissionMode(cp.getSubmissionMode());
             model.setProblemName(problemEntity.getProblemName());
             model.setAttachment(problemEntity.getAttachment());
             model.setAttachmentNames(problemEntity.getAttachmentNames());
@@ -778,6 +785,7 @@ public class ContestProblemController {
         ModelContestSubmitProgramViaUploadFile model = gson.fromJson(inputJson,
                 ModelContestSubmitProgramViaUploadFile.class);
         ContestEntity contestEntity = contestRepo.findContestByContestId(model.getContestId());
+        ContestProblem cp = contestProblemRepo.findByContestIdAndProblemId(model.getContestId(), model.getProblemId());
         Date currentDate = new Date();
         int timeTest = ((int) (currentDate.getTime() - contestEntity.getStartedAt().getTime())) / (60 * 1000); // minutes
         // System.out.println(currentDate);
@@ -915,9 +923,14 @@ public class ContestProblemController {
             ModelContestSubmissionResponse resp = null;
             if (contestEntity.getSubmissionActionType()
                     .equals(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)) {
-                resp = problemTestCaseService.submitContestProblemTestCaseByTestCase(
+                if(cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
+                    resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
+                }else {
+                    resp = problemTestCaseService.submitContestProblemTestCaseByTestCase(
                         request,
                         principal.getName());
+
+                }
             } else {
                 resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
             }
@@ -953,7 +966,34 @@ public class ContestProblemController {
         ModelEvaluateBatchSubmissionResponse res = problemTestCaseService.judgeAllSubmissionsOfContest(contestId);
         return ResponseEntity.ok().body(res);
     }
+    @PostMapping("/submit-solution-output-of-testcase")
+    public ResponseEntity<?> submitSolutionOutputOfATestCase(Principal principale,
+                                                             @RequestParam("inputJson") String inputJson,
+                                                             @RequestParam("file") MultipartFile file){
+        Gson gson = new Gson();
+        ModelSubmitSolutionOutputOfATestCase model = gson.fromJson(inputJson, ModelSubmitSolutionOutputOfATestCase.class);
+        try {
+            String solutionOutput = "";
+            InputStream inputStream = file.getInputStream();
+            Scanner in = new Scanner(inputStream);
+            while (in.hasNext()) {
+                String line = in.nextLine();
+                solutionOutput += line + "\n";
+                //System.out.println("submitSolutionOutputOfATestCase: read line: " + line);
+            }
+            in.close();
+            ModelContestSubmissionResponse resp = problemTestCaseService.submitSolutionOutputOfATestCase(principale.getName(),
+                                                                                                         solutionOutput,
+                                                                                              model
+                                                                                              );
+            log.info("resp {}", resp);
+            return ResponseEntity.status(200).body(resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body("OK");
 
+    }
     @PostMapping("/submit-solution-output")
     public ResponseEntity<?> submitSolutionOutput(Principal principale,
             @RequestParam("inputJson") String inputJson,

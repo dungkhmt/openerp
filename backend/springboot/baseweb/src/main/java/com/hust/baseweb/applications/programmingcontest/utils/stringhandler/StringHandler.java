@@ -29,9 +29,19 @@ public class StringHandler {
         response = response.substring(0, runTimeIndex);
         String []ans = response.split(Constants.SPLIT_TEST_CASE); // ans[0] is the score returned by the checker
         int score = 0;
+
         try{
             if(ans != null && ans.length > 0){
-                score = Integer.valueOf(ans[0]);
+                //score = Integer.valueOf(ans[0]);
+                String[] s = ans[0].split(" ");
+                if(s.length > 0){
+                    score = Integer.valueOf(s[0]);
+                    status = "";
+                    for(int i = 1; i < s.length; i++) status = status + s[i] + " ";
+                }else{
+                    score = Integer.valueOf(s[0]);
+                    status = "OK";
+                }
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -39,7 +49,8 @@ public class StringHandler {
         return ProblemSubmission.builder()
                                 .runtime(runtime)
                                 .score(score)
-                                .status("OK")
+                                //.status("OK")
+                                .status(status)
                                 .testCasePass("1/1")
                                 .build();
     }
