@@ -1,7 +1,6 @@
 package com.hust.baseweb.applications.education.classmanagement.controller;
 
 import com.google.gson.Gson;
-import com.hust.baseweb.applications.contentmanager.model.ContentHeaderModel;
 import com.hust.baseweb.applications.contentmanager.model.ContentModel;
 import com.hust.baseweb.applications.contentmanager.repo.MongoContentService;
 import com.hust.baseweb.applications.education.classmanagement.model.ModelAddUser2ClassInput;
@@ -24,10 +23,6 @@ import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.compress.utils.IOUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.ImageType;
-import org.apache.pdfbox.rendering.PDFRenderer;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,21 +30,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
@@ -123,6 +113,11 @@ public class ClassController {
         EduClassUserLoginRole eduClassUserLoginRole = classService.addEduClassUserLoginRole(input);
 
         return ResponseEntity.ok().body("OK");
+    }
+
+    @GetMapping("/{classId}/user-login-roles")
+    public ResponseEntity getEduUserLoginRolesOfClass(@PathVariable UUID classId) {
+        return ResponseEntity.ok(classService.getUserLoginRolesOfClass(classId));
     }
 
     @GetMapping("/get-classes-of-user/{userLoginId}")

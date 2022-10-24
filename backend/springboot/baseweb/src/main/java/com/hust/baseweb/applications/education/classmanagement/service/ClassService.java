@@ -9,10 +9,8 @@ import com.hust.baseweb.applications.education.exception.SimpleResponse;
 import com.hust.baseweb.applications.education.model.*;
 import com.hust.baseweb.applications.education.model.educlassuserloginrole.AddEduClassUserLoginRoleIM;
 import com.hust.baseweb.applications.education.model.educlassuserloginrole.ClassOfUserOM;
-import com.hust.baseweb.applications.education.model.educlassuserloginrole.EduClassUserLoginRoleType;
 import com.hust.baseweb.applications.education.model.getclasslist.GetClassListOM;
 import com.hust.baseweb.entity.UserLogin;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -51,6 +49,8 @@ public interface ClassService {
     List<GetStudentsOfClassOM> getRegistStudentsOfClass(UUID id);
 
     EduClassUserLoginRole addEduClassUserLoginRole(AddEduClassUserLoginRoleIM input);
+
+    List<EduClassUserLoginRole> getUserLoginRolesOfClass(UUID classId);
 
     List<ClassOfUserOM> getClassOfUser(String userLoginId);
 

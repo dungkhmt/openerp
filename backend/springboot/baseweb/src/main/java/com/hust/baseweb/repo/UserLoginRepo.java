@@ -46,4 +46,14 @@ public interface UserLoginRepo extends JpaRepository<UserLogin, String> {
 
     @Query(value = "SELECT ul.* FROM user_login ul WHERE ul.party_id = :partyId", nativeQuery = true)
     UserLogin finByPartyId(@Param("partyId") UUID partyId);
+
+    @Query(
+        nativeQuery = true,
+        value = "SELECT u.user_login_id FROM user_login u " +
+           "WHERE UPPER(u.user_login_id) LIKE CONCAT('%', UPPER(:partOfLoginId), '%') " +
+           "AND u.enabled = true " +
+           "LIMIT :limit"
+    )
+    List<String> findByEnabledLoginIdContains(@Param("partOfLoginId") String partOfLoginId,
+                                              @Param("limit") Integer limit);
 }

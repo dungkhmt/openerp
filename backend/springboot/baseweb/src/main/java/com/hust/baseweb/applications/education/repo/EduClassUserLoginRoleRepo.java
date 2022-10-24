@@ -9,11 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public interface EduClassUserLoginRoleRepo extends JpaRepository<EduClassUserLoginRole, EduClassUserLoginRoleId> {
     EduClassUserLoginRole save(EduClassUserLoginRole eduClassUserLoginRole);
 
     List<EduClassUserLoginRole> findAllByUserLoginIdAndThruDate(String userLoginId, Date thruDate);
+
+    List<EduClassUserLoginRole> findAllByClassId(UUID classId);
 
     //Page<EduClassUserLoginRole> findAllByUserLoginIdAndThruDate(String userLoginId, Date thruDate, Pageable pageable);
 

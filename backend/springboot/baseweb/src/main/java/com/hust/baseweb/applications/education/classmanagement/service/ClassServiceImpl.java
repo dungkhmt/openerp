@@ -364,6 +364,11 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
+    public List<EduClassUserLoginRole> getUserLoginRolesOfClass(UUID classId) {
+        return eduClassUserLoginRoleRepo.findAllByClassId(classId);
+    }
+
+    @Override
     public List<ClassOfUserOM> getClassOfUser(String userLoginId) {
         //Page<EduClassUserLoginRole> lstRoles = eduClassUserLoginRoleRepo
         //    .findAllByUserLoginIdAndThruDate(userLoginId, null, pageable);
