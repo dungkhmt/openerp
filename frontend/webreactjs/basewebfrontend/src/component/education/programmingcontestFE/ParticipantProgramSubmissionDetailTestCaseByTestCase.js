@@ -52,25 +52,28 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
     },
     {
       title: "",
-      render: (rowData) => (
-        <div>
-          <button
-            color="primary"
-            type="submit"
-            //onChange={onInputChange}
-            onClick={() => handleFormSubmit(event, rowData.testCaseId)}
-            width="100%"
-          >
-            UPLOAD
-          </button>
+      render: (rowData) =>
+        rowData.viewSubmitSolutionOutputMode == "Y" ? (
+          <div>
+            <button
+              color="primary"
+              type="submit"
+              //onChange={onInputChange}
+              onClick={() => handleFormSubmit(event, rowData.testCaseId)}
+              width="100%"
+            >
+              UPLOAD
+            </button>
 
-          <input
-            type="file"
-            id="selected-upload-file"
-            onChange={() => onFileChange(event, rowData.testCaseId)}
-          />
-        </div>
-      ),
+            <input
+              type="file"
+              id="selected-upload-file"
+              onChange={() => onFileChange(event, rowData.testCaseId)}
+            />
+          </div>
+        ) : (
+          ""
+        ),
     },
   ];
 

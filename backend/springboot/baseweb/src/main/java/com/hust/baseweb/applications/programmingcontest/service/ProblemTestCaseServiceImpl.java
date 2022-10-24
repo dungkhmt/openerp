@@ -760,14 +760,21 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
     private ModelGetContestDetailResponse getModelGetContestDetailResponse(String contestId, ContestEntity contestEntity) {
         List<ModelGetProblemDetailResponse> problems = new ArrayList<>();
+
         contestEntity.getProblems().forEach(contestProblem -> {
+            ContestProblem cp = contestProblemRepo.findByContestIdAndProblemId(contestEntity.getContestId(), contestProblem.getProblemId());
+            String submissionMode = "";
+            if(cp != null){
+                submissionMode = cp.getSubmissionMode();
+            }
             ModelGetProblemDetailResponse p = ModelGetProblemDetailResponse.builder()
                     .levelId(contestProblem.getLevelId())
                     .problemId(contestProblem.getProblemId())
                     .problemName(contestProblem.getProblemName())
                     .levelOrder(contestProblem.getLevelOrder())
                     .problemDescription(contestProblem.getProblemDescription())
-
+                    .createdByUserId(contestProblem.getUserId())
+                    .submissionMode(submissionMode)
                     .build();
             problems.add(p);
         });
@@ -861,7 +868,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                       e.getPoint(),
                                                                       e.getTestCaseOutput(),
                                                                       e.getParticipantSolutionOtput(),
-                                                                      e.getCreatedStamp()
+                                                                      e.getCreatedStamp(),
+                                                                      "N"
                                                                       );
         });
         return retLst;
@@ -873,9 +881,21 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     ) {
         ContestSubmissionEntity sub = contestSubmissionRepo.findById(submissionId).orElse(null);
         ContestEntity contest = null;
+        String contestId = "";
+        String problemId = "";
+
         if(sub != null){
             contest = contestRepo.findContestByContestId(sub.getContestId());
+            contestId = sub.getContestId(); problemId = sub.getProblemId();
         }
+        String viewSubmitSolutionOutputMode = "N";
+        ContestProblem contestProblem = contestProblemRepo.findByContestIdAndProblemId(contestId, problemId);
+        if(contestProblem != null){
+            if(contestProblem.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
+                viewSubmitSolutionOutputMode = "Y";
+            }
+        }
+
         List<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId((submissionId));
         //log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
         List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = new ArrayList();
@@ -907,7 +927,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                           testCaseOutput,
                                                                           //e.getParticipantSolutionOtput(),
                                                                           participantSolutionOutput,
-                                                                          e.getCreatedStamp()
+                                                                          e.getCreatedStamp(),
+                                                                          viewSubmitSolutionOutputMode
             ));
         }
         return retLst;
@@ -918,8 +939,19 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     ){
         ContestSubmissionEntity sub = contestSubmissionRepo.findContestSubmissionEntityByContestSubmissionId(submissionId);
         ContestEntity contest = null;
-        if(sub != null)
+        String contestId = "";
+        String problemId = "";
+        if(sub != null) {
             contest = contestRepo.findContestByContestId(sub.getContestId());
+            contestId = sub.getContestId(); problemId = sub.getProblemId();
+        }
+        String viewSubmitSolutionOutputMode = "N";
+        ContestProblem contestProblem = contestProblemRepo.findByContestIdAndProblemId(contestId, problemId);
+        if(contestProblem != null){
+            if(contestProblem.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
+                viewSubmitSolutionOutputMode = "Y";
+            }
+        }
 
         List<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId((submissionId));
         //log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
@@ -967,7 +999,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                           testCaseOutput,
                                                                           //e.getParticipantSolutionOtput(),
                                                                           participantSolutionOutput,
-                                                                          e.getCreatedStamp()
+                                                                          e.getCreatedStamp(),
+                                                                          viewSubmitSolutionOutputMode
             ));
         }
         return retLst;

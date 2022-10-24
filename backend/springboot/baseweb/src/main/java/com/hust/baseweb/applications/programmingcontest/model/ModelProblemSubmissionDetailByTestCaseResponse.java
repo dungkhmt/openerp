@@ -24,4 +24,5 @@ public class ModelProblemSubmissionDetailByTestCaseResponse {
     private String testCaseAnswer;
     private String participantAnswer;
     private Date createdAt;
+    private String viewSubmitSolutionOutputMode;
 }

@@ -7,6 +7,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import Table from "@mui/material/Table";
 import { useHistory } from "react-router-dom";
+import StandardTable from "component/table/StandardTable";
 import {
   Button,
   TableHead,
@@ -31,15 +32,33 @@ export function ContestManagerListProblem(props) {
   const [threshold, setThreshold] = useState(50);
   const history = useHistory();
 
+  const columns = [
+    { title: "Index", field: "index" },
+    { title: "Problem Name", field: "problemName" },
+    { title: "Level", field: "levelId" },
+    { title: "Created By", field: "createdByUserId" },
+    { title: "Submission Mode", field: "submissionMode" },
+    {
+      title: "Submission Mode",
+      render: (row) => (
+        <Button onClick={() => handleChangeContestProblem(row.problemId)}>
+          Update
+        </Button>
+      ),
+    },
+  ];
+
   const generatePdfDocument = async (documentData, fileName) => {
     const blob = await pdf(
       <SubmissionOfParticipantPDFDocument data={documentData} />
     ).toBlob();
-  
+
     FileSaver.saveAs(blob, fileName);
   };
-  
 
+  function handleChangeContestProblem(problemId) {
+    alert("change submission mode " + problemId);
+  }
   useEffect(() => {
     request("get", "/get-contest-detail/" + contestId, (res) => {
       setContestTime(res.data.contestTime);
@@ -94,7 +113,10 @@ export function ContestManagerListProblem(props) {
         //alert("Rejudge DONE!!!");
         setIsProcessing(false);
         setUserSubmissions(res.data);
-        generatePdfDocument(res.data, `USER_JUDGED_SUBMISSION-${contestId}.pdf`);
+        generatePdfDocument(
+          res.data,
+          `USER_JUDGED_SUBMISSION-${contestId}.pdf`
+        );
         //setSuccessful(res.data.contents.content);
         //setTotalPageSuccessful(res.data.contents.totalPages);
       }
@@ -187,6 +209,19 @@ export function ContestManagerListProblem(props) {
         List Problem
       </Typography>
 
+      <StandardTable
+        title={"Problems"}
+        columns={columns}
+        data={problems}
+        hideCommandBar
+        options={{
+          selection: false,
+          pageSize: 20,
+          search: true,
+          sorting: true,
+        }}
+      />
+
       <TableContainer component={Paper}>
         <Table
           sx={{ minWidth: window.innerWidth - 500 }}
@@ -213,6 +248,12 @@ export function ContestManagerListProblem(props) {
                     {" "}
                     <b>{`${problem.levelId}`} </b>{" "}
                   </span>
+                </StyledTableCell>
+                <StyledTableCell component="th" scope="row">
+                  <b>{problem.createdByUserId}</b>
+                </StyledTableCell>
+                <StyledTableCell component="th" scope="row">
+                  <b>{problem.submissionMode}</b>
                 </StyledTableCell>
               </StyledTableRow>
             ))}
