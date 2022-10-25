@@ -112,12 +112,18 @@ public class ClassController {
 
         EduClassUserLoginRole eduClassUserLoginRole = classService.addEduClassUserLoginRole(input);
 
-        return ResponseEntity.ok().body("OK");
+        return ResponseEntity.ok().body(eduClassUserLoginRole);
     }
 
     @GetMapping("/{classId}/user-login-roles")
     public ResponseEntity getEduUserLoginRolesOfClass(@PathVariable UUID classId) {
         return ResponseEntity.ok(classService.getUserLoginRolesOfClass(classId));
+    }
+
+    @DeleteMapping("/class-user-login-roles")
+    public ResponseEntity deleteEduClassUserLoginRole(@RequestBody AddEduClassUserLoginRoleIM deletedPermission) {
+        classService.deleteEduClassUserLoginRole(deletedPermission);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/get-classes-of-user/{userLoginId}")

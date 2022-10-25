@@ -447,6 +447,13 @@ public class ClassServiceImpl implements ClassService {
         return 0;
     }
 
+    @Override
+    public void deleteEduClassUserLoginRole(AddEduClassUserLoginRoleIM deletedPermission) {
+        eduClassUserLoginRoleRepo.deleteByClassIdAndUserLoginIdAndRoleId(deletedPermission.getClassId(),
+                                                                         deletedPermission.getUserLoginId(),
+                                                                         deletedPermission.getRoleId());
+    }
+
     @Transactional
     private SimpleResponse createOrUpdateRegist(UUID classId, String studentId, RegistStatus status) {
         EduClass eduClass = new EduClass();

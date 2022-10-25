@@ -57,4 +57,6 @@ public interface ClassService {
     EduCourse getCourseOfClassCode(String classCode);
 
     int addAllUser2Class(String classCode);
+
+    void deleteEduClassUserLoginRole(AddEduClassUserLoginRoleIM deletedPermission);
 }

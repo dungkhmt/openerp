@@ -1,7 +1,7 @@
 import {
   MenuItem,
 } from "@material-ui/core";
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useMemo} from "react";
 import { request } from "../../../../api";
 import StandardTable from "../../../../component/table/StandardTable";
 import {makeStyles} from "@material-ui/core/styles";
@@ -20,10 +20,13 @@ import {
 import Dialog from "@mui/material/Dialog";
 import Button from "@mui/material/Button";
 
+import {errorNoti, successNoti} from "../../../../utils/notification";
+
 const useStyles = makeStyles(theme => ({
   teacherUpdateClassPermissionsDlg: {
     '& .MuiDialog-paperWidthLg': {
-      minWidth: '800px'
+      minWidth: '960px',
+      maxHeight: '680px'
     }
   },
   permissionAssignContainer: {
@@ -35,10 +38,21 @@ const useStyles = makeStyles(theme => ({
   permissionInput: {
     minWidth: '300px',
     flexGrow: 1
+  },
+  permissionTableWrapper: {
+    '& table thead tr': {
+      '& th:nth-child(3)': {
+        maxWidth: '160px !important'
+      },
+      '& th:nth-child(4)': {
+        maxWidth: '100px !important'
+      }
+    }
   }
 }))
 
 export default function TClassUpdatePopup(props) {
+  const classes = useStyles();
   const { open, setOpen, classId } = props;
   const [roles, setRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(null);
@@ -46,32 +60,53 @@ export default function TClassUpdatePopup(props) {
   const [enabledUserLoginIds, setEnabledUserLoginIds] = useState([]);
   const [loginIdInput, setLoginIdInput] = useState({ search: "", selected: null })
 
+  const descriptionOfRoles = useMemo(() => {
+    let descriptions = {};
+    roles.forEach(role => descriptions[role.roleId] = role.description)
+    return descriptions
+  }, [roles]);
+
+  useEffect(getUserLoginRolesOfCurrentClass, [])
+  useEffect(getEnabledUserLoginIds, [loginIdInput.search]);
+  useEffect(getRoles, []);
+
   const userLoginRolesColumns = [
     { field: "userLoginId", title: "User login id" },
-    { field: "roleId", title: "Vai trò"},
-    { field: "fromDate", title: "Ngày cấp quyền",
+    { field: "roleId", title: "Vai trò",
       render: permission => (
-        <Typography>
-          {defaultDatetimeFormat(permission.fromDate)}
-        </Typography>
+        <Typography>{ descriptionOfRoles[permission.roleId] }</Typography>
+      )
+    },
+    { field: "fromDate", title: "Ngày cấp quyền",
+      cellStyle: {
+        maxWidth: '160px'
+      },
+      render: permission => (
+        <Typography>{ defaultDatetimeFormat(permission.fromDate) }</Typography>
       )
     },
     { field: "", title: "",
       cellStyle: {
-        width: '100px'
-      },
-      headerStyle: {
-        width: '100px'
+        maxWidth: '100px'
       },
       render: permission => (
-        <Button variant="outlined">Revoke</Button>
+        <Button variant="outlined"
+                onClick={() => revokePermission(permission)}>
+          Revoke
+        </Button>
       )
     }
   ]
-  const classes = useStyles();
 
-  function revokePermission(classId, userLoginId, roleId) {
-    // request("delete", )
+  function revokePermission(deletedPermission) {
+    let successHandler = () => {
+      successNoti("Đã thu hồi quyền, xem kết quả ở bảng");
+      setUserLoginRolesOfCurrentClass(userLoginRolesOfCurrentClass.filter(permission => permission !== deletedPermission));
+    }
+    let errorHandlers = {
+      onError: () => errorNoti("Đã xảy ra lỗi khi thu hồi quyền")
+    }
+    request("DELETE", "edu/class/class-user-login-roles", successHandler, errorHandlers, deletedPermission);
   }
 
   function updateStatus(status) {
@@ -79,14 +114,13 @@ export default function TClassUpdatePopup(props) {
       setOpen(false);
     });
   }
+
   function getRoles() {
     request("GET", "/edu/class/get-role-list-educlass-userlogin", (res) => {
       setRoles(res.data);
       console.log("getRoles res = ", res);
     });
   }
-
-  useEffect(getEnabledUserLoginIds, [loginIdInput.search]);
 
   function getEnabledUserLoginIds() {
     request("GET", `/user-login-ids`, (res) => {
@@ -102,28 +136,25 @@ export default function TClassUpdatePopup(props) {
     })
   }
 
-  useEffect(getUserLoginRolesOfCurrentClass, [])
 
-  function performUpdateRole() {
-    let body = {
-      classId: classId,
-      userLoginId: loginIdInput.selected,
+
+  function assignNewPermission() {
+    let newPermission = {
+      classId: classId, userLoginId:
+      loginIdInput.selected,
       roleId: selectedRole,
     };
-    request(
-      "POST",
-      "edu/class/add-class-user-login-role",
-      (res) => {
-        //alert("assign teacher to class " + res.data);
-        //setIsProcessing(false);
-      },
-      { 401: () => {} },
-      body
-    );
+    let notifySuccessAndUpdateResult = (res) => {
+      successNoti("Phân quyền thành công, xem kết quả ở bảng", 3000);
+      setUserLoginRolesOfCurrentClass(prevPermissions => [...prevPermissions, res.data]);
+    }
+    let errorHandlers = {
+      onError: () => errorNoti("Đã có lỗi xảy ra khi phân quyền")
+    }
+    request("POST", "/edu/class/add-class-user-login-role", notifySuccessAndUpdateResult, errorHandlers, newPermission);
   }
-  useEffect(() => {
-    getRoles();
-  }, []);
+
+
   return (
     <Dialog
       open={open}
@@ -138,7 +169,7 @@ export default function TClassUpdatePopup(props) {
             <Autocomplete
               disablePortal
               id="asynchronous-demo"
-              className={classes.permissionInput}
+              className={`login-id-inp ${classes.permissionInput}`}
               sx={{ minWidth: 300, flexGrow: 1 }}
               options={enabledUserLoginIds}
               isOptionEqualToValue={(option, value) => option === value}
@@ -164,12 +195,12 @@ export default function TClassUpdatePopup(props) {
               ))}
             </TextField>
 
-            <Button variant="outlined" onClick={performUpdateRole}>Assign</Button>
+            <Button variant="outlined" onClick={assignNewPermission}>Assign</Button>
           </div>
         </Box>
 
         <Card>
-          <CardContent>
+          <CardContent className={classes.permissionTableWrapper}>
             <StandardTable
               classes={"permissionTable"}
               title="Các quyền đã cấp"
@@ -184,14 +215,13 @@ export default function TClassUpdatePopup(props) {
             />
           </CardContent>
         </Card>
-
-        <DialogActions>
-          <Button onClick={() => updateStatus("HIDDEN")}>Hide</Button>
-          <Button onClick={() => updateStatus("OPEN")}>Open</Button>
-          <Button onClick={() => setOpen(false)}>Close</Button>
-        </DialogActions>
-
       </DialogContent>
+
+      <DialogActions>
+        <Button onClick={() => updateStatus("HIDDEN")}>Hide</Button>
+        <Button onClick={() => updateStatus("OPEN")}>Open</Button>
+        <Button onClick={() => setOpen(false)}>Close</Button>
+      </DialogActions>
     </Dialog>
   );
 }
