@@ -20,6 +20,8 @@ import TableBody from "@mui/material/TableBody";
 import { pdf } from "@react-pdf/renderer";
 import FileSaver from "file-saver";
 import SubmissionOfParticipantPDFDocument from "./template/SubmissionOfParticipantPDFDocument";
+import UpdateProblemContestDialog from "./UpdateProblemContestDialog";
+import { errorNoti, successNoti } from "utils/notification";
 
 export function ContestManagerListProblem(props) {
   const contestId = props.contestId;
@@ -31,6 +33,9 @@ export function ContestManagerListProblem(props) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [threshold, setThreshold] = useState(50);
   const history = useHistory();
+  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const [selectedProblemId, setSelectedProblemId] = useState(null);
+  const [modes, setModes] = useState([]);
 
   const columns = [
     { title: "Index", field: "index" },
@@ -57,15 +62,68 @@ export function ContestManagerListProblem(props) {
   };
 
   function handleChangeContestProblem(problemId) {
-    alert("change submission mode " + problemId);
+    //alert("change submission mode " + problemId);
+    setSelectedProblemId(problemId);
+    setOpenUpdateDialog(true);
   }
-  useEffect(() => {
+  function onUpdateInfo(
+    selectedSubmissionMode,
+    selectedProblemId,
+    selectedContestId
+  ) {
+    //alert(
+    //  "update problem contest " +
+    //    selectedProblemId +
+    //    selectedContestId +
+    //    selectedSubmissionMode
+    //);
+    setIsProcessing(true);
+    let body = {
+      problemId: selectedProblemId,
+      contestId: selectedContestId,
+      submissionMode: selectedSubmissionMode,
+    };
+    request(
+      "post",
+      //"/forbid-member-from-submit-to-contest",
+      "/update-problem-contest",
+      (res) => {
+        successNoti("Đã hoàn thành");
+        setIsProcessing(false);
+        setOpenUpdateDialog(false);
+      },
+      {
+        onError: () => {
+          setIsProcessing(false);
+          errorNoti("Đã có lỗi xảy ra.");
+        },
+        401: () => {},
+      },
+      body
+    );
+  }
+  function handleModelClose() {
+    setOpenUpdateDialog(false);
+  }
+
+  function getSubmissionModes() {
+    request("get", "/get-submission-modes/", (res) => {
+      //console.log('get-submission-modes, res.data =' = res.data);
+      setModes(res.data);
+    }).then();
+  }
+
+  function getContestDetail() {
     request("get", "/get-contest-detail/" + contestId, (res) => {
       setContestTime(res.data.contestTime);
       setProblems(res.data.list);
       setContestName(res.data.contestName);
       setTimeLimit(res.data.contestTime);
     }).then();
+  }
+  useEffect(() => {
+    getContestDetail();
+    getSubmissionModes();
   }, []);
 
   function handleEdit() {
@@ -221,7 +279,14 @@ export function ContestManagerListProblem(props) {
           sorting: true,
         }}
       />
-
+      <UpdateProblemContestDialog
+        open={openUpdateDialog}
+        onClose={handleModelClose}
+        onUpdateInfo={onUpdateInfo}
+        selectedProblemId={selectedProblemId}
+        selectedContestId={contestId}
+        modes={modes}
+      />
       <TableContainer component={Paper}>
         <Table
           sx={{ minWidth: window.innerWidth - 500 }}

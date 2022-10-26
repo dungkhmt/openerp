@@ -164,5 +164,5 @@ public interface ProblemTestCaseService {
 
     public boolean updatePermissionMemberToContest(String userId, ModelUpdatePermissionMemberToContestInput input);
 
-
+    public boolean updateProblemContest(String userId, ModelUpdateProblemContestInput I);
 }

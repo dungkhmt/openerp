@@ -3324,4 +3324,15 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         return false;
     }
 
+    @Override
+    public boolean updateProblemContest(String userId, ModelUpdateProblemContestInput I) {
+        ContestProblem cp = contestProblemRepo.findByContestIdAndProblemId(I.getContestId(), I.getProblemId());
+        if(cp == null){
+            return false;
+        }
+        cp.setSubmissionMode(I.getSubmissionMode());
+        cp = contestProblemRepo.save(cp);
+        return true;
+    }
+
 }

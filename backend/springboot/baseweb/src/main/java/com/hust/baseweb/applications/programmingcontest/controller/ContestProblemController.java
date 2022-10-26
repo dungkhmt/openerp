@@ -1254,4 +1254,14 @@ public class ContestProblemController {
                 principal.getName());
         return ResponseEntity.ok().body(res);
     }
+    @GetMapping("/get-submission-modes")
+    public ResponseEntity<?> getSubmissionModes(){
+        List<String> res = ContestProblem.getSubmissionModes();
+        return ResponseEntity.ok().body(res);
+    }
+    @PostMapping("/update-problem-contest")
+    public ResponseEntity<?> updateProblemContest(Principal principal, @RequestBody ModelUpdateProblemContestInput I){
+        boolean res = problemTestCaseService.updateProblemContest(principal.getName(), I);
+        return ResponseEntity.ok().body(res);
+    }
 }
