@@ -19,6 +19,8 @@ import changePageSize, {
 
 import NegativeButton from "../../../../component/education/classmanagement/NegativeButton";
 import PositiveButton from "../../../../component/education/classmanagement/PositiveButton";
+import StudentsWaitingForApprovalToClass
+  from "../../../../component/education/classmanagement/teacher/StudentsWaitingForApprovalToClass";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -181,6 +183,12 @@ export default function TeacherViewDetailClassStudentRegistered(props) {
   }, []);
   return (
     <div>
+      <Card>
+        <CardContent>
+          <StudentsWaitingForApprovalToClass classId={classId}/>
+        </CardContent>
+      </Card>
+
       <Card className={classes.card} elevation={0}>
         {/* <CardActionArea
               disableRipple
