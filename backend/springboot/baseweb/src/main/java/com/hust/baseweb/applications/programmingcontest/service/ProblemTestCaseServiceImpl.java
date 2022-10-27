@@ -3080,25 +3080,40 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         // otherwise, ignore
         String problemId = modelUploadTestCase.getProblemId();
         ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
-        String tempName = tempDir.createRandomScriptFileName(userName + "-" + problemEntity.getProblemName() + "-" + problemEntity.getCorrectSolutionLanguage());
         String output = "";
-        try {
-            output = runCode(problemEntity.getCorrectSolutionSourceCode(), problemEntity.getCorrectSolutionLanguage(), tempName,
-                    testCase, problemEntity.getTimeLimit(), "Correct Solution Language Not Found");
-        }catch(Exception e){
-            e.printStackTrace();
-        }
         ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
-        if(output.contains("Time Limit Exceeded")){
-            res.setMessage("Time Limit Exceeded");
-            res.setStatus("TLE");
-            return res;
-        }
-        output = output.substring(0, output.length()-1);
-        int lastLinetIndexExpected = output.lastIndexOf("\n");
-        output = output.substring(0, lastLinetIndexExpected);
+        if(modelUploadTestCase.getUploadMode().equals("EXECUTE")) {
+            String tempName = tempDir.createRandomScriptFileName(userName +
+                                                                 "-" +
+                                                                 problemEntity.getProblemName() +
+                                                                 "-" +
+                                                                 problemEntity.getCorrectSolutionLanguage());
+
+            try {
+                output = runCode(problemEntity.getCorrectSolutionSourceCode(),
+                                 problemEntity.getCorrectSolutionLanguage(),
+                                 tempName,
+                                 testCase,
+                                 problemEntity.getTimeLimit(),
+                                 "Correct Solution Language Not Found");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if(output.contains("Time Limit Exceeded")){
+                res.setMessage("Time Limit Exceeded");
+                res.setStatus("TLE");
+                return res;
+            }
+            output = output.substring(0, output.length()-1);
+            int lastLinetIndexExpected = output.lastIndexOf("\n");
+            output = output.substring(0, lastLinetIndexExpected);
 //        output = output.replaceAll("\n", "");
-        log.info("addTestCase, output = {}", output);
+            log.info("addTestCase, output = {}", output);
+
+        }else{
+            output = modelUploadTestCase.getCorrectAnswer();
+        }
+
 
 
         TestCaseEntity tc = new TestCaseEntity();
@@ -3178,6 +3193,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         tc.setIsPublic(modelUploadTestCase.getIsPublic());
         tc.setTestCasePoint(modelUploadTestCase.getPoint());
         tc.setDescription(modelUploadTestCase.getDescription());
+        tc.setCorrectAnswer(modelUploadTestCase.getCorrectAnswer());
         tc = testCaseRepo.save(tc);
         ModelUploadTestCaseOutput res= new ModelUploadTestCaseOutput();
         res.setMessage("Successfully");

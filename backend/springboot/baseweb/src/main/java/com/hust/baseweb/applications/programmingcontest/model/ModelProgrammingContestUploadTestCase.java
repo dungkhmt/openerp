@@ -13,5 +13,7 @@ public class ModelProgrammingContestUploadTestCase {
     private String problemId;
     private String isPublic;
     private int point;
+    private String correctAnswer;
     private String description;
+    private String uploadMode;
 }

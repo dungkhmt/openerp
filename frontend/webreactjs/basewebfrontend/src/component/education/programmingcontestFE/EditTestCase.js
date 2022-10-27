@@ -135,6 +135,7 @@ export default function EditTestCase(props) {
       point: point,
       isPublic: isPublic,
       description: description,
+      correctAnswer: result,
     };
     let formData = new FormData();
     formData.append("inputJson", JSON.stringify(body));
@@ -237,11 +238,13 @@ export default function EditTestCase(props) {
           <Grid item xs={3}>
             <input
               type="file"
-              accept=".c, .cpp, .java, .py"
+              //accept=".c, .cpp, .java, .py"
               id="selected-upload-file"
               onChange={onFileChange}
             />
           </Grid>
+          <br></br>
+          Description
           <TextField
             fullWidth
             style={{
@@ -253,6 +256,20 @@ export default function EditTestCase(props) {
             value={description}
             onChange={(event) => {
               setDescription(event.target.value);
+            }}
+          ></TextField>
+          Solution Output
+          <TextField
+            fullWidth
+            style={{
+              marginTop: "10px",
+              marginBottom: "24px",
+            }}
+            multiline
+            maxRows={10}
+            value={result}
+            onChange={(event) => {
+              setResult(event.target.value);
             }}
           ></TextField>
           <Grid item xs={2}>
@@ -267,7 +284,6 @@ export default function EditTestCase(props) {
             </Button>
             <h2> Status: {uploadMessage}</h2>
           </Grid>
-
           {isProcessing ? <CircularProgress /> : ""}
         </Grid>
       </form>

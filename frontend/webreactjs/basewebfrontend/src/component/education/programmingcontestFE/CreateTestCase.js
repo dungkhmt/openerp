@@ -33,6 +33,7 @@ export default function CreateTestCase(props) {
   const [isPublic, setIsPublic] = useState("N");
   const [isProcessing, setIsProcessing] = useState(false);
   const [filename, setFilename] = useState("");
+  const [uploadMode, setUploadMode] = useState(null);
 
   const dispatch = useDispatch();
   const [uploadMessage, setUploadMessage] = useState("");
@@ -115,6 +116,8 @@ export default function CreateTestCase(props) {
       point: point,
       isPublic: isPublic,
       description: description,
+      uploadMode: uploadMode,
+      correctAnswer: result,
     };
     let formData = new FormData();
     formData.append("inputJson", JSON.stringify(body));
@@ -184,6 +187,25 @@ export default function CreateTestCase(props) {
             {"N"}
           </MenuItem>
         </TextField>
+        <TextField
+          autoFocus
+          // required
+          select
+          id="Mode"
+          label="Upload Mode"
+          onChange={(event) => {
+            setUploadMode(event.target.value);
+          }}
+          value={uploadMode}
+          style={{ width: "140px" }}
+        >
+          <MenuItem key={"NOT_EXECUTE"} value={"NOT_EXECUTE"}>
+            {"NOT_EXECUTE"}
+          </MenuItem>
+          <MenuItem key={"EXECUTE"} value={"EXECUTE"}>
+            {"EXECUTE"}
+          </MenuItem>
+        </TextField>
       </Box>
       <br />
 
@@ -196,6 +218,7 @@ export default function CreateTestCase(props) {
               onChange={onFileChange}
             />
           </Grid>
+          Description
           <TextField
             fullWidth
             style={{
@@ -207,6 +230,20 @@ export default function CreateTestCase(props) {
             value={description}
             onChange={(event) => {
               setDescription(event.target.value);
+            }}
+          ></TextField>
+          Result
+          <TextField
+            fullWidth
+            style={{
+              marginTop: "10px",
+              marginBottom: "24px",
+            }}
+            multiline
+            maxRows={10}
+            value={result}
+            onChange={(event) => {
+              setResult(event.target.value);
             }}
           ></TextField>
           <Grid item xs={2}>
@@ -221,7 +258,6 @@ export default function CreateTestCase(props) {
             </Button>
             <h2> Status: {uploadMessage}</h2>
           </Grid>
-
           {isProcessing ? <CircularProgress /> : ""}
         </Grid>
       </form>
