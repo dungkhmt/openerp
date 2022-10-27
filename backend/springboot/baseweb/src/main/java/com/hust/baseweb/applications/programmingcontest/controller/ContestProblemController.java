@@ -924,6 +924,7 @@ public class ContestProblemController {
             if (contestEntity.getSubmissionActionType()
                     .equals(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)) {
                 if(cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
+                    log.info("contestSubmitProblemViaUploadFile, mode submit output");
                     resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
                 }else {
                     resp = problemTestCaseService.submitContestProblemTestCaseByTestCase(
@@ -1075,13 +1076,18 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(list);
     }
 
+    @GetMapping("/get-test-case-detail-short/{testCaseId}")
+    public ResponseEntity<?> getTestCaseDetailShort(@PathVariable("testCaseId") UUID testCaseId)
+            throws MiniLeetCodeException {
+        ModelGetTestCaseDetail resp = problemTestCaseService.getTestCaseDetailShort(testCaseId);
+        return ResponseEntity.status(200).body(resp);
+    }
     @GetMapping("/get-test-case-detail/{testCaseId}")
     public ResponseEntity<?> getTestCaseDetail(@PathVariable("testCaseId") UUID testCaseId)
-            throws MiniLeetCodeException {
+        throws MiniLeetCodeException {
         ModelGetTestCaseDetail resp = problemTestCaseService.getTestCaseDetail(testCaseId);
         return ResponseEntity.status(200).body(resp);
     }
-
     @PostMapping("/update-test-case/{testCaseId}")
     public ResponseEntity<?> updateDateTestCase(@PathVariable("testCaseId") UUID testCaseId,
             @RequestBody ModelSaveTestcase modelSaveTestcase) throws MiniLeetCodeException {

@@ -10,6 +10,7 @@ import java.util.List;
 @Slf4j
 public class StringHandler {
     public static ProblemSubmission handleContestResponseSubmitSolutionOutputOneTestCase(String response, int point){
+        log.info("handleContestResponseSubmitSolutionOutputOneTestCase, response = " + response);
         response = response.substring(0, response.length()-1);
         int lastIndex = response.lastIndexOf("\n");
         String status = response.substring(lastIndex);
@@ -36,7 +37,7 @@ public class StringHandler {
                 String[] s = ans[0].split(" ");
                 if(s.length > 0){
                     score = Integer.valueOf(s[0]);
-                    status = "";
+                    status = "OK ";
                     for(int i = 1; i < s.length; i++) status = status + s[i] + " ";
                 }else{
                     score = Integer.valueOf(s[0]);

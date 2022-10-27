@@ -1287,6 +1287,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         if(testCaseEntityList == null) testCaseEntityList = new ArrayList<>();
 
+        log.info("submitContestProblemStoreOnlyNotExecute, testCaseList.sz = " + testCaseEntityList.size());
 
         int runtime  = 0;
         int score = 0;
@@ -1303,6 +1304,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     cste = ContestSubmissionTestCaseEntity.builder()
                                                           .contestId(contestId)
                                                           .problemId(problemId)
+                                                          .contestSubmissionId(c.getContestSubmissionId())
                                                           .testCaseId(testCaseEntityList.get(i).getTestCaseId())
                                                           .submittedByUserLoginId(userName)
                                                           .point(0)
@@ -1315,12 +1317,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                           .createdStamp(new Date())
                                                           .build();
                 cste = contestSubmissionTestCaseEntityRepo.save(cste);
+                log.info("submitContestProblemStoreOnlyNotExecute, save submission_testcase " + cste.getTestCaseId() + " submission " + cste.getContestSubmissionId());
                 LCSTE.add(cste);
 
         }
 
 
-        log.info("c {}", c.getRuntime());
+        //log.info("c {}", c.getRuntime());
         return ModelContestSubmissionResponse.builder()
                                              .status("STORED")
                                              .testCasePass(c.getTestCasePass())
@@ -1437,9 +1440,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        "language not found",
                                                        1000000);
 
-
-            //log.info("submitSolutionOutput, response = " + response);
-        ProblemSubmission problemSubmission = StringHandler.handleContestResponseSubmitSolutionOutputOneTestCase(response,testCase.getTestCasePoint());
+            log.info("submitSolutionOutput, response = " + response);
+            ProblemSubmission problemSubmission = StringHandler.handleContestResponseSubmitSolutionOutputOneTestCase(response,testCase.getTestCasePoint());
 
         String participantAns = "";
         if(problemSubmission.getParticipantAns() != null && problemSubmission.getParticipantAns().size() > 0){
@@ -1448,8 +1450,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             ContestSubmissionTestCaseEntity cste = null;
         List<ContestSubmissionTestCaseEntity> l_cste = contestSubmissionTestCaseEntityRepo
             .findAllByContestSubmissionIdAndTestCaseId(sub.getContestSubmissionId(), m.getTestCaseId());
+        int subPoint = sub.getPoint();
         if(l_cste != null && l_cste.size() > 0){
             cste = l_cste.get(0);
+            subPoint = subPoint - cste.getPoint();// reduce point of submission by old point of test-case
             cste.setPoint(problemSubmission.getScore());
             cste.setStatus(problemSubmission.getStatus());
             cste.setParticipantSolutionOtput(solutionOutput);
@@ -1473,6 +1477,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
         cste = contestSubmissionTestCaseEntityRepo.save(cste);
 
+        subPoint = subPoint + cste.getPoint(); // update Point;
+        sub.setPoint(subPoint);
+        sub.setStatus(ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL);
+        sub = contestSubmissionRepo.save(sub);
 
         return ModelContestSubmissionResponse.builder()
                                              .contestId(contestId)
@@ -1888,15 +1896,34 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         return ModelGetTestCaseDetail.builder()
                 .testCaseId(testCaseId)
-                                     //.correctAns(testCase.getCorrectAnswer())
-                                     .correctAns(testCase.getCorrectAnswerShort(20))
-                //.testCase(testCase.getTestCase())
-                .testCase(testCase.getTestCaseShort(20))
+                                     .correctAns(testCase.getCorrectAnswer())
+                                     //.correctAns(testCase.getCorrectAnswerShort(20))
+                .testCase(testCase.getTestCase())
+                //.testCase(testCase.getTestCaseShort(20))
                 .point(testCase.getTestCasePoint()).isPublic(testCase.getIsPublic())
                 .problemSolution(problem.getSolution())
                 .problemDescription(problem.getProblemDescription())
                                      .description(testCase.getDescription())
                 .build();
+    }
+    @Override
+    public ModelGetTestCaseDetail getTestCaseDetailShort(UUID testCaseId) throws MiniLeetCodeException {
+        TestCaseEntity testCase = testCaseRepo.findTestCaseByTestCaseId(testCaseId);
+        ProblemEntity problem = problemRepo.findByProblemId(testCase.getProblemId());
+        if(testCase == null){
+            throw new MiniLeetCodeException("testcase not found");
+        }
+        return ModelGetTestCaseDetail.builder()
+                                     .testCaseId(testCaseId)
+                                     //.correctAns(testCase.getCorrectAnswer())
+                                     .correctAns(testCase.getCorrectAnswerShort(20))
+                                     //.testCase(testCase.getTestCase())
+                                     .testCase(testCase.getTestCaseShort(20))
+                                     .point(testCase.getTestCasePoint()).isPublic(testCase.getIsPublic())
+                                     .problemSolution(problem.getSolution())
+                                     .problemDescription(problem.getProblemDescription())
+                                     .description(testCase.getDescription())
+                                     .build();
     }
 
     @Override
@@ -2810,7 +2837,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         return ans;
     }
     private String submissionSolutionOutput(String sourceChecker, String computerLanguage, String solutionOutput, String tempName, TestCaseEntity testCase, String exception, int timeLimit) throws Exception {
-        log.info("submissionSolutionOutput, sourceChecker = " + sourceChecker + " solutionOutput = " + solutionOutput + " testCase = " + testCase.getTestCase());
+        //log.info("submissionSolutionOutput, sourceChecker = " + sourceChecker + " solutionOutput = " + solutionOutput + " testCase = " + testCase.getTestCase());
 
         String ans = "";
         tempName = tempName.replaceAll(" ","");

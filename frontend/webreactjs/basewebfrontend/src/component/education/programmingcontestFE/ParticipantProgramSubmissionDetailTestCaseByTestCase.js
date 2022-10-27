@@ -109,10 +109,11 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
       .then((res) => {
         setIsProcessing(false);
         console.log("result submit = ", res);
+        //alert("submit solution output OK");
         setScore(res.score);
         let arr_res = [];
         for (let i = 0; i < submissionTestCase.length; i++) {
-          arr_res.push(submissionTestCase[i].result);
+          arr_res.push(submissionTestCase[i]);
         }
         for (let i = 0; i < arr_res.length; i++) {
           if (arr_res[i].testCaseId === res.selectedTestCaseId) {
@@ -121,6 +122,8 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
           }
         }
         setSubmissionTestCase(arr_res);
+        getSubmissionDetailTestCaseByTestCase();
+        //setFilename("");
       })
       .catch((e) => {
         setIsProcessing(false);
@@ -172,7 +175,8 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
   function getTestcaseDetail(testcaseId) {
     request(
       "get",
-      "/get-test-case-detail/" + testcaseId,
+      //"/get-test-case-detail/" + testcaseId,
+      "/get-test-case-detail-short/" + testcaseId,
       (res) => {
         setTestcaseDetailList((prev) => [...prev, res.data]);
       },

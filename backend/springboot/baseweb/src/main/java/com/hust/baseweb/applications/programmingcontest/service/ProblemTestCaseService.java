@@ -104,6 +104,7 @@ public interface ProblemTestCaseService {
     List<ModelGetTestCase> getTestCaseByProblem(String problemId);
 
     ModelGetTestCaseDetail getTestCaseDetail(UUID testCaseId) throws MiniLeetCodeException;
+    ModelGetTestCaseDetail getTestCaseDetailShort(UUID testCaseId) throws MiniLeetCodeException;
 
     void editTestCase(UUID testCaseId, ModelSaveTestcase modelSaveTestcase) throws MiniLeetCodeException;
 
