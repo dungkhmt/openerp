@@ -1,80 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Avatar,
-  Card,
-  CardContent,
-  CardHeader,
-  Paper,
-  Link,
-} from "@material-ui/core";
 import { request } from "../../../../api";
-import { makeStyles } from "@material-ui/core/styles";
-import { drawerWidth } from "../../../../assets/jss/material-dashboard-react";
-import { FcApproval } from "react-icons/fc";
-import { StyledBadge } from "../../../../component/education/classmanagement/StyledBadge";
-import MaterialTable from "material-table";
-import changePageSize, {
-  localization,
-} from "../../../../utils/MaterialTableUtils";
-
-import NegativeButton from "../../../../component/education/classmanagement/NegativeButton";
-import PositiveButton from "../../../../component/education/classmanagement/PositiveButton";
 import {errorNoti, successNoti} from "../../../../utils/notification";
 import {Button} from "@mui/material";
 import StandardTable from "../../../table/StandardTable";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    // flexGrow: 1,
-    margin: "auto",
-    width: `calc(100vw - ${drawerWidth + theme.spacing(4) * 2 + 1}px)`,
-    backgroundColor: theme.palette.background.paper,
-  },
-  card: {
-    marginTop: theme.spacing(2),
-  },
-  grid: {
-    paddingLeft: 56,
-  },
-  negativeBtn: {
-    minWidth: 112,
-    marginLeft: 10,
-    marginRight: 10,
-  },
-  positiveBtn: {
-    minWidth: 112,
-  },
-  dialogRemoveBtn: {
-    fontWeight: "normal",
-  },
-  listItem: {
-    height: 48,
-    borderRadius: 6,
-    marginBottom: 6,
-    backgroundColor: "#f5f5f5",
-    "&:hover": {
-      backgroundColor: "#e0e0e0",
-    },
-  },
-  open: { transform: "rotate(-180deg)", transition: "0.3s" },
-  close: { transition: "0.3s" },
-  item: {
-    paddingLeft: 32,
-  },
-  tabs: { padding: theme.spacing(2) },
-  tabSelected: {
-    background: "rgba(254,243,199,1)",
-    color: "rgba(180,83,9,1) !important",
-  },
-  tabRoot: {
-    margin: "0px 0.5rem",
-    borderRadius: "0.375rem",
-    textTransform: "none",
-  },
-}));
 
 export default function StudentsWaitingForApprovalToClass(props) {
-  const classes = useStyles();
   const classId = props.classId;
   const [registStudents, setRegistStudents] = useState([]);
   const [selectedRegists, setSelectedRegists] = useState([]);
@@ -113,10 +44,12 @@ export default function StudentsWaitingForApprovalToClass(props) {
   
   const UpdateStatusButtons = ({ studentIds }) => (
     <div>
-      <Button onClick={() => updateRegistrationStatusForStudents(studentIds, "APPROVED")}>
+      <Button variant="outlined"
+              onClick={() => updateRegistrationStatusForStudents(studentIds, "APPROVED")}>
         Phê duyệt
       </Button>
-      <Button onClick={() => updateRegistrationStatusForStudents(studentIds, "REFUSED")}>
+      <Button variant="outlined"
+              onClick={() => updateRegistrationStatusForStudents(studentIds, "REFUSED")}>
         Từ chối
       </Button>
     </div>

@@ -28,7 +28,7 @@ import changePageSize, {
   tableIcons,
 } from "../../../../utils/MaterialTableUtils";
 import displayTime from "../../../../utils/DateTimeUtils";
-import AssignList from "../../../../component/education/classmanagement/AssignList";
+import AssignmentListOfClass from "../../../../component/education/classmanagement/teacher/AssignmentListOfClass";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -177,6 +177,12 @@ export default function TeacherViewDetailClassExercises(props) {
 
   return (
     <div>
+      <Card>
+        <CardContent>
+          <AssignmentListOfClass classId={classId} />
+        </CardContent>
+      </Card>
+
       <Card className={classes.card}>
         <CardHeader
           avatar={
