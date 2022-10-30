@@ -6,6 +6,9 @@ import MaterialTable from "material-table";
 import { useHistory } from "react-router-dom";
 import TeacherCreateSessionForm from "./TeacherCreateSessionForm";
 import { Link as RouterLink } from "react-router-dom";
+import {Card, CardContent} from "@mui/material";
+import LearningSessionListOfClass
+  from "../../../../component/education/classmanagement/teacher/LearningSessionListOfClass";
 export default function TeacherClassViewLearningSessionList(props) {
   const classId = props.classId;
   const [sessions, setSessions] = useState([]);
@@ -49,6 +52,12 @@ export default function TeacherClassViewLearningSessionList(props) {
   }, []);
   return (
     <div>
+      <Card>
+        <CardContent>
+          <LearningSessionListOfClass classId={classId}/>
+        </CardContent>
+      </Card>
+
       <h1>Danh sách buổi học {classId}</h1>
       <MaterialTable
         title="Danh sách buổi học"
