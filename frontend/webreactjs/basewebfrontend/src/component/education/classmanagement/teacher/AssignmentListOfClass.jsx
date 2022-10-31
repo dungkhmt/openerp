@@ -33,10 +33,7 @@ export default function AssignmentListOfClass(props) {
   }
 
   function navigateToAssignmentDetailPage(assignmentId) {
-    history.push({
-      pathname: `/edu/teacher/class/${classId}/assignment/${assignmentId}`,
-      state: {},
-    });
+    history.push(`/edu/teacher/class/${classId}/assignment/${assignmentId}`);
   }
 
   function navigateToCreateAssignmentPage() {
@@ -79,7 +76,7 @@ export default function AssignmentListOfClass(props) {
                         search: true,
                         sorting: true
                       }}
-                      onRowClick={assignment => navigateToAssignmentDetailPage(assignment.id)}
+                      onRowClick={ (event, assignment) => navigateToAssignmentDetailPage(assignment.id) }
                       actions={actions}/>
     </div>
   )

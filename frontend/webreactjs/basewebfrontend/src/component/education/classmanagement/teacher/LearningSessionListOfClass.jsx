@@ -3,7 +3,7 @@ import { request } from "../../../../api";
 import { useHistory } from "react-router-dom";
 import {Button} from "@mui/material";
 import StandardTable from "../../../table/StandardTable";
-import TeacherCreateSessionForm from "../../../../views/Education/ClassManagement/Teacher/TeacherCreateSessionForm";
+import CreateLearningSessionDlg from "./CreateLearningSessionDlg";
 
 export default function LearningSessionListOfClass(props) {
   const history = useHistory();
@@ -21,6 +21,11 @@ export default function LearningSessionListOfClass(props) {
 
   function navigateToLearningSessionDetailPage(learningSessionId) {
     history.push(`/edu/teacher/class/session/detail/${learningSessionId}`)
+  }
+
+  function updateLearningSessionsWhenCreateSuccess(res) {
+    console.log("Newly created learning sessions")
+    setLearningSessionsOfClass([...learningSessionsOfClass, res.data]);
   }
 
   const columns = [
@@ -52,11 +57,10 @@ export default function LearningSessionListOfClass(props) {
                       onRowClick={(event, session) => navigateToLearningSessionDetailPage(session.sessionId)}
                       actions={actions}/>
 
-      <TeacherCreateSessionForm
-        open={createLearningSessionDlgOpen}
-        setOpen={setCreateLearningSessionDlgOpen}
-        classId={classId}
-      />
+      <CreateLearningSessionDlg classId={classId}
+                                open={createLearningSessionDlgOpen}
+                                setOpen={setCreateLearningSessionDlgOpen}
+                                onCreateSuccess={updateLearningSessionsWhenCreateSuccess}/>
     </div>
   )
 }
