@@ -948,8 +948,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         String viewSubmitSolutionOutputMode = "N";
         ContestProblem contestProblem = contestProblemRepo.findByContestIdAndProblemId(contestId, problemId);
         if(contestProblem != null){
-            if(contestProblem.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
-                viewSubmitSolutionOutputMode = "Y";
+            if(contestProblem.getSubmissionMode() !=null) {
+                if (contestProblem.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)) {
+                    viewSubmitSolutionOutputMode = "Y";
+                }
             }
         }
 
