@@ -56,12 +56,12 @@ public class StringHandler {
                                 .build();
     }
     public static ProblemSubmission handleContestResponse(String response, List<String> testCaseAns, List<Integer> points){
-        log.info("handleContestResponse, response {}", response);
+        //log.info("handleContestResponse, response {}", response);
         String orignalMessage = response;
         response = response.substring(0, response.length()-1);
         int lastIndex = response.lastIndexOf("\n");
         String status = response.substring(lastIndex);
-        log.info("status {}", status);
+        //log.info("status {}", status);
         if(status.contains("Compile Error")){
             return ProblemSubmission.builder()
                                     .score(0)

@@ -1212,7 +1212,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }else{
             message = "Successful";
         }
-        log.info("evaluateSubmission, totalStatus = " + totalStatus + " nbTestCasePass = " + nbTestCasePass);
+        //log.info("evaluateSubmission, totalStatus = " + totalStatus + " nbTestCasePass = " + nbTestCasePass);
 
         //String response = submission(modelContestSubmission.getSource(), modelContestSubmission.getLanguage(), tempName, testCaseEntityList, "language not found", problemEntity.getTimeLimit());
 
@@ -1238,7 +1238,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             e = contestSubmissionTestCaseEntityRepo.save(e);
         }
 
-        log.info("c {}", c.getRuntime());
+        //log.info("c {}", c.getRuntime());
 
         return ModelContestSubmissionResponse.builder()
                                              .status(totalStatus)

@@ -779,7 +779,7 @@ public class ContestProblemController {
     public ResponseEntity<?> contestSubmitProblemViaUploadFile(Principal principal,
             @RequestParam("inputJson") String inputJson,
             @RequestParam("file") MultipartFile file) {
-        log.info("contestSubmitProblemViaUploadFile, inputJson = " + inputJson);
+        //log.info("contestSubmitProblemViaUploadFile, inputJson = " + inputJson);
 
         Gson gson = new Gson();
         ModelContestSubmitProgramViaUploadFile model = gson.fromJson(inputJson,
@@ -792,16 +792,16 @@ public class ContestProblemController {
         // System.out.println(testStartDate);
         // System.out.println(timeTest);
         // System.out.println(test.getDuration());
-        log.info("contestSubmitProblemViaUploadFile, currentDate = " + currentDate + ", contest started at"
-                + contestEntity.getStartedAt()
-                + " timeTest = " + timeTest + " contestSolvingTime = " + contestEntity.getContestSolvingTime());
+        //log.info("contestSubmitProblemViaUploadFile, currentDate = " + currentDate + ", contest started at"
+        //        + contestEntity.getStartedAt()
+        //        + " timeTest = " + timeTest + " contestSolvingTime = " + contestEntity.getContestSolvingTime());
 
         // if (timeTest > contestEntity.getContestSolvingTime()) {
         if (!contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
-            log.info("contestSubmitProblemViaUploadFile, TIME OUT!!!!! currentDate = " + currentDate
-                    + ", contest started at" + contestEntity.getStartedAt()
-                    + " timeTest = " + timeTest + " contestSolvingTime = " +
-                    contestEntity.getContestSolvingTime());
+            //log.info("contestSubmitProblemViaUploadFile, TIME OUT!!!!! currentDate = " + currentDate
+            //        + ", contest started at" + contestEntity.getStartedAt()
+            //        + " timeTest = " + timeTest + " contestSolvingTime = " +
+             //       contestEntity.getContestSolvingTime());
 
             // return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
 
@@ -838,7 +838,7 @@ public class ContestProblemController {
                     .numberTestCasePassed(0)
                     .totalNumberTestCase(0)
                     .build();
-            log.info("contestSubmitProblemViaUploadFile: Participant not approved or registered");
+            //log.info("contestSubmitProblemViaUploadFile: Participant not approved or registered");
             return ResponseEntity.ok().body(resp);
 
         }
@@ -859,7 +859,7 @@ public class ContestProblemController {
                         .numberTestCasePassed(0)
                         .totalNumberTestCase(0)
                         .build();
-                log.info("contestSubmitProblemViaUploadFile: Participant has not permission to submit");
+                //log.info("contestSubmitProblemViaUploadFile: Participant has not permission to submit");
                 return ResponseEntity.ok().body(resp);
 
             }
@@ -883,8 +883,8 @@ public class ContestProblemController {
                     .numberTestCasePassed(0)
                     .totalNumberTestCase(0)
                     .build();
-            log.info("contestSubmitProblemViaUploadFile: Maximum Number of Submissions "
-                    + contestEntity.getMaxNumberSubmissions() + " Reached! Cannot submit more");
+            //log.info("contestSubmitProblemViaUploadFile: Maximum Number of Submissions "
+            //        + contestEntity.getMaxNumberSubmissions() + " Reached! Cannot submit more");
             return ResponseEntity.ok().body(resp);
         }
 
@@ -914,8 +914,8 @@ public class ContestProblemController {
                         .numberTestCasePassed(0)
                         .totalNumberTestCase(0)
                         .build();
-                log.info("contestSubmitProblemViaUploadFile: Max Source code Length violations " + source.length()
-                        + " > " + contestEntity.getMaxSourceCodeLength() + " --> Cannot submit more");
+                //log.info("contestSubmitProblemViaUploadFile: Max Source code Length violations " + source.length()
+                //        + " > " + contestEntity.getMaxSourceCodeLength() + " --> Cannot submit more");
                 return ResponseEntity.ok().body(resp);
             }
             ModelContestSubmission request = new ModelContestSubmission(model.getContestId(), model.getProblemId(),
@@ -924,7 +924,7 @@ public class ContestProblemController {
             if (contestEntity.getSubmissionActionType()
                     .equals(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)) {
                 if(cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
-                    log.info("contestSubmitProblemViaUploadFile, mode submit output");
+                    //log.info("contestSubmitProblemViaUploadFile, mode submit output");
                     resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
                 }else {
                     resp = problemTestCaseService.submitContestProblemTestCaseByTestCase(
@@ -935,7 +935,7 @@ public class ContestProblemController {
             } else {
                 resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
             }
-            log.info("resp {}", resp);
+            //log.info("resp {}", resp);
             return ResponseEntity.status(200).body(resp);
         } catch (Exception e) {
             e.printStackTrace();
