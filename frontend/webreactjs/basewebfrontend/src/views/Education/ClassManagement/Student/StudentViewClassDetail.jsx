@@ -34,9 +34,8 @@ import {
 } from "../../../../component/tab";
 import { setClassId } from "../../../../reducers/classReducer";
 import StudentViewLearningSessionList from "./StudentViewLearningSessionList";
-import ChapterListOfCourse
-  from "../../../../component/education/classmanagement/student/classdetail/ChapterListOfCourse";
-import StudentViewClassDetail from "./StudentViewClassDetail";
+import StudentViewClassDetailChapterList from "./StudentViewClassDetailChapterList";
+import StudentViewClassDetailStudentList from "./StudentViewClassDetailStudentList";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -61,74 +60,30 @@ const useStyles = makeStyles((theme) => ({
 function SClassDetail() {
   const classes = useStyles();
   const params = useParams();
-  //const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
-  //const history = useHistory();
 
+  const classId = params.id;
   const [classDetail, setClassDetail] = useState({});
-
-  const [chapterList, setChapterList] = useState([]);
-
   const [activeTab, setActiveTab] = useState(0);
 
   const handleChange = (event, tabIndex) => {
     setActiveTab(tabIndex);
   };
 
-  const chapterColumns = [
-    {
-      title: "Chapter",
-      field: "chapterId",
-      render: (rowData) => (
-        <Link
-          component={RouterLink}
-          to={`/edu/student/course/chapter/detail/${rowData["chapterId"]}`}
-        >
-          {rowData["chapterName"]}
-        </Link>
-      ),
-    },
-  ];
-
-  // Functions.
   const getClassDetail = () => {
     const classId = params.id;
-    request(
-      // token, history,
-      "get",
-      `/edu/class/${params.id}`,
-      (res) => {
+    request("get", `/edu/class/${params.id}`, (res) => {
         setClassDetail(res.data);
         dispatch(setClassId(classId));
-      }
-    );
-  };
-
-  const getChapterListOfClass = () => {
-    //request(token, history, "get", `/get-quiz-of-class/${params.id}`, (res) => {
-    request(
-      // token,
-      // history,
-      "get",
-      `/edu/class/get-chapters-of-class/${params.id}`,
-      (res) => {
-        console.log("getChapterListOfClass, res.data = ", res.data);
-        setChapterList(res.data);
-      }
-    );
+    });
   };
 
   useEffect(() => {
     getClassDetail();
-    getChapterListOfClass();
-    // console.log("classDetail = ", classDetail);
   }, []);
 
   return (
     <Fragment>
-      <StudentViewClassDetail />
-      <br/>
-
       <div className={classes.tabs}>
         <StyledTabs
           value={activeTab}
@@ -213,27 +168,8 @@ function SClassDetail() {
         </Card>
       </TabPanel>
 
-      {/*<TabPanel value={activeTab} index={1}>*/}
-      {/*  <Card>*/}
-      {/*    <CardContent>*/}
-      {/*      <MaterialTable*/}
-      {/*        title={"Chapter"}*/}
-      {/*        columns={chapterColumns}*/}
-      {/*        data={chapterList}*/}
-      {/*        components={{*/}
-      {/*          Container: (props) => <Paper {...props} elevation={0} />,*/}
-      {/*        }}*/}
-      {/*      />*/}
-      {/*    </CardContent>*/}
-      {/*  </Card>*/}
-      {/*</TabPanel>*/}
-
       <TabPanel value={activeTab} index={1}>
-        <Card>
-          <CardContent>
-            <ChapterListOfCourse classId={params.id}/>
-          </CardContent>
-        </Card>
+        <StudentViewClassDetailChapterList classId={classId} />
       </TabPanel>
 
       <TabPanel value={activeTab} index={2}>
@@ -241,7 +177,7 @@ function SClassDetail() {
       </TabPanel>
 
       <TabPanel value={activeTab} index={3}>
-        <StudentListTab classId={params.id} />
+        <StudentViewClassDetailStudentList classId={classId} />
       </TabPanel>
 
       <TabPanel value={activeTab} index={4}>
