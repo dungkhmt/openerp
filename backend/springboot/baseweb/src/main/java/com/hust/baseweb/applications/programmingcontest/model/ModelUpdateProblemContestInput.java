@@ -9,11 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModelProgrammingContestUploadTestCase {
+public class ModelUpdateProblemContestInput {
     private String problemId;
-    private String isPublic;
-    private int point;
-    private String correctAnswer;
-    private String description;
-    private String uploadMode;
+    private String contestId;
+    private String submissionMode;
 }

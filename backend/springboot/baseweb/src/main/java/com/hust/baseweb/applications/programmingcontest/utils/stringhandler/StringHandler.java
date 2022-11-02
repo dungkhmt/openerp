@@ -10,6 +10,7 @@ import java.util.List;
 @Slf4j
 public class StringHandler {
     public static ProblemSubmission handleContestResponseSubmitSolutionOutputOneTestCase(String response, int point){
+        log.info("handleContestResponseSubmitSolutionOutputOneTestCase, response = " + response);
         response = response.substring(0, response.length()-1);
         int lastIndex = response.lastIndexOf("\n");
         String status = response.substring(lastIndex);
@@ -29,9 +30,19 @@ public class StringHandler {
         response = response.substring(0, runTimeIndex);
         String []ans = response.split(Constants.SPLIT_TEST_CASE); // ans[0] is the score returned by the checker
         int score = 0;
+
         try{
             if(ans != null && ans.length > 0){
-                score = Integer.valueOf(ans[0]);
+                //score = Integer.valueOf(ans[0]);
+                String[] s = ans[0].split(" ");
+                if(s.length > 0){
+                    score = Integer.valueOf(s[0]);
+                    status = "OK ";
+                    for(int i = 1; i < s.length; i++) status = status + s[i] + " ";
+                }else{
+                    score = Integer.valueOf(s[0]);
+                    status = "OK";
+                }
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -39,17 +50,18 @@ public class StringHandler {
         return ProblemSubmission.builder()
                                 .runtime(runtime)
                                 .score(score)
-                                .status("OK")
+                                //.status("OK")
+                                .status(status)
                                 .testCasePass("1/1")
                                 .build();
     }
     public static ProblemSubmission handleContestResponse(String response, List<String> testCaseAns, List<Integer> points){
-        log.info("handleContestResponse, response {}", response);
+        //log.info("handleContestResponse, response {}", response);
         String orignalMessage = response;
         response = response.substring(0, response.length()-1);
         int lastIndex = response.lastIndexOf("\n");
         String status = response.substring(lastIndex);
-        log.info("status {}", status);
+        //log.info("status {}", status);
         if(status.contains("Compile Error")){
             return ProblemSubmission.builder()
                                     .score(0)
@@ -113,6 +125,16 @@ public class StringHandler {
         s = s.replaceAll("\n", " ");
         return s.replaceAll("( +)", " ").trim();
 
+    }
+
+    public static String shorthen(String s, int len){
+        if(s == null || s.equals("")) return s;
+        if(len >= s.length()) return s;
+        return s.substring(0,len) + "...";
+    }
+
+    public static void main(String[] args){
+        System.out.println(StringHandler.shorthen("pham quang dung",5));
     }
 }
 

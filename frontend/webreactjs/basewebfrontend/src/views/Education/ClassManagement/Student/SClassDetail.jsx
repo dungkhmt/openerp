@@ -74,7 +74,7 @@ function SClassDetail() {
 
   const chapterColumns = [
     {
-      title: "Chương",
+      title: "Chapter",
       field: "chapterId",
       render: (rowData) => (
         <Link
@@ -130,12 +130,12 @@ function SClassDetail() {
           aria-label="ant tabs"
           centered
         >
-          <StyledTab label="Thông tin chung" {...a11yProps(0)} />
-          <StyledTab label="Nội dung" {...a11yProps(1)} />
+          <StyledTab label="General Information" {...a11yProps(0)} />
+          <StyledTab label="Content" {...a11yProps(1)} />
           <StyledTab label="Quiz" {...a11yProps(2)} />
-          <StyledTab label="Sinh viên" {...a11yProps(3)} />
-          <StyledTab label="Bài tập" {...a11yProps(4)} />
-          <StyledTab label="Buổi học" {...a11yProps(5)} />
+          <StyledTab label="Students" {...a11yProps(3)} />
+          <StyledTab label="Exercises" {...a11yProps(4)} />
+          <StyledTab label="Sessions" {...a11yProps(5)} />
         </StyledTabs>
         <Typography className={classes.padding} />
       </div>
@@ -153,10 +153,10 @@ function SClassDetail() {
           <CardContent>
             <Grid container className={classes.grid}>
               <Grid item md={3} sm={3} xs={3} direction="column">
-                <Typography>Mã lớp</Typography>
-                <Typography>Mã học phần</Typography>
-                <Typography>Tên học phần</Typography>
-                <Typography>Loại lớp</Typography>
+                <Typography>Class Code</Typography>
+                <Typography>Course Code</Typography>
+                <Typography>Course Name</Typography>
+                <Typography>Class Type</Typography>
               </Grid>
               <Grid item md={8} sm={8} xs={8}>
                 <Typography>
@@ -181,7 +181,7 @@ function SClassDetail() {
               </div>
 
               <Grid item md={3} sm={3} xs={3}>
-                <Typography>Giảng viên</Typography>
+                <Typography>Teacher</Typography>
                 <Typography>Email</Typography>
               </Grid>
               <Grid item md={8} sm={8} xs={8}>
@@ -211,7 +211,7 @@ function SClassDetail() {
         <Card>
           <CardContent>
             <MaterialTable
-              title={"Chương"}
+              title={"Chapter"}
               columns={chapterColumns}
               data={chapterList}
               components={{

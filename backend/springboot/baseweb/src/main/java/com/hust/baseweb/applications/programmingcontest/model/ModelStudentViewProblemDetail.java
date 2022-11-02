@@ -16,6 +16,7 @@ public class ModelStudentViewProblemDetail {
     private String problemStatement;
     private String createdByUserLoginId;
     private String createdByUserFullName;
+    private String submissionMode;
     private Date createdStamp;
     private List<byte[]> attachment;
     private List<String> attachmentNames;

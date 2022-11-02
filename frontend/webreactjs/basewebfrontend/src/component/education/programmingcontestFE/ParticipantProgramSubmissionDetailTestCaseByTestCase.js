@@ -6,15 +6,23 @@ import MaterialTable from "material-table";
 import { React, useEffect, useState } from "react";
 import { request } from "../../../api";
 import { toFormattedDateTime } from "../../../utils/dateutils";
+import { useDispatch, useSelector } from "react-redux";
+import { authPostMultiPart } from "../../../api";
 
 export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
   props
 ) {
+  const dispatch = useDispatch();
   const { submissionId } = props;
   const [submissionTestCase, setSubmissionTestCase] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [testcaseDetailList, setTestcaseDetailList] = useState([]);
   const [selectedTestcase, setSelectedTestcase] = useState();
+
+  const [isProcessing, setIsProcessing] = useState(false);
+  const token = useSelector((state) => state.auth.token);
+
+  const [score, setScore] = useState(0);
 
   const columns = [
     { title: "Contest", field: "contestId" },
@@ -42,7 +50,99 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
         </IconButton>
       ),
     },
+    {
+      title: "",
+      render: (rowData) =>
+        rowData.viewSubmitSolutionOutputMode == "Y" ? (
+          <div>
+            <button
+              color="primary"
+              type="submit"
+              //onChange={onInputChange}
+              onClick={() => handleFormSubmit(event, rowData.testCaseId)}
+              width="100%"
+            >
+              UPLOAD
+            </button>
+
+            <input
+              type="file"
+              id="selected-upload-file"
+              onChange={() => onFileChange(event, rowData.testCaseId)}
+            />
+          </div>
+        ) : (
+          ""
+        ),
+    },
   ];
+
+  function handleFormSubmit(event, testCaseId) {
+    let selectedFile = null;
+    for (let i = 0; i < testcaseDetailList.length; i++) {
+      if (testcaseDetailList[i].testCaseId === testCaseId) {
+        //alert(
+        //  "upload solution output for test case " +
+        //    testCaseId +
+        //    " file " +
+        //    testcaseDetailList[i].file.name
+        // );
+        selectedFile = testcaseDetailList[i].file;
+        break;
+      }
+    }
+    event.preventDefault();
+    let body = {
+      testCaseId: testCaseId,
+      submissionId: submissionId,
+    };
+    let formData = new FormData();
+    formData.append("inputJson", JSON.stringify(body));
+    formData.append("file", selectedFile);
+
+    authPostMultiPart(
+      dispatch,
+      token,
+      "/submit-solution-output-of-testcase",
+      formData
+    )
+      .then((res) => {
+        setIsProcessing(false);
+        console.log("result submit = ", res);
+        //alert("submit solution output OK");
+        setScore(res.score);
+        let arr_res = [];
+        for (let i = 0; i < submissionTestCase.length; i++) {
+          arr_res.push(submissionTestCase[i]);
+        }
+        for (let i = 0; i < arr_res.length; i++) {
+          if (arr_res[i].testCaseId === res.selectedTestCaseId) {
+            arr_res[i].point = res.score;
+            arr_res[i].message = res.message;
+          }
+        }
+        setSubmissionTestCase(arr_res);
+        getSubmissionDetailTestCaseByTestCase();
+        //setFilename("");
+      })
+      .catch((e) => {
+        setIsProcessing(false);
+        console.error(e);
+      });
+  }
+  function onFileChange(e, testCaseId) {
+    //alert("testCase " + testCaseId + " change file " + e.target.files[0].name);
+    let arr = [];
+    for (let i = 0; i < testcaseDetailList.length; i++) {
+      arr.push(testcaseDetailList[i]);
+    }
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].testCaseId === testCaseId) {
+        arr[i].file = e.target.files[0];
+      }
+    }
+    setTestcaseDetailList(arr);
+  }
 
   function getSubmissionDetailTestCaseByTestCase() {
     request(
@@ -62,6 +162,7 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
             testCaseId: e.testCaseId,
             testCase: e.testCase,
             correctAns: e.correctAns,
+            file: "",
           });
         });
         console.log("testCaseDetailList tcl = ", tcl);
@@ -74,7 +175,8 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
   function getTestcaseDetail(testcaseId) {
     request(
       "get",
-      "/get-test-case-detail/" + testcaseId,
+      //"/get-test-case-detail/" + testcaseId,
+      "/get-test-case-detail-short/" + testcaseId,
       (res) => {
         setTestcaseDetailList((prev) => [...prev, res.data]);
       },

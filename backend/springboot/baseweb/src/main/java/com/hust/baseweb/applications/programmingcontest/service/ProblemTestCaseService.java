@@ -66,6 +66,7 @@ public interface ProblemTestCaseService {
 
 
     ModelContestSubmissionResponse submitSolutionOutput(String solutionOutput, String contestId, String problemId, UUID testCaseId, String userName) throws Exception;
+    ModelContestSubmissionResponse submitSolutionOutputOfATestCase(String userId,String solutionOutput, ModelSubmitSolutionOutputOfATestCase m);
 
     ModelStudentRegisterContestResponse studentRegisterContest(String contestId, String userId) throws MiniLeetCodeException;
 
@@ -103,6 +104,7 @@ public interface ProblemTestCaseService {
     List<ModelGetTestCase> getTestCaseByProblem(String problemId);
 
     ModelGetTestCaseDetail getTestCaseDetail(UUID testCaseId) throws MiniLeetCodeException;
+    ModelGetTestCaseDetail getTestCaseDetailShort(UUID testCaseId) throws MiniLeetCodeException;
 
     void editTestCase(UUID testCaseId, ModelSaveTestcase modelSaveTestcase) throws MiniLeetCodeException;
 
@@ -163,5 +165,5 @@ public interface ProblemTestCaseService {
 
     public boolean updatePermissionMemberToContest(String userId, ModelUpdatePermissionMemberToContestInput input);
 
-
+    public boolean updateProblemContest(String userId, ModelUpdateProblemContestInput I);
 }

@@ -5,15 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModelProgrammingContestUploadTestCase {
-    private String problemId;
-    private String isPublic;
-    private int point;
-    private String correctAnswer;
-    private String description;
-    private String uploadMode;
+public class ModelSubmitSolutionOutputOfATestCase {
+    private UUID testCaseId;
+    private UUID submissionId;
 }

@@ -146,20 +146,21 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         List<MultipartFile> fileArray = Arrays.asList(files);
 
         List<String> removedFilesId = modelUpdateContestProblem.getRemovedFilesId();
-        List<String> oldAttachmentIds = Arrays.asList(oldProblem.getAttachment().split(";"));
-        for (String s : oldAttachmentIds) {
-            try {
-                GridFsResource content = mongoContentService.getById(s);
-                if (content != null) {
-                    if(removedFilesId.contains(content.getFilename())) {
-                        mongoContentService.deleteFilesById(s);
+        if(oldProblem.getAttachment() != null && !oldProblem.getAttachment().equals("")) {
+            List<String> oldAttachmentIds = Arrays.asList(oldProblem.getAttachment().split(";"));
+            for (String s : oldAttachmentIds) {
+                try {
+                    GridFsResource content = mongoContentService.getById(s);
+                    if (content != null) {
+                        if (removedFilesId.contains(content.getFilename())) {
+                            mongoContentService.deleteFilesById(s);
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
-
         fileArray.forEach((file) -> {
             ContentModel model = new ContentModel(fileId[fileArray.indexOf(file)], file);
 
@@ -506,7 +507,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                              .useCacheContestProblem(ContestEntity.USE_CACHE_CONTEST_PROBLEM_YES)
                                              .submissionActionType(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)
                                              .problemDescriptionViewType(ContestEntity.CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_VISIBLE)
-                                             .participantViewResultMode(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER)
+                                             //.participantViewResultMode(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER)
+                                             .participantViewResultMode(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT)
                                              .evaluateBothPublicPrivateTestcase(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_NO)
                                              .createdAt(new Date())
                                                            .build();
@@ -758,14 +760,21 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
     private ModelGetContestDetailResponse getModelGetContestDetailResponse(String contestId, ContestEntity contestEntity) {
         List<ModelGetProblemDetailResponse> problems = new ArrayList<>();
+
         contestEntity.getProblems().forEach(contestProblem -> {
+            ContestProblem cp = contestProblemRepo.findByContestIdAndProblemId(contestEntity.getContestId(), contestProblem.getProblemId());
+            String submissionMode = "";
+            if(cp != null){
+                submissionMode = cp.getSubmissionMode();
+            }
             ModelGetProblemDetailResponse p = ModelGetProblemDetailResponse.builder()
                     .levelId(contestProblem.getLevelId())
                     .problemId(contestProblem.getProblemId())
                     .problemName(contestProblem.getProblemName())
                     .levelOrder(contestProblem.getLevelOrder())
                     .problemDescription(contestProblem.getProblemDescription())
-
+                    .createdByUserId(contestProblem.getUserId())
+                    .submissionMode(submissionMode)
                     .build();
             problems.add(p);
         });
@@ -859,7 +868,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                       e.getPoint(),
                                                                       e.getTestCaseOutput(),
                                                                       e.getParticipantSolutionOtput(),
-                                                                      e.getCreatedStamp()
+                                                                      e.getCreatedStamp(),
+                                                                      "N"
                                                                       );
         });
         return retLst;
@@ -869,55 +879,39 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public List<ModelProblemSubmissionDetailByTestCaseResponse> getContestProblemSubmissionDetailByTestCaseOfASubmission(
         UUID submissionId
     ) {
+        ContestSubmissionEntity sub = contestSubmissionRepo.findById(submissionId).orElse(null);
+        ContestEntity contest = null;
+        String contestId = "";
+        String problemId = "";
+
+        if(sub != null){
+            contest = contestRepo.findContestByContestId(sub.getContestId());
+            contestId = sub.getContestId(); problemId = sub.getProblemId();
+        }
+        String viewSubmitSolutionOutputMode = "N";
+        ContestProblem contestProblem = contestProblemRepo.findByContestIdAndProblemId(contestId, problemId);
+        if(contestProblem != null){
+            if(contestProblem.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
+                viewSubmitSolutionOutputMode = "Y";
+            }
+        }
+
         List<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId((submissionId));
-        log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
+        //log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
         List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = new ArrayList();
         for(ContestSubmissionTestCaseEntity e: L){
             TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
             String testCase = "";
             String correctAnswer = "";
+            String testCaseOutput = e.getTestCaseOutput();
+            String participantSolutionOutput = e.getParticipantSolutionOtput();
             if(tc != null){
                 testCase = tc.getTestCase(); correctAnswer = tc.getCorrectAnswer();
             }
-
-            retLst.add(new ModelProblemSubmissionDetailByTestCaseResponse(e.getContestSubmissionTestcaseId(),
-                                                                          e.getContestId(),
-                                                                          e.getProblemId(),
-                                                                          e.getSubmittedByUserLoginId(),
-                                                                          e.getTestCaseId(),
-                                                                          testCase,
-                                                                          correctAnswer,
-                                                                          e.getStatus(),
-                                                                          e.getPoint(),
-                                                                          e.getTestCaseOutput(),
-                                                                          e.getParticipantSolutionOtput(),
-                                                                          e.getCreatedStamp()
-            ));
-        }
-        return retLst;
-    }
-    @Override
-    public List<ModelProblemSubmissionDetailByTestCaseResponse> getContestProblemSubmissionDetailByTestCaseOfASubmissionViewedByParticipant(
-        UUID submissionId
-    ){
-        ContestSubmissionEntity sub = contestSubmissionRepo.findContestSubmissionEntityByContestSubmissionId(submissionId);
-        ContestEntity contest = null;
-        if(sub != null)
-            contest = contestRepo.findContestByContestId(sub.getContestId());
-
-        List<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId((submissionId));
-        log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
-        List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = new ArrayList();
-        for(ContestSubmissionTestCaseEntity e: L){
-
-            String testCase = "";
-            String correctAnswer = "";
-            if(contest != null && contest.getParticipantViewResultMode().equals(ContestEntity
-                                                                 .CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE)) {
-                TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
-                if (tc != null) {
-                    testCase = tc.getTestCase();
-                    correctAnswer = tc.getCorrectAnswer();
+            if(contest != null){
+                if(contest.getParticipantViewResultMode().equals(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT)){
+                    testCaseOutput = StringHandler.shorthen(testCaseOutput,100);
+                    participantSolutionOutput = StringHandler.shorthen(participantSolutionOutput,100);
                 }
             }
             retLst.add(new ModelProblemSubmissionDetailByTestCaseResponse(e.getContestSubmissionTestcaseId(),
@@ -929,9 +923,86 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                           correctAnswer,
                                                                           e.getStatus(),
                                                                           e.getPoint(),
-                                                                          e.getTestCaseOutput(),
-                                                                          e.getParticipantSolutionOtput(),
-                                                                          e.getCreatedStamp()
+                                                                          //e.getTestCaseOutput(),
+                                                                          testCaseOutput,
+                                                                          //e.getParticipantSolutionOtput(),
+                                                                          participantSolutionOutput,
+                                                                          e.getCreatedStamp(),
+                                                                          viewSubmitSolutionOutputMode
+            ));
+        }
+        return retLst;
+    }
+    @Override
+    public List<ModelProblemSubmissionDetailByTestCaseResponse> getContestProblemSubmissionDetailByTestCaseOfASubmissionViewedByParticipant(
+        UUID submissionId
+    ){
+        ContestSubmissionEntity sub = contestSubmissionRepo.findContestSubmissionEntityByContestSubmissionId(submissionId);
+        ContestEntity contest = null;
+        String contestId = "";
+        String problemId = "";
+        if(sub != null) {
+            contest = contestRepo.findContestByContestId(sub.getContestId());
+            contestId = sub.getContestId(); problemId = sub.getProblemId();
+        }
+        String viewSubmitSolutionOutputMode = "N";
+        ContestProblem contestProblem = contestProblemRepo.findByContestIdAndProblemId(contestId, problemId);
+        if(contestProblem != null){
+            if(contestProblem.getSubmissionMode() !=null) {
+                if (contestProblem.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)) {
+                    viewSubmitSolutionOutputMode = "Y";
+                }
+            }
+        }
+
+        List<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId((submissionId));
+        //log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
+        List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = new ArrayList();
+        for(ContestSubmissionTestCaseEntity e: L){
+
+            String testCase = "";
+            String correctAnswer = "";
+            String testCaseOutput = e.getTestCaseOutput();
+            String participantSolutionOutput = e.getParticipantSolutionOtput();
+            if(contest != null){
+                //log.info("getContestProblemSubmissionDetailByTestCaseOfASubmissionViewedByParticipant, mode = " + contest.getParticipantViewResultMode());
+                if(contest.getParticipantViewResultMode().equals(ContestEntity
+                                                                  .CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE)
+                ){
+                    TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
+                    if (tc != null) {
+                        testCase = tc.getTestCase();
+                        correctAnswer = tc.getCorrectAnswer();
+                    }
+                }else if(contest.getParticipantViewResultMode().equals(ContestEntity
+                                                                                            .CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT)
+                ){
+                    TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
+                    if (tc != null) {
+                        testCase = tc.getTestCase();
+                        correctAnswer = tc.getCorrectAnswer();
+                        //testCase = StringHandler.shorthen(testCase,100);
+                        //correctAnswer = StringHandler.shorthen(correctAnswer,100);
+                        testCaseOutput = StringHandler.shorthen(testCaseOutput,100);
+                        participantSolutionOutput = StringHandler.shorthen(participantSolutionOutput,100);
+                    }
+                }
+            }
+            retLst.add(new ModelProblemSubmissionDetailByTestCaseResponse(e.getContestSubmissionTestcaseId(),
+                                                                          e.getContestId(),
+                                                                          e.getProblemId(),
+                                                                          e.getSubmittedByUserLoginId(),
+                                                                          e.getTestCaseId(),
+                                                                          testCase,
+                                                                          correctAnswer,
+                                                                          e.getStatus(),
+                                                                          e.getPoint(),
+                                                                          //e.getTestCaseOutput(),
+                                                                          testCaseOutput,
+                                                                          //e.getParticipantSolutionOtput(),
+                                                                          participantSolutionOutput,
+                                                                          e.getCreatedStamp(),
+                                                                          viewSubmitSolutionOutputMode
             ));
         }
         return retLst;
@@ -1141,7 +1212,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }else{
             message = "Successful";
         }
-        log.info("evaluateSubmission, totalStatus = " + totalStatus + " nbTestCasePass = " + nbTestCasePass);
+        //log.info("evaluateSubmission, totalStatus = " + totalStatus + " nbTestCasePass = " + nbTestCasePass);
 
         //String response = submission(modelContestSubmission.getSource(), modelContestSubmission.getLanguage(), tempName, testCaseEntityList, "language not found", problemEntity.getTimeLimit());
 
@@ -1167,7 +1238,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             e = contestSubmissionTestCaseEntityRepo.save(e);
         }
 
-        log.info("c {}", c.getRuntime());
+        //log.info("c {}", c.getRuntime());
 
         return ModelContestSubmissionResponse.builder()
                                              .status(totalStatus)
@@ -1189,6 +1260,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         ModelContestSubmission modelContestSubmission,
         String userName
     ) throws Exception {
+        String problemId = modelContestSubmission.getProblemId();
+        String contestId = modelContestSubmission.getContestId();
+        ContestEntity contest = contestRepo.findContestByContestId(modelContestSubmission.getContestId());
 
         ContestSubmissionEntity c = ContestSubmissionEntity.builder()
                                                            .contestId(modelContestSubmission.getContestId())
@@ -1204,9 +1278,54 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .build();
         c = contestSubmissionRepo.save(c);
 
+        // generated test-case with empty result
+        List<TestCaseEntity> testCaseEntityList = null;
+
+        if(contest.getEvaluateBothPublicPrivateTestcase() != null &&
+           contest.getEvaluateBothPublicPrivateTestcase().equals(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_YES))
+            testCaseEntityList = testCaseRepo.findAllByProblemId(problemId);
+        else{
+            testCaseEntityList = testCaseRepo.findAllByProblemIdAndIsPublic(problemId,"N");
+        }
+        if(testCaseEntityList == null) testCaseEntityList = new ArrayList<>();
+
+        log.info("submitContestProblemStoreOnlyNotExecute, testCaseList.sz = " + testCaseEntityList.size());
+
+        int runtime  = 0;
+        int score = 0;
+        int nbTestCasePass = 0;
+        String totalStatus = "";
+        List<String> statusList = new ArrayList<String>();
+        List<ContestSubmissionTestCaseEntity> LCSTE = new ArrayList();
+        String message = "";
+        boolean compileError = false;
+        for(int i = 0; i < testCaseEntityList.size(); i++) {
+            TestCaseEntity testCase = testCaseEntityList.get(i);
+
+                ContestSubmissionTestCaseEntity cste = null;
+                    cste = ContestSubmissionTestCaseEntity.builder()
+                                                          .contestId(contestId)
+                                                          .problemId(problemId)
+                                                          .contestSubmissionId(c.getContestSubmissionId())
+                                                          .testCaseId(testCaseEntityList.get(i).getTestCaseId())
+                                                          .submittedByUserLoginId(userName)
+                                                          .point(0)
+                                                          .status("N/A")
+                                                          .testCaseOutput(testCaseEntityList
+                                                                              .get(i)
+                                                                              .getCorrectAnswer())
+                                                          .participantSolutionOtput("")
+                                                          .runtime(null)
+                                                          .createdStamp(new Date())
+                                                          .build();
+                cste = contestSubmissionTestCaseEntityRepo.save(cste);
+                log.info("submitContestProblemStoreOnlyNotExecute, save submission_testcase " + cste.getTestCaseId() + " submission " + cste.getContestSubmissionId());
+                LCSTE.add(cste);
+
+        }
 
 
-        log.info("c {}", c.getRuntime());
+        //log.info("c {}", c.getRuntime());
         return ModelContestSubmissionResponse.builder()
                                              .status("STORED")
                                              .testCasePass(c.getTestCasePass())
@@ -1282,6 +1401,107 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                              .submittedAt(new Date())
                                              .score(problemSubmission.getScore())
                                              .build();
+
+    }
+
+    @Override
+    public ModelContestSubmissionResponse submitSolutionOutputOfATestCase(
+        String userId,
+        String solutionOutput,
+        ModelSubmitSolutionOutputOfATestCase m
+    ) {
+        ModelContestSubmissionResponse res = new ModelContestSubmissionResponse();
+        ContestSubmissionEntity sub = contestSubmissionRepo.findContestSubmissionEntityByContestSubmissionId(m.getSubmissionId());
+        if(sub == null){
+            return res;
+        }
+        String contestId = sub.getContestId();
+        String problemId = sub.getProblemId();
+        ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
+        //UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(
+        //    contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
+
+        UserRegistrationContestEntity userRegistrationContest = null;
+        List<UserRegistrationContestEntity> userRegistrationContests = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(
+            contestId, userId, Constants.RegistrationType.SUCCESSFUL.getValue());
+        if(userRegistrationContests != null && userRegistrationContests.size() > 0)
+            userRegistrationContest   = userRegistrationContests.get(0);
+
+        //log.info("submitSolutionOutput, userRegistrationContest {}", userRegistrationContest);
+        if(userRegistrationContest == null){
+            return res;
+        }
+        TestCaseEntity testCase = testCaseRepo.findTestCaseByTestCaseId(m.getTestCaseId());
+        String tempName = tempDir.createRandomScriptFileName(userId+"-" + contestId + "-" + problemId);
+        try {
+            String response = submissionSolutionOutput(problemEntity.getSolutionCheckerSourceCode(),
+                                                       problemEntity.getSolutionCheckerSourceLanguage(),
+                                                       solutionOutput,
+                                                       tempName,
+                                                       testCase,
+                                                       "language not found",
+                                                       1000000);
+
+            log.info("submitSolutionOutput, response = " + response);
+            ProblemSubmission problemSubmission = StringHandler.handleContestResponseSubmitSolutionOutputOneTestCase(response,testCase.getTestCasePoint());
+
+        String participantAns = "";
+        if(problemSubmission.getParticipantAns() != null && problemSubmission.getParticipantAns().size() > 0){
+            participantAns = problemSubmission.getParticipantAns().get(0);
+        }
+            ContestSubmissionTestCaseEntity cste = null;
+        List<ContestSubmissionTestCaseEntity> l_cste = contestSubmissionTestCaseEntityRepo
+            .findAllByContestSubmissionIdAndTestCaseId(sub.getContestSubmissionId(), m.getTestCaseId());
+        int subPoint = sub.getPoint();
+        if(l_cste != null && l_cste.size() > 0){
+            cste = l_cste.get(0);
+            subPoint = subPoint - cste.getPoint();// reduce point of submission by old point of test-case
+            cste.setPoint(problemSubmission.getScore());
+            cste.setStatus(problemSubmission.getStatus());
+            cste.setParticipantSolutionOtput(solutionOutput);
+            cste.setRuntime(problemSubmission.getRuntime());
+            cste.setCreatedStamp(new Date());
+        }else{
+            cste = ContestSubmissionTestCaseEntity.builder()
+                                                                              .contestId(contestId)
+                                                                              .problemId(problemId)
+                                                                              .contestSubmissionId(sub.getContestSubmissionId())
+                                                                              .testCaseId(testCase.getTestCaseId())
+                                                                              .submittedByUserLoginId(userId)
+                                                                              .point(problemSubmission.getScore())
+                                                                              .status(problemSubmission.getStatus())
+                                                                              .testCaseOutput(testCase.getCorrectAnswer())
+                                                                              .participantSolutionOtput(participantAns)
+                                                                              .runtime(problemSubmission.getRuntime())
+                                                                              .createdStamp(new Date())
+                                                                              .build();
+        }
+
+        cste = contestSubmissionTestCaseEntityRepo.save(cste);
+
+        subPoint = subPoint + cste.getPoint(); // update Point;
+        sub.setPoint(subPoint);
+        sub.setStatus(ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL);
+        sub = contestSubmissionRepo.save(sub);
+
+        return ModelContestSubmissionResponse.builder()
+                                             .contestId(contestId)
+                                             .problemId(problemId)
+                                             .contestSubmissionID(sub.getContestSubmissionId())
+                                             .selectedTestCaseId(m.getTestCaseId())
+                                             .status(problemSubmission.getStatus())
+                                             .testCasePass("1/1")
+                                             .runtime(problemSubmission.getRuntime())
+                                             .memoryUsage((float)0.0)
+                                             .problemName(problemEntity.getProblemName())
+                                             //.contestSubmissionID(null)
+                                             .submittedAt(new Date())
+                                             .score(problemSubmission.getScore())
+                                             .build();
+
+        }catch(Exception e){
+            return res;
+        }
 
     }
 
@@ -1678,15 +1898,34 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         return ModelGetTestCaseDetail.builder()
                 .testCaseId(testCaseId)
-                                     //.correctAns(testCase.getCorrectAnswer())
-                                     .correctAns(testCase.getCorrectAnswerShort(20))
-                //.testCase(testCase.getTestCase())
-                .testCase(testCase.getTestCaseShort(20))
+                                     .correctAns(testCase.getCorrectAnswer())
+                                     //.correctAns(testCase.getCorrectAnswerShort(20))
+                .testCase(testCase.getTestCase())
+                //.testCase(testCase.getTestCaseShort(20))
                 .point(testCase.getTestCasePoint()).isPublic(testCase.getIsPublic())
                 .problemSolution(problem.getSolution())
                 .problemDescription(problem.getProblemDescription())
                                      .description(testCase.getDescription())
                 .build();
+    }
+    @Override
+    public ModelGetTestCaseDetail getTestCaseDetailShort(UUID testCaseId) throws MiniLeetCodeException {
+        TestCaseEntity testCase = testCaseRepo.findTestCaseByTestCaseId(testCaseId);
+        ProblemEntity problem = problemRepo.findByProblemId(testCase.getProblemId());
+        if(testCase == null){
+            throw new MiniLeetCodeException("testcase not found");
+        }
+        return ModelGetTestCaseDetail.builder()
+                                     .testCaseId(testCaseId)
+                                     //.correctAns(testCase.getCorrectAnswer())
+                                     .correctAns(testCase.getCorrectAnswerShort(20))
+                                     //.testCase(testCase.getTestCase())
+                                     .testCase(testCase.getTestCaseShort(20))
+                                     .point(testCase.getTestCasePoint()).isPublic(testCase.getIsPublic())
+                                     .problemSolution(problem.getSolution())
+                                     .problemDescription(problem.getProblemDescription())
+                                     .description(testCase.getDescription())
+                                     .build();
     }
 
     @Override
@@ -2600,7 +2839,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         return ans;
     }
     private String submissionSolutionOutput(String sourceChecker, String computerLanguage, String solutionOutput, String tempName, TestCaseEntity testCase, String exception, int timeLimit) throws Exception {
-        log.info("submissionSolutionOutput, sourceChecker = " + sourceChecker + " solutionOutput = " + solutionOutput + " testCase = " + testCase.getTestCase());
+        //log.info("submissionSolutionOutput, sourceChecker = " + sourceChecker + " solutionOutput = " + solutionOutput + " testCase = " + testCase.getTestCase());
 
         String ans = "";
         tempName = tempName.replaceAll(" ","");
@@ -2870,25 +3109,40 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         // otherwise, ignore
         String problemId = modelUploadTestCase.getProblemId();
         ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
-        String tempName = tempDir.createRandomScriptFileName(userName + "-" + problemEntity.getProblemName() + "-" + problemEntity.getCorrectSolutionLanguage());
         String output = "";
-        try {
-            output = runCode(problemEntity.getCorrectSolutionSourceCode(), problemEntity.getCorrectSolutionLanguage(), tempName,
-                    testCase, problemEntity.getTimeLimit(), "Correct Solution Language Not Found");
-        }catch(Exception e){
-            e.printStackTrace();
-        }
         ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
-        if(output.contains("Time Limit Exceeded")){
-            res.setMessage("Time Limit Exceeded");
-            res.setStatus("TLE");
-            return res;
-        }
-        output = output.substring(0, output.length()-1);
-        int lastLinetIndexExpected = output.lastIndexOf("\n");
-        output = output.substring(0, lastLinetIndexExpected);
+        if(modelUploadTestCase.getUploadMode().equals("EXECUTE")) {
+            String tempName = tempDir.createRandomScriptFileName(userName +
+                                                                 "-" +
+                                                                 problemEntity.getProblemName() +
+                                                                 "-" +
+                                                                 problemEntity.getCorrectSolutionLanguage());
+
+            try {
+                output = runCode(problemEntity.getCorrectSolutionSourceCode(),
+                                 problemEntity.getCorrectSolutionLanguage(),
+                                 tempName,
+                                 testCase,
+                                 problemEntity.getTimeLimit(),
+                                 "Correct Solution Language Not Found");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if(output.contains("Time Limit Exceeded")){
+                res.setMessage("Time Limit Exceeded");
+                res.setStatus("TLE");
+                return res;
+            }
+            output = output.substring(0, output.length()-1);
+            int lastLinetIndexExpected = output.lastIndexOf("\n");
+            output = output.substring(0, lastLinetIndexExpected);
 //        output = output.replaceAll("\n", "");
-        log.info("addTestCase, output = {}", output);
+            log.info("addTestCase, output = {}", output);
+
+        }else{
+            output = modelUploadTestCase.getCorrectAnswer();
+        }
+
 
 
         TestCaseEntity tc = new TestCaseEntity();
@@ -2968,6 +3222,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         tc.setIsPublic(modelUploadTestCase.getIsPublic());
         tc.setTestCasePoint(modelUploadTestCase.getPoint());
         tc.setDescription(modelUploadTestCase.getDescription());
+        tc.setCorrectAnswer(modelUploadTestCase.getCorrectAnswer());
         tc = testCaseRepo.save(tc);
         ModelUploadTestCaseOutput res= new ModelUploadTestCaseOutput();
         res.setMessage("Successfully");
@@ -3112,6 +3367,17 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             userRegistrationContestRepo.save(u); return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean updateProblemContest(String userId, ModelUpdateProblemContestInput I) {
+        ContestProblem cp = contestProblemRepo.findByContestIdAndProblemId(I.getContestId(), I.getProblemId());
+        if(cp == null){
+            return false;
+        }
+        cp.setSubmissionMode(I.getSubmissionMode());
+        cp = contestProblemRepo.save(cp);
+        return true;
     }
 
 }

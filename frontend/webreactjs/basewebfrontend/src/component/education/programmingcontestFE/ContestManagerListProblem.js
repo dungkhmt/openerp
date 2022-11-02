@@ -7,6 +7,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import Table from "@mui/material/Table";
 import { useHistory } from "react-router-dom";
+import StandardTable from "component/table/StandardTable";
 import {
   Button,
   TableHead,
@@ -19,6 +20,8 @@ import TableBody from "@mui/material/TableBody";
 import { pdf } from "@react-pdf/renderer";
 import FileSaver from "file-saver";
 import SubmissionOfParticipantPDFDocument from "./template/SubmissionOfParticipantPDFDocument";
+import UpdateProblemContestDialog from "./UpdateProblemContestDialog";
+import { errorNoti, successNoti } from "utils/notification";
 
 export function ContestManagerListProblem(props) {
   const contestId = props.contestId;
@@ -30,23 +33,97 @@ export function ContestManagerListProblem(props) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [threshold, setThreshold] = useState(50);
   const history = useHistory();
+  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const [selectedProblemId, setSelectedProblemId] = useState(null);
+  const [modes, setModes] = useState([]);
+
+  const columns = [
+    { title: "Index", field: "index" },
+    { title: "Problem Name", field: "problemName" },
+    { title: "Level", field: "levelId" },
+    { title: "Created By", field: "createdByUserId" },
+    { title: "Submission Mode", field: "submissionMode" },
+    {
+      title: "Submission Mode",
+      render: (row) => (
+        <Button onClick={() => handleChangeContestProblem(row.problemId)}>
+          Update
+        </Button>
+      ),
+    },
+  ];
 
   const generatePdfDocument = async (documentData, fileName) => {
     const blob = await pdf(
       <SubmissionOfParticipantPDFDocument data={documentData} />
     ).toBlob();
-  
+
     FileSaver.saveAs(blob, fileName);
   };
-  
 
-  useEffect(() => {
+  function handleChangeContestProblem(problemId) {
+    //alert("change submission mode " + problemId);
+    setSelectedProblemId(problemId);
+    setOpenUpdateDialog(true);
+  }
+  function onUpdateInfo(
+    selectedSubmissionMode,
+    selectedProblemId,
+    selectedContestId
+  ) {
+    //alert(
+    //  "update problem contest " +
+    //    selectedProblemId +
+    //    selectedContestId +
+    //    selectedSubmissionMode
+    //);
+    setIsProcessing(true);
+    let body = {
+      problemId: selectedProblemId,
+      contestId: selectedContestId,
+      submissionMode: selectedSubmissionMode,
+    };
+    request(
+      "post",
+      //"/forbid-member-from-submit-to-contest",
+      "/update-problem-contest",
+      (res) => {
+        successNoti("Đã hoàn thành");
+        setIsProcessing(false);
+        setOpenUpdateDialog(false);
+      },
+      {
+        onError: () => {
+          setIsProcessing(false);
+          errorNoti("Đã có lỗi xảy ra.");
+        },
+        401: () => {},
+      },
+      body
+    );
+  }
+  function handleModelClose() {
+    setOpenUpdateDialog(false);
+  }
+
+  function getSubmissionModes() {
+    request("get", "/get-submission-modes/", (res) => {
+      //console.log('get-submission-modes, res.data =' = res.data);
+      setModes(res.data);
+    }).then();
+  }
+
+  function getContestDetail() {
     request("get", "/get-contest-detail/" + contestId, (res) => {
       setContestTime(res.data.contestTime);
       setProblems(res.data.list);
       setContestName(res.data.contestName);
       setTimeLimit(res.data.contestTime);
     }).then();
+  }
+  useEffect(() => {
+    getContestDetail();
+    getSubmissionModes();
   }, []);
 
   function handleEdit() {
@@ -94,7 +171,10 @@ export function ContestManagerListProblem(props) {
         //alert("Rejudge DONE!!!");
         setIsProcessing(false);
         setUserSubmissions(res.data);
-        generatePdfDocument(res.data, `USER_JUDGED_SUBMISSION-${contestId}.pdf`);
+        generatePdfDocument(
+          res.data,
+          `USER_JUDGED_SUBMISSION-${contestId}.pdf`
+        );
         //setSuccessful(res.data.contents.content);
         //setTotalPageSuccessful(res.data.contents.totalPages);
       }
@@ -187,6 +267,26 @@ export function ContestManagerListProblem(props) {
         List Problem
       </Typography>
 
+      <StandardTable
+        title={"Problems"}
+        columns={columns}
+        data={problems}
+        hideCommandBar
+        options={{
+          selection: false,
+          pageSize: 20,
+          search: true,
+          sorting: true,
+        }}
+      />
+      <UpdateProblemContestDialog
+        open={openUpdateDialog}
+        onClose={handleModelClose}
+        onUpdateInfo={onUpdateInfo}
+        selectedProblemId={selectedProblemId}
+        selectedContestId={contestId}
+        modes={modes}
+      />
       <TableContainer component={Paper}>
         <Table
           sx={{ minWidth: window.innerWidth - 500 }}
@@ -213,6 +313,12 @@ export function ContestManagerListProblem(props) {
                     {" "}
                     <b>{`${problem.levelId}`} </b>{" "}
                   </span>
+                </StyledTableCell>
+                <StyledTableCell component="th" scope="row">
+                  <b>{problem.createdByUserId}</b>
+                </StyledTableCell>
+                <StyledTableCell component="th" scope="row">
+                  <b>{problem.submissionMode}</b>
                 </StyledTableCell>
               </StyledTableRow>
             ))}

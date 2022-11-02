@@ -165,7 +165,7 @@ function EditProblem() {
     setFetchedImageArray(
       fetchedImageArray.filter((file) => file.fileName !== fileId)
     );
-    setRemovedFileIds([...removedFilesId, fileId])
+    setRemovedFileIds([...removedFilesId, fileId]);
   };
 
   useEffect(() => {
@@ -308,20 +308,18 @@ function EditProblem() {
       convertToRaw(editorStateSolution.getCurrentContent())
     );
 
-
     let fileId = [];
     if (attachmentFiles.length > 0) {
       fileId = attachmentFiles.map((file) => {
-      if (typeof file.name !== "undefined") {
-        return file.name;
-      }
-      if (typeof file.fileName !== "undefined") {
-        return file.fileName;
-      }
-      return file.id;
-    });
+        if (typeof file.name !== "undefined") {
+          return file.name;
+        }
+        if (typeof file.fileName !== "undefined") {
+          return file.fileName;
+        }
+        return file.id;
+      });
     }
-    
 
     let body = {
       problemName: problemName,
@@ -611,7 +609,9 @@ function EditProblem() {
                         )}
                         <HighlightOffIcon
                           className={classes.buttonClearImage}
-                          onClick={() => handleDeleteImageAttachment(file.fileName)}
+                          onClick={() =>
+                            handleDeleteImageAttachment(file.fileName)
+                          }
                         />
                       </div>
                     </div>
@@ -657,7 +657,7 @@ function EditProblem() {
                 margin: 20,
               }}
               multiline
-              maxRows={4}
+              maxRows={20}
               value={codeSolution}
               onChange={(event) => {
                 setCodeSolution(event.target.value);
@@ -679,6 +679,18 @@ function EditProblem() {
             <Typography>
               <h2>Solution Checker</h2>
             </Typography>
+            <TextField
+              style={{
+                width: 1.0 * window.innerWidth,
+                margin: 20,
+              }}
+              multiline
+              maxRows={20}
+              value={codeChecker}
+              onChange={(event) => {
+                setCodeChecker(event.target.value);
+              }}
+            ></TextField>
             <TextField
               style={{ width: 0.075 * window.innerWidth, margin: 20 }}
               variant={"outlined"}

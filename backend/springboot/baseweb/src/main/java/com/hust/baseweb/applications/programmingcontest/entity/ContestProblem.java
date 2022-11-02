@@ -4,6 +4,8 @@ import com.hust.baseweb.applications.programmingcontest.composite.CompositeConte
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,6 +16,15 @@ import javax.persistence.*;
 @Table(name = "contest_contest_problem_new")
 @IdClass(CompositeContestProblemId.class)
 public class ContestProblem {
+    public static final String SUBMISSION_MODE_SOURCE_CODE = "SUBMISSION_MODE_SOURCE_CODE";
+    public static final String SUBMISSION_MODE_SOLUTION_OUTPUT = "SUBMISSION_MODE_SOLUTION_OUTPUT";
+
+    public static List<String> getSubmissionModes(){
+        List<String> L = new ArrayList();
+        L.add(SUBMISSION_MODE_SOURCE_CODE);
+        L.add(SUBMISSION_MODE_SOLUTION_OUTPUT);
+        return L;
+    }
     @Id
     @Column(name="contest_id")
     private String contestId;
@@ -21,4 +32,7 @@ public class ContestProblem {
     @Id
     @Column(name="problem_id")
     private String problemId;
+
+    @Column(name="submission_mode")
+    private String submissionMode;
 }
