@@ -364,6 +364,11 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
+    public List<EduClassUserLoginRole> getUserLoginRolesOfClass(UUID classId) {
+        return eduClassUserLoginRoleRepo.findAllByClassId(classId);
+    }
+
+    @Override
     public List<ClassOfUserOM> getClassOfUser(String userLoginId) {
         //Page<EduClassUserLoginRole> lstRoles = eduClassUserLoginRoleRepo
         //    .findAllByUserLoginIdAndThruDate(userLoginId, null, pageable);
@@ -440,6 +445,13 @@ public class ClassServiceImpl implements ClassService {
         }
 
         return 0;
+    }
+
+    @Override
+    public void deleteEduClassUserLoginRole(AddEduClassUserLoginRoleIM deletedPermission) {
+        eduClassUserLoginRoleRepo.deleteByClassIdAndUserLoginIdAndRoleId(deletedPermission.getClassId(),
+                                                                         deletedPermission.getUserLoginId(),
+                                                                         deletedPermission.getRoleId());
     }
 
     @Transactional

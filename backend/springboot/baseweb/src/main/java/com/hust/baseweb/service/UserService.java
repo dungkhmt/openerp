@@ -12,6 +12,7 @@ import com.hust.baseweb.rest.user.DPerson;
 import com.hust.baseweb.rest.user.UserRestBriefProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.UUID;
@@ -66,6 +67,8 @@ public interface UserService {
     SimpleResponse resetPassword(String userLoginId);
 
     SimpleResponse assignGroup2AllUsers(ModelAssignGroupAllUsersInput I);
+
+    List<String> getAllEnabledLoginIdsContains(String partOfLoginId, Integer limit);
 
 //    UserRegister.OutputModel registerUser(UserRegister.InputModel inputModel);
 

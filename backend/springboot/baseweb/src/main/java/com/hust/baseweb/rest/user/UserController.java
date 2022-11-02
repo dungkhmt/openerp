@@ -103,6 +103,14 @@ public class UserController {
         );
     }
 
+    @GetMapping("/user-login-ids")
+    public ResponseEntity<?> getEnabledUserLoginIds(
+        @RequestParam(name = "search", required = false, defaultValue = "") String partOfLoginId,
+        @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit
+    ) {
+        return ResponseEntity.ok(userService.getAllEnabledLoginIdsContains(partOfLoginId, limit));
+    }
+
     @GetMapping(path = "/get-security-groups")
     public ResponseEntity<?> getSecurityGroups(Principal principal) {
         List<SecurityGroup> securityGroups = securityGroupService.findAll();

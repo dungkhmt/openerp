@@ -22,6 +22,7 @@ import changePageSize, {
   tableIcons,
 } from "../../../../utils/MaterialTableUtils";
 import NegativeButton from "../../../../component/education/classmanagement/NegativeButton";
+import StudentListOfClass from "../../../../component/education/classmanagement/teacher/StudentListOfClass";
 //import PositiveButton from "../../../../component/education/classmanagement/PositiveButton";
 
 const useStyles = makeStyles((theme) => ({
@@ -122,6 +123,12 @@ export default function TeacherViewDetailClassStudentList(props) {
 
   return (
     <div>
+      <Card>
+        <CardContent>
+          <StudentListOfClass classId={classId}/>
+        </CardContent>
+      </Card>
+
       <Card className={classes.card} elevation={0}>
         {/* <CardActionArea disableRipple onClick={onClickStuCard}> */}
         <CardHeader

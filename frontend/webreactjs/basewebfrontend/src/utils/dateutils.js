@@ -5,6 +5,7 @@ import {
 } from "@material-ui/pickers";
 import React from "react";
 import { format } from "date-fns";
+import moment from "moment";
 
 export function toFormattedDateTime(rawTime) {
   let date = new Date(rawTime);
@@ -132,3 +133,16 @@ export function getDateFromNowPlus(year, month, day) {
 export function dateFnFormat(date, formatString) {
   return format(date, formatString);
 }
+
+const DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
+const DEFAULT_DATETIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+
+export function defaultDateFormat(date) {
+  return moment(date).format(DEFAULT_DATE_FORMAT);
+}
+
+export function defaultDatetimeFormat(datetime) {
+  return moment(datetime).format(DEFAULT_DATETIME_FORMAT);
+}
+
+

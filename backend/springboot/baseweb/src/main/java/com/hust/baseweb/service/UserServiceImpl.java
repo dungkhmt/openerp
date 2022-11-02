@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -687,6 +688,11 @@ public class UserServiceImpl implements UserService {
         }
         res.setMessage("numbr of updates = " + cnt);
         return res;
+    }
+
+    @Override
+    public List<String> getAllEnabledLoginIdsContains(String partOfLoginId, Integer limit) {
+        return userLoginRepo.findByEnabledLoginIdContains(partOfLoginId, limit);
     }
 
 //    @Override

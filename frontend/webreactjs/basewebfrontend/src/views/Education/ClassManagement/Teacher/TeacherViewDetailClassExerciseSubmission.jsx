@@ -22,6 +22,8 @@ import Button from "@material-ui/core/Button";
 import ReactExport from "react-data-export";
 import MaterialTable from "material-table";
 import { localization, tableIcons } from "../../../../utils/MaterialTableUtils";
+import AssignmentSubmissionListOfClass
+  from "../../../../component/education/classmanagement/teacher/AssignmentSubmissionListOfClass";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -164,6 +166,13 @@ export default function TeacherViewDetailClassExerciseSubmission(props) {
 
   return (
     <div>
+      <Card>
+        <CardContent>
+          <AssignmentSubmissionListOfClass classId={classId}/>
+        </CardContent>
+      </Card>
+
+
       <Card className={classes.card}>
         {/* <CardActionArea disableRipple onClick={onClickStuAssignCard}> */}
         <CardHeader
