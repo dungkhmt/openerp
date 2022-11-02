@@ -11,6 +11,9 @@ const useStyles = makeStyles(theme => ({
   assignmentsTableContainer: {
     '& button:has(span > .create-assignment-btn):hover': {
       backgroundColor: 'unset'
+    },
+    '& span:has(.create-assignment-btn) + span': {
+      display: 'none'
     }
   }
 }))
