@@ -18,6 +18,5 @@ public class TestReceiver {
 //        String msg = objectMapper.readValue(message, String.class);
 //        System.out.println("Thread " + Thread.currentThread().getId() + ": Received <" + msg + ">");
 //        Thread.sleep(500);
-////        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 //    }
 }
