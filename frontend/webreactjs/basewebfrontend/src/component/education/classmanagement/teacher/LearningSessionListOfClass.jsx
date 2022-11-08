@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import {Button} from "@mui/material";
 import StandardTable from "../../../table/StandardTable";
 import CreateLearningSessionDlg from "./CreateLearningSessionDlg";
+import PropTypes from "prop-types";
 
 export default function LearningSessionListOfClass(props) {
   const history = useHistory();
@@ -34,7 +35,8 @@ export default function LearningSessionListOfClass(props) {
     { title: "Người tạo", field: "createdByUserLoginId" },
     { title: "Trạng thái", field: "statusId" },
   ];
-  const actions = [{ icon: () => CreateLearningSessionButton, isFreeAction: true }];
+  const actions = props.enableCreateSession ?
+    [{ icon: () => CreateLearningSessionButton, isFreeAction: true }] : [];
 
   const CreateLearningSessionButton = (
     <Button variant="outlined"
@@ -42,6 +44,9 @@ export default function LearningSessionListOfClass(props) {
       Thêm mới
     </Button>
   )
+
+  const onRowClick = props.viewDetailOnRowClick ?
+    (event, session) => navigateToLearningSessionDetailPage(session.sessionId) : null;
 
   return (
     <div>
@@ -54,13 +59,26 @@ export default function LearningSessionListOfClass(props) {
                         search: true,
                         sorting: true
                       }}
-                      onRowClick={(event, session) => navigateToLearningSessionDetailPage(session.sessionId)}
+                      onRowClick={onRowClick}
                       actions={actions}/>
 
-      <CreateLearningSessionDlg classId={classId}
-                                open={createLearningSessionDlgOpen}
-                                setOpen={setCreateLearningSessionDlgOpen}
-                                onCreateSuccess={updateLearningSessionsWhenCreateSuccess}/>
+      { props.enableCreateSession &&
+        <CreateLearningSessionDlg classId={classId}
+                                  open={createLearningSessionDlgOpen}
+                                  setOpen={setCreateLearningSessionDlgOpen}
+                                  onCreateSuccess={updateLearningSessionsWhenCreateSuccess}/>
+      }
     </div>
   )
+}
+
+LearningSessionListOfClass.propTypes = {
+  classId: PropTypes.string.isRequired,
+  enableCreateSession: PropTypes.bool,
+  viewDetailOnRowClick: PropTypes.bool
+}
+
+LearningSessionListOfClass.defaultProps = {
+  enableCreateSession: false,
+  viewDetailOnRowClick: false
 }
