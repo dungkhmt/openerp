@@ -27,7 +27,7 @@ import AssignmentTab from "../../../../component/education/classmanagement/stude
 import QuizTab from "../../../../component/education/classmanagement/student/QuizTab";
 import StudentListTab from "../../../../component/education/classmanagement/student/StudentListTab";
 import {
-  a11yProps,
+  a11yProps, AntTab, AntTabs,
   StyledTab,
   StyledTabs,
   TabPanel,
@@ -36,6 +36,8 @@ import { setClassId } from "../../../../reducers/classReducer";
 import StudentViewLearningSessionList from "./StudentViewLearningSessionList";
 import StudentViewClassDetailChapterList from "./StudentViewClassDetailChapterList";
 import StudentViewClassDetailStudentList from "./StudentViewClassDetailStudentList";
+import StudentViewClassDetailLearningSessionList from "./StudentViewClassDetailLearningSessionList";
+import StudentViewClassDetailAssignmentList from "./StudentViewClassDetailAssignmentList";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -57,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function SClassDetail() {
+export default function StudentViewClassDetail() {
   const classes = useStyles();
   const params = useParams();
   const dispatch = useDispatch();
@@ -66,7 +68,7 @@ function SClassDetail() {
   const [classDetail, setClassDetail] = useState({});
   const [activeTab, setActiveTab] = useState(0);
 
-  const handleChange = (event, tabIndex) => {
+  const handleChangeTab = (event, tabIndex) => {
     setActiveTab(tabIndex);
   };
 
@@ -82,24 +84,26 @@ function SClassDetail() {
     getClassDetail();
   }, []);
 
+  const tabsLabel = [
+    "Thông tin chung",
+    "Nội dung",
+    "Bài tập trắc nghiệm",
+    "DS sinh viên",
+    "Bài tập",
+    "Buổi học"
+  ]
+
   return (
-    <Fragment>
-      <div className={classes.tabs}>
-        <StyledTabs
-          value={activeTab}
-          onChange={handleChange}
-          aria-label="ant tabs"
-          centered
-        >
-          <StyledTab label="General Information" {...a11yProps(0)} />
-          <StyledTab label="Content" {...a11yProps(1)} />
-          <StyledTab label="Quiz" {...a11yProps(2)} />
-          <StyledTab label="Students" {...a11yProps(3)} />
-          <StyledTab label="Exercises" {...a11yProps(4)} />
-          <StyledTab label="Sessions" {...a11yProps(5)} />
-        </StyledTabs>
-        <Typography className={classes.padding} />
-      </div>
+    <div>
+      <AntTabs value={activeTab}
+               onChange={handleChangeTab}
+               aria-label="student-view-class-detail-tabs"
+               scrollButtons="auto"
+               variant="scrollable">
+        {tabsLabel.map((label, idx) => (
+          <AntTab key={label} label={label} {...a11yProps(idx)} />
+        ))}
+      </AntTabs>
 
       <TabPanel value={activeTab} index={0}>
         <Card className={classes.card}>
@@ -179,15 +183,12 @@ function SClassDetail() {
       <TabPanel value={activeTab} index={3}>
         <StudentViewClassDetailStudentList classId={classId} />
       </TabPanel>
-
       <TabPanel value={activeTab} index={4}>
-        <AssignmentTab classId={params.id} />
+        <StudentViewClassDetailAssignmentList classId={params.id} />
       </TabPanel>
       <TabPanel value={activeTab} index={5}>
-        <StudentViewLearningSessionList classId={params.id} />
+        <StudentViewClassDetailLearningSessionList classId={params.id} />
       </TabPanel>
-    </Fragment>
+    </div>
   );
 }
-
-export default SClassDetail;

@@ -18,7 +18,7 @@ export default function ChapterListOfCourse(props) {
   }
 
   function navigateToChapterDetailPage(event, chapter) {
-    history.push(`/edu/student/course/chapter/detail/${chapter.id}`)
+    history.push(`/edu/student/course/chapter/detail/${chapter.chapterId}`)
   }
 
   const chapterColumns = [

@@ -213,25 +213,17 @@ function SClassDetail() {
         </Card>
       </TabPanel>
 
-      {/*<TabPanel value={activeTab} index={1}>*/}
-      {/*  <Card>*/}
-      {/*    <CardContent>*/}
-      {/*      <MaterialTable*/}
-      {/*        title={"Chapter"}*/}
-      {/*        columns={chapterColumns}*/}
-      {/*        data={chapterList}*/}
-      {/*        components={{*/}
-      {/*          Container: (props) => <Paper {...props} elevation={0} />,*/}
-      {/*        }}*/}
-      {/*      />*/}
-      {/*    </CardContent>*/}
-      {/*  </Card>*/}
-      {/*</TabPanel>*/}
-
       <TabPanel value={activeTab} index={1}>
         <Card>
           <CardContent>
-            <ChapterListOfCourse classId={params.id}/>
+            <MaterialTable
+              title={"Chapter"}
+              columns={chapterColumns}
+              data={chapterList}
+              components={{
+                Container: (props) => <Paper {...props} elevation={0} />,
+              }}
+            />
           </CardContent>
         </Card>
       </TabPanel>
