@@ -82,7 +82,7 @@ export default function StudentViewSubmission() {
         switch (status) {
           case "Accept":
             return { color: "green" };
-          case "Wrong Answer":
+          case "In Progress":
             return { color: "gold" };
           default:
             return { color: "red" };
