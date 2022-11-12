@@ -5,6 +5,7 @@ import ViewCourseVideo from "../component/dataadmin/ViewCourseVideo";
 import ViewLogUserDoPraticeQuizs from "../component/dataadmin/ViewLogUserDoPraticeQuizs";
 import MainDashBoard from "../component/dataadmin/MainDashBoard";
 import ViewProgrammingContestSubmission from "../component/dataadmin/ViewProgrammingContestSubmission";
+import StudentList from "../views/dataadmin/viewlearningprofiles/StudentList";
 export default function AdminRoute() {
   let { path } = useRouteMatch();
   return (
@@ -36,6 +37,10 @@ export default function AdminRoute() {
           exact
           path={`${path}/view-log-user-do-pratice-quiz/list`}
         ></Route>
+
+        <Route path={`${path}/view-learning-profiles/users`}
+               component={StudentList}
+               exact />
       </Switch>
     </div>
   );

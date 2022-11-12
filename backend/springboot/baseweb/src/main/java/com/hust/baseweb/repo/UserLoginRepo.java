@@ -2,11 +2,15 @@ package com.hust.baseweb.repo;
 
 import com.hust.baseweb.entity.Party;
 import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.model.UserLoginWithPersonModel;
 import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,4 +60,24 @@ public interface UserLoginRepo extends JpaRepository<UserLogin, String> {
     )
     List<String> findByEnabledLoginIdContains(@Param("partOfLoginId") String partOfLoginId,
                                               @Param("limit") Integer limit);
+
+    @Query(
+        nativeQuery = true,
+        value = "SELECT ul.user_login_id userLoginId, ur.email email, ur.affiliations affiliations, " +
+                "   p.first_name firstName, p.middle_name middleName, p.last_name lastName, p.gender gender, p.birth_date birthDate " +
+                "FROM user_login ul " +
+                "INNER JOIN user_login_security_group ul_sg " +
+                "   ON ul.user_login_id = ul_sg.user_login_id AND ul_sg.group_id IN :securityGroupIds " +
+                "LEFT JOIN user_register ur ON ul.user_login_id = ur.user_login_id " +
+                "LEFT JOIN person p ON ul.party_id = p.party_id " +
+                "WHERE CONCAT(COALESCE(p.first_name, ''), ' ', COALESCE(p.middle_name, ''), ' ', COALESCE(p.last_name, '')) LIKE CONCAT('%', :search, '%') " +
+                "   OR ul.user_login_id LIKE CONCAT('%', :search, '%') " +
+                "   OR ur.affiliations LIKE CONCAT('%', :search, '%') " +
+                "   OR ur.email LIKE CONCAT('%', :search, '%')"
+    )
+    Page<UserLoginWithPersonModel> findUserLoginWithPersonModelBySecurityGroupId(
+        @Param("securityGroupId") Collection<String> securityGroupIds,
+        @Param("search") String search,
+        Pageable pageable
+    );
 }

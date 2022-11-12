@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,6 +58,9 @@ public interface UserService {
     List<String> getGroupPermsByUserLoginId(String userLoginId);
 
     PersonModel findPersonByUserLoginId(String userLoginId);
+
+    Page<UserLoginWithPersonModel> findAllUserLoginWithPersonModelBySecurityGroupId(
+        Collection<String> securityGroupIds, String search, Pageable pageable);
 
     List<String> findAllUserLoginIdOfGroup(String groupId);
 

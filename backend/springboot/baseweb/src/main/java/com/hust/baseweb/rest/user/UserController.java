@@ -16,6 +16,7 @@ import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -100,6 +102,19 @@ public class UserController {
 
         return ResponseEntity.ok().body(
             userService.findUsersByUserLoginId(page, userLoginId)
+        );
+    }
+
+    @GetMapping(
+        value = "users",
+        params = {"securityGroups", "search", "page", "size"}
+    )
+    public ResponseEntity<?> getUserLoginWithPersonModelBySecurityGroup(
+        @RequestParam("securityGroups") Collection<String> securityGroupIds,
+        @RequestParam String search, @RequestParam int page, @RequestParam int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(
+            userService.findAllUserLoginWithPersonModelBySecurityGroupId(securityGroupIds, search, pageable)
         );
     }
 

@@ -117,10 +117,11 @@ public interface ClassRepo extends JpaRepository<EduClass, UUID> {
                    "where\n" +
                    "\tcl.semester_id = ?1\n" +
                    "\tand cast(code as varchar) like concat('%', lower(unaccent(?2)), '%')\n" +
-                   "\tand lower(unaccent(co.id)) like concat('%', lower(unaccent(?3)), '%')\n" +
-                   "\tand lower(unaccent(co.course_name)) like concat('%', lower(unaccent(?4)), '%')\n" +
-                   "\tand lower(unaccent(cl.class_type)) like concat('%', lower(unaccent(?5)), '%')\n" +
-                   "\tand lower(unaccent(d.id)) like concat('%', lower(unaccent(?6)), '%')",
+                   "\tand cast(class_code as varchar) like concat('%', lower(unaccent(?3)), '%')\n" +
+                   "\tand lower(unaccent(co.id)) like concat('%', lower(unaccent(?4)), '%')\n" +
+                   "\tand lower(unaccent(co.course_name)) like concat('%', lower(unaccent(?5)), '%')\n" +
+                   "\tand lower(unaccent(cl.class_type)) like concat('%', lower(unaccent(?6)), '%')\n" +
+                   "\tand lower(unaccent(d.id)) like concat('%', lower(unaccent(?7)), '%')",
            countQuery = "select\n" +
                         "\tcount(cl.id)\n" +
                         "from\n" +
@@ -132,10 +133,11 @@ public interface ClassRepo extends JpaRepository<EduClass, UUID> {
                         "where\n" +
                         "\tcl.semester_id = ?1\n" +
                         "\tand cast(code as varchar) like concat('%', lower(unaccent(?2)), '%')\n" +
-                        "\tand lower(unaccent(co.id)) like concat('%', lower(unaccent(?3)), '%')\n" +
-                        "\tand lower(unaccent(co.course_name)) like concat('%', lower(unaccent(?4)), '%')\n" +
-                        "\tand lower(unaccent(cl.class_type)) like concat('%', lower(unaccent(?5)), '%')\n" +
-                        "\tand lower(unaccent(d.id)) like concat('%', lower(unaccent(?6)), '%')",
+                        "\tand cast(class_code as varchar) like concat('%', lower(unaccent(?3)), '%')\n" +
+                        "\tand lower(unaccent(co.id)) like concat('%', lower(unaccent(?4)), '%')\n" +
+                        "\tand lower(unaccent(co.course_name)) like concat('%', lower(unaccent(?5)), '%')\n" +
+                        "\tand lower(unaccent(cl.class_type)) like concat('%', lower(unaccent(?6)), '%')\n" +
+                        "\tand lower(unaccent(d.id)) like concat('%', lower(unaccent(?7)), '%')",
            nativeQuery = true)
     Page<ClassOM> findBySemesterWithFilters(
         short semesterId,

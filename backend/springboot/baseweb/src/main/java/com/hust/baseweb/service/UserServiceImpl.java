@@ -518,6 +518,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<UserLoginWithPersonModel> findAllUserLoginWithPersonModelBySecurityGroupId(
+        Collection<String> securityGroupIds, String search, Pageable pageable) {
+        return userLoginRepo.findUserLoginWithPersonModelBySecurityGroupId(securityGroupIds, search, pageable);
+    }
+
+    @Override
     public List<String> findAllUserLoginIdOfGroup(String groupId) {
         return userLoginRepo.findAllUserLoginOfGroup(groupId);
     }
