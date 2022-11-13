@@ -63,7 +63,7 @@ public interface UserLoginRepo extends JpaRepository<UserLogin, String> {
 
     @Query(
         nativeQuery = true,
-        value = "SELECT ul.user_login_id userLoginId, ur.email email, ur.affiliations affiliations, " +
+        value = "SELECT DISTINCT ul.user_login_id userLoginId, ur.email email, ur.affiliations affiliations, " +
                 "   p.first_name firstName, p.middle_name middleName, p.last_name lastName, p.gender gender, p.birth_date birthDate " +
                 "FROM user_login ul " +
                 "INNER JOIN user_login_security_group ul_sg " +

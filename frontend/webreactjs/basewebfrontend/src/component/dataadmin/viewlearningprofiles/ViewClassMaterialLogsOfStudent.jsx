@@ -1,39 +1,36 @@
 import React, {useState, useEffect} from 'react';
 import {request} from "../../../api";
 import {errorNoti} from "../../../utils/notification";
-import StandardTable from "../../../component/table/StandardTable";
 import {Card, CardContent} from "@material-ui/core";
+import StandardTable from "../../table/StandardTable";
 import {MuiThemeProvider} from "@material-ui/core/styles";
-import {useHistory} from "react-router-dom";
 
-export default function StudentList(props) {
-  const history = useHistory();
-  const [studentsOfCurrentPage, setStudentsOfCurrentPage] = useState([]);
+export default function ViewClassMaterialLogsOfStudent(props) {
+  const studentLoginId = props.studentLoginId;
+  const [viewMaterialLogsOfStudent, setViewMaterialLogsOfStudent] = useState([]);
   const [filterParams, setFilterParams] = useState({ search: '', page: 0, size: 20 });
 
-  useEffect(getStudentsOfCurrentPage, [filterParams]);
+  useEffect(getViewMaterialLogsOfStudent, [filterParams]);
 
-  function getStudentsOfCurrentPage() {
-    const params = {
-      securityGroups: "ROLE_STUDENT,ROLE_EDUCATION_LEARNING_MANAGEMENT_STUDENT",
-      ...filterParams
-    }
-    let successHandler = res => setStudentsOfCurrentPage(res.data.content);
+  function getViewMaterialLogsOfStudent() {
+    let successHandler = res => setViewMaterialLogsOfStudent(res.data.content);
     let errorHandlers = {
       onError: (error) => errorNoti("Đã xảy ra lỗi trong khi tải dữ liệu!", 3000)
     }
-    request("GET", "/users", successHandler, errorHandlers,  null, { params })
-  }
-
-  function navigateToLeaningProfilesPageOfStudent(studentLoginId) {
-    history.push(`/admin/data/view-learning-profiles/users/${studentLoginId}`)
+    request(
+      "GET", `/admin/data/education/view-class-material-logs/${studentLoginId}`,
+      successHandler, errorHandlers, null, { params: filterParams }
+    );
   }
 
   const columns = [
-    { title: "User Login ID", field: "userLoginId" },
-    { title: "Họ tên", field: "fullName" },
-    { title: "Đơn vị", field: "affiliations" },
-    { title: "Email", field: "email" }
+    { title: "Mã học phần", field: "courseId" },
+    { title: "Tên học phần", field: "courseName" },
+    { title: "Mã lớp", field: "classCode" },
+    { title: "Học kỳ", field: "semester" },
+    { title: "Chương", field: "chapterName" },
+    { title: "Tài liệu", field: "materialName" },
+    { title: "Ngày xem", field: "viewAt" }
   ]
 
   return (
@@ -41,9 +38,9 @@ export default function StudentList(props) {
       <Card>
         <CardContent>
           <StandardTable
-            title="Danh sách sinh viên"
+            title="Lịch sử xem học liệu"
             columns={columns}
-            data={studentsOfCurrentPage}
+            data={viewMaterialLogsOfStudent}
             hideCommandBar
             options={{
               selection: false,
@@ -56,7 +53,6 @@ export default function StudentList(props) {
             onPageChange={ page => setFilterParams({...filterParams, page})}
             onRowsPerPageChange={ size => setFilterParams({...filterParams, size }) }
             onSearchChange={ search => setFilterParams({page: 0, size: filterParams.size, search}) }
-            onRowClick={ (event, student) => navigateToLeaningProfilesPageOfStudent(student.userLoginId) }
           />
         </CardContent>
       </Card>
