@@ -104,7 +104,7 @@ export default function StudentViewSubmission() {
     getSubmissions();
   }
   return (
-    <Box>
+    <Box sx={{marginTop: "20px"}}>
       {/*
       <MuiThemeProvider theme={themeTable}>
         <Button
