@@ -179,7 +179,9 @@ export default function TeacherViewDetailClassExercises(props) {
     <div>
       <Card>
         <CardContent>
-          <AssignmentListOfClass classId={classId} />
+          <AssignmentListOfClass classId={classId}
+                                 userRole="teacher"
+                                 enableCreateAssignment />
         </CardContent>
       </Card>
 
