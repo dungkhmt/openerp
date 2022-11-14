@@ -54,7 +54,9 @@ export default function TeacherClassViewLearningSessionList(props) {
     <div>
       <Card>
         <CardContent>
-          <LearningSessionListOfClass classId={classId}/>
+          <LearningSessionListOfClass classId={classId}
+                                      enableCreateSession
+                                      viewDetailOnRowClick/>
         </CardContent>
       </Card>
 

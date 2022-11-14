@@ -6,6 +6,7 @@ import moment from "moment";
 import {useHistory} from "react-router-dom";
 import {Button} from "@mui/material";
 import {makeStyles} from "@material-ui/core/styles";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles(theme => ({
   assignmentsTableContainer: {
@@ -36,7 +37,7 @@ export default function AssignmentListOfClass(props) {
   }
 
   function navigateToAssignmentDetailPage(assignmentId) {
-    history.push(`/edu/teacher/class/${classId}/assignment/${assignmentId}`);
+    history.push(`/edu/${props.userRole}/class/${classId}/assignment/${assignmentId}`);
   }
 
   function navigateToCreateAssignmentPage() {
@@ -56,6 +57,9 @@ export default function AssignmentListOfClass(props) {
     { field: "status",  title: "Trạng thái", lookup: ASSIGNMENT_STATUSES }
   ];
 
+  const actions = props.enableCreateAssignment ?
+    [{ icon: () => CreateNewAssignmentButton, isFreeAction: true }] : [];
+
   const CreateNewAssignmentButton = (
     <Button variant="outlined"
             className="create-assignment-btn"
@@ -63,10 +67,6 @@ export default function AssignmentListOfClass(props) {
       Tạo mới
     </Button>
   )
-
-  const actions = [
-    { icon: () => CreateNewAssignmentButton, isFreeAction: true }
-  ]
 
   return (
     <div className={classes.assignmentsTableContainer}>
@@ -106,4 +106,15 @@ function setAssignmentStatus(assignment) {
   } else {
     assignment.status = 'STARTED';
   }
+}
+
+AssignmentListOfClass.propTypes = {
+  classId: PropTypes.string.isRequired,
+  userRole: PropTypes.oneOf<String>(['student', 'teacher']),
+  enableCreateAssignment: PropTypes.bool,
+}
+
+AssignmentListOfClass.defaultProps = {
+  userRole: 'student',
+  enableCreateAssignment: false
 }
