@@ -3,6 +3,8 @@ import {a11yProps, AntTab, AntTabs, TabPanel} from "../../../component/tab";
 import ViewClassMaterialLogsOfStudent
   from "../../../component/dataadmin/viewlearningprofiles/ViewClassMaterialLogsOfStudent";
 import {useParams} from "react-router";
+import DoingPracticeQuizLogsOfStudent
+  from "../../../component/dataadmin/viewlearningprofiles/DoingPracticeQuizLogsOfStudent";
 
 function StudentLearningProfiles(props) {
   const params = useParams();
@@ -39,7 +41,7 @@ function StudentLearningProfiles(props) {
         <ViewClassMaterialLogsOfStudent studentLoginId={studentLoginId}/>
       </TabPanel>
       <TabPanel value={activeTab} index={2}>
-        <div>Quiz Test</div>
+        <DoingPracticeQuizLogsOfStudent studentLoginId={studentLoginId}/>
       </TabPanel>
       <TabPanel value={activeTab} index={3}>
         <div>Programming contest</div>

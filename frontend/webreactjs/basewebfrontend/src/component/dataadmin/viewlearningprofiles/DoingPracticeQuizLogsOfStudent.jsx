@@ -5,20 +5,20 @@ import {Card, CardContent} from "@material-ui/core";
 import StandardTable from "../../table/StandardTable";
 import {MuiThemeProvider} from "@material-ui/core/styles";
 
-export default function ViewClassMaterialLogsOfStudent(props) {
+export default function DoingPracticeQuizLogsOfStudent(props) {
   const studentLoginId = props.studentLoginId;
-  const [viewMaterialLogsOfStudent, setViewMaterialLogsOfStudent] = useState([]);
+  const [doingQuizLogsOfStudent, setDoingQuizLogsOfStudent] = useState([]);
   const [filterParams, setFilterParams] = useState({ search: '', page: 0, size: 20 });
 
   useEffect(getViewMaterialLogsOfStudent, [filterParams]);
 
   function getViewMaterialLogsOfStudent() {
-    let successHandler = res => setViewMaterialLogsOfStudent(res.data.content);
+    let successHandler = res => setDoingQuizLogsOfStudent(res.data.content);
     let errorHandlers = {
       onError: (error) => errorNoti("Đã xảy ra lỗi trong khi tải dữ liệu!", 3000)
     }
     request(
-      "GET", `/admin/data/education/view-class-material-logs/${studentLoginId}`,
+      "GET", `/admin/data/education/doing-practice-quiz-logs/${studentLoginId}`,
       successHandler, errorHandlers, null, { params: filterParams }
     );
   }
@@ -28,9 +28,10 @@ export default function ViewClassMaterialLogsOfStudent(props) {
     { title: "Tên học phần", field: "courseName" },
     { title: "Mã lớp", field: "classCode" },
     { title: "Học kỳ", field: "semester" },
-    { title: "Chương", field: "chapterName" },
-    { title: "Tài liệu", field: "materialName" },
-    { title: "Ngày xem", field: "viewAt" }
+    { title: "Chủ đề", field: "topicName" },
+    { title: "ID câu hỏi", field: "questionId" },
+    { title: "Điểm số", field: "grade" },
+    { title: "Ngày thực hiện", field: "doAt" }
   ]
 
   return (
@@ -38,9 +39,9 @@ export default function ViewClassMaterialLogsOfStudent(props) {
       <Card>
         <CardContent>
           <StandardTable
-            title="Lịch sử xem học liệu"
+            title="Lịch sử làm quiz"
             columns={columns}
-            data={viewMaterialLogsOfStudent}
+            data={doingQuizLogsOfStudent}
             hideCommandBar
             options={{
               selection: false,
