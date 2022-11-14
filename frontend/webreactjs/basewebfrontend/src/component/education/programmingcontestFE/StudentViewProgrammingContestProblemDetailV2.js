@@ -108,7 +108,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
     authPostMultiPart(
       dispatch,
       token,
-      "/contest-submit-problem-via-upload-file",
+      "/contest-submit-problem-via-upload-file-v2",
       formData
     )
       .then((res) => {
