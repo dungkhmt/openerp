@@ -1,9 +1,8 @@
 package com.hust.baseweb.config.rabbitmq;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
@@ -16,6 +15,11 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 @Configuration
 public class RabbitConfig {
@@ -46,14 +50,15 @@ public class RabbitConfig {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(jsonMessageConverter());
-        factory.setConcurrentConsumers(4);
-        factory.setMaxConcurrentConsumers(20);
-        factory.setPrefetchCount(10);
-        // factory.setChannelTransacted(true); //try if there are faults, but this will slow down the process
+        factory.setConcurrentConsumers(5);
+        factory.setMaxConcurrentConsumers(8);
+        factory.setPrefetchCount(4);
+        // factory.setChannelTransacted(true); //try if there are faults, but this will
+        // slow down the process
 
         // adjust if needed
-//        factory.setConsecutiveActiveTrigger(4);
-//        factory.setConsecutiveIdleTrigger(4);
+        // factory.setConsecutiveActiveTrigger(3);
+        // factory.setConsecutiveIdleTrigger(4);
         return factory;
     }
 
@@ -69,7 +74,9 @@ public class RabbitConfig {
 
     @Bean
     public Queue judgeProblemQueue() {
-        return new Queue(JUDGE_PROBLEM_QUEUE, true, false, false);
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-queue-type", "quorum");
+        return new Queue(JUDGE_PROBLEM_QUEUE, true, false, false, args);
     }
 
     @Bean
@@ -78,4 +85,3 @@ public class RabbitConfig {
     }
 
 }
-
