@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.hust.baseweb.applications.contentmanager.model.ContentHeaderModel;
 import com.hust.baseweb.applications.contentmanager.model.ContentModel;
@@ -17,15 +18,17 @@ import com.hust.baseweb.applications.programmingcontest.utils.TempDir;
 import com.hust.baseweb.applications.programmingcontest.utils.codesimilaritycheckingalgorithms.CodeSimilarityCheck;
 import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.ProblemSubmission;
 import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.StringHandler;
+import com.hust.baseweb.config.rabbitmq.ProblemContestRoutingKey;
+import com.hust.baseweb.config.rabbitmq.RabbitConfig;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.repo.UserLoginRepo;
 import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -68,6 +71,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private ContestSubmissionHistoryRepo contestSubmissionHistoryRepo;
     private ContestProblemRepo contestProblemRepo;
     private MongoContentService mongoContentService;
+    private ObjectMapper objectMapper;
+    private RabbitTemplate rabbitTemplate;
 
     @Override
     public void createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException {
@@ -1107,6 +1112,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .score(problemSubmission.getScore())
                 .build();
     }
+
     @Transactional
     @Override
     public ModelContestSubmissionResponse submitContestProblemTestCaseByTestCase(ModelContestSubmission modelContestSubmission, String userName) throws Exception {
@@ -1146,7 +1152,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         testCaseEntityList = lstFiltered;
 
-        String tempName = tempDir.createRandomScriptFileName(userName+"-"+modelContestSubmission.getContestId()+"-"+modelContestSubmission.getProblemId());
+        String tempName = tempDir.createRandomScriptFileName(userName+"-"+modelContestSubmission.getContestId()+"-"+modelContestSubmission.getProblemId()+"-"+Math.random());
 
         int runtime  = 0;
         int score = 0;
@@ -1260,6 +1266,195 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                              .numberTestCasePassed(nbTestCasePass)
                                              .totalNumberTestCase(testCaseEntityList.size())
                                              .build();
+    }
+
+    @Transactional
+    @Override
+    public void submitContestProblemTestCaseByTestCaseWithFile(
+        ModelContestSubmission modelContestSubmission,
+        String userId
+    ) throws Exception {
+        Date submitTime = new Date();
+        ContestSubmissionEntity submission = ContestSubmissionEntity.builder()
+                                                           .contestId(modelContestSubmission.getContestId())
+                                                           .status(ContestSubmissionEntity.SUBMISSION_STATUS_EVALUATION_IN_PROGRESS)
+                                                           .point(0)
+                                                           .problemId(modelContestSubmission.getProblemId())
+                                                           .userId(userId)
+                                                           .runtime(0L)
+                                                           .createdAt(submitTime)
+                                                           .build();
+        submission = contestSubmissionRepo.save(submission);
+
+        ModelContestSubmissionMessage msg = new ModelContestSubmissionMessage();
+        msg.setModelContestSubmission(modelContestSubmission);
+        msg.setSubmission(submission);
+        rabbitTemplate.convertAndSend(
+            RabbitConfig.EXCHANGE,
+            ProblemContestRoutingKey.JUDGE_PROBLEM,
+            objectMapper.writeValueAsString(msg)
+        );
+    }
+
+    @Transactional
+    @Override
+    public void submitContestProblemTestCaseByTestCaseWithFileProcessor(
+        ModelContestSubmission modelContestSubmission,
+        ContestSubmissionEntity submission
+    ) throws Exception {
+
+        ProblemEntity problemEntity = problemRepo.findByProblemId(modelContestSubmission.getProblemId());
+        ContestEntity contest = contestRepo.findContestByContestId(modelContestSubmission.getContestId());
+
+        String userId = submission.getUserId();
+
+        List<TestCaseEntity> testCaseEntityList = null;
+        boolean evaluatePrivatePublic = contest != null &&
+                                    contest.getEvaluateBothPublicPrivateTestcase() != null &&
+                                    contest.getEvaluateBothPublicPrivateTestcase()
+                                        .equals(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_YES);
+
+        if (evaluatePrivatePublic) {
+            testCaseEntityList = testCaseRepo.findAllByProblemId(modelContestSubmission.getProblemId());
+        } else {
+            testCaseEntityList = testCaseRepo
+                .findAllByProblemIdAndIsPublic(modelContestSubmission.getProblemId(), "N");
+        }
+
+        List<TestCaseEntity> lstFiltered = new ArrayList();
+        for (TestCaseEntity tc : testCaseEntityList) {
+            if (tc.getStatusId() != null && tc.getStatusId().equals(TestCaseEntity.STATUS_DISABLED)) {
+                continue;
+            }
+            lstFiltered.add(tc);
+        }
+        testCaseEntityList = lstFiltered;
+
+        String tempName = tempDir.createRandomScriptFileName(userId + "-" +
+                                                             modelContestSubmission.getContestId() + "-" +
+                                                             modelContestSubmission.getProblemId() + "-" +
+                                                             Math.random());
+
+        int runtime = 0;
+        int score = 0;
+        int nbTestCasePass = 0;
+        String totalStatus = "";
+        List<String> statusList = new ArrayList<>();
+        List<ContestSubmissionTestCaseEntity> LCSTE = new ArrayList();
+        String message = "";
+        boolean compileError = false;
+
+        for (TestCaseEntity testCaseEntity : testCaseEntityList) {
+            List<TestCaseEntity> L = new ArrayList();
+            L.add(testCaseEntity);
+
+            String response = submission(
+                modelContestSubmission.getSource(),
+                modelContestSubmission.getLanguage(),
+                tempName,
+                L,
+                "language not found",
+                problemEntity.getTimeLimit());
+
+            List<String> testCaseAns = L.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
+            List<Integer> points = L.stream().map(TestCaseEntity::getTestCasePoint).collect(Collectors.toList());
+            ProblemSubmission problemSubmission = StringHandler.handleContestResponse(response, testCaseAns, points);
+
+            if (problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")) {
+                message = problemSubmission.getMessage();
+                compileError = true;
+                break;
+            }
+
+            runtime = runtime + problemSubmission.getRuntime().intValue();
+            score = score + problemSubmission.getScore();
+            nbTestCasePass += problemSubmission.getNbTestCasePass();
+            statusList.add(problemSubmission.getStatus());
+            List<String> output = problemSubmission.getParticipantAns();
+            String participantAns = "";
+            if (output != null && output.size() > 0) {
+                participantAns = output.get(0);
+            }
+
+            ContestSubmissionTestCaseEntity cste = ContestSubmissionTestCaseEntity.builder()
+                                                                                  .contestId(modelContestSubmission.getContestId())
+                                                                                  .problemId(modelContestSubmission.getProblemId())
+                                                                                  .testCaseId(testCaseEntity.getTestCaseId())
+                                                                                  .submittedByUserLoginId(userId)
+                                                                                  .point(problemSubmission.getScore())
+                                                                                  .status(problemSubmission.getStatus())
+                                                                                  .testCaseOutput(testCaseEntity.getCorrectAnswer())
+                                                                                  .participantSolutionOtput(participantAns)
+                                                                                  .runtime(problemSubmission.getRuntime())
+                                                                                  .createdStamp(submission.getCreatedAt())
+                                                                                  .build();
+            cste = contestSubmissionTestCaseEntityRepo.save(cste);
+            LCSTE.add(cste);
+        }
+        boolean accepted = true;
+
+        label:
+        for (String s : statusList) {
+            switch (s) {
+                case ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR:
+                    totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
+                    accepted = false;
+                    break label;
+                case ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED:
+                    totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
+                    accepted = false;
+                    break label;
+                case ContestSubmissionEntity.SUBMISSION_STATUS_WRONG:
+                    totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
+                    accepted = false; //break;
+                    break;
+            }
+        }
+
+        if (accepted) {
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
+        }
+
+        if (compileError) {
+            // keep compile error message above
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
+        } else if (nbTestCasePass == 0) {
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
+        } else if (nbTestCasePass > 0 && nbTestCasePass < testCaseEntityList.size()) {
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL;
+        } else {
+            message = "Successful";
+        }
+
+        ContestSubmissionEntity submissionEntity = contestSubmissionRepo.
+            findContestSubmissionEntityByContestSubmissionId(submission.getContestSubmissionId());
+
+        submissionEntity.setStatus(totalStatus);
+        submissionEntity.setPoint(score);
+        submissionEntity.setTestCasePass(nbTestCasePass + "/" + testCaseEntityList.size());
+        submissionEntity.setSourceCode(modelContestSubmission.getSource());
+        submissionEntity.setSourceCodeLanguage(modelContestSubmission.getLanguage());
+        submissionEntity.setRuntime((long) runtime);
+        submissionEntity = contestSubmissionRepo.save(submissionEntity);
+
+        for (ContestSubmissionTestCaseEntity e : LCSTE) {
+            e.setContestSubmissionId(submissionEntity.getContestSubmissionId());
+            e = contestSubmissionTestCaseEntityRepo.save(e);
+        }
+
+        ModelContestSubmissionResponse.builder()
+                                      .status(totalStatus)
+                                      .message(message)
+                                      .testCasePass(submissionEntity.getTestCasePass())
+                                      .runtime(runtime)
+                                      .memoryUsage(submissionEntity.getMemoryUsage())
+                                      .problemName(problemEntity.getProblemName())
+                                      .contestSubmissionID(submissionEntity.getContestSubmissionId())
+                                      .submittedAt(submissionEntity.getCreatedAt())
+                                      .score(score)
+                                      .numberTestCasePassed(nbTestCasePass)
+                                      .totalNumberTestCase(testCaseEntityList.size())
+                                      .build();
     }
 
     @Override

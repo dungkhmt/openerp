@@ -24,6 +24,7 @@ import { StudentContestNotRegistered } from "../component/education/programmingc
 import { StudentContestRegistered } from "../component/education/programmingcontestFE/StudentContestRegistered";
 import StudentViewContestDetail from "../component/education/programmingcontestFE/StudentViewContestDetail";
 import StudentViewProgrammingContestProblemDetail from "../component/education/programmingcontestFE/StudentViewProgrammingContestProblemDetail";
+import StudentViewProgrammingContestProblemDetailV2 from "../component/education/programmingcontestFE/StudentViewProgrammingContestProblemDetailV2";
 import ManagerViewProblemDetail from "../component/education/programmingcontestFE/ManagerViewProblemDetail";
 import SubmitSolutionOutput from "../component/education/programmingcontestFE/SubmitSolutionOutput";
 import { Test } from "../component/education/programmingcontestFE/Test";
@@ -62,8 +63,12 @@ export default function ProgrammingContestRoutes() {
           component={StudentViewContestDetail}
           path={`${path}/student-view-contest-detail/:contestId`}
         />
-        <Route
+        {/* <Route
           component={StudentViewProgrammingContestProblemDetail}
+          path={`${path}/student-view-contest-problem-detail/:contestId/:problemId`}
+        /> */}
+        <Route
+          component={StudentViewProgrammingContestProblemDetailV2}
           path={`${path}/student-view-contest-problem-detail/:contestId/:problemId`}
         />
         <Route
