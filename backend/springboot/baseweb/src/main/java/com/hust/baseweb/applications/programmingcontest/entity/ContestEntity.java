@@ -41,6 +41,15 @@ public class ContestEntity {
     public static final String EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_YES = "Y";
     public static final String EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_NO = "N";
 
+    public static final String SYNCHRONOUS_JUDGE_MODE = "SYNCHRONOUS_JUDGE_MODE";
+    public static final String ASYNCHRONOUS_JUDGE_MODE_QUEUE = "ASYNCHRONOUS_JUDGE_MODE_QUEUE";
+
+    public static List<String> getJudgeModes(){
+        List<String> L = new ArrayList();
+        L.add(SYNCHRONOUS_JUDGE_MODE);
+        L.add(ASYNCHRONOUS_JUDGE_MODE_QUEUE);
+        return L;
+    }
     public static List<String> getListUseCacheContestProblems(){
         List<String> L = new ArrayList();
         L.add(ContestEntity.USE_CACHE_CONTEST_PROBLEM_YES);
@@ -159,5 +168,12 @@ public class ContestEntity {
 
     @Column(name="evaluate_both_public_private_testcase")
     private String evaluateBothPublicPrivateTestcase;
+
+    @Column(name="min_time_between_two_submissions")
+    private int minTimeBetweenTwoSubmissions;
+
+    @Column(name="judge_mode")
+    private String judgeMode; // synchronous or asynchronous using queue
+
 
 }

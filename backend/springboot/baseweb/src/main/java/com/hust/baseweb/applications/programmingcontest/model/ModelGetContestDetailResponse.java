@@ -24,6 +24,8 @@ public class ModelGetContestDetailResponse {
     private String useCacheContestProblem;
     private String evaluateBothPublicPrivateTestcase;
     private int maxSourceCodeLength;
+    private int minTimeBetweenTwoSubmissions;
+    private String judgeMode;
     private List<String> listStatusIds;
     private List<String> listSubmissionActionTypes;
     private List<String> listParticipantViewModes;
@@ -31,4 +33,5 @@ public class ModelGetContestDetailResponse {
     private List<String> listProblemDescriptionViewTypes;
     private List<String> listUseCacheContestProblems;
     private List<String> listEvaluateBothPublicPrivateTestcases;
+    private List<String> listJudgeModes;
 }
