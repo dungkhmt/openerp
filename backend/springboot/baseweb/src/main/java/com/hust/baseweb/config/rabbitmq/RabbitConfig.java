@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 @Configuration
 public class RabbitConfig {
 
-    public static final String JUDGE_PROBLEM_QUEUE = "judge_problem_queue";
+    public static final String JUDGE_PROBLEM_QUEUE = "judge_problem_queue" ;
     public static final String EXCHANGE = "programming_contest_exchange";
 
     @Bean
