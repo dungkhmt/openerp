@@ -1,12 +1,10 @@
 package com.hust.baseweb.config.rabbitmq;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -16,15 +14,13 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class RabbitConfig {
 
-    public static final String JUDGE_PROBLEM_QUEUE = "judge_problem_queue" ;
+    public static final String JUDGE_PROBLEM_QUEUE = "judge_problem_queue";
     public static final String EXCHANGE = "programming_contest_exchange";
 
     @Bean
@@ -49,6 +45,7 @@ public class RabbitConfig {
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
+        factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         factory.setMessageConverter(jsonMessageConverter());
         factory.setConcurrentConsumers(5);
         factory.setMaxConcurrentConsumers(8);

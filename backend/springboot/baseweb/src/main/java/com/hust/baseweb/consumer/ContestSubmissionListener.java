@@ -6,6 +6,8 @@ import com.hust.baseweb.applications.programmingcontest.model.ModelContestSubmis
 import com.hust.baseweb.applications.programmingcontest.model.ModelContestSubmissionMessage;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import com.hust.baseweb.config.rabbitmq.RabbitConfig;
+import com.rabbitmq.client.Channel;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -24,12 +26,14 @@ public class ContestSubmissionListener {
     }
 
     @RabbitListener(queues = RabbitConfig.JUDGE_PROBLEM_QUEUE)
-    public void onMessage(String message) throws Exception {
-        ModelContestSubmissionMessage msg = objectMapper.readValue(message, ModelContestSubmissionMessage.class);
+    public void onMessage(Message message, String messageBody, Channel channel) throws Exception {
+        ModelContestSubmissionMessage msg = objectMapper.readValue(messageBody, ModelContestSubmissionMessage.class);
         ModelContestSubmission contestSubmission = msg.getModelContestSubmission();
         ContestSubmissionEntity submissionEntity = msg.getSubmission();
         problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFileProcessor(
             contestSubmission,
             submissionEntity);
+
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
     }
 }
