@@ -73,7 +73,6 @@ public class RabbitConfig {
     public Queue judgeProblemQueue() {
         Map<String, Object> args = new HashMap<>();
         args.put("x-queue-type", "quorum");
-        args.put("x-delivery-limit", 3);
         return new Queue(JUDGE_PROBLEM_QUEUE, true, false, false, args);
     }
 
