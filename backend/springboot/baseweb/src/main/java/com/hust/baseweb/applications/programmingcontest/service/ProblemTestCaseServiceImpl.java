@@ -509,6 +509,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .statusId(ContestEntity.CONTEST_STATUS_CREATED)
                                                            .maxNumberSubmissions(modelCreateContest.getMaxNumberSubmissions())
                                                             .maxSourceCodeLength(modelCreateContest.getMaxSourceCodeLength())
+                                             .minTimeBetweenTwoSubmissions(60)
+                                             .judgeMode(ContestEntity.SYNCHRONOUS_JUDGE_MODE)
                                              .useCacheContestProblem(ContestEntity.USE_CACHE_CONTEST_PROBLEM_YES)
                                              .submissionActionType(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)
                                              .problemDescriptionViewType(ContestEntity.CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_VISIBLE)
@@ -666,6 +668,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .useCacheContestProblem(modelUpdateContest.getUseCacheContestProblem())
                                                        .maxSourceCodeLength(modelUpdateContest.getMaxSourceCodeLength())
                                                        .evaluateBothPublicPrivateTestcase(modelUpdateContest.getEvaluateBothPublicPrivateTestcase())
+                                                       .minTimeBetweenTwoSubmissions(modelUpdateContest.getMinTimeBetweenTwoSubmissions())
+                                                       .judgeMode(modelUpdateContest.getJudgeMode())
                                                        .build();
             return contestRepo.save(contestEntity);
 
@@ -798,6 +802,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                             .listMaxNumberSubmissions(ContestEntity.getListMaxNumberSubmissions())
                                             .listProblemDescriptionViewTypes(ContestEntity.getProblemDescriptionViewTypes())
                                             .listUseCacheContestProblems(ContestEntity.getListUseCacheContestProblems())
+                                            .listJudgeModes(ContestEntity.getJudgeModes())
                                             .listEvaluateBothPublicPrivateTestcases(ContestEntity.getListEvaluateBothPublicPrivateTestcases())
                                             .submissionActionType(contestEntity.getSubmissionActionType())
                                             .maxNumberSubmission(contestEntity.getMaxNumberSubmissions())
@@ -806,6 +811,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                             .useCacheContestProblem(contestEntity.getUseCacheContestProblem())
                                             .evaluateBothPublicPrivateTestcase(contestEntity.getEvaluateBothPublicPrivateTestcase())
                                             .maxSourceCodeLength(contestEntity.getMaxSourceCodeLength())
+                                            .minTimeBetweenTwoSubmissions(contestEntity.getMinTimeBetweenTwoSubmissions())
+                                            .judgeMode(contestEntity.getJudgeMode())
                                             .build();
     }
 

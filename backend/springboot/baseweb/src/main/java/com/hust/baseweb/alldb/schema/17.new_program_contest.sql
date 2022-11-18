@@ -89,6 +89,8 @@ create table contest_new
 	status_id varchar(100),
 	submission_action_type varchar(200),
 	max_number_submission int,
+	min_time_between_two_submissions int,
+	judge_mode varchar(100),
     participant_view_result_mode varchar(200),
     use_cache_contest_problem varchar(1),
     max_source_code_length int,

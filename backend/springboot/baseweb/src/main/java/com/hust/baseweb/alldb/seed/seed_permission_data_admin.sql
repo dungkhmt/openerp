@@ -36,6 +36,10 @@ INSERT INTO public.application
 (application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
 VALUES('MENU_DATA_ADMIN_VIEW_LOG_USER_DO_PRATICE_QUIZ', 'MENU', 'MENU_DATA_ADMIN', 'DATA_ADMIN', 'Menu admin view log users quiz', NULL, '2021-10-22 15:35:30.537');
 
+INSERT INTO public.application
+(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
+VALUES('MENU_DATA_ADMIN_VIEW_LEARNING_PROFILE_USERS', 'MENU', 'MENU_DATA_ADMIN', 'DATA_ADMIN', 'Menu admin view learning profile student', NULL, '2021-10-22 15:35:30.537');
+
 --permission for screens security
 insert into security_permission (permission_id,description) values('VIEW_LOG_USER_VIEW_COURSE_VIDEO','view log of users viewing video course');
 insert into security_permission (permission_id,description) values('VIEW_LOG_USER_DO_QUIZ','view log of users pratice quizs');

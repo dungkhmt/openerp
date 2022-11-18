@@ -21,5 +21,7 @@ public class ModelUpdateContest {
     private String useCacheContestProblem;
     private String evaluateBothPublicPrivateTestcase;
     private int maxSourceCodeLength;
+    private int minTimeBetweenTwoSubmissions;
+    private String judgeMode;
 
 }

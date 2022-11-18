@@ -16,7 +16,7 @@ import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import { ContentState, EditorState } from "draft-js";
 import htmlToDraft from "html-to-draftjs";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
@@ -27,7 +27,11 @@ import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import FileSaver from "file-saver";
 import StudentViewSubmission from "./StudentViewSubmission";
-import { getFileType, randomImageName, saveByteArray } from "utils/FileUpload/covert";
+import {
+  getFileType,
+  randomImageName,
+  saveByteArray,
+} from "utils/FileUpload/covert";
 import { makeStyles } from "@material-ui/core/styles";
 
 const editorStyle = {
@@ -50,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     marginBottom: "16px",
-    alignItems: "center"
+    alignItems: "center",
   },
   fileName: {
     fontStyle: "italic",
@@ -85,6 +89,9 @@ export default function StudentViewProgrammingContestProblemDetail() {
   );
   const [fetchedImageArray, setFetchedImageArray] = useState([]);
 
+  //const inputRef = React.useRef();
+  const inputRef = useRef();
+
   function onFileChange(event) {
     setFilename(event.target.files[0]);
   }
@@ -96,6 +103,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const handleFormSubmit = (event) => {
     event.preventDefault();
     setIsProcessing(true);
+    //alert("start to submit");
     let body = {
       problemId: problemId,
       contestId: contestId,
@@ -113,9 +121,11 @@ export default function StudentViewProgrammingContestProblemDetail() {
     )
       .then((res) => {
         setIsProcessing(false);
+        alert("submited click refresh to see result");
+        inputRef.current.value = "";
         if (res.status === "TIME_OUT") {
           alert("Time Out!!!");
-        } 
+        }
       })
       .catch((e) => {
         setIsProcessing(false);
@@ -139,34 +149,41 @@ export default function StudentViewProgrammingContestProblemDetail() {
     authGet(
       dispatch,
       token,
-      "/get-problem-detail-view-by-student-in-contest/" + problemId + "/" + contestId
-    ).then((res) => {
-      setProblem(res);
-      console.log(res);
-      //setProblemStatement(res.data.problemStatement);
-      if (res.attachment && res.attachment.length !== 0) {
-        const newFileURLArray = res.attachment.map((url) => ({
-          id: randomImageName(),
-          content: url,
-        }));
-        newFileURLArray.forEach((file, idx) => {
-          file.fileName = res.attachmentNames[idx];
-        });
-        setFetchedImageArray(newFileURLArray);
-      }
+      "/get-problem-detail-view-by-student-in-contest/" +
+        problemId +
+        "/" +
+        contestId
+    )
+      .then(
+        (res) => {
+          setProblem(res);
+          console.log(res);
+          //setProblemStatement(res.data.problemStatement);
+          if (res.attachment && res.attachment.length !== 0) {
+            const newFileURLArray = res.attachment.map((url) => ({
+              id: randomImageName(),
+              content: url,
+            }));
+            newFileURLArray.forEach((file, idx) => {
+              file.fileName = res.attachmentNames[idx];
+            });
+            setFetchedImageArray(newFileURLArray);
+          }
 
-      let problemDescriptionHtml = htmlToDraft(res.problemStatement);
-      let { contentBlocks, entityMap } = problemDescriptionHtml;
-      let contentDescriptionState = ContentState.createFromBlockArray(
-        contentBlocks,
-        entityMap
-      );
-      let statementDescription = EditorState.createWithContent(
-        contentDescriptionState
-      );
-      setEditorStateDescription(statementDescription);
-    }, (e) => console.log(e))
-    .then();
+          let problemDescriptionHtml = htmlToDraft(res.problemStatement);
+          let { contentBlocks, entityMap } = problemDescriptionHtml;
+          let contentDescriptionState = ContentState.createFromBlockArray(
+            contentBlocks,
+            entityMap
+          );
+          let statementDescription = EditorState.createWithContent(
+            contentDescriptionState
+          );
+          setEditorStateDescription(statementDescription);
+        },
+        (e) => console.log(e)
+      )
+      .then();
   }
 
   useEffect(() => {
@@ -252,7 +269,12 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 )}
                 {getFileType(file.fileName) === "pdf" && (
                   <Box className={classes.fileDownload}>
-                    <Typography variant="subtitle2" className={classes.fileName}>{file.fileName}</Typography>
+                    <Typography
+                      variant="subtitle2"
+                      className={classes.fileName}
+                    >
+                      {file.fileName}
+                    </Typography>
                     <Button
                       variant="contained"
                       color="success"
@@ -267,7 +289,12 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 )}
                 {getFileType(file.fileName) === "word" && (
                   <Box className={classes.fileDownload}>
-                    <Typography variant="subtitle2" className={classes.fileName}>{file.fileName}</Typography>
+                    <Typography
+                      variant="subtitle2"
+                      className={classes.fileName}
+                    >
+                      {file.fileName}
+                    </Typography>
                     <Button
                       variant="contained"
                       color="success"
@@ -282,7 +309,12 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 )}
                 {getFileType(file.fileName) === "txt" && (
                   <Box className={classes.fileDownload}>
-                    <Typography variant="subtitle2" className={classes.fileName}>{file.fileName}</Typography>
+                    <Typography
+                      variant="subtitle2"
+                      className={classes.fileName}
+                    >
+                      {file.fileName}
+                    </Typography>
                     <Button
                       variant="contained"
                       color="success"
@@ -410,6 +442,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 accept=".c, .cpp, .java, .py"
                 id="selected-upload-file"
                 onChange={onFileChange}
+                ref={inputRef}
               />
             </Grid>
             <Grid item xs={2}>
@@ -452,7 +485,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
             {isProcessing ? <CircularProgress /> : ""}
           </Grid>
         </form>
-
       </div>
       <div>
         <br></br>
