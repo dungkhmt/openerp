@@ -78,7 +78,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const [testCases, setTestCases] = useState([]);
   const [filename, setFilename] = useState("");
   const [language, setLanguage] = useState("CPP");
-  const [runTime, setRunTime] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [selectedTestcase, setSelectedTestcase] = useState();
   const token = useSelector((state) => state.auth.token);
@@ -89,7 +88,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
   );
   const [fetchedImageArray, setFetchedImageArray] = useState([]);
 
-  //const inputRef = React.useRef();
   const inputRef = useRef();
 
   function onFileChange(event) {
@@ -100,36 +98,40 @@ export default function StudentViewProgrammingContestProblemDetail() {
     setFilename(name);
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
     setIsProcessing(true);
-    //alert("start to submit");
     let body = {
       problemId: problemId,
       contestId: contestId,
       language: language,
     };
+
     let formData = new FormData();
     formData.append("inputJson", JSON.stringify(body));
     formData.append("file", filename);
 
-    authPostMultiPart(
+    await authPostMultiPart(
       dispatch,
       token,
       "/contest-submit-problem-via-upload-file-v2",
       formData
     )
+
+
       .then((res) => {
-        setIsProcessing(false);
-        alert("submited click refresh to see result");
-        inputRef.current.value = "";
+        alert("Submitted. Click REFRESH to see result");
+        inputRef.current.value = null;
         if (res.status === "TIME_OUT") {
           alert("Time Out!!!");
         }
       })
       .catch((e) => {
-        setIsProcessing(false);
         console.error(e);
+      })
+      .finally(() => {
+        setIsProcessing(false);
+        inputRef.current.value = null;
       });
   };
 
@@ -472,6 +474,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
 
             <Grid item xs={2}>
               <Button
+                disabled={isProcessing}
                 color="primary"
                 variant="contained"
                 type="submit"
