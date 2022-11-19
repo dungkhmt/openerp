@@ -1358,12 +1358,20 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
             List<String> testCaseAns = L.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
             List<Integer> points = L.stream().map(TestCaseEntity::getTestCasePoint).collect(Collectors.toList());
-            ProblemSubmission problemSubmission = StringHandler.handleContestResponse(response, testCaseAns, points);
 
-            if (problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")) {
-                message = problemSubmission.getMessage();
-                compileError = true;
-                break;
+            ProblemSubmission problemSubmission = new ProblemSubmission();
+            try {
+                problemSubmission = StringHandler.handleContestResponse(response, testCaseAns, points);
+                if (problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")) {
+                    message = problemSubmission.getMessage();
+                    compileError = true;
+                    break;
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("LOG FOR TESTING STRING HANDLER ERROR: " + response);
+                throw new Exception("error from StringHandler");
             }
 
             runtime = runtime + problemSubmission.getRuntime().intValue();
@@ -1378,6 +1386,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
             ContestSubmissionTestCaseEntity cste = ContestSubmissionTestCaseEntity.builder()
                                                                                   .contestId(modelContestSubmission.getContestId())
+                                                                                  .contestSubmissionId(submission.getContestSubmissionId())
                                                                                   .problemId(modelContestSubmission.getProblemId())
                                                                                   .testCaseId(testCaseEntity.getTestCaseId())
                                                                                   .submittedByUserLoginId(userId)
@@ -1437,10 +1446,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         submissionEntity.setRuntime((long) runtime);
         submissionEntity = contestSubmissionRepo.save(submissionEntity);
 
-        for (ContestSubmissionTestCaseEntity e : LCSTE) {
-            e.setContestSubmissionId(submissionEntity.getContestSubmissionId());
-            e = contestSubmissionTestCaseEntityRepo.save(e);
-        }
+//        for (ContestSubmissionTestCaseEntity e : LCSTE) {
+//            e.setContestSubmissionId(submissionEntity.getContestSubmissionId());
+//            e = contestSubmissionTestCaseEntityRepo.save(e);
+//        }
 
         ModelContestSubmissionResponse.builder()
                                       .status(totalStatus)
