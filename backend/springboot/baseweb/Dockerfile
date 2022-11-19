@@ -17,9 +17,10 @@ RUN apk update && apk add --no-cache gcompat # For ortools
 RUN apk add --update ttf-dejavu && rm -rf /var/cache/apk/* # For Apache POI
 
 ENV JAVA_OPTS=""
+
 VOLUME /tmp
 ARG DEPENDENCY=/workspace/app/target/dependency
 COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java", "-Xmx3g", "-cp","app:app/lib/*","com.hust.baseweb.BasewebApplication"]
+ENTRYPOINT ["java", "${JAVA_OPTS}", "-cp","app:app/lib/*","com.hust.baseweb.BasewebApplication"]
