@@ -45,6 +45,7 @@ public class RabbitConfig {
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
+        factory.setDefaultRequeueRejected(true);
         factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         factory.setMessageConverter(jsonMessageConverter());
         factory.setConcurrentConsumers(5);
@@ -73,6 +74,7 @@ public class RabbitConfig {
     public Queue judgeProblemQueue() {
         Map<String, Object> args = new HashMap<>();
         args.put("x-queue-type", "quorum");
+        args.put("x-delivery-limit", Integer.valueOf(3));
         return new Queue(JUDGE_PROBLEM_QUEUE, true, false, false, args);
     }
 
