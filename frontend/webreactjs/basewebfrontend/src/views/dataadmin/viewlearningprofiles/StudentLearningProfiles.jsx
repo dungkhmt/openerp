@@ -5,6 +5,8 @@ import ViewClassMaterialLogsOfStudent
 import {useParams} from "react-router";
 import DoingPracticeQuizLogsOfStudent
   from "../../../component/dataadmin/viewlearningprofiles/DoingPracticeQuizLogsOfStudent";
+import ProgrammingContestSubmissionsOfStudent
+  from "../../../component/dataadmin/viewlearningprofiles/ProgrammingContestSubmissionsOfStudent";
 
 function StudentLearningProfiles(props) {
   const params = useParams();
@@ -44,7 +46,7 @@ function StudentLearningProfiles(props) {
         <DoingPracticeQuizLogsOfStudent studentLoginId={studentLoginId}/>
       </TabPanel>
       <TabPanel value={activeTab} index={3}>
-        <div>Programming contest</div>
+        <ProgrammingContestSubmissionsOfStudent studentLoginId={studentLoginId}/>
       </TabPanel>
     </div>
   );
