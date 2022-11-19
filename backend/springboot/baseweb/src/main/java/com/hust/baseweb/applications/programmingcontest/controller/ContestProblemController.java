@@ -769,6 +769,24 @@ public class ContestProblemController {
         return ResponseEntity.ok().body(res);
     }
 
+    @PostMapping("/contest-submit-problem-via-upload-file-v3")
+    public ResponseEntity<?> contestSubmitProblemViaUploadFileV3(
+        Principal principal,
+        @RequestParam("inputJson") String inputJson,
+        @RequestParam("file") MultipartFile file
+    ) {
+        Gson gson = new Gson();
+        ModelContestSubmitProgramViaUploadFile model = gson.fromJson(
+            inputJson,
+            ModelContestSubmitProgramViaUploadFile.class);
+        ContestEntity contestEntity = contestRepo.findContestByContestId(model.getContestId());
+        if (contestEntity.getJudgeMode() != null &&
+            contestEntity.getJudgeMode().equals(ContestEntity.ASYNCHRONOUS_JUDGE_MODE_QUEUE)) {
+            return contestSubmitProblemViaUploadFileV2(principal, inputJson, file);
+        }
+        return contestSubmitProblemViaUploadFile(principal, inputJson, file);
+    }
+
     @PostMapping("/contest-submit-problem-via-upload-file")
     public ResponseEntity<?> contestSubmitProblemViaUploadFile(Principal principal,
             @RequestParam("inputJson") String inputJson,
