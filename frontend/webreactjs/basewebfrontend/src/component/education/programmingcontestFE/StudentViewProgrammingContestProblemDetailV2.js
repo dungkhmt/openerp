@@ -114,7 +114,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
     await authPostMultiPart(
       dispatch,
       token,
-      "/contest-submit-problem-via-upload-file-v2",
+      "/contest-submit-problem-via-upload-file-v3",
       formData
     )
 
