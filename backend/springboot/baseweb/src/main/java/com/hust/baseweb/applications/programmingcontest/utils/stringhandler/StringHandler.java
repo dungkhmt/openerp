@@ -60,16 +60,15 @@ public class StringHandler {
         String orignalMessage = response;
         response = response.substring(0, response.length()-1);
         int lastIndex = response.lastIndexOf("\n");
-        String status = response.substring(lastIndex);
+        String status;
+        if (lastIndex < 0) {
+            return buildCompileErrorForSubmission(testCaseAns.size(), orignalMessage);
+        } else {
+            status = response.substring(lastIndex);
+        }
         //log.info("status {}", status);
-        if(status.contains("Compile Error")){
-            return ProblemSubmission.builder()
-                                    .score(0)
-                                    .runtime(0L)
-                                    .testCasePass(0+"/"+testCaseAns.size())
-                                    .status("Compile Error")
-                                    .message(orignalMessage)
-                                    .build();
+        if (status.contains("Compile Error")) {
+            return buildCompileErrorForSubmission(testCaseAns.size(), orignalMessage);
         }
         response = response.substring(0, lastIndex);
         int runTimeIndex = response.lastIndexOf("\n");
@@ -114,6 +113,16 @@ public class StringHandler {
                                 .nbTestCasePass(cnt)
                                 .testCaseAns(testCaseAns)
                                 .participantAns(participantAns)
+                                .build();
+    }
+
+    private static ProblemSubmission buildCompileErrorForSubmission(int numTestCases, String message) {
+        return ProblemSubmission.builder()
+                                .score(0)
+                                .runtime(0L)
+                                .testCasePass(0 + "/" + numTestCases)
+                                .status("Compile Error")
+                                .message(message)
                                 .build();
     }
 
