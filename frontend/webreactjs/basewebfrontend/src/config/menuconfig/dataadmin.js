@@ -54,13 +54,5 @@ export const DataAdministration = {
       text: "View Users Learning Profiles",
       child: []
     }
-    {
-      id: "MENU_DATA_ADMIN_VIEW_LEARNING_PROFILE_USERS",
-      path: "/admin/data/view-learning-profile-users",
-      isPublic: false,
-      icon: null,
-      text: "View User Learning Profiles",
-      child: [],
-    },
   ],
 };
