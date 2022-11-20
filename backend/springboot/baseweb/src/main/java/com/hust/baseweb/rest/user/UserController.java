@@ -46,6 +46,11 @@ public class UserController {
     private PartyService partyService;
     private SecurityGroupService securityGroupService;
 
+    @GetMapping("/users/{userLoginId}/detail")
+    public ResponseEntity<?> getUserDetailByLoginId(@PathVariable String userLoginId) {
+        return ResponseEntity.ok(userService.findPersonByUserLoginId(userLoginId));
+    }
+
     @PostMapping(path = "/user")
     public ResponseEntity<?> save(
         @RequestBody PersonModel personModel,

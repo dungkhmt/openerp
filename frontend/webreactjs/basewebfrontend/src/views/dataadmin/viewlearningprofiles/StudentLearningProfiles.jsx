@@ -7,6 +7,7 @@ import DoingPracticeQuizLogsOfStudent
   from "../../../component/dataadmin/viewlearningprofiles/DoingPracticeQuizLogsOfStudent";
 import ProgrammingContestSubmissionsOfStudent
   from "../../../component/dataadmin/viewlearningprofiles/ProgrammingContestSubmissionsOfStudent";
+import StudentDetail from "../../../component/dataadmin/viewlearningprofiles/StudentDetail";
 
 function StudentLearningProfiles(props) {
   const params = useParams();
@@ -37,7 +38,7 @@ function StudentLearningProfiles(props) {
       </AntTabs>
 
       <TabPanel value={activeTab} index={0}>
-        <div>Thông tin chung sinh viên</div>
+        <StudentDetail studentLoginId={studentLoginId}/>
       </TabPanel>
       <TabPanel value={activeTab} index={1}>
         <ViewClassMaterialLogsOfStudent studentLoginId={studentLoginId}/>
