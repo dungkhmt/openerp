@@ -1,52 +1,31 @@
-import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
-import { Box, Button } from "@mui/material";
-import MaterialTable, { MTableToolbar } from "material-table";
-import React, { useEffect, useState } from "react";
+import { Box, Button, CircularProgress } from "@mui/material";
+import StandardTable from "component/table/StandardTable";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
-import {
-  components,
-  localization,
-  themeTable,
-} from "../../../utils/MaterialTableUtils";
 import { request } from "./Request";
-import StandardTable from "component/table/StandardTable";
-import TertiaryButton from "component/button/TertiaryButton";
 
-const useStyles = makeStyles((theme) => ({}));
 const commandBarStyles = {
   position: "sticky",
-  top: 124,
+  top: 60,
   zIndex: 11,
   mt: -3,
   mb: 3,
 };
-const CommandBarButton = (props) => (
-  <TertiaryButton
-    sx={{
-      fontWeight: (theme) => theme.typography.fontWeightLight,
-      "&:hover": {
-        color: "primary.main",
-      },
-    }}
-    color="inherit"
-    {...props}
-  >
-    {props.children}
-  </TertiaryButton>
-);
 export default function StudentViewSubmission() {
   const { t } = useTranslation(
     "education/programmingcontest/studentviewcontestdetail"
   );
   const { contestId } = useParams();
   const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const getSubmissions = async () => {
     request(
       "get",
       "/get-contest-submission-paging-of-a-user-and-contest/" + contestId,
       (res) => {
         setSubmissions(res.data.content);
+        setLoading(false);
       },
       {}
     );
@@ -82,7 +61,7 @@ export default function StudentViewSubmission() {
         switch (status) {
           case "Accept":
             return { color: "green" };
-          case "Wrong Answer":
+          case "In Progress":
             return { color: "gold" };
           default:
             return { color: "red" };
@@ -101,10 +80,12 @@ export default function StudentViewSubmission() {
   ];
 
   function handleRefresh() {
+    setLoading(true);
     getSubmissions();
   }
+
   return (
-    <Box>
+    <Box sx={{ marginTop: "20px" }}>
       {/*
       <MuiThemeProvider theme={themeTable}>
         <Button
@@ -158,14 +139,16 @@ export default function StudentViewSubmission() {
           }}
           commandBarComponents={
             <>
-              <TertiaryButton
+              <Button
+                disabled={loading}
                 onClick={() => {
                   handleRefresh();
                 }}
               >
                 {" "}
                 REFRESH
-              </TertiaryButton>
+              </Button>
+              {loading && <CircularProgress />}
             </>
           }
         />

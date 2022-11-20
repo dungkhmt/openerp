@@ -2,11 +2,9 @@ package com.hust.baseweb.applications.programmingcontest.controller;
 
 import com.google.gson.Gson;
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
-import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
-import com.hust.baseweb.applications.programmingcontest.model.ModelCreateContestProblem;
-import com.hust.baseweb.applications.programmingcontest.model.ModelCreateContestProblemResponse;
+import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestProblemRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
@@ -29,11 +27,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.ws.rs.Path;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -775,12 +769,29 @@ public class ContestProblemController {
         return ResponseEntity.ok().body(res);
     }
 
+    @PostMapping("/contest-submit-problem-via-upload-file-v3")
+    public ResponseEntity<?> contestSubmitProblemViaUploadFileV3(
+        Principal principal,
+        @RequestParam("inputJson") String inputJson,
+        @RequestParam("file") MultipartFile file
+    ) {
+        Gson gson = new Gson();
+        ModelContestSubmitProgramViaUploadFile model = gson.fromJson(
+            inputJson,
+            ModelContestSubmitProgramViaUploadFile.class);
+        ContestEntity contestEntity = contestRepo.findContestByContestId(model.getContestId());
+        if (contestEntity.getJudgeMode() != null &&
+            contestEntity.getJudgeMode().equals(ContestEntity.ASYNCHRONOUS_JUDGE_MODE_QUEUE)) {
+            return contestSubmitProblemViaUploadFileV2(principal, inputJson, file);
+        }
+        return contestSubmitProblemViaUploadFile(principal, inputJson, file);
+    }
+
     @PostMapping("/contest-submit-problem-via-upload-file")
     public ResponseEntity<?> contestSubmitProblemViaUploadFile(Principal principal,
             @RequestParam("inputJson") String inputJson,
             @RequestParam("file") MultipartFile file) {
         //log.info("contestSubmitProblemViaUploadFile, inputJson = " + inputJson);
-
         Gson gson = new Gson();
         ModelContestSubmitProgramViaUploadFile model = gson.fromJson(inputJson,
                 ModelContestSubmitProgramViaUploadFile.class);
@@ -941,6 +952,164 @@ public class ContestProblemController {
             e.printStackTrace();
         }
         return ResponseEntity.ok().body("OK");
+    }
+
+    @PostMapping("/contest-submit-problem-via-upload-file-v2")
+    public ResponseEntity<?> contestSubmitProblemViaUploadFileV2(Principal principal,
+            @RequestParam("inputJson") String inputJson,
+            @RequestParam("file") MultipartFile file) {
+
+        Gson gson = new Gson();
+        ModelContestSubmitProgramViaUploadFile model = gson.fromJson(inputJson,
+                ModelContestSubmitProgramViaUploadFile.class);
+        ContestEntity contestEntity = contestRepo.findContestByContestId(model.getContestId());
+        ContestProblem cp = contestProblemRepo.findByContestIdAndProblemId(model.getContestId(), model.getProblemId());
+
+        if (!contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
+            ModelContestSubmissionResponse resp = buildSubmissionResponseTimeOut();
+            return ResponseEntity.ok().body(resp);
+        }
+
+        List<UserRegistrationContestEntity> userRegistrations = userRegistrationContestRepo
+                .findUserRegistrationContestEntityByContestIdAndUserIdAndStatusAndRoleId(model.getContestId(),
+                        principal.getName(), UserRegistrationContestEntity.STATUS_SUCCESSFUL,
+                        UserRegistrationContestEntity.ROLE_PARTICIPANT);
+        if (userRegistrations == null || userRegistrations.size() == 0) {
+            ModelContestSubmissionResponse resp = buildSubmissionResponseNotRegistered();
+            return ResponseEntity.ok().body(resp);
+
+        }
+
+        for (UserRegistrationContestEntity u : userRegistrations) {
+            if (u.getPermissionId() != null
+                    && u.getPermissionId().equals(UserRegistrationContestEntity.PERMISSION_FORBIDDEN_SUBMIT)) {
+                ModelContestSubmissionResponse resp = buildSubmissionResponseNoPermission();
+                return ResponseEntity.ok().body(resp);
+            }
+        }
+
+        int numOfSubmissions = contestSubmissionRepo
+                .countAllByContestIdAndUserIdAndProblemId(model.getContestId(), principal.getName(), model.getProblemId());
+        if (numOfSubmissions >= contestEntity.getMaxNumberSubmissions()) {
+            ModelContestSubmissionResponse resp = buildSubmissionResponseReachMaxSubmission(contestEntity.getMaxNumberSubmissions());
+            return ResponseEntity.ok().body(resp);
+        }
+
+        try {
+            StringBuilder source = new StringBuilder();
+            InputStream inputStream = file.getInputStream();
+            Scanner in = new Scanner(inputStream);
+            while (in.hasNext()) {
+                String line = in.nextLine();
+                source.append(line).append("\n");
+            }
+            in.close();
+
+            if (source.length() > contestEntity.getMaxSourceCodeLength()) {
+                ModelContestSubmissionResponse resp = buildSubmissionResponseReachMaxSourceLength(source.length(), contestEntity.getMaxSourceCodeLength());
+                return ResponseEntity.ok().body(resp);
+            }
+            ModelContestSubmission request = new ModelContestSubmission(model.getContestId(), model.getProblemId(),
+                                                                        source.toString(), model.getLanguage());
+            ModelContestSubmissionResponse resp = null;
+            if (contestEntity.getSubmissionActionType()
+                    .equals(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)) {
+                if (cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
+                    resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
+                }else {
+                    problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, principal.getName());
+                }
+            } else {
+                resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
+            }
+
+            return ResponseEntity.status(200).body(resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body("OK");
+    }
+
+    private ModelContestSubmissionResponse buildSubmissionResponseTimeOut() {
+        return ModelContestSubmissionResponse.builder()
+                                             .status("TIME_OUT")
+                                             .testCasePass("0")
+                                             .runtime(0L)
+                                             .memoryUsage((float) 0)
+                                             .problemName("")
+                                             .contestSubmissionID(null)
+                                             .submittedAt(null)
+                                             .score(0)
+                                             .numberTestCasePassed(0)
+                                             .totalNumberTestCase(0)
+                                             .build();
+    }
+    private ModelContestSubmissionResponse buildSubmissionResponseNotRegistered() {
+        return ModelContestSubmissionResponse.builder()
+                                             .status("TIME_OUT")
+                                             .testCasePass("0")
+                                             .runtime(0L)
+                                             .memoryUsage((float) 0)
+                                             .problemName("")
+                                             .contestSubmissionID(null)
+                                             .submittedAt(null)
+                                             .score(0)
+                                             .numberTestCasePassed(0)
+                                             .totalNumberTestCase(0)
+                                             .build();
+    }
+    private ModelContestSubmissionResponse buildSubmissionResponseNoPermission() {
+        return ModelContestSubmissionResponse.builder()
+                                             .status("PARTICIPANT_HAS_NOT_PERMISSION_TO_SUBMIT")
+                                             .message("Participant has no permission to submit")
+                                             .testCasePass("0")
+                                             .runtime(0L)
+                                             .memoryUsage((float) 0)
+                                             .problemName("")
+                                             .contestSubmissionID(null)
+                                             .submittedAt(null)
+                                             .score(0)
+                                             .numberTestCasePassed(0)
+                                             .totalNumberTestCase(0)
+                                             .build();
+    }
+    private ModelContestSubmissionResponse buildSubmissionResponseReachMaxSubmission(int maxNumberSubmission) {
+        return ModelContestSubmissionResponse.builder()
+                                             .status("MAX_NUMBER_SUBMISSIONS_REACHED")
+                                             .message("Maximum Number of Submissions " + maxNumberSubmission
+                                                      + " Reached! Cannot submit more")
+                                             .testCasePass("0")
+                                             .runtime(0L)
+                                             .memoryUsage((float) 0)
+                                             .problemName("")
+                                             .contestSubmissionID(null)
+                                             .submittedAt(null)
+                                             .score(0)
+                                             .numberTestCasePassed(0)
+                                             .totalNumberTestCase(0)
+                                             .build();
+    }
+    private ModelContestSubmissionResponse buildSubmissionResponseReachMaxSourceLength(int sourceLength, int maxLength) {
+        return ModelContestSubmissionResponse.builder()
+                                             .status("MAX_SOURCE_CODE_LENGTH_VIOLATIONS")
+                                             .message("Max source code length violations " + sourceLength + " exceeded "
+                                                      + maxLength + " ")
+                                             .testCasePass("0")
+                                             .runtime(0L)
+                                             .memoryUsage((float) 0)
+                                             .problemName("")
+                                             .contestSubmissionID(null)
+                                             .submittedAt(null)
+                                             .score(0)
+                                             .numberTestCasePassed(0)
+                                             .totalNumberTestCase(0)
+                                             .build();
+    }
+
+    @GetMapping("/test-jmeter")
+    public ResponseEntity<?> testJmeter(@RequestParam String s) {
+        s = s.concat("Hello");
+        return ResponseEntity.ok().body(s);
     }
 
     @GetMapping("/evaluate-submission/{submissionId}")

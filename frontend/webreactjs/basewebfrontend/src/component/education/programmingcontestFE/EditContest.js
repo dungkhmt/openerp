@@ -267,6 +267,11 @@ export default function EditContest(props) {
 
   const [maxSourceCodeLength, setMaxSourceCodeLength] = useState(50000);
 
+  const [minTimeBetweenTwoSubmissions, setMinTimeBetweenTwoSubmissions] =
+    useState();
+  const [judgeMode, setJudgeMode] = useState(null);
+  const [listJudgeModes, setListJudgeModes] = useState([]);
+
   const classes = useStyles();
   const handleClick = (event, name) => {
     const selectedIndex = problemSelected.indexOf(name);
@@ -307,6 +312,8 @@ export default function EditContest(props) {
       useCacheContestProblem: useCacheContestProblem,
       maxSourceCodeLength: maxSourceCodeLength,
       evaluateBothPublicPrivateTestcase: evaluateBothPublicPrivateTestcase,
+      minTimeBetweenTwoSubmissions: minTimeBetweenTwoSubmissions,
+      judgeMode: judgeMode,
     };
     request(
       "post",
@@ -355,6 +362,8 @@ export default function EditContest(props) {
       setMaxNumberSubmission(res.data.maxNumberSubmission);
       setListMaxNumberSubmissions(res.data.listMaxNumberSubmissions);
       setProblemDescriptionViewType(res.data.problemDescriptionViewType);
+      setMinTimeBetweenTwoSubmissions(res.data.minTimeBetweenTwoSubmissions);
+      setJudgeMode(res.data.judgeMode);
       setListProblemDescriptionViewTypes(
         res.data.listProblemDescriptionViewTypes
       );
@@ -367,6 +376,8 @@ export default function EditContest(props) {
       setListEvaluateBothPublicPrivateTestcases(
         res.data.listEvaluateBothPublicPrivateTestcases
       );
+      setListJudgeModes(res.data.listJudgeModes);
+
       console.log("res ", res.data);
     }).then();
   }, [page]);
@@ -502,6 +513,18 @@ export default function EditContest(props) {
                 }}
                 value={maxSourceCodeLength}
               ></TextField>
+              <TextField
+                autoFocus
+                // required
+
+                id="minTimeBetweenTwoSubmissions"
+                label="minTimeBetweenTwoSubmissions"
+                placeholder="minTimeBetweenTwoSubmissions"
+                onChange={(event) => {
+                  setMinTimeBetweenTwoSubmissions(event.target.value);
+                }}
+                value={minTimeBetweenTwoSubmissions}
+              ></TextField>
 
               <TextField
                 autoFocus
@@ -516,6 +539,24 @@ export default function EditContest(props) {
                 value={participantViewResultMode}
               >
                 {listParticipantViewResultModes.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                autoFocus
+                // required
+                select
+                id="judgeMode"
+                label="judgeMode"
+                placeholder="JudgeMode"
+                onChange={(event) => {
+                  setJudgeMode(event.target.value);
+                }}
+                value={judgeMode}
+              >
+                {listJudgeModes.map((item) => (
                   <MenuItem key={item} value={item}>
                     {item}
                   </MenuItem>

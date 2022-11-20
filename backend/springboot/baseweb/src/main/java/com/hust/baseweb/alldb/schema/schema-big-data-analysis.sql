@@ -1,0 +1,20 @@
+create table data_quality_check(
+    id uuid not null default uuid_generate_v1(),
+    table_id varchar(100),
+    table_name varchar(500),
+    rule_id varchar(100),
+    rule_description varchar(500),
+    param1 varchar(100),
+    param2 varchar(100),
+    param3 varchar(100),
+    param4 varchar(100),
+    param5 varchar(100),
+    param6 varchar(100),
+    param7 varchar(100),
+    param8 varchar(100),
+    param9 varchar(100),
+    param10 varchar(100),
+    last_updated_stamp         timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_stamp              timestamp DEFAULT CURRENT_TIMESTAMP,
+    constraint pk_data_quality_check primary key (table_id)
+);
