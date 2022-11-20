@@ -59,7 +59,7 @@ public interface ContestSubmissionRepo extends JpaRepository<ContestSubmissionEn
         nativeQuery = true,
         value = "SELECT ct.contest_id contestId, ct.contest_name contestName, p.problem_id problemId, p.problem_name problemName, " +
                     "CAST(cts.contest_submission_id as VARCHAR(64)) submissionId, cts.status status, cts.test_case_pass testCasePass, cts.point point, " +
-                    "cts.source_code_language sourceCodeLanguge, cts.created_stamp submitAt " +
+                    "cts.source_code_language sourceCodeLanguage, cts.created_stamp submitAt " +
                 "FROM contest_submission_new cts " +
                     "INNER JOIN contest_new ct ON cts.user_submission_id = :studentLoginId AND cts.contest_id = ct.contest_id " +
                     "INNER JOIN contest_problem_new p ON cts.problem_id = p.problem_id " +

@@ -8,7 +8,7 @@ import {useHistory} from "react-router-dom";
 
 export default function StudentList(props) {
   const history = useHistory();
-  const [studentsOfCurrentPage, setStudentsOfCurrentPage] = useState([]);
+  const [studentsOfCurrentPage, setStudentsOfCurrentPage] = useState({ content: [], totalElements: 0 });
   const [filterParams, setFilterParams] = useState({ search: '', page: 0, size: 20 });
 
   useEffect(getStudentsOfCurrentPage, [filterParams]);
@@ -18,7 +18,10 @@ export default function StudentList(props) {
       securityGroups: "ROLE_STUDENT,ROLE_EDUCATION_LEARNING_MANAGEMENT_STUDENT",
       ...filterParams
     }
-    let successHandler = res => setStudentsOfCurrentPage(res.data.content);
+    let successHandler = res => setStudentsOfCurrentPage({
+      content: res.data.content,
+      totalElements: res.data.totalElements
+    });
     let errorHandlers = {
       onError: (error) => errorNoti("Đã xảy ra lỗi trong khi tải dữ liệu!", 3000)
     }
@@ -43,7 +46,7 @@ export default function StudentList(props) {
           <StandardTable
             title="Danh sách sinh viên"
             columns={columns}
-            data={studentsOfCurrentPage}
+            data={studentsOfCurrentPage.content}
             hideCommandBar
             options={{
               selection: false,
@@ -53,8 +56,9 @@ export default function StudentList(props) {
               searchText: filterParams.search,
               debounceInterval: 300
             }}
-            onPageChange={ page => setFilterParams({...filterParams, page})}
-            onRowsPerPageChange={ size => setFilterParams({...filterParams, size }) }
+            page={filterParams.page}
+            totalCount={studentsOfCurrentPage.totalElements}
+            onChangePage={ (page, size) => setFilterParams({...filterParams, page, size}) }
             onSearchChange={ search => setFilterParams({page: 0, size: filterParams.size, search}) }
             onRowClick={ (event, student) => navigateToLeaningProfilesPageOfStudent(student.userLoginId) }
           />
