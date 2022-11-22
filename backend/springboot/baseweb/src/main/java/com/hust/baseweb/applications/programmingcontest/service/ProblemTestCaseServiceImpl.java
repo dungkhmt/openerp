@@ -1284,6 +1284,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .runtime(0L)
                                                            .createdAt(submitTime)
                                                            .build();
+        log.info("submitContestProblemTestCaseByTestCaseWithFile, save submission to DB");
         submission = contestSubmissionRepo.save(submission);
 
         ModelContestSubmissionMessage msg = new ModelContestSubmissionMessage();

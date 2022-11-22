@@ -782,8 +782,10 @@ public class ContestProblemController {
         ContestEntity contestEntity = contestRepo.findContestByContestId(model.getContestId());
         if (contestEntity.getJudgeMode() != null &&
             contestEntity.getJudgeMode().equals(ContestEntity.ASYNCHRONOUS_JUDGE_MODE_QUEUE)) {
+            log.info("contestSubmitProblemViaUploadFileV3, mode using queue");
             return contestSubmitProblemViaUploadFileV2(principal, inputJson, file);
         }
+        log.info("contestSubmitProblemViaUploadFileV3, mode synchronous, NOT using queue");
         return contestSubmitProblemViaUploadFile(principal, inputJson, file);
     }
 
