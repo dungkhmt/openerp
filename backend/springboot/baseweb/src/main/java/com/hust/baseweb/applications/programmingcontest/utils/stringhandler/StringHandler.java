@@ -3,8 +3,10 @@ package com.hust.baseweb.applications.programmingcontest.utils.stringhandler;
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.TextStringBuilder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -55,8 +57,9 @@ public class StringHandler {
                                 .testCasePass("1/1")
                                 .build();
     }
+
     public static ProblemSubmission handleContestResponse(String response, List<String> testCaseAns, List<Integer> points){
-        //log.info("handleContestResponse, response {}", response);
+        // log.info("handleContestResponse, response {}", response);
         String orignalMessage = response;
         response = response.substring(0, response.length()-1);
         int lastIndex = response.lastIndexOf("\n");
@@ -66,7 +69,6 @@ public class StringHandler {
         } else {
             status = response.substring(lastIndex);
         }
-        //log.info("status {}", status);
         if (status.contains("Compile Error")) {
             return buildCompileErrorForSubmission(testCaseAns.size(), orignalMessage);
         }
@@ -87,10 +89,8 @@ public class StringHandler {
             String a = replaceSpace(testCaseAns.get(i));
             String b = replaceSpace(ans[i]);
             if(!a.equals(b)){
-                //if(status == null && ans[i].contains("Time Limit Exceeded")){
                 if(status == null && ans[i].contains(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)){
                     status = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
-                //}else if(!ans[i].contains("Time Limit Exceeded")){
                 }else if(!ans[i].contains(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)){
                     status = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
                 }
@@ -101,7 +101,6 @@ public class StringHandler {
         }
 
         if(status == null){
-            //status = "Accept";
             status = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
         }
         return ProblemSubmission.builder()
@@ -113,6 +112,66 @@ public class StringHandler {
                                 .nbTestCasePass(cnt)
                                 .testCaseAns(testCaseAns)
                                 .participantAns(participantAns)
+                                .build();
+    }
+
+    public static ProblemSubmission handleContestResponseV2(String response, List<String> testCaseAns, List<Integer> points) {
+        // log.info("handleContestResponse, response {}", response);
+        String originalMessage = response;
+
+        //remove the last '\n' character
+        response = response.substring(0, response.length() - 1);
+        int lastNewLineIndex = response.lastIndexOf("\n");
+        String status;
+
+        if (lastNewLineIndex < 0) {
+            return buildCompileErrorForSubmission(testCaseAns.size(), originalMessage);
+        } else {
+            status = response.substring(lastNewLineIndex);
+        }
+
+        if (status.contains(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
+            return buildCompileErrorForSubmission(testCaseAns.size(), originalMessage);
+        }
+
+        String responseWithoutStatus = response.substring(0, lastNewLineIndex);
+        int runTimeIndex = responseWithoutStatus.lastIndexOf("\n");
+        String runtimeString = responseWithoutStatus.substring(runTimeIndex + 1);
+        Long runtime = Long.parseLong(runtimeString);
+
+        String participantAns = responseWithoutStatus.substring(0, runTimeIndex);
+        String[] ansArray = participantAns.split(Constants.SPLIT_TEST_CASE);
+
+        status = null;
+        int cnt = 0;
+        int score = 0;
+        for (int i = 0; i < testCaseAns.size(); i++) {
+            String correctTestcaseAns = replaceSpaceV2(testCaseAns.get(i));
+            String participantTestcaseAns = replaceSpaceV2(ansArray[i]);
+            if (!correctTestcaseAns.equals(participantTestcaseAns)) {
+                if (status == null && ansArray[i].contains(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)) {
+                    status = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
+                } else if (!ansArray[i].contains(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)) {
+                    status = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
+                }
+            } else {
+                score += points.get(i);
+                cnt++;
+            }
+        }
+
+        if (status == null) {
+            status = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
+        }
+        return ProblemSubmission.builder()
+                                .runtime(runtime)
+                                .score(score)
+                                .status(status)
+                                .message(originalMessage)
+                                .testCasePass(cnt + "/" + testCaseAns.size())
+                                .nbTestCasePass(cnt)
+                                .testCaseAns(testCaseAns)
+                                .participantAns(Arrays.asList(ansArray))
                                 .build();
     }
 
@@ -133,6 +192,18 @@ public class StringHandler {
 
         s = s.replaceAll("\n", " ");
         return s.replaceAll("( +)", " ").trim();
+
+    }
+
+    private static String replaceSpaceV2(String s) {
+        if (s == null) return null;
+
+        TextStringBuilder stringBuilder = new TextStringBuilder(s);
+
+        stringBuilder.replaceAll("\n", " ");
+        stringBuilder.replaceAll("( +)", " ").trim();
+//        s = s.replaceAll("\n", " ");
+        return stringBuilder.toString();
 
     }
 

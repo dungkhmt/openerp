@@ -198,6 +198,14 @@
             <version>3.11</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.10.0</version>
+        </dependency>
+
+
         <!--Test - 2 dependencies-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
