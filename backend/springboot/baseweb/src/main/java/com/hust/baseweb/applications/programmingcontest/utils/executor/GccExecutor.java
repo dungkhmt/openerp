@@ -108,12 +108,12 @@ public class GccExecutor {
     }
 
     public String genSubmitScriptFile(List<TestCaseEntity> testCaseEntities, String source, String tmpName, int timeLimit){
-        String genTestCase = "";
-        for(int i = 0; i < testCaseEntities.size(); i++){
+        StringBuilder genTestCase = new StringBuilder();
+        for (int i = 0; i < testCaseEntities.size(); i++) {
             String testcase = "cat <<EOF >> testcase" + i + ".txt \n"
-                              + testCaseEntities.get(i).getTestCase() +"\n"
-                              +"EOF" + "\n";
-            genTestCase += testcase;
+                              + testCaseEntities.get(i).getTestCase() + "\n"
+                              + "EOF" + "\n";
+            genTestCase.append(testcase);
         }
         String sourceSH = SHFileStart
                           + "mkdir -p " + tmpName + "\n"

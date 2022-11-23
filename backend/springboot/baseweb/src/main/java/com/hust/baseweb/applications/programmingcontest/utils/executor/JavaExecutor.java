@@ -59,12 +59,12 @@ public class JavaExecutor {
     }
 
     public String genSubmitScriptFile(List<TestCaseEntity> testCases, String source, String tmpName, int timeout){
-        String genTestCase = "";
-        for(int i = 0; i < testCases.size(); i++){
+        StringBuilder genTestCase = new StringBuilder();
+        for (int i = 0; i < testCases.size(); i++) {
             String testcase = "cat <<EOF >> testcase" + i + ".txt \n"
-                              + testCases.get(i).getTestCase() +"\n"
-                              +"EOF" + "\n";
-            genTestCase += testcase;
+                              + testCases.get(i).getTestCase() + "\n"
+                              + "EOF" + "\n";
+            genTestCase.append(testcase);
         }
         String sourceSH = SHFileStart
                           + "mkdir -p " + tmpName + "\n"
