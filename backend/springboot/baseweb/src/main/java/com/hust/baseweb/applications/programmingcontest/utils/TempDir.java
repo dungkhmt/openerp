@@ -26,23 +26,13 @@ public class TempDir {
 
     private static final String TEMPDIR = "./temp_dir/";
 
-    private static final int RANDOM_LENGTH = 5;
+    private final GccExecutor gccExecutor = new GccExecutor();
 
-    private static final int maxVal = 99999;
+    private final JavaExecutor javaExecutor = new JavaExecutor();
 
-    private static final int minVal = 10000;
+    private final Python3Executor python3Executor = new Python3Executor();
 
-    private static final String SHFileStart = "#!/bin/bash\n";
-
-    private OfInt r = new Random().ints(minVal, maxVal).iterator();
-
-    private GccExecutor gccExecutor = new GccExecutor();
-
-    private JavaExecutor javaExecutor = new JavaExecutor();
-
-    private Python3Executor python3Executor = new Python3Executor();
-
-    private GolangExecutor golangExecutor = new GolangExecutor();
+    private final GolangExecutor golangExecutor = new GolangExecutor();
 
     public static ConcurrentLinkedQueue<String> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
