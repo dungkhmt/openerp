@@ -117,29 +117,25 @@ public class StringHandler {
 
     public static ProblemSubmission handleContestResponseV2(String response, List<String> testCaseAns, List<Integer> points) {
         // log.info("handleContestResponse, response {}", response);
+        if (response.length() == 0) throw new IllegalArgumentException("Docker Judging client error");
+
         String originalMessage = response;
 
-        //remove the last '\n' character
+        //remove the last '\n' character, which is redundant
         response = response.substring(0, response.length() - 1);
-        int lastNewLineIndex = response.lastIndexOf("\n");
-        String status;
-
-        if (lastNewLineIndex < 0) {
-            return buildCompileErrorForSubmission(testCaseAns.size(), originalMessage);
-        } else {
-            status = response.substring(lastNewLineIndex);
-        }
+        int statusIndex = response.lastIndexOf("\n") + 1;
+        String status = response.substring(statusIndex);
 
         if (status.contains(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
             return buildCompileErrorForSubmission(testCaseAns.size(), originalMessage);
         }
 
-        String responseWithoutStatus = response.substring(0, lastNewLineIndex);
-        int runTimeIndex = responseWithoutStatus.lastIndexOf("\n");
-        String runtimeString = responseWithoutStatus.substring(runTimeIndex + 1);
+        String responseWithoutStatus = response.substring(0, statusIndex - 1);
+        int runTimeIndex = responseWithoutStatus.lastIndexOf("\n") + 1;
+        String runtimeString = responseWithoutStatus.substring(runTimeIndex);
         Long runtime = Long.parseLong(runtimeString);
 
-        String participantAns = responseWithoutStatus.substring(0, runTimeIndex);
+        String participantAns = responseWithoutStatus.substring(0, runTimeIndex - 1);
         String[] ansArray = participantAns.split(Constants.SPLIT_TEST_CASE);
 
         status = null;
