@@ -1366,6 +1366,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 if (problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")) {
                     message = problemSubmission.getMessage();
                     compileError = true;
+                    //log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Compiler Error, msg  = " + message);
                     break;
                 }
             }
@@ -1428,6 +1429,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         if (compileError) {
             // keep compile error message above
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
+            //log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Summary Compile error " + message);
         } else if (nbTestCasePass == 0) {
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
         } else if (nbTestCasePass > 0 && nbTestCasePass < testCaseEntityList.size()) {
@@ -1445,6 +1447,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         submissionEntity.setSourceCode(modelContestSubmission.getSource());
         submissionEntity.setSourceCodeLanguage(modelContestSubmission.getLanguage());
         submissionEntity.setRuntime((long) runtime);
+        submissionEntity.setMessage(message);
         submissionEntity = contestSubmissionRepo.save(submissionEntity);
 
 //        for (ContestSubmissionTestCaseEntity e : LCSTE) {
