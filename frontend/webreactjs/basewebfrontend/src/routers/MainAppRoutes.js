@@ -16,6 +16,7 @@ import ChatRoute from "./ChatRoute";
 import WMSRoute from "./WMSRoute";
 import TaskManagementRoute from "./TaskManagementRoute";
 import WhiteBoardRoute from "./WhiteBoardRoute";
+import BigDataAnalysisRoute from "./BigDataAnalysisRoutes";
 
 // const NotFound = lazy(() => import("../views/errors/NotFound"));
 // const AccountActivationRoute = lazy(() => import("./AccountActivationRoute"));
@@ -83,10 +84,12 @@ function MainAppRoute(props) {
             component={ProgrammingContestRoutes}
             path="/programming-contest"
           />
+          <PrivateRoute component={ThesisRoutes} path="/thesis" />
           <PrivateRoute
-            component={ThesisRoutes}
-            path="/thesis"
+            component={BigDataAnalysisRoute}
+            path="/bigdataanalysis"
           />
+
           <PrivateRoute
             component={TestGroupRoute}
             isAuthenticated={props.isAuthenticated}
