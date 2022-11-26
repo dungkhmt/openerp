@@ -59,14 +59,6 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(null);
     }
 
-    @PostMapping("/add-problem-language-source-code/{problemId}")
-    public ResponseEntity<?> addProblemLanguageSourceCode(
-            @PathVariable("problemId") String problemId,
-            @RequestBody ModelAddProblemLanguageSourceCode modelAddProblemLanguageSourceCode) throws Exception {
-        problemTestCaseService.updateProblemSourceCode(modelAddProblemLanguageSourceCode, problemId);
-        return ResponseEntity.status(200).body(null);
-    }
-
     @PostMapping("/get-test-case-result/{problemId}")
     public ResponseEntity<?> getTestCaseResult(@PathVariable("problemId") String problemId,
             @RequestBody ModelGetTestCaseResult testCaseResult, Principal principal) throws Exception {

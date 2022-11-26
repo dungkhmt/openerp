@@ -16,11 +16,4 @@ public interface TestCaseRepo extends JpaRepository<TestCaseEntity, UUID> {
 
     List<TestCaseEntity> findAllByProblemIdAndIsPublicAndStatusId(String problemId, String isPublic, String statusId);
 
-
-//    @Query("delete from TestCaseEntity t where t.problemId = :problemId")
-//    void deleteAllTestCasesByProblemId(@PathVariable("problemId") String problemId);
-
-    void deleteAllByProblemId(String problemId);
-
-    void deleteTestCaseEntityByTestCaseId(UUID testCaseId);
 }

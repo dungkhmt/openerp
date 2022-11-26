@@ -48,7 +48,6 @@ import java.util.stream.Collectors;
 public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private final ProblemRepo problemRepo;
     private TestCaseRepo testCaseRepo;
-    private ProblemSourceCodeRepo problemSourceCodeRepo;
     private DockerClientBase dockerClientBase;
     private TempDir tempDir;
     private ProblemPagingAndSortingRepo problemPagingAndSortingRepo;
@@ -199,28 +198,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
 
-
-    @Override
-    public void updateProblemSourceCode(ModelAddProblemLanguageSourceCode modelAddProblemLanguageSourceCode, String problemId) {
-//        ProblemSourceCode problemSourceCode = new ProblemSourceCode();
-//        problemSourceCode.setProblemSourceCodeId(modelAddProblemLanguageSourceCode.getProblemSourceCodeId());
-//        problemSourceCode.setMainSource(modelAddProblemLanguageSourceCode.getMainSource());
-//        problemSourceCode.setBaseSource(modelAddProblemLanguageSourceCode.getBaseSource());
-//        problemSourceCode.setLanguage(modelAddProblemLanguageSourceCode.getLanguage());
-//        problemSourceCode.setProblemFunctionDefaultSource(modelAddProblemLanguageSourceCode.getProblemFunctionDefaultSource());
-//        problemSourceCode.setProblemFunctionSolution(modelAddProblemLanguageSourceCode.getProblemFunctionSolution());
-//        ContestProblem contestProblem = contestProblemRepo.findByProblemId(problemId);
-//        if(contestProblem.getProblemSourceCode() == null){
-//            ArrayList<ProblemSourceCode> problemSourceCodes = new ArrayList<ProblemSourceCode>();
-//            problemSourceCodes.add(problemSourceCode);
-//            contestProblem.setProblemSourceCode(problemSourceCodes);
-//        }else{
-//            contestProblem.getProblemSourceCode().add(problemSourceCode);
-//        }
-//        problemSourceCodeRepo.save(problemSourceCode);
-//        contestProblemRepo.save(contestProblem);
-    }
-
     @Override
     public Page<ProblemEntity> getContestProblemPaging(Pageable pageable){
         return problemPagingAndSortingRepo.findAll(pageable);
@@ -230,24 +207,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public List<ProblemEntity> getAllProblems() {
         List<ProblemEntity> problems = problemRepo.findAll();
         return problems;
-    }
-
-    @Override
-    public ProblemEntity findContestProblemByProblemId(String problemId) throws Exception {
-        try {
-            return problemRepo.findByProblemId(problemId);
-        }catch (Exception e){
-            throw new Exception(e.toString());
-        }
-    }
-
-    @Override
-    public void saveTestCase(TestCaseEntity testCase) throws Exception {
-        try {
-            testCaseRepo.save(testCase);
-        }catch (Exception e){
-            throw new Exception(e.toString());
-        }
     }
 
     @Override
@@ -1343,7 +1302,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         int nbTestCasePass = 0;
         String totalStatus = "";
         List<String> statusList = new ArrayList<>();
-        List<ContestSubmissionTestCaseEntity> LCSTE = new ArrayList();
         String message = "";
         boolean compileError = false;
 
@@ -1410,7 +1368,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                                   .createdStamp(submission.getCreatedAt())
                                                                                   .build();
             cste = contestSubmissionTestCaseEntityRepo.save(cste);
-            LCSTE.add(cste);
         }
         boolean accepted = true;
 
@@ -1462,7 +1419,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public ModelContestSubmissionResponse submitContestProblemStoreOnlyNotExecute(
         ModelContestSubmission modelContestSubmission,
         String userName
-    ) throws Exception {
+    ) {
         String problemId = modelContestSubmission.getProblemId();
         String contestId = modelContestSubmission.getContestId();
         ContestEntity contest = contestRepo.findContestByContestId(modelContestSubmission.getContestId());
@@ -1476,7 +1433,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .testCasePass("")
                                                            .sourceCode(modelContestSubmission.getSource())
                                                            .sourceCodeLanguage(modelContestSubmission.getLanguage())
-                                                           .runtime(new Long(0))
+                                                           .runtime(0L)
                                                            .createdAt(new Date())
                                                            .build();
         c = contestSubmissionRepo.save(c);
@@ -1796,7 +1753,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public boolean approveRegisteredUser2Contest(
         String teacherId,
         ModelApproveRegisterUser2ContestInput input
-    ) throws MiniLeetCodeException {
+    ) {
 
         UserRegistrationContestEntity u = userRegistrationContestRepo.findById(input.getId()).orElse(null);
         if(u != null){
@@ -2316,38 +2273,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         res.setProblemIds(problemIds);
         res.setProblems(contest.getProblems());
         return res;
-    }
-
-    @Override
-    @Transactional
-    public void deleteProblem(String problemId, String userId) throws MiniLeetCodeException {
-        ProblemEntity problem = problemRepo.findByProblemId(problemId);
-        if(problem.getUserId().equals(userId)){
-            try {
-                testCaseRepo.deleteAllByProblemId(problemId);
-                problemRepo.deleteProblemEntityByProblemId(problemId);
-            }catch (Exception e){
-                throw new MiniLeetCodeException("Problem exist in some contest");
-            }
-
-        }
-        else
-            throw new MiniLeetCodeException("Permission denied");
-    }
-
-    @Override
-    @Transactional
-    public void deleteContest(String contestId, String userId) throws MiniLeetCodeException {
-        ContestEntity contest = contestRepo.findContestByContestId(contestId);
-        if(!contest.getUserId().equals(userId)){
-            throw new MiniLeetCodeException("Permission denied");
-        }
-        userSubmissionContestResultNativeRepo.deleteAllByContestId(contestId);
-        userRegistrationContestRepo.deleteAllByContestId(contestId);
-        contestSubmissionRepo.deleteAllByContestId(contestId);
-        contestRepo.deleteByContestIdAndUserId(contestId, userId);
-
-
     }
 
     @Override
@@ -2917,7 +2842,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     private ModelGetTestCase convertToModelGetTestCase(TestCaseEntity testCaseEntity){
-        boolean viewMore = false;
         String correctAns = testCaseEntity.getCorrectAnswer();
         String testCase = testCaseEntity.getTestCase();
         int point = testCaseEntity.getTestCasePoint();
@@ -2928,7 +2852,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .point(point)
                 .isPublic(testCaseEntity.getIsPublic())
                                .status(testCaseEntity.getStatusId())
-                .viewMore(viewMore)
+                .viewMore(false)
                 .testCaseId(testCaseEntity.getTestCaseId())
                                .description(testCaseEntity.getDescription())
                 .build();
@@ -3001,16 +2925,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .build();
     }
 
-    private List<ProblemEntity> getContestProblemsFromListContestId(List<String> problemIds) throws MiniLeetCodeException {
-//        List<ProblemEntity> problemEntities = new ArrayList<>();
-//        for(String problemId : problemIds){
-//            ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
-//            if(problemEntity == null){
-//                throw new MiniLeetCodeException("Problem " + problemId +" does not exist");
-//            }
-//            problemEntities.add(problemEntity);
-//        }
-//        return problemEntities;
+    private List<ProblemEntity> getContestProblemsFromListContestId(List<String> problemIds) {
         return problemRepo.getAllProblemWithArray(problemIds);
     }
 
@@ -3214,12 +3129,14 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             //ModelSimilarityClusterOutput c = new ModelSimilarityClusterOutput();
             //c.setProblemId(p.getProblemId());
             //c.setClusters(connectedComponents);
-            for(List<String> cc: connectedComponents) {
+            for (List<String> cc : connectedComponents) {
                 ModelSimilarityClusterOutput c = new ModelSimilarityClusterOutput();
                 c.setProblemId(p.getProblemId());
-                String userIds = "";
-                for(String s: cc) userIds = userIds + s + ", ";
-                c.setUserIds(userIds);
+                StringBuilder userIds = new StringBuilder();
+                for (String s : cc) {
+                    userIds.append(s).append(", ");
+                }
+                c.setUserIds(userIds.toString());
                 res.add(c);
             }
         }
@@ -3506,9 +3423,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         for(String userId: mUserId2Submission.keySet()){
             if(mUserId2Submission.get(userId) != null) {
-                for (ModelUserJudgedProblemSubmissionResponse m : mUserId2Submission.get(userId)) {
-                    res.add(m);
-                }
+                res.addAll(mUserId2Submission.get(userId));
             }
         }
         return res;
