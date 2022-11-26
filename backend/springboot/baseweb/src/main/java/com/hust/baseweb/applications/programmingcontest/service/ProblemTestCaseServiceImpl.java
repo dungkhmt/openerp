@@ -1356,12 +1356,20 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 "language not found",
                 problemEntity.getTimeLimit());
 
-            List<String> testCaseAns = L.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
-            List<Integer> points = L.stream().map(TestCaseEntity::getTestCasePoint).collect(Collectors.toList());
+            List<String> testCaseAns = Collections.singletonList(testCaseEntity.getCorrectAnswer());
+            List<Integer> points = Collections.singletonList(testCaseEntity.getTestCasePoint());
 
             ProblemSubmission problemSubmission = new ProblemSubmission();
             try {
-                problemSubmission = StringHandler.handleContestResponse(response, testCaseAns, points);
+                // int mb = 1000 * 1000;
+                // MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+
+                problemSubmission = StringHandler.handleContestResponseV2(response, testCaseAns, points);
+                
+                // long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
+                // long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
+                // System.out.println("Memory used / committed :  " + used + "mb / " + committed + "mb");
+
                 if (problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")) {
                     message = problemSubmission.getMessage();
                     compileError = true;
@@ -1391,7 +1399,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                                   .testCaseId(testCaseEntity.getTestCaseId())
                                                                                   .submittedByUserLoginId(userId)
                                                                                   .point(problemSubmission.getScore())
-                                                                                  .status(problemSubmission.getStatus().replaceAll("\u0000", ""))
+                                                                                  .status(problemSubmission.getStatus())
                                                                                   .testCaseOutput(testCaseEntity.getCorrectAnswer().replaceAll("\u0000", ""))
                                                                                   .participantSolutionOtput(participantAns.replaceAll("\u0000", ""))
                                                                                   .runtime(problemSubmission.getRuntime())
@@ -1402,21 +1410,18 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         boolean accepted = true;
 
-        label:
         for (String s : statusList) {
-            switch (s) {
-                case ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR:
-                    totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
-                    accepted = false;
-                    break label;
-                case ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED:
-                    totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
-                    accepted = false;
-                    break label;
-                case ContestSubmissionEntity.SUBMISSION_STATUS_WRONG:
-                    totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
-                    accepted = false; //break;
-                    break;
+            if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
+                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
+                accepted = false;
+                break;
+            } else if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)) {
+                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
+                accepted = false;
+                break;
+            } else if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_WRONG)) {
+                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
+                accepted = false; //break;
             }
         }
 
@@ -1444,26 +1449,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         submissionEntity.setSourceCode(modelContestSubmission.getSource());
         submissionEntity.setSourceCodeLanguage(modelContestSubmission.getLanguage());
         submissionEntity.setRuntime((long) runtime);
-        submissionEntity = contestSubmissionRepo.save(submissionEntity);
-
-//        for (ContestSubmissionTestCaseEntity e : LCSTE) {
-//            e.setContestSubmissionId(submissionEntity.getContestSubmissionId());
-//            e = contestSubmissionTestCaseEntityRepo.save(e);
-//        }
-
-        ModelContestSubmissionResponse.builder()
-                                      .status(totalStatus)
-                                      .message(message)
-                                      .testCasePass(submissionEntity.getTestCasePass())
-                                      .runtime(runtime)
-                                      .memoryUsage(submissionEntity.getMemoryUsage())
-                                      .problemName(problemEntity.getProblemName())
-                                      .contestSubmissionID(submissionEntity.getContestSubmissionId())
-                                      .submittedAt(submissionEntity.getCreatedAt())
-                                      .score(score)
-                                      .numberTestCasePassed(nbTestCasePass)
-                                      .totalNumberTestCase(testCaseEntityList.size())
-                                      .build();
+        submissionEntity.setMessage(message);
+        contestSubmissionRepo.save(submissionEntity);
     }
 
     @Override
@@ -3025,7 +3012,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
     private String submission(String source, String computerLanguage, String tempName, List<TestCaseEntity> testCaseList, String exception, int timeLimit) throws Exception {
         String ans;
-        tempName = tempName.replaceAll(" ","");
+        tempName = tempName.replace(" ","");
         switch (computerLanguage){
             case "CPP":
                 tempDir.createScriptSubmissionFile(ComputerLanguage.Languages.CPP, tempName, testCaseList, source, timeLimit);
