@@ -17,14 +17,8 @@ public interface ProblemTestCaseService {
 
     ProblemEntity updateContestProblem(String problemId, String userId, String json, MultipartFile[] files) throws Exception;
 
-    void updateProblemSourceCode(ModelAddProblemLanguageSourceCode modelAddProblemLanguageSourceCode, String problemId);
-
     Page<ProblemEntity> getContestProblemPaging(Pageable pageable);
     List<ProblemEntity> getAllProblems();
-
-    ProblemEntity findContestProblemByProblemId(String problemId) throws Exception;
-
-    void saveTestCase(TestCaseEntity testCase) throws Exception;
 
     String executableIDECode(ModelRunCodeFromIDE modelRunCodeFromIDE, String userName, String computerLanguage) throws Exception;
 
@@ -126,10 +120,6 @@ public interface ProblemTestCaseService {
 
     ModelGetContestInfosOfSubmissionOutput getContestInfosOfASubmission(UUID submissionId);
 
-    void deleteProblem(String problemId, String userId) throws MiniLeetCodeException;
-
-    void deleteContest(String contestId, String userId) throws MiniLeetCodeException;
-
     void deleteTestcase(UUID testcaseId, String userId) throws MiniLeetCodeException;
 
     ModelCodeSimilarityOutput checkSimilarity(String contestId, ModelCheckSimilarityInput I);
@@ -154,18 +144,18 @@ public interface ProblemTestCaseService {
     int addAdminToManagerAndParticipantAllContest();
 
     ModelUploadTestCaseOutput addTestCase(String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName);
-    public ModelUploadTestCaseOutput rerunCreateTestCaseSolution(String problemId, UUID testCaseId, String userId);
+    ModelUploadTestCaseOutput rerunCreateTestCaseSolution(String problemId, UUID testCaseId, String userId);
 
     ModelUploadTestCaseOutput uploadUpdateTestCase(UUID testCaseId, String testCase, ModelProgrammingContestUploadTestCase modelUploadTestCase, String userName);
 
-    public List<ModelUserJudgedProblemSubmissionResponse> getUserJudgedProblemSubmissions(String contestId);
+    List<ModelUserJudgedProblemSubmissionResponse> getUserJudgedProblemSubmissions(String contestId);
 
-    public ModelGetRolesOfUserInContestResponse getRolesOfUserInContest(String userId, String contestId);
+    ModelGetRolesOfUserInContestResponse getRolesOfUserInContest(String userId, String contestId);
 
-    public boolean removeMemberFromContest(UUID id);
-    public boolean forbidMemberFromSubmitToContest(UUID id);
+    boolean removeMemberFromContest(UUID id);
+    boolean forbidMemberFromSubmitToContest(UUID id);
 
-    public boolean updatePermissionMemberToContest(String userId, ModelUpdatePermissionMemberToContestInput input);
+    boolean updatePermissionMemberToContest(String userId, ModelUpdatePermissionMemberToContestInput input);
 
-    public boolean updateProblemContest(String userId, ModelUpdateProblemContestInput I);
+    boolean updateProblemContest(String userId, ModelUpdateProblemContestInput I);
 }
