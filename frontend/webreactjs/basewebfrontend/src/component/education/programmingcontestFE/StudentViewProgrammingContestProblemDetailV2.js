@@ -78,6 +78,9 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const [testCases, setTestCases] = useState([]);
   const [filename, setFilename] = useState("");
   const [language, setLanguage] = useState("CPP");
+  const [status, setStatus] = useState("");
+  const [message, setMessage] = useState("");
+
   const [openModal, setOpenModal] = useState(false);
   const [selectedTestcase, setSelectedTestcase] = useState();
   const token = useSelector((state) => state.auth.token);
@@ -117,13 +120,16 @@ export default function StudentViewProgrammingContestProblemDetail() {
       "/contest-submit-problem-via-upload-file-v3",
       formData
     )
-
-
       .then((res) => {
         alert("Submitted. Click REFRESH to see result");
         inputRef.current.value = null;
         if (res.status === "TIME_OUT") {
           alert("Time Out!!!");
+          setStatus(res.status);
+          setMessage(res.message);
+        } else {
+          setStatus(res.status);
+          setMessage(res.message);
         }
       })
       .catch((e) => {
@@ -488,6 +494,12 @@ export default function StudentViewProgrammingContestProblemDetail() {
             {isProcessing ? <CircularProgress /> : ""}
           </Grid>
         </form>
+        <div>
+          <h2>Status: {status}</h2>
+        </div>
+        <div>
+          <h2>Message: </h2> {message}
+        </div>
       </div>
       <div>
         <br></br>

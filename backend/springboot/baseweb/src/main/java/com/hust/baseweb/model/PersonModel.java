@@ -16,6 +16,8 @@ public class PersonModel {
 
     private String userName;
 
+    private String email;
+
     private String password;
 
     private List<String> roles;
@@ -37,4 +39,30 @@ public class PersonModel {
     public String getFullName(){
         return lastName + " " + middleName + " " + firstName;
     }
+
+    public PersonModel(
+        String userName,
+        String password,
+        List<String> roles,
+        String partyCode,
+        String firstName,
+        String lastName,
+        String middleName,
+        String gender,
+        Date birthDate,
+        String affiliations
+    ) {
+        this.userName = userName;
+        this.password = password;
+        this.roles = roles;
+        this.partyCode = partyCode;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.middleName = middleName;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.affiliations = affiliations;
+    }
+
+
 }

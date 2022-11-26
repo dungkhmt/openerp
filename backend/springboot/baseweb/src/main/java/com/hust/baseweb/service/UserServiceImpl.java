@@ -489,6 +489,12 @@ public class UserServiceImpl implements UserService {
             }
             log.info("findPersonByUserLoginId, found person {}", person);
             PersonModel personModel = new PersonModel();
+            personModel.setUserName(userLoginId);
+            if (userRegister != null) {
+                personModel.setEmail(userRegister.getEmail());
+            }
+            personModel.setGender(person.getGender());
+            personModel.setBirthDate(person.getBirthDate());
             personModel.setFirstName(person.getFirstName());
             personModel.setMiddleName(person.getMiddleName());
             personModel.setLastName(person.getLastName());
@@ -515,6 +521,12 @@ public class UserServiceImpl implements UserService {
         }
         return personModel;
          */
+    }
+
+    @Override
+    public Page<UserLoginWithPersonModel> findAllUserLoginWithPersonModelBySecurityGroupId(
+        Collection<String> securityGroupIds, String search, Pageable pageable) {
+        return userLoginRepo.findUserLoginWithPersonModelBySecurityGroupId(securityGroupIds, search, pageable);
     }
 
     @Override

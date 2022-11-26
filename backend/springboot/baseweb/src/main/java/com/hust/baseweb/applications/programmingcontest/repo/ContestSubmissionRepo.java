@@ -1,7 +1,10 @@
 package com.hust.baseweb.applications.programmingcontest.repo;
 
+import com.hust.baseweb.applications.admin.dataadmin.education.model.ProgrammingContestSubmissionOM;
 import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionEntity;
 import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -57,4 +60,28 @@ public interface ContestSubmissionRepo extends JpaRepository<ContestSubmissionEn
 
     @Query(value="select count(*) from contest_submission_new",nativeQuery=true)
     int countTotal();
+
+    @Query(
+        nativeQuery = true,
+        value = "SELECT ct.contest_id contestId, ct.contest_name contestName, p.problem_id problemId, p.problem_name problemName, " +
+                    "CAST(cts.contest_submission_id as VARCHAR(64)) submissionId, cts.status status, cts.test_case_pass testCasePass, cts.point point, " +
+                    "cts.source_code_language sourceCodeLanguage, cts.created_stamp submitAt " +
+                "FROM contest_submission_new cts " +
+                    "INNER JOIN contest_new ct ON cts.user_submission_id = :studentLoginId AND cts.contest_id = ct.contest_id " +
+                    "INNER JOIN contest_problem_new p ON cts.problem_id = p.problem_id " +
+                "WHERE LOWER(ct.contest_name) LIKE CONCAT('%', LOWER(:search), '%') " +
+                    "OR LOWER(p.problem_name) LIKE CONCAT('%', LOWER(:search), '%') " +
+                    "OR LOWER(CAST(cts.contest_submission_id as VARCHAR)) LIKE CONCAT('%', LOWER(:search), '%') " +
+                    "OR LOWER(cts.status) LIKE CONCAT('%', LOWER(:search), '%') " +
+                    "OR LOWER(cts.test_case_pass) LIKE CONCAT('%', LOWER(:search), '%') " +
+                    "OR LOWER(CAST(cts.point as VARCHAR(10))) LIKE CONCAT('%', LOWER(:search), '%') " +
+                    "OR LOWER(cts.source_code_language) LIKE CONCAT('%', LOWER(:search), '%') " +
+                    "OR LOWER(CAST(cts.created_stamp as VARCHAR)) LIKE CONCAT('%', LOWER(:search), '%')"
+
+    )
+    Page<ProgrammingContestSubmissionOM> findContestSubmissionsOfStudent(
+        @Param("studentLoginId") String studentLoginId,
+        @Param("search") String search,
+        Pageable pageable
+    );
 }

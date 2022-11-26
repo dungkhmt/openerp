@@ -48,11 +48,11 @@ export const DataAdministration = {
     },
     {
       id: "MENU_DATA_ADMIN_VIEW_LEARNING_PROFILE_USERS",
-      path: "/admin/data/view-learning-profile-users",
+      path: "/admin/data/view-learning-profiles/users",
       isPublic: false,
       icon: null,
-      text: "View User Learning Profiles",
-      child: [],
-    },
+      text: "View Users Learning Profiles",
+      child: []
+    }
   ],
 };

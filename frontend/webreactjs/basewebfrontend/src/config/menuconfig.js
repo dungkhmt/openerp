@@ -32,6 +32,7 @@ import { ThesisDefensePlanManagement } from "./menuconfig/Thesis_defense_plan_ma
 import { taskmanagement } from "./menuconfig/taskmanagement";
 import { warehouse } from "./menuconfig/warehouse";
 import { whiteboard } from "./menuconfig/whiteboard";
+import { bigdataanalysis } from "./menuconfig/bigdataanalysis";
 import {
   ProgrammingContestMenuTeacher,
   ProgrammingContestMenuStudent,
@@ -53,6 +54,7 @@ MENU_LIST.push(ThesisDefensePlanManagement);
 //MENU_LIST.push(ThesisDefenseJuryManagement);
 MENU_LIST.push(taskmanagement);
 MENU_LIST.push(whiteboard);
+MENU_LIST.push(bigdataanalysis);
 MENU_LIST.push(Chat);
 MENU_LIST.push(teachingassignment);
 // MENU_LIST.push(schedule);

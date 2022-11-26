@@ -903,9 +903,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         String viewSubmitSolutionOutputMode = "N";
         ContestProblem contestProblem = contestProblemRepo.findByContestIdAndProblemId(contestId, problemId);
         if(contestProblem != null){
-            if(contestProblem.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
-                viewSubmitSolutionOutputMode = "Y";
-            }
+            if(contestProblem.getSubmissionMode() != null)
+                if(contestProblem.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
+                    viewSubmitSolutionOutputMode = "Y";
+                }
         }
 
         List<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId((submissionId));
@@ -1235,6 +1236,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         ContestSubmissionEntity c = ContestSubmissionEntity.builder()
                                                            .contestId(modelContestSubmission.getContestId())
                                                            .status(totalStatus)
+                                                           .message(message)
                                                            .point(score)
                                                            .problemId(modelContestSubmission.getProblemId())
                                                            .userId(userName)
@@ -1284,6 +1286,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .runtime(0L)
                                                            .createdAt(submitTime)
                                                            .build();
+        log.info("submitContestProblemTestCaseByTestCaseWithFile, save submission to DB");
         submission = contestSubmissionRepo.save(submission);
 
         ModelContestSubmissionMessage msg = new ModelContestSubmissionMessage();
@@ -1365,7 +1368,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 // MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
 
                 problemSubmission = StringHandler.handleContestResponseV2(response, testCaseAns, points);
-                
+
                 // long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
                 // long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
                 // System.out.println("Memory used / committed :  " + used + "mb / " + committed + "mb");
@@ -1373,6 +1376,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 if (problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")) {
                     message = problemSubmission.getMessage();
                     compileError = true;
+                    log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Compiler Error, msg  = " + message);
                     break;
                 }
             }
@@ -1432,6 +1436,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         if (compileError) {
             // keep compile error message above
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
+            //log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Summary Compile error " + message);
         } else if (nbTestCasePass == 0) {
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
         } else if (nbTestCasePass > 0 && nbTestCasePass < testCaseEntityList.size()) {
