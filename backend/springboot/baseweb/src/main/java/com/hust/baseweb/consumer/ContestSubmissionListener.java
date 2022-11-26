@@ -7,6 +7,7 @@ import com.hust.baseweb.applications.programmingcontest.model.ModelContestSubmis
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import com.hust.baseweb.config.rabbitmq.ProblemContestRoutingKey;
 import com.hust.baseweb.config.rabbitmq.RabbitConfig;
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -63,8 +64,10 @@ public class ContestSubmissionListener {
     }
 
     private void sendMessageToDeadLetterQueue(Message message, Channel channel) throws IOException {
-        channel.basicPublish(RabbitConfig.DEAD_LETTER_EXCHANGE, ProblemContestRoutingKey.JUDGE_PROBLEM_DL, null,
-                message.getBody());
+        channel.basicPublish(RabbitConfig.DEAD_LETTER_EXCHANGE,
+                             ProblemContestRoutingKey.JUDGE_PROBLEM_DL,
+                             new AMQP.BasicProperties.Builder().deliveryMode(2).build(),
+                             message.getBody());
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
     }
 }
