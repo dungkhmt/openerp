@@ -11,6 +11,7 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,9 @@ public class ContestSubmissionListener {
 
     private final ObjectMapper objectMapper;
     private final ProblemTestCaseService problemTestCaseService;
+
+    @Value("${rabbit.RETRY_LIMIT}")
+    private int retryLimit = 3;
 
     public ContestSubmissionListener(
             ObjectMapper objectMapper,
@@ -33,7 +37,7 @@ public class ContestSubmissionListener {
     public void onMessage(
             Message message, String messageBody, Channel channel,
             @Header(required = false, name = "x-delivery-count") Integer deliveryCount) throws Exception {
-        if (deliveryCount == null || deliveryCount < 3) {
+        if (deliveryCount == null || deliveryCount < retryLimit) {
             retryMessage(message, messageBody, channel);
         } else {
             sendMessageToDeadLetterQueue(message, channel);

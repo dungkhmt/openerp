@@ -1,15 +1,10 @@
 package com.hust.baseweb.config.rabbitmq;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.amqp.core.AcknowledgeMode;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.FanoutExchange;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -17,14 +12,11 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class RabbitConfig {
@@ -94,6 +86,7 @@ public class RabbitConfig {
     public Queue judgeProblemQueue() {
         Map<String, Object> args = new HashMap<>();
         args.put("x-queue-type", "quorum");
+        args.put("x-overflow", "reject-publish");
         // args.put("x-dead-letter-exchange", DEAD_LETTER_EXCHANGE);
         // args.put("x-dead-letter-exchange", "");
         // args.put("x-dead-letter-routing-key", ProblemContestRoutingKey.JUDGE_PROBLEM_DL);
