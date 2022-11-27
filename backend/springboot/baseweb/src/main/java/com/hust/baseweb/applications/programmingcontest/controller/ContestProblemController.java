@@ -45,16 +45,12 @@ public class ContestProblemController {
     UserService userService;
     UserRegistrationContestRepo userRegistrationContestRepo;
 
-    // public static List<ModelGetContestDetailResponse> runningContests = new
-    // ArrayList();
     public static ConcurrentMap<String, ModelGetContestDetailResponse> runningContests = new ConcurrentHashMap();
 
     @PostMapping("/create-problem")
     public ResponseEntity<?> createContestProblem(Principal principal,
             @RequestParam("ModelCreateContestProblem") String json,
             @RequestParam("files") MultipartFile[] files) throws MiniLeetCodeException {
-        // problemTestCaseService.createContestProblem(modelCreateContestProblem,
-        // principal.getName());
         problemTestCaseService.createContestProblem(principal.getName(), json, files);
         return ResponseEntity.status(200).body(null);
     }
@@ -94,8 +90,7 @@ public class ContestProblemController {
     @PostMapping("/ide/{computerLanguage}")
     public ResponseEntity<?> runCode(@PathVariable("computerLanguage") String computerLanguage,
             @RequestBody ModelRunCodeFromIDE modelRunCodeFromIDE, Principal principal) throws Exception {
-        String response = null;
-        response = problemTestCaseService.executableIDECode(modelRunCodeFromIDE, principal.getName(), computerLanguage);
+        String response = problemTestCaseService.executableIDECode(modelRunCodeFromIDE, principal.getName(), computerLanguage);
         ModelRunCodeFromIDEOutput modelRunCodeFromIDEOutput = new ModelRunCodeFromIDEOutput();
         modelRunCodeFromIDEOutput.setOutput(response);
         return ResponseEntity.status(200).body(modelRunCodeFromIDEOutput);
@@ -953,6 +948,7 @@ public class ContestProblemController {
             @RequestParam("inputJson") String inputJson,
             @RequestParam("file") MultipartFile file) {
 
+        String userId = principal.getName();
         Gson gson = new Gson();
         ModelContestSubmitProgramViaUploadFile model = gson.fromJson(inputJson,
                 ModelContestSubmitProgramViaUploadFile.class);
@@ -966,7 +962,7 @@ public class ContestProblemController {
 
         List<UserRegistrationContestEntity> userRegistrations = userRegistrationContestRepo
                 .findUserRegistrationContestEntityByContestIdAndUserIdAndStatusAndRoleId(model.getContestId(),
-                        principal.getName(), UserRegistrationContestEntity.STATUS_SUCCESSFUL,
+                        userId, UserRegistrationContestEntity.STATUS_SUCCESSFUL,
                         UserRegistrationContestEntity.ROLE_PARTICIPANT);
         if (userRegistrations == null || userRegistrations.size() == 0) {
             ModelContestSubmissionResponse resp = buildSubmissionResponseNotRegistered();
@@ -983,7 +979,7 @@ public class ContestProblemController {
         }
 
         int numOfSubmissions = contestSubmissionRepo
-                .countAllByContestIdAndUserIdAndProblemId(model.getContestId(), principal.getName(), model.getProblemId());
+                .countAllByContestIdAndUserIdAndProblemId(model.getContestId(), userId, model.getProblemId());
         if (numOfSubmissions >= contestEntity.getMaxNumberSubmissions()) {
             ModelContestSubmissionResponse resp = buildSubmissionResponseReachMaxSubmission(contestEntity.getMaxNumberSubmissions());
             return ResponseEntity.ok().body(resp);
@@ -1009,12 +1005,12 @@ public class ContestProblemController {
             if (contestEntity.getSubmissionActionType()
                     .equals(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)) {
                 if (cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
-                    resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
+                    resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId);
                 }else {
-                    problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, principal.getName());
+                    problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, userId);
                 }
             } else {
-                resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
+                resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId);
             }
 
             return ResponseEntity.status(200).body(resp);
