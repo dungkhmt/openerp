@@ -23,8 +23,8 @@ public class ContestSubmissionListener {
     private final ObjectMapper objectMapper;
     private final ProblemTestCaseService problemTestCaseService;
 
-    @Value("${rabbit.RETRY_LIMIT}")
-    private int retryLimit = 3;
+    @Value("${rabbit.RETRY_LIMIT:3}")
+    private int retryLimit;
 
     public ContestSubmissionListener(
             ObjectMapper objectMapper,

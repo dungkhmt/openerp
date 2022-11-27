@@ -27,17 +27,17 @@ public class RabbitConfig {
     public static final String DEAD_LETTER_EXCHANGE = "programming_contest_dead_letter_exchange";
     public static final String JUDGE_PROBLEM_DEAD_LETTER_QUEUE = "judge_problem_dead_letter_queue";
 
-    @Value("${rabbit.CONCURRENT_CONSUMERS}")
-    private int concurrentConsumer = 5;
+    @Value("${rabbit.CONCURRENT_CONSUMERS:5}")
+    private int concurrentConsumer;
 
-    @Value("${rabbit.MAX_CONCURRENT_CONSUMERS}")
-    private int maxConcurrentConsumer = 8;
+    @Value("${rabbit.MAX_CONCURRENT_CONSUMERS:8}")
+    private int maxConcurrentConsumer;
 
-    @Value("${rabbit.PREFETCH_COUNT}")
-    private int prefetchCount = 3;
+    @Value("${rabbit.PREFETCH_COUNT:3}")
+    private int prefetchCount;
 
-    @Value("${rabbit.DEAD_MESSAGE_TTL}")
-    private int deadMessageTimeToLive = 120000;
+    @Value("${rabbit.DEAD_MESSAGE_TTL:120000}")
+    private int deadMessageTimeToLive;
 
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
