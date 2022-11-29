@@ -36,80 +36,29 @@ import AdapterDateFns from "@mui/lab/AdapterDateFns";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(4),
-    "& .MuiTextField-root": {
-      margin: theme.spacing(1),
-      width: "30%",
-      minWidth: 120,
+    padding: theme.spacing(4), "& .MuiTextField-root": {
+      margin: theme.spacing(1), width: "30%", minWidth: 120,
     },
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    maxWidth: 300,
+  }, formControl: {
+    margin: theme.spacing(1), minWidth: 120, maxWidth: 300,
   },
 }));
 
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
-const headCells = [
-  {
-    id: "problemName",
-    numeric: false,
-    disablePadding: true,
-    label: "Title",
-  },
-  {
-    id: "levelOrder",
-    numeric: true,
-    disablePadding: false,
-    label: "Difficulty",
-  },
-];
+const headCells = [{
+  id: "problemName", numeric: false, disablePadding: true, label: "Title",
+}, {
+  id: "levelOrder", numeric: true, disablePadding: false, label: "Difficulty",
+},];
 
 function EnhancedTableHead(props) {
   const {
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
+    onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort,
   } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
 
-  return (
-    <TableHead>
+  return (<TableHead>
       <TableRow>
         <TableCell padding="checkbox">
           <Checkbox
@@ -122,8 +71,7 @@ function EnhancedTableHead(props) {
             }}
           />
         </TableCell>
-        {headCells.map((headCell) => (
-          <TableCell
+        {headCells.map((headCell) => (<TableCell
             key={headCell.id}
             align={headCell.numeric ? "right" : "left"}
             padding={headCell.disablePadding ? "none" : "normal"}
@@ -135,17 +83,13 @@ function EnhancedTableHead(props) {
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
+              {orderBy === headCell.id ? (<Box component="span" sx={visuallyHidden}>
                   {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </Box>
-              ) : null}
+                </Box>) : null}
             </TableSortLabel>
-          </TableCell>
-        ))}
+          </TableCell>))}
       </TableRow>
-    </TableHead>
-  );
+    </TableHead>);
 }
 
 EnhancedTableHead.propTypes = {
@@ -160,55 +104,39 @@ EnhancedTableHead.propTypes = {
 const EnhancedTableToolbar = (props) => {
   const {numSelected} = props;
 
-  return (
-    <Toolbar
+  return (<Toolbar
       sx={{
-        pl: {sm: 2},
-        pr: {xs: 1, sm: 1},
-        ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(
-              theme.palette.primary.main,
-              theme.palette.action.activatedOpacity
-            ),
+        pl: {sm: 2}, pr: {xs: 1, sm: 1}, ...(numSelected > 0 && {
+          bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
         }),
       }}
     >
-      {numSelected > 0 ? (
-        <Typography
+      {numSelected > 0 ? (<Typography
           sx={{flex: "1 1 100%"}}
           color="inherit"
           variant="subtitle1"
           component="div"
         >
           {numSelected} selected
-        </Typography>
-      ) : (
-        <Typography
+        </Typography>) : (<Typography
           sx={{flex: "1 1 100%"}}
           variant="h6"
           id="tableTitle"
           component="div"
         >
           Choose Problem
-        </Typography>
-      )}
+        </Typography>)}
 
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
+      {numSelected > 0 ? (<Tooltip title="Delete">
           <IconButton>
             <DeleteIcon/>
           </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
+        </Tooltip>) : (<Tooltip title="Filter list">
           <IconButton>
             <FilterListIcon/>
           </IconButton>
-        </Tooltip>
-      )}
-    </Toolbar>
-  );
+        </Tooltip>)}
+    </Toolbar>);
 };
 
 EnhancedTableToolbar.propTypes = {
@@ -235,33 +163,21 @@ export default function EditContest(props) {
   const [listSubmissionActionType, setListSubmissionActionType] = useState([]);
   const [maxNumberSubmission, setMaxNumberSubmission] = useState(10);
   const [listMaxNumberSubmissions, setListMaxNumberSubmissions] = useState([]);
-  const [participantViewResultMode, setParticipantViewResultMode] =
-    useState(null);
-  const [listParticipantViewResultModes, setListParticipantViewResultModes] =
-    useState([]);
+  const [participantViewResultMode, setParticipantViewResultMode] = useState(null);
+  const [listParticipantViewResultModes, setListParticipantViewResultModes] = useState([]);
 
-  const [problemDescriptionViewType, setProblemDescriptionViewType] =
-    useState(null);
-  const [listProblemDescriptionViewTypes, setListProblemDescriptionViewTypes] =
-    useState([]);
+  const [problemDescriptionViewType, setProblemDescriptionViewType] = useState(null);
+  const [listProblemDescriptionViewTypes, setListProblemDescriptionViewTypes] = useState([]);
 
   const [useCacheContestProblem, setUseCacheContestProblem] = useState(null);
-  const [listUseCacheContestProblems, setListUseCacheContestProblems] =
-    useState([]);
-  const [
-    evaluateBothPublicPrivateTestcase,
-    setEvaluateBothPublicPrivateTestcase,
-  ] = useState(null);
+  const [listUseCacheContestProblems, setListUseCacheContestProblems] = useState([]);
+  const [evaluateBothPublicPrivateTestcase, setEvaluateBothPublicPrivateTestcase,] = useState(null);
 
-  const [
-    listEvaluateBothPublicPrivateTestcases,
-    setListEvaluateBothPublicPrivateTestcases,
-  ] = useState([]);
+  const [listEvaluateBothPublicPrivateTestcases, setListEvaluateBothPublicPrivateTestcases,] = useState([]);
 
   const [maxSourceCodeLength, setMaxSourceCodeLength] = useState(50000);
 
-  const [minTimeBetweenTwoSubmissions, setMinTimeBetweenTwoSubmissions] =
-    useState();
+  const [minTimeBetweenTwoSubmissions, setMinTimeBetweenTwoSubmissions] = useState();
   const [judgeMode, setJudgeMode] = useState(null);
   const [listJudgeModes, setListJudgeModes] = useState([]);
 
@@ -277,10 +193,7 @@ export default function EditContest(props) {
     } else if (selectedIndex === problemSelected.length - 1) {
       newSelected = newSelected.concat(problemSelected.slice(0, -1));
     } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        problemSelected.slice(0, selectedIndex),
-        problemSelected.slice(selectedIndex + 1)
-      );
+      newSelected = newSelected.concat(problemSelected.slice(0, selectedIndex), problemSelected.slice(selectedIndex + 1));
     }
     console.log("newSelected ", newSelected);
     setProblemSelected(newSelected);
@@ -309,32 +222,22 @@ export default function EditContest(props) {
       minTimeBetweenTwoSubmissions: minTimeBetweenTwoSubmissions,
       judgeMode: judgeMode,
     };
-    request(
-      "post",
-      "/edit-contest/" + contestId,
-      (res) => {
-        // console.log("problem list", res.data);
-        setShowSubmitSuccess(true);
-        sleep(1000).then((r) => {
-          //history.push("/programming-contest/list-contest");
-          history.push("/programming-contest/teacher-list-contest-manager");
-        });
-      },
-      {},
-      body
-    ).then();
+    request("post", "/edit-contest/" + contestId, (res) => {
+      // console.log("problem list", res.data);
+      setShowSubmitSuccess(true);
+      sleep(1000).then((r) => {
+        //history.push("/programming-contest/list-contest");
+        history.push("/programming-contest/teacher-list-contest-manager");
+      });
+    }, {}, body).then();
   }
 
   useEffect(() => {
-    request(
-      "get",
-      "/get-contest-problem-paging?size=" + pageSize + "&page=" + (page - 1),
-      (res) => {
-        // console.log("problem list", res.data);
-        setTotalPages(res.data.totalPages);
-        setContestProblems(res.data.content);
-      }
-    ).then();
+    request("get", "/get-contest-problem-paging?size=" + pageSize + "&page=" + (page - 1), (res) => {
+      // console.log("problem list", res.data);
+      setTotalPages(res.data.totalPages);
+      setContestProblems(res.data.content);
+    }).then();
 
     request("get", "/get-contest-detail/" + contestId, (res) => {
       setContestTime(res.data.contestTime);
@@ -358,26 +261,19 @@ export default function EditContest(props) {
       setProblemDescriptionViewType(res.data.problemDescriptionViewType);
       setMinTimeBetweenTwoSubmissions(res.data.minTimeBetweenTwoSubmissions);
       setJudgeMode(res.data.judgeMode);
-      setListProblemDescriptionViewTypes(
-        res.data.listProblemDescriptionViewTypes
-      );
+      setListProblemDescriptionViewTypes(res.data.listProblemDescriptionViewTypes);
       setUseCacheContestProblem(res.data.useCacheContestProblem);
-      setEvaluateBothPublicPrivateTestcase(
-        res.data.evaluateBothPublicPrivateTestcase
-      );
+      setEvaluateBothPublicPrivateTestcase(res.data.evaluateBothPublicPrivateTestcase);
       setMaxSourceCodeLength(res.data.maxSourceCodeLength);
       setListUseCacheContestProblems(res.data.listUseCacheContestProblems);
-      setListEvaluateBothPublicPrivateTestcases(
-        res.data.listEvaluateBothPublicPrivateTestcases
-      );
+      setListEvaluateBothPublicPrivateTestcases(res.data.listEvaluateBothPublicPrivateTestcases);
       setListJudgeModes(res.data.listJudgeModes);
 
       console.log("res ", res.data);
     }).then();
   }, [page]);
 
-  return (
-    <div>
+  return (<div>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Card>
           <CardContent>
@@ -453,11 +349,9 @@ export default function EditContest(props) {
                 }}
                 value={statusId}
               >
-                {listStatusIds.map((item) => (
-                  <MenuItem key={item} value={item}>
+                {listStatusIds.map((item) => (<MenuItem key={item} value={item}>
                     {item}
-                  </MenuItem>
-                ))}
+                  </MenuItem>))}
               </TextField>
               <TextField
                 autoFocus
@@ -471,11 +365,9 @@ export default function EditContest(props) {
                 }}
                 value={submissionActionType}
               >
-                {listSubmissionActionType.map((item) => (
-                  <MenuItem key={item} value={item}>
+                {listSubmissionActionType.map((item) => (<MenuItem key={item} value={item}>
                     {item}
-                  </MenuItem>
-                ))}
+                  </MenuItem>))}
               </TextField>
 
               <TextField
@@ -491,11 +383,9 @@ export default function EditContest(props) {
                 }}
                 value={maxNumberSubmission}
               >
-                {listMaxNumberSubmissions.map((item) => (
-                  <MenuItem key={item} value={item}>
+                {listMaxNumberSubmissions.map((item) => (<MenuItem key={item} value={item}>
                     {item}
-                  </MenuItem>
-                ))}
+                  </MenuItem>))}
               </TextField>
               <TextField
                 autoFocus
@@ -532,11 +422,9 @@ export default function EditContest(props) {
                 }}
                 value={participantViewResultMode}
               >
-                {listParticipantViewResultModes.map((item) => (
-                  <MenuItem key={item} value={item}>
+                {listParticipantViewResultModes.map((item) => (<MenuItem key={item} value={item}>
                     {item}
-                  </MenuItem>
-                ))}
+                  </MenuItem>))}
               </TextField>
               <TextField
                 autoFocus
@@ -550,11 +438,9 @@ export default function EditContest(props) {
                 }}
                 value={judgeMode}
               >
-                {listJudgeModes.map((item) => (
-                  <MenuItem key={item} value={item}>
+                {listJudgeModes.map((item) => (<MenuItem key={item} value={item}>
                     {item}
-                  </MenuItem>
-                ))}
+                  </MenuItem>))}
               </TextField>
 
               <TextField
@@ -569,11 +455,9 @@ export default function EditContest(props) {
                 }}
                 value={useCacheContestProblem}
               >
-                {listUseCacheContestProblems.map((item) => (
-                  <MenuItem key={item} value={item}>
+                {listUseCacheContestProblems.map((item) => (<MenuItem key={item} value={item}>
                     {item}
-                  </MenuItem>
-                ))}
+                  </MenuItem>))}
               </TextField>
               <TextField
                 autoFocus
@@ -587,11 +471,9 @@ export default function EditContest(props) {
                 }}
                 value={evaluateBothPublicPrivateTestcase}
               >
-                {listEvaluateBothPublicPrivateTestcases.map((item) => (
-                  <MenuItem key={item} value={item}>
+                {listEvaluateBothPublicPrivateTestcases.map((item) => (<MenuItem key={item} value={item}>
                     {item}
-                  </MenuItem>
-                ))}
+                  </MenuItem>))}
               </TextField>
 
               <TextField
@@ -606,11 +488,9 @@ export default function EditContest(props) {
                 }}
                 value={problemDescriptionViewType}
               >
-                {listProblemDescriptionViewTypes.map((item) => (
-                  <MenuItem key={item} value={item}>
+                {listProblemDescriptionViewTypes.map((item) => (<MenuItem key={item} value={item}>
                     {item}
-                  </MenuItem>
-                ))}
+                  </MenuItem>))}
               </TextField>
 
               <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -641,8 +521,7 @@ export default function EditContest(props) {
                       {contestProblems.map((p, index) => {
                         const isItemSelected = isSelected(p.problemId);
                         const labelId = `enhanced-table-checkbox-${index}`;
-                        return (
-                          <TableRow
+                        return (<TableRow
                             hover
                             onClick={(event) => handleClick(event, p.problemId)}
                             role="checkbox"
@@ -673,8 +552,7 @@ export default function EditContest(props) {
                                 style={{color: getColorLevel(`${p.levelId}`)}}
                               >{`${p.levelId}`}</span>
                             </TableCell>
-                          </TableRow>
-                        );
+                          </TableRow>);
                       })}
                     </TableBody>
                   </Table>
@@ -712,6 +590,5 @@ export default function EditContest(props) {
           </CardActions>
         </Card>
       </MuiPickersUtilsProvider>
-    </div>
-  );
+    </div>);
 }
