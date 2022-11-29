@@ -1361,7 +1361,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                                   .testCaseId(testCaseEntity.getTestCaseId())
                                                                                   .submittedByUserLoginId(userId)
                                                                                   .point(problemSubmission.getScore())
-                                                                                  .status(problemSubmission.getStatus())
+                                                                                  .status(problemSubmission.getStatus().replaceAll("\u0000", ""))
                                                                                   .testCaseOutput(testCaseEntity.getCorrectAnswer().replaceAll("\u0000", ""))
                                                                                   .participantSolutionOtput(participantAns.replaceAll("\u0000", ""))
                                                                                   .runtime(problemSubmission.getRuntime())
