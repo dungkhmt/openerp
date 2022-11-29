@@ -12,6 +12,7 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
@@ -23,7 +24,7 @@ import {request} from "./Request";
 import Pagination from "@material-ui/lab/Pagination";
 import DateFnsUtils from "@date-io/date-fns";
 import {MuiPickersUtilsProvider} from "@material-ui/pickers";
-import {Button, Card, CardActions, TextField} from "@material-ui/core";
+import {Button, Card, CardActions} from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import {getColorLevel, sleep} from "./lib";
 import {SubmitSuccess} from "./SubmitSuccess";
@@ -157,28 +158,27 @@ export default function EditContest(props) {
   const [isPublic, setIsPublic] = useState(false);
   const [startDate, setStartDate] = React.useState(new Date());
   const [countDown, setCountDown] = useState(Number(0));
-  const [statusId, setStatusId] = useState(null);
+  const [statusId, setStatusId] = useState("");
   const [listStatusIds, setListStatusIds] = useState([]);
-  const [submissionActionType, setSubmissionActionType] = useState(null);
+  const [submissionActionType, setSubmissionActionType] = useState("");
   const [listSubmissionActionType, setListSubmissionActionType] = useState([]);
   const [maxNumberSubmission, setMaxNumberSubmission] = useState(10);
-  const [listMaxNumberSubmissions, setListMaxNumberSubmissions] = useState([]);
-  const [participantViewResultMode, setParticipantViewResultMode] = useState(null);
+  const [participantViewResultMode, setParticipantViewResultMode] = useState("");
   const [listParticipantViewResultModes, setListParticipantViewResultModes] = useState([]);
 
-  const [problemDescriptionViewType, setProblemDescriptionViewType] = useState(null);
+  const [problemDescriptionViewType, setProblemDescriptionViewType] = useState("");
   const [listProblemDescriptionViewTypes, setListProblemDescriptionViewTypes] = useState([]);
 
-  const [useCacheContestProblem, setUseCacheContestProblem] = useState(null);
+  const [useCacheContestProblem, setUseCacheContestProblem] = useState("");
   const [listUseCacheContestProblems, setListUseCacheContestProblems] = useState([]);
-  const [evaluateBothPublicPrivateTestcase, setEvaluateBothPublicPrivateTestcase,] = useState(null);
+  const [evaluateBothPublicPrivateTestcase, setEvaluateBothPublicPrivateTestcase,] = useState("");
 
   const [listEvaluateBothPublicPrivateTestcases, setListEvaluateBothPublicPrivateTestcases,] = useState([]);
 
   const [maxSourceCodeLength, setMaxSourceCodeLength] = useState(50000);
 
-  const [minTimeBetweenTwoSubmissions, setMinTimeBetweenTwoSubmissions] = useState();
-  const [judgeMode, setJudgeMode] = useState(null);
+  const [minTimeBetweenTwoSubmissions, setMinTimeBetweenTwoSubmissions] = useState(0);
+  const [judgeMode, setJudgeMode] = useState("");
   const [listJudgeModes, setListJudgeModes] = useState([]);
 
   const classes = useStyles();
@@ -223,10 +223,8 @@ export default function EditContest(props) {
       judgeMode: judgeMode,
     };
     request("post", "/edit-contest/" + contestId, (res) => {
-      // console.log("problem list", res.data);
       setShowSubmitSuccess(true);
       sleep(1000).then((r) => {
-        //history.push("/programming-contest/list-contest");
         history.push("/programming-contest/teacher-list-contest-manager");
       });
     }, {}, body).then();
@@ -257,7 +255,6 @@ export default function EditContest(props) {
       setParticipantViewResultMode(res.data.participantViewResultMode);
       setListParticipantViewResultModes(res.data.listParticipantViewModes);
       setMaxNumberSubmission(res.data.maxNumberSubmission);
-      setListMaxNumberSubmissions(res.data.listMaxNumberSubmissions);
       setProblemDescriptionViewType(res.data.problemDescriptionViewType);
       setMinTimeBetweenTwoSubmissions(res.data.minTimeBetweenTwoSubmissions);
       setJudgeMode(res.data.judgeMode);
@@ -374,7 +371,6 @@ export default function EditContest(props) {
                 autoFocus
                 type="number"
                 // required
-                select
                 id="maxNumberSubmission"
                 label="Max number of Submission"
                 placeholder="Submission Limit"
@@ -382,11 +378,7 @@ export default function EditContest(props) {
                   setMaxNumberSubmission(event.target.value);
                 }}
                 value={maxNumberSubmission}
-              >
-                {listMaxNumberSubmissions.map((item) => (<MenuItem key={item} value={item}>
-                    {item}
-                  </MenuItem>))}
-              </TextField>
+              />
               <TextField
                 autoFocus
                 type="number"
