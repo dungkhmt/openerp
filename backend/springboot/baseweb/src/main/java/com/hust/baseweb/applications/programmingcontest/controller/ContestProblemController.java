@@ -11,6 +11,7 @@ import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRe
 import com.hust.baseweb.applications.programmingcontest.repo.UserRegistrationContestRepo;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.model.ListPersonModel;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.service.UserService;
 import io.lettuce.core.dynamic.annotation.Param;
@@ -539,7 +540,17 @@ public class ContestProblemController {
         }
         ListModelUserRegisteredContestInfo resp = problemTestCaseService.searchUser(pageable, contestId, keyword);
         return ResponseEntity.status(200).body(resp);
-
+    }
+    @Secured("ROLE_TEACHER")
+    @GetMapping("/search-user-based-keyword")
+    public ResponseEntity<?> searchUserBaseKeyword(Pageable pageable,
+                                        @Param("keyword") String keyword) {
+        if (keyword == null) {
+            keyword = "";
+        }
+        log.info("searchUserBaseKeywordm keyword = " + keyword);
+        ListPersonModel resp = problemTestCaseService.searchUserBaseKeyword(pageable, keyword);
+        return ResponseEntity.status(200).body(resp);
     }
 
     @Secured("ROLE_TEACHER")
@@ -1429,4 +1440,22 @@ public class ContestProblemController {
         boolean res = problemTestCaseService.updateProblemContest(principal.getName(), I);
         return ResponseEntity.ok().body(res);
     }
+
+    @GetMapping("/get-user-contest-problem-roles/{problemId}")
+    public ResponseEntity<?> getUserContestProblemRoles(Principal principal, @PathVariable String problemId){
+        List<ModelResponseUserProblemRole> res = problemTestCaseService.getUserProblemRoles(problemId);
+        return ResponseEntity.ok().body(res);
+    }
+
+    @PostMapping("/add-contest-problem-role-to-user/")
+    public ResponseEntity<?> addContestProblemRole(Principal principal, @RequestBody ModelUserProblemRole input){
+        boolean ok = problemTestCaseService.addUserProblemRole(principal.getName(), input);
+        return ResponseEntity.ok().body(ok);
+    }
+    @PostMapping("/remove-contest-problem-role-to-user/")
+    public ResponseEntity<?> removeContestProblemRole(Principal principal, @RequestBody ModelUserProblemRole input){
+        boolean ok = problemTestCaseService.removeUserProblemRole(principal.getName(), input);
+        return ResponseEntity.ok().body(ok);
+    }
+
 }

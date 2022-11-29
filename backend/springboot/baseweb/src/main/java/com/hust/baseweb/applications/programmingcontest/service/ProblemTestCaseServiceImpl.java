@@ -21,6 +21,7 @@ import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.Stri
 import com.hust.baseweb.config.rabbitmq.ProblemContestRoutingKey;
 import com.hust.baseweb.config.rabbitmq.RabbitConfig;
 import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.model.ListPersonModel;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.repo.UserLoginRepo;
 import com.hust.baseweb.service.UserService;
@@ -69,6 +70,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private CodePlagiarismRepo codePlagiarismRepo;
     private ContestSubmissionHistoryRepo contestSubmissionHistoryRepo;
     private ContestProblemRepo contestProblemRepo;
+    private UserContestProblemRoleRepo userContestProblemRoleRepo;
     private MongoContentService mongoContentService;
     private ObjectMapper objectMapper;
     private RabbitTemplate rabbitTemplate;
@@ -1898,6 +1900,16 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public ListPersonModel searchUserBaseKeyword(Pageable pageable, String keyword) {
+//        ContestEntity contest = contestRepo.findContestByContestId(contestId);
+        Page<PersonModel> list = userLoginRepo.searchUser(pageable, keyword);
+        log.info("searchUserBaseKeyword, list.sz = ");
+        return ListPersonModel.builder()
+                                                 .contents(list)
+                                                 .build();
+    }
+
+    @Override
     public ModelGetContestPageResponse getRegisteredContestByUser(Pageable pageable, String userName) {
 //        Page<ContestEntity> list = userRegistrationContestPagingAndSortingRepo.getContestByUserAndStatusSuccessful(pageable, userName);
         Date currentDate = new Date();
@@ -3495,6 +3507,47 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         cp.setSubmissionMode(I.getSubmissionMode());
         cp = contestProblemRepo.save(cp);
+        return true;
+    }
+    @Override
+    public List<ModelResponseUserProblemRole> getUserProblemRoles(String problemId){
+        List<UserContestProblemRole> lst = userContestProblemRoleRepo.findAllByProblemId(problemId);
+        List<ModelResponseUserProblemRole> res = new ArrayList();
+        for(UserContestProblemRole upr: lst){
+            ModelResponseUserProblemRole e = new ModelResponseUserProblemRole();
+            e.setUserLoginId(upr.getUserId());
+            e.setProblemId(upr.getProblemId());
+            e.setRoleId(upr.getRoleId());
+            res.add(e);
+        }
+        return res;
+    }
+
+    @Override
+    public boolean addUserProblemRole(String userName, ModelUserProblemRole input){
+        List<UserContestProblemRole> L = userContestProblemRoleRepo.findAllByProblemIdAndUserIdAndRoleId(input.getProblemId(), input.getUserId(),input.getRoleId());
+        if(L != null && L.size() > 0){
+            return false;
+        }
+        UserContestProblemRole e = new UserContestProblemRole();
+        e.setUserId(input.getUserId());
+        e.setProblemId(input.getProblemId());
+        e.setRoleId(input.getRoleId());
+        e.setUpdateByUserId(userName);
+        e = userContestProblemRoleRepo.save(e);
+
+        return true;
+    }
+    @Override
+    public boolean removeUserProblemRole(String userName, ModelUserProblemRole input){
+        List<UserContestProblemRole> L = userContestProblemRoleRepo.findAllByProblemIdAndUserIdAndRoleId(input.getProblemId(), input.getUserId(),input.getRoleId());
+        if(L != null && L.size() > 0){
+            return false;
+        }
+        for(UserContestProblemRole e: L){
+            userContestProblemRoleRepo.delete(e);
+            //userContestProblemRoleRepo.remove(e);
+        }
         return true;
     }
 

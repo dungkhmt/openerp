@@ -40,6 +40,12 @@ public class PersonModel {
         return lastName + " " + middleName + " " + firstName;
     }
 
+    public PersonModel(String userName, String lastName, String middleName, String firstName){
+        this.userName = userName;
+        this.lastName = lastName;
+        this.middleName = middleName;
+        this.firstName = firstName;
+    }
     public PersonModel(
         String userName,
         String password,

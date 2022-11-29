@@ -21,6 +21,20 @@ create table contest_problem_new
     constraint fk_contest_problem_new foreign key (created_by_user_login_id) references user_login(user_login_id)
 );
 
+create table user_contest_problem_role(
+    id uuid not null default uuid_generate_v1(),
+    user_id varchar(60),
+    problem_id varchar(100),
+    role_id varchar(100),
+    update_by_user_id varchar(60),
+    last_updated_stamp         timestamp DEFAULT current_date ,
+    created_stamp              timestamp DEFAULT current_date ,
+    constraint pk_user_contest_problem_role primary key(id),
+    constraint fk_user_contest_problem_role_updated_by_user_id foreign key(update_by_user_id) references user_login(user_login_id),
+    constraint fk_user_contest_problem_role_user_id foreign key(user_id) references user_login(user_login_id),
+    constraint fk_user_contest_problem_role_problem_id foreign key(problem_id) references contest_problem_new(problem_id)
+);
+
 create table problem_source_code_new
 (
     problem_source_code_id varchar (70),

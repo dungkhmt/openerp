@@ -8,6 +8,7 @@ import CreateContest from "../component/education/programmingcontestFE/CreateCon
 import CreateProblem from "../component/education/programmingcontestFE/CreateProblem";
 //import CreateTestCase from "../component/education/programmingcontestFE/CreateTestCase-old-temp";
 import CreateTestCase from "../component/education/programmingcontestFE/CreateTestCase";
+import UserContestProblemRole from "../component/education/programmingcontestFE/UserContestProblemRole";
 import EditContest from "../component/education/programmingcontestFE/EditContest";
 import EditProblem from "../component/education/programmingcontestFE/EditProblem";
 //import EditTestCase from "../component/education/programmingcontestFE/EditTestCase-old-temp";
@@ -49,6 +50,11 @@ export default function ProgrammingContestRoutes() {
           component={CreateTestCase}
           path={`${path}/problem-detail-create-test-case/:problemId`}
         />
+        <Route
+          component={UserContestProblemRole}
+          path={`${path}/user-contest-problem-role-management/:problemId`}
+        />
+
         <Route
           component={ProblemSubmissionDetail}
           path={`${path}/problem-submission-detail/:problemSubmissionId`}
