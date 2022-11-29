@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
-// import Typography from "@material-ui/core/Typography";
+import React, {useEffect, useState} from "react";
 import PropTypes from "prop-types";
-import { alpha } from "@mui/material/styles";
+import {alpha} from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
@@ -17,25 +15,20 @@ import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import { visuallyHidden } from "@mui/utils";
-import { request } from "./Request";
-import { API_URL } from "../../../config/config";
+import {visuallyHidden} from "@mui/utils";
+import {request} from "./Request";
 import Pagination from "@material-ui/lab/Pagination";
 import DateFnsUtils from "@date-io/date-fns";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { Button, Card, CardActions, TextField } from "@material-ui/core";
+import {MuiPickersUtilsProvider} from "@material-ui/pickers";
+import {Button, Card, CardActions, TextField} from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
-import { makeStyles } from "@material-ui/core/styles";
-import { TableFooter } from "@mui/material";
-import lib, { sleep } from "./lib";
-import { SubmitSuccess } from "./SubmitSuccess";
-import { useHistory } from "react-router-dom";
-import { getColorLevel } from "./lib";
-import { MenuItem } from "@material-ui/core/";
+import {makeStyles} from "@material-ui/core/styles";
+import {getColorLevel, sleep} from "./lib";
+import {SubmitSuccess} from "./SubmitSuccess";
+import {useHistory} from "react-router-dom";
+import {MenuItem} from "@material-ui/core/";
 import DateTimePicker from "@mui/lab/DateTimePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
@@ -55,36 +48,6 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 300,
   },
 }));
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
 
 const headCells = [
   {
@@ -225,7 +188,6 @@ export default function CreateContest(props) {
   const [contestName, setContestName] = useState("");
   const [contestId, setContestId] = useState("");
   const [contestTime, setContestTime] = useState(Number(0));
-  const [listProblem, setListProblem] = useState([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [contestProblems, setContestProblems] = useState([]);
@@ -294,7 +256,6 @@ export default function CreateContest(props) {
       "get",
       "/get-contest-problem-paging?size=" + pageSize + "&page=" + (page - 1),
       (res) => {
-        // console.log("problem list", res.data);
         setTotalPages(res.data.totalPages);
         setContestProblems(res.data.content);
       }
@@ -320,7 +281,7 @@ export default function CreateContest(props) {
                 onChange={(event) => {
                   setContestId(event.target.value);
                 }}
-              ></TextField>
+              />
 
               <TextField
                 autoFocus
@@ -331,7 +292,7 @@ export default function CreateContest(props) {
                 onChange={(event) => {
                   setContestName(event.target.value);
                 }}
-              ></TextField>
+              />
 
               <TextField
                 autoFocus
@@ -342,7 +303,7 @@ export default function CreateContest(props) {
                 onChange={(event) => {
                   setContestTime(Number(event.target.value));
                 }}
-              ></TextField>
+              />
 
               <TextField
                 autoFocus
@@ -353,7 +314,7 @@ export default function CreateContest(props) {
                 onChange={(event) => {
                   setCountDown(Number(event.target.value));
                 }}
-              ></TextField>
+              />
 
               <TextField
                 autoFocus
@@ -366,7 +327,7 @@ export default function CreateContest(props) {
                   setMaxNumberSubmissions(event.target.value);
                 }}
                 value={maxNumberSubmissions}
-              ></TextField>
+              />
               <TextField
                 autoFocus
                 // required
@@ -378,7 +339,7 @@ export default function CreateContest(props) {
                   setMaxSourceCodeLength(event.target.value);
                 }}
                 value={maxSourceCodeLength}
-              ></TextField>
+              />
 
               <TextField
                 autoFocus
