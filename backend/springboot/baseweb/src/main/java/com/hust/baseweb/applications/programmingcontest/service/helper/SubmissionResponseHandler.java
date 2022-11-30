@@ -22,6 +22,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class SubmissionResponseHandler {
+
     private ContestSubmissionRepo contestSubmissionRepo;
     private ContestSubmissionTestCaseEntityRepo contestSubmissionTestCaseEntityRepo;
 
@@ -46,7 +47,7 @@ public class SubmissionResponseHandler {
             List<String> testCaseAns = Collections.singletonList(testCaseEntity.getCorrectAnswer());
             List<Integer> points = Collections.singletonList(testCaseEntity.getTestCasePoint());
 
-            ProblemSubmission problemSubmission = new ProblemSubmission();
+            ProblemSubmission problemSubmission;
             try {
                 // int mb = 1000 * 1000;
                 // MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
@@ -79,19 +80,24 @@ public class SubmissionResponseHandler {
                 participantAns = output.get(0);
             }
 
-            ContestSubmissionTestCaseEntity cste = ContestSubmissionTestCaseEntity.builder()
-                                                                                  .contestId(modelContestSubmission.getContestId())
-                                                                                  .contestSubmissionId(submission.getContestSubmissionId())
-                                                                                  .problemId(modelContestSubmission.getProblemId())
-                                                                                  .testCaseId(testCaseEntity.getTestCaseId())
-                                                                                  .submittedByUserLoginId(submission.getUserId())
-                                                                                  .point(problemSubmission.getScore())
-                                                                                  .status(StringHandler.removeNullCharacter(problemSubmission.getStatus()))
-                                                                                  .testCaseOutput(StringHandler.removeNullCharacter(testCaseEntity.getCorrectAnswer()))
-                                                                                  .participantSolutionOtput(StringHandler.removeNullCharacter(participantAns))
-                                                                                  .runtime(problemSubmission.getRuntime())
-                                                                                  .createdStamp(submission.getCreatedAt())
-                                                                                  .build();
+            ContestSubmissionTestCaseEntity cste;
+            cste = ContestSubmissionTestCaseEntity.builder()
+                                                  .contestId(modelContestSubmission.getContestId())
+                                                  .contestSubmissionId(submission.getContestSubmissionId())
+                                                  .problemId(modelContestSubmission.getProblemId())
+                                                  .testCaseId(testCaseEntity.getTestCaseId())
+                                                  .submittedByUserLoginId(submission.getUserId())
+                                                  .point(problemSubmission.getScore())
+                                                  .status(StringHandler.removeNullCharacter(
+                                                      problemSubmission.getStatus()))
+                                                  .testCaseOutput(StringHandler.removeNullCharacter(
+                                                      testCaseEntity.getCorrectAnswer()))
+                                                  .participantSolutionOtput(
+                                                      StringHandler.removeNullCharacter(
+                                                          participantAns))
+                                                  .runtime(problemSubmission.getRuntime())
+                                                  .createdStamp(submission.getCreatedAt())
+                                                  .build();
             contestSubmissionTestCaseEntityRepo.save(cste);
         }
         boolean accepted = true;
@@ -137,7 +143,7 @@ public class SubmissionResponseHandler {
         submissionEntity.setSourceCodeLanguage(modelContestSubmission.getLanguage());
         submissionEntity.setRuntime((long) runtime);
         submissionEntity.setMessage(message);
-        ContestSubmissionEntity c = contestSubmissionRepo.save(submissionEntity);
+        contestSubmissionRepo.save(submissionEntity);
     }
 
 }
