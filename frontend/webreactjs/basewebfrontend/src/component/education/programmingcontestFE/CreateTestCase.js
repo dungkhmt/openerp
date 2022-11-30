@@ -33,7 +33,7 @@ export default function CreateTestCase(props) {
   const [isPublic, setIsPublic] = useState("N");
   const [isProcessing, setIsProcessing] = useState(false);
   const [filename, setFilename] = useState("");
-  const [uploadMode, setUploadMode] = useState(null);
+  const [uploadMode, setUploadMode] = useState("EXECUTE");
 
   const dispatch = useDispatch();
   const [uploadMessage, setUploadMessage] = useState("");
