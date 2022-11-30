@@ -8,6 +8,7 @@ import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestProblemRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
+import com.hust.baseweb.applications.programmingcontest.repo.UserContestProblemRoleRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.UserRegistrationContestRepo;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import com.hust.baseweb.entity.UserLogin;
@@ -45,6 +46,7 @@ public class ContestProblemController {
     ContestProblemRepo contestProblemRepo;
     UserService userService;
     UserRegistrationContestRepo userRegistrationContestRepo;
+    UserContestProblemRoleRepo userContestProblemRoleRepo;
 
     public static ConcurrentMap<String, ModelGetContestDetailResponse> runningContests = new ConcurrentHashMap();
 
@@ -173,7 +175,18 @@ public class ContestProblemController {
             @PathVariable("problemId") String problemId, Principal principal,
             @RequestParam("ModelUpdateContestProblem") String json, @RequestParam("files") MultipartFile[] files)
         throws Exception {
-        log.info("updateProblemDetails problemId {}", problemId);
+        //log.info("updateProblemDetails problemId {}", problemId);
+        List<UserContestProblemRole> L = userContestProblemRoleRepo.findAllByProblemIdAndUserId(problemId, principal.getName());
+        boolean hasPermission = false;
+        for(UserContestProblemRole e: L){
+            if(e.getRoleId().equals(UserContestProblemRole.ROLE_MANAGER) || e.getRoleId().equals(UserContestProblemRole.ROLE_OWNER)){
+                hasPermission = true; break;
+            }
+        }
+        if(!hasPermission){
+            //return ResponseEntity.status(401).body("No permission");
+            return ResponseEntity.status(HttpStatus.OK).body("No permission");
+        }
         ProblemEntity problemResponse = problemTestCaseService.updateContestProblem(problemId, principal.getName(), json, files);
         return ResponseEntity.status(HttpStatus.OK).body(problemResponse);
     }
@@ -602,7 +615,7 @@ public class ContestProblemController {
     @GetMapping("/get-contest-paging-registered")
     public ResponseEntity<?> getContestRegisteredByStudentPaging(Pageable pageable, @Param("sortBy") String sortBy,
             Principal principal) {
-        log.info("getContestRegisteredByStudentPaging sortBy {} pageable {}", sortBy, pageable);
+        //log.info("getContestRegisteredByStudentPaging sortBy {} pageable {}", sortBy, pageable);
         if (sortBy != null) {
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(sortBy));
         } else {
@@ -780,10 +793,10 @@ public class ContestProblemController {
         ContestEntity contestEntity = contestRepo.findContestByContestId(model.getContestId());
         if (contestEntity.getJudgeMode() != null &&
             contestEntity.getJudgeMode().equals(ContestEntity.ASYNCHRONOUS_JUDGE_MODE_QUEUE)) {
-            log.info("contestSubmitProblemViaUploadFileV3, mode using queue");
+            //log.info("contestSubmitProblemViaUploadFileV3, mode using queue");
             return contestSubmitProblemViaUploadFileV2(principal, inputJson, file);
         }
-        log.info("contestSubmitProblemViaUploadFileV3, mode synchronous, NOT using queue");
+        //log.info("contestSubmitProblemViaUploadFileV3, mode synchronous, NOT using queue");
         return contestSubmitProblemViaUploadFile(principal, inputJson, file);
     }
 
@@ -1314,12 +1327,12 @@ public class ContestProblemController {
     @GetMapping("/get-contest-submission-paging-of-a-user-and-contest/{contestId}")
     public ResponseEntity<?> getContestSubmissionPagingOfCurrentUser(Principal principal,
             @PathVariable String contestId, Pageable pageable) {
-        log.info(
-                "getContestSubmissionPagingOfCurrentUser, user = " + principal.getName() + " contestId = " + contestId);
+        //log.info(
+        //        "getContestSubmissionPagingOfCurrentUser, user = " + principal.getName() + " contestId = " + contestId);
         pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by("createdAt").descending());
         Page<ContestSubmission> page = problemTestCaseService
                 .findContestSubmissionByUserLoginIdAndContestIdPaging(pageable, principal.getName(), contestId);
-        log.info("page {}", page);
+        //log.info("page {}", page);
         return ResponseEntity.status(200).body(page);
     }
 
