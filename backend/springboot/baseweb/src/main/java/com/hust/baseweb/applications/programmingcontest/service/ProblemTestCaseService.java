@@ -56,7 +56,7 @@ public interface ProblemTestCaseService {
 
     ModelContestSubmissionResponse submitContestProblem(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
     ModelContestSubmissionResponse submitContestProblemTestCaseByTestCase(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
-    void submitContestProblemTestCaseByTestCaseWithFile(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
+    ModelContestSubmissionResponse submitContestProblemTestCaseByTestCaseWithFile(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
     void submitContestProblemTestCaseByTestCaseWithFileProcessor(ModelContestSubmission modelContestSubmission, ContestSubmissionEntity submissionEntity) throws Exception;
     ModelContestSubmissionResponse submitContestProblemStoreOnlyNotExecute(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
 

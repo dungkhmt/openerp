@@ -1231,7 +1231,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
     @Transactional
     @Override
-    public void submitContestProblemTestCaseByTestCaseWithFile(
+    public ModelContestSubmissionResponse submitContestProblemTestCaseByTestCaseWithFile(
         ModelContestSubmission modelContestSubmission,
         String userId
     ) throws Exception {
@@ -1256,6 +1256,11 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             ProblemContestRoutingKey.JUDGE_PROBLEM,
             objectMapper.writeValueAsString(msg)
         );
+
+        return ModelContestSubmissionResponse.builder()
+                                      .status("IN_PROGRESS")
+                                      .message("Submission is being evaluated")
+                                      .build();
     }
 
     @Transactional

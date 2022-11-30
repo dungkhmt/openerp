@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress } from "@mui/material";
 import StandardTable from "component/table/StandardTable";
-import { useEffect, useState } from "react";
+import {forwardRef, useEffect, useImperativeHandle, useState} from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { request } from "./Request";
@@ -12,7 +12,7 @@ const commandBarStyles = {
   mt: -3,
   mb: 3,
 };
-export default function StudentViewSubmission() {
+const StudentViewSubmission = forwardRef((props, ref) => {
   const { t } = useTranslation(
     "education/programmingcontest/studentviewcontestdetail"
   );
@@ -83,6 +83,12 @@ export default function StudentViewSubmission() {
     setLoading(true);
     getSubmissions();
   }
+
+  useImperativeHandle(ref, () => ({
+    refreshSubmission() {
+      handleRefresh()
+    }
+  }));
 
   return (
     <Box sx={{ marginTop: "20px" }}>
@@ -155,4 +161,6 @@ export default function StudentViewSubmission() {
       </div>
     </Box>
   );
-}
+})
+
+export default StudentViewSubmission;
