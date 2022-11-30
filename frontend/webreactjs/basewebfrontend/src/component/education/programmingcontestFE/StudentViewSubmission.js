@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress } from "@mui/material";
+import {Box, Button, CircularProgress, Typography} from "@mui/material";
 import StandardTable from "component/table/StandardTable";
 import {forwardRef, useEffect, useImperativeHandle, useState} from "react";
 import { useTranslation } from "react-i18next";
@@ -68,7 +68,7 @@ const StudentViewSubmission = forwardRef((props, ref) => {
         }
       },
     },
-    { title: "message", field: "message" },
+    { title: "Message", field: "message" },
     { title: t("submissionList.point"), field: "point" },
     { title: t("submissionList.language"), field: "sourceCodeLanguage" },
     {
@@ -146,6 +146,7 @@ const StudentViewSubmission = forwardRef((props, ref) => {
           commandBarComponents={
             <>
               <Button
+                variant="contained"
                 disabled={loading}
                 onClick={() => {
                   handleRefresh();

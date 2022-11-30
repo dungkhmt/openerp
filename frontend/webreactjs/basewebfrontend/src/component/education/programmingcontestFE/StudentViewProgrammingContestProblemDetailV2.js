@@ -33,6 +33,8 @@ import {
   saveByteArray,
 } from "utils/FileUpload/covert";
 import {makeStyles} from "@material-ui/core/styles";
+import {useSnackbar} from "notistack";
+import {AlertErrorProp, AlertSuccessProp} from "../../common/HustSnackbarNoti";
 
 const editorStyle = {
   toolbar: {
@@ -71,6 +73,7 @@ const useStyles = makeStyles((theme) => ({
 export default function StudentViewProgrammingContestProblemDetail() {
   const params = useParams();
   const classes = useStyles();
+  const {enqueueSnackbar} = useSnackbar();
 
   const problemId = params.problemId;
   const contestId = params.contestId;
@@ -90,6 +93,13 @@ export default function StudentViewProgrammingContestProblemDetail() {
     EditorState.createEmpty()
   );
   const [fetchedImageArray, setFetchedImageArray] = useState([]);
+
+  const ERR_STATUS = ["TIME_OUT",
+    "PARTICIPANT_NOT_APPROVED_OR_REGISTERED",
+    "PARTICIPANT_HAS_NOT_PERMISSION_TO_SUBMIT",
+    "MAX_NUMBER_SUBMISSIONS_REACHED",
+    "MAX_SOURCE_CODE_LENGTH_VIOLATIONS",
+    "SUBMISSION_INTERVAL_VIOLATIONS"];
 
   const inputRef = useRef();
   const listSubmissionRef = useRef(null);
@@ -112,6 +122,11 @@ export default function StudentViewProgrammingContestProblemDetail() {
       language: language,
     };
 
+    if (filename == null) {
+      enqueueSnackbar("Please choose a file to submit", AlertErrorProp);
+      setIsProcessing(false);
+      return;
+    }
     let formData = new FormData();
     formData.append("inputJson", JSON.stringify(body));
     formData.append("file", filename);
@@ -125,6 +140,9 @@ export default function StudentViewProgrammingContestProblemDetail() {
       .then((res) => {
         listSubmissionRef.current.refreshSubmission();
         inputRef.current.value = null;
+        if (ERR_STATUS.includes(res.status)) {
+          enqueueSnackbar(res.message, AlertErrorProp);
+        } else enqueueSnackbar("Submitted! Check submission status below", AlertSuccessProp)
         setStatus(res.status);
         setMessage(res.message);
       })
@@ -133,6 +151,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
       })
       .finally(() => {
         setIsProcessing(false);
+        setFilename(null);
         inputRef.current.value = null;
       });
   };
@@ -494,7 +513,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
           <h3>Status: <em>{status}</em></h3>
         </div>
         <div>
-          <h3>Message: <em>{message}</em> </h3>
+          <h3>Message: <em>{message}</em></h3>
         </div>
       </div>
       <div>
