@@ -209,8 +209,8 @@ public class StringHandler {
         return s.substring(0,len) + "...";
     }
 
-    public static void main(String[] args){
-        System.out.println(StringHandler.shorthen("pham quang dung",5));
+    public static String removeNullCharacter(String s){
+        return s.replaceAll("\u0000", "");
     }
 }
 

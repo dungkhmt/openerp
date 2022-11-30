@@ -12,6 +12,7 @@ import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
 import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.repo.*;
+import com.hust.baseweb.applications.programmingcontest.service.helper.SubmissionResponseHandler;
 import com.hust.baseweb.applications.programmingcontest.utils.ComputerLanguage;
 import com.hust.baseweb.applications.programmingcontest.utils.DateTimeUtils;
 import com.hust.baseweb.applications.programmingcontest.utils.TempDir;
@@ -74,6 +75,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private MongoContentService mongoContentService;
     private ObjectMapper objectMapper;
     private RabbitTemplate rabbitTemplate;
+    private SubmissionResponseHandler submissionResponseHandler;
 
     @Override
     public void createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException {
@@ -1277,7 +1279,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                       .build();
     }
 
-    @Transactional
     @Override
     public void submitContestProblemTestCaseByTestCaseWithFileProcessor(
         ModelContestSubmission modelContestSubmission,
@@ -1302,28 +1303,21 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .findAllByProblemIdAndIsPublic(modelContestSubmission.getProblemId(), "N");
         }
 
-        List<TestCaseEntity> lstFiltered = new ArrayList();
+        List<TestCaseEntity> listTestCaseAvailable = new ArrayList();
         for (TestCaseEntity tc : testCaseEntityList) {
             if (tc.getStatusId() != null && tc.getStatusId().equals(TestCaseEntity.STATUS_DISABLED)) {
                 continue;
             }
-            lstFiltered.add(tc);
+            listTestCaseAvailable.add(tc);
         }
-        testCaseEntityList = lstFiltered;
+        testCaseEntityList = listTestCaseAvailable;
 
         String tempName = tempDir.createRandomScriptFileName(userId + "-" +
                                                              modelContestSubmission.getContestId() + "-" +
                                                              modelContestSubmission.getProblemId() + "-" +
                                                              Math.random());
 
-        int runtime = 0;
-        int score = 0;
-        int nbTestCasePass = 0;
-        String totalStatus = "";
-        List<String> statusList = new ArrayList<>();
-        String message = "";
-        boolean compileError = false;
-
+        List<String> listSubmissionResponse = new ArrayList<>();
         for (TestCaseEntity testCaseEntity : testCaseEntityList) {
             List<TestCaseEntity> L = new ArrayList();
             L.add(testCaseEntity);
@@ -1336,102 +1330,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 "language not found",
                 problemEntity.getTimeLimit());
 
-            List<String> testCaseAns = Collections.singletonList(testCaseEntity.getCorrectAnswer());
-            List<Integer> points = Collections.singletonList(testCaseEntity.getTestCasePoint());
-
-            ProblemSubmission problemSubmission = new ProblemSubmission();
-            try {
-                // int mb = 1000 * 1000;
-                // MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
-
-                problemSubmission = StringHandler.handleContestResponseV2(response, testCaseAns, points);
-
-                // long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
-                // long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
-                // System.out.println("Memory used / committed :  " + used + "mb / " + committed + "mb");
-
-                if (problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")) {
-                    message = problemSubmission.getMessage();
-                    compileError = true;
-                    //log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Compiler Error, msg  = " + message);
-                    break;
-                }
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("LOG FOR TESTING STRING HANDLER ERROR: " + response);
-                throw new Exception("error from StringHandler");
-            }
-
-            runtime = runtime + problemSubmission.getRuntime().intValue();
-            score = score + problemSubmission.getScore();
-            nbTestCasePass += problemSubmission.getNbTestCasePass();
-            statusList.add(problemSubmission.getStatus());
-            List<String> output = problemSubmission.getParticipantAns();
-            String participantAns = "";
-            if (output != null && output.size() > 0) {
-                participantAns = output.get(0);
-            }
-
-            ContestSubmissionTestCaseEntity cste = ContestSubmissionTestCaseEntity.builder()
-                                                                                  .contestId(modelContestSubmission.getContestId())
-                                                                                  .contestSubmissionId(submission.getContestSubmissionId())
-                                                                                  .problemId(modelContestSubmission.getProblemId())
-                                                                                  .testCaseId(testCaseEntity.getTestCaseId())
-                                                                                  .submittedByUserLoginId(userId)
-                                                                                  .point(problemSubmission.getScore())
-                                                                                  .status(problemSubmission.getStatus().replaceAll("\u0000", ""))
-                                                                                  .testCaseOutput(testCaseEntity.getCorrectAnswer().replaceAll("\u0000", ""))
-                                                                                  .participantSolutionOtput(participantAns.replaceAll("\u0000", ""))
-                                                                                  .runtime(problemSubmission.getRuntime())
-                                                                                  .createdStamp(submission.getCreatedAt())
-                                                                                  .build();
-            cste = contestSubmissionTestCaseEntityRepo.save(cste);
-        }
-        boolean accepted = true;
-
-        for (String s : statusList) {
-            if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
-                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
-                accepted = false;
-                break;
-            } else if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)) {
-                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
-                accepted = false;
-                break;
-            } else if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_WRONG)) {
-                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
-                accepted = false; //break;
-            }
+            listSubmissionResponse.add(response);
         }
 
-        if (accepted) {
-            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
-        }
-
-        if (compileError) {
-            // keep compile error message above
-            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
-            //log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Summary Compile error " + message);
-        } else if (nbTestCasePass == 0) {
-            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
-        } else if (nbTestCasePass > 0 && nbTestCasePass < testCaseEntityList.size()) {
-            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL;
-        } else {
-            message = "Successful";
-        }
-
-        ContestSubmissionEntity submissionEntity = contestSubmissionRepo.
-            findContestSubmissionEntityByContestSubmissionId(submission.getContestSubmissionId());
-
-        submissionEntity.setStatus(totalStatus);
-        submissionEntity.setPoint(score);
-        submissionEntity.setTestCasePass(nbTestCasePass + "/" + testCaseEntityList.size());
-        submissionEntity.setSourceCode(modelContestSubmission.getSource());
-        submissionEntity.setSourceCodeLanguage(modelContestSubmission.getLanguage());
-        submissionEntity.setRuntime((long) runtime);
-        submissionEntity.setMessage(message);
-        contestSubmissionRepo.save(submissionEntity);
+        submissionResponseHandler.processSubmissionResponse(testCaseEntityList, listSubmissionResponse, modelContestSubmission, submission);
     }
 
     @Override
