@@ -996,8 +996,8 @@ public class ContestProblemController {
                     submissionInterval);
                 return ResponseEntity.ok().body(resp);
             }
+            cacheService.pushCachedWithExpire(hashId, userId, true, submissionInterval * 1000);
         }
-        cacheService.pushCachedWithExpire(hashId, userId, true, submissionInterval * 1000);
 
         try {
             StringBuilder source = new StringBuilder();
@@ -1021,7 +1021,7 @@ public class ContestProblemController {
                 if (cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
                     resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId);
                 }else {
-                    problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, userId);
+                    resp = problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, userId);
                 }
             } else {
                 resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId);
