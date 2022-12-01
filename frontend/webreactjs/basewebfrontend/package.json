@@ -55,7 +55,6 @@
     "material-ui-dropzone": "^3.3.1",
     "material-ui-search-bar": "^1.0.0",
     "nanoid": "^3.3.4",
-    "notistack": "^2.0.8",
     "overlayscrollbars": "^1.13.1",
     "overlayscrollbars-react": "^0.2.3",
     "pdfmake": "^0.1.68",
