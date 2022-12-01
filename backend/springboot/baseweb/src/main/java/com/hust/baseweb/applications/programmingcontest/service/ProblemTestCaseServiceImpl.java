@@ -128,6 +128,33 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .build();
         problemRepo.save(problemEntity);
 
+        // grant role owner, manager, view to current user
+        UserContestProblemRole upr = new UserContestProblemRole();
+        upr.setProblemId(problemEntity.getProblemId());
+        upr.setUserId(userID);
+        upr.setRoleId(UserContestProblemRole.ROLE_OWNER);
+        upr.setUpdateByUserId(userID);
+        upr.setCreatedStamp(new Date());
+        upr.setLastUpdated(new Date());
+        upr = userContestProblemRoleRepo.save(upr);
+
+        upr = new UserContestProblemRole();
+        upr.setProblemId(problemEntity.getProblemId());
+        upr.setUserId(userID);
+        upr.setRoleId(UserContestProblemRole.ROLE_MANAGER);
+        upr.setUpdateByUserId(userID);
+        upr.setCreatedStamp(new Date());
+        upr.setLastUpdated(new Date());
+        upr = userContestProblemRoleRepo.save(upr);
+
+        upr = new UserContestProblemRole();
+        upr.setProblemId(problemEntity.getProblemId());
+        upr.setUserId(userID);
+        upr.setRoleId(UserContestProblemRole.ROLE_VIEW);
+        upr.setUpdateByUserId(userID);
+        upr.setCreatedStamp(new Date());
+        upr.setLastUpdated(new Date());
+        upr = userContestProblemRoleRepo.save(upr);
 
     }
 
@@ -3469,5 +3496,18 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         return true;
     }
-
+    @Override
+    public boolean grantRole2AllProblems(String userLoginId, String userId, String roleId){
+        List<ProblemEntity> problems = problemRepo.findAll();
+        for(ProblemEntity p: problems){
+            UserContestProblemRole upr = new UserContestProblemRole();
+            upr.setUpdateByUserId(userLoginId);
+            upr.setUserId(userId);
+            upr.setRoleId(roleId);
+            upr.setProblemId(p.getProblemId());
+            upr.setCreatedStamp(new Date());
+            upr = userContestProblemRoleRepo.save(upr);
+        }
+        return true;
+    }
 }
