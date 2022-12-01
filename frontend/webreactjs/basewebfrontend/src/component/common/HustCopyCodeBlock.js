@@ -16,7 +16,7 @@ const HustCopyBlock = (props) => {
       {title && <Typography variant="h6">{title}</Typography>}
       <CopyBlock
         codeBlock
-        text={text}
+        text={text || ""}
         showLineNumbers={showLineNumbers}
         theme={dracula}
         wrapLines={wrapLines}

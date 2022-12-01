@@ -69,7 +69,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
 
-  const [openModal, setOpenModal] = useState(false);
+  const [openModalPreview, setOpenModalPreview] = useState(false);
   const [selectedTestcase, setSelectedTestcase] = useState();
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
@@ -127,7 +127,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
         inputRef.current.value = null;
         if (ERR_STATUS.includes(res.status)) {
           errorNoti(res.message, 3000);
-        } else successNoti("Submitted! Check submission status below", 3000)
+        } else successNoti("Submitted!", 3000)
         setStatus(res.status);
         setMessage(res.message);
       })
@@ -230,8 +230,8 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const ModalPreview = (chosenTestcase) => {
     return (
       <HustModal
-        open={openModal}
-        onClose={() => setOpenModal(false)}
+        open={openModalPreview}
+        onClose={() => setOpenModalPreview(false)}
         isNotShowCloseButton
         showCloseBtnTitle={false}
       >
@@ -426,7 +426,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
                         color="primary"
                         onClick={() => {
                           setSelectedTestcase(testCase);
-                          setOpenModal(true);
+                          setOpenModalPreview(true);
                         }}
                       >
                         <InfoIcon/>
