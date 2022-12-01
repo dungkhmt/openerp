@@ -1471,4 +1471,11 @@ public class ContestProblemController {
         return ResponseEntity.ok().body(ok);
     }
 
+    @GetMapping("/grant-manager-role-all-problems/{userId}/{roleId}")
+    public ResponseEntity<?> grantRole2AllProblems(Principal principal, @PathVariable String userId, @PathVariable String roleId){
+        //log.info("grantRole2AllProblems, userId = " + userId + " roleId = " + roleId);
+        boolean ok = problemTestCaseService.grantRole2AllProblems(principal.getName(), userId, roleId);
+        return ResponseEntity.ok().body(ok);
+    }
+
 }

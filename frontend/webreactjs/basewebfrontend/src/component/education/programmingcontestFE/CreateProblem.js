@@ -201,12 +201,30 @@ function CreateProblem() {
     for (const file of attachmentFiles) {
       formData.append("files", file);
     }
+    /*
     try {
       authPostMultiPart(dispatch, token, "/create-problem", formData).then(
         (res) => {
           sleep(1000).then(() => {
             history.push("/programming-contest/list-problems");
           });
+        }
+      );
+    } catch (error) {
+      alert(error);
+    }
+    */
+    try {
+      authPostMultiPart(dispatch, token, "/create-problem", formData).then(
+        (res) => {
+          setShowSubmitSuccess(true);
+          sleep(1000).then((r) => {
+            history.push("/programming-contest/list-problems");
+          });
+        },
+        {},
+        () => {
+          alert("Cập nhật thất bại");
         }
       );
     } catch (error) {
