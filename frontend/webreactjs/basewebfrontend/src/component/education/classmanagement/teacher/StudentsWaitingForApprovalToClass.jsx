@@ -43,7 +43,7 @@ export default function StudentsWaitingForApprovalToClass(props) {
   }
   
   const UpdateStatusButtons = ({ studentIds }) => (
-    <div>
+    <div style={{ display: 'flex', columnGap: '10px' }}>
       <Button variant="outlined"
               onClick={() => updateRegistrationStatusForStudents(studentIds, "APPROVED")}>
         Phê duyệt
