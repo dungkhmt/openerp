@@ -498,8 +498,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .statusId(ContestEntity.CONTEST_STATUS_CREATED)
                                                            .maxNumberSubmissions(modelCreateContest.getMaxNumberSubmissions())
                                                             .maxSourceCodeLength(modelCreateContest.getMaxSourceCodeLength())
-                                             .minTimeBetweenTwoSubmissions(60)
-                                             .judgeMode(ContestEntity.SYNCHRONOUS_JUDGE_MODE)
+                                             .minTimeBetweenTwoSubmissions(modelCreateContest.getMinTimeBetweenTwoSubmissions())
+                                             .judgeMode(modelCreateContest.getJudgeMode())
                                              .useCacheContestProblem(ContestEntity.USE_CACHE_CONTEST_PROBLEM_YES)
                                              .submissionActionType(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)
                                              .problemDescriptionViewType(ContestEntity.CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_VISIBLE)
@@ -1272,7 +1272,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
     @Transactional
     @Override
-    public void submitContestProblemTestCaseByTestCaseWithFile(
+    public ModelContestSubmissionResponse submitContestProblemTestCaseByTestCaseWithFile(
         ModelContestSubmission modelContestSubmission,
         String userId
     ) throws Exception {
@@ -1297,6 +1297,11 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             ProblemContestRoutingKey.JUDGE_PROBLEM,
             objectMapper.writeValueAsString(msg)
         );
+
+        return ModelContestSubmissionResponse.builder()
+                                      .status("IN_PROGRESS")
+                                      .message("Submission is being evaluated")
+                                      .build();
     }
 
     @Transactional
@@ -1402,7 +1407,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                                   .testCaseId(testCaseEntity.getTestCaseId())
                                                                                   .submittedByUserLoginId(userId)
                                                                                   .point(problemSubmission.getScore())
-                                                                                  .status(problemSubmission.getStatus())
+                                                                                  .status(problemSubmission.getStatus().replaceAll("\u0000", ""))
                                                                                   .testCaseOutput(testCaseEntity.getCorrectAnswer().replaceAll("\u0000", ""))
                                                                                   .participantSolutionOtput(participantAns.replaceAll("\u0000", ""))
                                                                                   .runtime(problemSubmission.getRuntime())

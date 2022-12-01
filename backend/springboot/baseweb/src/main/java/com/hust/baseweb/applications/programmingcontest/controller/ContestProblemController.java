@@ -1,6 +1,7 @@
 package com.hust.baseweb.applications.programmingcontest.controller;
 
 import com.google.gson.Gson;
+import com.hust.baseweb.applications.programmingcontest.cache.RedisCacheService;
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
@@ -47,6 +48,7 @@ public class ContestProblemController {
     UserService userService;
     UserRegistrationContestRepo userRegistrationContestRepo;
     UserContestProblemRoleRepo userContestProblemRoleRepo;
+    RedisCacheService cacheService;
 
     public static ConcurrentMap<String, ModelGetContestDetailResponse> runningContests = new ConcurrentHashMap();
 
@@ -1009,6 +1011,18 @@ public class ContestProblemController {
             return ResponseEntity.ok().body(resp);
         }
 
+        int submissionInterval = contestEntity.getMinTimeBetweenTwoSubmissions();
+        String hashId = "PROBLEM_SUBMISSION" + model.getProblemId();
+        if (submissionInterval > 0) {
+            Boolean isInInterval = cacheService.getCachedObject(hashId, userId, Boolean.class);
+            if (isInInterval != null && isInInterval.equals(true)) {
+                ModelContestSubmissionResponse resp = buildSubmissionResponseNotEnoughTimeBetweenSubmissions(
+                    submissionInterval);
+                return ResponseEntity.ok().body(resp);
+            }
+            cacheService.pushCachedWithExpire(hashId, userId, true, submissionInterval * 1000);
+        }
+
         try {
             StringBuilder source = new StringBuilder();
             InputStream inputStream = file.getInputStream();
@@ -1031,7 +1045,7 @@ public class ContestProblemController {
                 if (cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
                     resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId);
                 }else {
-                    problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, userId);
+                    resp = problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, userId);
                 }
             } else {
                 resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId);
@@ -1060,7 +1074,8 @@ public class ContestProblemController {
     }
     private ModelContestSubmissionResponse buildSubmissionResponseNotRegistered() {
         return ModelContestSubmissionResponse.builder()
-                                             .status("TIME_OUT")
+                                             .status("PARTICIPANT_NOT_APPROVED_OR_REGISTERED")
+                                             .message("Participant is not approved or not registered")
                                              .testCasePass("0")
                                              .runtime(0L)
                                              .memoryUsage((float) 0)
@@ -1108,6 +1123,22 @@ public class ContestProblemController {
                                              .status("MAX_SOURCE_CODE_LENGTH_VIOLATIONS")
                                              .message("Max source code length violations " + sourceLength + " exceeded "
                                                       + maxLength + " ")
+                                             .testCasePass("0")
+                                             .runtime(0L)
+                                             .memoryUsage((float) 0)
+                                             .problemName("")
+                                             .contestSubmissionID(null)
+                                             .submittedAt(null)
+                                             .score(0)
+                                             .numberTestCasePassed(0)
+                                             .totalNumberTestCase(0)
+                                             .build();
+    }
+
+    private ModelContestSubmissionResponse buildSubmissionResponseNotEnoughTimeBetweenSubmissions(int interval) {
+        return ModelContestSubmissionResponse.builder()
+                                             .status("SUBMISSION_INTERVAL_VIOLATIONS")
+                                             .message("Not enough time between 2 submissions (" + interval + "s) ")
                                              .testCasePass("0")
                                              .runtime(0L)
                                              .memoryUsage((float) 0)

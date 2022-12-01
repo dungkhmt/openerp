@@ -1,17 +1,18 @@
-import { CssBaseline } from "@material-ui/core";
-import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
-import { useEffect } from "react";
-import { I18nextProvider } from "react-i18next";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { useDispatch } from "react-redux";
-import { Router } from "react-router-dom";
-import { Slide, ToastContainer } from "react-toastify";
+import {CssBaseline} from "@material-ui/core";
+import {createTheme, MuiThemeProvider} from "@material-ui/core/styles";
+import {useEffect} from "react";
+import {I18nextProvider} from "react-i18next";
+import {QueryClient, QueryClientProvider} from "react-query";
+import {useDispatch} from "react-redux";
+import {Router} from "react-router-dom";
+import {Slide, ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { success } from "./action/index.js";
+import {success} from "./action/index.js";
 import history from "./history.js";
 import Routes from "./Routes";
-import { useAuthState } from "./state/AuthState.js";
+import {useAuthState} from "./state/AuthState.js";
 import i18n from "./translation/i18n";
+import {SnackbarProvider} from "notistack";
 
 const theme = createTheme({
   typography: {
@@ -50,7 +51,7 @@ const queryClient = new QueryClient({
 
 function App() {
   const dispatch = useDispatch();
-  const { isAuthenticated, token } = useAuthState();
+  const {isAuthenticated, token} = useAuthState();
 
   useEffect(() => {
     if (isAuthenticated.get()) dispatch(success(token.get()));
@@ -67,25 +68,27 @@ function App() {
     <I18nextProvider i18n={i18n}>
       <QueryClientProvider client={queryClient}>
         <MuiThemeProvider theme={theme}>
-          <CssBaseline />
-          {/* <Router> */}
-          <Router history={history}>
-            <Routes />
-            <ToastContainer
-              position="bottom-center"
-              transition={Slide}
-              autoClose={3000}
-              limit={3}
-              hideProgressBar={true}
-              newestOnTop
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-            />
-          </Router>
-          {/* </Router> */}
+          <SnackbarProvider maxSnack={1}>
+            <CssBaseline/>
+            {/* <Router> */}
+            <Router history={history}>
+              <Routes/>
+              <ToastContainer
+                position="bottom-center"
+                transition={Slide}
+                autoClose={3000}
+                limit={3}
+                hideProgressBar={true}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+              />
+            </Router>
+            {/* </Router> */}
+          </SnackbarProvider>
         </MuiThemeProvider>
       </QueryClientProvider>
     </I18nextProvider>

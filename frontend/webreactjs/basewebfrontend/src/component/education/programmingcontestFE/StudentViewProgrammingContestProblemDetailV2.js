@@ -8,21 +8,21 @@ import {
   Typography,
 } from "@material-ui/core";
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, IconButton } from "@mui/material";
+import {Box, IconButton} from "@mui/material";
 import Paper from "@material-ui/core/Paper";
 import TableRow from "@material-ui/core/TableRow";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
-import { ContentState, EditorState } from "draft-js";
+import {ContentState, EditorState} from "draft-js";
 import htmlToDraft from "html-to-draftjs";
-import React, { useEffect, useState, useRef } from "react";
-import { Editor } from "react-draft-wysiwyg";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { authGet, authPostMultiPart } from "../../../api";
-import { StyledTableCell, StyledTableRow } from "./lib";
-import { request } from "./Request";
+import React, {useEffect, useState, useRef} from "react";
+import {Editor} from "react-draft-wysiwyg";
+import {useDispatch, useSelector} from "react-redux";
+import {useParams} from "react-router";
+import {authGet, authPostMultiPart} from "../../../api";
+import {StyledTableCell, StyledTableRow} from "./lib";
+import {request} from "./Request";
 import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import FileSaver from "file-saver";
@@ -32,7 +32,9 @@ import {
   randomImageName,
   saveByteArray,
 } from "utils/FileUpload/covert";
-import { makeStyles } from "@material-ui/core/styles";
+import {makeStyles} from "@material-ui/core/styles";
+import {useSnackbar} from "notistack";
+import {AlertErrorProp, AlertSuccessProp} from "../../common/HustSnackbarNoti";
 
 const editorStyle = {
   toolbar: {
@@ -71,6 +73,7 @@ const useStyles = makeStyles((theme) => ({
 export default function StudentViewProgrammingContestProblemDetail() {
   const params = useParams();
   const classes = useStyles();
+  const {enqueueSnackbar} = useSnackbar();
 
   const problemId = params.problemId;
   const contestId = params.contestId;
@@ -91,11 +94,20 @@ export default function StudentViewProgrammingContestProblemDetail() {
   );
   const [fetchedImageArray, setFetchedImageArray] = useState([]);
 
+  const ERR_STATUS = ["TIME_OUT",
+    "PARTICIPANT_NOT_APPROVED_OR_REGISTERED",
+    "PARTICIPANT_HAS_NOT_PERMISSION_TO_SUBMIT",
+    "MAX_NUMBER_SUBMISSIONS_REACHED",
+    "MAX_SOURCE_CODE_LENGTH_VIOLATIONS",
+    "SUBMISSION_INTERVAL_VIOLATIONS"];
+
   const inputRef = useRef();
+  const listSubmissionRef = useRef(null);
 
   function onFileChange(event) {
     setFilename(event.target.files[0]);
   }
+
   const onInputChange = (event) => {
     let name = event.target.value;
     setFilename(name);
@@ -110,6 +122,11 @@ export default function StudentViewProgrammingContestProblemDetail() {
       language: language,
     };
 
+    if (filename == null) {
+      enqueueSnackbar("Please choose a file to submit", AlertErrorProp);
+      setIsProcessing(false);
+      return;
+    }
     let formData = new FormData();
     formData.append("inputJson", JSON.stringify(body));
     formData.append("file", filename);
@@ -121,22 +138,20 @@ export default function StudentViewProgrammingContestProblemDetail() {
       formData
     )
       .then((res) => {
-        alert("Submitted. Click REFRESH to see result");
+        listSubmissionRef.current.refreshSubmission();
         inputRef.current.value = null;
-        if (res.status === "TIME_OUT") {
-          alert("Time Out!!!");
-          setStatus(res.status);
-          setMessage(res.message);
-        } else {
-          setStatus(res.status);
-          setMessage(res.message);
-        }
+        if (ERR_STATUS.includes(res.status)) {
+          enqueueSnackbar(res.message, AlertErrorProp);
+        } else enqueueSnackbar("Submitted! Check submission status below", AlertSuccessProp)
+        setStatus(res.status);
+        setMessage(res.message);
       })
       .catch((e) => {
         console.error(e);
       })
       .finally(() => {
         setIsProcessing(false);
+        setFilename(null);
         inputRef.current.value = null;
       });
   };
@@ -158,9 +173,9 @@ export default function StudentViewProgrammingContestProblemDetail() {
       dispatch,
       token,
       "/get-problem-detail-view-by-student-in-contest/" +
-        problemId +
-        "/" +
-        contestId
+      problemId +
+      "/" +
+      contestId
     )
       .then(
         (res) => {
@@ -179,7 +194,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
           }
 
           let problemDescriptionHtml = htmlToDraft(res.problemStatement);
-          let { contentBlocks, entityMap } = problemDescriptionHtml;
+          let {contentBlocks, entityMap} = problemDescriptionHtml;
           let contentDescriptionState = ContentState.createFromBlockArray(
             contentBlocks,
             entityMap
@@ -217,11 +232,11 @@ export default function StudentViewProgrammingContestProblemDetail() {
       var blob = new Blob(
         [
           "INPUT: \n" +
-            testCase_ith.testCase +
-            "\n\nOUTPUT: \n" +
-            testCase_ith.correctAns,
+          testCase_ith.testCase +
+          "\n\nOUTPUT: \n" +
+          testCase_ith.correctAns,
         ],
-        { type: "text/plain;charset=utf-8" }
+        {type: "text/plain;charset=utf-8"}
       );
       FileSaver.saveAs(blob, "Testcase_" + (i + 1) + ".txt");
     }
@@ -341,7 +356,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
       </div>
 
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 750 }} aria-label="customized table">
+        <Table sx={{minWidth: 750}} aria-label="customized table">
           <TableHead>
             <TableRow>
               <StyledTableCell></StyledTableCell>
@@ -429,7 +444,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
                           setOpenModal(true);
                         }}
                       >
-                        <InfoIcon />
+                        <InfoIcon/>
                       </IconButton>
                     </StyledTableCell>
                     <StyledTableCell align="left"></StyledTableCell>
@@ -440,7 +455,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
           </TableBody>
         </Table>
       </TableContainer>
-      <ModalPreview chosenTestcase={selectedTestcase} />
+      <ModalPreview chosenTestcase={selectedTestcase}/>
       <div>
         <form onSubmit={handleFormSubmit}>
           <Grid container spacing={1} alignItems="flex-end">
@@ -491,19 +506,19 @@ export default function StudentViewProgrammingContestProblemDetail() {
               </Button>
             </Grid>
 
-            {isProcessing ? <CircularProgress /> : ""}
+            {isProcessing ? <CircularProgress/> : ""}
           </Grid>
         </form>
         <div>
-          <h2>Status: {status}</h2>
+          <h3>Status: <em>{status}</em></h3>
         </div>
         <div>
-          <h2>Message: </h2> {message}
+          <h3>Message: <em>{message}</em></h3>
         </div>
       </div>
       <div>
         <br></br>
-        <StudentViewSubmission />
+        <StudentViewSubmission ref={listSubmissionRef}/>
       </div>
     </div>
   );

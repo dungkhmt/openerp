@@ -27,16 +27,16 @@ public class RabbitConfig {
     public static final String DEAD_LETTER_EXCHANGE = "programming_contest_dead_letter_exchange";
     public static final String JUDGE_PROBLEM_DEAD_LETTER_QUEUE = "judge_problem_dead_letter_queue";
 
-    @Value("${rabbit.CONCURRENT_CONSUMERS:5}")
+    @Value("${spring.rabbitmq.programming_contest.concurrent_consumers:4}")
     private int concurrentConsumer;
 
-    @Value("${rabbit.MAX_CONCURRENT_CONSUMERS:8}")
+    @Value("${spring.rabbitmq.programming_contest.max_concurrent_consumers:8}")
     private int maxConcurrentConsumer;
 
-    @Value("${rabbit.PREFETCH_COUNT:3}")
+    @Value("${spring.rabbitmq.programming_contest.prefetch_count:1}")
     private int prefetchCount;
 
-    @Value("${rabbit.DEAD_MESSAGE_TTL:120000}")
+    @Value("${spring.rabbitmq.programming_contest.dead_message_ttl:120000}")
     private int deadMessageTimeToLive;
 
     @Bean

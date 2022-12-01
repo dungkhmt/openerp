@@ -23,7 +23,7 @@ public class ContestSubmissionListener {
     private final ObjectMapper objectMapper;
     private final ProblemTestCaseService problemTestCaseService;
 
-    @Value("${rabbit.RETRY_LIMIT:3}")
+    @Value("${spring.rabbitmq.programming_contest.retry_limit:2}")
     private int retryLimit;
 
     public ContestSubmissionListener(

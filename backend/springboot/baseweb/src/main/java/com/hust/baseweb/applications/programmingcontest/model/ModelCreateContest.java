@@ -16,4 +16,6 @@ public class ModelCreateContest {
     private Date startedAt;
     private long countDownTime;
     private int maxSourceCodeLength;
+    private int minTimeBetweenTwoSubmissions;
+    private String judgeMode;
 }
