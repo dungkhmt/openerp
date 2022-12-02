@@ -1,0 +1,52 @@
+package com.hust.baseweb.applications.bigdataanalysis.controller;
+
+import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheck;
+import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheckRule;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelCreateDataCheckRuleInput;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelUpdateDataQualityCheckInput;
+import com.hust.baseweb.applications.bigdataanalysis.service.DataQualityCheckService;
+import org.springframework.http.ResponseEntity;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import java.io.InputStream;
+import java.security.Principal;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.*;
+@RestController
+@CrossOrigin
+@AllArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
+
+public class BigDataAnalysisController {
+    private DataQualityCheckService dataQualityCheckService;
+
+    @GetMapping("/get-data-quality-check-rules")
+    public ResponseEntity<?> getDataQualityCheckRules(Principal principal){
+        List<DataQualityCheckRule> res = dataQualityCheckService.getDataQualityCheckRules();
+        return ResponseEntity.ok().body(res);
+    }
+
+    @GetMapping("/get-data-quality-check-list")
+    public ResponseEntity<?> getDataQualityCheckList(Principal principal){
+        List<DataQualityCheck> res = dataQualityCheckService.getDataQualityCheckList();
+        return ResponseEntity.ok().body(res);
+    }
+    @PostMapping("/update-data-quality-check-result")
+    public ResponseEntity<?> updateDataQualityCheckResult(Principal principal, @RequestBody
+        ModelUpdateDataQualityCheckInput input){
+        DataQualityCheck dqc = dataQualityCheckService.updateDataQualityCheckResult(principal.getName(), input);
+        return ResponseEntity.ok().body(dqc);
+    }
+    @PostMapping("/create-data-quality-check")
+    public ResponseEntity<?> createDataQualityCheck(Principal principal, @RequestBody ModelCreateDataCheckRuleInput input){
+        DataQualityCheck dqc = dataQualityCheckService.createDataQualityCheck(principal.getName(), input);
+        return ResponseEntity.ok().body(dqc);
+    }
+
+
+}
