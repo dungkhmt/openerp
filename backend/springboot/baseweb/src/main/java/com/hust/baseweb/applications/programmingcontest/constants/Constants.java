@@ -6,17 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 @AllArgsConstructor(onConstructor_ = @Autowired)
 @Data
 public class Constants {
-    private Map<String, Integer> MapLevelOrder = new HashMap<>();
+
+    private Map<String, Integer> MapLevelOrder;
 
     @Bean
-    public void initConstants(){
+    public void initConstants() {
         MapLevelOrder.put("easy", 1);
         MapLevelOrder.put("medium", 2);
         MapLevelOrder.put("hard", 3);
@@ -24,74 +24,78 @@ public class Constants {
 
     public static final String SPLIT_TEST_CASE = "testcasedone";
 
-    public enum RegistrationType{
+    public enum RegistrationType {
         PENDING("PENDING"),
         SUCCESSFUL("SUCCESSFUL"),
         FAILED("FAILED");
 
-        private String value;
+        private final String value;
 
-        RegistrationType(String value){
+        RegistrationType(String value) {
             this.value = value;
         }
 
-        public String getValue(){
+        public String getValue() {
             return this.value;
         }
     }
 
+    public enum RegisterCourseStatus {
+        SUCCESSES("SUCCESSES"),
+        FAILED("FAILED");
 
-    public enum RegisterCourseStatus{
-        SUCCESSES("SUCCESSES"), FAILED("FAILED");
+        private final String value;
 
-        private String value;
-
-        RegisterCourseStatus(String value){
+        RegisterCourseStatus(String value) {
             this.value = value;
         }
 
-        public String getValue(){
+        public String getValue() {
             return this.value;
         }
     }
 
-    public enum GetPointForRankingType{
+    public enum GetPointForRankingType {
         LATEST("LATEST"), HIGHEST("HIGHEST");
 
-        private String value;
+        private final String value;
 
-        GetPointForRankingType(String value){
+        GetPointForRankingType(String value) {
             this.value = value;
         }
 
-        public String getValue(){
+        public String getValue() {
             return this.value;
         }
     }
 
-    public enum Languages{
-        CPP("CPP"),
-        PYTHON3("PYTHON3"),
-        JAVA("JAVA"),
-        GOLANG("GOLANG");
+//    public enum Languages {
+//        CPP("CPP"),
+//        PYTHON3("PYTHON3"),
+//        JAVA("JAVA"),
+//        GOLANG("GOLANG");
+//
+//        private final String value;
+//
+//        Languages(String value) {
+//            this.value = value;
+//        }
+//
+//        public String getValue() {
+//            return this.value;
+//        }
+//
+//    }
 
-        private String value;
+    public enum DockerImage {
+        GCC("gcc:8.5-buster"),
+        JAVA("openjdk:13-buster"),
+        PYTHON3("python:3.6-buster"),
+        GOLANG("golang:1.16-buster");
 
-        Languages(String value){
-            this.value = value;
-        }
-        public String getValue(){
-            return this.value;
-        }
+        private final String value;
 
-    }
-
-    public enum DockerImage{
-        GCC("gcc:8.5-buster"), JAVA("openjdk:13-buster"), PYTHON3("python:3.6-buster"), GOLANG("golang:1.16-buster");
-
-        private String value;
-
-        DockerImage(String value){
+        DockerImage(String value) {
             this.value = value;
         }
 
@@ -100,13 +104,15 @@ public class Constants {
         }
     }
 
+    public enum BaseDockerContainerName {
+        GCC("/gcc"),
+        JAVA("/java"),
+        PYTHON3("/python3"),
+        GOLANG("/golang");
 
-    public enum DockerContainer{
-        GCC("/gcc"), JAVA("/java"), PYTHON3("/python3"), GOLANG("/golang");
+        private final String value;
 
-        private String value;
-
-        DockerContainer(String value){
+        BaseDockerContainerName(String value) {
             this.value = value;
         }
 
