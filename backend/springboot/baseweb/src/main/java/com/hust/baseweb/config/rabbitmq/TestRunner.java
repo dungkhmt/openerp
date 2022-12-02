@@ -24,8 +24,8 @@ public class TestRunner implements CommandLineRunner {
     //     for (int i = 0; i < 100; i++) {
     //         String msg = "Hello" + (i + 1) + " from RabbitMQ!";
     //         rabbitTemplate.convertAndSend(
-    //             RabbitConfig.EXCHANGE,
-    //             ProblemContestRoutingKey.JUDGE_PROBLEM,
+       //             RabbitProgrammingContestConfig.EXCHANGE,
+       //             ProblemContestRoutingKey.JUDGE_PROBLEM,
     //             objectMapper.writeValueAsString(msg)
     //         );
     //     }

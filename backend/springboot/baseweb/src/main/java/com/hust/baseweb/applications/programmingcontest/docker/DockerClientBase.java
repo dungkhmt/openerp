@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.utils.ComputerLanguage;
+import com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestProperties;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogStream;
@@ -14,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,10 +38,8 @@ public class DockerClientBase {
     @Value("${DOCKER_SERVER_HOST}")
     private String DOCKER_SERVER_HOST;
 
-//    @Autowired
-//    private RabbitProgrammingContestProperties contestProperties;
-
-    private int maxConcurrentConsumers = 2;
+    @Autowired
+    private RabbitProgrammingContestProperties rabbitConfig;
 
     private static DockerClient dockerClient;
 
@@ -133,7 +133,7 @@ public class DockerClientBase {
             Constants.BaseDockerContainerName.PYTHON3.getValue(),
             Constants.DockerImage.PYTHON3));
 
-//        final int maxConcurrentConsumers = contestProperties.getMaxConcurrentConsumers();
+        final int maxConcurrentConsumers = rabbitConfig.getMaxConcurrentConsumers();
         int numOfGccContainer = Math.min(maxConcurrentConsumers, 10);
         for (int i = 1; i <= numOfGccContainer; i++) {
             juryContainers.add(new JuryContainer(
