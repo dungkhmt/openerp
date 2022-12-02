@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -143,6 +144,7 @@ public class SubmissionResponseHandler {
         submissionEntity.setSourceCodeLanguage(modelContestSubmission.getLanguage());
         submissionEntity.setRuntime((long) runtime);
         submissionEntity.setMessage(message);
+        submissionEntity.setUpdateAt(new Date());
         contestSubmissionRepo.save(submissionEntity);
     }
 
