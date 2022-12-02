@@ -227,7 +227,7 @@ create table solution_hint_to_quiz_question(
     solution_text text,
     created_by_user_login_id varchar(60),
     status_id varchar(60),
-
+    attachment varchar(500),
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -244,6 +244,19 @@ create table quiz_question_course_topic(
     created_by_user_login_id varchar(60),
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-
 );
+
+create table participant_doing_quiz_add_explanation(
+    id uuid not null default uuid_generate_v1(),
+    question_id uuid not null,
+    participant_user_id varchar(60),
+    test_id varchar(60),
+    solution_explanation text,
+    attachment varchar(500),
+    last_updated_stamp            TIMESTAMP,
+    created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    constraint pk_participant_doing_quiz_add_explanation primary key (id),
+    constraint fk_participant_doing_quiz_add_explanation_question foreign key(question_id) references quiz_question(question_id),
+    constraint fk_participant_doing_quiz_add_explanation_participant foreign key(participant_user_id) references user_login(user_login_id)
+);
+
