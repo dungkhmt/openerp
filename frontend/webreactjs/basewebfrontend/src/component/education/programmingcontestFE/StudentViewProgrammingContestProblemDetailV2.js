@@ -1,12 +1,4 @@
-import {
-  Button,
-  CircularProgress,
-  Grid,
-  MenuItem,
-  TableHead,
-  TextField,
-  Typography,
-} from "@material-ui/core";
+import {Button, CircularProgress, Grid, MenuItem, TableHead, TextField, Typography,} from "@material-ui/core";
 import InfoIcon from "@mui/icons-material/Info";
 import {Box, IconButton} from "@mui/material";
 import Paper from "@material-ui/core/Paper";
@@ -16,7 +8,7 @@ import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import {ContentState, EditorState} from "draft-js";
 import htmlToDraft from "html-to-draftjs";
-import React, {useEffect, useState, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Editor} from "react-draft-wysiwyg";
 import {useDispatch, useSelector} from "react-redux";
 import {useParams} from "react-router";
@@ -27,14 +19,9 @@ import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import FileSaver from "file-saver";
 import StudentViewSubmission from "./StudentViewSubmission";
-import {
-  getFileType,
-  randomImageName,
-  saveByteArray,
-} from "utils/FileUpload/covert";
+import {getFileType, randomImageName, saveByteArray,} from "utils/FileUpload/covert";
 import {makeStyles} from "@material-ui/core/styles";
-import {useSnackbar} from "notistack";
-import {AlertErrorProp, AlertSuccessProp} from "../../common/HustSnackbarNoti";
+import {errorNoti, successNoti} from "../../../utils/notification";
 
 const editorStyle = {
   toolbar: {
@@ -73,18 +60,16 @@ const useStyles = makeStyles((theme) => ({
 export default function StudentViewProgrammingContestProblemDetail() {
   const params = useParams();
   const classes = useStyles();
-  const {enqueueSnackbar} = useSnackbar();
-
   const problemId = params.problemId;
   const contestId = params.contestId;
   const [problem, setProblem] = useState(null);
   const [testCases, setTestCases] = useState([]);
-  const [filename, setFilename] = useState("");
+  const [filename, setFilename] = useState(null);
   const [language, setLanguage] = useState("CPP");
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
 
-  const [openModal, setOpenModal] = useState(false);
+  const [openModalPreview, setOpenModalPreview] = useState(false);
   const [selectedTestcase, setSelectedTestcase] = useState();
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
@@ -123,7 +108,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
     };
 
     if (filename == null) {
-      enqueueSnackbar("Please choose a file to submit", AlertErrorProp);
+      errorNoti("Please choose a file to submit", 2000);
       setIsProcessing(false);
       return;
     }
@@ -141,8 +126,8 @@ export default function StudentViewProgrammingContestProblemDetail() {
         listSubmissionRef.current.refreshSubmission();
         inputRef.current.value = null;
         if (ERR_STATUS.includes(res.status)) {
-          enqueueSnackbar(res.message, AlertErrorProp);
-        } else enqueueSnackbar("Submitted! Check submission status below", AlertSuccessProp)
+          errorNoti(res.message, 3000);
+        } else successNoti("Submitted!", 3000)
         setStatus(res.status);
         setMessage(res.message);
       })
@@ -245,8 +230,8 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const ModalPreview = (chosenTestcase) => {
     return (
       <HustModal
-        open={openModal}
-        onClose={() => setOpenModal(false)}
+        open={openModalPreview}
+        onClose={() => setOpenModalPreview(false)}
         isNotShowCloseButton
         showCloseBtnTitle={false}
       >
@@ -441,7 +426,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
                         color="primary"
                         onClick={() => {
                           setSelectedTestcase(testCase);
-                          setOpenModal(true);
+                          setOpenModalPreview(true);
                         }}
                       >
                         <InfoIcon/>

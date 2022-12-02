@@ -12,7 +12,6 @@ import history from "./history.js";
 import Routes from "./Routes";
 import {useAuthState} from "./state/AuthState.js";
 import i18n from "./translation/i18n";
-import {SnackbarProvider} from "notistack";
 
 const theme = createTheme({
   typography: {
@@ -68,27 +67,25 @@ function App() {
     <I18nextProvider i18n={i18n}>
       <QueryClientProvider client={queryClient}>
         <MuiThemeProvider theme={theme}>
-          <SnackbarProvider maxSnack={1}>
-            <CssBaseline/>
-            {/* <Router> */}
-            <Router history={history}>
-              <Routes/>
-              <ToastContainer
-                position="bottom-center"
-                transition={Slide}
-                autoClose={3000}
-                limit={3}
-                hideProgressBar={true}
-                newestOnTop
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-              />
-            </Router>
-            {/* </Router> */}
-          </SnackbarProvider>
+          <CssBaseline/>
+          {/* <Router> */}
+          <Router history={history}>
+            <Routes/>
+            <ToastContainer
+              position="bottom-center"
+              transition={Slide}
+              autoClose={3000}
+              limit={3}
+              hideProgressBar={true}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
+          </Router>
+          {/* </Router> */}
         </MuiThemeProvider>
       </QueryClientProvider>
     </I18nextProvider>

@@ -134,7 +134,7 @@ export default function ContestProblemSubmissionDetail() {
       <Typography variant={"h5"}>Language: {submissionLanguage}</Typography>
       <TextField
         style={{
-          width: 1.0 * window.innerWidth,
+          width: 0.7 * window.innerWidth,
           margin: 20,
         }}
         multiline
@@ -144,7 +144,7 @@ export default function ContestProblemSubmissionDetail() {
           setSubmissionSource(event.target.value);
           console.log(submissionSource);
         }}
-      ></TextField>
+      />
       <h3>Compile Message: {message}</h3>
       {/*
       <Button onClick={updateCode}>Update Code</Button>
