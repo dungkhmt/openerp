@@ -79,7 +79,7 @@ public class DataQualityCheckServiceImpl implements DataQualityCheckService{
         dqc.setResult(input.getResult());
         dqc.setStatusId(input.getStatusId());
         dqc.setMessage(input.getMessage());
-        dqc.setLastModifiedBy(inp;
+
         dqc = dataQualityCheckRepo.save(dqc);
         return dqc;
     }
