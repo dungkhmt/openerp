@@ -5,6 +5,7 @@ import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 import MaterialTable from "material-table";
 import React, { useEffect, useReducer, useState } from "react";
 import { request } from "../../../api";
+import JoinQuizTestRequestList from "./detail/JoinQuizTestRequestList";
 
 // const useStyles = makeStyles({
 //   table: {
@@ -148,6 +149,9 @@ export default function QuizTestJoinRequest(props) {
   }, []);
 
   return (
+    <>
+      <JoinQuizTestRequestList testId={testId}/>
+
     <MaterialTable
       title=""
       columns={columns}
@@ -231,5 +235,7 @@ export default function QuizTestJoinRequest(props) {
         },
       ]}
     />
+
+    </>
   );
 }

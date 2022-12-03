@@ -228,9 +228,6 @@ public class QuizTestController {
         /* for (StudentInTestQueryReturnModel studentInTestQueryReturn : list) {
             System.out.println(studentInTestQueryReturn);
         } */
-        if (list.isEmpty()) {
-            return ResponseEntity.ok().body("Error");
-        }
         return ResponseEntity.ok().body(list);
 
     }

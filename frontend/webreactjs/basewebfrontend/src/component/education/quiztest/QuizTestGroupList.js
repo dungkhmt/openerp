@@ -22,6 +22,7 @@ import TertiaryButton from "../../button/TertiaryButton";
 import CustomizedDialogs from "../../dialog/CustomizedDialogs";
 import ErrorDialog from "../../dialog/ErrorDialog";
 import QuizTestGroupQuestionList from "./QuizTestGroupQuestionList";
+import QuizGroupList from "./detail/QuizGroupList";
 export const style = (theme) => ({
   testBtn: {
     marginLeft: 40,
@@ -258,6 +259,8 @@ export default function QuizTestGroupList(props) {
 
   return (
     <>
+      <QuizGroupList testId={testId}/>
+
       <MaterialTable
         title=""
         columns={columns}
