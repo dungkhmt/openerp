@@ -1,6 +1,9 @@
 # syntax = docker/dockerfile:1.3
 
-FROM openjdk:8-jdk as build
+FROM openjdk:8-jdk-alpine as build
+
+RUN apk update && apk add --no-cache gcompat # For ortools
+
 WORKDIR /workspace/app
 
 COPY mvnw .
@@ -13,7 +16,7 @@ RUN ./mvnw install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 FROM openjdk:8-jdk
-#RUN apk update && apk add --no-cache gcompat # For ortools
+
 #RUN apk add --update ttf-dejavu && rm -rf /var/cache/apk/* # For Apache POI
 
 ENV JAVA_OPTS=""
