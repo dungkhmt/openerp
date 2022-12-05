@@ -11,6 +11,7 @@ import { request } from "../../../../api";
 import TestButton from "./TestButton";
 
 import CommentsOnQuiz from "./CommentsOnQuiz";
+import CreateQuizDoingExplanationDialog from "../../quiztest/quizdoingexplanation/CreateQuizDoingExplanationDialog";
 
 const useStyles = makeStyles(() => ({
   testBtn: {
@@ -77,6 +78,7 @@ export default function Quizz({ quizz, index, classId }) {
   const token = useSelector((state) => state.auth.token);
   const history = useHistory();
 
+  const [createExplanationDlgOpen, setCreateExplanationDlgOpen] = useState(false);
   const [result, setResult] = useState({ submited: false, isCorrect: false });
   const [openCommentBox, setOpenCommentBox] = useState(false);
   const [numberComments, setNumberComments] = useState(0);
@@ -223,6 +225,14 @@ export default function Quizz({ quizz, index, classId }) {
           setOpen={setOpenCommentBox}
         />
       */}
+      <div className={classes.testBtn}>
+        <Button variant="outlined" onClick={() => setCreateExplanationDlgOpen(true)}>
+          Thêm cách làm
+        </Button>
+      </div>
+      <CreateQuizDoingExplanationDialog open={createExplanationDlgOpen}
+                                        onClose={() => setCreateExplanationDlgOpen(false)}
+                                        questionId={quizz.questionId}/>
     </div>
   );
 }
