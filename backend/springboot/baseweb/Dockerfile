@@ -13,7 +13,7 @@ RUN ./mvnw install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 FROM eclipse-temurin:8-jdk-alpine
-RUN apk update && apk add --no-cache gcompat # For ortools
+RUN apk update && apk add --no-cache gcompat ncurses-libs libgcc libstdc++ # For ortools
 RUN apk add --update ttf-dejavu && rm -rf /var/cache/apk/* # For Apache POI
 
 ENV JAVA_OPTS=""
