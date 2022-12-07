@@ -19,8 +19,6 @@ import com.hust.baseweb.applications.programmingcontest.utils.TempDir;
 import com.hust.baseweb.applications.programmingcontest.utils.codesimilaritycheckingalgorithms.CodeSimilarityCheck;
 import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.ProblemSubmission;
 import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.StringHandler;
-import com.hust.baseweb.config.rabbitmq.ProblemContestRoutingKey;
-import com.hust.baseweb.config.rabbitmq.RabbitConfig;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.model.ListPersonModel;
 import com.hust.baseweb.model.PersonModel;
@@ -43,6 +41,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.hust.baseweb.config.rabbitmq.ProblemContestRoutingKey.JUDGE_PROBLEM;
+import static com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestConfig.EXCHANGE;
 
 @Slf4j
 @Service
@@ -1295,8 +1296,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         msg.setModelContestSubmission(modelContestSubmission);
         msg.setSubmission(submission);
         rabbitTemplate.convertAndSend(
-            RabbitConfig.EXCHANGE,
-            ProblemContestRoutingKey.JUDGE_PROBLEM,
+            EXCHANGE,
+            JUDGE_PROBLEM,
             objectMapper.writeValueAsString(msg)
         );
 
