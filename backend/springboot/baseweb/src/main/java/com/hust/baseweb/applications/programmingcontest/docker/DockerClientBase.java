@@ -279,10 +279,15 @@ public class DockerClientBase {
             attachStderr());
 
         //log.info("runExecutable, dirName = " +     dirName +   " language = " +     languages +  " copyToContainer OK -> runExecCreation OK");
-        LogStream output = dockerClient.execStart(runExecCreation.id());
+        String output = null;
+        try (LogStream stream = dockerClient.execStart(runExecCreation.id())) {
+            output = stream.readFully() ;
+        } catch (DockerException | InterruptedException e) {
+            log.error("Failed to exec commands '{}' in container '{}'", runCommand, containerId, e);
+        }
 
         //log.info("runExecutable, dirName = " +   dirName +   " language = " +   languages + " copyToContainer OK -> runExecCreation OK -> execStart to get output OK");
-        return output.readFully();
+        return output;
     }
 }
 
