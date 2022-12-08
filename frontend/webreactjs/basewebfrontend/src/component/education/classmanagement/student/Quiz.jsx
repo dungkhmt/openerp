@@ -12,6 +12,7 @@ import TestButton from "./TestButton";
 
 import CommentsOnQuiz from "./CommentsOnQuiz";
 import CreateQuizDoingExplanationDialog from "../../quiztest/quizdoingexplanation/CreateQuizDoingExplanationDialog";
+import QuizDoingExplanationDetail from "../../quiztest/quizdoingexplanation/QuizDoingExplanationDetail";
 
 const useStyles = makeStyles(() => ({
   testBtn: {
@@ -79,6 +80,7 @@ export default function Quizz({ quizz, index, classId }) {
   const history = useHistory();
 
   const [createExplanationDlgOpen, setCreateExplanationDlgOpen] = useState(false);
+  const [quizDoingExplanationOpen, setQuizDoingExplanationOpen] = useState(false);
   const [result, setResult] = useState({ submited: false, isCorrect: false });
   const [openCommentBox, setOpenCommentBox] = useState(false);
   const [numberComments, setNumberComments] = useState(0);
@@ -233,6 +235,24 @@ export default function Quizz({ quizz, index, classId }) {
       <CreateQuizDoingExplanationDialog open={createExplanationDlgOpen}
                                         onClose={() => setCreateExplanationDlgOpen(false)}
                                         questionId={quizz.questionId}/>
+
+      { !quizDoingExplanationOpen &&
+        <div className={classes.testBtn}>
+          <Button variant="outlined" onClick={() => setQuizDoingExplanationOpen(true)}>
+            Xem cách làm đã tạo
+          </Button>
+        </div>
+      }
+      { quizDoingExplanationOpen &&
+        <>
+          <div className={classes.testBtn}>
+            <Button variant="outlined" onClick={() => setQuizDoingExplanationOpen(false)}>
+              Ẩn cách làm
+            </Button>
+          </div>
+          <QuizDoingExplanationDetail questionId={quizz.questionId}/>
+        </>
+      }
     </div>
   );
 }

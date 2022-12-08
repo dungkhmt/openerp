@@ -24,5 +24,5 @@ export default function FilePreview(props) {
 }
 
 FilePreview.propTypes = {
-  file: PropTypes.instanceOf(File).isRequired
+  file: PropTypes.instanceOf(Blob).isRequired
 }

@@ -4,9 +4,13 @@ import com.hust.baseweb.applications.education.quiztest.entity.QuizQuestionDoing
 import com.hust.baseweb.applications.education.quiztest.model.quizdoingexplanation.QuizDoingExplanationInputModel;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public interface QuizQuestionDoingExplanationService {
+
+    Collection<QuizQuestionDoingExplanation> findExplanationByParticipantIdAndQuestionId(String participantLoginId,
+                                                                                         UUID questionId);
 
     QuizQuestionDoingExplanation createExplanation(QuizDoingExplanationInputModel solutionExplanation,
                                                    MultipartFile attachment);

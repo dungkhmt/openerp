@@ -58,7 +58,7 @@ public class ContentApiController {
                 InputStream inputStream = content.getInputStream();
                 HttpHeaders headers= new HttpHeaders();
 //                headers.setContentType(MediaType.parseMediaType( content.getContentType()));
-                headers.add("Content-Type", "application/octet-stream");
+                headers.add("Content-Type", content.getContentType());
                 headers.add("Content-Disposition", "attachment");
                 headers.add("Access-Control-Expose-Headers", "Content-Disposition");
                 return new ResponseEntity<>(IOUtils.toByteArray(inputStream), headers, HttpStatus.OK);

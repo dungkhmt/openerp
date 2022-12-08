@@ -30,6 +30,12 @@ export default function FileUploader(props) {
 
   function updateSelectedFiles(newSelectedFiles) {
     let newSelectedFileArr = [...newSelectedFiles];
+    for (let i = 0; i < newSelectedFileArr.length; i++) {
+      let file = newSelectedFileArr[i];
+      if (!file.type) {
+        newSelectedFileArr[i] = file.slice(0, file.size, "text/plain")
+      }
+    }
     setSelectedFiles(newSelectedFileArr);
   }
 

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.UUID;
 
 @Slf4j
@@ -24,6 +25,14 @@ public class QuizQuestionDoingExplanationServiceImpl implements QuizQuestionDoin
     private final MongoContentService mongoContentService;
 
     private final QuizQuestionDoingExplanationRepo quizDoingExplanationRepo;
+
+    @Override
+    public Collection<QuizQuestionDoingExplanation> findExplanationByParticipantIdAndQuestionId(
+        String participantLoginId,
+        UUID questionId
+    ) {
+        return quizDoingExplanationRepo.findByParticipantUserIdAndQuestionId(participantLoginId, questionId);
+    }
 
     @Override
     public QuizQuestionDoingExplanation createExplanation(QuizDoingExplanationInputModel quizDoingExplanationIM,
