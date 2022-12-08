@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -123,6 +124,7 @@ public class ContestEntity {
             inverseJoinColumns = @JoinColumn(name = "problem_id", referencedColumnName = "problem_id")
     )
     @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<ProblemEntity> problems;
 
     @Column(name = "try_again")
