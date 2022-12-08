@@ -1281,7 +1281,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         Date submitTime = new Date();
         ContestSubmissionEntity submission = ContestSubmissionEntity.builder()
                                                            .contestId(modelContestSubmission.getContestId())
-                                                           .status(ContestSubmissionEntity.SUBMISSION_STATUS_EVALUATION_IN_PROGRESS)
+                                                           .sourceCode(modelContestSubmission.getSource())
+                                                                    .sourceCodeLanguage(modelContestSubmission.getLanguage())
+                                                                    .status(ContestSubmissionEntity.SUBMISSION_STATUS_EVALUATION_IN_PROGRESS)
                                                            .point(0)
                                                            .problemId(modelContestSubmission.getProblemId())
                                                            .userId(userId)
