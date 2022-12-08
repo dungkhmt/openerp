@@ -12,6 +12,7 @@ import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRe
 import com.hust.baseweb.applications.programmingcontest.repo.UserContestProblemRoleRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.UserRegistrationContestRepo;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
+import com.hust.baseweb.applications.programmingcontest.service.helper.cache.ProblemTestCaseServiceCache;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.model.ListPersonModel;
 import com.hust.baseweb.model.PersonModel;
@@ -1012,7 +1013,8 @@ public class ContestProblemController {
         }
 
         int submissionInterval = contestEntity.getMinTimeBetweenTwoSubmissions();
-        String hashId = "PROBLEM_SUBMISSION" + model.getProblemId();
+        String hashId = ProblemTestCaseServiceCache.RedisHashPrefix.PROBLEM_SUBMISSION.getValue() +
+                        model.getProblemId();
         if (submissionInterval > 0) {
             Boolean isInInterval = cacheService.getCachedObject(hashId, userId, Boolean.class);
             if (isInInterval != null && isInInterval.equals(true)) {
