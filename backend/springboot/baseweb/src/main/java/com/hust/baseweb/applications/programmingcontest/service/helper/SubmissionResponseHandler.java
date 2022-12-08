@@ -44,6 +44,9 @@ public class SubmissionResponseHandler {
         String message = "";
         boolean compileError = false;
 
+        int mb = 1000 * 1000;
+        MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+
         int i = 0;
         for (TestCaseEntity testCaseEntity : testCaseEntityList) {
             String response = listSubmissionResponse.get(i++);
@@ -51,15 +54,9 @@ public class SubmissionResponseHandler {
             List<Integer> points = Collections.singletonList(testCaseEntity.getTestCasePoint());
 
             ProblemSubmission problemSubmission;
+
             try {
-                 int mb = 1000 * 1000;
-                 MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
-
                 problemSubmission = StringHandler.handleContestResponseV2(response, testCaseAns, points);
-
-                 long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
-                 long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
-                 System.out.println("Memory used / committed :  " + used + "mb / " + committed + "mb");
 
                 if (problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")) {
                     message = problemSubmission.getMessage();
@@ -103,6 +100,10 @@ public class SubmissionResponseHandler {
             contestSubmissionTestCaseEntityRepo.save(cste);
         }
         boolean accepted = true;
+
+        long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
+        long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
+        System.out.println("Memory used / committed :  " + used + "mb / " + committed + "mb");
 
         for (String s : statusList) {
             if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
