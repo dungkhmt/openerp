@@ -109,8 +109,8 @@ public class RedisCacheService {
     }
 
     @Async("asyncRedis")
-    public CompletableFuture<Boolean> invalidCached(String hashId) {
-        log.debug("invalid cache {}", hashId);
+    public CompletableFuture<Boolean> flushCache(String hashId) {
+        log.debug("flush cache {}", hashId);
         return CompletableFuture.completedFuture(redisTemplate.delete(hashId));
     }
 }

@@ -4,6 +4,7 @@ import com.hust.baseweb.applications.programmingcontest.cache.RedisCacheService;
 import com.hust.baseweb.applications.programmingcontest.entity.ContestEntity;
 import com.hust.baseweb.applications.programmingcontest.entity.ProblemEntity;
 import com.hust.baseweb.applications.programmingcontest.entity.TestCaseEntity;
+import com.hust.baseweb.applications.programmingcontest.model.ModelGetContestDetailResponse;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ProblemRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.TestCaseRepo;
@@ -26,7 +27,8 @@ public class ProblemTestCaseServiceCache {
         PROBLEM("PROBLEM"),
         PROBLEM_SUBMISSION("PROBLEM_SUBMISSION"),
         TEST_CASE("TEST_CASE"),
-        CONTEST("CONTEST");
+        CONTEST("CONTEST"),
+        CONTEST_DETAIL_SOLVING("CONTEST_DETAIL_SOLVING");
 
         private final String value;
 
@@ -39,6 +41,9 @@ public class ProblemTestCaseServiceCache {
         }
     }
 
+    public void flushCache(RedisHashPrefix hash) {
+        cacheService.flushCache(hash.getValue());
+    }
 
     public ProblemEntity findProblemAndUpdateCache(String problemId) {
         ProblemEntity problem = findProblemInCache(problemId);
@@ -92,7 +97,7 @@ public class ProblemTestCaseServiceCache {
             } else {
                 testCaseEntityList = testCaseRepo.findAllByProblemIdAndIsPublic(problemId, "N");
             }
-            addListTestCaseToCache(problemId, testCaseEntityList, isPublicTestCase, 60*60);
+            addListTestCaseToCache(problemId, testCaseEntityList, isPublicTestCase, 60 * 60);
         }
         return testCaseEntityList;
     }
@@ -100,6 +105,24 @@ public class ProblemTestCaseServiceCache {
     public List<TestCaseEntity> findListTestCaseInCache(String problemId, boolean isPublicTestCase) {
         String key = generateKeyTestCase(problemId, isPublicTestCase);
         return cacheService.getCachedSpecialListObject(RedisHashPrefix.TEST_CASE.getValue(), key, TestCaseEntity.class);
+    }
+
+    public Boolean findCheckSubmissionBetweenIntervalInCache(String problemId, String userId) {
+        String key = generateKeySubmissionInterval(problemId, userId);
+        return cacheService.getCachedObject(RedisHashPrefix.PROBLEM_SUBMISSION.getValue(), key, Boolean.class);
+    }
+
+    public void addSubmissionBetweenIntervalToCache(String problemId, String userId, int submissionInterval) {
+        String key = generateKeySubmissionInterval(problemId, userId);
+        cacheService.pushCachedWithExpire(
+            RedisHashPrefix.PROBLEM_SUBMISSION.getValue(),
+            key,
+            true,
+            submissionInterval * 1000);
+    }
+
+    private String generateKeySubmissionInterval(String problemId, String userId) {
+        return problemId + "__" + userId;
     }
 
     public void addListTestCaseToCache(
@@ -121,5 +144,21 @@ public class ProblemTestCaseServiceCache {
             return problemId + "_Y";
         }
         return problemId + "_N";
+    }
+
+
+    public ModelGetContestDetailResponse findContestDetailResponseInCache(String contestId) {
+        return cacheService.getCachedObject(
+            RedisHashPrefix.CONTEST_DETAIL_SOLVING.getValue(),
+            contestId,
+            ModelGetContestDetailResponse.class);
+    }
+
+    public void addContestDetailResponseToCache(ModelGetContestDetailResponse contest, int expireTime) {
+        cacheService.pushCachedWithExpire(
+            RedisHashPrefix.CONTEST_DETAIL_SOLVING.getValue(),
+            contest.getContestId(),
+            contest,
+            expireTime * 1000);
     }
 }
