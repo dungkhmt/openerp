@@ -1363,6 +1363,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             listSubmissionResponse.add(response);
         }
 
+        tempDir.removeDir(tempName);
         submissionResponseHandler.processSubmissionResponse(testCaseEntityList, listSubmissionResponse, modelContestSubmission, submission);
     }
 
