@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -50,24 +52,23 @@ public class SubmissionResponseHandler {
 
             ProblemSubmission problemSubmission;
             try {
-                // int mb = 1000 * 1000;
-                // MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+                 int mb = 1000 * 1000;
+                 MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
 
                 problemSubmission = StringHandler.handleContestResponseV2(response, testCaseAns, points);
 
-                // long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
-                // long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
-                // System.out.println("Memory used / committed :  " + used + "mb / " + committed + "mb");
+                 long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
+                 long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
+                 System.out.println("Memory used / committed :  " + used + "mb / " + committed + "mb");
 
                 if (problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")) {
                     message = problemSubmission.getMessage();
                     compileError = true;
-                    //log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Compiler Error, msg  = " + message);
                     break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("LOG FOR TESTING STRING HANDLER ERROR: " + response);
+//                System.out.println("LOG FOR TESTING STRING HANDLER ERROR: " + response);
                 throw new Exception("error from StringHandler");
             }
 
