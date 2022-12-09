@@ -1509,4 +1509,12 @@ public class ContestProblemController {
         return ResponseEntity.ok().body(ok);
     }
 
+    @GetMapping("/public/ranking-programming-contest/{contestId}")
+    public ResponseEntity<?> getRankingContestPublic(@PathVariable("contestId") String contestId, Pageable pageable) {
+        pageable = Pageable.unpaged();
+        List<ContestSubmissionsByUser> page = problemTestCaseService.getRankingByContestIdNew(pageable, contestId,
+                                                                                              Constants.GetPointForRankingType.HIGHEST);
+        // log.info("ranking page {}", page);
+        return ResponseEntity.status(200).body(page);
+    }
 }
