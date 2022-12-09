@@ -37,7 +37,20 @@ public class RedisCacheService {
                 return objectMapper.readValue((String) value, clazz);
             }
         } catch (Exception e) {
-            log.error("Cannot get query cache #{}{}", hashId, key, e);
+            log.error("Cannot get query cache #{} {}", hashId, key, e);
+        }
+        return null;
+    }
+
+    public <T> List<T> getCachedSpecialListObject(String hashId, String key, Class<T> clazz) {
+        try {
+            Object value = getCachedObject(hashId, key);
+            if (value != null) {
+                log.debug("hit cache for hashId " + hashId);
+                return objectMapper.convertValue(value, new TypeReference<List<T>>() { });
+            }
+        } catch (Exception e) {
+//            log.error("Cannot get query cache #{}{}", hashId, key, e);
         }
         return null;
     }
@@ -96,8 +109,8 @@ public class RedisCacheService {
     }
 
     @Async("asyncRedis")
-    public CompletableFuture<Boolean> invalidCached(String hashId) {
-        log.debug("invalid cache {}", hashId);
+    public CompletableFuture<Boolean> flushCache(String hashId) {
+        log.debug("flush cache {}", hashId);
         return CompletableFuture.completedFuture(redisTemplate.delete(hashId));
     }
 }

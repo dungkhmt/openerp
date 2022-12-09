@@ -13,10 +13,11 @@ import java.util.Map;
 @AllArgsConstructor(onConstructor_ = @Autowired)
 @Data
 public class Constants {
+
     private Map<String, Integer> MapLevelOrder = new HashMap<>();
 
     @Bean
-    public void initConstants(){
+    public void initConstants() {
         MapLevelOrder.put("easy", 1);
         MapLevelOrder.put("medium", 2);
         MapLevelOrder.put("hard", 3);
@@ -24,52 +25,52 @@ public class Constants {
 
     public static final String SPLIT_TEST_CASE = "testcasedone";
 
-    public enum RegistrationType{
+    public enum RegistrationType {
         PENDING("PENDING"),
         SUCCESSFUL("SUCCESSFUL"),
         FAILED("FAILED");
 
         private String value;
 
-        RegistrationType(String value){
+        RegistrationType(String value) {
             this.value = value;
         }
 
-        public String getValue(){
+        public String getValue() {
             return this.value;
         }
     }
 
 
-    public enum RegisterCourseStatus{
+    public enum RegisterCourseStatus {
         SUCCESSES("SUCCESSES"), FAILED("FAILED");
 
         private String value;
 
-        RegisterCourseStatus(String value){
+        RegisterCourseStatus(String value) {
             this.value = value;
         }
 
-        public String getValue(){
+        public String getValue() {
             return this.value;
         }
     }
 
-    public enum GetPointForRankingType{
+    public enum GetPointForRankingType {
         LATEST("LATEST"), HIGHEST("HIGHEST");
 
         private String value;
 
-        GetPointForRankingType(String value){
+        GetPointForRankingType(String value) {
             this.value = value;
         }
 
-        public String getValue(){
+        public String getValue() {
             return this.value;
         }
     }
 
-    public enum Languages{
+    public enum Languages {
         CPP("CPP"),
         PYTHON3("PYTHON3"),
         JAVA("JAVA"),
@@ -77,21 +78,22 @@ public class Constants {
 
         private String value;
 
-        Languages(String value){
+        Languages(String value) {
             this.value = value;
         }
-        public String getValue(){
+
+        public String getValue() {
             return this.value;
         }
 
     }
 
-    public enum DockerImage{
+    public enum DockerImage {
         GCC("gcc:8.5-buster"), JAVA("openjdk:13-buster"), PYTHON3("python:3.6-buster"), GOLANG("golang:1.16-buster");
 
         private String value;
 
-        DockerImage(String value){
+        DockerImage(String value) {
             this.value = value;
         }
 
@@ -101,12 +103,12 @@ public class Constants {
     }
 
 
-    public enum DockerContainer{
+    public enum DockerContainer {
         GCC("/gcc"), JAVA("/java"), PYTHON3("/python3"), GOLANG("/golang");
 
         private String value;
 
-        DockerContainer(String value){
+        DockerContainer(String value) {
             this.value = value;
         }
 

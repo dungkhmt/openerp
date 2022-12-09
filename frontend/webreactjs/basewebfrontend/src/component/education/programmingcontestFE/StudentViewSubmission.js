@@ -200,7 +200,8 @@ const StudentViewSubmission = forwardRef((props, ref) => {
                 variant="contained"
                 disabled={loading}
                 onClick={() => {
-                  handleRefresh();
+                  setLoading(true);
+                  setTimeout(handleRefresh, 2000);
                 }}
               >
                 {" "}

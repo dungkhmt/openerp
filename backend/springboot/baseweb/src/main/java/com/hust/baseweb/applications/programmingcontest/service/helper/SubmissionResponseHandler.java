@@ -14,8 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -41,6 +44,9 @@ public class SubmissionResponseHandler {
         String message = "";
         boolean compileError = false;
 
+        int mb = 1000 * 1000;
+        MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+
         int i = 0;
         for (TestCaseEntity testCaseEntity : testCaseEntityList) {
             String response = listSubmissionResponse.get(i++);
@@ -48,25 +54,18 @@ public class SubmissionResponseHandler {
             List<Integer> points = Collections.singletonList(testCaseEntity.getTestCasePoint());
 
             ProblemSubmission problemSubmission;
+
             try {
-                // int mb = 1000 * 1000;
-                // MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
-
                 problemSubmission = StringHandler.handleContestResponseV2(response, testCaseAns, points);
-
-                // long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
-                // long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
-                // System.out.println("Memory used / committed :  " + used + "mb / " + committed + "mb");
 
                 if (problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")) {
                     message = problemSubmission.getMessage();
                     compileError = true;
-                    //log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Compiler Error, msg  = " + message);
                     break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("LOG FOR TESTING STRING HANDLER ERROR: " + response);
+//                System.out.println("LOG FOR TESTING STRING HANDLER ERROR: " + response);
                 throw new Exception("error from StringHandler");
             }
 
@@ -101,6 +100,10 @@ public class SubmissionResponseHandler {
             contestSubmissionTestCaseEntityRepo.save(cste);
         }
         boolean accepted = true;
+
+        long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
+        long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
+        System.out.println("Memory used / committed :  " + used + "mb / " + committed + "mb");
 
         for (String s : statusList) {
             if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
@@ -143,6 +146,7 @@ public class SubmissionResponseHandler {
         submissionEntity.setSourceCodeLanguage(modelContestSubmission.getLanguage());
         submissionEntity.setRuntime((long) runtime);
         submissionEntity.setMessage(message);
+        submissionEntity.setUpdateAt(new Date());
         contestSubmissionRepo.save(submissionEntity);
     }
 

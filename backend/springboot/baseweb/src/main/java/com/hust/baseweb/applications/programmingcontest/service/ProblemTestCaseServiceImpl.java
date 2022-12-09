@@ -13,14 +13,13 @@ import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeEx
 import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.repo.*;
 import com.hust.baseweb.applications.programmingcontest.service.helper.SubmissionResponseHandler;
+import com.hust.baseweb.applications.programmingcontest.service.helper.cache.ProblemTestCaseServiceCache;
 import com.hust.baseweb.applications.programmingcontest.utils.ComputerLanguage;
 import com.hust.baseweb.applications.programmingcontest.utils.DateTimeUtils;
 import com.hust.baseweb.applications.programmingcontest.utils.TempDir;
 import com.hust.baseweb.applications.programmingcontest.utils.codesimilaritycheckingalgorithms.CodeSimilarityCheck;
 import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.ProblemSubmission;
 import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.StringHandler;
-import com.hust.baseweb.config.rabbitmq.ProblemContestRoutingKey;
-import com.hust.baseweb.config.rabbitmq.RabbitConfig;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.model.ListPersonModel;
 import com.hust.baseweb.model.PersonModel;
@@ -43,6 +42,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.hust.baseweb.config.rabbitmq.ProblemContestRoutingKey.JUDGE_PROBLEM;
+import static com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestConfig.EXCHANGE;
 
 @Slf4j
 @Service
@@ -76,6 +78,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private ObjectMapper objectMapper;
     private RabbitTemplate rabbitTemplate;
     private SubmissionResponseHandler submissionResponseHandler;
+    private ProblemTestCaseServiceCache cacheService;
 
     @Override
     public void createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException {
@@ -1297,8 +1300,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         msg.setModelContestSubmission(modelContestSubmission);
         msg.setSubmission(submission);
         rabbitTemplate.convertAndSend(
-            RabbitConfig.EXCHANGE,
-            ProblemContestRoutingKey.JUDGE_PROBLEM,
+            EXCHANGE,
+            JUDGE_PROBLEM,
             objectMapper.writeValueAsString(msg)
         );
 
@@ -1314,8 +1317,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         ContestSubmissionEntity submission
     ) throws Exception {
 
-        ProblemEntity problemEntity = problemRepo.findByProblemId(modelContestSubmission.getProblemId());
-        ContestEntity contest = contestRepo.findContestByContestId(modelContestSubmission.getContestId());
+        ProblemEntity problemEntity = cacheService.findProblemAndUpdateCache(modelContestSubmission.getProblemId());
+        ContestEntity contest = cacheService.findContestAndUpdateCache(modelContestSubmission.getContestId());
 
         String userId = submission.getUserId();
 
@@ -1325,12 +1328,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                     contest.getEvaluateBothPublicPrivateTestcase()
                                         .equals(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_YES);
 
-        if (evaluatePrivatePublic) {
-            testCaseEntityList = testCaseRepo.findAllByProblemId(modelContestSubmission.getProblemId());
-        } else {
-            testCaseEntityList = testCaseRepo
-                .findAllByProblemIdAndIsPublic(modelContestSubmission.getProblemId(), "N");
-        }
+//        if (evaluatePrivatePublic) {
+//            testCaseEntityList = testCaseRepo.findAllByProblemId(modelContestSubmission.getProblemId());
+//        } else {
+//            testCaseEntityList = testCaseRepo
+//                .findAllByProblemIdAndIsPublic(modelContestSubmission.getProblemId(), "N");
+//        }
+        testCaseEntityList = cacheService.findListTestCaseAndUpdateCache(modelContestSubmission.getProblemId(), evaluatePrivatePublic);
 
         List<TestCaseEntity> listTestCaseAvailable = new ArrayList();
         for (TestCaseEntity tc : testCaseEntityList) {
@@ -1362,6 +1366,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             listSubmissionResponse.add(response);
         }
 
+        tempDir.removeDir(tempName);
         submissionResponseHandler.processSubmissionResponse(testCaseEntityList, listSubmissionResponse, modelContestSubmission, submission);
     }
 

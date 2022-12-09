@@ -12,6 +12,7 @@ import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRe
 import com.hust.baseweb.applications.programmingcontest.repo.UserContestProblemRoleRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.UserRegistrationContestRepo;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
+import com.hust.baseweb.applications.programmingcontest.service.helper.cache.ProblemTestCaseServiceCache;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.model.ListPersonModel;
 import com.hust.baseweb.model.PersonModel;
@@ -48,7 +49,7 @@ public class ContestProblemController {
     UserService userService;
     UserRegistrationContestRepo userRegistrationContestRepo;
     UserContestProblemRoleRepo userContestProblemRoleRepo;
-    RedisCacheService cacheService;
+    ProblemTestCaseServiceCache cacheService;
 
     public static ConcurrentMap<String, ModelGetContestDetailResponse> runningContests = new ConcurrentHashMap();
 
@@ -263,28 +264,33 @@ public class ContestProblemController {
         log.info("edit contest modelUpdateContest {}", modelUpdateContest);
 
         problemTestCaseService.updateContest(modelUpdateContest, principal.getName(), contestId);
-        ModelGetContestDetailResponse runningContest = runningContests.get(contestId);
-        if (runningContest != null) {
-            removeContestFromCache(contestId);
-            if (modelUpdateContest.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
-                log.info("updateContest, found contest " + contestId + " is running in cache --> remove it");
-                // remove active contest from runningContests
-                // removeContestFromCache(contestId);
+//        ModelGetContestDetailResponse runningContest = runningContests.get(contestId);
+//        if (runningContest != null) {
+//            removeContestFromCache(contestId);
+//            if (modelUpdateContest.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
+//                log.info("updateContest, found contest " + contestId + " is running in cache --> remove it");
+//                // remove active contest from runningContests
+//                // removeContestFromCache(contestId);
+//
+//                // RELOAD Contest and Put into the cache
+//                log.info("editContest, status = RUNNING -> RELOAD from DB and put into cache");
+//                runningContest = problemTestCaseService.getContestDetailByContestId(contestId);
+//                if (runningContest != null)
+//                    checkAndAddRunningContest(runningContest);
+//            }
+//        }
 
-                // RELOAD Contest and Put into the cache
-                log.info("editContest, status = RUNNING -> RELOAD from DB and put into cache");
-                runningContest = problemTestCaseService.getContestDetailByContestId(contestId);
-                if (runningContest != null)
-                    checkAndAddRunningContest(runningContest);
-            }
+        ModelGetContestDetailResponse runningContest = problemTestCaseService.getContestDetailByContestId(contestId);
+        if (runningContest != null) {
+            cacheService.addContestDetailResponseToCache(runningContest, 60*60);
         }
         return ResponseEntity.status(200).body(null);
     }
 
-    synchronized static void removeContestFromCache(String contestId) {
-        log.info("removeContestFromCache synchronized remove from cache contestId " + contestId);
-        runningContests.remove(contestId);
-    }
+//    synchronized static void removeContestFromCache(String contestId) {
+//        log.info("removeContestFromCache synchronized remove from cache contestId " + contestId);
+//        runningContests.remove(contestId);
+//    }
 
     @GetMapping("/get-list-roles-contest")
     public ResponseEntity<?> getListRolesContest() {
@@ -391,34 +397,41 @@ public class ContestProblemController {
          * }
          * }
          */
-        if (contestEntity.getUseCacheContestProblem() != null &&
-                contestEntity.getUseCacheContestProblem().equals(ContestEntity.USE_CACHE_CONTEST_PROBLEM_YES)) {
-            response = runningContests.get(contestId);
-            if (response == null) {
-                // load from DB and store in cache
-                log.info("getContestDetail constestid " + contestId
-                        + " USED_CACHE not found in the cache --> load from DB");
-                response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
-                if (response != null)
-                    checkAndAddRunningContest(response);
 
-            } else {
-                log.info("getContestDetail constestid {} use cache, found a running contest in cache!!!", contestId);
-            }
-        } else {
-            log.info("getContestDetail constestid {} NOT use cache -> load from DB", contestId);
+//        if (contestEntity.getUseCacheContestProblem() != null &&
+//                contestEntity.getUseCacheContestProblem().equals(ContestEntity.USE_CACHE_CONTEST_PROBLEM_YES)) {
+//            response = runningContests.get(contestId);
+//            if (response == null) {
+//                // load from DB and store in cache
+//                log.info("getContestDetail constestid " + contestId
+//                        + " USED_CACHE not found in the cache --> load from DB");
+//                response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
+//                if (response != null)
+//                    checkAndAddRunningContest(response);
+//
+//            } else {
+//                log.info("getContestDetail constestid {} use cache, found a running contest in cache!!!", contestId);
+//            }
+//        } else {
+//            log.info("getContestDetail constestid {} NOT use cache -> load from DB", contestId);
+//            response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
+//        }
+
+        response = cacheService.findContestDetailResponseInCache(contestId);
+        if (response == null) {
             response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
+            cacheService.addContestDetailResponseToCache(response, 60 * 60);
         }
         return ResponseEntity.status(200).body(response);
     }
 
-    synchronized static void checkAndAddRunningContest(ModelGetContestDetailResponse response) {
-        if (runningContests.get(response.getContestId()) == null) {
-            runningContests.put(response.getContestId(), response);
-            log.info("getContestDetail constestid " + response.getContestId()
-                    + " not found in the cache --> load from DB AND push successfully in cache");
-        }
-    }
+//    synchronized static void checkAndAddRunningContest(ModelGetContestDetailResponse response) {
+//        if (runningContests.get(response.getContestId()) == null) {
+//            runningContests.put(response.getContestId(), response);
+//            log.info("getContestDetail constestid " + response.getContestId()
+//                    + " not found in the cache --> load from DB AND push successfully in cache");
+//        }
+//    }
 
     @Secured("ROLE_STUDENT")
     @PostMapping("/student-register-contest/{contestId}")
@@ -1012,15 +1025,14 @@ public class ContestProblemController {
         }
 
         int submissionInterval = contestEntity.getMinTimeBetweenTwoSubmissions();
-        String hashId = "PROBLEM_SUBMISSION" + model.getProblemId();
         if (submissionInterval > 0) {
-            Boolean isInInterval = cacheService.getCachedObject(hashId, userId, Boolean.class);
+            Boolean isInInterval = cacheService.findCheckSubmissionBetweenIntervalInCache(model.getProblemId(), userId);
             if (isInInterval != null && isInInterval.equals(true)) {
                 ModelContestSubmissionResponse resp = buildSubmissionResponseNotEnoughTimeBetweenSubmissions(
                     submissionInterval);
                 return ResponseEntity.ok().body(resp);
             }
-            cacheService.pushCachedWithExpire(hashId, userId, true, submissionInterval * 1000);
+            cacheService.addSubmissionBetweenIntervalToCache(model.getProblemId(), userId, submissionInterval);
         }
 
         try {
