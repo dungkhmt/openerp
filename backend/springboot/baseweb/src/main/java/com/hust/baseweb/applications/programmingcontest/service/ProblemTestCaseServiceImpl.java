@@ -129,6 +129,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .userId(userID)
                 .build();
         problemRepo.save(problemEntity);
+        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.PROBLEM);
 
         // grant role owner, manager, view to current user
         UserContestProblemRole upr = new UserContestProblemRole();
@@ -227,6 +228,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         problemEntity.setAttachment(String.join(";", attachmentId));
         problemRepo.save(problemEntity);
 
+        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.PROBLEM);
         return problemEntity;
     }
 
@@ -438,7 +440,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 .problemId(problemId)
             .isPublic(modelSaveTestcase.getIsPublic())
                 .build();
-        return testCaseRepo.save(testCaseEntity);
+        TestCaseEntity testCase = testCaseRepo.save(testCaseEntity);
+        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.TEST_CASE);
+        return testCase;
     }
 
 
@@ -529,6 +533,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .build();
                 contestEntity = contestRepo.save(contestEntity);
             }
+            cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.CONTEST);
 
             // create corresponding entities in ContestRole
             ContestRole contestRole = new ContestRole();
@@ -2062,6 +2067,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         testCase.setTestCasePoint(modelSaveTestcase.getPoint());
         testCase.setIsPublic(modelSaveTestcase.getIsPublic());
         testCaseRepo.save(testCase);
+        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.TEST_CASE);
     }
 
     @Override
@@ -2250,6 +2256,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         testCase.setStatusId(TestCaseEntity.STATUS_DISABLED);
         testCase = testCaseRepo.save(testCase);
+        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.TEST_CASE);
 
         //testCaseRepo.deleteTestCaseEntityByTestCaseId(testcaseId);
 
@@ -3235,6 +3242,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         tc.setCorrectAnswer(output);
         tc.setDescription(modelUploadTestCase.getDescription());
         tc = testCaseRepo.save(tc);
+        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.TEST_CASE);
         res.setMessage("Upload Successfully!");
         res.setStatus("OK");
         return res;
@@ -3266,6 +3274,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
       //  log.info("rerunCreateTestCaseSolution, output " + output);
         tc.setCorrectAnswer(output);
         tc = testCaseRepo.save(tc);
+        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.TEST_CASE);
         res.setMessage("Upload Successfully!");
         res.setStatus("OK");
 
@@ -3306,6 +3315,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         tc.setDescription(modelUploadTestCase.getDescription());
         tc.setCorrectAnswer(modelUploadTestCase.getCorrectAnswer());
         tc = testCaseRepo.save(tc);
+        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.TEST_CASE);
         ModelUploadTestCaseOutput res= new ModelUploadTestCaseOutput();
         res.setMessage("Successfully");
         res.setStatus("OK");

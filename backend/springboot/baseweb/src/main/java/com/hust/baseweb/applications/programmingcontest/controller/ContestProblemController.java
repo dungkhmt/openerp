@@ -1,7 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.controller;
 
 import com.google.gson.Gson;
-import com.hust.baseweb.applications.programmingcontest.cache.RedisCacheService;
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
@@ -1024,15 +1023,19 @@ public class ContestProblemController {
             return ResponseEntity.ok().body(resp);
         }
 
-        int submissionInterval = contestEntity.getMinTimeBetweenTwoSubmissions();
+        long submissionInterval = contestEntity.getMinTimeBetweenTwoSubmissions();
         if (submissionInterval > 0) {
-            Boolean isInInterval = cacheService.findCheckSubmissionBetweenIntervalInCache(model.getProblemId(), userId);
-            if (isInInterval != null && isInInterval.equals(true)) {
-                ModelContestSubmissionResponse resp = buildSubmissionResponseNotEnoughTimeBetweenSubmissions(
-                    submissionInterval);
-                return ResponseEntity.ok().body(resp);
+            Date now = new Date();
+            Long lastSubmitTime = cacheService.findUserLastProblemSubmissionTimeInCache(model.getProblemId(), userId);
+            if (lastSubmitTime != null) {
+                long diffBetweenNowAndLastSubmit = now.getTime() - lastSubmitTime;
+                if (diffBetweenNowAndLastSubmit < submissionInterval * 1000) {
+                    ModelContestSubmissionResponse resp = buildSubmissionResponseNotEnoughTimeBetweenSubmissions(
+                        submissionInterval);
+                    return ResponseEntity.ok().body(resp);
+                }
             }
-            cacheService.addSubmissionBetweenIntervalToCache(model.getProblemId(), userId, submissionInterval);
+            cacheService.addUserLastProblemSubmissionTimeToCache(model.getProblemId(), userId);
         }
 
         try {
@@ -1147,7 +1150,7 @@ public class ContestProblemController {
                                              .build();
     }
 
-    private ModelContestSubmissionResponse buildSubmissionResponseNotEnoughTimeBetweenSubmissions(int interval) {
+    private ModelContestSubmissionResponse buildSubmissionResponseNotEnoughTimeBetweenSubmissions(long interval) {
         return ModelContestSubmissionResponse.builder()
                                              .status("SUBMISSION_INTERVAL_VIOLATIONS")
                                              .message("Not enough time between 2 submissions (" + interval + "s) ")

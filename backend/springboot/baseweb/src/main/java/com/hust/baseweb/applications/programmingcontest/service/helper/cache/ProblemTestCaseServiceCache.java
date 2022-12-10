@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -43,6 +44,12 @@ public class ProblemTestCaseServiceCache {
 
     public void flushCache(RedisHashPrefix hash) {
         cacheService.flushCache(hash.getValue());
+    }
+
+    public void flushAllCache() {
+        for (RedisHashPrefix hash : RedisHashPrefix.values()) {
+            cacheService.flushCache(hash.getValue());
+        }
     }
 
     public ProblemEntity findProblemAndUpdateCache(String problemId) {
@@ -107,18 +114,19 @@ public class ProblemTestCaseServiceCache {
         return cacheService.getCachedSpecialListObject(RedisHashPrefix.TEST_CASE.getValue(), key, TestCaseEntity.class);
     }
 
-    public Boolean findCheckSubmissionBetweenIntervalInCache(String problemId, String userId) {
+    public Long findUserLastProblemSubmissionTimeInCache(String problemId, String userId) {
         String key = generateKeySubmissionInterval(problemId, userId);
-        return cacheService.getCachedObject(RedisHashPrefix.PROBLEM_SUBMISSION.getValue(), key, Boolean.class);
+        return cacheService.getCachedObject(RedisHashPrefix.PROBLEM_SUBMISSION.getValue(), key, Long.class);
     }
 
-    public void addSubmissionBetweenIntervalToCache(String problemId, String userId, int submissionInterval) {
+    public void addUserLastProblemSubmissionTimeToCache(String problemId, String userId) {
         String key = generateKeySubmissionInterval(problemId, userId);
+        Date now = new Date();
         cacheService.pushCachedWithExpire(
             RedisHashPrefix.PROBLEM_SUBMISSION.getValue(),
             key,
-            true,
-            submissionInterval * 1000);
+            now.getTime(),
+            24 * 60 * 60 * 1000);
     }
 
     private String generateKeySubmissionInterval(String problemId, String userId) {

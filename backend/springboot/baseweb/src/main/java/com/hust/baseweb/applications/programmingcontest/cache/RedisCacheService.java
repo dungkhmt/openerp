@@ -5,14 +5,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -108,9 +106,8 @@ public class RedisCacheService {
         }
     }
 
-    @Async("asyncRedis")
-    public CompletableFuture<Boolean> flushCache(String hashId) {
+    public void flushCache(String hashId) {
         log.debug("flush cache {}", hashId);
-        return CompletableFuture.completedFuture(redisTemplate.delete(hashId));
+        redisTemplate.delete(hashId);
     }
 }

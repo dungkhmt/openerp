@@ -173,7 +173,7 @@ public class ContestEntity {
     private String evaluateBothPublicPrivateTestcase;
 
     @Column(name="min_time_between_two_submissions")
-    private int minTimeBetweenTwoSubmissions;
+    private long minTimeBetweenTwoSubmissions;
 
     @Column(name="judge_mode")
     private String judgeMode; // synchronous or asynchronous using queue
