@@ -361,6 +361,13 @@ public class ContestProblemController {
         return ResponseEntity.ok().body(res);
     }
 
+    @GetMapping("/get-list-contest-problem-student/{contestId}")
+    public ResponseEntity<?> getListContestProblemViewedByStudent(@PathVariable("contestId") String contestId) {
+        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+        List<ProblemEntity> listProblem = contestEntity.getProblems();
+        return ResponseEntity.status(200).body(listProblem);
+    }
+
     @GetMapping("/get-contest-detail-solving/{contestId}")
     public ResponseEntity<?> getContestDetailSolving(@PathVariable("contestId") String contestId, Principal principal)
             throws MiniLeetCodeException {
