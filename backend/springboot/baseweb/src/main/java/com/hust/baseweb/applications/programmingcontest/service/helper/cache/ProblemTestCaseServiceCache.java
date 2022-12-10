@@ -111,7 +111,7 @@ public class ProblemTestCaseServiceCache {
 
     public List<TestCaseEntity> findListTestCaseInCache(String problemId, boolean isPublicTestCase) {
         String key = generateKeyTestCase(problemId, isPublicTestCase);
-        return cacheService.getCachedSpecialListObject(RedisHashPrefix.TEST_CASE.getValue(), key, TestCaseEntity.class);
+        return cacheService.getCachedSpecialListObject(RedisHashPrefix.TEST_CASE.getValue(), key);
     }
 
     public Long findUserLastProblemSubmissionTimeInCache(String problemId, String userId) {
