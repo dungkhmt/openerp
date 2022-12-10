@@ -29,7 +29,6 @@ import StudentViewProgrammingContestProblemDetailV2 from "../component/education
 import ManagerViewProblemDetail from "../component/education/programmingcontestFE/ManagerViewProblemDetail";
 import SubmitSolutionOutput from "../component/education/programmingcontestFE/SubmitSolutionOutput";
 import { Test } from "../component/education/programmingcontestFE/Test";
-
 export default function ProgrammingContestRoutes() {
   let { path } = useRouteMatch();
   return (

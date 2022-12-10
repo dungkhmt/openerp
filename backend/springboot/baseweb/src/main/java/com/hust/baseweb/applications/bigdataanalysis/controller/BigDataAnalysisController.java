@@ -3,6 +3,8 @@ package com.hust.baseweb.applications.bigdataanalysis.controller;
 import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheck;
 import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheckRule;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelCreateDataCheckRuleInput;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckResult;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckRule;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelUpdateDataQualityCheckInput;
 import com.hust.baseweb.applications.bigdataanalysis.service.DataQualityCheckService;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +29,9 @@ public class BigDataAnalysisController {
 
     @GetMapping("/get-data-quality-check-rules")
     public ResponseEntity<?> getDataQualityCheckRules(Principal principal){
-        List<DataQualityCheckRule> res = dataQualityCheckService.getDataQualityCheckRules();
+        //List<DataQualityCheckRule> res = dataQualityCheckService.getDataQualityCheckRules();
+        List<ModelResponseDataQualityCheckRule> res = dataQualityCheckService.getDataQualityCheckRuleList();
+
         return ResponseEntity.ok().body(res);
     }
 
@@ -46,6 +50,12 @@ public class BigDataAnalysisController {
     public ResponseEntity<?> createDataQualityCheck(Principal principal, @RequestBody ModelCreateDataCheckRuleInput input){
         DataQualityCheck dqc = dataQualityCheckService.createDataQualityCheck(principal.getName(), input);
         return ResponseEntity.ok().body(dqc);
+    }
+
+    @GetMapping("/get-data-quality-check-result-list")
+    public ResponseEntity<?> getDataQualityCheckResultList(){
+        List<ModelResponseDataQualityCheckResult> res = dataQualityCheckService.getDataQualityCheckResultList();
+        return ResponseEntity.ok().body(res);
     }
 
 

@@ -7,7 +7,7 @@ export const bigdataanalysis = {
   child: [
     {
       id: "MENU_BIGDATA_ANALYSIS_VIEW_QUALITY_CHECK",
-      path: "/bigdataanalysis/quality-check",
+      path: "/bigdataanalysis/quality-check-result",
       isPublic: false,
       icon: "StarBorder",
       text: "Quality Check",

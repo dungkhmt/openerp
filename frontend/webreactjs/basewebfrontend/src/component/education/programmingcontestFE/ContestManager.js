@@ -250,25 +250,24 @@ export function ContestManager() {
         <Tab label="Register User" {...a11yProps(2)} style={{ width: "10%" }} />
         <Tab label="Add User" {...a11yProps(3)} style={{ width: "10%" }} />
         <Tab label="Ranking" {...a11yProps(4)} style={{ width: "10%" }} />
-        <Tab label="Ranking (New)" {...a11yProps(5)} style={{ width: "10%" }} />
         <Tab
           label="User Submission (NA)"
-          {...a11yProps(6)}
+          {...a11yProps(5)}
           style={{ width: "10%" }}
         />
         <Tab
           label="User Submission"
-          {...a11yProps(7)}
+          {...a11yProps(6)}
           style={{ width: "10%" }}
         />
         <Tab
           label="Submission Detail by TestCase"
-          {...a11yProps(8)}
+          {...a11yProps(7)}
           style={{ width: "10%" }}
         />
         <Tab
           label="Check Code Plagiarism"
-          {...a11yProps(9)}
+          {...a11yProps(8)}
           style={{ width: "10%" }}
         />
       </Tabs>
@@ -292,27 +291,29 @@ export function ContestManager() {
         <ContestManagerAddMember contestId={contestId} />
       </TabPanelVertical>
 
+      {/*
       <TabPanelVertical value={value} index={4}>
         <ContestManagerRanking contestId={contestId} />
       </TabPanelVertical>
+      */}
 
-      <TabPanelVertical value={value} index={5}>
+      <TabPanelVertical value={value} index={4}>
         <ContestManagerRankingNew contestId={contestId} />
       </TabPanelVertical>
 
-      <TabPanelVertical value={value} index={6}>
+      <TabPanelVertical value={value} index={5}>
         <ContestManagerUserSubmissionNotEvaluated contestId={contestId} />
       </TabPanelVertical>
 
-      <TabPanelVertical value={value} index={7}>
+      <TabPanelVertical value={value} index={6}>
         <ContestManagerUserSubmission contestId={contestId} />
       </TabPanelVertical>
 
-      <TabPanelVertical value={value} index={8}>
+      <TabPanelVertical value={value} index={7}>
         <ContestManagerViewListContestProblemSubmissionDetailByTestCase />
       </TabPanelVertical>
 
-      <TabPanelVertical value={value} index={9}>
+      <TabPanelVertical value={value} index={8}>
         <CodeSimilarityCheck contestId={contestId} />
       </TabPanelVertical>
     </div>
