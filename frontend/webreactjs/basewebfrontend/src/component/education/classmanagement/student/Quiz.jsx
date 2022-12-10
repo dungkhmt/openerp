@@ -16,11 +16,9 @@ import QuizDoingExplanationDetail from "../../quiztest/quizdoingexplanation/Quiz
 
 const useStyles = makeStyles(() => ({
   testBtn: {
-    marginLeft: 40,
-    marginTop: 32,
   },
   wrapper: {
-    padding: "32px 0px",
+    padding: "24px 0px",
   },
   answerWrapper: {
     "& label": {
@@ -52,6 +50,14 @@ const useStyles = makeStyles(() => ({
   imageQuiz: {
     maxWidth: "100%",
   },
+  actionContainer: {
+    display: 'flex',
+    marginTop: '12px',
+    columnGap: '10px'
+  },
+  solutionsContainer: {
+    marginTop: '16px'
+  }
 }));
 
 /**
@@ -181,6 +187,9 @@ export default function Quizz({ quizz, index, classId }) {
             label={parse(answer.choiceAnswerContent)}
           />
         ))}
+      </FormGroup>
+
+      <div className={classes.actionContainer}>
         <div className={classes.testBtn}>
           <TestButton
             result={result}
@@ -188,8 +197,54 @@ export default function Quizz({ quizz, index, classId }) {
             onClick={onClickTestBtn}
           />
         </div>
-      </FormGroup>
-      {openCommentBox ? (
+
+        {!openCommentBox && (
+          <div className={classes.testBtn}>
+            <Button variant="outlined" onClick={handleClickCommentBtn}>
+              ({numberComments}) Bình luận
+            </Button>
+          </div>
+        )}
+
+        {openCommentBox && (
+          <div className={classes.testBtn}>
+            <Button variant="outlined" onClick={handleClickHideCommentBtn}>
+              Ẩn bình luận
+            </Button>
+          </div>
+        )}
+
+        { !quizDoingExplanationOpen &&
+          <div className={classes.testBtn}>
+            <Button variant="outlined" onClick={() => setQuizDoingExplanationOpen(true)}>
+              Xem cách làm
+            </Button>
+          </div>
+        }
+
+        { quizDoingExplanationOpen && (
+          <div className={classes.testBtn}>
+            <Button variant="outlined" onClick={() => setQuizDoingExplanationOpen(false)}>
+              Ẩn cách làm
+            </Button>
+          </div>
+        )}
+
+        <div className={classes.testBtn}>
+          <Button variant="outlined" onClick={() => setCreateExplanationDlgOpen(true)}>
+            Thêm cách làm
+          </Button>
+        </div>
+      </div>
+
+      { quizDoingExplanationOpen && (
+        <div className={classes.solutionsContainer}>
+          <Typography variant="h6">Các cách làm đã tạo cho câu hỏi này</Typography>
+          <QuizDoingExplanationDetail questionId={quizz.questionId}/>
+        </div>
+      )}
+
+      {openCommentBox && (
         <div>
           <CommentsOnQuiz
             questionId={quizz.questionId}
@@ -197,62 +252,11 @@ export default function Quizz({ quizz, index, classId }) {
             setOpen={setOpenCommentBox}
           />
         </div>
-      ) : (
-        ""
       )}
 
-      {!openCommentBox ? (
-        <div className={classes.testBtn}>
-          <Button variant="outlined" onClick={handleClickCommentBtn}>
-            ({numberComments}) Bình luận
-          </Button>
-        </div>
-      ) : (
-        ""
-      )}
-      {openCommentBox ? (
-        <div className={classes.testBtn}>
-          <Button variant="outlined" onClick={handleClickHideCommentBtn}>
-            Ẩn Bình luận
-          </Button>
-        </div>
-      ) : (
-        ""
-      )}
-
-      {/*
-        <CommentsOnQuizPopup
-          questionId={quizz.questionId}
-          open={openCommentBox}
-          setOpen={setOpenCommentBox}
-        />
-      */}
-      <div className={classes.testBtn}>
-        <Button variant="outlined" onClick={() => setCreateExplanationDlgOpen(true)}>
-          Thêm cách làm
-        </Button>
-      </div>
       <CreateQuizDoingExplanationDialog open={createExplanationDlgOpen}
                                         onClose={() => setCreateExplanationDlgOpen(false)}
                                         questionId={quizz.questionId}/>
-
-      { !quizDoingExplanationOpen &&
-        <div className={classes.testBtn}>
-          <Button variant="outlined" onClick={() => setQuizDoingExplanationOpen(true)}>
-            Xem cách làm đã tạo
-          </Button>
-        </div>
-      }
-      { quizDoingExplanationOpen &&
-        <>
-          <div className={classes.testBtn}>
-            <Button variant="outlined" onClick={() => setQuizDoingExplanationOpen(false)}>
-              Ẩn cách làm
-            </Button>
-          </div>
-          <QuizDoingExplanationDetail questionId={quizz.questionId}/>
-        </>
-      }
     </div>
   );
 }

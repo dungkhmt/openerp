@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,7 +32,10 @@ public class QuizQuestionDoingExplanationServiceImpl implements QuizQuestionDoin
         String participantLoginId,
         UUID questionId
     ) {
-        return quizDoingExplanationRepo.findByParticipantUserIdAndQuestionId(participantLoginId, questionId);
+        Sort sortDescByCreatedTime = Sort.by(Sort.Direction.DESC, "createdStamp");
+        return quizDoingExplanationRepo.findByParticipantUserIdAndQuestionId(participantLoginId,
+                                                                             questionId,
+                                                                             sortDescByCreatedTime);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.hust.baseweb.applications.education.quiztest.service.QuizQuestionDoin
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class QuizQuestionDoingExplanationController {
     public ResponseEntity<?> createQuizDoingExplanation(
         Principal principal,
         @RequestPart QuizDoingExplanationInputModel quizDoingExplanation,
-        @RequestParam MultipartFile attachment
+        @RequestPart(required = false) MultipartFile attachment
     ) {
         log.info("Create quiz doing explanation {}", quizDoingExplanation);
         try {
@@ -44,6 +45,25 @@ public class QuizQuestionDoingExplanationController {
         } catch (RuntimeException e) {
             log.error("An error occur when create quiz doing explanation", e.getMessage());
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping(value = "/{explanationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateQuizDoingExplanation(@PathVariable UUID explanationId,
+                                                        @RequestPart(required = false) String solutionExplanation,
+                                                        @RequestPart(required = false) MultipartFile attachment) {
+        log.info("Update quiz doing explanation with new explanation = {}", solutionExplanation);
+        try {
+            return ResponseEntity.ok(
+                quizDoingExplanationService.updateExplanation(explanationId, solutionExplanation, attachment)
+            );
+        } catch (ResourceNotFoundException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
+        } catch (RuntimeException e) {
+            log.error("An error occur when update quiz doing explanation with id = {}. Detail: {}",
+                      explanationId,  e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
