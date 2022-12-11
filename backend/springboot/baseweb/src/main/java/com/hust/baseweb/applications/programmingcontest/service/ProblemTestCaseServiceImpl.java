@@ -971,10 +971,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 e.getSubmittedByUserLoginId(),
                 e.getTestCaseId(),
                 testCase,
-                correctAnswer,
                 e.getStatus(),
                 e.getPoint(),
-                e.getTestCaseOutput(),
+                correctAnswer,
                 e.getParticipantSolutionOtput(),
                 e.getCreatedStamp(),
                 "N"
@@ -1010,15 +1009,15 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         List<ContestSubmissionTestCaseEntity> L = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId((submissionId));
         //log.info("getContestProblemSubmissionDetailByTestCaseOfASubmission, submissionId  = " + submissionId + " retList = " + L.size());
         List<ModelProblemSubmissionDetailByTestCaseResponse> retLst = new ArrayList();
+
         for (ContestSubmissionTestCaseEntity e : L) {
             TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
             String testCase = "";
-            String correctAnswer = "";
-            String testCaseOutput = e.getTestCaseOutput();
+            String testCaseOutput = "";
             String participantSolutionOutput = e.getParticipantSolutionOtput();
             if (tc != null) {
                 testCase = tc.getTestCase();
-                correctAnswer = tc.getCorrectAnswer();
+                testCaseOutput = tc.getCorrectAnswer();
             }
             if (contest != null) {
                 if (contest
@@ -1035,7 +1034,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 e.getSubmittedByUserLoginId(),
                 e.getTestCaseId(),
                 testCase,
-                correctAnswer,
                 e.getStatus(),
                 e.getPoint(),
                 //e.getTestCaseOutput(),
@@ -1079,43 +1077,34 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         for (ContestSubmissionTestCaseEntity e : L) {
 
             String testCase = "";
-            String correctAnswer = "";
-            String testCaseOutput = e.getTestCaseOutput();
+            String testCaseOutput = "";
             String participantSolutionOutput = e.getParticipantSolutionOtput();
             if (contest != null) {
-                //log.info("getContestProblemSubmissionDetailByTestCaseOfASubmissionViewedByParticipant, mode = " + contest.getParticipantViewResultMode());
-                if (contest.getParticipantViewResultMode().equals(ContestEntity
-                                                                      .CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE)
-                ) {
-                    TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
-                    if (tc != null) {
-                        testCase = tc.getTestCase();
-                        correctAnswer = tc.getCorrectAnswer();
+                TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
+                if (tc == null) break;
+
+                testCase = tc.getTestCase();
+                testCaseOutput = tc.getCorrectAnswer();
+                switch (contest.getParticipantViewResultMode()) {
+                    case ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE: {
+//                        testCaseOutput = tc.getCorrectAnswer();
+                        break;
                     }
-                } else if (contest.getParticipantViewResultMode().equals(ContestEntity
-                                                                             .CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT)
-                ) {
-                    TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
-                    if (tc != null) {
-                        testCase = tc.getTestCase();
-                        correctAnswer = tc.getCorrectAnswer();
+                    case ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT: {
+//                        testCaseOutput = tc.getCorrectAnswer();
                         //testCase = StringHandler.shorthen(testCase,100);
-                        //correctAnswer = StringHandler.shorthen(correctAnswer,100);
                         testCaseOutput = StringHandler.shorthen(testCaseOutput, 100);
                         participantSolutionOutput = StringHandler.shorthen(participantSolutionOutput, 100);
+                        break;
                     }
-                } else if (contest.getParticipantViewResultMode().equals(ContestEntity
-                                                                             .CONTEST_PARTICIPANT_VIEW_MODE_NOT_SEE_CORRECT_ANSWER)
-                ) {
-                    TestCaseEntity tc = testCaseRepo.findTestCaseByTestCaseId(e.getTestCaseId());
-                    if (tc != null) {
-                        testCase = tc.getTestCase();
-                        correctAnswer = "HIDDEN";//tc.getCorrectAnswer();
+                    case ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_NOT_SEE_CORRECT_ANSWER: {
                         testCaseOutput = "HIDDEN";//StringHandler.shorthen(testCaseOutput,100);
                         participantSolutionOutput = StringHandler.shorthen(participantSolutionOutput, 100);
+                        break;
                     }
                 }
             }
+
             retLst.add(new ModelProblemSubmissionDetailByTestCaseResponse(
                 e.getContestSubmissionTestcaseId(),
                 e.getContestId(),
@@ -1123,7 +1112,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 e.getSubmittedByUserLoginId(),
                 e.getTestCaseId(),
                 testCase,
-                correctAnswer,
                 e.getStatus(),
                 e.getPoint(),
                 //e.getTestCaseOutput(),
@@ -1383,9 +1371,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                                   .submittedByUserLoginId(userName)
                                                                                   .point(problemSubmission.getScore())
                                                                                   .status(problemSubmission.getStatus())
-                                                                                  .testCaseOutput(testCaseEntityList
-                                                                                                      .get(i)
-                                                                                                      .getCorrectAnswer())
                                                                                   .participantSolutionOtput(
                                                                                       participantAns)
                                                                                   .runtime(problemSubmission.getRuntime())
@@ -1630,9 +1615,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                   .submittedByUserLoginId(userName)
                                                   .point(0)
                                                   .status("N/A")
-                                                  .testCaseOutput(testCaseEntityList
-                                                                      .get(i)
-                                                                      .getCorrectAnswer())
                                                   .participantSolutionOtput("")
                                                   .runtime(null)
                                                   .createdStamp(new Date())
@@ -1712,7 +1694,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                               .submittedByUserLoginId(userName)
                                                                               .point(problemSubmission.getScore())
                                                                               .status(problemSubmission.getStatus())
-                                                                              .testCaseOutput(testCase.getCorrectAnswer())
                                                                               .participantSolutionOtput(participantAns)
                                                                               .runtime(problemSubmission.getRuntime())
                                                                               .createdStamp(new Date())
@@ -1802,7 +1783,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                       .submittedByUserLoginId(userId)
                                                       .point(problemSubmission.getScore())
                                                       .status(problemSubmission.getStatus())
-                                                      .testCaseOutput(testCase.getCorrectAnswer())
                                                       .participantSolutionOtput(participantAns)
                                                       .runtime(problemSubmission.getRuntime())
                                                       .createdStamp(new Date())
@@ -2835,9 +2815,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                               .submittedByUserLoginId(sub.getUserId())
                                                               .point(problemSubmission.getScore())
                                                               .status(problemSubmission.getStatus())
-                                                              .testCaseOutput(testCaseEntityList
-                                                                                  .get(i)
-                                                                                  .getCorrectAnswer())
                                                               .participantSolutionOtput(participantAns)
                                                               .runtime(problemSubmission.getRuntime())
                                                               .createdStamp(new Date())
@@ -3130,9 +3107,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                       .submittedByUserLoginId(userLoginId)
                                                                       .point(problemSubmission.getScore())
                                                                       .status(problemSubmission.getStatus())
-                                                                      .testCaseOutput(testCaseEntityList
-                                                                                          .get(i)
-                                                                                          .getCorrectAnswer())
                                                                       .participantSolutionOtput(participantAns)
                                                                       .runtime(problemSubmission.getRuntime())
                                                                       .createdStamp(new Date())

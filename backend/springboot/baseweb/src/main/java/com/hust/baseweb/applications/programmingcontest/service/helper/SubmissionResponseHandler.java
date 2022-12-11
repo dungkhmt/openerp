@@ -89,8 +89,6 @@ public class SubmissionResponseHandler {
                                                                                   .point(problemSubmission.getScore())
                                                                                   .status(StringHandler.removeNullCharacter(
                                                                                       problemSubmission.getStatus()))
-                                                                                  .testCaseOutput(StringHandler.removeNullCharacter(
-                                                                                      testCaseEntity.getCorrectAnswer()))
                                                                                   .participantSolutionOtput(
                                                                                       StringHandler.removeNullCharacter(
                                                                                           participantAns))

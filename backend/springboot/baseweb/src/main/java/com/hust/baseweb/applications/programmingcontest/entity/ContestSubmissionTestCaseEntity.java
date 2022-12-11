@@ -43,10 +43,6 @@ public class ContestSubmissionTestCaseEntity {
     @Column(name ="participant_solution_output")
     private String participantSolutionOtput;
 
-    @Column(name ="test_case_output")
-    private String testCaseOutput;
-
-
     @Column(name="runtime")
     private Long runtime;
 
