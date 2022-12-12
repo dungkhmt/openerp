@@ -146,7 +146,7 @@ export default function TeacherViewQuizDetail({ quiz, index, courseId }) {
       <Box className={classes.quizzStatement}>
         <Typography component="span">{`Câu ${index + 1}.`}&nbsp;</Typography>(
         {quiz.quizCourseTopic.quizCourseTopicName}:{quiz.levelId}:
-        {quiz.statusId})&nbsp;&nbsp;
+        {quiz.statusId})&nbsp;&nbsp; Created By: {quiz.createdByUserLoginId}
         {parse(quiz.statement)}
       </Box>
       {/*<FormGroup row className={classes.answerWrapper}>

@@ -6,6 +6,7 @@ import com.hust.baseweb.applications.contentmanager.model.ContentModel;
 import com.hust.baseweb.applications.contentmanager.repo.MongoContentService;
 import com.hust.baseweb.applications.education.classmanagement.service.storage.exception.StorageException;
 import com.hust.baseweb.applications.education.entity.*;
+import com.hust.baseweb.applications.education.model.quiz.ModelCreateQuizQuestionUserRole;
 import com.hust.baseweb.applications.education.model.quiz.QuizChooseAnswerInputModel;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionCreateInputModel;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailModel;
@@ -51,7 +52,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
     private QuizCourseTopicService quizCourseTopicService;
 
-
+    private QuizQuestionUserRoleRepo quizQuestionUserRoleRepo;
 
     private QuizChoiceAnswerRepo quizChoiceAnswerRepo;
 
@@ -225,6 +226,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         quizQuestionDetailModel.setQuizCourseTopic(quizQuestion.getQuizCourseTopic());
         quizQuestionDetailModel.setQuestionId(quizQuestion.getQuestionId());
         quizQuestionDetailModel.setStatusId(quizQuestion.getStatusId());
+        quizQuestionDetailModel.setCreatedByUserLoginId(quizQuestion.getCreatedByUserLoginId());
 
         if (quizQuestion.getAttachment() != null) {
             String[] fileId = quizQuestion.getAttachment().split(";", -1);
@@ -484,5 +486,28 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         quizQuestion = quizQuestionRepo.save(quizQuestion);
 
         return quizQuestion;
+    }
+
+    public QuizQuestionUserRole addQuizQuestionUserRole(ModelCreateQuizQuestionUserRole input){
+        QuizQuestionUserRole quizQuestionUserRole = new QuizQuestionUserRole();
+        quizQuestionUserRole.setUserId(input.getUserId());
+        quizQuestionUserRole.setQuestionId(input.getQuestionId());
+        quizQuestionUserRole.setRoleId(input.getRoleId());
+        quizQuestionUserRole.setCreatedStamp(new Date());
+        quizQuestionUserRole = quizQuestionUserRoleRepo.save(quizQuestionUserRole);
+        return quizQuestionUserRole;
+    }
+
+    public boolean grantRoleToUserOnAllQuizQuestions(String roleId, String userId){
+        List<QuizQuestion> questions = quizQuestionRepo.findAll();
+        for(QuizQuestion q: questions){
+            QuizQuestionUserRole r = new QuizQuestionUserRole();
+            r.setRoleId(roleId);
+            r.setUserId(userId);
+            r.setQuestionId(q.getQuestionId());
+            r.setCreatedStamp(new Date());
+            r = quizQuestionUserRoleRepo.save(r);
+        }
+        return true;
     }
 }

@@ -13,6 +13,7 @@ create table quiz_question(
     question_id uuid not null default uuid_generate_v1(),
     course_topic_id varchar(60),
     level_id varchar(50),
+    question_name varchar(500),
     question_content text,
     attachment varchar(500),
     status_id varchar(30),
@@ -32,7 +33,20 @@ create table quiz_choice_answer(
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     constraint pk_quiz_choice_answer primary key(choice_answer_id),
-    constraint fk_quiz_choice_answer_question_id foreign key(question_id) references quiz_question(question_id)
+    constraint fk_quiz_choice_answer_question_id foreign key(question_id) references quiz_question(question_id),
+
+);
+
+create table quiz_question_user_role(
+    id uuid not null default uuid_generate_v1(),
+    question_id uuid,
+    user_id varchar(60),
+    role_id varchar(100),
+    last_updated_stamp            TIMESTAMP,
+    created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    constraint pk_quiz_question_user_role primary key(id),
+    constraint fk_quiz_question_user_role_question_id foreign key(question_id) references quiz_question(question_id),
+    constraint fk_quiz_question_user_role_user_id foreign key(user_id) references user_login(user_login_id)
 );
 
 create table log_user_login_course_chapter_material(

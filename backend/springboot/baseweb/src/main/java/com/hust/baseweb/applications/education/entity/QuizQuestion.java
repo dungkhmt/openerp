@@ -36,6 +36,9 @@ public class QuizQuestion {
     @Column(name = "created_by_user_login_id")
     private String createdByUserLoginId;
 
+    @Column(name = "question_name")
+    private String questionName;
+
     @Column(name = "level_id")
     private String levelId;
 
