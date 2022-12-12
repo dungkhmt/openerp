@@ -5,6 +5,8 @@ import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheckMast
 import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheckResult;
 import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheckRule;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelCreateDataCheckRuleInput;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelCreateDataQualityCheckMaster;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckMaster;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckResult;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckRule;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelUpdateDataQualityCheckInput;
@@ -128,6 +130,34 @@ public class DataQualityCheckServiceImpl implements DataQualityCheckService{
             m.setListParams(L);
             res.add(m);
 
+        }
+        return res;
+    }
+
+    public DataQualityCheckMaster createDataQualityCheckMaster(String userId, ModelCreateDataQualityCheckMaster input){
+        DataQualityCheckMaster res = new DataQualityCheckMaster();
+        res.setRuleId(input.getRuleId());
+        res.setCreatedByUserLoginId(userId);
+        res.setCreatedStamp(new Date());
+        res.setMetaData(input.getMetaData());
+        res.setTableName(input.getTableName());
+        res = dataQualityCheckMasterRepo.save(res);
+
+        return res;
+    }
+
+    public List<ModelResponseDataQualityCheckMaster> getListDataQualityCheckMaster(String userId){
+        List<DataQualityCheckMaster> L = dataQualityCheckMasterRepo.findAllByCreatedByUserLoginId(userId);
+        List<ModelResponseDataQualityCheckMaster> res = new ArrayList();
+        for(DataQualityCheckMaster e : L){
+            ModelResponseDataQualityCheckMaster m = new ModelResponseDataQualityCheckMaster();
+            m.setId(e.getId());
+            m.setRuleId(e.getRuleId());
+            m.setCreatedByUserLoginId(e.getCreatedByUserLoginId());
+            m.setMetaData(e.getMetaData());
+            m.setTableName(e.getTableName());
+            m.setCreatedStamp(e.getCreatedStamp());
+            res.add(m);
         }
         return res;
     }

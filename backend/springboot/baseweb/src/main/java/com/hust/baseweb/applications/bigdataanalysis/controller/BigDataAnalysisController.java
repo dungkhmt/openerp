@@ -2,7 +2,10 @@ package com.hust.baseweb.applications.bigdataanalysis.controller;
 
 import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheck;
 import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheckRule;
+import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheckMaster;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelCreateDataCheckRuleInput;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelCreateDataQualityCheckMaster;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckMaster;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckResult;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckRule;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelUpdateDataQualityCheckInput;
@@ -58,5 +61,15 @@ public class BigDataAnalysisController {
         return ResponseEntity.ok().body(res);
     }
 
+    @PostMapping("/create-data-quality-check-master")
+    public ResponseEntity<?> createDataQualityCheckMaster(Principal principal, @RequestBody ModelCreateDataQualityCheckMaster input){
+        DataQualityCheckMaster res =  dataQualityCheckService.createDataQualityCheckMaster(principal.getName(), input);
+        return ResponseEntity.ok().body(res);
+    }
 
+    @GetMapping("/get-list-data-quality-check-master")
+    public ResponseEntity<?> getListDataQualityCheckMaster(Principal principal){
+        List<ModelResponseDataQualityCheckMaster> res = dataQualityCheckService.getListDataQualityCheckMaster(principal.getName());
+        return ResponseEntity.ok().body(res);
+    }
 }

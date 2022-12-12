@@ -7,61 +7,36 @@ import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
 //import { defaultDatetimeFormat } from "../../utils/dateutils";
 import { toFormattedDateTime } from "../../utils/dateutils";
 
-export default function DataQualityCheckResult() {
-  const [rules, setRules] = useState([]);
+export default function DataQualityCheckMaster() {
   const columns = [
-    { title: "Entity", field: "entity" },
-    { title: "Instance", field: "instance" },
     { title: "RuleID", field: "ruleId" },
-    { title: "Value", field: "value" },
-    {
-      title: "Status",
-      field: "status",
-      cellStyle: (status) => {
-        switch (status) {
-          case "OK":
-            return { color: "green" };
-          case "FAILED":
-            return { color: "red" };
-          default:
-            return { color: "red" };
-        }
-      },
-    },
+    { title: "MetaData", field: "metaData" },
     { title: "Table", field: "tableName" },
-    { title: "Link", field: "linkSource" },
+    { title: "UserID", field: "createdByUserLoginId" },
     { title: "Created At", field: "createdStamp" },
   ];
 
-  function getRules() {
-    request("get", "/get-data-quality-check-result-list", (res) => {
+  const [dataQualityCheckMasters, setDataQualityCheckMasters] = useState([]);
+
+  function getDataQualityCheckMaster() {
+    request("get", "/get-list-data-quality-check-master", (res) => {
       const content = res.data.map((c) => ({
         ...c,
         createdStamp: toFormattedDateTime(c.createdStamp),
       }));
-      setRules(content);
+      setDataQualityCheckMasters(content);
     }).then();
   }
   useEffect(() => {
-    try {
-      var refreshIntervalId = setInterval(async () => {
-        getRules();
-      }, 3000);
-    } catch (e) {
-      console.log("FOUND exception", e);
-    }
-
-    return function cleanInterval() {
-      clearInterval(refreshIntervalId);
-    };
-    //getRules();
+    getDataQualityCheckMaster();
   }, []);
+
   return (
     <div>
       <StandardTable
-        title={"Check Result"}
+        title={"Data Quality Check Master"}
         columns={columns}
-        data={rules}
+        data={dataQualityCheckMasters}
         hideCommandBar
         options={{
           selection: false,

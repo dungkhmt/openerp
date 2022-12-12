@@ -25,3 +25,7 @@ VALUES('MENU_BIGDATA_ANALYSIS_VIEW_QUALITY_CHECK', 'MENU', 'MENU_BIGDATA_ANALYSI
 INSERT INTO public.application
 (application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
 VALUES('MENU_BIGDATA_ANALYSIS_DEFINE_RULE_QUALITY_CHECK', 'MENU', 'MENU_BIGDATA_ANALYSIS', 'BIG_DATA_ANALYSIS', 'Menu View Quality Check - Big Data Analysis', '2021-10-22 15:39:05.031', '2021-10-22 14:08:52.934');
+
+INSERT INTO public.application
+(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
+VALUES('MENU_BIGDATA_ANALYSIS_LIST_DATA_QUALITY_CHECK_MASTER', 'MENU', 'MENU_BIGDATA_ANALYSIS', 'BIG_DATA_ANALYSIS', 'Menu View List Data Quality Check Master - Big Data Analysis', '2021-10-22 15:39:05.031', '2021-10-22 14:08:52.934');
