@@ -17,6 +17,8 @@ public interface QuizQuestionDoingExplanationService {
 
     QuizQuestionDoingExplanation updateExplanation(UUID explanationId, String newExplanation, MultipartFile attachment);
 
+    void deleteExplanation(UUID explanationId);
+
     QuizQuestionDoingExplanation setAttachment(QuizQuestionDoingExplanation savedSolution, MultipartFile attachment);
 
 }

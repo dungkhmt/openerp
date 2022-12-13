@@ -4,7 +4,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormGroup from "@material-ui/core/FormGroup";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import parse from "html-react-parser";
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useRef} from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import { request } from "../../../../api";
@@ -99,6 +99,13 @@ export default function Quizz({ quizz, index, classId }) {
 
     return isChecked;
   });
+
+  const explanationDetailRef = useRef(null);
+
+  function refreshExplanation() {
+    if (!explanationDetailRef.current) return;
+    explanationDetailRef.current.reload();
+  }
 
   function getNumberComments() {
     request(
@@ -240,7 +247,8 @@ export default function Quizz({ quizz, index, classId }) {
       { quizDoingExplanationOpen && (
         <div className={classes.solutionsContainer}>
           <Typography variant="h6">Các cách làm đã tạo cho câu hỏi này</Typography>
-          <QuizDoingExplanationDetail questionId={quizz.questionId}/>
+          <QuizDoingExplanationDetail questionId={quizz.questionId}
+                                      ref={explanationDetailRef}/>
         </div>
       )}
 
@@ -254,9 +262,10 @@ export default function Quizz({ quizz, index, classId }) {
         </div>
       )}
 
-      <CreateQuizDoingExplanationDialog open={createExplanationDlgOpen}
+      <CreateQuizDoingExplanationDialog questionId={quizz.questionId}
+                                        open={createExplanationDlgOpen}
                                         onClose={() => setCreateExplanationDlgOpen(false)}
-                                        questionId={quizz.questionId}/>
+                                        onCreateSuccess={refreshExplanation}/>
     </div>
   );
 }

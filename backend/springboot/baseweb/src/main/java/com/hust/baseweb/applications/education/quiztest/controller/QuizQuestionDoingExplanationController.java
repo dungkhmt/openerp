@@ -68,4 +68,19 @@ public class QuizQuestionDoingExplanationController {
         }
     }
 
+    @DeleteMapping("/{explanationId}")
+    public ResponseEntity deleteQuizDoingExplanation(@PathVariable UUID explanationId) {
+        log.info("Delete quiz doing explanation having id = {}", explanationId);
+        try {
+            quizDoingExplanationService.deleteExplanation(explanationId);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
+        } catch (RuntimeException e) {
+            log.error("An error occur when delete quiz doing explanation with id = {}. Detail: {}",
+                      explanationId,  e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

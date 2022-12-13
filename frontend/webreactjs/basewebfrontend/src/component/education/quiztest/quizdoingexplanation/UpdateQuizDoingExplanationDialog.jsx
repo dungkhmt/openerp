@@ -28,9 +28,14 @@ export default function UpdateQuizDoingExplanationDialog(props) {
     let successHandler = (res) => {
       successNoti("Cập nhật cách làm thành công, xem kết quả trên giao diện");
       props.onClose();
+      props.onUpdateSuccess(res);
     }
     let errorHandlers = {
-      onError: () => errorNoti("Đã xảy ra lỗi khi cập nhật cách làm!")
+      onError: () => {
+        errorNoti("Đã xảy ra lỗi khi cập nhật cách làm!")
+        props.onClose()
+      }
+
     }
     const config = {
       headers: {
@@ -53,7 +58,7 @@ export default function UpdateQuizDoingExplanationDialog(props) {
           <RichTextEditor content={solutionExplanation}
                           onContentChange={htmlContent => setSolutionExplanation(htmlContent)}/>
           { (!attachment && solution.attachment) && (
-            <FilePreview file={solution.attachment}/>
+            <FilePreview file={solution.attachment} width="568" height="400" style={{ marginTop: '10px'}}/>
           )}
           <FileUploader onChange={files => setAttachment(files[0])}/>
         </>

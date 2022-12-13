@@ -64,6 +64,17 @@ public class QuizQuestionDoingExplanationServiceImpl implements QuizQuestionDoin
     }
 
     @Override
+    public void deleteExplanation(UUID explanationId) {
+        QuizQuestionDoingExplanation updatedQuizDoingExplanation = quizDoingExplanationRepo.findById(explanationId)
+            .orElseThrow(() -> new ResourceNotFoundException("Doesn't exist quiz doing explanation with id " + explanationId));
+        String attachmentStorageId = updatedQuizDoingExplanation.getAttachment();
+        quizDoingExplanationRepo.deleteById(explanationId);
+        if (attachmentStorageId != null) {
+            mongoContentService.deleteFilesById(attachmentStorageId);
+        }
+    }
+
+    @Override
     public QuizQuestionDoingExplanation setAttachment(QuizQuestionDoingExplanation savedSolution,
                                                       MultipartFile attachment) {
         if (attachment == null) {

@@ -20,7 +20,8 @@ export default function CreateQuizDoingExplanationDialog(props) {
 
     let successHandler = (res) => {
       successNoti("Thêm cách làm thành công, xem kết quả trên giao diện");
-      console.log("Quiz doing explanation response", res);
+      props.onClose();
+      props.onCreateSuccess(res);
     }
     let errorHandlers = {
       onError: () => errorNoti("Đã xảy ra lỗi khi thêm cách làm!")

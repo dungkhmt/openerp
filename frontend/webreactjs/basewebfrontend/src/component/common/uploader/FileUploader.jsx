@@ -49,7 +49,7 @@ export default function FileUploader(props) {
       <div className={classes.fileUploaderPreview}>
         { props.preview &&
           selectedFiles.map((file, index) => (
-            <FilePreview file={file} key={index} width="560" height="400"/>
+            <FilePreview file={file} key={index} width="568" height="400"/>
           ))
         }
       </div>
