@@ -160,6 +160,8 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         quizQuestion.setCreatedStamp(new Date());
         quizQuestion = quizQuestionRepo.save(quizQuestion);
 
+        // grant role to userId
+
         return quizQuestion;
     }
 

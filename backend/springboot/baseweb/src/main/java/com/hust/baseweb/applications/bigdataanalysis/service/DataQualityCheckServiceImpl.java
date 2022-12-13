@@ -161,4 +161,12 @@ public class DataQualityCheckServiceImpl implements DataQualityCheckService{
         }
         return res;
     }
+
+    public boolean removeDataQualityCheckMaster(UUID id){
+        DataQualityCheckMaster r = dataQualityCheckMasterRepo.findById(id).orElse(null);
+        if(r ==  null) return false;
+        dataQualityCheckMasterRepo.delete(r);
+        return true;
+    }
+
 }

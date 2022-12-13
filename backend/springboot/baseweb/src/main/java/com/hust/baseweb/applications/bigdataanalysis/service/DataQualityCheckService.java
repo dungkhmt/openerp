@@ -27,4 +27,5 @@ public interface DataQualityCheckService {
 
     public List<ModelResponseDataQualityCheckMaster> getListDataQualityCheckMaster(String userId);
 
+    boolean removeDataQualityCheckMaster(UUID id);
 }

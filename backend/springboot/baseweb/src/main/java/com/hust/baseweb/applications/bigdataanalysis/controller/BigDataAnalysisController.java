@@ -70,6 +70,15 @@ public class BigDataAnalysisController {
     @GetMapping("/get-list-data-quality-check-master")
     public ResponseEntity<?> getListDataQualityCheckMaster(Principal principal){
         List<ModelResponseDataQualityCheckMaster> res = dataQualityCheckService.getListDataQualityCheckMaster(principal.getName());
+
+
         return ResponseEntity.ok().body(res);
     }
+
+    @GetMapping("/remove-data-quality-check-master/{id}")
+    public ResponseEntity<?> removeDataQualityCheckMaster(@PathVariable UUID id){
+        boolean ok = dataQualityCheckService.removeDataQualityCheckMaster(id);
+        return ResponseEntity.ok().body(ok);
+    }
+
 }

@@ -6,7 +6,7 @@ import StandardTable from "../table/StandardTable";
 import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
 //import { defaultDatetimeFormat } from "../../utils/dateutils";
 import { toFormattedDateTime } from "../../utils/dateutils";
-
+import { Button } from "@mui/material";
 export default function DataQualityCheckMaster() {
   const columns = [
     { title: "RuleID", field: "ruleId" },
@@ -14,10 +14,23 @@ export default function DataQualityCheckMaster() {
     { title: "Table", field: "tableName" },
     { title: "UserID", field: "createdByUserLoginId" },
     { title: "Created At", field: "createdStamp" },
+    {
+      title: "Action",
+
+      render: (rowData) => (
+        <Button onClick={() => handleRemove(rowData.id)}>Remove</Button>
+      ),
+    },
   ];
 
   const [dataQualityCheckMasters, setDataQualityCheckMasters] = useState([]);
 
+  function handleRemove(id) {
+    //alert("remove " + id);
+    request("get", "/remove-data-quality-check-master/" + id, (res) => {
+      getDataQualityCheckMaster();
+    }).then();
+  }
   function getDataQualityCheckMaster() {
     request("get", "/get-list-data-quality-check-master", (res) => {
       const content = res.data.map((c) => ({
