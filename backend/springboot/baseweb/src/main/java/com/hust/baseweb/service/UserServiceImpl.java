@@ -237,6 +237,17 @@ public class UserServiceImpl implements UserService {
         party.setPartyCode(personUpdateModel.getPartyCode());
         UserLogin u = party.getUserLogin();
 
+        log.info("update Person userlogin = " + u.getUserLoginId());
+        //UserRegister ur = userRegisterRepo.findByUserLoginId(u.getUserLoginId());
+        UserRegister ur = userRegisterRepo.findById(u.getUserLoginId()).orElse(null);
+
+        if(ur != null){
+            ur.setEmail(personUpdateModel.getEmail());
+            ur = userRegisterRepo.save(ur);
+        }else{
+            log.info("update Person, cannot find user register for " + u.getUserLoginId());
+        }
+
         u.setRoles(securityGroupRepo.findAllByGroupIdIn(personUpdateModel.getRoles()));
 
         if(personUpdateModel.getEnabled().equals("Y")){
