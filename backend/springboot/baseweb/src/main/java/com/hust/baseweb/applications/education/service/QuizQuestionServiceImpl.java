@@ -40,6 +40,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
@@ -84,6 +85,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     }
 
     @Override
+    @Transactional
     public QuizQuestion save(UserLogin u, String json, MultipartFile[] files) {
 
         //Do save file
@@ -161,6 +163,26 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         quizQuestion = quizQuestionRepo.save(quizQuestion);
 
         // grant role to userId
+        QuizQuestionUserRole r = new QuizQuestionUserRole();
+        r.setUserId(u.getUserLoginId());
+        r.setQuestionId(quizQuestion.getQuestionId());
+        r.setRoleId(QuizQuestionUserRole.ROLE_OWNER);
+        r.setCreatedStamp(new Date());
+        r = quizQuestionUserRoleRepo.save(r);
+
+        r = new QuizQuestionUserRole();
+        r.setUserId(u.getUserLoginId());
+        r.setQuestionId(quizQuestion.getQuestionId());
+        r.setRoleId(QuizQuestionUserRole.ROLE_MANAGER);
+        r.setCreatedStamp(new Date());
+        r = quizQuestionUserRoleRepo.save(r);
+
+        r = new QuizQuestionUserRole();
+        r.setUserId(u.getUserLoginId());
+        r.setQuestionId(quizQuestion.getQuestionId());
+        r.setRoleId(QuizQuestionUserRole.ROLE_VIEW);
+        r.setCreatedStamp(new Date());
+        r = quizQuestionUserRoleRepo.save(r);
 
         return quizQuestion;
     }
