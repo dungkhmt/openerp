@@ -93,7 +93,7 @@ export default function StudentQuizDetail() {
       {
         401: () => {},
         406: () => {
-          setMessageRequest("Quá thời gian làm bài!");
+          setMessageRequest("Time Out!");
           setRequestFailed(true);
         },
       }
@@ -105,18 +105,18 @@ export default function StudentQuizDetail() {
       "post",
       "/quiz-test-choose_answer-by-user",
       (res) => {
-        setMessageRequest("Đã lưu vào hệ thống!");
+        setMessageRequest("STORED!");
         setRequestSuccessfully(true);
         checkState[order].submitted.set(true);
         checkState[order].lastSubmittedAnswers.set(choseAnswers);
       },
       {
         400: () => {
-          setMessageRequest("Không được để trống!");
+          setMessageRequest("Cannot be empty!");
           setRequestFailed(true);
         },
         406: () => {
-          setMessageRequest("Quá thời gian làm bài!");
+          setMessageRequest("Time Out!");
           setRequestFailed(true);
         },
       },
@@ -165,10 +165,10 @@ export default function StudentQuizDetail() {
         <div style={{ padding: "0px 20px 20px 30px" }}>
           <div style={{ justifyContent: "space-between", display: "flex" }}>
             <h3>Quiz test: {quizGroupTestDetail.testName}</h3>
-            <h3>Môn: {quizGroupTestDetail.courseName}</h3>
+            <h3>Course: {quizGroupTestDetail.courseName}</h3>
           </div>
-          <h4>Bắt đầu: {quizGroupTestDetail.scheduleDatetime}</h4>
-          <h4>Thời gian: {quizGroupTestDetail.duration} phút</h4>
+          <h4>Start Time: {quizGroupTestDetail.scheduleDatetime}</h4>
+          <h4>Duration: {quizGroupTestDetail.duration} minutes</h4>
         </div>
 
         {viewTypeId === "VIEW_STEP" ? (
