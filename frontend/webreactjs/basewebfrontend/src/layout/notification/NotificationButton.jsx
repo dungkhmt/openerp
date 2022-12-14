@@ -3,9 +3,12 @@ import { grey } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import clsx from "clsx";
+import { EventSourcePolyfill } from "event-source-polyfill";
 import randomColor from "randomcolor";
 import React from "react";
+import { store } from "../..";
 import { request } from "../../api";
+import { API_URL } from "../../config/config";
 import { useNotificationState } from "../../state/NotificationState";
 import NotificationMenu from "./NotificationMenu";
 
@@ -101,11 +104,6 @@ function NotificationButton() {
   }, [open.get()]);
 
   React.useEffect(() => {
-    fetchNotification();
-  }, []);
-
-  /*
-  React.useEffect(() => {
     // When user open multiple tabs, only one tab will receive events at any point of time,
     // all other tabs will wait for "heartbeatTimeout" secs and reconnect to server,
     // one of them will successfully connect and receive next events
@@ -176,33 +174,33 @@ function NotificationButton() {
         );
       }
 
-      // es.close();
-      // console.info(new Date(), `SSE closed`);
-      // reconnect();
+      es.close();
+      console.info(new Date(), `SSE closed`);
+      reconnect();
     };
 
     // Setup EventSource
     let es;
-    // let reconnectFrequencySeconds = 1;
+    let reconnectFrequencySeconds = 1;
 
-    // // Putting these functions in extra variables is just for the sake of readability
-    // const wait = function () {
-    //   return reconnectFrequencySeconds * 1000;
-    // };
+    // Putting these functions in extra variables is just for the sake of readability
+    const wait = function () {
+      return reconnectFrequencySeconds * 1000;
+    };
 
-    // const tryToSetup = function () {
-    //   setupEventSource();
-    //   reconnectFrequencySeconds *= 2;
+    const tryToSetup = function () {
+      setupEventSource();
+      reconnectFrequencySeconds *= 2;
 
-    //   if (reconnectFrequencySeconds >= 64) {
-    //     reconnectFrequencySeconds = 64;
-    //   }
-    // };
+      if (reconnectFrequencySeconds >= 64) {
+        reconnectFrequencySeconds = 64;
+      }
+    };
 
-    // // Reconnect on every error
-    // const reconnect = function () {
-    //   setTimeout(tryToSetup, wait());
-    // };
+    // Reconnect on every error
+    const reconnect = function () {
+      setTimeout(tryToSetup, wait());
+    };
 
     // let count = 0;
 
@@ -235,17 +233,14 @@ function NotificationButton() {
       es.onerror = onError;
     }
 
-    //setupEventSource();
+    setupEventSource();
 
     return () => {
       es.close();
       es = null;
       console.info(new Date(), `SSE closed`);
     };
-    
-   
   }, []);
-*/
 
   return (
     <>
