@@ -174,33 +174,33 @@ function NotificationButton() {
         );
       }
 
-      // es.close();
-      // console.info(new Date(), `SSE closed`);
-      // reconnect();
+      es.close();
+      console.info(new Date(), `SSE closed`);
+      reconnect();
     };
 
     // Setup EventSource
     let es;
-    // let reconnectFrequencySeconds = 1;
+    let reconnectFrequencySeconds = 1;
 
-    // // Putting these functions in extra variables is just for the sake of readability
-    // const wait = function () {
-    //   return reconnectFrequencySeconds * 1000;
-    // };
+    // Putting these functions in extra variables is just for the sake of readability
+    const wait = function () {
+      return reconnectFrequencySeconds * 1000;
+    };
 
-    // const tryToSetup = function () {
-    //   setupEventSource();
-    //   reconnectFrequencySeconds *= 2;
+    const tryToSetup = function () {
+      setupEventSource();
+      reconnectFrequencySeconds *= 2;
 
-    //   if (reconnectFrequencySeconds >= 64) {
-    //     reconnectFrequencySeconds = 64;
-    //   }
-    // };
+      if (reconnectFrequencySeconds >= 64) {
+        reconnectFrequencySeconds = 64;
+      }
+    };
 
-    // // Reconnect on every error
-    // const reconnect = function () {
-    //   setTimeout(tryToSetup, wait());
-    // };
+    // Reconnect on every error
+    const reconnect = function () {
+      setTimeout(tryToSetup, wait());
+    };
 
     // let count = 0;
 
