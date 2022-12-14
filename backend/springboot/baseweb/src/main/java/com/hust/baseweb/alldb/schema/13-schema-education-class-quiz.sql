@@ -16,6 +16,8 @@ create table quiz_question(
     question_content text,
     attachment varchar(500),
     status_id varchar(30),
+    solution_content text,
+    solution_attachment varchar(500),
     created_by_user_login_id varchar(60),
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

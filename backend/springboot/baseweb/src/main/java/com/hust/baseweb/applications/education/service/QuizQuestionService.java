@@ -16,7 +16,7 @@ public interface QuizQuestionService {
 
     QuizQuestion save(QuizQuestionCreateInputModel input);
 
-    QuizQuestion save(UserLogin u, String json, MultipartFile[] files);
+    QuizQuestion save(UserLogin u, String json, MultipartFile[] files, MultipartFile[] solutionAttachments);
 
     List<QuizQuestion> findAll();
 

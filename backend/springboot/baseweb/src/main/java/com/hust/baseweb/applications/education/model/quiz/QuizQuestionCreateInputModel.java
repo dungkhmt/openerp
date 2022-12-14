@@ -13,5 +13,7 @@ public class QuizQuestionCreateInputModel {
 
     private String questionContent;
 
+    private String solutionContent;
+
     private String[] fileId;
 }

@@ -83,7 +83,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     }
 
     @Override
-    public QuizQuestion save(UserLogin u, String json, MultipartFile[] files) {
+    public QuizQuestion save(UserLogin u, String json, MultipartFile[] files, MultipartFile[] solutionAttachments) {
 
         //Do save file
 //        Date now = new Date();
@@ -142,8 +142,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
             }
         });
 
-
-
+        List<String> solutionAttachmentStorageIds = mongoContentService.storeFiles(solutionAttachments);
 
         QuizQuestion quizQuestion = new QuizQuestion();
         quizQuestion.setLevelId(input.getLevelId());
@@ -156,6 +155,8 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         //quizQuestion.setStatusId(QuizQuestion.STATUS_PUBLIC);
         quizQuestion.setStatusId(QuizQuestion.STATUS_PRIVATE);
         quizQuestion.setAttachment(String.join(";", attachmentId));
+        quizQuestion.setSolutionContent(input.getSolutionContent());
+        quizQuestion.setSolutionAttachment(String.join(";", solutionAttachmentStorageIds));
         quizQuestion.setCreatedStamp(new Date());
         quizQuestion = quizQuestionRepo.save(quizQuestion);
 

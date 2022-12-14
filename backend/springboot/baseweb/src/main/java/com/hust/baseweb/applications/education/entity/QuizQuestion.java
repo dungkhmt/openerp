@@ -47,6 +47,10 @@ public class QuizQuestion {
     @Column(name = "status_id")
     private String statusId;
 
+    private String solutionContent;
+
+    private String solutionAttachment;
+
     @Column(name = "created_stamp")
     private Date createdStamp;
 

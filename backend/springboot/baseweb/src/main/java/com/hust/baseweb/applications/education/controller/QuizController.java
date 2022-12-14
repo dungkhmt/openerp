@@ -183,7 +183,8 @@ public class QuizController {
         Principal principal,
         //@RequestBody QuizQuestionCreateInputModel input,
         @RequestParam("QuizQuestionCreateInputModel") String json,
-        @RequestParam("files") MultipartFile[] files
+        @RequestParam("files") MultipartFile[] files,
+        @RequestParam("solutionAttachments") MultipartFile[] solutionAttachments
     ) {
         UserLogin u = userService.findById(principal.getName());
 
@@ -192,7 +193,7 @@ public class QuizController {
 
         //System.out.println("hehehehehehehe");
 //        log.info("createQuizQuestion, topicId = " + input.getQuizCourseTopicId());
-        QuizQuestion quizQuestion = quizQuestionService.save(u, json, files);
+        QuizQuestion quizQuestion = quizQuestionService.save(u, json, files, solutionAttachments);
         return ResponseEntity.ok().body(quizQuestion);
     }
 
