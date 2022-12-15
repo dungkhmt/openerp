@@ -14,4 +14,8 @@ public class QuizQuestionUpdateInputModel {
     private String questionContent;
 
     private String[] fileId;
+
+    private String solutionContent;
+
+    private String[] deletedAttachmentIds;
 }

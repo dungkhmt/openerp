@@ -26,6 +26,10 @@ import {
   randomImageName,
 } from "../../../utils/FileUpload/covert";
 import AlertDialog from "../../common/AlertDialog";
+import RichTextEditor from "../../common/editor/RichTextEditor";
+import getFileByStorageId from "../quiztest/quizdoingexplanation/content-utils";
+import FilePreview from "../../common/uploader/FilePreview";
+import FileUploader from "../../common/uploader/FileUploader";
 
 let reDirect = null;
 const useStyles = makeStyles((theme) => ({
@@ -93,6 +97,28 @@ function CreateQuizOfCourse() {
 
   const [initState, setInitSate] = useState(false);
 
+  const [solutionContent, setSolutionContent] = useState('');
+  const [solutionAttachmentIds, setSolutionAttachmentIds] = useState([]);
+  const [solutionAttachments, setSolutionAttachments] = useState([]);
+  const [deletedAttachmentIds, setDeletedAttachmentIds] = useState([]);
+  const [addedSolutionAttachments, setAddedSolutionAttachments] = useState([]);
+
+  useEffect(getSolutionAttachments, [solutionAttachmentIds]);
+
+  async function getSolutionAttachments() {
+    console.log("solutionAttachmentIds", solutionAttachmentIds);
+    let attachments = await Promise.all(
+      solutionAttachmentIds.map(attachmentId => getFileByStorageId(attachmentId))
+    )
+    setSolutionAttachments(attachments);
+  }
+
+  function removeOldSolutionAttachments(attachmentIndex) {
+    setDeletedAttachmentIds([...deletedAttachmentIds, solutionAttachmentIds[attachmentIndex]]);
+    solutionAttachments.splice(attachmentIndex, 1);
+    setSolutionAttachments([...solutionAttachments]);
+  }
+
   const [alertMessage, setAlertMessage] = useState({
     title: "Vui lòng nhập đầy đủ thông tin cần thiết",
     content:
@@ -152,6 +178,8 @@ function CreateQuizOfCourse() {
           let quizQuestion = res;
           setQuizCourseTopicId(quizQuestion.quizCourseTopic.quizCourseTopicId);
           setLevelId(quizQuestion.levelId);
+          setSolutionContent(quizQuestion.solutionContent ?? '');
+          setSolutionAttachmentIds(quizQuestion.solutionAttachmentIds);
           let blocksFromHtml = htmlToDraft(quizQuestion.questionContent);
           let { contentBlocks, entityMap } = blocksFromHtml;
           let contentState = ContentState.createFromBlockArray(
@@ -202,12 +230,18 @@ function CreateQuizOfCourse() {
       levelId: levelId,
       questionContent: statement,
       fileId,
+      solutionContent,
+      deletedAttachmentIds
     };
 
     let formData = new FormData();
     formData.append("QuizQuestionUpdateInputModel", JSON.stringify(body));
     for (const file of newAttachmentFiles) {
       formData.append("files", file);
+    }
+
+    for (const attachment of addedSolutionAttachments) {
+      formData.append("addedSolutionAttachments", attachment);
     }
 
     authPostMultiPart(
@@ -353,6 +387,21 @@ function CreateQuizOfCourse() {
                     </div>
                   </div>
                 ))}
+
+              <div>
+                <Typography variant="h6" style={{ marginBottom: '10px' }}>Hướng dẫn làm bài</Typography>
+                <RichTextEditor content={solutionContent}
+                                onContentChange={content => setSolutionContent(content)}/>
+                { solutionAttachments.map((attachment, index) => (
+                  <div style={{ width: '568px', height: '300px', position: 'relative', marginTop: '10px'}}>
+                    <HighlightOffIcon style={{ position: 'absolute', top: '5px', right: '5px'}}
+                      className={classes.buttonClearImage}
+                      onClick={() => removeOldSolutionAttachments(index)}/>
+                    <FilePreview file={attachment} width="568" height="300"/>
+                  </div>
+                ))}
+                <FileUploader onChange={files => setAddedSolutionAttachments(files)} multiple/>
+              </div>
             </form>
           </CardContent>
           <CardActions>

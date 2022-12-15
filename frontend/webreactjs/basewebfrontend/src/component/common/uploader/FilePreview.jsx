@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
 
@@ -13,12 +13,13 @@ const FALLBACK_CONTENT_TYPE = "text/plain";
 
 export default function FilePreview(props) {
   const classes = useStyles();
-  const file = props.file;
-  const src = URL.createObjectURL(file);
-  const type = file.type || FALLBACK_CONTENT_TYPE;
+  const file = useMemo(() => ({
+    src: URL.createObjectURL(props.file),
+    type: props.file.type || FALLBACK_CONTENT_TYPE
+  }), [props.file])
 
   return (
-    <embed src={src} key={src} type={type}
+    <embed src={file.src} key={file.src} type={file.type}
            className={classes.filePreview} {...props}/>
   );
 }

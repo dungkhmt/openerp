@@ -122,13 +122,14 @@ public class QuizController {
         //@RequestBody QuizQuestionCreateInputModel input,
         @PathVariable UUID questionId,
         @RequestParam("QuizQuestionUpdateInputModel") String json,
-        @RequestParam("files") MultipartFile[] files
+        @RequestParam("files") MultipartFile[] files,
+        @RequestParam("addedSolutionAttachments") MultipartFile[] addedSolutionAttachments
     ) {
 
 //        Gson g = new Gson();
 //        QuizQuestionUpdateInputModel input = g.fromJson(json, QuizQuestionUpdateInputModel.class);
 //        log.info("updateQuizQuestion, topicId = " + input.getQuizCourseTopicId());
-        QuizQuestion quizQuestion = quizQuestionService.update(questionId, json, files);
+        QuizQuestion quizQuestion = quizQuestionService.update(questionId, json, files, addedSolutionAttachments);
         return ResponseEntity.ok().body(quizQuestion);
     }
 
