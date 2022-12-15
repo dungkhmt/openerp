@@ -2,6 +2,7 @@ package com.hust.baseweb.controller;
 
 
 import com.hust.baseweb.entity.*;
+import com.hust.baseweb.model.ModelPageUserSearchResponse;
 import com.hust.baseweb.model.PasswordChangeModel;
 import com.hust.baseweb.service.ApplicationService;
 import com.hust.baseweb.service.PersonService;
@@ -15,6 +16,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import io.lettuce.core.dynamic.annotation.Param;
 
 import java.security.Principal;
 import java.util.*;
@@ -165,6 +171,17 @@ public class ApiController {
     @GetMapping("screen-security")
     public ResponseEntity<?> getScrSecurInfo(Principal principal) {
         return ResponseEntity.ok().body(applicationService.getScrSecurInfo(principal.getName()));
+    }
+
+    @GetMapping("/search-user")
+    public ResponseEntity<?> searchUser(Pageable pageable,
+                                        @Param("keyword") String keyword) {
+        if (keyword == null) {
+            keyword = "";
+        }
+        ModelPageUserSearchResponse res = userService.searchUser(pageable, keyword);
+
+        return ResponseEntity.status(200).body(res);
     }
 
     /*Jedis jedis = new Jedis("localhost");

@@ -44,5 +44,6 @@ public interface QuizQuestionService {
 
     boolean grantRoleToUserOnAllQuizQuestions(String roleId, String userId);
 
+    List<QuizQuestionUserRole> getUsersGranttedToQuizQuestion(UUID questionId);
 
 }

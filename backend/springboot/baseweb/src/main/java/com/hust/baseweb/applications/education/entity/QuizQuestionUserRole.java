@@ -17,7 +17,7 @@ public class QuizQuestionUserRole {
     public static final String ROLE_MANAGER = "MANAGER";
     public static final String ROLE_VIEW = "VIEW";
 
-    public List<String> getRoles(){
+    public static List<String> getRoles(){
         List<String> lst = new ArrayList();
         lst.add(ROLE_OWNER);
         lst.add(ROLE_MANAGER);
