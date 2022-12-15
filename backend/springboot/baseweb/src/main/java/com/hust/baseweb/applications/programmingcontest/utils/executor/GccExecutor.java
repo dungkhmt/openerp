@@ -139,7 +139,7 @@ public class GccExecutor {
                           + "f=\"testcase\"$n\".txt\"" + "\n"
                         //   + "cat $f | timeout " + timeLimit + "s " + "./main  || echo Time Limit Exceeded" + "\n"
                           + "cat $f | (ulimit -t " + timeLimit
-                                            + " -v " + memoryLimit
+                                            + " -v " + (memoryLimit * 1024)
                                             + " -f 30000; "
                           + "./main > " + outputFileName + "; ) &> " + errorFileName + "\n"
                           + "ERROR=$(head -1 " + errorFileName +") \n"
