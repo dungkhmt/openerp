@@ -1152,7 +1152,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             tempName,
             testCaseEntityList,
             "Language Not Found",
-            problemEntity.getTimeLimit());
+            problemEntity.getTimeLimit(),
+            problemEntity.getMemoryLimit());
 
         List<String> correctAns = testCaseEntityList
             .stream()
@@ -1221,7 +1222,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             tempName,
             testCaseEntityList,
             "language not found",
-            problemEntity.getTimeLimit());
+            problemEntity.getTimeLimit(),
+            problemEntity.getMemoryLimit());
 
         List<String> testCaseAns = testCaseEntityList
             .stream()
@@ -1337,7 +1339,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 tempName,
                 L,
                 "language not found",
-                problemEntity.getTimeLimit());
+                problemEntity.getTimeLimit(),
+                problemEntity.getMemoryLimit());
 
             List<String> testCaseAns = L.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
             List<Integer> points = L.stream().map(TestCaseEntity::getTestCasePoint).collect(Collectors.toList());
@@ -1542,7 +1545,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 tempName,
                 L,
                 "language not found",
-                problemEntity.getTimeLimit());
+                problemEntity.getTimeLimit(),
+                problemEntity.getMemoryLimit());
 
             listSubmissionResponse.add(response);
         }
@@ -2760,7 +2764,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                         tempName,
                         L,
                         "language not found",
-                        p.getTimeLimit());
+                        p.getTimeLimit(),
+                        p.getMemoryLimit());
                     List<String> testCaseAns = L
                         .stream()
                         .map(TestCaseEntity::getCorrectAnswer)
@@ -3047,7 +3052,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                 tempName,
                                 L,
                                 "language not found",
-                                p.getTimeLimit());
+                                p.getTimeLimit(),
+                                p.getMemoryLimit());
                             List<String> testCaseAns = L
                                 .stream()
                                 .map(TestCaseEntity::getCorrectAnswer)
@@ -3298,7 +3304,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         String tempName,
         List<TestCaseEntity> testCaseList,
         String exception,
-        int timeLimit
+        int timeLimit,
+        int memoryLimit
     ) throws Exception {
         String ans;
         tempName = tempName.replace(" ", "");
@@ -3309,7 +3316,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     tempName,
                     testCaseList,
                     source,
-                    timeLimit);
+                    timeLimit,
+                    memoryLimit);
                 ans = dockerClientBase.runExecutable(ComputerLanguage.Languages.CPP, tempName);
                 break;
             case "JAVA":
@@ -3318,7 +3326,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     tempName,
                     testCaseList,
                     source,
-                    timeLimit);
+                    timeLimit,
+                    memoryLimit);
                 ans = dockerClientBase.runExecutable(ComputerLanguage.Languages.JAVA, tempName);
                 break;
             case "PYTHON3":
@@ -3327,7 +3336,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     tempName,
                     testCaseList,
                     source,
-                    timeLimit);
+                    timeLimit,
+                    memoryLimit);
                 ans = dockerClientBase.runExecutable(ComputerLanguage.Languages.PYTHON3, tempName);
                 break;
             case "GOLANG":
@@ -3336,7 +3346,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     tempName,
                     testCaseList,
                     source,
-                    timeLimit);
+                    timeLimit,
+                    memoryLimit);
                 ans = dockerClientBase.runExecutable(ComputerLanguage.Languages.GOLANG, tempName);
                 break;
             default:
