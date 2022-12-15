@@ -70,6 +70,22 @@ public class Constants {
         }
     }
 
+    public enum TestCaseSubmissionError {
+        FILE_LIMIT("File size limit exceeded"),
+        MEMORY_LIMIT("Segmentation fault"),
+        TIME_LIMIT("Killed");
+
+        private String value;
+
+        TestCaseSubmissionError(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+    }
+
     public enum Languages {
         CPP("CPP"),
         PYTHON3("PYTHON3"),

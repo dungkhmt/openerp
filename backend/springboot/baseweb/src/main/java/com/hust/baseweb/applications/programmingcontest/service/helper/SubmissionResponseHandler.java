@@ -61,7 +61,7 @@ public class SubmissionResponseHandler {
             try {
                 problemSubmission = StringHandler.handleContestResponseV2(response, testCaseAns, points);
 
-                if (problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")) {
+                if (problemSubmission.getMessage().equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
                     message = problemSubmission.getMessage();
                     compileError = true;
                     break;
@@ -110,37 +110,11 @@ public class SubmissionResponseHandler {
             "Total handle response time = {} ms",
             (endTime1 - startTime1) / 1000000);
 
-        boolean accepted = true;
-
         long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
         long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
         System.out.println("Memory used / committed :  " + used + "mb / " + committed + "mb");
 
-        label:
-        for (String s : statusList) {
-            switch (s) {
-                case ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR:
-                    totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
-                    accepted = false;
-                    break label;
-                case ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED:
-                    totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
-                    accepted = false;
-                    break label;
-                case ContestSubmissionEntity.SUBMISSION_STATUS_WRONG:
-                    totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
-                    accepted = false; //break;
-
-                    break;
-            }
-        }
-
-        if (accepted) {
-            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
-        }
-
         if (compileError) {
-            // keep compile error message above
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
             //log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Summary Compile error " + message);
         } else if (nbTestCasePass == 0) {
@@ -149,6 +123,7 @@ public class SubmissionResponseHandler {
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL;
         } else {
             message = "Successful";
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
         }
 
         ContestSubmissionEntity submissionEntity = contestSubmissionRepo.
