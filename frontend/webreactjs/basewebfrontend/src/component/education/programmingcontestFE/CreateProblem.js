@@ -1,42 +1,36 @@
-import { cppLanguage } from "@codemirror/lang-cpp";
-import { java } from "@codemirror/lang-java";
-import { javascript } from "@codemirror/lang-javascript";
-import { pythonLanguage } from "@codemirror/lang-python";
-import { go } from "@codemirror/legacy-modes/mode/go";
-import { StreamLanguage } from "@codemirror/stream-parser";
+import {cppLanguage} from "@codemirror/lang-cpp";
+import {java} from "@codemirror/lang-java";
+import {javascript} from "@codemirror/lang-javascript";
+import {pythonLanguage} from "@codemirror/lang-python";
+import {go} from "@codemirror/legacy-modes/mode/go";
+import {StreamLanguage} from "@codemirror/stream-parser";
 import DateFnsUtils from "@date-io/date-fns";
-import { Button } from "@material-ui/core";
-import {
-  Card,
-  CardActions,
-  CardContent,
-  MenuItem,
-  TextField,
-  Typography,
-} from "@material-ui/core/";
-import { makeStyles } from "@material-ui/core/styles";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { convertToRaw, EditorState } from "draft-js";
+import {Button} from "@material-ui/core";
+import {Card, CardActions, CardContent, MenuItem, Typography, TextField, InputAdornment} from "@mui/material";
+import {makeStyles} from "@material-ui/core/styles";
+import {MuiPickersUtilsProvider} from "@material-ui/pickers";
+import {convertToRaw, EditorState} from "draft-js";
 import draftToHtml from "draftjs-to-html";
-import { DropzoneArea } from "material-ui-dropzone";
-import React, { useState } from "react";
-import { Editor } from "react-draft-wysiwyg";
+import {DropzoneArea} from "material-ui-dropzone";
+import React, {useState} from "react";
+import {Editor} from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
-import { CompileStatus } from "./CompileStatus";
-import { sleep } from "./lib";
-import { request } from "./Request";
-import { SubmitSuccess } from "./SubmitSuccess";
-import { SubmitWarming } from "./SubmitWarming";
-import { authPostMultiPart } from "../../../api";
+import {useDispatch, useSelector} from "react-redux";
+import {useHistory} from "react-router-dom";
+import {CompileStatus} from "./CompileStatus";
+import {sleep} from "./lib";
+import {request} from "./Request";
+import {SubmitSuccess} from "./SubmitSuccess";
+import {SubmitWarming} from "./SubmitWarming";
+import {authPostMultiPart} from "../../../api";
+import {useTranslation} from "react-i18next";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
     "& .MuiTextField-root": {
       margin: theme.spacing(1),
-      width: "40%",
+      width: "30%",
       minWidth: 120,
     },
   },
@@ -73,6 +67,9 @@ const editorStyle = {
 };
 
 function CreateProblem() {
+  const {t} = useTranslation(
+    "education/programmingcontest/problem"
+  );
   const history = useHistory();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
@@ -80,12 +77,10 @@ function CreateProblem() {
   const [problemId, setProblemID] = useState();
   const [problemName, setProblemName] = useState();
   const [problemDescriptions, setProblemDescription] = useState();
-  const [timeLimit, setTimeLimit] = useState();
-  const [memoryLimit, setMemoryLimit] = useState();
-  const [levelId, setLevelId] = useState();
-  const [categoryId, setCategoryId] = useState();
+  const [timeLimit, setTimeLimit] = useState(1);
+  const [memoryLimit, setMemoryLimit] = useState(256);
+  const [levelId, setLevelId] = useState("medium");
   const defaultLevel = ["easy", "medium", "hard"];
-  const listCategory = [];
   const classes = useStyles();
   const descriptionClass = descriptionStyles();
   const [editorStateDescription, setEditorStateDescription] = useState(
@@ -136,7 +131,6 @@ function CreateProblem() {
   };
 
   function checkCompile() {
-    console.log("check compile");
     let body = {
       source: codeSolution,
       computerLanguage: languageSolution,
@@ -184,7 +178,6 @@ function CreateProblem() {
       problemDescription: description,
       timeLimit: timeLimit,
       levelId: levelId,
-      categoryId: categoryId,
       memoryLimit: memoryLimit,
       correctSolutionLanguage: languageSolution,
       solution: solution,
@@ -252,7 +245,7 @@ function CreateProblem() {
         <Card>
           <CardContent>
             <Typography variant="h5" component="h2">
-              Create Problem
+              <b>{t("createProblem")}</b>
             </Typography>
             <form className={classes.root} noValidate autoComplete="off">
               <div>
@@ -265,7 +258,7 @@ function CreateProblem() {
                   onChange={(event) => {
                     setProblemID(event.target.value);
                   }}
-                ></TextField>
+                />
                 <TextField
                   autoFocus
                   required
@@ -275,37 +268,15 @@ function CreateProblem() {
                   onChange={(event) => {
                     setProblemName(event.target.value);
                   }}
-                ></TextField>
-
-                <TextField
-                  autoFocus
-                  required
-                  id="timeLimit"
-                  label="Time Limit"
-                  placeholder="Time Limit"
-                  onChange={(event) => {
-                    setTimeLimit(event.target.value);
-                  }}
-                ></TextField>
-
-                <TextField
-                  autoFocus
-                  required
-                  id="memoryLimit"
-                  label="Memory Limit"
-                  placeholder="Memory Limit"
-                  onChange={(event) => {
-                    setMemoryLimit(event.target.value);
-                  }}
-                ></TextField>
+                />
 
                 <TextField
                   autoFocus
                   required
                   select
                   id="levelId"
-                  label="Level"
-                  placeholder="Level"
+                  label={t("level")}
+                  value={levelId}
                   onChange={(event) => {
                     setLevelId(event.target.value);
                   }}
@@ -317,23 +288,33 @@ function CreateProblem() {
                   ))}
                 </TextField>
 
+
                 <TextField
                   autoFocus
-                  // required
-                  select
-                  id="categoryId"
-                  label="Category ID"
-                  placeholder="Category ID"
+                  required
+                  id="timeLimit"
+                  label={t("timeLimit")}
+                  placeholder="Time Limit"
+                  type="number"
+                  value={timeLimit}
                   onChange={(event) => {
-                    setCategoryId(event.target.value);
+                    setTimeLimit(event.target.value);
                   }}
-                >
-                  {listCategory.map((item) => (
-                    <MenuItem key={item} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                  InputProps={{endAdornment: <InputAdornment position="end">s</InputAdornment>,}}
+                />
+
+                <TextField
+                  autoFocus
+                  required
+                  id="memoryLimit"
+                  label={t("memoryLimit")}
+                  type="number"
+                  value={memoryLimit}
+                  onChange={(event) => {
+                    setMemoryLimit(event.target.value);
+                  }}
+                  InputProps={{endAdornment: <InputAdornment position="end">MB</InputAdornment>,}}
+                />
 
                 <TextField
                   autoFocus
@@ -363,7 +344,7 @@ function CreateProblem() {
             >
               <div>
                 <Typography>
-                  <h2>Problem Description</h2>
+                  <h2>{t("problemDescription")}</h2>
                 </Typography>
                 <Editor
                   editorState={editorStateDescription}
@@ -404,15 +385,15 @@ function CreateProblem() {
                     `Vượt quá số lượng tệp tối đa cho phép. Chỉ được phép tải lên tối đa ${filesLimit} tệp.`
                   }
                   alertSnackbarProps={{
-                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                    anchorOrigin: {vertical: "bottom", horizontal: "right"},
                     autoHideDuration: 1800,
                   }}
                   onChange={(files) => handleAttachmentFiles(files)}
-                ></DropzoneArea>
+                />
               </div>
               <div>
                 <Typography>
-                  <h2>Problem Solution</h2>
+                  <h2>{t("problemSuggestion")}</h2>
                 </Typography>
                 <Editor
                   editorState={editorStateSolution}
@@ -424,7 +405,7 @@ function CreateProblem() {
               </div>
             </form>
             <Typography>
-              <h2>Correct Solution Source Code</h2>
+              <h2>{t("correctSourceCode")}</h2>
             </Typography>
             <TextField
               style={{ width: 0.075 * window.innerWidth, margin: 20 }}
@@ -447,8 +428,9 @@ function CreateProblem() {
             <TextField
               variant="outlined"
               style={{
-                width: 0.9 * window.innerWidth,
-                margin: 20,
+                width: 0.65 * window.innerWidth,
+                marginLeft: 24,
+                marginBottom: 20,
               }}
               multiline
               rows={12}
@@ -457,7 +439,7 @@ function CreateProblem() {
               onChange={(event) => {
                 setCodeSolution(event.target.value);
               }}
-            ></TextField>
+            />
             {/*
             <CodeMirror
               value={codeSolution}
@@ -472,7 +454,7 @@ function CreateProblem() {
             */}
             <br />
             <Typography>
-              <h2>Checker source code</h2>
+              <h2>{t("checkerSourceCode")}</h2>
             </Typography>
             <TextField
               style={{ width: 0.075 * window.innerWidth, margin: 20 }}
@@ -531,7 +513,7 @@ function CreateProblem() {
             </Button>
             <SubmitWarming
               showSubmitWarming={showSubmitWarming}
-              content={"Your source must be pass compile process"}
+              content={"Your source code must pass \"CHECK SOLUTION COMPILE\""}
             />
             <SubmitSuccess
               showSubmitSuccess={showSubmitSuccess}
