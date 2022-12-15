@@ -534,4 +534,8 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         }
         return true;
     }
+    public List<QuizQuestionUserRole> getUsersGranttedToQuizQuestion(UUID questionId){
+        List<QuizQuestionUserRole> res = quizQuestionUserRoleRepo.findAllByQuestionId(questionId);
+        return res;
+    }
 }

@@ -7,6 +7,7 @@ import { request } from "../../../api";
 import TeacherCourseQuizChoiceAnswerList from "./TeacherCourseQuizChoiceAnswerList";
 import TeacherCourseQuizContent from "./TeacherCourseQuizContent";
 import withScreenSecurity from "../../withScreenSecurity";
+import QuizUserRole from "./QuizUserRole";
 
 function TeacherCourseQuizDetail() {
   const params = useParams();
@@ -34,14 +35,17 @@ function TeacherCourseQuizDetail() {
   }, []);
 
   return (
-    <Card>
-      <Link to={"/edu/course/detail/" + courseId}>QUAY VỀ CHI TIẾT MÔN</Link>
-      <TeacherCourseQuizContent questionId={questionId} />
-      <TeacherCourseQuizChoiceAnswerList
-        questionId={questionId}
-        courseId={courseId}
-      />
-    </Card>
+    <>
+      <Card>
+        <Link to={"/edu/course/detail/" + courseId}>QUAY VỀ CHI TIẾT MÔN</Link>
+        <TeacherCourseQuizContent questionId={questionId} />
+        <TeacherCourseQuizChoiceAnswerList
+          questionId={questionId}
+          courseId={courseId}
+        />
+      </Card>
+      <QuizUserRole questionId={questionId} />
+    </>
   );
 }
 

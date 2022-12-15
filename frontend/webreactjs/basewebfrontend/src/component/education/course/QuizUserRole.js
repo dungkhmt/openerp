@@ -12,10 +12,10 @@ import { Search, SearchIconWrapper } from "../programmingcontestFE/lib";
 import { InputBase } from "@mui/material";
 import StandardTable from "component/table/StandardTable";
 import { TextField, MenuItem, Button } from "@mui/material/";
-import AddMember2QuizTestDialog from "./AddMember2QuizTestDialog";
+import AddMember2QuizDialog from "./AddMember2QuizDialog";
 
-export default function ParticipantRolesOfQuizTest(props) {
-  const testId = props.testId;
+export default function QuizUserRole(props) {
+  const questionId = props.questionId;
   const [participants, setParticipants] = useState([]);
   const history = useHistory();
 
@@ -50,9 +50,13 @@ export default function ParticipantRolesOfQuizTest(props) {
   ];
 
   function getUserRoles() {
-    request("get", "get-users-role-of-quiz-test/" + testId, (res) => {
-      setParticipants(res.data);
-    });
+    request(
+      "get",
+      "get-users-granted-to-quiz-question/" + questionId,
+      (res) => {
+        setParticipants(res.data);
+      }
+    );
   }
 
   function handleModalClose() {
@@ -61,14 +65,14 @@ export default function ParticipantRolesOfQuizTest(props) {
   function onUpdateInfo(selectRole, selectedUserId) {
     //alert("onUpdateInfo " + selectRole + ":" + selectedUserId);
     let body = {
-      testId: testId,
+      questionId: questionId,
       userId: selectedUserId,
       roleId: selectRole,
     };
 
     request(
       "post",
-      "/add-quiz-test-participant-role",
+      "/add-quiz-question-user-role",
       (res) => {
         alert("Add successully");
         setOpen(false);
@@ -81,9 +85,9 @@ export default function ParticipantRolesOfQuizTest(props) {
     //alert("click " + u);
     request(
       "get",
-      "/get-roles-user-not-granted-in-quiz-test/" + testId + "/" + u,
+      "/get-roles-user-not-granted-in-quiz-question/" + questionId + "/" + u,
       (res) => {
-        console.log("get-roles-user-not-granted-in-quiz-test, res = ", res);
+        //console.log("get-roles-user-not-granted-in-quiz-test, res = ", res);
         //setRolesApproved(res.data.rolesApprovedInContest);
         setRolesNotApproved(res.data);
         setSelectedUserId(u);
@@ -182,7 +186,7 @@ export default function ParticipantRolesOfQuizTest(props) {
         ]}
       />
 
-      <AddMember2QuizTestDialog
+      <AddMember2QuizDialog
         open={open}
         onClose={handleModalClose}
         onUpdateInfo={onUpdateInfo}

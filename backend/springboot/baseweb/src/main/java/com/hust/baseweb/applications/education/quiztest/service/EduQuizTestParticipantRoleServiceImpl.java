@@ -49,6 +49,23 @@ public class EduQuizTestParticipantRoleServiceImpl implements EduQuizTestPartici
         }
         return res;
     }
+    @Override
+    public List<QuizTestParticipantRoleModel> getParticipantRolesOfUserInQuizTest(String userId, String testId) {
+        //List<EduTestQuizRole> eduTestQuizRoles = eduTestQuizRoleRepo.findAllByTestId(testId);
+        List<EduTestQuizRole> eduTestQuizRoles = eduTestQuizRoleRepo.findAllByTestIdAndParticipantUserLoginId(testId, userId);
+
+        List<QuizTestParticipantRoleModel> res = new ArrayList();
+        //log.info("getParticipantRolesOfQuizTest, testId = " + testId + " list  = " + eduTestQuizRoles.size() + "");
+        for(EduTestQuizRole r: eduTestQuizRoles){
+            //log.info("getParticipantRolesOfQuizTest, role  = {}",r);
+            QuizTestParticipantRoleModel m = new QuizTestParticipantRoleModel();
+            m.setTestId(testId);
+            m.setUserId(r.getParticipantUserLoginId());
+            m.setRoleId(r.getRoleId());
+            res.add(m);
+        }
+        return res;
+    }
 
     @Override
     public List<QuizTestParticipantRoleModel> getQuizTestsOfUser(String userId) {

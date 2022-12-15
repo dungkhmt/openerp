@@ -721,6 +721,17 @@ public class UserServiceImpl implements UserService {
         return userLoginRepo.findByEnabledLoginIdContains(partOfLoginId, limit);
     }
 
+    @Override
+    public ModelPageUserSearchResponse searchUser(Pageable pageable, String keyword) {
+
+        Page<PersonModel> list = userLoginRepo.searchUser(
+            pageable,
+            keyword);
+        return ModelPageUserSearchResponse.builder()
+                                                 .contents(list)
+                                                 .build();
+    }
+
 //    @Override
 //    public UserRegister.OutputModel registerUser(UserRegister.InputModel inputModel) {
 //        String userLoginId = inputModel.getUserLoginId();

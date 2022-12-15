@@ -503,6 +503,11 @@ public class QuizController {
         return ResponseEntity.ok().body(quizChoiceAnswer);
     }
 
+    @GetMapping("/get-users-granted-to-quiz-question/{questionId}")
+    public ResponseEntity<?> getUsersGranttedToQuizQuestion(@PathVariable UUID questionId){
+        List<QuizQuestionUserRole> res = quizQuestionService.getUsersGranttedToQuizQuestion(questionId);
+        return ResponseEntity.ok().body(res);
+    }
     @PostMapping("/add-quiz-question-user-role")
     public ResponseEntity<?> addQuizQuestionUserRole(Principal princiapl, @RequestBody ModelCreateQuizQuestionUserRole input){
         QuizQuestionUserRole quizQuestionUserRole = quizQuestionService.addQuizQuestionUserRole(input);
@@ -514,4 +519,22 @@ public class QuizController {
         return ResponseEntity.ok().body(ok);
     }
 
+    @GetMapping("/get-roles-user-not-granted-in-quiz-question/{questionId}/{userId}")
+    public ResponseEntity<?> getRolesUserNotGranttedInQuizQuestion(@PathVariable UUID questionId, @PathVariable String userId){
+        List<QuizQuestionUserRole> rolesGrantted = quizQuestionUserRoleRepo.findAllByQuestionIdAndUserId(questionId, userId);
+        List<String> res = new ArrayList();
+        List<String> roles = QuizQuestionUserRole.getRoles();
+        for(String r: roles){
+            boolean exist = false;
+            for(QuizQuestionUserRole qr: rolesGrantted){
+                if(qr.getRoleId().equals(r)){
+                    exist= true; break;
+                }
+            }
+            if(!exist){
+                res.add(r);
+            }
+        }
+        return ResponseEntity.ok().body(res);
+    }
 }

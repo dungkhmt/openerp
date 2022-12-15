@@ -107,6 +107,21 @@ public class QuizTestController {
         List<QuizTestParticipantRoleModel> res = eduQuizTestParticipantRoleService.getParticipantRolesOfQuizTest(testId);
         return ResponseEntity.ok().body(res);
     }
+    @GetMapping("/get-roles-user-not-granted-in-quiz-test/{testId}/{userId}")
+    public ResponseEntity<?> getRolesUserNotGrantedInQuizTest(@PathVariable String testId, @PathVariable String userId){
+        List<QuizTestParticipantRoleModel> rolesGranted = eduQuizTestParticipantRoleService.getParticipantRolesOfUserInQuizTest(userId, testId);
+        List<String> res = new ArrayList();
+        List<String> roles = EduTestQuizRole.getRoles();
+        for(String r: roles){
+            boolean exist = false;
+            for(QuizTestParticipantRoleModel ri: rolesGranted)
+                if(ri.getRoleId().equals(r)){
+                    exist = true; break;
+                }
+            if(!exist) res.add(r);
+        }
+        return ResponseEntity.ok().body(res);
+    }
     @GetMapping("/get-all-quiz-test")
     public ResponseEntity<?> getAllQuizTests(Principal principal){
         List<QuizTestParticipantRoleModel> res = eduQuizTestParticipantRoleService.getAllQuizTests();
@@ -282,8 +297,9 @@ public class QuizTestController {
             courseId = eduClass.getEduCourse().getId();
         }
 
-        log.info("getListQuizForAssignmentOfTest, testId = " + testId + " courseId = " + courseId);
+
         List<QuizQuestion> quizQuestions = quizQuestionService.findQuizOfCourse(courseId);
+        log.info("getListQuizForAssignmentOfTest, testId = " + testId + " courseId = " + courseId + " all questions = " + quizQuestions.size());
         List<QuizQuestionDetailModel> quizQuestionDetailModels = new ArrayList<>();
         for (QuizQuestion q : quizQuestions) {
             if (q.getStatusId().equals(QuizQuestion.STATUS_PUBLIC)) {
