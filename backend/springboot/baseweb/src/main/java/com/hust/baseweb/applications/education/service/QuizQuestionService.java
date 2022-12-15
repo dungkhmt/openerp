@@ -18,7 +18,7 @@ public interface QuizQuestionService {
 
     QuizQuestion save(QuizQuestionCreateInputModel input);
 
-    QuizQuestion save(UserLogin u, String json, MultipartFile[] files);
+    QuizQuestion save(UserLogin u, String json, MultipartFile[] files, MultipartFile[] solutionAttachments);
 
     List<QuizQuestion> findAll();
 
@@ -38,7 +38,7 @@ public interface QuizQuestionService {
 
     QuizQuestionDetailModel findById(UUID questionId);
 
-    QuizQuestion update(UUID questionId, String json, MultipartFile[] files);
+    QuizQuestion update(UUID questionId, String json, MultipartFile[] files, MultipartFile[] addedSolutionAttachments);
 
     QuizQuestionUserRole addQuizQuestionUserRole(ModelCreateQuizQuestionUserRole input);
 

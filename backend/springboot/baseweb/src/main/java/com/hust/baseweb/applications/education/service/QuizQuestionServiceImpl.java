@@ -86,7 +86,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
     @Override
     @Transactional
-    public QuizQuestion save(UserLogin u, String json, MultipartFile[] files) {
+    public QuizQuestion save(UserLogin u, String json, MultipartFile[] files, MultipartFile[] solutionAttachments) {
 
         //Do save file
 //        Date now = new Date();
@@ -145,8 +145,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
             }
         });
 
-
-
+        List<String> solutionAttachmentStorageIds = mongoContentService.storeFiles(solutionAttachments);
 
         QuizQuestion quizQuestion = new QuizQuestion();
         quizQuestion.setLevelId(input.getLevelId());
@@ -159,6 +158,8 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         //quizQuestion.setStatusId(QuizQuestion.STATUS_PUBLIC);
         quizQuestion.setStatusId(QuizQuestion.STATUS_PRIVATE);
         quizQuestion.setAttachment(String.join(";", attachmentId));
+        quizQuestion.setSolutionContent(input.getSolutionContent());
+        quizQuestion.setSolutionAttachment(String.join(";", solutionAttachmentStorageIds));
         quizQuestion.setCreatedStamp(new Date());
         quizQuestion = quizQuestionRepo.save(quizQuestion);
 
@@ -391,6 +392,12 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         quizQuestionDetailModel.setQuestionId(quizQuestion.getQuestionId());
         quizQuestionDetailModel.setStatusId(quizQuestion.getStatusId());
         quizQuestionDetailModel.setStatement(quizQuestion.getQuestionContent());
+        quizQuestionDetailModel.setSolutionContent(quizQuestion.getSolutionContent());
+
+        String solutionAttachment = quizQuestion.getSolutionAttachment();
+        if (solutionAttachment != null && !solutionAttachment.trim().equals("")) {
+            quizQuestionDetailModel.setSolutionAttachmentIds(quizQuestion.getSolutionAttachment().split(";"));
+        }
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
@@ -436,7 +443,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     }
 
     @Override
-    public QuizQuestion update(UUID questionId, String json, MultipartFile[] files) {
+    public QuizQuestion update(UUID questionId, String json, MultipartFile[] files, MultipartFile[] addedSolutionAttachments) {
 //        Date now = new Date();
 //        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 //        String prefixFileName = formatter.format(now);
@@ -507,8 +514,25 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         quizQuestion.setLastUpdatedStamp(new Date());
         quizQuestion.setCreatedStamp(quizQuestionTemp.getCreatedStamp());
         quizQuestion.setStatusId(quizQuestionTemp.getStatusId());
-        quizQuestion = quizQuestionRepo.save(quizQuestion);
+        quizQuestion.setSolutionContent(input.getSolutionContent());
 
+        List<String> addedSolutionAttachmentIds = mongoContentService.storeFiles(addedSolutionAttachments);
+        String[] oldSolutionAttachments = {};
+        if (quizQuestionTemp.getSolutionAttachment() != null) {
+            oldSolutionAttachments = quizQuestionTemp.getSolutionAttachment().split(";");
+        }
+        List<String> solutionAttachmentIds = Arrays.stream(oldSolutionAttachments)
+                                                   .collect(Collectors.toList());
+        solutionAttachmentIds.removeAll(Arrays.asList(input.getDeletedAttachmentIds()));
+        solutionAttachmentIds.addAll(addedSolutionAttachmentIds);
+        String newSolutionAttachmentIds = solutionAttachmentIds.size() == 0 ? null : String.join(";", solutionAttachmentIds);
+        quizQuestion.setSolutionAttachment(newSolutionAttachmentIds);
+
+        for (String deletedAttachmentId : input.getDeletedAttachmentIds()) {
+            mongoContentService.deleteFilesById(deletedAttachmentId);
+        }
+
+        quizQuestion = quizQuestionRepo.save(quizQuestion);
         return quizQuestion;
     }
 
