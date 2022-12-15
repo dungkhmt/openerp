@@ -69,7 +69,11 @@ function NotificationButton() {
     let fromId = null;
     const fetchedNoties = notifications.get();
 
-    if (fetchedNoties) {
+    if (fetchedNoties && fetchedNoties.length > 0) {
+      console.log(
+        "fetchNotification, res = ",
+        fetchedNoties[fetchedNoties.length - 1]
+      );
       fromId = fetchedNoties[fetchedNoties.length - 1].id;
     }
 

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.*;
 
 @Getter
 @Setter
@@ -24,6 +25,13 @@ public class EduTestQuizRole {
     public static final String ROLE_MANAGER = "MANAGER";
     public static final String ROLE_OWNER = "OWNER";
 
+    public static List<String> getRoles(){
+        List<String> L = new ArrayList();
+        L.add(ROLE_PARTICIPANT);
+        L.add(ROLE_MANAGER);
+        L.add(ROLE_OWNER);
+        return L;
+    }
     @Id
     @Column(name = "test_id")
     private String testId;

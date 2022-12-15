@@ -10,4 +10,6 @@ public interface EduTestQuizRoleRepo extends JpaRepository<EduTestQuizRole, Comp
     List<EduTestQuizRole> findAllByTestId(String testId);
     List<EduTestQuizRole> findByTestId(String testId);
     List<EduTestQuizRole> findByParticipantUserLoginId(String participantUserLoginId);
+
+    List<EduTestQuizRole> findAllByTestIdAndParticipantUserLoginId(String testId, String participantUserLoginId);
 }
