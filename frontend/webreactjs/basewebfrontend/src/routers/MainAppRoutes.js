@@ -17,6 +17,7 @@ import WMSRoute from "./WMSRoute";
 import TaskManagementRoute from "./TaskManagementRoute";
 import WhiteBoardRoute from "./WhiteBoardRoute";
 import BigDataAnalysisRoute from "./BigDataAnalysisRoutes";
+import ContestManagerRankingPublic from "../component/education/programmingcontestFE/ContestManagerRankingPublic";
 
 // const NotFound = lazy(() => import("../views/errors/NotFound"));
 // const AccountActivationRoute = lazy(() => import("./AccountActivationRoute"));
@@ -65,6 +66,10 @@ function MainAppRoute(props) {
       >
         <Switch>
           <Route component={Home} exact path="/" />
+          <Route
+            component={ContestManagerRankingPublic}
+            path={"/programming-contest/public/contest-raking/:contestId"}
+          />
 
           <PrivateRoute component={UserLoginRoute} path="/userlogin" />
 

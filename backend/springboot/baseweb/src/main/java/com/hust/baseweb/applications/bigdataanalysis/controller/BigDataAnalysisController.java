@@ -2,7 +2,12 @@ package com.hust.baseweb.applications.bigdataanalysis.controller;
 
 import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheck;
 import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheckRule;
+import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheckMaster;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelCreateDataCheckRuleInput;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelCreateDataQualityCheckMaster;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckMaster;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckResult;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckRule;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelUpdateDataQualityCheckInput;
 import com.hust.baseweb.applications.bigdataanalysis.service.DataQualityCheckService;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +32,9 @@ public class BigDataAnalysisController {
 
     @GetMapping("/get-data-quality-check-rules")
     public ResponseEntity<?> getDataQualityCheckRules(Principal principal){
-        List<DataQualityCheckRule> res = dataQualityCheckService.getDataQualityCheckRules();
+        //List<DataQualityCheckRule> res = dataQualityCheckService.getDataQualityCheckRules();
+        List<ModelResponseDataQualityCheckRule> res = dataQualityCheckService.getDataQualityCheckRuleList();
+
         return ResponseEntity.ok().body(res);
     }
 
@@ -48,5 +55,30 @@ public class BigDataAnalysisController {
         return ResponseEntity.ok().body(dqc);
     }
 
+    @GetMapping("/get-data-quality-check-result-list")
+    public ResponseEntity<?> getDataQualityCheckResultList(){
+        List<ModelResponseDataQualityCheckResult> res = dataQualityCheckService.getDataQualityCheckResultList();
+        return ResponseEntity.ok().body(res);
+    }
+
+    @PostMapping("/create-data-quality-check-master")
+    public ResponseEntity<?> createDataQualityCheckMaster(Principal principal, @RequestBody ModelCreateDataQualityCheckMaster input){
+        DataQualityCheckMaster res =  dataQualityCheckService.createDataQualityCheckMaster(principal.getName(), input);
+        return ResponseEntity.ok().body(res);
+    }
+
+    @GetMapping("/get-list-data-quality-check-master")
+    public ResponseEntity<?> getListDataQualityCheckMaster(Principal principal){
+        List<ModelResponseDataQualityCheckMaster> res = dataQualityCheckService.getListDataQualityCheckMaster(principal.getName());
+
+
+        return ResponseEntity.ok().body(res);
+    }
+
+    @GetMapping("/remove-data-quality-check-master/{id}")
+    public ResponseEntity<?> removeDataQualityCheckMaster(@PathVariable UUID id){
+        boolean ok = dataQualityCheckService.removeDataQualityCheckMaster(id);
+        return ResponseEntity.ok().body(ok);
+    }
 
 }

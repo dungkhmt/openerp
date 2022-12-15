@@ -1,19 +1,19 @@
 import InfoIcon from "@mui/icons-material/Info";
-import { IconButton } from "@mui/material";
+import {IconButton} from "@mui/material";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import HustModal from "component/common/HustModal";
 import MaterialTable from "material-table";
-import { React, useEffect, useState } from "react";
-import { request } from "../../../api";
-import { toFormattedDateTime } from "../../../utils/dateutils";
-import { useDispatch, useSelector } from "react-redux";
-import { authPostMultiPart } from "../../../api";
+import {React, useEffect, useState} from "react";
+import {authPostMultiPart, request} from "../../../api";
+import {toFormattedDateTime} from "../../../utils/dateutils";
+import {useDispatch, useSelector} from "react-redux";
+import Box from "@mui/material/Box";
 
 export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
   props
 ) {
   const dispatch = useDispatch();
-  const { submissionId } = props;
+  const {submissionId} = props;
   const [submissionTestCase, setSubmissionTestCase] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [testcaseDetailList, setTestcaseDetailList] = useState([]);
@@ -25,15 +25,15 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
   const [score, setScore] = useState(0);
 
   const columns = [
-    { title: "Contest", field: "contestId" },
-    { title: "Problem", field: "problemId" },
-    { title: "Message", field: "message" },
-    { title: "Point", field: "point" },
-    { title: "Correct result", field: "testCaseAnswer" },
-    { title: "Participant's result", field: "participantAnswer" },
-    { title: "Submit at", field: "createdAt" },
+    {title: "Contest", field: "contestId"},
+    {title: "Problem", field: "problemId"},
+    {title: "Message", field: "message"},
+    {title: "Point", field: "point"},
+    // {title: "Correct result", field: "testCaseAnswer"},
+    // {title: "Participant's result", field: "participantAnswer"},
+    {title: "Submit at", field: "createdAt"},
     {
-      title: "",
+      title: "Detail",
       render: (rowData) => (
         <IconButton
           color="primary"
@@ -46,7 +46,7 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
             setOpenModal(true);
           }}
         >
-          <InfoIcon />
+          <InfoIcon/>
         </IconButton>
       ),
     },
@@ -130,6 +130,7 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
         console.error(e);
       });
   }
+
   function onFileChange(e, testCaseId) {
     //alert("testCase " + testCaseId + " change file " + e.target.files[0].name);
     let arr = [];
@@ -148,7 +149,7 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
     request(
       "get",
       "/get-contest-problem-submission-detail-by-testcase-of-a-submission-viewed-by-participant/" +
-        submissionId,
+      submissionId,
       (res) => {
         let L = res.data.map((c) => ({
           ...c,
@@ -161,14 +162,18 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
           tcl.push({
             testCaseId: e.testCaseId,
             testCase: e.testCase,
-            correctAns: e.correctAns,
+            testCaseAnswer: e.testCaseAnswer,
+            participantAnswer: e.participantAnswer,
             file: "",
           });
         });
-        console.log("testCaseDetailList tcl = ", tcl);
+        // console.log("testCaseDetailList tcl = ", tcl);
         setTestcaseDetailList(tcl);
       },
-      { 401: () => {} }
+      {
+        401: () => {
+        }
+      }
     );
   }
 
@@ -180,7 +185,10 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
       (res) => {
         setTestcaseDetailList((prev) => [...prev, res.data]);
       },
-      { 401: () => {} }
+      {
+        401: () => {
+        }
+      }
     );
   }
 
@@ -206,16 +214,33 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
         onClose={() => setOpenModal(false)}
         isNotShowCloseButton
         showCloseBtnTitle={false}
+        maxWidthPaper={800}
       >
         <HustCopyCodeBlock
           title="Input"
           text={chosenTestcase?.chosenTestcase?.testCase}
         />
-        <HustCopyCodeBlock
-          title="Output"
-          text={chosenTestcase?.chosenTestcase?.correctAns}
-          mt={2}
-        />
+        <Box sx={{
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-between",
+          marginTop: "14px"
+        }}>
+          <Box width="48%">
+            <HustCopyCodeBlock
+              title="Correct output"
+              text={chosenTestcase?.chosenTestcase?.testCaseAnswer}
+            />
+          </Box>
+          <Box width="48%">
+            <HustCopyCodeBlock
+              title="User output"
+              text={chosenTestcase?.chosenTestcase?.participantAnswer}
+            />
+          </Box>
+
+        </Box>
       </HustModal>
     );
   };
@@ -223,11 +248,11 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
   return (
     <div>
       <MaterialTable
-        title={"Detail"}
+        title={"Problem's Test cases"}
         columns={columns}
         data={submissionTestCase}
       />
-      <ModalPreview chosenTestcase={selectedTestcase} />
+      <ModalPreview chosenTestcase={selectedTestcase}/>
     </div>
   );
 }

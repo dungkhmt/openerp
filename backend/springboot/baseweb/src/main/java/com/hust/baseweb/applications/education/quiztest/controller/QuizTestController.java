@@ -21,6 +21,7 @@ import com.hust.baseweb.applications.education.quiztest.repo.EduTestQuizRoleRepo
 import com.hust.baseweb.applications.education.quiztest.service.EduQuizTestGroupService;
 import com.hust.baseweb.applications.education.quiztest.service.EduQuizTestParticipantRoleService;
 import com.hust.baseweb.applications.education.quiztest.service.EduQuizTestQuizQuestionService;
+import com.hust.baseweb.applications.education.quiztest.service.EduTestQuizParticipantService;
 import com.hust.baseweb.applications.education.quiztest.service.QuizTestService;
 import com.hust.baseweb.applications.education.service.QuizQuestionService;
 import com.hust.baseweb.entity.UserLogin;
@@ -36,6 +37,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Log4j2
@@ -54,6 +64,8 @@ public class QuizTestController {
     private EduQuizTestGroupService eduQuizTestGroupService;
     private EduTestQuizRoleRepo eduTestQuizRoleRepo;
     private EduQuizTestParticipantRoleService eduQuizTestParticipantRoleService;
+    private EduTestQuizParticipantService eduTestQuizParticipantService;
+
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @PostMapping("/create-quiz-test")
@@ -93,6 +105,21 @@ public class QuizTestController {
     @GetMapping("/get-users-role-of-quiz-test/{testId}")
     public ResponseEntity<?> getUserRolesOfQuizTest(@PathVariable String testId){
         List<QuizTestParticipantRoleModel> res = eduQuizTestParticipantRoleService.getParticipantRolesOfQuizTest(testId);
+        return ResponseEntity.ok().body(res);
+    }
+    @GetMapping("/get-roles-user-not-granted-in-quiz-test/{testId}/{userId}")
+    public ResponseEntity<?> getRolesUserNotGrantedInQuizTest(@PathVariable String testId, @PathVariable String userId){
+        List<QuizTestParticipantRoleModel> rolesGranted = eduQuizTestParticipantRoleService.getParticipantRolesOfUserInQuizTest(userId, testId);
+        List<String> res = new ArrayList();
+        List<String> roles = EduTestQuizRole.getRoles();
+        for(String r: roles){
+            boolean exist = false;
+            for(QuizTestParticipantRoleModel ri: rolesGranted)
+                if(ri.getRoleId().equals(r)){
+                    exist = true; break;
+                }
+            if(!exist) res.add(r);
+        }
         return ResponseEntity.ok().body(res);
     }
     @GetMapping("/get-all-quiz-test")
@@ -270,8 +297,9 @@ public class QuizTestController {
             courseId = eduClass.getEduCourse().getId();
         }
 
-        log.info("getListQuizForAssignmentOfTest, testId = " + testId + " courseId = " + courseId);
+
         List<QuizQuestion> quizQuestions = quizQuestionService.findQuizOfCourse(courseId);
+        log.info("getListQuizForAssignmentOfTest, testId = " + testId + " courseId = " + courseId + " all questions = " + quizQuestions.size());
         List<QuizQuestionDetailModel> quizQuestionDetailModels = new ArrayList<>();
         for (QuizQuestion q : quizQuestions) {
             if (q.getStatusId().equals(QuizQuestion.STATUS_PUBLIC)) {
@@ -378,4 +406,39 @@ public class QuizTestController {
         return ResponseEntity.ok().body(cnt);
     }
 
+    @PostMapping("/upload-excel-student-list")
+    public ResponseEntity<?> uploadExcelStudentListOfQuizTest(Principal principal,
+                                            @RequestParam("inputJson") String inputJson,
+                                            @RequestParam("file") MultipartFile file) {
+        Gson gson = new Gson();
+        ModelUploadExcelStudentListOfQuizTest modelUpload = gson.fromJson(
+            inputJson,
+            ModelUploadExcelStudentListOfQuizTest.class);
+        String testId = modelUpload.getTestId();
+        log.info("uploadExcelStudentListOfQuizTest, testId = " + testId);
+
+        List<String> uploadedUsers = new ArrayList();
+        try (InputStream is = file.getInputStream()) {
+            XSSFWorkbook wb = new XSSFWorkbook(is);
+            XSSFSheet sheet = wb.getSheetAt(0);
+            int lastRowNum = sheet.getLastRowNum();
+            //System.out.println("uploadExcelStudentListOfQuizTest, lastRowNum = " + lastRowNum);
+            for (int i = 1; i <= lastRowNum; i++) {
+                Row row = sheet.getRow(i);
+                Cell c = row.getCell(0);
+
+                String userId = c.getStringCellValue();
+                boolean ok = eduTestQuizParticipantService.addParticipant2QuizTest(userId, testId);
+                if(ok){
+                    uploadedUsers.add(userId);
+                }
+                //System.out.print("get user " + userId);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body(uploadedUsers);
+
+
+    }
 }

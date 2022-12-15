@@ -1,0 +1,15 @@
+{
+  "problem": "Problem",
+  "problemId": "Problem ID",
+  "level": "Level",
+  "timeLimit": "Time limit",
+  "memoryLimit": "Memory limit",
+  "problemDescription": "Problem description",
+  "problemSuggestion": "Suggesstion for solution",
+  "correctSourceCode": "Solution Source code",
+  "checkerSourceCode": "Checker Source code",
+  "problemList": {
+    "title": "Problems"
+  },
+  "createProblem": "Create new Problem"
+}

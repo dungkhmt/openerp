@@ -2,6 +2,8 @@ package com.hust.baseweb.applications.education.service;
 
 import com.hust.baseweb.applications.education.entity.EduCourse;
 import com.hust.baseweb.applications.education.entity.QuizQuestion;
+import com.hust.baseweb.applications.education.entity.QuizQuestionUserRole;
+import com.hust.baseweb.applications.education.model.quiz.ModelCreateQuizQuestionUserRole;
 import com.hust.baseweb.applications.education.model.quiz.QuizChooseAnswerInputModel;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionCreateInputModel;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailModel;
@@ -37,4 +39,11 @@ public interface QuizQuestionService {
     QuizQuestionDetailModel findById(UUID questionId);
 
     QuizQuestion update(UUID questionId, String json, MultipartFile[] files, MultipartFile[] addedSolutionAttachments);
+
+    QuizQuestionUserRole addQuizQuestionUserRole(ModelCreateQuizQuestionUserRole input);
+
+    boolean grantRoleToUserOnAllQuizQuestions(String roleId, String userId);
+
+    List<QuizQuestionUserRole> getUsersGranttedToQuizQuestion(UUID questionId);
+
 }

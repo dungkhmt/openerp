@@ -74,6 +74,8 @@ public interface UserService {
 
     List<String> getAllEnabledLoginIdsContains(String partOfLoginId, Integer limit);
 
+    ModelPageUserSearchResponse searchUser(Pageable pageable, String keyword);
+
 //    UserRegister.OutputModel registerUser(UserRegister.InputModel inputModel);
 
 //    boolean approveRegisterUser(String userLoginId);

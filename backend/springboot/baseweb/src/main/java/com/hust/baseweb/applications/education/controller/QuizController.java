@@ -5,6 +5,7 @@ import com.hust.baseweb.applications.education.classmanagement.service.ClassServ
 import com.hust.baseweb.applications.education.entity.*;
 import com.hust.baseweb.applications.education.model.GetClassDetailOM;
 import com.hust.baseweb.applications.education.model.quiz.*;
+import com.hust.baseweb.applications.education.repo.QuizQuestionUserRoleRepo;
 import com.hust.baseweb.applications.education.service.CommentOnQuizQuestionService;
 import com.hust.baseweb.applications.education.service.QuizChoiceAnswerService;
 import com.hust.baseweb.applications.education.service.QuizCourseTopicService;
@@ -44,6 +45,8 @@ public class QuizController {
     private ClassService classService;
 
     private CommentOnQuizQuestionService commentOnQuizQuestionService;
+
+    private QuizQuestionUserRoleRepo quizQuestionUserRoleRepo;
 
     @PostMapping("/post-comment-on-quiz")
     public ResponseEntity<?> postCommentOnQuizQuestion(Principal principal,
@@ -129,6 +132,20 @@ public class QuizController {
 //        Gson g = new Gson();
 //        QuizQuestionUpdateInputModel input = g.fromJson(json, QuizQuestionUpdateInputModel.class);
 //        log.info("updateQuizQuestion, topicId = " + input.getQuizCourseTopicId());
+
+        // check permission (based on roles)
+        List<QuizQuestionUserRole> roles = quizQuestionUserRoleRepo.findAllByUserId(principal.getName());
+        boolean hasUpdatePermission = false;
+        for(QuizQuestionUserRole e: roles){
+            if(e.getRoleId().equals(QuizQuestionUserRole.ROLE_MANAGER) || e.getRoleId().equals(QuizQuestionUserRole.ROLE_MANAGER)){
+                hasUpdatePermission = true;
+                break;
+            }
+        }
+        if(!hasUpdatePermission){
+            return ResponseEntity.ok().body("No permission");
+        }
+        
         QuizQuestion quizQuestion = quizQuestionService.update(questionId, json, files, addedSolutionAttachments);
         return ResponseEntity.ok().body(quizQuestion);
     }
@@ -358,7 +375,7 @@ public class QuizController {
 
     @GetMapping("/get-quiz-of-course/{courseId}")
     public ResponseEntity<?> getQuizOfCourse(Principal principal, @PathVariable String courseId) {
-        log.info("getQuizOfCourse, courseId = " + courseId);
+        //log.info("getQuizOfCourse, courseId = " + courseId);
         List<QuizQuestion> quizQuestions = quizQuestionService.findQuizOfCourse(courseId);
         //List<QuizQuestion> quizQuestions = quizQuestionService.findAll();
         List<QuizQuestionDetailModel> quizQuestionDetailModels = new ArrayList<>();
@@ -403,9 +420,24 @@ public class QuizController {
     public ResponseEntity<?> createQuizChoiceAnswer(
         Principal principal,
         @PathVariable UUID choiceAnswerId,
+
         @RequestBody QuizChoiceAnswerCreateInputModel input
     ) {
         log.info("updateQuizChoiceAnswer " + choiceAnswerId);
+
+        // check permission (based on roles)
+        List<QuizQuestionUserRole> roles = quizQuestionUserRoleRepo.findAllByUserId(principal.getName());
+        boolean hasUpdatePermission = false;
+        for(QuizQuestionUserRole e: roles){
+            if(e.getRoleId().equals(QuizQuestionUserRole.ROLE_MANAGER) || e.getRoleId().equals(QuizQuestionUserRole.ROLE_MANAGER)){
+                hasUpdatePermission = true;
+                break;
+            }
+        }
+        if(!hasUpdatePermission){
+            return ResponseEntity.ok().body("No permission");
+        }
+
         QuizChoiceAnswer quizChoiceAnswer = quizChoiceAnswerService.update(choiceAnswerId, input);
         return ResponseEntity.ok().body(quizChoiceAnswer);
     }
@@ -471,5 +503,40 @@ public class QuizController {
     ) {
         QuizChoiceAnswer quizChoiceAnswer = quizChoiceAnswerService.delete(input.getChoiceAnswerId());
         return ResponseEntity.ok().body(quizChoiceAnswer);
+    }
+
+    @GetMapping("/get-users-granted-to-quiz-question/{questionId}")
+    public ResponseEntity<?> getUsersGranttedToQuizQuestion(@PathVariable UUID questionId){
+        List<QuizQuestionUserRole> res = quizQuestionService.getUsersGranttedToQuizQuestion(questionId);
+        return ResponseEntity.ok().body(res);
+    }
+    @PostMapping("/add-quiz-question-user-role")
+    public ResponseEntity<?> addQuizQuestionUserRole(Principal princiapl, @RequestBody ModelCreateQuizQuestionUserRole input){
+        QuizQuestionUserRole quizQuestionUserRole = quizQuestionService.addQuizQuestionUserRole(input);
+        return ResponseEntity.ok().body(quizQuestionUserRole);
+    }
+    @GetMapping("/grant-role-to-user-on-all-quiz-questions/{roleId}/{userId}")
+    public ResponseEntity<?> grantRoleToUserOnAllQuizQuestion(Principal principal, @PathVariable String roleId, @PathVariable String userId){
+        boolean ok = quizQuestionService.grantRoleToUserOnAllQuizQuestions(roleId, userId);
+        return ResponseEntity.ok().body(ok);
+    }
+
+    @GetMapping("/get-roles-user-not-granted-in-quiz-question/{questionId}/{userId}")
+    public ResponseEntity<?> getRolesUserNotGranttedInQuizQuestion(@PathVariable UUID questionId, @PathVariable String userId){
+        List<QuizQuestionUserRole> rolesGrantted = quizQuestionUserRoleRepo.findAllByQuestionIdAndUserId(questionId, userId);
+        List<String> res = new ArrayList();
+        List<String> roles = QuizQuestionUserRole.getRoles();
+        for(String r: roles){
+            boolean exist = false;
+            for(QuizQuestionUserRole qr: rolesGrantted){
+                if(qr.getRoleId().equals(r)){
+                    exist= true; break;
+                }
+            }
+            if(!exist){
+                res.add(r);
+            }
+        }
+        return ResponseEntity.ok().body(res);
     }
 }

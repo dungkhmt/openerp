@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -37,37 +39,36 @@ public class SubmissionResponseHandler {
         int runtime = 0;
         int score = 0;
         int nbTestCasePass = 0;
+
         String totalStatus = "";
         List<String> statusList = new ArrayList<>();
         String message = "";
         boolean compileError = false;
 
+        int mb = 1000 * 1000;
+        MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+
         int i = 0;
+
+        long startTime1 = System.nanoTime();
         for (TestCaseEntity testCaseEntity : testCaseEntityList) {
             String response = listSubmissionResponse.get(i++);
             List<String> testCaseAns = Collections.singletonList(testCaseEntity.getCorrectAnswer());
             List<Integer> points = Collections.singletonList(testCaseEntity.getTestCasePoint());
 
             ProblemSubmission problemSubmission;
-            try {
-                // int mb = 1000 * 1000;
-                // MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
 
+            try {
                 problemSubmission = StringHandler.handleContestResponseV2(response, testCaseAns, points);
 
-                // long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
-                // long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
-                // System.out.println("Memory used / committed :  " + used + "mb / " + committed + "mb");
-
-                if (problemSubmission.getMessage() != null && !problemSubmission.getMessage().contains("successful")) {
+                if (problemSubmission.getMessage().equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
                     message = problemSubmission.getMessage();
                     compileError = true;
-                    //log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Compiler Error, msg  = " + message);
                     break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("LOG FOR TESTING STRING HANDLER ERROR: " + response);
+//                System.out.println("LOG FOR TESTING STRING HANDLER ERROR: " + response);
                 throw new Exception("error from StringHandler");
             }
 
@@ -75,55 +76,45 @@ public class SubmissionResponseHandler {
             score = score + problemSubmission.getScore();
             nbTestCasePass += problemSubmission.getNbTestCasePass();
             statusList.add(problemSubmission.getStatus());
+
             List<String> output = problemSubmission.getParticipantAns();
-            String participantAns = "";
-            if (output != null && output.size() > 0) {
-                participantAns = output.get(0);
-            }
+            String participantAns = output != null && output.size() > 0 ? output.get(0) : "";
 
-            ContestSubmissionTestCaseEntity cste;
-            cste = ContestSubmissionTestCaseEntity.builder()
-                                                  .contestId(modelContestSubmission.getContestId())
-                                                  .contestSubmissionId(submission.getContestSubmissionId())
-                                                  .problemId(modelContestSubmission.getProblemId())
-                                                  .testCaseId(testCaseEntity.getTestCaseId())
-                                                  .submittedByUserLoginId(submission.getUserId())
-                                                  .point(problemSubmission.getScore())
-                                                  .status(StringHandler.removeNullCharacter(
-                                                      problemSubmission.getStatus()))
-                                                  .testCaseOutput(StringHandler.removeNullCharacter(
-                                                      testCaseEntity.getCorrectAnswer()))
-                                                  .participantSolutionOtput(
-                                                      StringHandler.removeNullCharacter(
-                                                          participantAns))
-                                                  .runtime(problemSubmission.getRuntime())
-                                                  .createdStamp(submission.getCreatedAt())
-                                                  .build();
+            ContestSubmissionTestCaseEntity cste = ContestSubmissionTestCaseEntity.builder()
+                                                                                  .contestId(modelContestSubmission.getContestId())
+                                                                                  .contestSubmissionId(submission.getContestSubmissionId())
+                                                                                  .problemId(modelContestSubmission.getProblemId())
+                                                                                  .testCaseId(testCaseEntity.getTestCaseId())
+                                                                                  .submittedByUserLoginId(submission.getUserId())
+                                                                                  .point(problemSubmission.getScore())
+                                                                                  .status(StringHandler.removeNullCharacter(
+                                                                                      problemSubmission.getStatus()))
+                                                                                  .participantSolutionOtput(
+                                                                                      StringHandler.removeNullCharacter(
+                                                                                          participantAns))
+                                                                                  .runtime(problemSubmission.getRuntime())
+                                                                                  .createdStamp(submission.getCreatedAt())
+                                                                                  .build();
+
+            long startTime = System.nanoTime();
             contestSubmissionTestCaseEntityRepo.save(cste);
-        }
-        boolean accepted = true;
+            long endTime = System.nanoTime();
+            log.info(
+                "Save contestSubmissionTestCaseEntity to DB, execution time = {} ms",
+                (endTime - startTime) / 1000000);
 
-        for (String s : statusList) {
-            if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
-                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
-                accepted = false;
-                break;
-            } else if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)) {
-                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
-                accepted = false;
-                break;
-            } else if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_WRONG)) {
-                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
-                accepted = false; //break;
-            }
         }
 
-        if (accepted) {
-            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
-        }
+        long endTime1 = System.nanoTime();
+        log.info(
+            "Total handle response time = {} ms",
+            (endTime1 - startTime1) / 1000000);
+
+        long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
+        long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
+        System.out.println("Memory used / committed :  " + used + "mb / " + committed + "mb");
 
         if (compileError) {
-            // keep compile error message above
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
             //log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Summary Compile error " + message);
         } else if (nbTestCasePass == 0) {
@@ -132,6 +123,7 @@ public class SubmissionResponseHandler {
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL;
         } else {
             message = "Successful";
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
         }
 
         ContestSubmissionEntity submissionEntity = contestSubmissionRepo.

@@ -17,14 +17,15 @@ import { FcDocument } from "react-icons/fc";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import SimpleBar from "simplebar-react";
-import { request } from "../../../api";
+import { request, authPostMultiPart } from "../../../api";
+//import { authPostMultiPart } from "../../../api";
 import { localization } from "../../../utils/MaterialTableUtils";
 import PrimaryButton from "../../button/PrimaryButton";
 import TertiaryButton from "../../button/TertiaryButton";
 import CustomizedDialogs from "../../dialog/CustomizedDialogs";
 import ErrorDialog from "../../dialog/ErrorDialog";
 import { style } from "./TeacherViewQuizDetailForAssignment";
-
+import { useDispatch } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   ...style(theme),
   table: {
@@ -46,6 +47,10 @@ export default function QuizTestStudentList(props) {
   const history = useHistory();
   const classes = useStyles();
   const token = useSelector((state) => state.auth.token);
+  const [filename, setFilename] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
+  const dispatch = useDispatch();
 
   //
   const testId = props.testId;
@@ -242,6 +247,38 @@ export default function QuizTestStudentList(props) {
       );
     }
   };
+  const handleUploadExcelStudentList = (event) => {
+    event.preventDefault();
+    setIsProcessing(true);
+    setUploadMessage("");
+    //alert("handleUploadExcelStudentList " + testId);
+    let body = {
+      testId: testId,
+    };
+    let formData = new FormData();
+    formData.append("inputJson", JSON.stringify(body));
+    formData.append("file", filename);
+
+    authPostMultiPart(dispatch, token, "/upload-excel-student-list", formData)
+      .then((res) => {
+        setIsProcessing(false);
+        console.log("handleFormSubmit, res = ", res);
+        setUploadMessage(res.message);
+        //if (res.status == "TIME_OUT") {
+        //  alert("Time Out!!!");
+        //} else {
+        //}
+      })
+      .catch((e) => {
+        setIsProcessing(false);
+        console.error(e);
+        //alert("Time Out!!!");
+      });
+  };
+
+  function onFileChange(event) {
+    setFilename(event.target.files[0]);
+  }
 
   useEffect(() => {
     getStudentList();
@@ -250,6 +287,9 @@ export default function QuizTestStudentList(props) {
 
   return (
     <>
+      <input type="file" id="selected-upload-file" onChange={onFileChange} />
+      <Button onClick={handleUploadExcelStudentList}>Upload</Button>
+
       <MaterialTable
         title=""
         columns={cols}

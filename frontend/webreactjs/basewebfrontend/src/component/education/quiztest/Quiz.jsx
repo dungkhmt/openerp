@@ -72,7 +72,7 @@ export default function Quiz({ question, order, choseAnswers, onSave }) {
     <Grid item xs={12} key={questionId}>
       <Paper className={classes.paper}>
         <div className={classes.root}>
-          <h4>Câu hỏi {order + 1}.</h4> {ReactHtmlParser(statement)}
+          <h4>Question {order + 1}.</h4> {ReactHtmlParser(statement)}
           {attachment &&
             attachment.length !== 0 &&
             attachment.map((url, index) => (
@@ -134,7 +134,7 @@ export default function Quiz({ question, order, choseAnswers, onSave }) {
                     width: 100,
                   }}
                 >
-                  Lưu
+                  Save
                 </Button>
                 {/* )} */}
               </div>
@@ -150,7 +150,7 @@ export default function Quiz({ question, order, choseAnswers, onSave }) {
                     },
                   }}
                 >
-                  *Phương án hệ thống đã lưu lần gần nhất:{" "}
+                  *Most recently saved answer:{" "}
                   {choices
                     .filter((ans) =>
                       checkState.lastSubmittedAnswers

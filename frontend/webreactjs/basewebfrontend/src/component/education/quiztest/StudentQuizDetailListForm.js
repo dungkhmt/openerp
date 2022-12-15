@@ -86,7 +86,7 @@ export default function StudentQuizDetailListForm() {
       {
         401: () => {},
         406: () => {
-          setMessageRequest("Quá thời gian làm bài!");
+          setMessageRequest("Time Out!");
           setRequestFailed(true);
         },
       }
@@ -98,18 +98,18 @@ export default function StudentQuizDetailListForm() {
       "post",
       "/quiz-test-choose_answer-by-user",
       (res) => {
-        setMessageRequest("Đã lưu vào hệ thống!");
+        setMessageRequest("STORED!");
         setRequestSuccessfully(true);
         checkState[order].submitted.set(true);
         checkState[order].lastSubmittedAnswers.set(choseAnswers);
       },
       {
         400: () => {
-          setMessageRequest("Không được để trống!");
+          setMessageRequest("Cannot be empty!");
           setRequestFailed(true);
         },
         406: () => {
-          setMessageRequest("Quá thời gian làm bài!");
+          setMessageRequest("Time Out!");
           setRequestFailed(true);
         },
       },
@@ -172,13 +172,13 @@ export default function StudentQuizDetailListForm() {
             ) : (
               <p style={{ justifyContent: "center" }}>
                 {" "}
-                Chưa có câu hỏi cho mã đề này
+                Questions not available
               </p>
             )
           ) : (
             <p style={{ justifyContent: "center" }}>
               {" "}
-              Chưa phát đề cho sinh viên{" "}
+              Exam has not been available to student yet{" "}
             </p>
           )}
         </Grid>

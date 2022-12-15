@@ -1,10 +1,18 @@
 package com.hust.baseweb.applications.bigdataanalysis.service;
 
 import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheck;
+import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheckMaster;
+import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheckResult;
 import com.hust.baseweb.applications.bigdataanalysis.entity.DataQualityCheckRule;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelCreateDataCheckRuleInput;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelCreateDataQualityCheckMaster;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckMaster;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckResult;
+import com.hust.baseweb.applications.bigdataanalysis.model.ModelResponseDataQualityCheckRule;
 import com.hust.baseweb.applications.bigdataanalysis.model.ModelUpdateDataQualityCheckInput;
+import com.hust.baseweb.applications.bigdataanalysis.repo.DataQualityCheckMasterRepo;
 import com.hust.baseweb.applications.bigdataanalysis.repo.DataQualityCheckRepo;
+import com.hust.baseweb.applications.bigdataanalysis.repo.DataQualityCheckResultRepo;
 import com.hust.baseweb.applications.bigdataanalysis.repo.DataQualityCheckRuleRepo;
 import java.util.*;
 import lombok.AllArgsConstructor;
@@ -23,6 +31,9 @@ import org.springframework.stereotype.Service;
 public class DataQualityCheckServiceImpl implements DataQualityCheckService{
     private DataQualityCheckRuleRepo dataQualityCheckRuleRepo;
     private DataQualityCheckRepo dataQualityCheckRepo;
+    private DataQualityCheckResultRepo dataQualityCheckResultRepo;
+    private DataQualityCheckMasterRepo dataQualityCheckMasterRepo;
+
     public List<DataQualityCheckRule> getDataQualityCheckRules(){
         List<DataQualityCheckRule> res = dataQualityCheckRuleRepo.findAll();
         return res;
@@ -83,4 +94,79 @@ public class DataQualityCheckServiceImpl implements DataQualityCheckService{
         dqc = dataQualityCheckRepo.save(dqc);
         return dqc;
     }
+
+    public List<ModelResponseDataQualityCheckResult> getDataQualityCheckResultList(){
+        List<DataQualityCheckResult> lst = dataQualityCheckResultRepo.findAll();
+        List<ModelResponseDataQualityCheckResult> res = new ArrayList();
+        for(DataQualityCheckResult e: lst){
+            ModelResponseDataQualityCheckResult r = new ModelResponseDataQualityCheckResult();
+            r.setRuleId(e.getRuleId());
+            r.setEntity(e.getEntity());
+            r.setInstance(e.getInstance());
+            r.setTableName(e.getTableName());
+            r.setValue(e.getValue());
+            r.setStatus(e.getStatus());
+            r.setLinkSource(e.getLinkSource());
+            r.setCreatedStamp(e.getCreatedStamp());
+            res.add(r);
+        }
+        return res;
+    }
+
+    public List<ModelResponseDataQualityCheckRule> getDataQualityCheckRuleList(){
+        List<DataQualityCheckRule> lst = dataQualityCheckRuleRepo.findAll();
+        List<ModelResponseDataQualityCheckRule> res = new ArrayList();
+        for(DataQualityCheckRule e: lst){
+            String[] listParams = e.getParams().split(",");
+            List<String> L = new ArrayList();
+
+            if(listParams != null && listParams.length > 0)
+                for(int i = 0; i < listParams.length; i++){
+                    L.add(listParams[i].trim());
+                }
+            ModelResponseDataQualityCheckRule m  = new ModelResponseDataQualityCheckRule();
+            m.setRuleId(e.getRuleId());
+            m.setParams(e.getParams());
+            m.setListParams(L);
+            res.add(m);
+
+        }
+        return res;
+    }
+
+    public DataQualityCheckMaster createDataQualityCheckMaster(String userId, ModelCreateDataQualityCheckMaster input){
+        DataQualityCheckMaster res = new DataQualityCheckMaster();
+        res.setRuleId(input.getRuleId());
+        res.setCreatedByUserLoginId(userId);
+        res.setCreatedStamp(new Date());
+        res.setMetaData(input.getMetaData());
+        res.setTableName(input.getTableName());
+        res = dataQualityCheckMasterRepo.save(res);
+
+        return res;
+    }
+
+    public List<ModelResponseDataQualityCheckMaster> getListDataQualityCheckMaster(String userId){
+        List<DataQualityCheckMaster> L = dataQualityCheckMasterRepo.findAllByCreatedByUserLoginId(userId);
+        List<ModelResponseDataQualityCheckMaster> res = new ArrayList();
+        for(DataQualityCheckMaster e : L){
+            ModelResponseDataQualityCheckMaster m = new ModelResponseDataQualityCheckMaster();
+            m.setId(e.getId());
+            m.setRuleId(e.getRuleId());
+            m.setCreatedByUserLoginId(e.getCreatedByUserLoginId());
+            m.setMetaData(e.getMetaData());
+            m.setTableName(e.getTableName());
+            m.setCreatedStamp(e.getCreatedStamp());
+            res.add(m);
+        }
+        return res;
+    }
+
+    public boolean removeDataQualityCheckMaster(UUID id){
+        DataQualityCheckMaster r = dataQualityCheckMasterRepo.findById(id).orElse(null);
+        if(r ==  null) return false;
+        dataQualityCheckMasterRepo.delete(r);
+        return true;
+    }
+
 }

@@ -126,13 +126,13 @@ public class TempDir {
         writer.close();
     }
 
-    public void createScriptSubmissionFile(ComputerLanguage.Languages languages, String tmpName, List<TestCaseEntity> testCases, String source, int timeout) throws IOException {
+    public void createScriptSubmissionFile(ComputerLanguage.Languages languages, String tmpName, List<TestCaseEntity> testCases, String source, int timeout, int memoryLimit) throws IOException {
         File theDir = new File(TEMPDIR+tmpName);
         theDir.mkdirs();
         String sourceSh;
         switch (languages){
             case CPP:
-                sourceSh = gccExecutor.genSubmitScriptFile(testCases, source, tmpName, timeout);
+                sourceSh = gccExecutor.genSubmitScriptFile(testCases, source, tmpName, timeout, memoryLimit);
                 break;
             case JAVA:
                 sourceSh = javaExecutor.genSubmitScriptFile(testCases, source, tmpName, timeout);

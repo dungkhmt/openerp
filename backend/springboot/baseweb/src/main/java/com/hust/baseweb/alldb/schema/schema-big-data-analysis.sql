@@ -8,26 +8,29 @@ create table data_quality_check_rule(
     constraint pk_data_quality_check_rule primary key(rule_id)
 );
 
-create table data_quality_check(
+create table data_quality_check_master(
     id uuid not null default uuid_generate_v1(),
     rule_id varchar(100),
     created_by_user_login_id varchar(60),
-    param1 varchar(100),
-    param2 varchar(100),
-    param3 varchar(100),
-    param4 varchar(100),
-    param5 varchar(100),
-    param6 varchar(100),
-    param7 varchar(100),
-    param8 varchar(100),
-    param9 varchar(100),
-    param10 varchar(100),
-    result varchar(500),
-    status_id varchar(100),
-    message text,
+    meta_data text,
+    table_name varchar(100),
     last_updated_stamp         timestamp DEFAULT CURRENT_TIMESTAMP,
     created_stamp              timestamp DEFAULT CURRENT_TIMESTAMP,
     constraint pk_data_quality_check primary key (table_id),
     constraint fk_data_quality_check_rule foreign key(rule_id) references  data_quality_check_rule(rule_id),
     constraint fk_data_quality_check_created_by_user foreign key(created_by_user_login_id) references user_login(user_login_id)
+);
+
+create table data_quality_check_result(
+    id uuid not null default uuid_generate_v1(),
+    data_quality_check_master_id uuid not null,
+    instance varchar(200),
+    result varchar(500),
+    status_id varchar(100),
+    message text,
+
+    last_updated_stamp         timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_stamp              timestamp DEFAULT CURRENT_TIMESTAMP,
+    constraint pk_data_quality_check_result primary key (id),
+    constraint fk_data_quality_check_result_master_id foreign key (data_quality_check_master_id) references data_quality_check_master(id)
 );

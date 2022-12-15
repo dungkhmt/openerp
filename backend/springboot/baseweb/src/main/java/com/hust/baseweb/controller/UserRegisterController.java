@@ -107,4 +107,5 @@ public class UserRegisterController {
         log.info("getUserDetail, found personModel {}",p);
         return ResponseEntity.ok().body(p);
     }
+
 }
