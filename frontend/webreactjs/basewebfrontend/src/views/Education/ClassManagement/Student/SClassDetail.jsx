@@ -34,8 +34,7 @@ import {
 } from "../../../../component/tab";
 import { setClassId } from "../../../../reducers/classReducer";
 import StudentViewLearningSessionList from "./StudentViewLearningSessionList";
-import ChapterListOfCourse
-  from "../../../../component/education/classmanagement/student/classdetail/ChapterListOfCourse";
+import ChapterListOfCourse from "../../../../component/education/classmanagement/student/classdetail/ChapterListOfCourse";
 import StudentViewClassDetail from "./StudentViewClassDetail";
 
 const useStyles = makeStyles((theme) => ({
@@ -127,7 +126,7 @@ function SClassDetail() {
   return (
     <Fragment>
       <StudentViewClassDetail />
-      <br/>
+      <br />
 
       <div className={classes.tabs}>
         <StyledTabs

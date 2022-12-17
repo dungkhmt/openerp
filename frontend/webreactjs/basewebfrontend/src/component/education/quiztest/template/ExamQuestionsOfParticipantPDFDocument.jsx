@@ -93,6 +93,7 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
           <Page size="A4" style={styles.page} wrap>
             <View>
               <Text style={styles.textLine}>Quiz test: {testName}</Text>
+              <Text style={styles.textLine}>Code: {groupCode}</Text>
               <Text style={styles.textLine}>Học phần: {courseName}</Text>
               <Text style={styles.textLine}>MSSV: {userDetail.id}</Text>
               <Text style={styles.textLine}>

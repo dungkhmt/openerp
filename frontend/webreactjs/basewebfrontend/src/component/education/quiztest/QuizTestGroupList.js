@@ -14,14 +14,21 @@ import {
 import { Delete } from "@material-ui/icons";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import MaterialTable from "material-table";
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import SimpleBar from "simplebar-react";
-import { request } from "../../../api";
+import { isFunction, request } from "api";
+import { pdf } from "@react-pdf/renderer";
 import PrimaryButton from "../../button/PrimaryButton";
 import TertiaryButton from "../../button/TertiaryButton";
 import CustomizedDialogs from "../../dialog/CustomizedDialogs";
 import ErrorDialog from "../../dialog/ErrorDialog";
 import QuizTestGroupQuestionList from "./QuizTestGroupQuestionList";
+import { VscFilePdf } from "react-icons/vsc";
+import FileSaver from "file-saver";
+import { infoNoti } from "utils/notification";
+import { toast } from "react-toastify";
+import ExamQuestionsOfParticipantPDFDocument from "./template/ExamQuestionsOfParticipantPDFDocument";
+
 export const style = (theme) => ({
   testBtn: {
     marginLeft: 40,
@@ -86,9 +93,21 @@ const headerProperties = {
 
 let count = 0;
 
+const generatePdfDocument = async (documentData, fileName, onCompleted) => {
+  const blob = await pdf(
+    <ExamQuestionsOfParticipantPDFDocument data={documentData} />
+  ).toBlob();
+
+  if (isFunction(onCompleted)) onCompleted();
+
+  FileSaver.saveAs(blob, fileName);
+};
+
 export default function QuizTestGroupList(props) {
   // const classes = useStyles();
+  const toastId = useRef(null);
 
+  const [studentQuestions, setStudentQuestions] = useState();
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const [selectedAll, setSelectedAll] = useState(false);
@@ -167,6 +186,23 @@ export default function QuizTestGroupList(props) {
   const handleChangeNumberGroups = (event) => {
     setNumberGroups(event.target.value);
   };
+
+  async function getQuestionsOfParticipants() {
+    let data;
+
+    await request(
+      "get",
+      "get-all-quiz-test-participation-group-question/" + testId,
+      (res) => {
+        data = res.data;
+        setStudentQuestions(data);
+      },
+      { 401: () => {} }
+    );
+
+    return data;
+  }
+
   async function getStudentList() {
     request(
       // token,
@@ -249,6 +285,25 @@ export default function QuizTestGroupList(props) {
         formData
       );
     }
+  };
+
+  const exportExamQuestionsOfAllStudents = async () => {
+    let questionsOfStudents;
+
+    if (!studentQuestions)
+      questionsOfStudents = await getQuestionsOfParticipants();
+    else questionsOfStudents = studentQuestions;
+
+    const data = questionsOfStudents.map(
+      ({ participantUserLoginId, fullName, quizGroupTestDetailModel }) => ({
+        userDetail: { id: participantUserLoginId, fullName: fullName },
+        ...quizGroupTestDetailModel,
+      })
+    );
+
+    generatePdfDocument(data, `${testId}.pdf`, () => {
+      toast.dismiss(toastId.current);
+    });
   };
 
   useEffect(() => {
@@ -362,6 +417,29 @@ export default function QuizTestGroupList(props) {
               );
             },
             isFreeAction: true,
+          },
+
+          {
+            icon: () => (
+              <img
+                alt="Xuất PDF"
+                src="/static/images/icons/pdf_icon.png"
+                style={{ width: "35px", height: "35px" }}
+              />
+            ),
+            tooltip: "Xuất PDF",
+            isFreeAction: true,
+            onClick: () => {
+              toastId.current = infoNoti("Hệ thống đang chuẩn bị tệp PDF ...");
+              exportExamQuestionsOfAllStudents();
+              // exportQuizQuestionAssigned2StudentPdf(
+              //   //students,
+              //   participants,
+              //   resultExportPDFData,
+              //   studentQuestions,
+              //   testId
+              // );
+            },
           },
         ]}
       />

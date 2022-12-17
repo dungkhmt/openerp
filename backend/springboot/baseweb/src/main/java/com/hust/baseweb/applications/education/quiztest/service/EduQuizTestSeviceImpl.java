@@ -12,6 +12,7 @@ import com.hust.baseweb.applications.education.quiztest.entity.*;
 import com.hust.baseweb.applications.education.quiztest.entity.compositeid.CompositeEduTestQuizGroupParticipationAssignmentId;
 import com.hust.baseweb.applications.education.quiztest.model.EditQuizTestInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.EduQuizTestModel;
+import com.hust.baseweb.applications.education.quiztest.model.ModelResponseGetMyQuizTest;
 import com.hust.baseweb.applications.education.quiztest.model.QuizTestCreateInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.StudentInTestQueryReturnModel;
 import com.hust.baseweb.applications.education.quiztest.model.edutestquizparticipation.QuizTestParticipationExecutionResultOutputModel;
@@ -1191,5 +1192,29 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
             cnt += eduQuizTestQuizQuestionService.createQuizTestQuestion(u, toQuizTestId, q.getQuestionId());
         }
         return cnt;
+    }
+
+    @Override
+    public List<ModelResponseGetMyQuizTest> getQuizTestListOfUser(String userId){
+        List<EduTestQuizParticipant> eduTestQuizParticipants = eduTestQuizParticipantRepo
+            .findByParticipantUserLoginIdAndStatusId(userId,EduTestQuizParticipant.STATUS_APPROVED);
+
+        List<ModelResponseGetMyQuizTest> res = new ArrayList();
+
+        for(EduTestQuizParticipant e: eduTestQuizParticipants){
+            EduQuizTest quizTest = repo.findById(e.getTestId()).orElse(null);
+            if(quizTest != null && quizTest.getStatusId().equals(EduQuizTest.QUIZ_TEST_STATUS_OPEN)){
+                ModelResponseGetMyQuizTest resItem = new ModelResponseGetMyQuizTest();
+                resItem.setTestId(e.getTestId());
+                resItem.setViewTypeId(quizTest.getViewTypeId());
+                resItem.setTestName(quizTest.getTestName());
+                resItem.setStatusId(e.getStatusId());
+                res.add(resItem);
+            }
+
+
+        }
+
+        return res;
     }
 }
