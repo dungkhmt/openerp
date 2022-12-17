@@ -13,4 +13,5 @@ public interface EduQuizTestGroupService {
 
     QuizGroupTestDetailModel getTestGroupQuestionDetail(Principal principal, String testID);
     QuizGroupTestDetailModel getTestGroupQuestionDetail(String userLoginId, String testID);
+    QuizGroupTestDetailModel getTestGroupQuestionDetailOfGroupCode(String userLoginId, String groupCode, String testId);
 }

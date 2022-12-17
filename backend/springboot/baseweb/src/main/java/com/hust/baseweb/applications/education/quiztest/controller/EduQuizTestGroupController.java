@@ -8,6 +8,7 @@ import com.hust.baseweb.applications.education.quiztest.model.ParticipantAndQues
 import com.hust.baseweb.applications.education.quiztest.model.QuizGroupTestDetailModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestgroup.GenerateQuizTestGroupInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestgroup.QuizTestGroupParticipantAssignmentOutputModel;
+import com.hust.baseweb.applications.education.quiztest.model.quiztestgroupparticipant.ModelResponseGetQuizTestGroup;
 import com.hust.baseweb.applications.education.quiztest.repo.EduTestQuizParticipantRepo;
 import com.hust.baseweb.applications.education.quiztest.service.EduQuizTestGroupService;
 import com.hust.baseweb.applications.education.quiztest.service.EduTestQuizGroupParticipationAssignmentService;
@@ -130,12 +131,52 @@ public class EduQuizTestGroupController {
         return ResponseEntity.ok().body(res);
     }
 
+    @GetMapping("/check-questions-of-group/{testID}/{groupCode}")
+    public ResponseEntity<?> getCheckQuestionOfGroup(Principal principal,
+                                                        @PathVariable String testID, @PathVariable String groupCode) {
+        EduQuizTest eduQuizTest = quizTestService.getQuizTestById(testID);
+        Date startDateTime = eduQuizTest.getScheduleDatetime();
+        Date currentDate = new Date();
+        int timeTest = ((int) (currentDate.getTime() - startDateTime.getTime())) / (60 * 1000); //minutes
+        log.info("getCheckQuestionOfGroup, current = " + currentDate.toString() +
+                 " scheduleDate = " + startDateTime.toString() + " timeTest = " + timeTest);
+
+        if (timeTest > eduQuizTest.getDuration() || timeTest < 0) {// out-of-allowed date-time
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
+        }
+
+        EduTestQuizParticipant testParticipant = eduTestQuizParticipationRepo.findEduTestQuizParticipantByParticipantUserLoginIdAndAndTestId(
+            principal.getName(),
+            testID);
+
+        if (testParticipant == null ||
+            (!testParticipant.getStatusId().equals(EduTestQuizParticipant.STATUS_APPROVED))) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+        }
+
+        QuizGroupTestDetailModel res = eduQuizTestGroupService.getTestGroupQuestionDetailOfGroupCode(principal.getName(), groupCode, testID);
+        if(eduQuizTest.getQuestionStatementViewTypeId() != null &&
+           eduQuizTest.getQuestionStatementViewTypeId().equals(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_HIDDEN)) {
+            for (QuizQuestionDetailModel q : res.getListQuestion()) {
+                q.setStatement("");
+            }
+        }
+        return ResponseEntity.ok().body(res);
+    }
+
     @GetMapping("/get-all-quiz-test-group-participants/{testId}")
     public ResponseEntity<?> getQuizTestGroupParticipants(Principal principal, @PathVariable String testId) {
         log.info("getQuizTestGroupParticipants, testId = " + testId);
         List<QuizTestGroupParticipantAssignmentOutputModel> quizTestGroupParticipantAssignmentOutputModels
             = eduTestQuizGroupParticipationAssignmentService.getQuizTestGroupParticipant(testId);
         return ResponseEntity.ok().body(quizTestGroupParticipantAssignmentOutputModels);
+    }
+
+    @GetMapping("/get-my-quiz-test-group/{testId}")
+    public ResponseEntity<?> getMyQuizTestGroup(Principal principal, @PathVariable String testId){
+        ModelResponseGetQuizTestGroup res = eduTestQuizGroupParticipationAssignmentService
+            .getQuizTestGroupOfUser(principal.getName());
+        return ResponseEntity.ok().body(res);
     }
 
 }

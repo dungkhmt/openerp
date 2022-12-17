@@ -4,6 +4,7 @@ import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizGroup;
 import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizGroupParticipationAssignment;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestgroup.QuizTestGroupParticipantAssignmentOutputModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestgroupparticipant.AddParticipantToQuizTestGroupInputModel;
+import com.hust.baseweb.applications.education.quiztest.model.quiztestgroupparticipant.ModelResponseGetQuizTestGroup;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestgroupparticipant.RemoveParticipantToQuizTestGroupInputModel;
 import com.hust.baseweb.applications.education.quiztest.repo.EduQuizTestGroupRepo;
 import com.hust.baseweb.applications.education.quiztest.repo.EduTestQuizGroupParticipationAssignmentRepo;
@@ -152,5 +153,24 @@ public class EduTestQuizGroupParticipationAssignmentServiceImpl
         }
         log.info("removeParticipantFromQuizTestGroup, assign NOT EXISTS!!");
         return false;
+    }
+
+    @Override
+    public ModelResponseGetQuizTestGroup getQuizTestGroupOfUser(String userId){
+        List<EduTestQuizGroupParticipationAssignment> L = eduTestQuizGroupParticipationAssignmentRepo
+            .findEduTestQuizGroupParticipationAssignmentsByParticipationUserLoginId(userId);
+        ModelResponseGetQuizTestGroup res = new ModelResponseGetQuizTestGroup();
+        res.setStatusId("NULL");
+
+        if(L != null && L.size() > 0){
+            EduTestQuizGroupParticipationAssignment e = L.get(0);
+            EduTestQuizGroup g = eduQuizTestGroupRepo.findById(e.getQuizGroupId()).orElse(null);
+            if(g != null) {
+                res.setGroupId(e.getQuizGroupId());
+                res.setGroupCode(g.getGroupCode());
+                res.setStatusId("OK");
+            }
+        }
+        return res;
     }
 }

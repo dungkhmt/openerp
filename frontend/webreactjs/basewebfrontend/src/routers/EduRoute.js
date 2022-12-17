@@ -31,6 +31,7 @@ import QuizTestList from "../component/education/quiztest/QuizTestList-old-tmp";
 import QuizTestListAll from "../component/education/quiztest/QuizTestListAll";
 import StudentQuizDetail from "../component/education/quiztest/StudentQuizDetail";
 import StudentQuizList from "../component/education/quiztest/StudentQuizTestList";
+import StudentMyQuizTestList from "../component/education/quiztest/StudentMyQuizTestList";
 import ResourceCreate from "../component/education/resourcelink/ResourceCreate";
 import ResourceDomainCreate from "../component/education/resourcelink/ResourceDomainCreate";
 import ResourceDomainEdit from "../component/education/resourcelink/ResourceDomainEdit";
@@ -240,6 +241,11 @@ export default function EduRoute() {
           component={StudentQuizList}
           path={`${path}/class/student/quiztest/list`}
         />
+        <Route
+          component={StudentMyQuizTestList}
+          path={`${path}/class/student/myquiztest/list`}
+        />
+
         <Route
           component={StudentQuizDetail}
           path={`${path}/class/student/quiztest/detail`}

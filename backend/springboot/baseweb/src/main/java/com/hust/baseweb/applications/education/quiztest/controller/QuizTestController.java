@@ -174,6 +174,16 @@ public class QuizTestController {
         List<EduQuizTestModel> listQuizTest = quizTestService.getListQuizByUserId(user.getUserLoginId());
         return ResponseEntity.ok().body(listQuizTest);
     }
+    @GetMapping("/get-my-quiz-test-list")
+    public ResponseEntity<?> getMyQuizTestListByUser(
+        Principal principal
+    ) {
+        //UserLogin user = userService.findById(principal.getName());
+        String userId = principal.getName();
+        List<ModelResponseGetMyQuizTest> listQuizTest = quizTestService.getQuizTestListOfUser(userId);
+        return ResponseEntity.ok().body(listQuizTest);
+    }
+
     @GetMapping("/get-active-quiz-of-session-for-participant/{sessionId}")
     public ResponseEntity<?> getActiveQuizTestOfSession(
         Principal principal, @PathVariable UUID sessionId
@@ -441,4 +451,5 @@ public class QuizTestController {
 
 
     }
+
 }
