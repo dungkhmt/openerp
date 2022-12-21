@@ -17,10 +17,6 @@ public class Utils {
             s = s + a[i];
         return s;
     }
-    public static void main(String[] args){
-        String p = Utils.genRandomPermutation(10);
-        System.out.println(" p = " + p);
-    }
     public static boolean checkPermutation(int[] p){
         // return true if p is a permutation of 0, 1, 2, ..., p.length - 1
         if(p == null || p.length == 0) return false;
@@ -73,4 +69,36 @@ public class Utils {
         }
         return seq;
     }
+    public static void swap(int[] a, int i, int j){
+        int tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    public static int[] getPermutationBasedOnSeq(int seq, int n){
+        // return a permutation of 0, 1, 2, . . ., n-1 based on seq (deterministic)
+        if(n == 0) return null;
+        int[] p = new int[n];
+        for(int i = 0; i < n; i++) p[i] = i;
+        int i = 0;
+        for(int k = 1; k <= seq; k++){
+            swap(p,i,n-i-1);
+            i = i + 1;
+            if(i >= n/2) break;
+        }
+        i = 0;
+        for(int k = 1; k <= seq; k++){
+            if(i >= n-1) break;
+            swap(p,i,i+1);
+            i = i + 2;
+        }
+        return p;
+    }
+    public static void main(String[] args){
+        String p = Utils.genRandomPermutation(10);
+        System.out.println(" p = " + p);
+
+        int[] a = Utils.getPermutationBasedOnSeq(6,10);
+        for(int i = 0; i < a.length; i++) System.out.print(a[i] + " "); System.out.println();
+
+
+    }
+
 }

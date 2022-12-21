@@ -13,5 +13,13 @@ public interface EduQuizTestGroupService {
 
     QuizGroupTestDetailModel getTestGroupQuestionDetail(Principal principal, String testID);
     QuizGroupTestDetailModel getTestGroupQuestionDetail(String userLoginId, String testID);
+
+
     QuizGroupTestDetailModel getTestGroupQuestionDetailOfGroupCode(String userLoginId, String groupCode, String testId);
+
+    List<QuizGroupTestDetailModel> getQuizTestGroupWithQuestionsDetail(String testId);
+    QuizGroupTestDetailModel getTestGroupQuestionDetailNotUsePermutationConfig(String userLoginId, String testID);
+    QuizGroupTestDetailModel getQuestionsDetailOfQuizGroup(String groupCode, String testID);
+
+    QuizGroupTestDetailModel getQuestionsDetailWithUserExecutionChoideOfQuizGroupNotUsePermutationConfig(String userLoginId, String groupCode, String testID);
 }

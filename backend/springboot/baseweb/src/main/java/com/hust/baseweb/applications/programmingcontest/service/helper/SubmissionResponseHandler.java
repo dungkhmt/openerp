@@ -61,7 +61,7 @@ public class SubmissionResponseHandler {
             try {
                 problemSubmission = StringHandler.handleContestResponseV2(response, testCaseAns, points);
 
-                if (problemSubmission.getMessage().equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
+                if (problemSubmission.getStatus().equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
                     message = problemSubmission.getMessage();
                     compileError = true;
                     break;

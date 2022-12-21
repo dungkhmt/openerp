@@ -53,7 +53,20 @@ export default function StudentQuizDetail() {
     setOpen(false);
   }
   function onUpdateInfo() {
-    alert("onUpdateInfo");
+    request(
+      "get",
+      "/confirm-update-group-code-quiz-test/" + testQuizId + "/" + groupCode,
+      (res) => {
+        alert("update " + res.data);
+      },
+      {
+        401: () => {},
+        406: () => {
+          //setMessageRequest("Time Out!");
+          setRequestFailed(true);
+        },
+      }
+    );
   }
   function getQuestionList() {
     request(
@@ -290,7 +303,7 @@ export default function StudentQuizDetail() {
               {/*<Button onClick={updateCode}>Update Code</Button>*/}
             </div>
           )}
-          {/*<Button onClick={checkoutQuestion}>Check</Button>*/}
+          {<Button onClick={checkoutQuestion}>Check</Button>}
         </div>
 
         {viewTypeId === "VIEW_STEP" ? (

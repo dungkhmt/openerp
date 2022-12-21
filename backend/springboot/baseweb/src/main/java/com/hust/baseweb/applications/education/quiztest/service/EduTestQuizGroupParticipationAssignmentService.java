@@ -18,5 +18,5 @@ public interface EduTestQuizGroupParticipationAssignmentService {
 
     public boolean removeParticipantFromQuizTestGroup(RemoveParticipantToQuizTestGroupInputModel input);
 
-    public ModelResponseGetQuizTestGroup getQuizTestGroupOfUser(String userId);
+    public ModelResponseGetQuizTestGroup getQuizTestGroupOfUser(String userId, String testId);
 }

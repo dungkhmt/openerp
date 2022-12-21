@@ -42,10 +42,10 @@ export default function CheckAndConfirmQuizGroupDialog(props) {
       actions={
         <>
           <TertiaryButton className={classes.btn} onClick={onClose}>
-            Huỷ
+            Cancel
           </TertiaryButton>
           <PrimaryButton className={classes.btn} onClick={() => onUpdateInfo()}>
-            Cập nhật
+            Confirm Code
           </PrimaryButton>
         </>
       }

@@ -58,4 +58,6 @@ public interface QuizTestService {
     public int copyQuestionsFromQuizTest2QuizTest(UserLogin u, String fromQuizTestId, String toQuizTestId);
 
     public List<ModelResponseGetMyQuizTest> getQuizTestListOfUser(String userId);
+
+    public boolean confirmUpdateGroupInQuizTest(String userId, String groupCode, String testId);
 }
