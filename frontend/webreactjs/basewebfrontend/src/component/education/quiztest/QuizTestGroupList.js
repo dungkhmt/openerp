@@ -192,7 +192,8 @@ export default function QuizTestGroupList(props) {
 
     await request(
       "get",
-      "get-all-quiz-test-participation-group-question/" + testId,
+      //"get-all-quiz-test-participation-group-question/" + testId,
+      "get-all-quiz-test-group-with-questions-detail/" + testId,
       (res) => {
         data = res.data;
         setStudentQuestions(data);
@@ -294,12 +295,10 @@ export default function QuizTestGroupList(props) {
       questionsOfStudents = await getQuestionsOfParticipants();
     else questionsOfStudents = studentQuestions;
 
-    const data = questionsOfStudents.map(
-      ({ participantUserLoginId, fullName, quizGroupTestDetailModel }) => ({
-        userDetail: { id: participantUserLoginId, fullName: fullName },
-        ...quizGroupTestDetailModel,
-      })
-    );
+    const data = questionsOfStudents.map((quizGroupTestDetailModel) => ({
+      userDetail: { id: " ", fullName: " " },
+      ...quizGroupTestDetailModel,
+    }));
 
     generatePdfDocument(data, `${testId}.pdf`, () => {
       toast.dismiss(toastId.current);

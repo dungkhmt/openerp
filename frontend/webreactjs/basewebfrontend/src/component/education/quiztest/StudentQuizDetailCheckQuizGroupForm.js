@@ -41,60 +41,6 @@ export default function StudentQuizDetailCheckQuizGroupForm(props) {
   // Keep track of checking state of all choices of all quiz
   //const checkState = useState([]);
 
-  function getQuestionList() {
-    request(
-      "get",
-      "/get-quiz-test-participation-group-question/" + testQuizId,
-      (res) => {
-        const {
-          listQuestion,
-          participationExecutionChoice,
-          ...quizGroupTestDetail
-        } = res.data;
-
-        setQuestions(listQuestion);
-        setQuizGroupTestDetail(quizGroupTestDetail);
-
-        // Restore test result
-        // TODO: optimize code
-        const chkState = [];
-
-        listQuestion.forEach((question) => {
-          const choices = {};
-          const choseAnswers =
-            participationExecutionChoice[question.questionId];
-
-          question.quizChoiceAnswerList.forEach((ans) => {
-            choices[ans.choiceAnswerId] = false;
-          });
-
-          choices.submitted = false;
-          if (choseAnswers) {
-            choseAnswers.forEach((choseAnsId) => {
-              choices[choseAnsId] = true;
-            });
-
-            choices.submitted = true;
-            choices["lastSubmittedAnswers"] = choseAnswers;
-          } else {
-            choices["lastSubmittedAnswers"] = [];
-          }
-
-          chkState.push(choices);
-        });
-
-        checkState.set(chkState);
-      },
-      {
-        401: () => {},
-        406: () => {
-          setMessageRequest("Time Out!");
-          setRequestFailed(true);
-        },
-      }
-    );
-  }
-
   const onSave = (order, questionId, choseAnswers) => {
     request(
       "post",

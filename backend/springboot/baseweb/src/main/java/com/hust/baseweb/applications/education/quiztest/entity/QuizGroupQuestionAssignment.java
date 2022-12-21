@@ -22,6 +22,9 @@ public class QuizGroupQuestionAssignment {
     @Column(name = "quiz_group_id")
     private UUID quizGroupId;
 
+    @Column(name="seq")
+    private int seq;
+
     @Column(name = "status_id")
     private String statusID;
 

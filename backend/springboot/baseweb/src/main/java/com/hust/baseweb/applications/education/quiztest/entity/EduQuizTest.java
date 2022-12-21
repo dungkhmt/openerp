@@ -29,7 +29,15 @@ public class EduQuizTest {
     public static final String QUESTION_STATEMENT_VIEW_TYPE_VISIBLE = "VISIBLE";
     public static final String QUESTION_STATEMENT_VIEW_TYPE_HIDDEN = "HIDDEN";
 
+    public static final String PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_ASSIGN_GROUP_BEFORE_HANDOUT = "ASSIGN_GROUP_BEFORE_HANDOUT"; // quiz group is assigned to participant by teacher on the system before hand-out
+    public static final String PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_HANDOUT_THEN_UPDATE_GROUP = "HANDOUT_THEN_UPDATE_GROUP";// quiz group questions is distributed (hard copy) randomly among participants and participants check and confirm update quiz group
 
+    public static List<String> getListParticipantQuizGroupAssignmentModes(){
+        List<String> L = new ArrayList();
+        L.add(PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_ASSIGN_GROUP_BEFORE_HANDOUT);
+        L.add(PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_HANDOUT_THEN_UPDATE_GROUP);
+        return L;
+    }
     public static List<String> getListQuestionStatementViewType(){
         List<String> L = new ArrayList();
         L.add(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_VISIBLE);
@@ -71,6 +79,9 @@ public class EduQuizTest {
 
     @Column(name="session_id")
     private UUID sessionId;
+
+    @Column(name="participant_quiz_group_assignment_mode")
+    private String participantQuizGroupAssignmentMode;
 
     @Column(name="view_type_id")
     private String viewTypeId;
