@@ -1,15 +1,24 @@
 {
   "problem": "Problem",
   "problemId": "Problem ID",
+  "problemName": "Problem name",
   "level": "Level",
   "timeLimit": "Time limit",
   "memoryLimit": "Memory limit",
   "problemDescription": "Problem description",
   "problemSuggestion": "Suggesstion for solution",
+  "problemSuggesstionPlaceholder": "Provide a suggestion in case of contestants facing difficulties solving the problem effectively",
   "correctSourceCode": "Solution Source code",
+  "allowSubmittingOutput": "Allow contestants to submit output only (without source code)",
   "checkerSourceCode": "Checker Source code",
+  "checkerSourceCodePlaceholder": "Source code to evaluate contestant's output",
   "problemList": {
     "title": "Problems"
   },
-  "createProblem": "Create new Problem"
+  "createProblem": "Create new Problem",
+  "validateSubmit": {
+      "warningCheckSolutionCompile": "Your source code must pass \"CHECK SOLUTION COMPILE\"",
+      "missingField": "Missing required field: {{fieldName}}"
+    }
+
 }
