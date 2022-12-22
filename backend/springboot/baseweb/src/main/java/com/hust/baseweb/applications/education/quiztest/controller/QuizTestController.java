@@ -10,6 +10,7 @@ import com.hust.baseweb.applications.education.quiztest.UserQuestionQuizExecutio
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
 import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizParticipant;
 import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizRole;
+import com.hust.baseweb.applications.education.quiztest.entity.QuizGroupQuestionAssignment;
 import com.hust.baseweb.applications.education.quiztest.model.*;
 import com.hust.baseweb.applications.education.quiztest.model.edutestquizparticipation.GetQuizTestParticipationExecutionResultInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.edutestquizparticipation.QuizTestParticipationExecutionResultOutputModel;
@@ -18,6 +19,7 @@ import com.hust.baseweb.applications.education.quiztest.model.quiztestgroup.Auto
 import com.hust.baseweb.applications.education.quiztest.model.quiztestquestion.CopyQuestionFromQuizTest2QuizTestInputModel;
 import com.hust.baseweb.applications.education.quiztest.repo.EduTestQuizParticipantRepo;
 import com.hust.baseweb.applications.education.quiztest.repo.EduTestQuizRoleRepo;
+import com.hust.baseweb.applications.education.quiztest.repo.QuizGroupQuestionAssignmentRepo;
 import com.hust.baseweb.applications.education.quiztest.service.EduQuizTestGroupService;
 import com.hust.baseweb.applications.education.quiztest.service.EduQuizTestParticipantRoleService;
 import com.hust.baseweb.applications.education.quiztest.service.EduQuizTestQuizQuestionService;
@@ -65,7 +67,7 @@ public class QuizTestController {
     private EduTestQuizRoleRepo eduTestQuizRoleRepo;
     private EduQuizTestParticipantRoleService eduQuizTestParticipantRoleService;
     private EduTestQuizParticipantService eduTestQuizParticipantService;
-
+    private QuizGroupQuestionAssignmentRepo quizGroupQuestionAssignmentRepo;
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @PostMapping("/create-quiz-test")
@@ -163,6 +165,11 @@ public class QuizTestController {
     @GetMapping("/get-list-question-statement-view-type-id")
     public ResponseEntity<?> getListQuestionStatementViewTypeId(){
         List<String> L = EduQuizTest.getListQuestionStatementViewType();
+        return ResponseEntity.ok().body(L);
+    }
+    @GetMapping("/get-list-participant-quizgroup-assignment-mode")
+    public ResponseEntity<?> getListParticipantQuizGroupAssignmentMode(){
+        List<String> L = EduQuizTest.getListParticipantQuizGroupAssignmentModes();
         return ResponseEntity.ok().body(L);
     }
 
@@ -451,5 +458,6 @@ public class QuizTestController {
 
 
     }
+
 
 }

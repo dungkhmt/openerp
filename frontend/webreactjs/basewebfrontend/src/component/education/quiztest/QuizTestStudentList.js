@@ -96,18 +96,21 @@ export default function QuizTestStudentList(props) {
       title: "Đề",
       ...headerProperties,
       width: "40%",
-      render: (rowData) =>
-        rowData["testGroup"] === "-" ? (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => onOpenDialog(rowData)}
-          >
-            Chọn đề
-          </Button>
-        ) : (
-          rowData["testGroup"]
-        ),
+    },
+    {
+      field: "",
+      title: "Cập nhật đề",
+      ...headerProperties,
+      width: "40%",
+      render: (rowData) => (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => onOpenDialog(rowData)}
+        >
+          Cập nhật đề thi
+        </Button>
+      ),
     },
 
     {
@@ -299,8 +302,8 @@ export default function QuizTestStudentList(props) {
         options={{
           search: true,
           actionsColumnIndex: -1,
-          pageSize: 10,
-          tableLayout: "fixed",
+          pageSize: 20,
+          //tableLayout: "fixed",
         }}
         actions={[
           {

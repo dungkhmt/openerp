@@ -51,6 +51,14 @@ function QuizTestEdit() {
     useState(null);
   const [listQuestionStatementViewTypeId, setListQuestionStatementViewTypeId] =
     useState([]);
+  const [
+    participantQuizGroupAssignmentMode,
+    setParticipantQuizGroupAssignmentMode,
+  ] = useState(null);
+  const [
+    listParticipantQuizGroupAssignmentMode,
+    setListParticipantQuizGroupAssignmentMode,
+  ] = useState([]);
 
   const handleChangeDuration = (e) => {
     setDuration(e.target.value);
@@ -59,6 +67,24 @@ function QuizTestEdit() {
     setSelectedDate(event);
   };
 
+  function getListParticipantQuizGroupAssignmentMode() {
+    request(
+      // token,
+      // history,
+      "get",
+      "get-list-participant-quizgroup-assignment-mode",
+      (res) => {
+        console.log(
+          "get-list-participant-quizgroup-assignment-mode res = ",
+          res
+        );
+        setListParticipantQuizGroupAssignmentMode(res.data);
+
+        //alert('assign questions to groups OK');
+      },
+      { 401: () => {} }
+    );
+  }
   function getListQuestionStatementViewTypeId() {
     request(
       // token,
@@ -86,7 +112,9 @@ function QuizTestEdit() {
         setDuration(res.data.duration);
         setSelectedDate(res.data.scheduleDatetime);
         setQuestionStatementViewTypeId(res.data.questionStatementViewTypeId);
-
+        setParticipantQuizGroupAssignmentMode(
+          res.data.participantQuizGroupAssignmentMode
+        );
         //alert('assign questions to groups OK');
       },
       { 401: () => {} }
@@ -128,6 +156,7 @@ function QuizTestEdit() {
       scheduleDate: selectedDate,
       duration: duration,
       questionStatementViewTypeId: questionStatementViewTypeId,
+      participantQuizGroupAssignmentMode: participantQuizGroupAssignmentMode,
     };
     request(
       // token,
@@ -147,6 +176,7 @@ function QuizTestEdit() {
   }
   useEffect(() => {
     getListQuestionStatementViewTypeId();
+    getListParticipantQuizGroupAssignmentMode();
     getQuizTestDetail();
   }, []);
 
@@ -222,6 +252,26 @@ function QuizTestEdit() {
                     value={questionStatementViewTypeId}
                   >
                     {listQuestionStatementViewTypeId.map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    autoFocus
+                    // required
+                    select
+                    id="participantQuizGroupAssignmentMode"
+                    label="participantQuizGroupAssignmentMode"
+                    placeholder="participantQuizGroupAssignmentMode"
+                    onChange={(event) => {
+                      setParticipantQuizGroupAssignmentMode(event.target.value);
+                    }}
+                    value={participantQuizGroupAssignmentMode}
+                  >
+                    {listParticipantQuizGroupAssignmentMode.map((item) => (
                       <MenuItem key={item} value={item}>
                         {item}
                       </MenuItem>
