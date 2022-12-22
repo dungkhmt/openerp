@@ -32,7 +32,7 @@ ExcelExporter.propTypes = {
 
 const DefaultExcelExportElement = (
   <Button
-    variant="outlined"
+    variant="contained"
     style={{ marginLeft: "0px" }}>
     Xuất Excel
   </Button>
