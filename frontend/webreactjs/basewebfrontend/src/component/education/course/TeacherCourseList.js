@@ -6,6 +6,7 @@ import { useParams } from "react-router";
 import { Link, useHistory } from "react-router-dom";
 import { authGet } from "../../../api";
 import withScreenSecurity from "../../withScreenSecurity";
+import TeacherViewCourseList from "./teacher/TeacherViewCourseList";
 
 function TeacherCourseList() {
   const params = useParams();
@@ -36,15 +37,20 @@ function TeacherCourseList() {
   }, []);
 
   return (
-    <Card>
-      <CardContent>
-        <MaterialTable
-          title={"Danh sách môn học"}
-          columns={columns}
-          data={courses}
-        />
-      </CardContent>
-    </Card>
+    <div>
+      <TeacherViewCourseList/>
+      <br/>
+
+      <Card>
+        <CardContent>
+          <MaterialTable
+            title={"Danh sách môn học"}
+            columns={columns}
+            data={courses}
+          />
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
