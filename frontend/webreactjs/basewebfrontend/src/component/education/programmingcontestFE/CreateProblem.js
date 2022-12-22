@@ -160,20 +160,17 @@ function CreateProblem() {
     }
     */
     setLoading(true);
-    try {
-      authPostMultiPart(dispatch, token, "/create-problem", formData).then(
+    authPostMultiPart(dispatch, token, "/create-problem", formData)
+      .then(
         (res) => {
           successNoti("Problem saved successfully", 1000);
           sleep(1000).then((r) => {
             history.push("/programming-contest/list-problems");
           });
         },
-      );
-    } catch (error) {
-      errorNoti(error);
-    } finally {
-      setLoading(false);
-    }
+      )
+      .catch(() => errorNoti("An error happened", 3000))
+      .finally(() => setLoading(false));
 
     // request(
     //   "post",
