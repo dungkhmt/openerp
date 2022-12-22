@@ -1,52 +1,32 @@
 import DateFnsUtils from "@date-io/date-fns";
-import {
-  Card,
-  CardActions,
-  CardContent,
-  TextField,
-  Typography,
-  MenuItem,
-} from "@material-ui/core/";
-import { makeStyles } from "@material-ui/core/styles";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import React, { useState, useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Editor } from "react-draft-wysiwyg";
-import { ContentState, convertToRaw, EditorState } from "draft-js";
+import {Card, CardActions, CardContent, MenuItem, TextField, Typography,} from "@material-ui/core/";
+import {makeStyles} from "@material-ui/core/styles";
+import {MuiPickersUtilsProvider} from "@material-ui/pickers";
+import React, {useEffect, useState} from "react";
+import {Link, useHistory} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {Editor} from "react-draft-wysiwyg";
+import {ContentState, convertToRaw, EditorState} from "draft-js";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { authGet, authPost, authPostMultiPart } from "../../../api";
-import { Button, TableHead } from "@material-ui/core";
+import {authGet, authPostMultiPart} from "../../../api";
+import {Button, TableHead} from "@material-ui/core";
 import draftToHtml from "draftjs-to-html";
-import { API_URL } from "../../../config/config";
-import { cpp, cppLanguage } from "@codemirror/lang-cpp";
-import { java } from "@codemirror/lang-java";
-import { pythonLanguage } from "@codemirror/lang-python";
-import { go } from "@codemirror/legacy-modes/mode/go";
-import { javascript } from "@codemirror/lang-javascript";
-import { StreamLanguage } from "@codemirror/stream-parser";
-import CodeMirror from "@uiw/react-codemirror";
-import { SubmitWarming } from "./SubmitWarming";
-import { CompileStatus } from "./CompileStatus";
-import { SubmitSuccess } from "./SubmitSuccess";
-import { useParams } from "react-router";
-import { request } from "./Request";
-import { sleep, StyledTableCell, StyledTableRow } from "./lib";
+import {SubmitWarming} from "./SubmitWarming";
+import {CompileStatus} from "./CompileStatus";
+import {SubmitSuccess} from "./SubmitSuccess";
+import {useParams} from "react-router";
+import {request} from "./Request";
+import {sleep, StyledTableCell, StyledTableRow} from "./lib";
 import htmlToDraft from "html-to-draftjs";
 import Paper from "@material-ui/core/Paper";
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@mui/material/TableBody";
-import {
-  dataUrlToFile,
-  getFileType,
-  randomImageName,
-  saveByteArray,
-} from "../../../utils/FileUpload/covert";
-import { DropzoneArea } from "material-ui-dropzone";
-import { Box } from "@mui/material";
+import {getFileType, randomImageName, saveByteArray,} from "../../../utils/FileUpload/covert";
+import {DropzoneArea} from "material-ui-dropzone";
+import {Box} from "@mui/material";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -255,21 +235,6 @@ function EditProblem() {
 
   const onChangeEditorStateSolution = (editorState) => {
     setEditorStateSolution(editorState);
-  };
-
-  const getExtension = () => {
-    switch (languageSolution) {
-      case "CPP":
-        return [cppLanguage];
-      case "GoLang":
-        return StreamLanguage.define(go);
-      case "Java":
-        return java();
-      case "Python3":
-        return StreamLanguage.define(pythonLanguage);
-      default:
-        return javascript();
-    }
   };
 
   function checkCompile() {
@@ -518,11 +483,11 @@ function EditProblem() {
                     `Vượt quá số lượng tệp tối đa được cho phép. Chỉ được phép tải lên tối đa ${filesLimit} tệp.`
                   }
                   alertSnackbarProps={{
-                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                    anchorOrigin: {vertical: "bottom", horizontal: "right"},
                     autoHideDuration: 1800,
                   }}
                   onChange={(files) => handleAttachmentFiles(files)}
-                ></DropzoneArea>
+                />
 
                 {fetchedImageArray.length !== 0 &&
                   fetchedImageArray.map((file) => (
@@ -653,7 +618,7 @@ function EditProblem() {
             </TextField>
             <TextField
               style={{
-                width: 1.0 * window.innerWidth,
+                width: 0.65 * window.innerWidth,
                 margin: 20,
               }}
               multiline
@@ -662,26 +627,13 @@ function EditProblem() {
               onChange={(event) => {
                 setCodeSolution(event.target.value);
               }}
-            ></TextField>
-            {/*
-            <CodeMirror
-              height={"500px"}
-              width="100%"
-              extensions={getExtension()}
-              onChange={(value, viewUpdate) => {
-                setCodeSolution(value);
-              }}
-              autoFocus={false}
-              value={codeSolution}
             />
-            */}
-
             <Typography>
               <h2>Solution Checker</h2>
             </Typography>
             <TextField
               style={{
-                width: 1.0 * window.innerWidth,
+                width: 0.65 * window.innerWidth,
                 margin: 20,
               }}
               multiline
@@ -690,7 +642,7 @@ function EditProblem() {
               onChange={(event) => {
                 setCodeChecker(event.target.value);
               }}
-            ></TextField>
+            />
             <TextField
               style={{ width: 0.075 * window.innerWidth, margin: 20 }}
               variant={"outlined"}
@@ -709,20 +661,6 @@ function EditProblem() {
                 </MenuItem>
               ))}
             </TextField>
-            {/*
-            <CodeMirror
-              height={"500px"}
-              width="100%"
-              extensions={getExtension()}
-              onChange={(value, viewUpdate) => {
-                setCodeChecker(value);
-              }}
-              autoFocus={false}
-              value={codeChecker}
-            />
-            */}
-            <br />
-
             <br />
             <CompileStatus
               showCompile={showCompile}

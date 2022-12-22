@@ -1,15 +1,11 @@
+import * as React from "react";
 import {useEffect, useState} from "react";
 import SplitPane from "react-split-pane";
 import {ScrollBox} from "react-scroll-box";
 import Typography from "@material-ui/core/Typography";
 import {Button, Divider, MenuItem, TextField} from "@material-ui/core";
 import {Markup} from "interweave";
-import CodeMirror from "@uiw/react-codemirror";
-import {getExtension} from "./lib";
-import {ConsoleContest} from "./ConsoleContest";
 import {request} from "./Request";
-import {API_URL} from "../../../config/config";
-import * as React from "react";
 import PropTypes from "prop-types";
 
 ContestProblemComponent.propTypes ={
@@ -109,51 +105,6 @@ export function ContestProblemComponent(props){
               </MenuItem>
             ))}
           </TextField>
-
-          <CodeMirror
-            value={source}
-            height={screenHeight}
-            width="100%"
-            extensions={getExtension(language)}
-            onChange={(value, viewUpdate) => {
-              setSource(value);
-              let a = contestId+"-"+problemId+"-source";
-              localStorage.setItem(a, value);
-            }}
-            autoFocus={false}
-          />
-
-          <ConsoleContest
-            showConsole={showConsole}
-            load={runCodeLoading}
-            output={output}
-            color={"light"}
-            extension={getExtension()}
-            input={input}
-            onInputChange={onInputChange}
-            consoleTabIndex={consoleTabIndex}
-            onChangeConsoleTabIndex={onChangeConsoleTabIndex}
-            accept={accept}
-            run={run}
-            timeLimit={timeLimit}
-            expected={expected}
-            compileError={compileError}
-            runTestCaseLoad={runTestCaseLoad}
-            runTestCaseShow={runTestCaseShow}
-            submitResult={testCaseResult}
-          />
-
-          <Button
-            variant="contained"
-            color="light"
-            // style={{marginLeft:"90px"}}
-            onClick={handleScroll}
-            // style={{position}}
-            // style={{left:"50%"}}
-            extension={getExtension()}
-          >
-            Console
-          </Button>
 
           <Button
             variant="contained"

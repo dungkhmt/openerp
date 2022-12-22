@@ -1,32 +1,13 @@
-import {
-  Box,
-  Button,
-  Grid,
-  MenuItem,
-  Tab,
-  Tabs,
-  TextField,
-  CircularProgress,
-  Toolbar,
-} from "@material-ui/core";
+import {Button, CircularProgress, Grid, MenuItem, TextField,} from "@material-ui/core";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import Typography from "@mui/material/Typography";
-import { ScrollBox } from "react-scroll-box";
-import { a11yProps, TabPanelVertical } from "./TabPanel";
-import CodeMirror from "@uiw/react-codemirror";
-import { useParams } from "react-router-dom";
-import { authGet, authPost } from "../../../api";
-import { useDispatch, useSelector } from "react-redux";
-import { Markup } from "interweave";
-import { OutputWithLoading } from "./OutputWithLoading";
-import { API_URL } from "../../../config/config";
-import { SubmitWarming } from "./SubmitWarming";
-import { SubmitSuccess } from "./SubmitSuccess";
-import { successNoti, warningNoti } from "../../../utils/notification";
-import { request } from "./Request";
-import { useHistory } from "react-router-dom";
-import { authPostMultiPart } from "../../../api";
+import {useHistory, useParams} from "react-router-dom";
+import {authPostMultiPart} from "../../../api";
+import {useDispatch, useSelector} from "react-redux";
+import {successNoti, warningNoti} from "../../../utils/notification";
+import {request} from "./Request";
+
 export default function EditTestCase(props) {
   const history = useHistory();
   const token = useSelector((state) => state.auth.token);
