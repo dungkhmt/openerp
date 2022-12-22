@@ -1,133 +1,81 @@
-import {cppLanguage} from "@codemirror/lang-cpp";
-import {java} from "@codemirror/lang-java";
-import {javascript} from "@codemirror/lang-javascript";
-import {pythonLanguage} from "@codemirror/lang-python";
-import {go} from "@codemirror/legacy-modes/mode/go";
-import {StreamLanguage} from "@codemirror/stream-parser";
-import DateFnsUtils from "@date-io/date-fns";
-import {Button} from "@material-ui/core";
-import {Card, CardActions, CardContent, MenuItem, Typography, TextField, InputAdornment} from "@mui/material";
-import {makeStyles} from "@material-ui/core/styles";
-import {MuiPickersUtilsProvider} from "@material-ui/pickers";
-import {convertToRaw, EditorState} from "draft-js";
-import draftToHtml from "draftjs-to-html";
-import {DropzoneArea} from "material-ui-dropzone";
+import {makeStyles} from "@material-ui/core";
+import {
+  Box,
+  Card,
+  CardContent,
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  InputAdornment,
+  MenuItem,
+  TextField,
+  Typography
+} from "@mui/material";
 import React, {useState} from "react";
-import {Editor} from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import {useDispatch, useSelector} from "react-redux";
 import {useHistory} from "react-router-dom";
 import {CompileStatus} from "./CompileStatus";
 import {sleep} from "./lib";
 import {request} from "./Request";
-import {SubmitSuccess} from "./SubmitSuccess";
-import {SubmitWarming} from "./SubmitWarming";
 import {authPostMultiPart} from "../../../api";
 import {useTranslation} from "react-i18next";
+import HustDropzoneArea from "../../common/HustDropzoneArea";
+import {errorNoti, successNoti, warningNoti} from "../../../utils/notification";
+import HustCodeEditor from "../../common/HustCodeEditor";
+import {LoadingButton} from "@mui/lab";
+import RichTextEditor from "../../common/editor/RichTextEditor";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: theme.spacing(2),
+  main: {
+    display: "flex",
+    justifyContent: "center",
+    flexWrap: "wrap",
     "& .MuiTextField-root": {
-      margin: theme.spacing(1),
-      width: "30%",
+      marginRight: theme.spacing(4),
+      marginBottom: theme.spacing(2),
+      width: "28%",
       minWidth: 120,
     },
   },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    maxWidth: 300,
-  },
+  description: {
+    marginBottom: theme.spacing(2),
+  }
 }));
-const descriptionStyles = makeStyles((theme) => ({
-  root: {
-    padding: theme.spacing(4),
-    "& .MuiTextField-root": {
-      margin: theme.spacing(1),
-      width: "100%",
-      minWidth: 120,
-    },
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    maxWidth: 300,
-  },
-}));
-
-const editorStyle = {
-  toolbar: {
-    background: "#FFFFFF",
-  },
-  editor: {
-    border: "1px solid black",
-    minHeight: "300px",
-  },
-};
 
 function CreateProblem() {
   const {t} = useTranslation(
     "education/programmingcontest/problem"
   );
+  const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 
-  const [problemId, setProblemID] = useState();
-  const [problemName, setProblemName] = useState();
-  const [problemDescriptions, setProblemDescription] = useState();
+  const [problemId, setProblemID] = useState("");
+  const [problemName, setProblemName] = useState("");
   const [timeLimit, setTimeLimit] = useState(1);
   const [memoryLimit, setMemoryLimit] = useState(256);
   const [levelId, setLevelId] = useState("medium");
   const defaultLevel = ["easy", "medium", "hard"];
-  const classes = useStyles();
-  const descriptionClass = descriptionStyles();
-  const [editorStateDescription, setEditorStateDescription] = useState(
-    EditorState.createEmpty()
-  );
-  const [editorStateSolution, setEditorStateSolution] = useState(
-    EditorState.createEmpty()
-  );
+  const [description, setDescription] = useState("");
+  const [solution, setSolution] = useState("");
   const [codeSolution, setCodeSolution] = useState("");
   const [languageSolution, setLanguageSolution] = useState("CPP");
   const [solutionChecker, setSolutionChecker] = useState("");
   const [solutionCheckerLanguage, setSolutionCheckerLanguage] = useState("CPP");
-  const computerLanguageList = ["CPP", "GOLANG", "JAVA", "PYTHON3"];
-  const [showSubmitWarming, setShowSubmitWarming] = useState(false);
-  const [showCompile, setShowCompile] = useState(false);
-  const [statusSuccessful, setStatusSuccessful] = useState(true);
-  const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
+
+  const [allowSubmittingOutput, setAllowSubmittingOutput] = useState(false);
   const [compileMessage, setCompileMessage] = useState("");
   const [attachmentFiles, setAttachmentFiles] = useState([]);
+  const [showCompile, setShowCompile] = useState(false);
+  const [statusSuccessful, setStatusSuccessful] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const handleAttachmentFiles = (files) => {
     setAttachmentFiles(files);
-  };
-
-  const onChangeEditorStateDescription = (editorState) => {
-    console.log(problemDescriptions);
-    setEditorStateDescription(editorState);
-  };
-
-  const onChangeEditorStateSolution = (editorState) => {
-    setEditorStateSolution(editorState);
-  };
-
-  const getExtension = () => {
-    switch (languageSolution) {
-      case "CPP":
-        return [cppLanguage];
-      case "GoLang":
-        return StreamLanguage.define(go);
-      case "Java":
-        return java();
-      case "Python3":
-        return StreamLanguage.define(pythonLanguage);
-      default:
-        return javascript();
-    }
   };
 
   function checkCompile() {
@@ -136,39 +84,43 @@ function CreateProblem() {
       computerLanguage: languageSolution,
     };
 
+    setLoading(true);
     request(
       "post",
       "/check-compile",
       (res) => {
-        console.log("res check compile", res);
-        if (res.data.status == "Successful") {
+        if (res.data.status === "Successful") {
           setShowCompile(true);
-          setShowSubmitWarming(false);
           setStatusSuccessful(true);
         } else {
           setShowCompile(true);
           setStatusSuccessful(false);
-          // setShowSubmitWarming(false);
-          // setStatusSuccessful(true);
         }
         setCompileMessage(res.data.message);
       },
       {},
       body
-    ).then();
+    ).then(() => setLoading(false));
+  }
+
+  const validateSubmit = () => {
+    if (problemId === "") {
+      errorNoti(t("validateSubmit.missingField", {fieldName: "Problem ID"}), 3000);
+      return false;
+    }
+    if (problemName === "") {
+      errorNoti(t("validateSubmit.missingField", {fieldName: "Problem Name"}), 3000);
+      return false;
+    }
+    if (!statusSuccessful) {
+      warningNoti(t("validateSubmit.warningCheckSolutionCompile"), 5000);
+      return false;
+    }
+    return true;
   }
 
   function handleSubmit() {
-    if (!statusSuccessful) {
-      setShowSubmitWarming(true);
-      return;
-    }
-    let description = draftToHtml(
-      convertToRaw(editorStateDescription.getCurrentContent())
-    );
-    let solution = draftToHtml(
-      convertToRaw(editorStateSolution.getCurrentContent())
-    );
+    if (!validateSubmit()) return;
 
     const fileId = attachmentFiles.map((file) => file.name);
 
@@ -207,21 +159,20 @@ function CreateProblem() {
       alert(error);
     }
     */
+    setLoading(true);
     try {
       authPostMultiPart(dispatch, token, "/create-problem", formData).then(
         (res) => {
-          setShowSubmitSuccess(true);
+          successNoti("Problem saved successfully", 1000);
           sleep(1000).then((r) => {
             history.push("/programming-contest/list-problems");
           });
         },
-        {},
-        () => {
-          alert("Cập nhật thất bại");
-        }
       );
     } catch (error) {
-      alert(error);
+      errorNoti(error);
+    } finally {
+      setLoading(false);
     }
 
     // request(
@@ -240,289 +191,183 @@ function CreateProblem() {
   }
 
   return (
-    <div>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Card>
-          <CardContent>
-            <Typography variant="h5" component="h2">
-              <b>{t("createProblem")}</b>
-            </Typography>
-            <form className={classes.root} noValidate autoComplete="off">
-              <div>
-                <TextField
-                  autoFocus
-                  required
-                  id="problemId"
-                  label="Problem ID"
-                  placeholder="Problem ID"
-                  onChange={(event) => {
-                    setProblemID(event.target.value);
-                  }}
-                />
-                <TextField
-                  autoFocus
-                  required
-                  id="problemName"
-                  label="Problem Name"
-                  placeholder="Problem Name"
-                  onChange={(event) => {
-                    setProblemName(event.target.value);
-                  }}
-                />
+    <Box>
+      <Card>
+        <Typography
+          fontWeight="600"
+          variant="h5"
+          component="div"
+          sx={{margin: "12px 0 10px 18px"}}
+          color="#2972bb"
+        >
+          {t("createProblem")}
+        </Typography>
+        <Divider/>
+        <CardContent sx={{padding: "24px"}}>
+          <Box className={classes.main}>
+            <TextField
+              autoFocus={true}
+              required
+              id={t("problemId")}
+              label="Problem ID"
+              placeholder="Problem ID"
+              onChange={(event) => {
+                setProblemID(event.target.value);
+              }}
+            />
+            <TextField
+              required
+              id="problemName"
+              label={t("problemName")}
+              placeholder="Problem Name"
+              onChange={(event) => {
+                setProblemName(event.target.value);
+              }}
+            />
 
-                <TextField
-                  autoFocus
-                  required
-                  select
-                  id="levelId"
-                  label={t("level")}
-                  value={levelId}
-                  onChange={(event) => {
-                    setLevelId(event.target.value);
-                  }}
-                >
-                  {defaultLevel.map((item) => (
-                    <MenuItem key={item} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))}
-                </TextField>
-
-
-                <TextField
-                  autoFocus
-                  required
-                  id="timeLimit"
-                  label={t("timeLimit")}
-                  placeholder="Time Limit"
-                  type="number"
-                  value={timeLimit}
-                  onChange={(event) => {
-                    setTimeLimit(event.target.value);
-                  }}
-                  InputProps={{endAdornment: <InputAdornment position="end">s</InputAdornment>,}}
-                />
-
-                <TextField
-                  autoFocus
-                  required
-                  id="memoryLimit"
-                  label={t("memoryLimit")}
-                  type="number"
-                  value={memoryLimit}
-                  onChange={(event) => {
-                    setMemoryLimit(event.target.value);
-                  }}
-                  InputProps={{endAdornment: <InputAdornment position="end">MB</InputAdornment>,}}
-                />
-
-                <TextField
-                  autoFocus
-                  // required
-                  select
-                  id="Public Problem"
-                  label="Public Problem"
-                  placeholder="Public Problem"
-                  onChange={(event) => {
-                    setIsPublic(event.target.value);
-                  }}
-                  value={isPublic}
-                >
-                  <MenuItem key={"true"} value={true}>
-                    {"true"}
-                  </MenuItem>
-                  <MenuItem key={"false"} value={false}>
-                    {"false"}
-                  </MenuItem>
-                </TextField>
-              </div>
-            </form>
-            <form
-              className={descriptionClass.root}
-              noValidate
-              autoComplete="off"
+            <TextField
+              required
+              select
+              id="levelId"
+              label={t("level")}
+              value={levelId}
+              onChange={(event) => {
+                setLevelId(event.target.value);
+              }}
             >
-              <div>
-                <Typography>
-                  <h2>{t("problemDescription")}</h2>
-                </Typography>
-                <Editor
-                  editorState={editorStateDescription}
-                  handlePastedText={() => false}
-                  onEditorStateChange={onChangeEditorStateDescription}
-                  toolbarStyle={editorStyle.toolbar}
-                  editorStyle={editorStyle.editor}
-                />
-              </div>
-              <div>
-                <Typography
-                  variant="subtitle1"
-                  display="block"
-                  style={{ margin: "5px 10px 0 5px", width: "100%" }}
-                >
-                  File đính kèm
-                </Typography>
-                <DropzoneArea
-                  dropzoneClass={classes.dropZone}
-                  filesLimit={20}
-                  showPreviews={true}
-                  showPreviewsInDropzone={false}
-                  useChipsForPreview
-                  dropzoneText="Kéo thả tệp vào đây hoặc nhấn để chọn tệp"
-                  previewText="Danh sách tệp tải lên:"
-                  previewChipProps={{
-                    variant: "outlined",
-                    color: "primary",
-                    size: "medium",
-                  }}
-                  getFileAddedMessage={(fileName) =>
-                    `Tệp ${fileName} tải lên thành công`
-                  }
-                  getFileRemovedMessage={(fileName) =>
-                    `Tệp ${fileName} đã loại bỏ`
-                  }
-                  getFileLimitExceedMessage={(filesLimit) =>
-                    `Vượt quá số lượng tệp tối đa cho phép. Chỉ được phép tải lên tối đa ${filesLimit} tệp.`
-                  }
-                  alertSnackbarProps={{
-                    anchorOrigin: {vertical: "bottom", horizontal: "right"},
-                    autoHideDuration: 1800,
-                  }}
-                  onChange={(files) => handleAttachmentFiles(files)}
-                />
-              </div>
-              <div>
+              {defaultLevel.map((item) => (
+                <MenuItem key={item} value={item}>
+                  {item}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              required
+              id="timeLimit"
+              label={t("timeLimit")}
+              placeholder="Time Limit"
+              type="number"
+              value={timeLimit}
+              onChange={(event) => {
+                setTimeLimit(event.target.value);
+              }}
+              InputProps={{endAdornment: <InputAdornment position="end">s</InputAdornment>,}}
+            />
+
+            <TextField
+              required
+              id="memoryLimit"
+              label={t("memoryLimit")}
+              type="number"
+              value={memoryLimit}
+              onChange={(event) => {
+                setMemoryLimit(event.target.value);
+              }}
+              InputProps={{endAdornment: <InputAdornment position="end">MB</InputAdornment>,}}
+            />
+
+            <TextField
+              select
+              id="isPublicProblem"
+              label="Public Problem"
+              onChange={(event) => {
+                setIsPublic(event.target.value);
+              }}
+              value={isPublic}
+            >
+              <MenuItem key={"true"} value={true}>
+                {"true"}
+              </MenuItem>
+              <MenuItem key={"false"} value={false}>
+                {"false"}
+              </MenuItem>
+            </TextField>
+          </Box>
+
+          <Box className={classes.description}>
+            <Typography variant="h5" component="div" sx={{marginTop: "12px", marginBottom: "8px"}}>
+              {t("problemDescription")}
+            </Typography>
+            <RichTextEditor content={description} onContentChange={text => setDescription(text)}/>
+            <HustDropzoneArea onChangeAttachment={(files) => handleAttachmentFiles(files)}/>
+          </Box>
+          {/* this function is not implemented yet
+              <Box>
                 <Typography>
                   <h2>{t("problemSuggestion")}</h2>
                 </Typography>
-                <Editor
-                  editorState={editorStateSolution}
-                  handlePastedText={() => false}
-                  onEditorStateChange={onChangeEditorStateSolution}
-                  toolbarStyle={editorStyle.toolbar}
-                  editorStyle={editorStyle.editor}
+                <RichTextEditor
+                  content={solution}
+                  onContentChange={text => setSolution(text)}
                 />
-              </div>
-            </form>
-            <Typography>
-              <h2>{t("correctSourceCode")}</h2>
-            </Typography>
-            <TextField
-              style={{ width: 0.075 * window.innerWidth, margin: 20 }}
-              variant={"outlined"}
-              size={"small"}
-              autoFocus
-              value={languageSolution}
-              select
-              id="computerLanguage"
-              onChange={(event) => {
-                setLanguageSolution(event.target.value);
-              }}
-            >
-              {computerLanguageList.map((item) => (
-                <MenuItem key={item} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              variant="outlined"
-              style={{
-                width: 0.65 * window.innerWidth,
-                marginLeft: 24,
-                marginBottom: 20,
-              }}
-              multiline
-              rows={12}
-              maxRows={12}
-              value={codeSolution}
-              onChange={(event) => {
-                setCodeSolution(event.target.value);
-              }}
-            />
-            {/*
-            <CodeMirror
-              value={codeSolution}
-              height={"500px"}
-              width="100%"
-              extensions={getExtension()}
-              onChange={(value, viewUpdate) => {
-                setCodeSolution(value);
-              }}
-              autoFocus={false}
-            />
-            */}
-            <br />
-            <Typography>
-              <h2>{t("checkerSourceCode")}</h2>
-            </Typography>
-            <TextField
-              style={{ width: 0.075 * window.innerWidth, margin: 20 }}
-              variant={"outlined"}
-              size={"small"}
-              autoFocus
-              value={solutionCheckerLanguage}
-              select
-              id="computerLanguage"
-              onChange={(event) => {
+              </Box>
+              */}
+
+          <HustCodeEditor
+            title={t("correctSourceCode")}
+            language={languageSolution}
+            onChangeLanguage={(event) => {
+              setLanguageSolution(event.target.value);
+            }}
+            sourceCode={codeSolution}
+            onChangeSourceCode={(code) => {
+              setCodeSolution(code);
+            }}
+          />
+          <LoadingButton
+            variant="contained"
+            loading={loading}
+            onClick={checkCompile}
+            sx={{marginTop: "12px", marginBottom: "6px"}}
+          >
+            Check Solution Compile
+          </LoadingButton>
+
+          <CompileStatus
+            showCompile={showCompile}
+            statusSuccessful={statusSuccessful}
+            message={compileMessage}
+          />
+          <FormControlLabel
+            label={t("allowSubmittingOutput")}
+            control={
+              <Checkbox
+                checked={allowSubmittingOutput}
+                onChange={() => setAllowSubmittingOutput(!allowSubmittingOutput)}
+              />}
+          />
+
+          {allowSubmittingOutput &&
+            <HustCodeEditor
+              title={t("checkerSourceCode")}
+              language={solutionCheckerLanguage}
+              onChangeLanguage={(event) => {
                 setSolutionCheckerLanguage(event.target.value);
               }}
-            >
-              {computerLanguageList.map((item) => (
-                <MenuItem key={item} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </TextField>
-            {/*
-              <CodeMirror
-                value={solutionChecker}
-                height={"500px"}
-                width="100%"
-                extensions={getExtension()}
-                onChange={(value, viewUpdate) => {
-                  setSolutionChecker(value);
-                }}
-                autoFocus={false}
-              />
-              */}
-            <br />
-
-            <CompileStatus
-              showCompile={showCompile}
-              statusSuccessful={statusSuccessful}
-              message={compileMessage}
+              sourceCode={solutionChecker}
+              onChangeSourceCode={(code) => {
+                setSolutionChecker(code);
+              }}
+              placeholder={t("checkerSourceCodePlaceholder")}
             />
-          </CardContent>
-          <CardActions>
-            <Button
+          }
+
+          <Box width="100%" sx={{marginTop: "16px"}}>
+            <LoadingButton
               variant="contained"
-              color="light"
-              style={{ marginLeft: "45px" }}
-              onClick={checkCompile}
-            >
-              Check Solution Compile
-            </Button>
-            <Button
-              variant="contained"
-              color="light"
-              style={{ marginLeft: "45px" }}
+              color="success"
+              loading={loading}
               onClick={handleSubmit}
             >
               Save
-            </Button>
-            <SubmitWarming
-              showSubmitWarming={showSubmitWarming}
-              content={"Your source code must pass \"CHECK SOLUTION COMPILE\""}
-            />
-            <SubmitSuccess
-              showSubmitSuccess={showSubmitSuccess}
-              content={"You have saved problem"}
-            />
-          </CardActions>
-        </Card>
-      </MuiPickersUtilsProvider>
-    </div>
+            </LoadingButton>
+          </Box>
+        </CardContent>
+
+      </Card>
+    </Box>
   );
 }
+
 export default CreateProblem;

@@ -38,6 +38,7 @@ export default function RichTextEditor(props) {
       onEditorStateChange={updateBindingContentOnEditorStateChange}
       toolbarStyle={props.editorStyle.toolbar}
       editorStyle={props.editorStyle.editor}
+      placeholder={"Enter your text"}
     />
   );
 }
@@ -50,11 +51,13 @@ RichTextEditor.propTypes = {
 
 const DEFAULT_EDITOR_STYLE = {
   toolbar: {
-    background: "#FFFFFF",
+    background: "#FBFBFB",
   },
   editor: {
-    border: "1px solid black",
-    minHeight: "300px",
+    border: "1px solid darkgray",
+    borderRadius: "2px",
+    minHeight: "260px",
+    padding: "8px"
   }
 }
 

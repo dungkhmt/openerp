@@ -1,27 +1,17 @@
 import {TableCell} from "@material-ui/core";
 import {tableCellClasses} from "@mui/material/TableCell";
 import TableRow from "@material-ui/core/TableRow";
-import {cppLanguage} from "@codemirror/lang-cpp";
-import {StreamLanguage} from "@codemirror/stream-parser";
-import {go} from "@codemirror/legacy-modes/mode/go";
-import {java} from "@codemirror/lang-java";
-import {pythonLanguage} from "@codemirror/lang-python";
-import {javascript} from "@codemirror/lang-javascript";
-import { styled, alpha } from '@mui/material/styles';
+import {alpha, styled} from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
-import { makeStyles } from "@material-ui/core/styles";
+import {makeStyles} from "@material-ui/core/styles";
 
-export default function lib() {
-  return ;
-}
-
-export function sleep(ms){
+export function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export  function getColorLevel(level){
+export function getColorLevel(level) {
   // const colors = ['red', 'yellow', 'green']
-  switch (level){
+  switch (level) {
     case 'easy':
       return 'green';
     case 'medium':
@@ -33,8 +23,8 @@ export  function getColorLevel(level){
   }
 }
 
-export function getColorRegisterStatus(status){
-  switch (status){
+export function getColorRegisterStatus(status) {
+  switch (status) {
     case 'SUCCESSFUL':
       return 'green';
     case 'PENDING':
@@ -48,7 +38,7 @@ export function getColorRegisterStatus(status){
   }
 }
 
-export const StyledTableCell = styled(TableCell)(({ theme }) => ({
+export const StyledTableCell = styled(TableCell)(({theme}) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
@@ -58,7 +48,7 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-export const StyledTableRow = styled(TableRow)(({ theme }) => ({
+export const StyledTableRow = styled(TableRow)(({theme}) => ({
   '&:nth-of-type(odd)': {
     backgroundColor: theme.palette.action.hover,
   },
@@ -68,23 +58,8 @@ export const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export const getExtension = (computerLanguage) =>{
-  switch (computerLanguage){
-    case "CPP":
-      return [cppLanguage];
-    case "GoLang":
-      return StreamLanguage.define(go);
-    case "Java":
-      return java();
-    case "Python3":
-      return StreamLanguage.define(pythonLanguage);
-    default:
-      return javascript();
-  }
-}
-
 export const getStatusColor = (status) => {
-  switch (status){
+  switch (status) {
     case 'Accept':
       return 'green';
     default:
@@ -93,7 +68,7 @@ export const getStatusColor = (status) => {
 }
 
 
-export const Search = styled('div')(({ theme }) => ({
+export const Search = styled('div')(({theme}) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -109,7 +84,7 @@ export const Search = styled('div')(({ theme }) => ({
   },
 }));
 
-export const SearchIconWrapper = styled('div')(({ theme }) => ({
+export const SearchIconWrapper = styled('div')(({theme}) => ({
   padding: theme.spacing(0, 2),
   height: '100%',
   position: 'absolute',
@@ -119,8 +94,8 @@ export const SearchIconWrapper = styled('div')(({ theme }) => ({
   justifyContent: 'center',
 }));
 
-export const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
+export const StyledInputBase = styled(InputBase)(({theme}) => ({
+  color: 'inherit',
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
@@ -135,7 +110,7 @@ export const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export const styleBase = makeStyles((theme) => (
   {
-    searchStyle:{
+    searchStyle: {
       color: 'inherit',
       '& .MuiInputBase-input': {
         padding: theme.spacing(1, 1, 1, 0),
