@@ -7,6 +7,7 @@ import {
   ListItemText,
   Tooltip,
   Typography,
+  CircularProgress,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
 import { Delete } from "@material-ui/icons";
@@ -292,6 +293,7 @@ export default function QuizTestStudentList(props) {
     <>
       <input type="file" id="selected-upload-file" onChange={onFileChange} />
       <Button onClick={handleUploadExcelStudentList}>Upload</Button>
+      {isProcessing ? <CircularProgress /> : ""}
 
       <MaterialTable
         title=""

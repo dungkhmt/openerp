@@ -9,7 +9,7 @@ import {
 } from "@react-pdf/renderer";
 import parse from "html-react-parser";
 import Footer from "./Footer";
-
+import React, { useState } from "react";
 Font.register({
   family: "Inter",
   fonts: [
@@ -76,6 +76,8 @@ const checkBoxBase64 =
 
 // Create Document Component
 function ExamQuestionsOfParticipantPDFDocument({ data }) {
+  const [totalPages, setTotalPages] = useState();
+
   return (
     <Document>
       {data?.map(
@@ -90,100 +92,129 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
           viewTypeId,
           listQuestion,
         }) => (
-          <Page size="A4" style={styles.page} wrap>
-            <View>
-              <Text style={styles.textLine}>Quiz test: {testName}</Text>
-              <Text style={styles.textLine}>Code: {groupCode}</Text>
-              <Text style={styles.textLine}>Học phần: {courseName}</Text>
-              <Text style={styles.textLine}>MSSV: {userDetail.id}</Text>
-              <Text style={styles.textLine}>
-                Họ tên: {userDetail?.fullName}
-              </Text>
-              <Text style={styles.textLine}>Bắt đầu: {scheduleDatetime}</Text>
-              <Text style={styles.textLine}>Thời gian: {duration} phút</Text>
+          <>
+            <Page size="A4" style={styles.page} wrap>
+              <View>
+                <Text style={styles.textLine}>Quiz test: {testName}</Text>
+                <Text style={styles.textLine}>Code: {groupCode}</Text>
+                <Text style={styles.textLine}>Học phần: {courseName}</Text>
+                <Text style={styles.textLine}>MSSV: {userDetail.id}</Text>
+                <Text style={styles.textLine}>
+                  FullName: {userDetail?.fullName}
+                </Text>
+                <Text style={styles.textLine}>
+                  Start Time: {scheduleDatetime}
+                </Text>
+                <Text style={styles.textLine}>
+                  Duration: {duration} minutes{" "}
+                </Text>
 
-              {/* Questions */}
-              {listQuestion.map((q, qIndex) => (
-                <View key={q.questionId} style={styles.question}>
-                  {parse(q.statement).map((ele, eIndex) => {
-                    if (eIndex > 0) {
-                      if (ele.type === "ul") {
+                {/* Questions */}
+                {listQuestion.map((q, qIndex) => (
+                  <View key={q.questionId} style={styles.question}>
+                    {parse(q.statement).map((ele, eIndex) => {
+                      if (eIndex > 0) {
+                        if (ele.type === "ul") {
+                          return (
+                            <View
+                              style={{
+                                display: "flex",
+                                flexGrow: 1,
+                                flexShrink: 1,
+                              }}
+                            >
+                              {ele.props.children.map((ulChild) => {
+                                if (ulChild.type === "li")
+                                  return (
+                                    <Text style={styles.ulChild}>
+                                      &#8226; {ulChild.props.children}
+                                    </Text>
+                                  );
+                                else if (ulChild !== "\n")
+                                  return (
+                                    <Text style={styles.ulChild}>
+                                      {ulChild}
+                                    </Text>
+                                  );
+                              })}
+                            </View>
+                          );
+                        } else if (ele !== "\n") {
+                          return <Text>{ele}</Text>;
+                        }
+                      } else {
                         return (
-                          <View
-                            style={{
-                              display: "flex",
-                              flexGrow: 1,
-                              flexShrink: 1,
-                            }}
-                          >
-                            {ele.props.children.map((ulChild) => {
-                              if (ulChild.type === "li")
-                                return (
-                                  <Text style={styles.ulChild}>
-                                    &#8226; {ulChild.props.children}
-                                  </Text>
-                                );
-                              else if (ulChild !== "\n")
-                                return (
-                                  <Text style={styles.ulChild}>{ulChild}</Text>
-                                );
-                            })}
-                          </View>
+                          <Text>
+                            <Text style={styles.bold}>Câu {qIndex + 1}. </Text>
+                            {ele}
+                          </Text>
                         );
-                      } else if (ele !== "\n") {
-                        return <Text>{ele}</Text>;
                       }
-                    } else {
-                      return (
-                        <Text>
-                          <Text style={styles.bold}>Câu {qIndex + 1}. </Text>
-                          {ele}
-                        </Text>
-                      );
-                    }
-                  })}
+                    })}
 
-                  {/* Question images */}
-                  {q.attachment?.length > 0 &&
-                    q.attachment.map((imageBase64, index) => (
-                      <View key={index} style={styles.imageContainer}>
+                    {/* Question images */}
+                    {q.attachment?.length > 0 &&
+                      q.attachment.map((imageBase64, index) => (
+                        <View key={index} style={styles.imageContainer}>
+                          <Image
+                            src={`data:application/pdf;base64,${imageBase64}`}
+                            style={{
+                              objectFit: "scale-down",
+                            }}
+                          />
+                        </View>
+                      ))}
+
+                    {/* Question answers */}
+                    {q.quizChoiceAnswerList.map((ans) => (
+                      <View
+                        key={ans.choiceAnswerId}
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
                         <Image
-                          src={`data:application/pdf;base64,${imageBase64}`}
+                          src={`data:application/pdf;base64,${checkBoxBase64}`}
                           style={{
-                            objectFit: "scale-down",
+                            width: "24px",
+                            height: "24px",
                           }}
                         />
+                        <Text style={styles.answer}>
+                          {parse(ans.choiceAnswerContent)}
+                        </Text>
                       </View>
                     ))}
-
-                  {/* Question answers */}
-                  {q.quizChoiceAnswerList.map((ans) => (
-                    <View
-                      key={ans.choiceAnswerId}
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Image
-                        src={`data:application/pdf;base64,${checkBoxBase64}`}
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                        }}
-                      />
-                      <Text style={styles.answer}>
-                        {parse(ans.choiceAnswerContent)}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              ))}
-            </View>
-            <Footer />
-          </Page>
+                  </View>
+                ))}
+              </View>
+              <Footer />
+              <View style={styles.footer} fixed>
+                <Text
+                  render={({
+                    pageNumber,
+                    totalPages,
+                    subPageNumber,
+                    subPageTotalPages,
+                  }) => {
+                    if (subPageTotalPages % 2 === 0) setTotalPages(3);
+                    else setTotalPages(2);
+                    console.log(
+                      "render subPageTotalPages = " + subPageTotalPages
+                    );
+                    return null;
+                  }}
+                  fixed
+                />
+              </View>
+            </Page>
+            {Array.from(new Array(totalPages)).map((ele) => (
+              <Page size="A4" />
+            ))}
+          </>
         )
       )}
     </Document>

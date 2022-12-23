@@ -1,4 +1,4 @@
-import { Box, Typography } from "@material-ui/core/";
+import { Box, Typography, CircularProgress } from "@material-ui/core/";
 import { teal } from "@material-ui/core/colors";
 import { useTheme } from "@material-ui/core/styles";
 import { Skeleton } from "@material-ui/lab";
@@ -69,6 +69,7 @@ function QuizTestDetail() {
 
   const [testInfo, setTestInfo] = useState([]);
   const [courseInfo, setCourseInfo] = useState();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const [selectedTab, setSelectedTab] = useState(0);
   const theme = useTheme();
@@ -83,6 +84,7 @@ function QuizTestDetail() {
   // }
 
   function handleAssignStudents2QuizGroup() {
+    setIsProcessing(true);
     let data = { quizTestId: testId };
 
     request(
@@ -91,6 +93,7 @@ function QuizTestDetail() {
       (res) => {
         console.log("assign students to groups ", res);
         alert("assign students to groups " + res.data);
+        setIsProcessing(false);
       },
       { 401: () => {} },
       data
@@ -100,6 +103,7 @@ function QuizTestDetail() {
   }
 
   function handleAssignQuestions2QuizGroup() {
+    setIsProcessing(true);
     let data = { quizTestId: testId, numberQuestions: 10 };
 
     request(
@@ -108,6 +112,7 @@ function QuizTestDetail() {
       (res) => {
         console.log("assign questions to groups ", res);
         alert("assign questions to groups " + res.data);
+        setIsProcessing(false);
       },
       { 401: () => {} },
       data
@@ -215,6 +220,7 @@ function QuizTestDetail() {
       <br />
 
       <Box display="flex" justifyContent="flex-end">
+        {isProcessing ? <CircularProgress /> : ""}
         <PrimaryButton
           sx={styles.btn}
           onClick={(e) => {
