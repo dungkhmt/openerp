@@ -205,7 +205,7 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
                 }) => {
                   if (subPageTotalPages !== undefined) {
                     subPageTotalPagesState.merge({
-                      [idx]: 4 - (subPageTotalPages % 4),
+                      [idx]: (4 - (subPageTotalPages % 4)) % 4,
                     });
                   }
 
