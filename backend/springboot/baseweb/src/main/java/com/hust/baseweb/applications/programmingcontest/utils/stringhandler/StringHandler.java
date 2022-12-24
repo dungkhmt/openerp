@@ -154,8 +154,8 @@ public class StringHandler {
                 ansArray[i] = ContestSubmissionEntity.SUBMISSION_STATUS_OUTPUT_LIMIT_EXCEEDED;
             }
             else if (participantTestcaseAns.equals(Constants.TestCaseSubmissionError.MEMORY_LIMIT.getValue())) {
-                status = ContestSubmissionEntity.SUBMISSION_STATUS_MEMORY_LIMIT_EXCEEDED;
-                ansArray[i] = ContestSubmissionEntity.SUBMISSION_STATUS_MEMORY_LIMIT_EXCEEDED;
+                status = ContestSubmissionEntity.SUBMISSION_STATUS_MEMORY_ALLOCATION_ERROR;
+                ansArray[i] = ContestSubmissionEntity.SUBMISSION_STATUS_MEMORY_ALLOCATION_ERROR;
             }
             else if (!correctTestcaseAns.equals(participantTestcaseAns)) {
                     status = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;

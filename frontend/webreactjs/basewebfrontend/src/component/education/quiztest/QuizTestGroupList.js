@@ -1,3 +1,4 @@
+import { createState } from "@hookstate/core";
 import {
   Button,
   Checkbox,
@@ -13,20 +14,19 @@ import {
 } from "@material-ui/core/styles";
 import { Delete } from "@material-ui/icons";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import MaterialTable from "material-table";
-import React, { useEffect, useReducer, useRef, useState } from "react";
-import SimpleBar from "simplebar-react";
-import { isFunction, request } from "api";
 import { pdf } from "@react-pdf/renderer";
+import { isFunction, request } from "api";
+import FileSaver from "file-saver";
+import MaterialTable from "material-table";
+import { useEffect, useReducer, useRef, useState } from "react";
+import { toast } from "react-toastify";
+import SimpleBar from "simplebar-react";
+import { infoNoti } from "utils/notification";
 import PrimaryButton from "../../button/PrimaryButton";
 import TertiaryButton from "../../button/TertiaryButton";
 import CustomizedDialogs from "../../dialog/CustomizedDialogs";
 import ErrorDialog from "../../dialog/ErrorDialog";
 import QuizTestGroupQuestionList from "./QuizTestGroupQuestionList";
-import { VscFilePdf } from "react-icons/vsc";
-import FileSaver from "file-saver";
-import { infoNoti } from "utils/notification";
-import { toast } from "react-toastify";
 import ExamQuestionsOfParticipantPDFDocument from "./template/ExamQuestionsOfParticipantPDFDocument";
 
 export const style = (theme) => ({
@@ -93,14 +93,48 @@ const headerProperties = {
 
 let count = 0;
 
-const generatePdfDocument = async (documentData, fileName, onCompleted) => {
-  const blob = await pdf(
+export const subPageTotalPagesState = createState({
+  fulfilled: false,
+  totalPages: [],
+});
+
+export const generatePdfDocument = async (
+  documentData,
+  fileName,
+  onCompleted
+) => {
+  subPageTotalPagesState.set({
+    fulfilled: false,
+    totalPages: Array.from(new Array(documentData.length)),
+  });
+
+  // Calculate value for elements of subPageTotalPagesState
+  await pdf(
     <ExamQuestionsOfParticipantPDFDocument data={documentData} />
   ).toBlob();
 
-  if (isFunction(onCompleted)) onCompleted();
+  // Generate PDF only one time
+  let done = false;
 
-  FileSaver.saveAs(blob, fileName);
+  // Spend time for subPageTotalPagesState to update new state
+  const timer = setInterval(async () => {
+    if (subPageTotalPagesState.fulfilled.get() && !done) {
+      // console.log("I AM HERE");
+      done = true;
+      clearInterval(timer);
+
+      // Generate and save file
+      const blob = await pdf(
+        <ExamQuestionsOfParticipantPDFDocument data={documentData} />
+      ).toBlob();
+
+      if (isFunction(onCompleted)) onCompleted();
+
+      FileSaver.saveAs(blob, fileName);
+    }
+  }, 50);
+
+  // console.log("subPageTotalPagesState = " + subPageTotalPagesState.get());
 };
 
 export default function QuizTestGroupList(props) {

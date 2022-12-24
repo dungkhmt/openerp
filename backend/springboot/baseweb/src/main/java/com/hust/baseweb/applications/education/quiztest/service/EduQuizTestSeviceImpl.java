@@ -81,6 +81,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         newRecord.setCreatedStamp(new Date());
         newRecord.setLastUpdatedStamp(new Date());
         newRecord.setQuestionStatementViewTypeId(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_VISIBLE);
+        newRecord.setParticipantQuizGroupAssignmentMode(EduQuizTest.PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_HANDOUT_THEN_UPDATE_GROUP);
         newRecord = repo.save(newRecord);
 
         EduTestQuizRole role = new EduTestQuizRole();
@@ -108,6 +109,8 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
             eduQuizTest.setDuration(input.getDuration());
             eduQuizTest.setScheduleDatetime(input.getScheduleDate());
             eduQuizTest.setQuestionStatementViewTypeId(input.getQuestionStatementViewTypeId());
+            eduQuizTest.setParticipantQuizGroupAssignmentMode(input.getParticipantQuizGroupAssignmentMode());
+
             eduQuizTest = repo.save(eduQuizTest);
             log.info("update, testId = " +
                      input.getTestId() +

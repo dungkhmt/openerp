@@ -7,6 +7,7 @@ import TeacherCourseQuizList from "./TeacherCourseQuizList";
 import TeacherCourseTopicList from "./TeacherCourseTopicList";
 import TeacherViewCourseQuizList from "./TeacherViewCourseQuizList";
 import withScreenSecurity from "../../withScreenSecurity";
+import TeacherViewCourseDetail from "./teacher/TeacherViewCourseDetail";
 
 function TeacherCourseDetail() {
   const params = useParams();
@@ -20,6 +21,9 @@ function TeacherCourseDetail() {
 
   return (
     <>
+      <TeacherViewCourseDetail courseId={courseId}/>
+      <br/>
+
       <TeacherCourseChapterList courseId={courseId} />
       <TeacherCourseQuizList courseId={courseId} />
       <TeacherCourseTopicList courseId={courseId} />
