@@ -204,9 +204,13 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
                   subPageTotalPages,
                 }) => {
                   if (subPageTotalPages !== undefined) {
-                    subPageTotalPagesState.merge({
+                    subPageTotalPagesState.totalPages.merge({
                       [idx]: (4 - (subPageTotalPages % 4)) % 4,
                     });
+                  }
+
+                  if (idx === data.length - 1) {
+                    subPageTotalPagesState.merge({ fulfilled: true });
                   }
 
                   return null;
@@ -214,10 +218,10 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
               />
             </Page>
             {/* Blank pages */}
-            {subPageTotalPagesState[idx].get() > 0 &&
-              Array.from(new Array(subPageTotalPagesState[idx].get())).map(
-                (_) => <Page size="A4" />
-              )}
+            {subPageTotalPagesState.totalPages[idx].get() > 0 &&
+              Array.from(
+                new Array(subPageTotalPagesState.totalPages[idx].get())
+              ).map((_) => <Page size="A4" />)}
           </>
         )
       )}

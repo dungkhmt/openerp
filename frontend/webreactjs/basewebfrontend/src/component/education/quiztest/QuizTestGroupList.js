@@ -93,33 +93,48 @@ const headerProperties = {
 
 let count = 0;
 
-export const subPageTotalPagesState = createState([]);
+export const subPageTotalPagesState = createState({
+  fulfilled: false,
+  totalPages: [],
+});
 
 export const generatePdfDocument = async (
   documentData,
   fileName,
   onCompleted
 ) => {
-  subPageTotalPagesState.set(Array.from(new Array(documentData.length)));
+  subPageTotalPagesState.set({
+    fulfilled: false,
+    totalPages: Array.from(new Array(documentData.length)),
+  });
 
   // Calculate value for elements of subPageTotalPagesState
   await pdf(
     <ExamQuestionsOfParticipantPDFDocument data={documentData} />
   ).toBlob();
 
+  // Generate PDF only one time
+  let done = false;
+
   // Spend time for subPageTotalPagesState to update new state
-  await new Promise((r) => setTimeout(r, 250));
+  const timer = setInterval(async () => {
+    if (subPageTotalPagesState.fulfilled.get() && !done) {
+      // console.log("I AM HERE");
+      done = true;
+      clearInterval(timer);
+
+      // Generate and save file
+      const blob = await pdf(
+        <ExamQuestionsOfParticipantPDFDocument data={documentData} />
+      ).toBlob();
+
+      if (isFunction(onCompleted)) onCompleted();
+
+      FileSaver.saveAs(blob, fileName);
+    }
+  }, 50);
 
   // console.log("subPageTotalPagesState = " + subPageTotalPagesState.get());
-
-  // Generate and save file
-  const blob = await pdf(
-    <ExamQuestionsOfParticipantPDFDocument data={documentData} />
-  ).toBlob();
-
-  if (isFunction(onCompleted)) onCompleted();
-
-  FileSaver.saveAs(blob, fileName);
 };
 
 export default function QuizTestGroupList(props) {
