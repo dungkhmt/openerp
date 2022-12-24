@@ -194,6 +194,7 @@ function CreateProblem() {
           id={"problemId"}
           label={t("problemId")}
           placeholder="Problem ID"
+          value={problemId}
           onChange={(event) => {
             setProblemID(event.target.value);
           }}
@@ -203,6 +204,7 @@ function CreateProblem() {
           id="problemName"
           label={t("problemName")}
           placeholder="Problem Name"
+          value={problemName}
           onChange={(event) => {
             setProblemName(event.target.value);
           }}
