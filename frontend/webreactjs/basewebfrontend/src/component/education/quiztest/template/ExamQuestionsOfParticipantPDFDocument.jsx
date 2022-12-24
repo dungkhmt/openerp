@@ -8,8 +8,9 @@ import {
   View,
 } from "@react-pdf/renderer";
 import parse from "html-react-parser";
+import { subPageTotalPagesState } from "../QuizTestGroupList";
 import Footer from "./Footer";
-import React, { useState } from "react";
+
 Font.register({
   family: "Inter",
   fonts: [
@@ -76,22 +77,23 @@ const checkBoxBase64 =
 
 // Create Document Component
 function ExamQuestionsOfParticipantPDFDocument({ data }) {
-  const [totalPages, setTotalPages] = useState();
-
   return (
     <Document>
       {data?.map(
-        ({
-          userDetail,
-          testName,
-          scheduleDatetime,
-          courseName,
-          duration,
-          quizGroupId,
-          groupCode,
-          viewTypeId,
-          listQuestion,
-        }) => (
+        (
+          {
+            userDetail,
+            testName,
+            scheduleDatetime,
+            courseName,
+            duration,
+            quizGroupId,
+            groupCode,
+            viewTypeId,
+            listQuestion,
+          },
+          idx
+        ) => (
           <>
             <Page size="A4" style={styles.page} wrap>
               <View>
@@ -192,28 +194,30 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
                 ))}
               </View>
               <Footer />
-              <View style={styles.footer} fixed>
-                <Text
-                  render={({
-                    pageNumber,
-                    totalPages,
-                    subPageNumber,
-                    subPageTotalPages,
-                  }) => {
-                    if (subPageTotalPages % 2 === 0) setTotalPages(3);
-                    else setTotalPages(2);
-                    console.log(
-                      "render subPageTotalPages = " + subPageTotalPages
-                    );
-                    return null;
-                  }}
-                  fixed
-                />
-              </View>
+
+              {/* Calculate value for subPageTotalPagesState[idx] */}
+              <Text
+                render={({
+                  pageNumber,
+                  totalPages,
+                  subPageNumber,
+                  subPageTotalPages,
+                }) => {
+                  if (subPageTotalPages !== undefined) {
+                    subPageTotalPagesState.merge({
+                      [idx]: 4 - (subPageTotalPages % 4),
+                    });
+                  }
+
+                  return null;
+                }}
+              />
             </Page>
-            {Array.from(new Array(totalPages)).map((ele) => (
-              <Page size="A4" />
-            ))}
+            {/* Blank pages */}
+            {subPageTotalPagesState[idx].get() > 0 &&
+              Array.from(new Array(subPageTotalPagesState[idx].get())).map(
+                (_) => <Page size="A4" />
+              )}
           </>
         )
       )}

@@ -1,3 +1,4 @@
+import { createState } from "@hookstate/core";
 import {
   Button,
   Checkbox,
@@ -13,20 +14,19 @@ import {
 } from "@material-ui/core/styles";
 import { Delete } from "@material-ui/icons";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import MaterialTable from "material-table";
-import React, { useEffect, useReducer, useRef, useState } from "react";
-import SimpleBar from "simplebar-react";
-import { isFunction, request } from "api";
 import { pdf } from "@react-pdf/renderer";
+import { isFunction, request } from "api";
+import FileSaver from "file-saver";
+import MaterialTable from "material-table";
+import { useEffect, useReducer, useRef, useState } from "react";
+import { toast } from "react-toastify";
+import SimpleBar from "simplebar-react";
+import { infoNoti } from "utils/notification";
 import PrimaryButton from "../../button/PrimaryButton";
 import TertiaryButton from "../../button/TertiaryButton";
 import CustomizedDialogs from "../../dialog/CustomizedDialogs";
 import ErrorDialog from "../../dialog/ErrorDialog";
 import QuizTestGroupQuestionList from "./QuizTestGroupQuestionList";
-import { VscFilePdf } from "react-icons/vsc";
-import FileSaver from "file-saver";
-import { infoNoti } from "utils/notification";
-import { toast } from "react-toastify";
 import ExamQuestionsOfParticipantPDFDocument from "./template/ExamQuestionsOfParticipantPDFDocument";
 
 export const style = (theme) => ({
@@ -93,7 +93,26 @@ const headerProperties = {
 
 let count = 0;
 
-const generatePdfDocument = async (documentData, fileName, onCompleted) => {
+export const subPageTotalPagesState = createState([]);
+
+export const generatePdfDocument = async (
+  documentData,
+  fileName,
+  onCompleted
+) => {
+  subPageTotalPagesState.set(Array.from(new Array(documentData.length)));
+
+  // Calculate value for elements of subPageTotalPagesState
+  await pdf(
+    <ExamQuestionsOfParticipantPDFDocument data={documentData} />
+  ).toBlob();
+
+  // Spend time for subPageTotalPagesState to update new state
+  await new Promise((r) => setTimeout(r, 250));
+
+  // console.log("subPageTotalPagesState = " + subPageTotalPagesState.get());
+
+  // Generate and save file
   const blob = await pdf(
     <ExamQuestionsOfParticipantPDFDocument data={documentData} />
   ).toBlob();
