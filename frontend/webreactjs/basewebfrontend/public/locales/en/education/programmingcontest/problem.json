@@ -17,6 +17,7 @@
     "title": "Problems"
   },
   "createProblem": "Create new Problem",
+  "editProblem": "Edit problem",
   "validateSubmit": {
       "warningCheckSolutionCompile": "Your source code must pass \"CHECK COMPILE\" step",
       "missingField": "Missing required field: {{fieldName}}"

@@ -17,6 +17,7 @@
     "title": "Danh sách bài tập"
   },
   "createProblem": "Tạo bài tập mới",
+  "editProblem": "Chỉnh sửa bài tập",
   "validateSubmit": {
     "warningCheckSolutionCompile": "Bạn chưa hoàn thành bước \"BIÊN DỊCH\"",
     "missingField": "Trường {{fieldName}} không được bỏ trống"
