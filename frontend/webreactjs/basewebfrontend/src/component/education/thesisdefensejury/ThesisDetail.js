@@ -1,31 +1,21 @@
 import * as React from "react";
-import { Link, useParams, NavLink } from "react-router-dom";
-import { Fragment, useEffect, useState } from "react";
-import { request } from "../../../api";
+import {useEffect, useState} from "react";
+import {useHistory, useParams} from "react-router-dom";
+import {request} from "../../../api";
 import Typography from "@mui/material/Typography";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import Table from "@mui/material/Table";
-import { useHistory } from "react-router-dom";
-import { Button, TableHead, CircularProgress } from "@material-ui/core";
+import {Button, TableHead} from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
-import { getColorLevel, StyledTableCell, StyledTableRow } from "../programmingcontestFE/lib";
+import {StyledTableCell, StyledTableRow} from "../programmingcontestFE/lib";
 import TableBody from "@mui/material/TableBody";
 
 export default function ThesisDetail(props) {
-    const params = useParams();
-    const history = useHistory();
-  const defensePlanId = props.defensePlanId;
+  const params = useParams();
+  const history = useHistory();
   const [name, setName] = useState();
-  const [thesisAbstract,setThesisAbstract] = useState();
-  const [programName,setProgramName] =  useState();
-  const [thesisPlanName,setThesisPlanName] = useState();
-  const [studentName,setStudentName] = useState();
-  const [supervisorName,setSupervisorName] =  useState();
-  const [juryName,setJuryName] = useState();
-  const [keyword,setKeyword] = useState();
-  const [createdTime,setCreatedTime] = useState();
-  const [thesis,setThesis] = useState([]);
+  const [thesis, setThesis] = useState([]);
 
   async function getAllThesis() {
     request(
@@ -34,12 +24,13 @@ export default function ThesisDetail(props) {
       "GET",
       `/thesis/${params.id}`,
       (res) => {
-          console.log(res.data)
+        console.log(res.data)
         setThesis([res.data]);
         setName(res.data.name)
       }
     );
   }
+
   useEffect(() => {
     getAllThesis()
   }, []);
@@ -47,11 +38,11 @@ export default function ThesisDetail(props) {
   const handleEdit = () => {
     history.push({
       pathname: `/thesis/edit/${thesis[0].id}`,
-      state:{
+      state: {
         thesisID: params.id
       }
     });
-    
+
   };
 
   return (
@@ -59,10 +50,10 @@ export default function ThesisDetail(props) {
       <Typography variant="h4" component="h2">
         Thesis: {name}
       </Typography>
-      
+
       <TableContainer component={Paper}>
         <Table
-          sx={{ minWidth: window.innerWidth - 500 }}
+          sx={{minWidth: window.innerWidth - 500}}
           aria-label="customized table"
         >
           <TableHead>
@@ -84,27 +75,27 @@ export default function ThesisDetail(props) {
                   <b>{ele.thesis_abstract}</b>
                 </StyledTableCell>
                 <StyledTableCell component="th" scope="row" align="center">
-                    <b>{ele.student_name} </b>
+                  <b>{ele.student_name} </b>
                 </StyledTableCell>
                 <StyledTableCell component="th" scope="row" align="center">
-                    <b>{ele.supervisor_name} </b>
+                  <b>{ele.supervisor_name} </b>
                 </StyledTableCell>
                 <StyledTableCell component="th" scope="row" align="center">
-                    <b>{ele.defense_jury_name} </b>
+                  <b>{ele.defense_jury_name} </b>
                 </StyledTableCell>
                 <StyledTableCell component="th" scope="row" align="center">
-                    <b>{ele.program_name} </b>
+                  <b>{ele.program_name} </b>
                 </StyledTableCell>
                 {/* <StyledTableCell component="th" scope="row" align="center">
                     <b>{ele.keyword} </b>
                 </StyledTableCell> */}
                 <StyledTableCell component="th" scope="row" align="center">
-                    <b>{ele.createdTime} </b>
+                  <b>{ele.createdTime} </b>
                 </StyledTableCell>
                 <StyledTableCell component="th" scope="row" align="center">
-                <Button  color="primary" onClick={handleEdit}>
-                  Edit
-                </Button>
+                  <Button color="primary" onClick={handleEdit}>
+                    Edit
+                  </Button>
                 </StyledTableCell>
               </StyledTableRow>
             ))}
