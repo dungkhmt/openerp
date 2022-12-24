@@ -7,5 +7,6 @@
   "edit" : "Edit",
   "public": "Public",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "missingField": "không được bỏ trống"
 }

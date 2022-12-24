@@ -7,5 +7,6 @@
     "edit" : "Chỉnh sửa",
     "public": "Công khai",
     "yes": "Có",
-    "no": "Không"
+    "no": "Không",
+    "missingField": "không được bỏ trống"
 }
