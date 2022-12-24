@@ -19,7 +19,7 @@ const HustContainerCard = (props) => {
           variant="h5"
           component="div"
           sx={{margin: "12px 0 10px 18px"}}
-          color="#2972bb"
+          color="#00acc1"
         >
           {title}
         </Typography>}
