@@ -118,7 +118,7 @@ public class SubmissionResponseHandler {
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
             //log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Summary Compile error " + message);
         } else if (nbTestCasePass == 0) {
-            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_FAILED;
         } else if (nbTestCasePass > 0 && nbTestCasePass < testCaseEntityList.size()) {
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL;
         } else {
