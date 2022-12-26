@@ -102,7 +102,7 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
               <Text style={styles.textLine}>Thời gian: {duration} phút</Text>
 
               {/* Questions */}
-              {listQuestion.map((q, qIndex) => (
+              {listQuestion?.map((q, qIndex) => (
                 <View key={q.questionId} style={styles.question}>
                   {parse(q.statement).map((ele, eIndex) => {
                     if (eIndex > 0) {

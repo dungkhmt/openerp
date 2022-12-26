@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { infoNoti } from "utils/notification";
 import ExamQuestionsOfParticipantPDFDocument from "./template/ExamQuestionsOfParticipantPDFDocument";
+import StudentAssignedToQuizGroups from "./detail/StudentAssignedToQuizGroups";
 
 const generatePdfDocument = async (documentData, fileName, onCompleted) => {
   const blob = await pdf(
@@ -184,7 +185,7 @@ function QuizTestGroupParticipants(props) {
 
     await request(
       "get",
-      "get-all-quiz-test-participation-group-question/" + testId,
+      "/get-all-quiz-test-participation-group-question/" + testId,
       (res) => {
         data = res.data;
         setStudentQuestions(data);
@@ -214,35 +215,40 @@ function QuizTestGroupParticipants(props) {
   }, []);
 
   return (
-    <MaterialTable
-      title={"Phân thí sinh vào các đề"}
-      columns={columns}
-      data={participants}
-      actions={[
-        {
-          icon: () => (
-            <img
-              alt="Xuất PDF"
-              src="/static/images/icons/pdf_icon.png"
-              style={{ width: "35px", height: "35px" }}
-            />
-          ),
-          tooltip: "Xuất PDF",
-          isFreeAction: true,
-          onClick: () => {
-            toastId.current = infoNoti("Hệ thống đang chuẩn bị tệp PDF ...");
-            exportExamQuestionsOfAllStudents();
-            // exportQuizQuestionAssigned2StudentPdf(
-            //   //students,
-            //   participants,
-            //   resultExportPDFData,
-            //   studentQuestions,
-            //   testId
-            // );
+    <>
+      <StudentAssignedToQuizGroups testId={testId}/>
+      <br/>
+
+      <MaterialTable
+        title={"Phân thí sinh vào các đề"}
+        columns={columns}
+        data={participants}
+        actions={[
+          {
+            icon: () => (
+              <img
+                alt="Xuất PDF"
+                src="/static/images/icons/pdf_icon.png"
+                style={{ width: "35px", height: "35px" }}
+              />
+            ),
+            tooltip: "Xuất PDF",
+            isFreeAction: true,
+            onClick: () => {
+              toastId.current = infoNoti("Hệ thống đang chuẩn bị tệp PDF ...");
+              exportExamQuestionsOfAllStudents();
+              // exportQuizQuestionAssigned2StudentPdf(
+              //   //students,
+              //   participants,
+              //   resultExportPDFData,
+              //   studentQuestions,
+              //   testId
+              // );
+            },
           },
-        },
-      ]}
-    />
+        ]}
+      />
+    </>
   );
 }
 

@@ -57,29 +57,37 @@ export default function QuizGroupList(props) {
   const columns = [
     { field: "groupCode", title: "Mã đề" },
     { field: "note", title: "Ghi chú" },
-    { field: "numStudent", title: "Số sinh viên", type: "numeric" },
-    { field: "numQuestion", title: "Số câu hỏi", type: "numeric" },
+    { field: "numStudent", title: "Số sinh viên", type: "numeric", cellStyle: { textAlign: 'center' } },
+    { field: "numQuestion", title: "Số câu hỏi", type: "numeric", cellStyle: { textAlign: 'center' } },
     { field: "", title: "",
-      render: (quizGroup) => <DeleteQuizGroupButton deletedGroupIds={[quizGroup.quizGroupId]}/>
+      render: (quizGroup) => (
+        <DeleteQuizGroupButton deletedGroupIds={[quizGroup.quizGroupId]}
+                               variant="outlined"/>
+      )
     }
   ]
 
   const actions = [
-    { icon: () => <GenerateQuizGroupButton/> },
-    { icon: () => <DeleteQuizGroupButton deletedGroupIds={quizGroupIdsToDelete}/> }
+    { icon: () => GenerateQuizGroupButton, isFreeAction: true },
+    {
+      icon: () => (
+        <DeleteQuizGroupButton deletedGroupIds={quizGroupIdsToDelete}
+                               variant="contained"/>
+      )
+    }
   ]
 
   const GenerateQuizGroupButton = (
     <Button color="primary"
-            variant="outlined"
+            variant="contained"
             onClick={(_) => setGenerateQuizGroupDlgOpen(true)}>
       Thêm đề
     </Button>
   )
 
-  const DeleteQuizGroupButton = ({deletedGroupIds}) => (
+  const DeleteQuizGroupButton = ({deletedGroupIds, variant}) => (
     <Button color="error"
-            variant="outlined"
+            variant={variant}
             onClick={(_) => deleteQuizGroups(deletedGroupIds)}>
       Xóa
     </Button>
