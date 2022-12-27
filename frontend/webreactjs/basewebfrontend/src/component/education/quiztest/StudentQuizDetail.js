@@ -5,7 +5,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { request } from "../../../api";
 import StudentQuizDetailListForm from "./StudentQuizDetailListForm";
 import StudentQuizDetailStepForm from "./StudentQuizDetailStepForm";
@@ -28,7 +28,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function StudentQuizDetail() {
   const history = useHistory();
-  const testQuizId = history.location.state?.testId;
+  //const testQuizId = history.location.state?.testId;
+  const params = useParams();
+  const testQuizId = params.testId;
 
   const classes = useStyles();
 
@@ -41,10 +43,10 @@ export default function StudentQuizDetail() {
   const [groupCode, setGroupCode] = React.useState(null);
   const [open, setOpen] = React.useState(false);
 
-  //const [viewTypeId, setViewTypeId] = React.useState(null);
-  const [viewTypeId, setViewTypeId] = React.useState(
-    history.location.state?.viewTypeId
-  );
+  const [viewTypeId, setViewTypeId] = React.useState(null);
+  //const [viewTypeId, setViewTypeId] = React.useState(
+  //  history.location.state?.viewTypeId
+  //);
 
   // Keep track of checking state of all choices of all quiz
   const checkState = useState([]);
@@ -58,6 +60,7 @@ export default function StudentQuizDetail() {
       "/confirm-update-group-code-quiz-test/" + testQuizId + "/" + groupCode,
       (res) => {
         alert("update " + res.data);
+        setOpen(false);
       },
       {
         401: () => {},
@@ -244,6 +247,11 @@ export default function StudentQuizDetail() {
 
     setOpen(true);
   }
+  function checkAndConfirmCode() {
+    history.push(
+      "/edu/class/student/quiztest-detail/check-confirm-code/" + testQuizId
+    );
+  }
   return (
     <div className={classes.root}>
       <Card style={{ padding: "20px 20px 20px 20px" }}>
@@ -268,48 +276,57 @@ export default function StudentQuizDetail() {
         <div style={{ padding: "0px 20px 20px 30px" }}>
           <div style={{ justifyContent: "space-between", display: "flex" }}>
             <h3>Quiz test: {quizGroupTestDetail.testName}</h3>
-
+            <h3>QuizTestID: {testQuizId}</h3>
             <h3>Course: {quizGroupTestDetail.courseName}</h3>
           </div>
           <h4>Start Time: {quizGroupTestDetail.scheduleDatetime}</h4>
           <h4>Duration: {quizGroupTestDetail.duration} minutes</h4>
-          {quizGroupTestDetail ? (
-            <div>
-              <TextField
-                autoFocus
-                required
-                id="groupCode"
-                label="groupCode"
-                placeholder="groupCode"
-                value={groupCode}
-                onChange={(event) => {
-                  setGroupCode(event.target.value);
-                }}
-              />
-            </div>
-          ) : (
-            <div>
-              <TextField
-                autoFocus
-                required
-                id="groupCode"
-                label="groupCode"
-                placeholder="groupCode"
-                value={groupCode}
-                onChange={(event) => {
-                  setGroupCode(event.target.value);
-                }}
-              />
-              {/*<Button onClick={updateCode}>Update Code</Button>*/}
-            </div>
-          )}
-          {<Button onClick={checkoutQuestion}>Check</Button>}
+          <div style={{ justifyContent: "space-between", display: "flex" }}>
+            <h3>Code: {groupCode}</h3>
+            <Button variant="contained" onClick={checkAndConfirmCode}>
+              {" "}
+              Check & Confirm Code
+            </Button>
+            {/*
+              quizGroupTestDetail ? (
+              <div>
+                <TextField
+                  autoFocus
+                  required
+                  id="groupCode"
+                  label="groupCode"
+                  placeholder="groupCode"
+                  value={groupCode}
+                  onChange={(event) => {
+                    setGroupCode(event.target.value);
+                  }}
+                />
+              </div>
+            ) : (
+              <div>
+                <TextField
+                  autoFocus
+                  required
+                  id="groupCode"
+                  label="groupCode"
+                  placeholder="groupCode"
+                    value={groupCode}
+                    
+                  onChange={(event) => {
+                    setGroupCode(event.target.value);
+                  }}
+                />
+               
+              </div>
+                )*/}
+          </div>
+          {/*<Button onClick={checkoutQuestion}>Check</Button>*/}
         </div>
 
         {viewTypeId === "VIEW_STEP" ? (
-          <StudentQuizDetailStepForm />
+          <StudentQuizDetailStepForm testId={testQuizId} />
         ) : (
-          <StudentQuizDetailListForm />
+          <StudentQuizDetailListForm testId={testQuizId} />
         )}
 
         {/*

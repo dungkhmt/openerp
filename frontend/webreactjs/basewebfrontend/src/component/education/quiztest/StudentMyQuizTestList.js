@@ -16,10 +16,13 @@ function StudentMyQuizTestList() {
 
   const onClickQuizId = (quizid, viewTypeId) => {
     console.log("click " + quizid);
-    history.push("/edu/class/student/quiztest/detail", {
-      testId: quizid,
-      viewTypeId: viewTypeId,
-    });
+
+    //history.push("/edu/class/student/quiztest/detail", {
+    //  testId: quizid,
+    //  viewTypeId: viewTypeId,
+    //});
+
+    history.push("/edu/class/student/quiztest/detail/" + quizid);
   };
   const columns = [
     {

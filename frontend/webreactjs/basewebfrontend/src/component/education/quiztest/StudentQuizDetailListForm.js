@@ -1,5 +1,5 @@
 import { useState } from "@hookstate/core";
-import Card from "@material-ui/core/Card";
+import { Card, Button } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,9 +24,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StudentQuizDetailListForm() {
+export default function StudentQuizDetailListForm(props) {
   const history = useHistory();
-  const testQuizId = history.location.state?.testId;
+  //const testQuizId = history.location.state?.testId;
+  const testQuizId = props.testId;
   const classes = useStyles();
 
   //
@@ -121,7 +122,9 @@ export default function StudentQuizDetailListForm() {
       }
     );
   };
-
+  function handleClickViewQuestion() {
+    getQuestionList();
+  }
   const handleCloseSuccess = () => {
     setRequestSuccessfully(false);
   };
@@ -155,6 +158,15 @@ export default function StudentQuizDetailListForm() {
             {messageRequest}
           </Alert>
         </Snackbar>
+        <div style={{}}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleClickViewQuestion}
+          >
+            View Questions
+          </Button>
+        </div>
 
         {/* Quiz */}
         <Grid container spacing={3}>

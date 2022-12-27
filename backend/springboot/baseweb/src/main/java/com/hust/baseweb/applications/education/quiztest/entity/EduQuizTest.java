@@ -44,7 +44,12 @@ public class EduQuizTest {
         L.add(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_HIDDEN);
         return L;
     };
-
+    public static List<String> getListQuizTestViewTypes(){
+        List<String> L = new ArrayList();
+        L.add(QUIZ_TEST_VIEW_TYPE_LIST);
+        L.add(QUIZ_TEST_VIEW_TYPE_STEP);
+        return L;
+    }
     @Id
     @Column(name = "test_id")
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
