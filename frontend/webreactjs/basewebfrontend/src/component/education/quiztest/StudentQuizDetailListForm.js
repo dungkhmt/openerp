@@ -102,7 +102,13 @@ export default function StudentQuizDetailListForm(props) {
         setMessageRequest("STORED!");
         setRequestSuccessfully(true);
         checkState[order].submitted.set(true);
-        checkState[order].lastSubmittedAnswers.set(choseAnswers);
+        //checkState[order].lastSubmittedAnswers.set(choseAnswers);
+        let resChoseAnswer = [];
+        for (let i = 0; i < res.data.length; i++) {
+          resChoseAnswer.push(res.data[i].choiceAnswerId);
+        }
+        console.log("res choseanswer = ", resChoseAnswer);
+        checkState[order].lastSubmittedAnswers.set(resChoseAnswer);
       },
       {
         400: () => {

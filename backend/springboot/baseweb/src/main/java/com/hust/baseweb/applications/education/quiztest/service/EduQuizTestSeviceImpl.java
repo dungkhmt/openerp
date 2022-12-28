@@ -963,7 +963,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         // todo by PQD
         List<QuizGroupQuestionParticipationExecutionChoice> choices = quizGroupQuestionParticipationExecutionChoiceRepo
             .findQuizGroupQuestionParticipationExecutionChoicesByParticipationUserLoginId(userLoginId);
-        log.info("getQuizTestParticipationExecutionResultOfAUserLogin, sz = " + choices.size());
+        //log.info("getQuizTestParticipationExecutionResultOfAUserLogin, sz = " + choices.size());
 
         HashSet<UUID> quizGroupIds = new HashSet();
         HashSet<UUID> questionIds = new HashSet();
@@ -989,8 +989,8 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                         date = c.getCreatedStamp();
                     }
                 }
-                log.info("getQuizTestParticipationExecutionResultOfAUserLogin, group " + g.getGroupCode()
-                         + " question " + qid + " ans = " + chooseAnsIds.size());
+                //log.info("getQuizTestParticipationExecutionResultOfAUserLogin, group " + g.getGroupCode()
+                //         + " question " + qid + " ans = " + chooseAnsIds.size());
 
                 QuizQuestion q = quizQuestionRepo.findById(qid).orElse(null);
                 List<QuizChoiceAnswer> ans = quizChoiceAnswerRepo.findAllByQuizQuestion(q);
@@ -1066,7 +1066,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         List<EduTestQuizGroup> eduTestQuizGroups = eduQuizTestGroupRepo.findByTestId(testId);
 
         for (StudentInfo studentInfo : list) {
-            log.info("getQuizTestParticipationExecutionResult, consider user " + studentInfo.getUser_login_id() + "");
+            //log.info("getQuizTestParticipationExecutionResult, consider user " + studentInfo.getUser_login_id() + "");
 
             for (EduTestQuizGroup eduTestQuizGroup : eduTestQuizGroups) {
 
@@ -1282,12 +1282,12 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                 .findAllByQuizGroupIdAndParticipationUserLoginId(
                     gr.getQuizGroupId(),
                     userId);
-            log.info("confirmUpdateGroupInQuizTest, GOT " +
-                     L.size() +
-                     " items for group-participant assignments group " +
-                     gr.getQuizGroupId() +
-                     " user " +
-                     userId);
+            //log.info("confirmUpdateGroupInQuizTest, GOT " +
+            //         L.size() +
+            //         " items for group-participant assignments group " +
+            //         gr.getQuizGroupId() +
+            //         " user " +
+            //         userId);
             // remove existing info
             if (L != null && L.size() > 0) {
                 for (EduTestQuizGroupParticipationAssignment a : L) {
