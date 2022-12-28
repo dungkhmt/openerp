@@ -61,7 +61,7 @@ function QuizTestResultChart(props) {
   const { testId } = props;
   const [data, setData] = useState({});
 
-  useEffect(() => {
+  function getResults(){
     request(
       "post",
       "/get-quiz-test-participation-execution-result",
@@ -72,6 +72,22 @@ function QuizTestResultChart(props) {
       {},
       { testId }
     );
+  }
+  useEffect(() => {
+    try {
+      var refreshIntervalId = setInterval(async () => {
+        getResults();
+      }, 3000);
+    } catch (e) {
+      console.log("FOUND exception", e);
+    }
+
+    return function cleanInterval() {
+      clearInterval(refreshIntervalId);
+    };
+
+    //getResults();
+    
   }, [testId]);
 
   return (

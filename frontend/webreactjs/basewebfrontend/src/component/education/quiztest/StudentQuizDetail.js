@@ -279,7 +279,7 @@ export default function StudentQuizDetail() {
             <h3>QuizTestID: {testQuizId}</h3>
             <h3>Course: {quizGroupTestDetail.courseName}</h3>
           </div>
-          <h4>Start Time: {quizGroupTestDetail.scheduleDatetime}</h4>
+          {/*<h4>Start Time: {quizGroupTestDetail.scheduleDatetime}</h4>*/}
           <h4>Duration: {quizGroupTestDetail.duration} minutes</h4>
           <div style={{ justifyContent: "space-between", display: "flex" }}>
             <h3>Code: {groupCode}</h3>
