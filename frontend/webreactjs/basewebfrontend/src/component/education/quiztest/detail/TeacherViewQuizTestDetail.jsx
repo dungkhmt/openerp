@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
 import { addZeroBefore } from "utils/dateutils";
-import withScreenSecurity from "../../withScreenSecurity";
+import withScreenSecurity from "../../../withScreenSecurity";
 import ParticipantRolesOfQuizTest from "./ParticipantRolesOfQuizTest";
 import QuizListForAssignment from "./QuizListForAssignment";
 import QuizQuestionsInQuizTest from "./QuizQuestionsInQuizTest";
@@ -79,16 +79,10 @@ function QuizTestDetail() {
     setSelectedTab(newValue);
   };
 
-  // function handleEditQuizTes() {
-  //   history.push("/edu/class/quiztest/edit/" + testId);
-  // }
-
   function handleAssignStudents2QuizGroup() {
     let data = { quizTestId: testId };
 
-    request(
-      "post",
-      "auto-assign-participants-2-quiz-test-group",
+    request("POST", "auto-assign-participants-2-quiz-test-group",
       (res) => {
         console.log("assign students to groups ", res);
         alert("assign students to groups " + res.data);
@@ -96,16 +90,12 @@ function QuizTestDetail() {
       { 401: () => {} },
       data
     );
-
-    // console.log(datasend);
   }
 
   function handleAssignQuestions2QuizGroup() {
     let data = { quizTestId: testId, numberQuestions: 10 };
 
-    request(
-      "post",
-      "auto-assign-question-2-quiz-group",
+    request("POST", "auto-assign-question-2-quiz-group",
       (res) => {
         console.log("assign questions to groups ", res);
         alert("assign questions to groups " + res.data);
@@ -113,8 +103,6 @@ function QuizTestDetail() {
       { 401: () => {} },
       data
     );
-
-    // console.log(datasend);
   }
 
   async function getQuizTestDetail() {
@@ -154,7 +142,7 @@ function QuizTestDetail() {
 
     //do something to get course info from testInfo.courseId
     /* request(
-      // token, history, 
+      // token, history,
       "get", `/edu/class/${re.classId}`, (res) => {
             tempCourseInfo.id = res.data.courseId;
             tempCourseInfo.courseName = res.data.name;

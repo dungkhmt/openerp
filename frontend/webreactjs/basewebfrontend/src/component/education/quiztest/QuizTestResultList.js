@@ -7,6 +7,7 @@ import { toFormattedDateTime } from "../../../utils/dateutils";
 import { localization } from "../../../utils/MaterialTableUtils";
 import { exportResultListPdf } from "./TeacherQuizResultExportPDF.js";
 import ViewHistoryLogQuizGroupQuestionParticipationExecutionChoice from "./ViewHistoryLogQuizGroupQuestionParticipationExecutionChoice";
+import ResultListOfQuizTest from "./detail/ResultListOfQuizTest";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -305,6 +306,8 @@ export default function QuizTestStudentListResult(props) {
 
   return (
     <>
+      <ResultListOfQuizTest testId={testId} isGeneral={isGeneral}/>
+
       <MaterialTable
         title=""
         columns={isGeneral ? generalColumns : columns}
