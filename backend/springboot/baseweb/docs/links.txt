@@ -1,6 +1,0 @@
-https://www.java67.com/2019/03/5-free-devops-courses-to-learn-jenkins.html?fbclid=IwAR0tbawnvYL2XhYDWNMSKS4yXdb7sFjq3VxJpv8IxZdBnV67Zi1B-q-W-do
-https://medium.com/@Mareks_082/auto-increment-keys-vs-uuid-a74d81f7476a
-
-https://stackoverflow.com/questions/39890849/what-exactly-is-field-injection-and-how-to-avoid-it
-
-https://medium.com/@devopsadvocate/how-to-implement-elasticsearch-fluentd-and-kibana-efk-stack-on-kubernetes-8d1bcdeb0a7f
