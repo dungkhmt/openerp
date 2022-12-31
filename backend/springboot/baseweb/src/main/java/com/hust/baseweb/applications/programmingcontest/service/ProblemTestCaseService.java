@@ -167,4 +167,6 @@ public interface ProblemTestCaseService {
     boolean addUserProblemRole(String userName, ModelUserProblemRole input);
     boolean removeUserProblemRole(String userName, ModelUserProblemRole input);
     boolean grantRole2AllProblems(String userLoginId, String userId, String roleId);
+
+    void evaluateCustomProblemSubmission(UUID contestSubmissionId) throws Exception;
 }

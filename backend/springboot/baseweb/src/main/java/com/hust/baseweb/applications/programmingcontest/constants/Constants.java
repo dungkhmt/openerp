@@ -133,4 +133,19 @@ public class Constants {
         }
     }
 
+    public enum ProblemResultEvaluationType {
+        NORMAL("NORMAL_EVALUATION"),
+        CUSTOM("CUSTOM_EVALUATION");
+
+        private String value;
+
+        ProblemResultEvaluationType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+    }
+
 }

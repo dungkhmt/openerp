@@ -2,6 +2,7 @@ package com.hust.baseweb.applications.programmingcontest.utils.stringhandler;
 
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionEntity;
+import com.hust.baseweb.applications.programmingcontest.entity.ProblemEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.TextStringBuilder;
 
@@ -115,7 +116,7 @@ public class StringHandler {
                                 .build();
     }
 
-    public static ProblemSubmission handleContestResponseV2(String response, List<String> testCaseAns, List<Integer> points) {
+    public static ProblemSubmission handleContestResponseV2(String response, List<String> testCaseAns, List<Integer> points, String problemEvaluationType) {
         // log.info("handleContestResponse, response {}", response);
         if (response.length() == 0) throw new IllegalArgumentException("Docker Judging client error");
 
@@ -142,7 +143,6 @@ public class StringHandler {
         int cnt = 0;
         int score = 0;
         for (int i = 0; i < testCaseAns.size(); i++) {
-            String correctTestcaseAns = replaceSpaceV2(testCaseAns.get(i));
             String participantTestcaseAns = replaceSpaceV2(ansArray[i]);
 
             if (participantTestcaseAns.equals(Constants.TestCaseSubmissionError.TIME_LIMIT.getValue())) {
@@ -157,12 +157,21 @@ public class StringHandler {
                 status = ContestSubmissionEntity.SUBMISSION_STATUS_MEMORY_ALLOCATION_ERROR;
                 ansArray[i] = ContestSubmissionEntity.SUBMISSION_STATUS_MEMORY_ALLOCATION_ERROR;
             }
-            else if (!correctTestcaseAns.equals(participantTestcaseAns)) {
-                    status = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
-            }
             else {
-                score += points.get(i);
-                cnt++;
+                String correctTestcaseAns = replaceSpaceV2(testCaseAns.get(i));
+
+                if (problemEvaluationType.equals(Constants.ProblemResultEvaluationType.NORMAL.getValue())){
+                    if (!correctTestcaseAns.equals(participantTestcaseAns))
+                        status = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
+                    else {
+                        score += points.get(i);
+                        cnt++;
+                    }
+                }
+                else if (problemEvaluationType.equals(Constants.ProblemResultEvaluationType.CUSTOM.getValue())){
+                    status = ContestSubmissionEntity.SUBMISSION_STATUS_WAIT_FOR_CUSTOM_EVALUATION;
+                }
+
             }
         }
 
@@ -180,6 +189,8 @@ public class StringHandler {
                                 .participantAns(Arrays.asList(ansArray))
                                 .build();
     }
+
+//    public static void hanlde
 
     private static ProblemSubmission buildCompileErrorForSubmission(int numTestCases, String message) {
         return ProblemSubmission.builder()

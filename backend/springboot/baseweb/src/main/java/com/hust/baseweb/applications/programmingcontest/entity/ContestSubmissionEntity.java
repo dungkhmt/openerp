@@ -25,6 +25,7 @@ public class ContestSubmissionEntity {
     public static final String SUBMISSION_STATUS_COMPILE_ERROR = "Compile Error";
     public static final String SUBMISSION_STATUS_NOT_AVAILABLE = "NA";
     public static final String SUBMISSION_STATUS_EVALUATION_IN_PROGRESS = "In Progress";
+    public static final String SUBMISSION_STATUS_WAIT_FOR_CUSTOM_EVALUATION = "Pending Evaluation";
 
     @Id
     @Column(name = "contest_submission_id")

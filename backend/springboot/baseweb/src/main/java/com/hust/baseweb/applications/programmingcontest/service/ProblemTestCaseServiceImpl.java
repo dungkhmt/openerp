@@ -1490,12 +1490,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                         contest.getEvaluateBothPublicPrivateTestcase()
                                                .equals(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_YES);
 
-//        if (evaluatePrivatePublic) {
-//            testCaseEntityList = testCaseRepo.findAllByProblemId(modelContestSubmission.getProblemId());
-//        } else {
-//            testCaseEntityList = testCaseRepo
-//                .findAllByProblemIdAndIsPublic(modelContestSubmission.getProblemId(), "N");
-//        }
         testCaseEntityList = cacheService.findListTestCaseAndUpdateCache(
             modelContestSubmission.getProblemId(),
             evaluatePrivatePublic);
@@ -1536,8 +1530,70 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             testCaseEntityList,
             listSubmissionResponse,
             modelContestSubmission,
-            submission);
+            submission,
+            problemEntity.getScoreEvaluationType());
     }
+
+    @Override
+    public void evaluateCustomProblemSubmission(UUID submissionId) throws Exception {
+
+        ContestSubmissionEntity submission = contestSubmissionRepo.findContestSubmissionEntityByContestSubmissionId(submissionId);
+        ProblemEntity problemEntity = cacheService.findProblemAndUpdateCache(submission.getProblemId());
+        ContestEntity contest = cacheService.findContestAndUpdateCache(submission.getContestId());
+        List<ContestSubmissionTestCaseEntity> submissionTestCases = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId(submissionId);
+
+        String userId = submission.getUserId();
+
+        List<TestCaseEntity> testCaseEntityList;
+        boolean evaluatePrivatePublic = contest != null &&
+                                        contest.getEvaluateBothPublicPrivateTestcase() != null &&
+                                        contest.getEvaluateBothPublicPrivateTestcase()
+                                               .equals(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_YES);
+
+        testCaseEntityList = cacheService.findListTestCaseAndUpdateCache(
+            submission.getProblemId(),
+            evaluatePrivatePublic);
+
+        List<TestCaseEntity> listTestCaseAvailable = new ArrayList<>();
+        for (TestCaseEntity tc : testCaseEntityList) {
+            if (tc.getStatusId() != null && tc.getStatusId().equals(TestCaseEntity.STATUS_DISABLED)) {
+                continue;
+            }
+            listTestCaseAvailable.add(tc);
+        }
+        testCaseEntityList = listTestCaseAvailable;
+
+        String tempName = tempDir.createRandomScriptFileName(userId + "-" +
+                                                             submission.getContestId() + "-" +
+                                                             submission.getProblemId() + "-" +
+                                                             "custom-" +
+                                                             Math.random());
+
+        Map<UUID, String> submissionResponses = new HashMap<UUID, String>();
+        for (TestCaseEntity testCaseEntity : testCaseEntityList) {
+            ContestSubmissionTestCaseEntity submissionTestCase = submissionTestCases
+                .stream()
+                .filter(tc -> tc.getTestCaseId().equals(testCaseEntity.getTestCaseId()))
+                .findFirst().get();
+
+            String response = submissionSolutionOutput(
+                problemEntity.getSolutionCheckerSourceCode(),
+                problemEntity.getSolutionCheckerSourceLanguage(),
+                submissionTestCase.getParticipantSolutionOtput(),
+                tempName,
+                testCaseEntity,
+                "language not found",
+                problemEntity.getTimeLimit(),
+                problemEntity.getMemoryLimit());
+
+            submissionResponses.put(submissionTestCase.getContestSubmissionTestcaseId(), response);
+        }
+
+        // tempDir.removeDir(tempName);
+        submissionResponseHandler.processCustomSubmissionResponse(submission, submissionResponses);
+    }
+
+
 
     @Override
     public ModelContestSubmissionResponse submitContestProblemStoreOnlyNotExecute(
@@ -1658,7 +1714,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             tempName,
             testCase,
             "language not found",
-            1000000);
+            1000000,
+            problemEntity.getMemoryLimit());
 
 
         //  log.info("submitSolutionOutput, response = " + response);
@@ -1735,7 +1792,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 tempName,
                 testCase,
                 "language not found",
-                1000000);
+                1000000,
+                problemEntity.getMemoryLimit());
 
             //   log.info("submitSolutionOutput, response = " + response);
             ProblemSubmission problemSubmission = StringHandler.handleContestResponseSubmitSolutionOutputOneTestCase(
@@ -3283,7 +3341,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         String tempName,
         TestCaseEntity testCase,
         String exception,
-        int timeLimit
+        int timeLimit,
+        int memoryLimit
     ) throws Exception {
         //log.info("submissionSolutionOutput, sourceChecker = " + sourceChecker + " solutionOutput = " + solutionOutput + " testCase = " + testCase.getTestCase());
 

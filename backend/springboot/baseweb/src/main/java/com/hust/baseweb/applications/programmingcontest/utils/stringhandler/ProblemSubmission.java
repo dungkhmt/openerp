@@ -20,4 +20,5 @@ public class ProblemSubmission {
     private int score;
     private List<String> testCaseAns;
     private List<String> participantAns;
+    private String scoreEvaluationType;
 }

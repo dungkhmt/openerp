@@ -78,6 +78,10 @@ public class ProblemEntity {
 
     @Column(name = "attachment")
     private String attachment;
+
+    @Column(name = "score_evaluation_type")
+    private String scoreEvaluationType;
+
 //    @OneToMany(mappedBy = "contestProblem")
 //    private Set<TestCase> testCases;
 //    @JoinTable(name = "contest_problem_test_case",
