@@ -147,7 +147,7 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
                       } else {
                         return (
                           <Text>
-                            <Text style={styles.bold}>Câu {qIndex + 1}. </Text>
+                            <Text style={styles.bold}>Question {qIndex + 1}. </Text>
                             {ele}
                           </Text>
                         );

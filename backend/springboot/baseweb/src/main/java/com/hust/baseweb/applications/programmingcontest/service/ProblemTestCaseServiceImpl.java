@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.hust.baseweb.applications.contentmanager.model.ContentHeaderModel;
 import com.hust.baseweb.applications.contentmanager.model.ContentModel;
 import com.hust.baseweb.applications.contentmanager.repo.MongoContentService;
+import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizRole;
 import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.docker.DockerClientBase;
@@ -25,6 +26,8 @@ import com.hust.baseweb.model.ListPersonModel;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.repo.UserLoginRepo;
 import com.hust.baseweb.service.UserService;
+import com.hust.baseweb.applications.notifications.service.NotificationsService;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -162,6 +165,36 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         upr.setCreatedStamp(new Date());
         upr.setLastUpdated(new Date());
         upr = userContestProblemRoleRepo.save(upr);
+
+
+        // grant manager role to user admin
+        UserLogin admin = userLoginRepo.findByUserLoginId("admin");
+        if(admin != null) {
+            upr = new UserContestProblemRole();
+            upr.setProblemId(problemEntity.getProblemId());
+            upr.setUserId(admin.getUserLoginId());
+            upr.setRoleId(UserContestProblemRole.ROLE_MANAGER);
+            upr.setUpdateByUserId(userID);
+            upr.setCreatedStamp(new Date());
+            upr.setLastUpdated(new Date());
+            upr = userContestProblemRoleRepo.save(upr);
+
+            upr = new UserContestProblemRole();
+            upr.setProblemId(problemEntity.getProblemId());
+            upr.setUserId(admin.getUserLoginId());
+            upr.setRoleId(UserContestProblemRole.ROLE_VIEW);
+            upr.setUpdateByUserId(userID);
+            upr.setCreatedStamp(new Date());
+            upr.setLastUpdated(new Date());
+            upr = userContestProblemRoleRepo.save(upr);
+
+            // push notification to admin
+            notificationsService.create(userID, admin.getUserLoginId(),
+                                        userID + " has created a contest problem ID " +
+                                        problemEntity.getProblemId()
+                , "");
+
+        }
 
     }
 
@@ -668,6 +701,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 urc.setUserId(admin);
                 urc.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
                 urc = userRegistrationContestRepo.save(urc);
+
+                //push notification to admin
+                notificationsService.create(userName, u.getUserLoginId(),
+                                            userName + " has created a contest " +
+                                            modelCreateContest.getContestId()
+                    , "");
+
             }
             return contestEntity;
         } catch (Exception e) {
@@ -1329,9 +1369,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         List<ContestSubmissionTestCaseEntity> LCSTE = new ArrayList();
         String message = "";
         boolean compileError = false;
-        for (int i = 0; i < testCaseEntityList.size(); i++) {
+        for (TestCaseEntity testCaseEntity : testCaseEntityList) {
             List<TestCaseEntity> L = new ArrayList();
-            L.add(testCaseEntityList.get(i));
+            L.add(testCaseEntity);
 
             String response = submission(
                 modelContestSubmission.getSource(),
@@ -1368,8 +1408,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             ContestSubmissionTestCaseEntity cste = ContestSubmissionTestCaseEntity.builder()
                                                                                   .contestId(modelContestSubmission.getContestId())
                                                                                   .problemId(modelContestSubmission.getProblemId())
-                                                                                  .testCaseId(testCaseEntityList
-                                                                                                  .get(i)
+                                                                                  .testCaseId(testCaseEntity
                                                                                                   .getTestCaseId())
                                                                                   .submittedByUserLoginId(userName)
                                                                                   .point(problemSubmission.getScore())
@@ -1382,42 +1421,23 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             cste = contestSubmissionTestCaseEntityRepo.save(cste);
             LCSTE.add(cste);
         }
-        boolean accepted = true;
+
+        totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
         for (String s : statusList) {
             if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
                 totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
-                accepted = false;
                 break;
-            } else if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)) {
-                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
-                accepted = false;
-                break;
-            } else if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_WRONG)) {
-                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
-                accepted = false; //break;
             }
-        }
-        if (accepted) {
-            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
         }
 
         if (compileError) {
-            // keep compile error message above
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
         } else if (nbTestCasePass == 0) {
-            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_FAILED;
         } else if (nbTestCasePass > 0 && nbTestCasePass < testCaseEntityList.size()) {
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL;
-        } else {
-            message = "Successful";
         }
-        //log.info("evaluateSubmission, totalStatus = " + totalStatus + " nbTestCasePass = " + nbTestCasePass);
 
-        //String response = submission(modelContestSubmission.getSource(), modelContestSubmission.getLanguage(), tempName, testCaseEntityList, "language not found", problemEntity.getTimeLimit());
-
-        //List<String> testCaseAns = testCaseEntityList.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
-        //List<Integer> points = testCaseEntityList.stream().map(TestCaseEntity::getTestCasePoint).collect(Collectors.toList());
-        //ProblemSubmission problemSubmission = StringHandler.handleContestResponse(response, testCaseAns, points);
         ContestSubmissionEntity c = ContestSubmissionEntity.builder()
                                                            .contestId(modelContestSubmission.getContestId())
                                                            .status(totalStatus)
@@ -1430,7 +1450,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                          testCaseEntityList.size())
                                                            .sourceCode(modelContestSubmission.getSource())
                                                            .sourceCodeLanguage(modelContestSubmission.getLanguage())
-                                                           .runtime(new Long(runtime))
+                                                           .runtime((long) runtime)
                                                            .createdAt(new Date())
                                                            .build();
         c = contestSubmissionRepo.save(c);
@@ -2835,64 +2855,29 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                     e.printStackTrace();
                 }
             }
-            boolean accepted = true;
+
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
             for (String s : statusList) {
                 if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
                     totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
-                    accepted = false;
                     break;
-                } else if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)) {
-                    totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
-                    accepted = false;
-                    break;
-                } else if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_WRONG)) {
-                    totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
-                    accepted = false; //break;
                 }
-            }
-            if (accepted) {
-                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
             }
 
             if (compileError) {
-                // keep compile error message above
                 totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
             } else if (nbTestCasePass == 0) {
-                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
+                totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_FAILED;
             } else if (nbTestCasePass > 0 && nbTestCasePass < testCaseEntityList.size()) {
                 totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL;
-            } else {
-                message = "Successful";
             }
-            //   log.info("evaluateSubmission, totalStatus = " + totalStatus + " nbTestCasePass = " + nbTestCasePass);
 
-            //String response = submission(modelContestSubmission.getSource(), modelContestSubmission.getLanguage(), tempName, testCaseEntityList, "language not found", problemEntity.getTimeLimit());
-
-            //List<String> testCaseAns = testCaseEntityList.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
-            //List<Integer> points = testCaseEntityList.stream().map(TestCaseEntity::getTestCasePoint).collect(Collectors.toList());
-            //ProblemSubmission problemSubmission = StringHandler.handleContestResponse(response, testCaseAns, points);
-
-            ContestSubmissionEntity c = ContestSubmissionEntity.builder()
-                                                               .contestId(sub.getContestId())
-                                                               .status(totalStatus)
-                                                               .point(score)
-                                                               .problemId(sub.getProblemId())
-                                                               .userId(sub.getUserId())
-                                                               .testCasePass(nbTestCasePass +
-                                                                             "/" +
-                                                                             testCaseEntityList.size())
-                                                               .sourceCode(sub.getSourceCode())
-                                                               .sourceCodeLanguage(sub.getSourceCodeLanguage())
-                                                               .runtime(new Long(runtime))
-                                                               .createdAt(new Date())
-                                                               .message(message)
-                                                               .build();
             sub.setPoint(score);
             sub.setTestCasePass(nbTestCasePass + "/" + testCaseEntityList.size());
             sub.setRuntime(new Long(runtime));
             sub.setStatus(totalStatus);
             sub.setMessage(message);
-            c = contestSubmissionRepo.save(sub);
+            ContestSubmissionEntity c = contestSubmissionRepo.save(sub);
 
             for (ContestSubmissionTestCaseEntity e : LCSTE) {
                 e.setContestSubmissionId(c.getContestSubmissionId());
@@ -3127,54 +3112,28 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                             e.printStackTrace();
                         }
                     }
-                    boolean accepted = true;
+
+                    totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
                     for (String s : statusList) {
                         if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
                             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
-                            accepted = false;
                             break;
-                        } else if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)) {
-                            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
-                            accepted = false;
-                            break;
-                        } else if (s.equals(ContestSubmissionEntity.SUBMISSION_STATUS_WRONG)) {
-                            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
-                            accepted = false; //break;
                         }
                     }
-                    if (accepted) {
-                        totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
-                    }
-                    if (compileError) {
-                        // keep compile error message above
-                        totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
-                    } else {
-                        message = "Successful";
-                    }
-                    //String response = submission(modelContestSubmission.getSource(), modelContestSubmission.getLanguage(), tempName, testCaseEntityList, "language not found", problemEntity.getTimeLimit());
 
-                    //List<String> testCaseAns = testCaseEntityList.stream().map(TestCaseEntity::getCorrectAnswer).collect(Collectors.toList());
-                    //List<Integer> points = testCaseEntityList.stream().map(TestCaseEntity::getTestCasePoint).collect(Collectors.toList());
-                    //ProblemSubmission problemSubmission = StringHandler.handleContestResponse(response, testCaseAns, points);
-                    ContestSubmissionEntity c = ContestSubmissionEntity.builder()
-                                                                       .contestId(contestId)
-                                                                       .status(totalStatus)
-                                                                       .point(score)
-                                                                       .problemId(problemId)
-                                                                       .userId(userLoginId)
-                                                                       .testCasePass(nbTestCasePass +
-                                                                                     "/" +
-                                                                                     testCaseEntityList.size())
-                                                                       .sourceCode(sub.getSourceCode())
-                                                                       .sourceCodeLanguage(sub.getSourceCodeLanguage())
-                                                                       .runtime(new Long(runtime))
-                                                                       .createdAt(new Date())
-                                                                       .build();
+                    if (compileError) {
+                        totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
+                    } else if (nbTestCasePass == 0) {
+                        totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_FAILED;
+                    } else if (nbTestCasePass > 0 && nbTestCasePass < testCaseEntityList.size()) {
+                        totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL;
+                    }
+
                     sub.setPoint(score);
                     sub.setTestCasePass(nbTestCasePass + "/" + testCaseEntityList.size());
                     sub.setRuntime(new Long(runtime));
                     sub.setStatus(totalStatus);
-                    c = contestSubmissionRepo.save(sub);
+                    ContestSubmissionEntity c = contestSubmissionRepo.save(sub);
 
                     for (ContestSubmissionTestCaseEntity e : LCSTE) {
                         e.setContestSubmissionId(c.getContestSubmissionId());

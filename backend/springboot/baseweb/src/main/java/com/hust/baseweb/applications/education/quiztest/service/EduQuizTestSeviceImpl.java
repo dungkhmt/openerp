@@ -26,6 +26,7 @@ import com.hust.baseweb.applications.education.repo.ClassRepo;
 import com.hust.baseweb.applications.education.repo.QuizChoiceAnswerRepo;
 import com.hust.baseweb.applications.education.repo.QuizQuestionRepo;
 import com.hust.baseweb.applications.education.service.QuizQuestionService;
+import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.repo.UserLoginRepo;
@@ -63,6 +64,9 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
     QuizChoiceAnswerRepo quizChoiceAnswerRepo;
     EduClassSessionRepo eduClassSessionRepo;
     UserService userService;
+
+    private NotificationsService notificationsService;
+
     private EduTestQuizRoleRepo eduTestQuizRoleRepo;
 
     @Transactional
@@ -82,6 +86,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         newRecord.setLastUpdatedStamp(new Date());
         newRecord.setQuestionStatementViewTypeId(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_VISIBLE);
         newRecord.setParticipantQuizGroupAssignmentMode(EduQuizTest.PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_HANDOUT_THEN_UPDATE_GROUP);
+        newRecord.setViewTypeId(EduQuizTest.QUIZ_TEST_VIEW_TYPE_LIST);
         newRecord = repo.save(newRecord);
 
         EduTestQuizRole role = new EduTestQuizRole();
@@ -90,6 +95,25 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         role.setTestId(input.getTestId());
         role.setStatusId(EduTestQuizRole.STATUS_APPROVED);
         role = eduTestQuizRoleRepo.save(role);
+
+        // grant manager role to user admin
+        UserLogin admin = userLoginRepo.findByUserLoginId("admin");
+        if(admin != null) {
+            role = new EduTestQuizRole();
+            role.setRoleId(EduTestQuizRole.ROLE_MANAGER);
+            role.setParticipantUserLoginId(admin.getUserLoginId());
+            role.setTestId(input.getTestId());
+            role.setStatusId(EduTestQuizRole.STATUS_APPROVED);
+            role = eduTestQuizRoleRepo.save(role);
+
+            // push notification to admin
+            notificationsService.create(user.getUserLoginId(), admin.getUserLoginId(),
+                                        user.getUserLoginId() + " has created a quiz-test " +
+                                        input.getTestId() + " of course " + input.getCourseId()
+                , "");
+
+        }
+
 
         return newRecord;
     }
@@ -110,7 +134,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
             eduQuizTest.setScheduleDatetime(input.getScheduleDate());
             eduQuizTest.setQuestionStatementViewTypeId(input.getQuestionStatementViewTypeId());
             eduQuizTest.setParticipantQuizGroupAssignmentMode(input.getParticipantQuizGroupAssignmentMode());
-
+            eduQuizTest.setViewTypeId(input.getViewTypeId());
             eduQuizTest = repo.save(eduQuizTest);
             log.info("update, testId = " +
                      input.getTestId() +
@@ -939,7 +963,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         // todo by PQD
         List<QuizGroupQuestionParticipationExecutionChoice> choices = quizGroupQuestionParticipationExecutionChoiceRepo
             .findQuizGroupQuestionParticipationExecutionChoicesByParticipationUserLoginId(userLoginId);
-        log.info("getQuizTestParticipationExecutionResultOfAUserLogin, sz = " + choices.size());
+        //log.info("getQuizTestParticipationExecutionResultOfAUserLogin, sz = " + choices.size());
 
         HashSet<UUID> quizGroupIds = new HashSet();
         HashSet<UUID> questionIds = new HashSet();
@@ -965,8 +989,8 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                         date = c.getCreatedStamp();
                     }
                 }
-                log.info("getQuizTestParticipationExecutionResultOfAUserLogin, group " + g.getGroupCode()
-                         + " question " + qid + " ans = " + chooseAnsIds.size());
+                //log.info("getQuizTestParticipationExecutionResultOfAUserLogin, group " + g.getGroupCode()
+                //         + " question " + qid + " ans = " + chooseAnsIds.size());
 
                 QuizQuestion q = quizQuestionRepo.findById(qid).orElse(null);
                 List<QuizChoiceAnswer> ans = quizChoiceAnswerRepo.findAllByQuizQuestion(q);
@@ -1042,7 +1066,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         List<EduTestQuizGroup> eduTestQuizGroups = eduQuizTestGroupRepo.findByTestId(testId);
 
         for (StudentInfo studentInfo : list) {
-            log.info("getQuizTestParticipationExecutionResult, consider user " + studentInfo.getUser_login_id() + "");
+            //log.info("getQuizTestParticipationExecutionResult, consider user " + studentInfo.getUser_login_id() + "");
 
             for (EduTestQuizGroup eduTestQuizGroup : eduTestQuizGroups) {
 
@@ -1258,12 +1282,12 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                 .findAllByQuizGroupIdAndParticipationUserLoginId(
                     gr.getQuizGroupId(),
                     userId);
-            log.info("confirmUpdateGroupInQuizTest, GOT " +
-                     L.size() +
-                     " items for group-participant assignments group " +
-                     gr.getQuizGroupId() +
-                     " user " +
-                     userId);
+            //log.info("confirmUpdateGroupInQuizTest, GOT " +
+            //         L.size() +
+            //         " items for group-participant assignments group " +
+            //         gr.getQuizGroupId() +
+            //         " user " +
+            //         userId);
             // remove existing info
             if (L != null && L.size() > 0) {
                 for (EduTestQuizGroupParticipationAssignment a : L) {

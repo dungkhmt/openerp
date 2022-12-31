@@ -69,11 +69,13 @@ public class QuizGroupQuestionParticipationExecutionChoiceController {
         String userId = principal.getName();
         List<UUID> chooseAnsIds = input.getChooseAnsIds();
 
-        //if (chooseAnsIds == null) {
-        //    log.info("quizChooseAnswer, chooseAnsIds = null");
-        //} else {
-        //    log.info("quizChooseAnswer, chooseAnsIds = " + chooseAnsIds.size());
-        //}
+        if(userId.equals("20210293")) {
+            if (chooseAnsIds == null) {
+                log.info("quizChooseAnswer, chooseAnsIds = null");
+            } else {
+                log.info("quizChooseAnswer, chooseAnsIds = " + chooseAnsIds.size());
+            }
+        }
 
         List<QuizGroupQuestionParticipationExecutionChoice> a = quizGroupQuestionParticipationExecutionChoiceRepo.findQuizGroupQuestionParticipationExecutionChoicesByParticipationUserLoginIdAndQuizGroupIdAndQuestionId(
             userId,
@@ -90,6 +92,7 @@ public class QuizGroupQuestionParticipationExecutionChoiceController {
         });
 
         Date createdStamp = new Date();
+        List<QuizGroupQuestionParticipationExecutionChoice> res = new ArrayList();
         for (UUID choiceId :
             chooseAnsIds) {
             QuizGroupQuestionParticipationExecutionChoice tmp = new QuizGroupQuestionParticipationExecutionChoice();
@@ -98,9 +101,14 @@ public class QuizGroupQuestionParticipationExecutionChoiceController {
             tmp.setParticipationUserLoginId(userId);
             tmp.setChoiceAnswerId(choiceId);
             tmp.setCreatedStamp(createdStamp);
-            quizGroupQuestionParticipationExecutionChoiceRepo.save(tmp);
-
-
+            tmp = quizGroupQuestionParticipationExecutionChoiceRepo.save(tmp);
+            res.add(tmp);
+            if(userId.equals("20210293")) {
+                log.info("quizChooseAnswer, saved record user " +
+                         tmp.getParticipationUserLoginId() +
+                         " chose " +
+                         tmp.getChoiceAnswerId());
+            }
             // create history log
             HistoryLogQuizGroupQuestionParticipationExecutionChoice historyLogQuizGroupQuestionParticipationExecutionChoice
                 = new HistoryLogQuizGroupQuestionParticipationExecutionChoice();
@@ -114,7 +122,8 @@ public class QuizGroupQuestionParticipationExecutionChoiceController {
         }
 
 
-        return ResponseEntity.ok().body(chooseAnsIds);
+        //return ResponseEntity.ok().body(chooseAnsIds);
+        return ResponseEntity.ok().body(res);
     }
     @PostMapping("/quiz-test-session-choose_answer-by-user")
     public ResponseEntity<?> quizTestSessionChooseAnswer(

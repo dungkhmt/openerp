@@ -23,9 +23,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StudentQuizDetailStepForm() {
+export default function StudentQuizDetailStepForm(props) {
   const history = useHistory();
-  const testQuizId = history.location.state?.testId;
+  //const testQuizId = history.location.state?.testId;
+  const testQuizId = props.testId;
   const classes = useStyles();
 
   //

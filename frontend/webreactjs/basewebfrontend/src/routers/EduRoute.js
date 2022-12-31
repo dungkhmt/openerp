@@ -30,6 +30,7 @@ import QuizTestEdit from "../component/education/quiztest/QuizTestEdit";
 import QuizTestList from "../component/education/quiztest/QuizTestList-old-tmp";
 import QuizTestListAll from "../component/education/quiztest/QuizTestListAll";
 import StudentQuizDetail from "../component/education/quiztest/StudentQuizDetail";
+import StudentQuizDetailCheckAndConfirmGroupCode from "../component/education/quiztest/StudentQuizDetailCheckAndConfirmGroupCode";
 import StudentQuizList from "../component/education/quiztest/StudentQuizTestList";
 import StudentMyQuizTestList from "../component/education/quiztest/StudentMyQuizTestList";
 import ResourceCreate from "../component/education/resourcelink/ResourceCreate";
@@ -248,7 +249,11 @@ export default function EduRoute() {
 
         <Route
           component={StudentQuizDetail}
-          path={`${path}/class/student/quiztest/detail`}
+          path={`${path}/class/student/quiztest/detail/:testId`}
+        />
+        <Route
+          component={StudentQuizDetailCheckAndConfirmGroupCode}
+          path={`${path}/class/student/quiztest-detail/check-confirm-code/:testId`}
         />
 
         {/* Class management. */}

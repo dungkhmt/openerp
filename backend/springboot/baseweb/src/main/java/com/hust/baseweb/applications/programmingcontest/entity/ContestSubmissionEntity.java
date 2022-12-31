@@ -17,6 +17,7 @@ import java.util.UUID;
 public class ContestSubmissionEntity {
     public static final String SUBMISSION_STATUS_ACCEPTED ="Accept";
     public static final String SUBMISSION_STATUS_PARTIAL ="Partial";
+    public static final String SUBMISSION_STATUS_FAILED ="Failed";
     public static final String SUBMISSION_STATUS_WRONG ="Wrong Answer";
     public static final String SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED = "Time Limit Exceeded";
     public static final String SUBMISSION_STATUS_OUTPUT_LIMIT_EXCEEDED = "Output Size Limit Exceeded";

@@ -167,6 +167,12 @@ public class QuizTestController {
         List<String> L = EduQuizTest.getListQuestionStatementViewType();
         return ResponseEntity.ok().body(L);
     }
+    @GetMapping("/get-list-quiz-test-view-type-id")
+    public ResponseEntity<?> getListQuizTestViewTypeId(){
+        List<String> L = EduQuizTest.getListQuizTestViewTypes();
+        return ResponseEntity.ok().body(L);
+    }
+
     @GetMapping("/get-list-participant-quizgroup-assignment-mode")
     public ResponseEntity<?> getListParticipantQuizGroupAssignmentMode(){
         List<String> L = EduQuizTest.getListParticipantQuizGroupAssignmentModes();

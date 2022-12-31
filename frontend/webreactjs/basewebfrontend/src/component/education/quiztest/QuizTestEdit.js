@@ -59,6 +59,8 @@ function QuizTestEdit() {
     listParticipantQuizGroupAssignmentMode,
     setListParticipantQuizGroupAssignmentMode,
   ] = useState([]);
+  const [viewTypeId, setViewTypeId] = useState(null);
+  const [listViewTypeIds, setListViewTypeIds] = useState([]);
 
   const handleChangeDuration = (e) => {
     setDuration(e.target.value);
@@ -100,6 +102,22 @@ function QuizTestEdit() {
       { 401: () => {} }
     );
   }
+  function getListQuizTestViewTypeId() {
+    request(
+      // token,
+      // history,
+      "get",
+      "get-list-quiz-test-view-type-id",
+      (res) => {
+        console.log("get-list-question-statement-view-type-id res = ", res);
+        setListViewTypeIds(res.data);
+
+        //alert('assign questions to groups OK');
+      },
+      { 401: () => {} }
+    );
+  }
+
   async function getQuizTestDetail() {
     request(
       // token,
@@ -156,6 +174,7 @@ function QuizTestEdit() {
       scheduleDate: selectedDate,
       duration: duration,
       questionStatementViewTypeId: questionStatementViewTypeId,
+      viewTypeId: viewTypeId,
       participantQuizGroupAssignmentMode: participantQuizGroupAssignmentMode,
     };
     request(
@@ -177,6 +196,7 @@ function QuizTestEdit() {
   useEffect(() => {
     getListQuestionStatementViewTypeId();
     getListParticipantQuizGroupAssignmentMode();
+    getListQuizTestViewTypeId();
     getQuizTestDetail();
   }, []);
 
@@ -252,6 +272,26 @@ function QuizTestEdit() {
                     value={questionStatementViewTypeId}
                   >
                     {listQuestionStatementViewTypeId.map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    autoFocus
+                    // required
+                    select
+                    id="ViewTypeId"
+                    label="ViewType"
+                    placeholder="ViewType"
+                    onChange={(event) => {
+                      setViewTypeId(event.target.value);
+                    }}
+                    value={viewTypeId}
+                  >
+                    {listViewTypeIds.map((item) => (
                       <MenuItem key={item} value={item}>
                         {item}
                       </MenuItem>
