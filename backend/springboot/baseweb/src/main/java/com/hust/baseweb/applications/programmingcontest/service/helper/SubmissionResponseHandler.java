@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.service.helper;
 
+import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionEntity;
 import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionTestCaseEntity;
 import com.hust.baseweb.applications.programmingcontest.entity.TestCaseEntity;
@@ -146,7 +147,7 @@ public class SubmissionResponseHandler {
 
         submissionEntity.setStatus(totalStatus);
         submissionEntity.setPoint(score);
-        submissionEntity.setTestCasePass(nbTestCasePass + "/" + testCaseEntityList.size());
+        submissionEntity.setTestCasePass(nbTestCasePass + " / " + testCaseEntityList.size());
         submissionEntity.setSourceCode(modelContestSubmission.getSource());
         submissionEntity.setSourceCodeLanguage(modelContestSubmission.getLanguage());
         submissionEntity.setRuntime((long) runtime);
@@ -181,7 +182,7 @@ public class SubmissionResponseHandler {
                 point = Integer.parseInt(pointString);
                 totalPoint += point;
 
-                message = response.substring(response.indexOf(' '));
+                message = response.substring(response.indexOf(' '), response.indexOf(Constants.SPLIT_TEST_CASE));
             }
 
             submissionTestCase.setPoint(point);
@@ -191,8 +192,9 @@ public class SubmissionResponseHandler {
         }
 
         submission.setPoint(totalPoint);
-        submission.setStatus("Evaluated");
-        submission.setTestCasePass("");
+        submission.setStatus(ContestSubmissionEntity.SUBMISSION_STATUS_CUSTOM_EVALUATED);
+        submission.setMessage(ContestSubmissionEntity.SUBMISSION_STATUS_CUSTOM_EVALUATED);
+        submission.setTestCasePass("_ / " + submissionResponses.size());
         submission.setUpdateAt(new Date());
 
         contestSubmissionRepo.save(submission);
