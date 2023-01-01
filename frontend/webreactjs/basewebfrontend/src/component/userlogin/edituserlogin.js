@@ -61,7 +61,7 @@ function EditUser(props) {
   const [middleName, setMiddleName] = useState();
   const [firstName, setFirstName] = useState();
   const [userName, setUserName] = useState();
-
+  const [email, setEmail] = useState();
   const [partyCode, setPartyCode] = useState();
   const [roles, setRoles] = useState([]);
   const [birthDate, setBirthDate] = useState(new Date());
@@ -106,7 +106,9 @@ function EditUser(props) {
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
   };
-
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
   const handlePartyCodeChange = (event) => {
     setPartyCode(event.target.value);
   };
@@ -126,6 +128,7 @@ function EditUser(props) {
       partyCode: partyCode,
       roles: roles,
       enabled: enabled,
+      email: email,
     };
     setIsRequesting(true);
     authPut(dispatch, token, "/user/" + partyId, data)
@@ -159,6 +162,7 @@ function EditUser(props) {
         setUserName(res.userLoginId);
         setRoles(res.roles);
         setEnabled(res.enabled);
+        setEmail(res.email);
       },
       (error) => {}
     );
@@ -211,6 +215,16 @@ function EditUser(props) {
                   shrink: true,
                 }}
               />
+              <TextField
+                id="email"
+                label="email"
+                value={email}
+                onChange={handleEmailChange}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+
               <KeyboardDatePicker
                 disableToolbar
                 variant="inline"

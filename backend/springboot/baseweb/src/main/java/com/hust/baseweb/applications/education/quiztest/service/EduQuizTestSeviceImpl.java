@@ -12,6 +12,7 @@ import com.hust.baseweb.applications.education.quiztest.entity.*;
 import com.hust.baseweb.applications.education.quiztest.entity.compositeid.CompositeEduTestQuizGroupParticipationAssignmentId;
 import com.hust.baseweb.applications.education.quiztest.model.EditQuizTestInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.EduQuizTestModel;
+import com.hust.baseweb.applications.education.quiztest.model.ModelResponseGetMyQuizTest;
 import com.hust.baseweb.applications.education.quiztest.model.QuizTestCreateInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.StudentInTestQueryReturnModel;
 import com.hust.baseweb.applications.education.quiztest.model.edutestquizparticipation.QuizTestParticipationExecutionResultOutputModel;
@@ -25,6 +26,7 @@ import com.hust.baseweb.applications.education.repo.ClassRepo;
 import com.hust.baseweb.applications.education.repo.QuizChoiceAnswerRepo;
 import com.hust.baseweb.applications.education.repo.QuizQuestionRepo;
 import com.hust.baseweb.applications.education.service.QuizQuestionService;
+import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.repo.UserLoginRepo;
@@ -62,6 +64,9 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
     QuizChoiceAnswerRepo quizChoiceAnswerRepo;
     EduClassSessionRepo eduClassSessionRepo;
     UserService userService;
+
+    private NotificationsService notificationsService;
+
     private EduTestQuizRoleRepo eduTestQuizRoleRepo;
 
     @Transactional
@@ -80,6 +85,8 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         newRecord.setCreatedStamp(new Date());
         newRecord.setLastUpdatedStamp(new Date());
         newRecord.setQuestionStatementViewTypeId(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_VISIBLE);
+        newRecord.setParticipantQuizGroupAssignmentMode(EduQuizTest.PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_HANDOUT_THEN_UPDATE_GROUP);
+        newRecord.setViewTypeId(EduQuizTest.QUIZ_TEST_VIEW_TYPE_LIST);
         newRecord = repo.save(newRecord);
 
         EduTestQuizRole role = new EduTestQuizRole();
@@ -88,6 +95,25 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         role.setTestId(input.getTestId());
         role.setStatusId(EduTestQuizRole.STATUS_APPROVED);
         role = eduTestQuizRoleRepo.save(role);
+
+        // grant manager role to user admin
+        UserLogin admin = userLoginRepo.findByUserLoginId("admin");
+        if(admin != null) {
+            role = new EduTestQuizRole();
+            role.setRoleId(EduTestQuizRole.ROLE_MANAGER);
+            role.setParticipantUserLoginId(admin.getUserLoginId());
+            role.setTestId(input.getTestId());
+            role.setStatusId(EduTestQuizRole.STATUS_APPROVED);
+            role = eduTestQuizRoleRepo.save(role);
+
+            // push notification to admin
+            notificationsService.create(user.getUserLoginId(), admin.getUserLoginId(),
+                                        user.getUserLoginId() + " has created a quiz-test " +
+                                        input.getTestId() + " of course " + input.getCourseId()
+                , "");
+
+        }
+
 
         return newRecord;
     }
@@ -107,6 +133,8 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
             eduQuizTest.setDuration(input.getDuration());
             eduQuizTest.setScheduleDatetime(input.getScheduleDate());
             eduQuizTest.setQuestionStatementViewTypeId(input.getQuestionStatementViewTypeId());
+            eduQuizTest.setParticipantQuizGroupAssignmentMode(input.getParticipantQuizGroupAssignmentMode());
+            eduQuizTest.setViewTypeId(input.getViewTypeId());
             eduQuizTest = repo.save(eduQuizTest);
             log.info("update, testId = " +
                      input.getTestId() +
@@ -635,6 +663,25 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                  */
             }
         }
+        //Random R = new Random();
+        // assign sequence (seq) for questions in each quiz_group
+        for (EduTestQuizGroup g : eduTestQuizGroups) {
+            List<QuizGroupQuestionAssignment> questions = quizGroupQuestionAssignmentRepo
+                .findQuizGroupQuestionAssignmentsByQuizGroupId(g.getQuizGroupId());
+
+            int[] s = new int[questions.size()];
+            for(int i = 0; i < s.length; i++) s[i] = i;
+            for(int i = 0; i < s.length; i++){
+                int j = R.nextInt(s.length);
+                int k = R.nextInt(s.length);
+                int tmp = s[j]; s[j] = s[k]; s[k] = tmp;
+            }
+            for(int i = 0; i < questions.size(); i++){
+                QuizGroupQuestionAssignment qqa = questions.get(i);
+                qqa.setSeq(s[i]);
+                qqa = quizGroupQuestionAssignmentRepo.save(qqa);
+            }
+        }
         return true;
 
     }
@@ -916,7 +963,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         // todo by PQD
         List<QuizGroupQuestionParticipationExecutionChoice> choices = quizGroupQuestionParticipationExecutionChoiceRepo
             .findQuizGroupQuestionParticipationExecutionChoicesByParticipationUserLoginId(userLoginId);
-        log.info("getQuizTestParticipationExecutionResultOfAUserLogin, sz = " + choices.size());
+        //log.info("getQuizTestParticipationExecutionResultOfAUserLogin, sz = " + choices.size());
 
         HashSet<UUID> quizGroupIds = new HashSet();
         HashSet<UUID> questionIds = new HashSet();
@@ -942,8 +989,8 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                         date = c.getCreatedStamp();
                     }
                 }
-                log.info("getQuizTestParticipationExecutionResultOfAUserLogin, group " + g.getGroupCode()
-                         + " question " + qid + " ans = " + chooseAnsIds.size());
+                //log.info("getQuizTestParticipationExecutionResultOfAUserLogin, group " + g.getGroupCode()
+                //         + " question " + qid + " ans = " + chooseAnsIds.size());
 
                 QuizQuestion q = quizQuestionRepo.findById(qid).orElse(null);
                 List<QuizChoiceAnswer> ans = quizChoiceAnswerRepo.findAllByQuizQuestion(q);
@@ -1019,7 +1066,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         List<EduTestQuizGroup> eduTestQuizGroups = eduQuizTestGroupRepo.findByTestId(testId);
 
         for (StudentInfo studentInfo : list) {
-            log.info("getQuizTestParticipationExecutionResult, consider user " + studentInfo.getUser_login_id() + "");
+            //log.info("getQuizTestParticipationExecutionResult, consider user " + studentInfo.getUser_login_id() + "");
 
             for (EduTestQuizGroup eduTestQuizGroup : eduTestQuizGroups) {
 
@@ -1191,5 +1238,96 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
             cnt += eduQuizTestQuizQuestionService.createQuizTestQuestion(u, toQuizTestId, q.getQuestionId());
         }
         return cnt;
+    }
+
+    @Override
+    public List<ModelResponseGetMyQuizTest> getQuizTestListOfUser(String userId){
+        List<EduTestQuizParticipant> eduTestQuizParticipants = eduTestQuizParticipantRepo
+            .findByParticipantUserLoginIdAndStatusId(userId,EduTestQuizParticipant.STATUS_APPROVED);
+
+        List<ModelResponseGetMyQuizTest> res = new ArrayList();
+
+        for(EduTestQuizParticipant e: eduTestQuizParticipants){
+            EduQuizTest quizTest = repo.findById(e.getTestId()).orElse(null);
+            if(quizTest != null && quizTest.getStatusId().equals(EduQuizTest.QUIZ_TEST_STATUS_OPEN)){
+                ModelResponseGetMyQuizTest resItem = new ModelResponseGetMyQuizTest();
+                resItem.setTestId(e.getTestId());
+                resItem.setViewTypeId(quizTest.getViewTypeId());
+                resItem.setTestName(quizTest.getTestName());
+                resItem.setStatusId(e.getStatusId());
+                res.add(resItem);
+            }
+
+
+        }
+
+        return res;
+    }
+
+    @Override
+    public boolean confirmUpdateGroupInQuizTest(String userId, String groupCode, String testId){
+        List<EduTestQuizGroup> groups = eduQuizTestGroupRepo.findByTestId(testId);
+        EduTestQuizGroup g = null;
+        for(EduTestQuizGroup gr: groups){
+            if(gr.getGroupCode() != null && gr.getGroupCode().equals(groupCode)){
+                g = gr; break;
+            }
+        }
+        if(g == null){
+            return false;
+        }
+        // remove assignment of groups to current user in testId
+        for(EduTestQuizGroup gr: groups) {
+            List<EduTestQuizGroupParticipationAssignment> L = eduTestQuizGroupParticipationAssignmentRepo
+                .findAllByQuizGroupIdAndParticipationUserLoginId(
+                    gr.getQuizGroupId(),
+                    userId);
+            //log.info("confirmUpdateGroupInQuizTest, GOT " +
+            //         L.size() +
+            //         " items for group-participant assignments group " +
+            //         gr.getQuizGroupId() +
+            //         " user " +
+            //         userId);
+            // remove existing info
+            if (L != null && L.size() > 0) {
+                for (EduTestQuizGroupParticipationAssignment a : L) {
+                    eduTestQuizGroupParticipationAssignmentRepo.delete(a);
+                }
+            }
+        }
+        // insert new assignment
+        EduTestQuizGroupParticipationAssignment a = new EduTestQuizGroupParticipationAssignment();
+        a.setQuizGroupId(g.getQuizGroupId());
+        a.setParticipationUserLoginId(userId);
+        a.setStatusId("OK");
+        a = eduTestQuizGroupParticipationAssignmentRepo.save(a);
+
+        /*
+        if (L == null || L.size() == 0) {
+            log.info("confirmUpdateGroupInQuizTest, assignment " +
+                     g.getQuizGroupId() +
+                     "," +
+                     userId +
+                     " not exists -> insert new");
+            EduTestQuizGroupParticipationAssignment a = new EduTestQuizGroupParticipationAssignment();
+            a.setQuizGroupId(g.getQuizGroupId());
+            a.setParticipationUserLoginId(userId);
+            a.setStatusId("OK");
+            a = eduTestQuizGroupParticipationAssignmentRepo.save(a);
+
+        }else{
+            log.info("confirmUpdateGroupInQuizTest, assignment " +
+                     g.getQuizGroupId() +
+                     "," +
+                     userId +
+                     " GOT sz = " + L.size() + " remove existing and insert new");
+
+            for(EduTestQuizGroupParticipationAssignment a: L){
+                eduTestQuizGroupParticipationAssignmentRepo.delete(a);
+            }
+        }
+        */
+        return true;
+
     }
 }

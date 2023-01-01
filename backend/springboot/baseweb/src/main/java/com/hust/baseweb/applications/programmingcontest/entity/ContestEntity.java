@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -30,6 +31,7 @@ public class ContestEntity {
     public static final String CONTEST_PARTICIPANT_VIEW_MODE_NOT_SEE_CORRECT_ANSWER = "NOT_SEE_CORRECT_ANSWER";
     public static final String CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE = "SEE_CORRECT_ANSWER_AND_PRIVATE_TEST_CASE";
     public static final String CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT = "SEE_CORRECT_ANSWER_AND_PRIVATE_TEST_CASE_SHORT";
+
 
 
     public static final String CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_VISIBLE = "VISIBLE";
@@ -122,6 +124,7 @@ public class ContestEntity {
             inverseJoinColumns = @JoinColumn(name = "problem_id", referencedColumnName = "problem_id")
     )
     @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<ProblemEntity> problems;
 
     @Column(name = "try_again")
@@ -170,7 +173,7 @@ public class ContestEntity {
     private String evaluateBothPublicPrivateTestcase;
 
     @Column(name="min_time_between_two_submissions")
-    private int minTimeBetweenTwoSubmissions;
+    private long minTimeBetweenTwoSubmissions;
 
     @Column(name="judge_mode")
     private String judgeMode; // synchronous or asynchronous using queue

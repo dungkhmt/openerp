@@ -25,6 +25,10 @@ public interface EduTestQuizGroupParticipationAssignmentRepo
         UUID quizGroupId,
         String participationUserLoginId
     );
+    List<EduTestQuizGroupParticipationAssignment> findAllByQuizGroupIdAndParticipationUserLoginId(
+        UUID quizGroupId,
+        String participationUserLoginId
+    );
 
     @Override
     boolean existsById(CompositeEduTestQuizGroupParticipationAssignmentId compositeEduTestQuizGroupParticipationAssignmentId);

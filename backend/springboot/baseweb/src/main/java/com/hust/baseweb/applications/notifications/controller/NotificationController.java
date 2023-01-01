@@ -3,7 +3,8 @@ package com.hust.baseweb.applications.notifications.controller;
 import com.hust.baseweb.applications.notifications.model.GetNotificationsOM;
 import com.hust.baseweb.applications.notifications.model.UpdateMultipleNotificationStatusBody;
 import com.hust.baseweb.applications.notifications.service.NotificationsService;
-import lombok.AllArgsConstructor;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -31,10 +32,14 @@ import static com.hust.baseweb.applications.notifications.service.NotificationsS
 @Validated
 @RestController
 @RequestMapping("/notification")
-@AllArgsConstructor(onConstructor_ = @Autowired)
 public class NotificationController {
 
-    private final NotificationsService notificationsService;
+    @Autowired
+    private NotificationsService notificationsService;
+
+    public NotificationController(MeterRegistry registry) {
+        Gauge.builder("active_user", subscriptions::size).register(registry);
+    }
 
     /**
      * Subscribes SseEmitter to receive pushed events from server
@@ -42,79 +47,79 @@ public class NotificationController {
      * @param toUser
      * @return
      */
-//    @GetMapping("/subscription")
-//    public ResponseEntity<SseEmitter> subscribes(
-//        @CurrentSecurityContext(expression = "authentication.name") String toUser
-//    ) {
-//        SseEmitter subscription;
-//        subscription = new SseEmitter(Long.MAX_VALUE);
-//        Runnable callback = () -> subscriptions.remove(toUser);
-//
-//        subscription.onTimeout(callback); // OK
-//        subscription.onCompletion(callback); // OK
-//        subscription.onError((ex) -> { // Must consider carefully, but currently OK
-//            log.error("onError fired with exception: " + ex);
-//        });
-//
-//        // Add new subscription to user's connection list.
-//        if (subscriptions.containsKey(toUser)) {
-//            subscriptions.get(toUser).add(subscription);
-//            log.info(
-//                "{} RE-SUBSCRIBES --> #CURRENT CONNECTION = {}",
-//                toUser,
-//                subscriptions.get(toUser).size());
-//        } else {
-//            subscriptions.put(toUser, new ArrayList<SseEmitter>() {{
-//                add(subscription);
-//            }});
-//            log.info("{} SUBSCRIBES", toUser);
-//        }
-//
-//        HttpHeaders responseHeaders = new HttpHeaders();
-//        responseHeaders.set("X-Accel-Buffering", "no");
-//        responseHeaders.set("Cache-Control", "no-cache"); // may be not necessary because Nginx server set it already
-//
-//        return ResponseEntity.ok().headers(responseHeaders).body(subscription);
-//    }
+    @GetMapping("/subscription")
+    public ResponseEntity<SseEmitter> subscribes(
+        @CurrentSecurityContext(expression = "authentication.name") String toUser
+    ) {
+        SseEmitter subscription;
+        subscription = new SseEmitter(Long.MAX_VALUE);
+        Runnable callback = () -> subscriptions.remove(toUser);
+
+        subscription.onTimeout(callback); // OK
+        subscription.onCompletion(callback); // OK
+        subscription.onError((ex) -> { // Must consider carefully, but currently OK
+            log.error("onError fired with exception: " + ex);
+        });
+
+        // Add new subscription to user's connection list.
+        if (subscriptions.containsKey(toUser)) {
+            subscriptions.get(toUser).add(subscription);
+            log.info(
+                "{} RE-SUBSCRIBES --> #CURRENT CONNECTION = {}",
+                toUser,
+                subscriptions.get(toUser).size());
+        } else {
+            subscriptions.put(toUser, new ArrayList<SseEmitter>() {{
+                add(subscription);
+            }});
+            log.info("{} SUBSCRIBES", toUser);
+        }
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("X-Accel-Buffering", "no");
+        responseHeaders.set("Cache-Control", "no-cache"); // may be not necessary because Nginx server set it already
+
+        return ResponseEntity.ok().headers(responseHeaders).body(subscription);
+    }
 
     /**
      * To keep connection alive
      */
-//    @Async
-//    @Scheduled(fixedRate = 40000)
-//    public void sendHeartbeatSignal() {
+    @Async
+    @Scheduled(fixedRate = 40000)
+    public void sendHeartbeatSignal() {
 //        log.info("#CURRENT ACTIVE USER = {}, START SENDING HEARTBEAT EVENT", subscriptions.size());
-//        long start = System.currentTimeMillis();
-//
-//        subscriptions.forEach((toUser, subscription) -> {
-//            // Use iterator to avoid ConcurrentModificationException.
-//            ListIterator<SseEmitter> iterator = subscription.listIterator();
-//            int size = subscription.size();
-//
-//            while (iterator.hasNext()) {
-//                try {
-//                    iterator.next().send(SseEmitter
-//                                             .event()
-//                                             .name(SSE_EVENT_HEARTBEAT)
-//                                             .data("keep alive", MediaType.TEXT_EVENT_STREAM));
-////                                      .comment(":\n\nkeep alive"));
-//                } catch (Exception e) {
-//                    iterator.remove();
-//                    size--;
+        long start = System.currentTimeMillis();
+
+        subscriptions.forEach((toUser, subscription) -> {
+            // Use iterator to avoid ConcurrentModificationException.
+            ListIterator<SseEmitter> iterator = subscription.listIterator();
+            int size = subscription.size();
+
+            while (iterator.hasNext()) {
+                try {
+                    iterator.next().send(SseEmitter
+                                             .event()
+                                             .name(SSE_EVENT_HEARTBEAT)
+                                             .data("keep alive", MediaType.TEXT_EVENT_STREAM));
+//                                      .comment(":\n\nkeep alive"));
+                } catch (Exception e) {
+                    iterator.remove();
+                    size--;
 //                    log.error("FAILED WHEN SENDING HEARTBEAT SIGNAL TO {}, MAY BE USER CLOSED A CONNECTION", toUser);
-//                }
-//            }
-//
-//            if (size == 0) {
-//                subscriptions.remove(toUser);
-//            }
-//        });
-//
+                }
+            }
+
+            if (size == 0) {
+                subscriptions.remove(toUser);
+            }
+        });
+
 //        log.info(
-//            "#CURRENT ACTIVE USER = {}, SENDING HEARTBEAT EVENT DONE IN: {} SECONDS",
+//            "#CURRENT ACTIVE USER = {}, SENDING HEARTBEAT EVENT DONE IN: {} MS",
 //            subscriptions.size(),
-//            (System.currentTimeMillis() - start) * 1.0 / 1000);
-//    }
+//            (System.currentTimeMillis() - start) * 1.0);
+    }
 
     /**
      * Get list of notifications with pagination

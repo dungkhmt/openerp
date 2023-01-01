@@ -141,7 +141,7 @@ public class UserServiceImpl implements UserService {
         Set<SecurityGroup> roles = securityGroupRepo.findAllByGroupIdIn(personModel.getRoles());
         UserLogin userLogin = new UserLogin(personModel.getUserName(), personModel.getPassword(), roles, true);
 
-        log.info("save, roles = " + personModel.getRoles().size());
+        //log.info("save, roles = " + personModel.getRoles().size());
         if (userLoginRepo.existsById(personModel.getUserName())) {
             throw new RuntimeException();
         }
@@ -174,7 +174,7 @@ public class UserServiceImpl implements UserService {
         Set<SecurityGroup> roles = securityGroupRepo.findAllByGroupIdIn(personModel.getRoles());
         UserLogin userLogin = new UserLogin(personModel.getUserName(), personModel.getPassword(), roles, true);
 
-        log.info("save, roles = " + personModel.getRoles().size());
+       // log.info("save, roles = " + personModel.getRoles().size());
         if (userLoginRepo.existsById(personModel.getUserName())) {
             throw new RuntimeException();
         }
@@ -236,6 +236,17 @@ public class UserServiceImpl implements UserService {
         Party party = partyRepo.getOne(partyId);
         party.setPartyCode(personUpdateModel.getPartyCode());
         UserLogin u = party.getUserLogin();
+
+        log.info("update Person userlogin = " + u.getUserLoginId());
+        //UserRegister ur = userRegisterRepo.findByUserLoginId(u.getUserLoginId());
+        UserRegister ur = userRegisterRepo.findById(u.getUserLoginId()).orElse(null);
+
+        if(ur != null){
+            ur.setEmail(personUpdateModel.getEmail());
+            ur = userRegisterRepo.save(ur);
+        }else{
+            log.info("update Person, cannot find user register for " + u.getUserLoginId());
+        }
 
         u.setRoles(securityGroupRepo.findAllByGroupIdIn(personUpdateModel.getRoles()));
 
@@ -376,7 +387,7 @@ public class UserServiceImpl implements UserService {
         if(ur != null) {
             String fullName = String.join(" ", ur.getFirstName(), ur.getMiddleName(), ur.getLastName());
             String email = ur.getEmail();
-            log.info("approve, email = " + email + " fullname = " + fullName);
+           // log.info("approve, email = " + email + " fullname = " + fullName);
             EMAIL_EXECUTOR_SERVICE.execute(() -> {
                 try {
                     Map<String, Object> model = new HashMap<>();
@@ -410,7 +421,7 @@ public class UserServiceImpl implements UserService {
         if(u != null){
             u.setStatusItem(statusItem);
             u = userRegisterRepo.save(u);
-            log.info("disableUserRegistration OK");
+           // log.info("disableUserRegistration OK");
 
             // send notification email to userLoginId
 
@@ -447,7 +458,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserLogin updatePassword2(String userLoginId, String password) {
         //String passWordOut = PASSWORD_ENCODER.encode(password);
-        log.info("::updatePassword2, user_login " + userLoginId + " " + password);
+       // log.info("::updatePassword2, user_login " + userLoginId + " " + password);
 //        UserLogin u = userLoginRepo.getByUserLoginId(userLoginId);
         UserLogin u = userLoginRepo.findByUserLoginId(userLoginId);
         //u.setPassword(passWordOut);
@@ -487,7 +498,7 @@ public class UserServiceImpl implements UserService {
                 log.info("findPersonByUserLoginId, person of " + userLoginId + " not exists");
                 return new PersonModel();
             }
-            log.info("findPersonByUserLoginId, found person {}", person);
+            //log.info("findPersonByUserLoginId, found person {}", person);
             PersonModel personModel = new PersonModel();
             personModel.setUserName(userLoginId);
             if (userRegister != null) {
@@ -537,7 +548,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public SimpleResponse approveCreateAccountActivationSendEmail(ApproveRegistrationIM im) {
-        log.info("approveCreateAccountActivationSendEmail, user_login_id = " + im.getUserLoginId());
+       // log.info("approveCreateAccountActivationSendEmail, user_login_id = " + im.getUserLoginId());
 
         UserRegister userRegister = userRegisterRepo.findById(im.getUserLoginId()).orElse(null);
 
@@ -572,7 +583,7 @@ public class UserServiceImpl implements UserService {
         if(ur != null) {
             String fullName = String.join(" ", ur.getFirstName(), ur.getMiddleName(), ur.getLastName());
             String email = ur.getEmail();
-            log.info("approve, email = " + email + " fullname = " + fullName);
+          //  log.info("approve, email = " + email + " fullname = " + fullName);
             EMAIL_EXECUTOR_SERVICE.execute(() -> {
                 try {
                     Map<String, Object> model = new HashMap<>();
@@ -618,7 +629,7 @@ public class UserServiceImpl implements UserService {
         }
         u.setEnabled(true);
         u = userLoginRepo.save(u);
-        log.info("activateAccount, userLoginId = " + u.getUserLoginId() + " enabled = " + u.isEnabled());
+      //  log.info("activateAccount, userLoginId = " + u.getUserLoginId() + " enabled = " + u.isEnabled());
 
         accountActivation.setStatusId(AccountActivation.STATUS_ACTIVATED);
 
@@ -642,9 +653,12 @@ public class UserServiceImpl implements UserService {
         if(ur != null) {
             String fullName = String.join(" ", ur.getFirstName(), ur.getMiddleName(), ur.getLastName());
             String email = ur.getEmail();
-            log.info("approve, email = " + email + " fullname = " + fullName);
+          //  log.info("approve, email = " + email + " fullname = " + fullName);
             String password = genRandomPassword();
             UserLogin u = userLoginRepo.findByUserLoginId(userLoginId);
+            if(u == null){
+                return new SimpleResponse(404, null, "Tài khoản " + userLoginId + " không tồn tại");
+            }
             u.setPassword(password);
             u = userLoginRepo.save(u);
 
@@ -678,7 +692,7 @@ public class UserServiceImpl implements UserService {
             return new SimpleResponse(200, null, "mật khẩu mới đã được gửi đến email cho tài khoản " + userLoginId);
         }
 
-        return new SimpleResponse(404, null, "Tài khoản " + userLoginId + " không tồn tài");
+        return new SimpleResponse(404, null, "Tài khoản " + userLoginId + " không tồn tại");
     }
 
     @Override
@@ -687,14 +701,14 @@ public class UserServiceImpl implements UserService {
         List<UserLogin> users = userLoginRepo.findAll();
         SecurityGroup g = securityGroupRepo.findById(I.getGroupId()).orElse(null);
         int cnt = 0;
-        log.info("assignGroup2AllUsers, groupId = " + I.getGroupId() + " g = " + g);
+       // log.info("assignGroup2AllUsers, groupId = " + I.getGroupId() + " g = " + g);
         if(g == null) return res;
         for(UserLogin u: users){
             if(!u.hasRole(I.getGroupId())) {
                 u.getRoles().add(g);
                 u = userLoginRepo.save(u);
                 cnt += 1;
-                log.info("assignGroup2AllUsers: OK " + cnt + " add group to user " + u.getUserLoginId());
+             //   log.info("assignGroup2AllUsers: OK " + cnt + " add group to user " + u.getUserLoginId());
             }
 
         }
@@ -705,6 +719,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<String> getAllEnabledLoginIdsContains(String partOfLoginId, Integer limit) {
         return userLoginRepo.findByEnabledLoginIdContains(partOfLoginId, limit);
+    }
+
+    @Override
+    public ModelPageUserSearchResponse searchUser(Pageable pageable, String keyword) {
+
+        Page<PersonModel> list = userLoginRepo.searchUser(
+            pageable,
+            keyword);
+        return ModelPageUserSearchResponse.builder()
+                                                 .contents(list)
+                                                 .build();
     }
 
 //    @Override

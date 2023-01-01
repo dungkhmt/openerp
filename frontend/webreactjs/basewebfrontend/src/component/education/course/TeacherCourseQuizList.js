@@ -133,6 +133,7 @@ function TeacherCourseQuizList(props) {
     { title: "Level", field: "levelId" },
     { title: "Status", field: "statusId" },
     { title: "Topic", field: "quizCourseTopic.quizCourseTopicId" },
+    { title: "Created By", field: "createdByUserLoginId" },
     { title: "Created date", field: "createdStamp" },
     {
       field: "",

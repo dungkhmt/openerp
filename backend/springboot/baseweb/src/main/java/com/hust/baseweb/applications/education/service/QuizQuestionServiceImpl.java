@@ -6,6 +6,7 @@ import com.hust.baseweb.applications.contentmanager.model.ContentModel;
 import com.hust.baseweb.applications.contentmanager.repo.MongoContentService;
 import com.hust.baseweb.applications.education.classmanagement.service.storage.exception.StorageException;
 import com.hust.baseweb.applications.education.entity.*;
+import com.hust.baseweb.applications.education.model.quiz.ModelCreateQuizQuestionUserRole;
 import com.hust.baseweb.applications.education.model.quiz.QuizChooseAnswerInputModel;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionCreateInputModel;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailModel;
@@ -39,6 +40,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
@@ -51,7 +53,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
     private QuizCourseTopicService quizCourseTopicService;
 
-
+    private QuizQuestionUserRoleRepo quizQuestionUserRoleRepo;
 
     private QuizChoiceAnswerRepo quizChoiceAnswerRepo;
 
@@ -83,7 +85,8 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     }
 
     @Override
-    public QuizQuestion save(UserLogin u, String json, MultipartFile[] files) {
+    @Transactional
+    public QuizQuestion save(UserLogin u, String json, MultipartFile[] files, MultipartFile[] solutionAttachments) {
 
         //Do save file
 //        Date now = new Date();
@@ -142,8 +145,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
             }
         });
 
-
-
+        List<String> solutionAttachmentStorageIds = mongoContentService.storeFiles(solutionAttachments);
 
         QuizQuestion quizQuestion = new QuizQuestion();
         quizQuestion.setLevelId(input.getLevelId());
@@ -156,8 +158,32 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         //quizQuestion.setStatusId(QuizQuestion.STATUS_PUBLIC);
         quizQuestion.setStatusId(QuizQuestion.STATUS_PRIVATE);
         quizQuestion.setAttachment(String.join(";", attachmentId));
+        quizQuestion.setSolutionContent(input.getSolutionContent());
+        quizQuestion.setSolutionAttachment(String.join(";", solutionAttachmentStorageIds));
         quizQuestion.setCreatedStamp(new Date());
         quizQuestion = quizQuestionRepo.save(quizQuestion);
+
+        // grant role to userId
+        QuizQuestionUserRole r = new QuizQuestionUserRole();
+        r.setUserId(u.getUserLoginId());
+        r.setQuestionId(quizQuestion.getQuestionId());
+        r.setRoleId(QuizQuestionUserRole.ROLE_OWNER);
+        r.setCreatedStamp(new Date());
+        r = quizQuestionUserRoleRepo.save(r);
+
+        r = new QuizQuestionUserRole();
+        r.setUserId(u.getUserLoginId());
+        r.setQuestionId(quizQuestion.getQuestionId());
+        r.setRoleId(QuizQuestionUserRole.ROLE_MANAGER);
+        r.setCreatedStamp(new Date());
+        r = quizQuestionUserRoleRepo.save(r);
+
+        r = new QuizQuestionUserRole();
+        r.setUserId(u.getUserLoginId());
+        r.setQuestionId(quizQuestion.getQuestionId());
+        r.setRoleId(QuizQuestionUserRole.ROLE_VIEW);
+        r.setCreatedStamp(new Date());
+        r = quizQuestionUserRoleRepo.save(r);
 
         return quizQuestion;
     }
@@ -225,6 +251,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         quizQuestionDetailModel.setQuizCourseTopic(quizQuestion.getQuizCourseTopic());
         quizQuestionDetailModel.setQuestionId(quizQuestion.getQuestionId());
         quizQuestionDetailModel.setStatusId(quizQuestion.getStatusId());
+        quizQuestionDetailModel.setCreatedByUserLoginId(quizQuestion.getCreatedByUserLoginId());
 
         if (quizQuestion.getAttachment() != null) {
             String[] fileId = quizQuestion.getAttachment().split(";", -1);
@@ -365,6 +392,12 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         quizQuestionDetailModel.setQuestionId(quizQuestion.getQuestionId());
         quizQuestionDetailModel.setStatusId(quizQuestion.getStatusId());
         quizQuestionDetailModel.setStatement(quizQuestion.getQuestionContent());
+        quizQuestionDetailModel.setSolutionContent(quizQuestion.getSolutionContent());
+
+        String solutionAttachment = quizQuestion.getSolutionAttachment();
+        if (solutionAttachment != null && !solutionAttachment.trim().equals("")) {
+            quizQuestionDetailModel.setSolutionAttachmentIds(quizQuestion.getSolutionAttachment().split(";"));
+        }
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
@@ -410,7 +443,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     }
 
     @Override
-    public QuizQuestion update(UUID questionId, String json, MultipartFile[] files) {
+    public QuizQuestion update(UUID questionId, String json, MultipartFile[] files, MultipartFile[] addedSolutionAttachments) {
 //        Date now = new Date();
 //        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 //        String prefixFileName = formatter.format(now);
@@ -481,8 +514,52 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         quizQuestion.setLastUpdatedStamp(new Date());
         quizQuestion.setCreatedStamp(quizQuestionTemp.getCreatedStamp());
         quizQuestion.setStatusId(quizQuestionTemp.getStatusId());
-        quizQuestion = quizQuestionRepo.save(quizQuestion);
+        quizQuestion.setSolutionContent(input.getSolutionContent());
 
+        List<String> addedSolutionAttachmentIds = mongoContentService.storeFiles(addedSolutionAttachments);
+        String[] oldSolutionAttachments = {};
+        if (quizQuestionTemp.getSolutionAttachment() != null) {
+            oldSolutionAttachments = quizQuestionTemp.getSolutionAttachment().split(";");
+        }
+        List<String> solutionAttachmentIds = Arrays.stream(oldSolutionAttachments)
+                                                   .collect(Collectors.toList());
+        solutionAttachmentIds.removeAll(Arrays.asList(input.getDeletedAttachmentIds()));
+        solutionAttachmentIds.addAll(addedSolutionAttachmentIds);
+        String newSolutionAttachmentIds = solutionAttachmentIds.size() == 0 ? null : String.join(";", solutionAttachmentIds);
+        quizQuestion.setSolutionAttachment(newSolutionAttachmentIds);
+
+        for (String deletedAttachmentId : input.getDeletedAttachmentIds()) {
+            mongoContentService.deleteFilesById(deletedAttachmentId);
+        }
+
+        quizQuestion = quizQuestionRepo.save(quizQuestion);
         return quizQuestion;
+    }
+
+    public QuizQuestionUserRole addQuizQuestionUserRole(ModelCreateQuizQuestionUserRole input){
+        QuizQuestionUserRole quizQuestionUserRole = new QuizQuestionUserRole();
+        quizQuestionUserRole.setUserId(input.getUserId());
+        quizQuestionUserRole.setQuestionId(input.getQuestionId());
+        quizQuestionUserRole.setRoleId(input.getRoleId());
+        quizQuestionUserRole.setCreatedStamp(new Date());
+        quizQuestionUserRole = quizQuestionUserRoleRepo.save(quizQuestionUserRole);
+        return quizQuestionUserRole;
+    }
+
+    public boolean grantRoleToUserOnAllQuizQuestions(String roleId, String userId){
+        List<QuizQuestion> questions = quizQuestionRepo.findAll();
+        for(QuizQuestion q: questions){
+            QuizQuestionUserRole r = new QuizQuestionUserRole();
+            r.setRoleId(roleId);
+            r.setUserId(userId);
+            r.setQuestionId(q.getQuestionId());
+            r.setCreatedStamp(new Date());
+            r = quizQuestionUserRoleRepo.save(r);
+        }
+        return true;
+    }
+    public List<QuizQuestionUserRole> getUsersGranttedToQuizQuestion(UUID questionId){
+        List<QuizQuestionUserRole> res = quizQuestionUserRoleRepo.findAllByQuestionId(questionId);
+        return res;
     }
 }

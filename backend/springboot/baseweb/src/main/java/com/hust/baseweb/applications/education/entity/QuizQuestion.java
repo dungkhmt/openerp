@@ -36,6 +36,9 @@ public class QuizQuestion {
     @Column(name = "created_by_user_login_id")
     private String createdByUserLoginId;
 
+    @Column(name = "question_name")
+    private String questionName;
+
     @Column(name = "level_id")
     private String levelId;
 
@@ -46,6 +49,10 @@ public class QuizQuestion {
     private String attachment;
     @Column(name = "status_id")
     private String statusId;
+
+    private String solutionContent;
+
+    private String solutionAttachment;
 
     @Column(name = "created_stamp")
     private Date createdStamp;

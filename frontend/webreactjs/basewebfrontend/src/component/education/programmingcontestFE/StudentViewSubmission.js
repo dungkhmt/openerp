@@ -1,9 +1,12 @@
-import { Box, Button, CircularProgress } from "@mui/material";
+import {Box, Button, CircularProgress, IconButton} from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 import StandardTable from "component/table/StandardTable";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Link, useParams } from "react-router-dom";
-import { request } from "./Request";
+import React, {forwardRef, useEffect, useImperativeHandle, useState} from "react";
+import {useTranslation} from "react-i18next";
+import {Link, useParams} from "react-router-dom";
+import {request} from "./Request";
+import HustCopyCodeBlock from "../../common/HustCopyCodeBlock";
+import HustModal from "../../common/HustModal";
 
 const commandBarStyles = {
   position: "sticky",
@@ -12,13 +15,17 @@ const commandBarStyles = {
   mt: -3,
   mb: 3,
 };
-export default function StudentViewSubmission() {
+const StudentViewSubmission = forwardRef((props, ref) => {
   const { t } = useTranslation(
     "education/programmingcontest/studentviewcontestdetail"
   );
   const { contestId } = useParams();
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [selectedRowData, setSelectedRowData] = useState();
+  const [openModalMessage, setOpenModalMessage] = useState(false);
+
   const getSubmissions = async () => {
     request(
       "get",
@@ -68,7 +75,17 @@ export default function StudentViewSubmission() {
         }
       },
     },
-    { title: "message", field: "message" },
+    { title: "Message", field: "message", render: (rowData) => (
+        <IconButton
+          color="primary"
+          onClick={() => {
+            setSelectedRowData(rowData);
+            setOpenModalMessage(true);
+          }}
+        >
+          <InfoIcon/>
+        </IconButton>
+      ), },
     { title: t("submissionList.point"), field: "point" },
     { title: t("submissionList.language"), field: "sourceCodeLanguage" },
     {
@@ -83,6 +100,46 @@ export default function StudentViewSubmission() {
     setLoading(true);
     getSubmissions();
   }
+
+  useImperativeHandle(ref, () => ({
+    refreshSubmission() {
+      handleRefresh()
+    }
+  }));
+
+
+  const ModalMessage = ({rowData}) => {
+    let message = "";
+    let detailLink = "";
+    if (rowData) {
+      if (rowData["message"]) message = rowData["message"];
+      if (rowData["contestSubmissionId"]) detailLink = rowData["contestSubmissionId"];
+    }
+    return (
+      <HustModal
+        open={openModalMessage}
+        onClose={() => setOpenModalMessage(false)}
+        isNotShowCloseButton
+        showCloseBtnTitle={false}
+      >
+        <HustCopyCodeBlock
+          title="Response"
+          text={message}
+        />
+        <Box paddingTop={2}>
+          <Link
+            to={{
+              pathname:
+                "/programming-contest/contest-problem-submission-detail/" +
+                detailLink,
+            }}
+          >
+            View detail here
+          </Link>
+        </Box>
+      </HustModal>
+    );
+  };
 
   return (
     <Box sx={{ marginTop: "20px" }}>
@@ -140,19 +197,24 @@ export default function StudentViewSubmission() {
           commandBarComponents={
             <>
               <Button
+                variant="contained"
                 disabled={loading}
                 onClick={() => {
-                  handleRefresh();
+                  setLoading(true);
+                  setTimeout(handleRefresh, 2000);
                 }}
               >
                 {" "}
                 REFRESH
               </Button>
               {loading && <CircularProgress />}
+              <ModalMessage rowData={selectedRowData}/>
             </>
           }
         />
       </div>
     </Box>
   );
-}
+})
+
+export default StudentViewSubmission;

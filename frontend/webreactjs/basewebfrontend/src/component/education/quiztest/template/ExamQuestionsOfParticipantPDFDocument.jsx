@@ -8,6 +8,7 @@ import {
   View,
 } from "@react-pdf/renderer";
 import parse from "html-react-parser";
+import { subPageTotalPagesState } from "../QuizTestGroupList";
 import Footer from "./Footer";
 
 Font.register({
@@ -79,110 +80,149 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
   return (
     <Document>
       {data?.map(
-        ({
-          userDetail,
-          testName,
-          scheduleDatetime,
-          courseName,
-          duration,
-          quizGroupId,
-          groupCode,
-          viewTypeId,
-          listQuestion,
-        }) => (
-          <Page size="A4" style={styles.page} wrap>
-            <View>
-              <Text style={styles.textLine}>Quiz test: {testName}</Text>
-              <Text style={styles.textLine}>Học phần: {courseName}</Text>
-              <Text style={styles.textLine}>MSSV: {userDetail.id}</Text>
-              <Text style={styles.textLine}>
-                Họ tên: {userDetail?.fullName}
-              </Text>
-              <Text style={styles.textLine}>Bắt đầu: {scheduleDatetime}</Text>
-              <Text style={styles.textLine}>Thời gian: {duration} phút</Text>
+        (
+          {
+            userDetail,
+            testName,
+            scheduleDatetime,
+            courseName,
+            duration,
+            quizGroupId,
+            groupCode,
+            viewTypeId,
+            listQuestion,
+          },
+          idx
+        ) => (
+          <>
+            <Page size="A4" style={styles.page} wrap>
+              <View>
+                <Text style={styles.textLine}>Quiz test: {testName}</Text>
+                <Text style={styles.textLine}>Code: {groupCode}</Text>
+                <Text style={styles.textLine}>Học phần: {courseName}</Text>
+                <Text style={styles.textLine}>MSSV: {userDetail.id}</Text>
+                <Text style={styles.textLine}>
+                  FullName: {userDetail?.fullName}
+                </Text>
+                <Text style={styles.textLine}>
+                  Start Time: {scheduleDatetime}
+                </Text>
+                <Text style={styles.textLine}>
+                  Duration: {duration} minutes{" "}
+                </Text>
 
-              {/* Questions */}
-              {listQuestion?.map((q, qIndex) => (
-                <View key={q.questionId} style={styles.question}>
-                  {parse(q.statement).map((ele, eIndex) => {
-                    if (eIndex > 0) {
-                      if (ele.type === "ul") {
+                {/* Questions */}
+                {listQuestion?.map((q, qIndex) => (
+                  <View key={q.questionId} style={styles.question}>
+                    {parse(q.statement).map((ele, eIndex) => {
+                      if (eIndex > 0) {
+                        if (ele.type === "ul") {
+                          return (
+                            <View
+                              style={{
+                                display: "flex",
+                                flexGrow: 1,
+                                flexShrink: 1,
+                              }}
+                            >
+                              {ele.props.children.map((ulChild) => {
+                                if (ulChild.type === "li")
+                                  return (
+                                    <Text style={styles.ulChild}>
+                                      &#8226; {ulChild.props.children}
+                                    </Text>
+                                  );
+                                else if (ulChild !== "\n")
+                                  return (
+                                    <Text style={styles.ulChild}>
+                                      {ulChild}
+                                    </Text>
+                                  );
+                              })}
+                            </View>
+                          );
+                        } else if (ele !== "\n") {
+                          return <Text>{ele}</Text>;
+                        }
+                      } else {
                         return (
-                          <View
-                            style={{
-                              display: "flex",
-                              flexGrow: 1,
-                              flexShrink: 1,
-                            }}
-                          >
-                            {ele.props.children.map((ulChild) => {
-                              if (ulChild.type === "li")
-                                return (
-                                  <Text style={styles.ulChild}>
-                                    &#8226; {ulChild.props.children}
-                                  </Text>
-                                );
-                              else if (ulChild !== "\n")
-                                return (
-                                  <Text style={styles.ulChild}>{ulChild}</Text>
-                                );
-                            })}
-                          </View>
+                          <Text>
+                            <Text style={styles.bold}>Question {qIndex + 1}. </Text>
+                            {ele}
+                          </Text>
                         );
-                      } else if (ele !== "\n") {
-                        return <Text>{ele}</Text>;
                       }
-                    } else {
-                      return (
-                        <Text>
-                          <Text style={styles.bold}>Câu {qIndex + 1}. </Text>
-                          {ele}
-                        </Text>
-                      );
-                    }
-                  })}
+                    })}
 
-                  {/* Question images */}
-                  {q.attachment?.length > 0 &&
-                    q.attachment.map((imageBase64, index) => (
-                      <View key={index} style={styles.imageContainer}>
+                    {/* Question images */}
+                    {q.attachment?.length > 0 &&
+                      q.attachment.map((imageBase64, index) => (
+                        <View key={index} style={styles.imageContainer}>
+                          <Image
+                            src={`data:application/pdf;base64,${imageBase64}`}
+                            style={{
+                              objectFit: "scale-down",
+                            }}
+                          />
+                        </View>
+                      ))}
+
+                    {/* Question answers */}
+                    {q.quizChoiceAnswerList.map((ans) => (
+                      <View
+                        key={ans.choiceAnswerId}
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
                         <Image
-                          src={`data:application/pdf;base64,${imageBase64}`}
+                          src={`data:application/pdf;base64,${checkBoxBase64}`}
                           style={{
-                            objectFit: "scale-down",
+                            width: "24px",
+                            height: "24px",
                           }}
                         />
+                        <Text style={styles.answer}>
+                          {parse(ans.choiceAnswerContent)}
+                        </Text>
                       </View>
                     ))}
+                  </View>
+                ))}
+              </View>
+              <Footer />
 
-                  {/* Question answers */}
-                  {q.quizChoiceAnswerList.map((ans) => (
-                    <View
-                      key={ans.choiceAnswerId}
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Image
-                        src={`data:application/pdf;base64,${checkBoxBase64}`}
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                        }}
-                      />
-                      <Text style={styles.answer}>
-                        {parse(ans.choiceAnswerContent)}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              ))}
-            </View>
-            <Footer />
-          </Page>
+              {/* Calculate value for subPageTotalPagesState[idx] */}
+              <Text
+                render={({
+                  pageNumber,
+                  totalPages,
+                  subPageNumber,
+                  subPageTotalPages,
+                }) => {
+                  if (subPageTotalPages !== undefined) {
+                    subPageTotalPagesState.totalPages.merge({
+                      [idx]: (4 - (subPageTotalPages % 4)) % 4,
+                    });
+                  }
+
+                  if (idx === data.length - 1) {
+                    subPageTotalPagesState.merge({ fulfilled: true });
+                  }
+
+                  return null;
+                }}
+              />
+            </Page>
+            {/* Blank pages */}
+            {subPageTotalPagesState.totalPages[idx].get() > 0 &&
+              Array.from(
+                new Array(subPageTotalPagesState.totalPages[idx].get())
+              ).map((_) => <Page size="A4" />)}
+          </>
         )
       )}
     </Document>

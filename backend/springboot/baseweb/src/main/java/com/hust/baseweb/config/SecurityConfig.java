@@ -36,8 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
             .authorizeRequests()
-            .antMatchers("/roles")
-            .permitAll()
+            .antMatchers("/roles").permitAll()
+            .antMatchers("/actuator/prometheus/**").permitAll()
             .antMatchers(HttpMethod.GET, "/videos/videos/*").permitAll()
 
             //permission to access all static resources

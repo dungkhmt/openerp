@@ -9,6 +9,8 @@ import com.hust.baseweb.model.ModelAssignGroupAllUsersInput;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.model.PersonUpdateModel;
 import com.hust.baseweb.model.UpdatePasswordModel;
+import com.hust.baseweb.entity.UserRegister;
+import com.hust.baseweb.repo.UserRegisterRepo;
 import com.hust.baseweb.model.dto.DPersonDetailModel;
 import com.hust.baseweb.service.PartyService;
 import com.hust.baseweb.service.SecurityGroupService;
@@ -45,6 +47,7 @@ public class UserController {
     private UserService userService;
     private PartyService partyService;
     private SecurityGroupService securityGroupService;
+    private UserRegisterRepo userRegisterRepo;
 
     @GetMapping("/users/{userLoginId}/detail")
     public ResponseEntity<?> getUserDetailByLoginId(@PathVariable String userLoginId) {
@@ -147,6 +150,15 @@ public class UserController {
         DPersonDetailModel detailModel = new DPersonDetailModel(p);
         UserLogin userLogin = userService.findById(principal.getName());
         UserLogin u = userService.findById(p.getUserLogin().getUserLoginId());
+        UserRegister ur = userRegisterRepo.findById(u.getUserLoginId()).orElse(null);
+        log.info("users get Detail info " + u.getUserLoginId());
+
+        if(ur != null){
+            detailModel.setEmail(ur.getEmail());
+            log.info("users get Detail info email found = " + ur.getEmail());
+        }else{
+            log.info("users get Detail info user register not found = ");
+        }
         if(u.isEnabled()) {
             detailModel.setEnabled("Y");
             log.info("getUsersDetail, userLoginId " + u.getUserLoginId() + " is enabled");

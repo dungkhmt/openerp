@@ -21,6 +21,8 @@ import { useHistory } from "react-router-dom";
 import { authGet, authPostMultiPart } from "../../../api";
 import AlertDialog from "../../common/AlertDialog";
 import withScreenSecurity from "../../withScreenSecurity";
+import RichTextEditor from "../../common/editor/RichTextEditor";
+import FileUploader from "../../common/uploader/FileUploader";
 
 let reDirect = null;
 const useStyles = makeStyles((theme) => ({
@@ -61,6 +63,9 @@ function CreateQuizOfCourse() {
   const [topicList, setTopicList] = useState([]);
 
   const [attachmentFiles, setAttachmentFiles] = useState([]);
+
+  const [solutionContent, setSolutionContent] = useState('');
+  const [solutionAttachments, setSolutionAttachments] = useState([]);
 
   const handleAttachmentFiles = (files) => {
     setAttachmentFiles(files);
@@ -115,12 +120,17 @@ function CreateQuizOfCourse() {
       levelId: levelId,
       questionContent: statement,
       fileId: fileId,
+      solutionContent
     };
 
     let formData = new FormData();
     formData.append("QuizQuestionCreateInputModel", JSON.stringify(body));
     for (const file of attachmentFiles) {
       formData.append("files", file);
+    }
+
+    for (const attachment of solutionAttachments) {
+      formData.append("solutionAttachments", attachment);
     }
 
     authPostMultiPart(dispatch, token, "/create-quiz-question", formData);
@@ -225,6 +235,15 @@ function CreateQuizOfCourse() {
               }}
               onChange={(files) => handleAttachmentFiles(files)}
             ></DropzoneArea>
+
+            <div>
+              <Typography variant="h6">Hướng dẫn làm bài</Typography>
+              <RichTextEditor content={solutionContent}
+                              onContentChange={solutionContent => setSolutionContent(solutionContent)}/>
+              <FileUploader onChange={files => setSolutionAttachments(files)}
+                            multiple/>
+            </div>
+
           </form>
         </CardContent>
         <CardActions>

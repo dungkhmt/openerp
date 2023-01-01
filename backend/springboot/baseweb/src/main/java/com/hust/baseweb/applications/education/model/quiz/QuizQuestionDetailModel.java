@@ -31,6 +31,10 @@ public class QuizQuestionDetailModel {
 
     private List<byte[]> attachment;
 
+    private String solutionContent;
+
+    private String[] solutionAttachmentIds = {};
+
     private String createdByUserLoginId;
 
     private String questionContent;

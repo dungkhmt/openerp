@@ -1,7 +1,4 @@
-
-import {
-  TableHead, Typography
-} from "@material-ui/core";
+import { TableHead, Typography } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import TableRow from "@material-ui/core/TableRow";
@@ -23,7 +20,7 @@ import { useHistory } from "react-router-dom";
 import {
   getFileType,
   randomImageName,
-  saveByteArray
+  saveByteArray,
 } from "utils/FileUpload/covert";
 import { authGet } from "../../../api";
 import ContestsUsingAProblem from "./ContestsUsingAProblem";
@@ -51,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     marginBottom: "16px",
-    alignItems: "center"
+    alignItems: "center",
   },
   fileName: {
     fontStyle: "italic",
@@ -216,6 +213,11 @@ export default function ManagerViewProblemDetail() {
       "/programming-contest/problem-detail-create-test-case/" + problemId
     );
   }
+  function userRoleManagement() {
+    history.push(
+      "/programming-contest/user-contest-problem-role-management/" + problemId
+    );
+  }
   return (
     <div>
       <Button
@@ -232,6 +234,14 @@ export default function ManagerViewProblemDetail() {
       >
         Add TestCase
       </Button>
+      <Button
+        onClick={() => {
+          userRoleManagement();
+        }}
+      >
+        User Roles
+      </Button>
+
       <div>
         <h3>Name: {problem ? problem.problemName : ""}</h3>
       </div>
@@ -259,7 +269,12 @@ export default function ManagerViewProblemDetail() {
                 )}
                 {getFileType(file.fileName) === "pdf" && (
                   <Box className={classes.fileDownload}>
-                    <Typography variant="subtitle2" className={classes.fileName}>{file.fileName}</Typography>
+                    <Typography
+                      variant="subtitle2"
+                      className={classes.fileName}
+                    >
+                      {file.fileName}
+                    </Typography>
                     <Button
                       variant="contained"
                       color="success"
@@ -274,7 +289,12 @@ export default function ManagerViewProblemDetail() {
                 )}
                 {getFileType(file.fileName) === "word" && (
                   <Box className={classes.fileDownload}>
-                    <Typography variant="subtitle2" className={classes.fileName}>{file.fileName}</Typography>
+                    <Typography
+                      variant="subtitle2"
+                      className={classes.fileName}
+                    >
+                      {file.fileName}
+                    </Typography>
                     <Button
                       variant="contained"
                       color="success"
@@ -289,7 +309,12 @@ export default function ManagerViewProblemDetail() {
                 )}
                 {getFileType(file.fileName) === "txt" && (
                   <Box className={classes.fileDownload}>
-                    <Typography variant="subtitle2" className={classes.fileName}>{file.fileName}</Typography>
+                    <Typography
+                      variant="subtitle2"
+                      className={classes.fileName}
+                    >
+                      {file.fileName}
+                    </Typography>
                     <Button
                       variant="contained"
                       color="success"

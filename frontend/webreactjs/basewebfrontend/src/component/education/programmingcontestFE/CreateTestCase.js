@@ -9,8 +9,6 @@ import {
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { useEffect, useState } from "react";
-//import { useSelector } from "react-redux";
-//import CodeMirror from "@uiw/react-codemirror";
 import { useHistory, useParams } from "react-router-dom";
 import { successNoti, warningNoti } from "../../../utils/notification";
 import { request } from "./Request";
@@ -33,7 +31,7 @@ export default function CreateTestCase(props) {
   const [isPublic, setIsPublic] = useState("N");
   const [isProcessing, setIsProcessing] = useState(false);
   const [filename, setFilename] = useState("");
-  const [uploadMode, setUploadMode] = useState(null);
+  const [uploadMode, setUploadMode] = useState("EXECUTE");
 
   const dispatch = useDispatch();
   const [uploadMessage, setUploadMessage] = useState("");

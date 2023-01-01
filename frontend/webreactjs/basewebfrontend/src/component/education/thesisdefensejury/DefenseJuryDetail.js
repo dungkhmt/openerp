@@ -1,122 +1,30 @@
-import { Button } from "@material-ui/core";
-import { Box, IconButton } from "@material-ui/core/";
-import { MuiThemeProvider } from "@material-ui/core/styles";
-import EditIcon from "@material-ui/icons/Edit";
+import {Button} from "@material-ui/core";
+import {Box, IconButton} from "@material-ui/core/";
+import {MuiThemeProvider} from "@material-ui/core/styles";
 import Grid from "@mui/material/Grid";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useLocation, useParams } from "react-router-dom";
-import { request } from "../../../api";
+import React, {useEffect, useState} from "react";
+import {useHistory, useLocation, useParams} from "react-router-dom";
+import {request} from "../../../api";
 import ElementAddTeacher from "./ElementAddTeacher";
 import ElementAddThesis from "./ElementAddThesis";
 import ElementDeleteTeacher from "./ElementDeleteTeacher";
 import ElementDeleteThesis from "./ElementDeleteThesis";
-// import {
-//   components,
-//   localization,
-//   themeTable,
-// } from "../../../utils/MaterialTableUtils";
-// import TertiaryButton from "../../button/TertiaryButton";
-// import { GiNuclearPlant } from "react-icons/gi";
 
-// const useStyles = makeStyles((theme) => ({
-//   commandButton: {
-//     marginLeft: theme.spacing(2),
-//     fontWeight: theme.typography.fontWeightRegular,
-//     "&:hover": {
-//       color: theme.palette.primary.main,
-//     },
-//   },
-//   tableToolbarHighlight: { backgroundColor: "transparent" },
-// }));
-
-// const headerProperties = {
-//   headerStyle: {
-//     fontSize: 16,
-//     backgroundColor: "rgb(63, 81, 181)",
-//     color: "white",
-//   },
-// };
-// const theme = createMuiTheme({
-//   palette: {
-//     primary: green,
-//   },
-// });
-
-// let count = 0;
-// const Item = styled(Paper)(({ theme }) => ({
-//   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-//   ...theme.typography.body2,
-//   padding: theme.spacing(1),
-//   textAlign: 'center',
-//   color: theme.palette.text.secondary,
-// }));
 
 function DefenseJuryDetail(props) {
-  // const classes = useStyles();
 
-  // Command delete button
-  const [selectedRows, setSelectedRows] = useState([]);
-
-  //
-  const [defenseJuryDetail, setDefenseJuryDetail] = useState([]);
   const history = useHistory();
-  const [selectedClassId, setSelectedClassId] = useState(null);
-  const [open, setOpen] = React.useState(false);
-  const [openModelExcel, setOpenModelExcel] = React.useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
   const params = useParams();
-  const statusDeleteEle = true;
   const [toggle, setToggle] = useState(false);
   const [toggleTeacher, setToggleTeacher] = useState(false);
   const [thesis, setThesis] = useState([]);
   const [notBelongThesis, setNotBelongThesis] = useState([]);
   const [teacher, setTeacher] = useState([]);
-  const [notBelongTeacher, setNotBelongTeacher] = useState([]);
   const [listTeacher, setListTeacher] = React.useState([]);
   const location = useLocation();
   const [loading, setLoading] = useState(true);
-  const [openLoadingAdd, setOpenLoadingAdd] = useState(false);
-  const [openLoadingDelete, setOpenLoadingDelete] = useState(false);
-  const [defensePlanId, setDefensePlanId] = useState();
-  useEffect(() => {
-    console.log(location.state.defensePlanId);
-    setDefensePlanId(location.state.defensePlanId);
-  }, [location]);
-  //const [selectedFile, setSelectedFile] = useState(null);
 
   // Table
-  const cellStyles = { headerStyle: { padding: 8 }, cellStyle: { padding: 8 } };
-  const alignRightCellStyles = {
-    headerStyle: { padding: 8, textAlign: "right" },
-    cellStyle: { padding: 8, textAlign: "right" },
-  };
-  const columns = [
-    { title: "Tên HĐ", field: "name", ...cellStyles },
-    { title: "Số lượng ĐA tối đa", field: "maxThesis", ...cellStyles },
-    { title: "Người tạo", field: "userLoginID", ...cellStyles },
-    { title: "Tên kế hoạch", field: "thesisPlanName", ...cellStyles },
-    { title: "Chương trình", field: "program_name", ...cellStyles },
-    { title: "Ngày bảo vệ", field: "defenseDate", ...cellStyles },
-    {
-      title: "",
-      render: (rowData) => (
-        <IconButton
-          color="primary"
-          aria-label="edit"
-          onClick={() => {
-            onUpdateHourLoad(rowData["classId"]);
-          }}
-        >
-          <EditIcon />
-        </IconButton>
-      ),
-      ...cellStyles,
-    },
-  ];
-
   const handlerIsLoad = () => {
     console.log("Loadding: ", loading);
     setLoading(true);
@@ -248,19 +156,6 @@ function DefenseJuryDetail(props) {
     );
   }
 
-  async function getDefenseJury() {
-    request(
-      // token,
-      // history,
-      "GET",
-      "/defense_jury/" + params.id,
-      (res) => {
-        // console.log(res.data)
-        setDefenseJuryDetail([res.data]);
-      }
-    );
-  }
-
   const handleToggle = () => {
     // console.log("First:",toggle)
     setToggle(!toggle);
@@ -271,24 +166,6 @@ function DefenseJuryDetail(props) {
     setToggleTeacher(!toggleTeacher);
     // console.log("Last:",toggle)
   };
-  const handleModalOpen = () => {
-    setOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setOpen(false);
-  };
-
-  const handleModalOpenModelExcel = () => {
-    setOpenModelExcel(true);
-  };
-
-  const handleModalCloseModelExcel = () => {
-    setOpenModelExcel(false);
-  };
-  useEffect(() => {
-    getDefenseJury();
-  }, []);
 
   const handleBack = (e) => {
     e.preventDefault();
@@ -318,8 +195,8 @@ function DefenseJuryDetail(props) {
         borderBottom={1}
         mt={-3}
         mb={3}
-        style={{ borderColor: "#e8e8e8" }}
-      ></Box>
+        style={{borderColor: "#e8e8e8"}}
+      />
       <MuiThemeProvider>
         <Button color="primary" type="submit" onClick={handleBack} width="20%">
           Back

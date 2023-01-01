@@ -1,5 +1,5 @@
 import { useState } from "@hookstate/core";
-import Card from "@material-ui/core/Card";
+import { Card, Button } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,9 +24,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StudentQuizDetailListForm() {
+export default function StudentQuizDetailListForm(props) {
   const history = useHistory();
-  const testQuizId = history.location.state?.testId;
+  //const testQuizId = history.location.state?.testId;
+  const testQuizId = props.testId;
   const classes = useStyles();
 
   //
@@ -86,7 +87,7 @@ export default function StudentQuizDetailListForm() {
       {
         401: () => {},
         406: () => {
-          setMessageRequest("Quá thời gian làm bài!");
+          setMessageRequest("Time Out!");
           setRequestFailed(true);
         },
       }
@@ -98,18 +99,24 @@ export default function StudentQuizDetailListForm() {
       "post",
       "/quiz-test-choose_answer-by-user",
       (res) => {
-        setMessageRequest("Đã lưu vào hệ thống!");
+        setMessageRequest("STORED!");
         setRequestSuccessfully(true);
         checkState[order].submitted.set(true);
-        checkState[order].lastSubmittedAnswers.set(choseAnswers);
+        //checkState[order].lastSubmittedAnswers.set(choseAnswers);
+        let resChoseAnswer = [];
+        for (let i = 0; i < res.data.length; i++) {
+          resChoseAnswer.push(res.data[i].choiceAnswerId);
+        }
+        console.log("res choseanswer = ", resChoseAnswer);
+        checkState[order].lastSubmittedAnswers.set(resChoseAnswer);
       },
       {
         400: () => {
-          setMessageRequest("Không được để trống!");
+          setMessageRequest("Cannot be empty!");
           setRequestFailed(true);
         },
         406: () => {
-          setMessageRequest("Quá thời gian làm bài!");
+          setMessageRequest("Time Out!");
           setRequestFailed(true);
         },
       },
@@ -121,7 +128,9 @@ export default function StudentQuizDetailListForm() {
       }
     );
   };
-
+  function handleClickViewQuestion() {
+    getQuestionList();
+  }
   const handleCloseSuccess = () => {
     setRequestSuccessfully(false);
   };
@@ -155,6 +164,15 @@ export default function StudentQuizDetailListForm() {
             {messageRequest}
           </Alert>
         </Snackbar>
+        <div style={{}}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleClickViewQuestion}
+          >
+            View Questions
+          </Button>
+        </div>
 
         {/* Quiz */}
         <Grid container spacing={3}>
@@ -172,13 +190,13 @@ export default function StudentQuizDetailListForm() {
             ) : (
               <p style={{ justifyContent: "center" }}>
                 {" "}
-                Chưa có câu hỏi cho mã đề này
+                Questions not available
               </p>
             )
           ) : (
             <p style={{ justifyContent: "center" }}>
               {" "}
-              Chưa phát đề cho sinh viên{" "}
+              Exam has not been available to student yet{" "}
             </p>
           )}
         </Grid>

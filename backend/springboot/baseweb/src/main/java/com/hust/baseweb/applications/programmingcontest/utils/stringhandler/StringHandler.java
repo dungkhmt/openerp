@@ -144,13 +144,23 @@ public class StringHandler {
         for (int i = 0; i < testCaseAns.size(); i++) {
             String correctTestcaseAns = replaceSpaceV2(testCaseAns.get(i));
             String participantTestcaseAns = replaceSpaceV2(ansArray[i]);
-            if (!correctTestcaseAns.equals(participantTestcaseAns)) {
-                if (status == null && ansArray[i].contains(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)) {
-                    status = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
-                } else if (!ansArray[i].contains(ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED)) {
+
+            if (participantTestcaseAns.equals(Constants.TestCaseSubmissionError.TIME_LIMIT.getValue())) {
+                status = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
+                ansArray[i] = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
+            }
+            else if (participantTestcaseAns.equals(Constants.TestCaseSubmissionError.FILE_LIMIT.getValue())) {
+                status = ContestSubmissionEntity.SUBMISSION_STATUS_OUTPUT_LIMIT_EXCEEDED;
+                ansArray[i] = ContestSubmissionEntity.SUBMISSION_STATUS_OUTPUT_LIMIT_EXCEEDED;
+            }
+            else if (participantTestcaseAns.equals(Constants.TestCaseSubmissionError.MEMORY_LIMIT.getValue())) {
+                status = ContestSubmissionEntity.SUBMISSION_STATUS_MEMORY_ALLOCATION_ERROR;
+                ansArray[i] = ContestSubmissionEntity.SUBMISSION_STATUS_MEMORY_ALLOCATION_ERROR;
+            }
+            else if (!correctTestcaseAns.equals(participantTestcaseAns)) {
                     status = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
-                }
-            } else {
+            }
+            else {
                 score += points.get(i);
                 cnt++;
             }
@@ -176,7 +186,7 @@ public class StringHandler {
                                 .score(0)
                                 .runtime(0L)
                                 .testCasePass(0 + "/" + numTestCases)
-                                .status("Compile Error")
+                                .status(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)
                                 .message(message)
                                 .build();
     }
@@ -209,8 +219,8 @@ public class StringHandler {
         return s.substring(0,len) + "...";
     }
 
-    public static void main(String[] args){
-        System.out.println(StringHandler.shorthen("pham quang dung",5));
+    public static String removeNullCharacter(String s){
+        return s.replaceAll("\u0000", "");
     }
 }
 

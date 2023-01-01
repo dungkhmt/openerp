@@ -4,6 +4,7 @@ import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
 import com.hust.baseweb.applications.programmingcontest.model.*;
+import com.hust.baseweb.model.ListPersonModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,7 +57,7 @@ public interface ProblemTestCaseService {
 
     ModelContestSubmissionResponse submitContestProblem(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
     ModelContestSubmissionResponse submitContestProblemTestCaseByTestCase(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
-    void submitContestProblemTestCaseByTestCaseWithFile(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
+    ModelContestSubmissionResponse submitContestProblemTestCaseByTestCaseWithFile(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
     void submitContestProblemTestCaseByTestCaseWithFileProcessor(ModelContestSubmission modelContestSubmission, ContestSubmissionEntity submissionEntity) throws Exception;
     ModelContestSubmissionResponse submitContestProblemStoreOnlyNotExecute(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
 
@@ -85,6 +86,8 @@ public interface ProblemTestCaseService {
     List<ModelMemberOfContestResponse> getPendingRegisteredUsersOfContest(String contestId);
 
     ListModelUserRegisteredContestInfo searchUser(Pageable pageable, String contestId, String keyword);
+
+    ListPersonModel searchUserBaseKeyword(Pageable pageable, String keyword);
 
     ModelGetContestPageResponse getRegisteredContestByUser(Pageable pageable, String userName);
     ModelGetContestPageResponse getRegisteredContestsByUser(String userName);
@@ -158,4 +161,10 @@ public interface ProblemTestCaseService {
     boolean updatePermissionMemberToContest(String userId, ModelUpdatePermissionMemberToContestInput input);
 
     boolean updateProblemContest(String userId, ModelUpdateProblemContestInput I);
+
+    List<ModelResponseUserProblemRole> getUserProblemRoles(String problemId);
+
+    boolean addUserProblemRole(String userName, ModelUserProblemRole input);
+    boolean removeUserProblemRole(String userName, ModelUserProblemRole input);
+    boolean grantRole2AllProblems(String userLoginId, String userId, String roleId);
 }

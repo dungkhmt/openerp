@@ -11,4 +11,6 @@ public interface EduQuizTestParticipantRoleService {
     List<QuizTestParticipantRoleModel> getParticipantRolesOfQuizTest(String testId);
     List<QuizTestParticipantRoleModel> getQuizTestsOfUser(String userId);
     List<QuizTestParticipantRoleModel> getAllQuizTests();
+
+    List<QuizTestParticipantRoleModel> getParticipantRolesOfUserInQuizTest(String userId, String testId);
 }

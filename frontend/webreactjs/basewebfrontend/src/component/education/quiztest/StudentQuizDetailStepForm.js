@@ -23,9 +23,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StudentQuizDetailStepForm() {
+export default function StudentQuizDetailStepForm(props) {
   const history = useHistory();
-  const testQuizId = history.location.state?.testId;
+  //const testQuizId = history.location.state?.testId;
+  const testQuizId = props.testId;
   const classes = useStyles();
 
   //
@@ -109,7 +110,7 @@ export default function StudentQuizDetailStepForm() {
       {
         401: () => {},
         406: () => {
-          setMessageRequest("Quá thời gian làm bài!");
+          setMessageRequest("Time Out!");
           setRequestFailed(true);
         },
       }
@@ -123,18 +124,18 @@ export default function StudentQuizDetailStepForm() {
       (res) => {
         //currentCheckState.submitted.set(true);
 
-        setMessageRequest("Đã lưu vào hệ thống!");
+        setMessageRequest("STORED!");
         setRequestSuccessfully(true);
         checkState[order].submitted.set(true);
         checkState[order].lastSubmittedAnswers.set(choseAnswers);
       },
       {
         400: () => {
-          setMessageRequest("Không được để trống!");
+          setMessageRequest("Cannot be empty!");
           setRequestFailed(true);
         },
         406: () => {
-          setMessageRequest("Quá thời gian làm bài!");
+          setMessageRequest("Time Out!");
           setRequestFailed(true);
         },
       },

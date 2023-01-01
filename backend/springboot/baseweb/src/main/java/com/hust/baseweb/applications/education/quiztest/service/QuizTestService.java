@@ -4,6 +4,7 @@ import com.hust.baseweb.applications.education.quiztest.UserQuestionQuizExecutio
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
 import com.hust.baseweb.applications.education.quiztest.model.EditQuizTestInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.EduQuizTestModel;
+import com.hust.baseweb.applications.education.quiztest.model.ModelResponseGetMyQuizTest;
 import com.hust.baseweb.applications.education.quiztest.model.QuizTestCreateInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.StudentInTestQueryReturnModel;
 import com.hust.baseweb.applications.education.quiztest.model.edutestquizparticipation.QuizTestParticipationExecutionResultOutputModel;
@@ -55,4 +56,8 @@ public interface QuizTestService {
     public boolean userAnsweredAQuizQuestion(String userLoginId, UUID questionId, UUID quizGroupId);
 
     public int copyQuestionsFromQuizTest2QuizTest(UserLogin u, String fromQuizTestId, String toQuizTestId);
+
+    public List<ModelResponseGetMyQuizTest> getQuizTestListOfUser(String userId);
+
+    public boolean confirmUpdateGroupInQuizTest(String userId, String groupCode, String testId);
 }

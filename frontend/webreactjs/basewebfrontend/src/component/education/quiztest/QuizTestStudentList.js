@@ -7,6 +7,7 @@ import {
   ListItemText,
   Tooltip,
   Typography,
+  CircularProgress,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
 import { Delete } from "@material-ui/icons";
@@ -17,14 +18,15 @@ import { FcDocument } from "react-icons/fc";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import SimpleBar from "simplebar-react";
-import { request } from "../../../api";
+import { request, authPostMultiPart } from "../../../api";
+//import { authPostMultiPart } from "../../../api";
 import { localization } from "../../../utils/MaterialTableUtils";
 import PrimaryButton from "../../button/PrimaryButton";
 import TertiaryButton from "../../button/TertiaryButton";
 import CustomizedDialogs from "../../dialog/CustomizedDialogs";
 import ErrorDialog from "../../dialog/ErrorDialog";
 import { style } from "./TeacherViewQuizDetailForAssignment";
-
+import { useDispatch } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   ...style(theme),
   table: {
@@ -46,6 +48,10 @@ export default function QuizTestStudentList(props) {
   const history = useHistory();
   const classes = useStyles();
   const token = useSelector((state) => state.auth.token);
+  const [filename, setFilename] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
+  const dispatch = useDispatch();
 
   //
   const testId = props.testId;
@@ -91,18 +97,21 @@ export default function QuizTestStudentList(props) {
       title: "Đề",
       ...headerProperties,
       width: "40%",
-      render: (rowData) =>
-        rowData["testGroup"] === "-" ? (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => onOpenDialog(rowData)}
-          >
-            Chọn đề
-          </Button>
-        ) : (
-          rowData["testGroup"]
-        ),
+    },
+    {
+      field: "",
+      title: "Cập nhật đề",
+      ...headerProperties,
+      width: "40%",
+      render: (rowData) => (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => onOpenDialog(rowData)}
+        >
+          Cập nhật đề thi
+        </Button>
+      ),
     },
 
     {
@@ -242,6 +251,38 @@ export default function QuizTestStudentList(props) {
       );
     }
   };
+  const handleUploadExcelStudentList = (event) => {
+    event.preventDefault();
+    setIsProcessing(true);
+    setUploadMessage("");
+    //alert("handleUploadExcelStudentList " + testId);
+    let body = {
+      testId: testId,
+    };
+    let formData = new FormData();
+    formData.append("inputJson", JSON.stringify(body));
+    formData.append("file", filename);
+
+    authPostMultiPart(dispatch, token, "/upload-excel-student-list", formData)
+      .then((res) => {
+        setIsProcessing(false);
+        console.log("handleFormSubmit, res = ", res);
+        setUploadMessage(res.message);
+        //if (res.status == "TIME_OUT") {
+        //  alert("Time Out!!!");
+        //} else {
+        //}
+      })
+      .catch((e) => {
+        setIsProcessing(false);
+        console.error(e);
+        //alert("Time Out!!!");
+      });
+  };
+
+  function onFileChange(event) {
+    setFilename(event.target.files[0]);
+  }
 
   useEffect(() => {
     getStudentList();
@@ -250,6 +291,10 @@ export default function QuizTestStudentList(props) {
 
   return (
     <>
+      <input type="file" id="selected-upload-file" onChange={onFileChange} />
+      <Button onClick={handleUploadExcelStudentList}>Upload</Button>
+      {isProcessing ? <CircularProgress /> : ""}
+
       <MaterialTable
         title=""
         columns={cols}
@@ -259,8 +304,8 @@ export default function QuizTestStudentList(props) {
         options={{
           search: true,
           actionsColumnIndex: -1,
-          pageSize: 10,
-          tableLayout: "fixed",
+          pageSize: 20,
+          //tableLayout: "fixed",
         }}
         actions={[
           {

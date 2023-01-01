@@ -17,4 +17,6 @@ public class EditQuizTestInputModel {
     private Date scheduleDate;
     private int duration;
     private String questionStatementViewTypeId;
+    private String viewTypeId;
+    private String participantQuizGroupAssignmentMode;
 }

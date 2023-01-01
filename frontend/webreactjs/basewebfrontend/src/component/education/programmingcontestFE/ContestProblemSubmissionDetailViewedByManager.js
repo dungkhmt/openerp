@@ -1,20 +1,13 @@
-import { Link, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { request } from "./Request";
-import { API_URL } from "../../../config/config";
+import {useParams} from "react-router-dom";
 import * as React from "react";
-import { Typography } from "@mui/material";
+import {useEffect, useState} from "react";
+import {request} from "./Request";
+import {Typography} from "@mui/material";
 import Box from "@mui/material/Box";
-import { Grid, TextField, Button, MenuItem } from "@material-ui/core";
-import CodeMirror from "@uiw/react-codemirror";
-import { cppLanguage } from "@codemirror/lang-cpp";
-import { StreamLanguage } from "@codemirror/stream-parser";
-import { go } from "@codemirror/legacy-modes/mode/go";
-import { java } from "@codemirror/lang-java";
-import { pythonLanguage } from "@codemirror/lang-python";
-import { javascript } from "@codemirror/lang-javascript";
-import { getStatusColor } from "./lib";
-import ManagerViewParticipantProgramSubmissionDetailTestCaseByTestCase from "./ManagerViewParticipantProgramSubmissionDetailTestCaseByTestCase";
+import {Button, Grid, MenuItem, TextField} from "@material-ui/core";
+import {getStatusColor} from "./lib";
+import ManagerViewParticipantProgramSubmissionDetailTestCaseByTestCase
+  from "./ManagerViewParticipantProgramSubmissionDetailTestCaseByTestCase";
 
 export default function ContestProblemSubmissionDetailViewedByManager() {
   const { problemSubmissionId } = useParams();
@@ -31,21 +24,6 @@ export default function ContestProblemSubmissionDetailViewedByManager() {
   const [testCasePass, setTestCasePass] = useState();
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
-
-  const getExtension = () => {
-    switch (submissionLanguage) {
-      case "CPP":
-        return [cppLanguage];
-      case "GoLang":
-        return StreamLanguage.define(go);
-      case "Java":
-        return java();
-      case "Python3":
-        return StreamLanguage.define(pythonLanguage);
-      default:
-        return javascript();
-    }
-  };
 
   function updateCode() {
     let body = {

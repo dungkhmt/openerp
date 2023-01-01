@@ -5,10 +5,12 @@ import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { request } from "../../../api";
 import StudentQuizDetailListForm from "./StudentQuizDetailListForm";
 import StudentQuizDetailStepForm from "./StudentQuizDetailStepForm";
+import { TextField, Button } from "@mui/material";
+import CheckAndConfirmQuizGroupDialog from "./CheckAndConfirmQuizGroupDialog";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -26,7 +28,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function StudentQuizDetail() {
   const history = useHistory();
-  const testQuizId = history.location.state?.testId;
+  //const testQuizId = history.location.state?.testId;
+  const params = useParams();
+  const testQuizId = params.testId;
 
   const classes = useStyles();
 
@@ -36,14 +40,37 @@ export default function StudentQuizDetail() {
   const [requestFailed, setRequestFailed] = React.useState(false);
   const [messageRequest, setMessageRequest] = React.useState(false);
   const [quizGroupTestDetail, setQuizGroupTestDetail] = React.useState({});
-  //const [viewTypeId, setViewTypeId] = React.useState(null);
-  const [viewTypeId, setViewTypeId] = React.useState(
-    history.location.state?.viewTypeId
-  );
+  const [groupCode, setGroupCode] = React.useState(null);
+  const [open, setOpen] = React.useState(false);
+
+  const [viewTypeId, setViewTypeId] = React.useState(null);
+  //const [viewTypeId, setViewTypeId] = React.useState(
+  //  history.location.state?.viewTypeId
+  //);
 
   // Keep track of checking state of all choices of all quiz
   const checkState = useState([]);
 
+  function onClose() {
+    setOpen(false);
+  }
+  function onUpdateInfo() {
+    request(
+      "get",
+      "/confirm-update-group-code-quiz-test/" + testQuizId + "/" + groupCode,
+      (res) => {
+        alert("update " + res.data);
+        setOpen(false);
+      },
+      {
+        401: () => {},
+        406: () => {
+          //setMessageRequest("Time Out!");
+          setRequestFailed(true);
+        },
+      }
+    );
+  }
   function getQuestionList() {
     request(
       "get",
@@ -93,30 +120,49 @@ export default function StudentQuizDetail() {
       {
         401: () => {},
         406: () => {
-          setMessageRequest("Quá thời gian làm bài!");
+          setMessageRequest("Time Out!");
           setRequestFailed(true);
         },
       }
     );
   }
-
+  function getQuizTestGroup() {
+    request(
+      "get",
+      "/get-my-quiz-test-group/" + testQuizId,
+      (res) => {
+        if (res.data.statusId === "OK") {
+          setGroupCode(res.data.groupCode);
+        } else {
+          setGroupCode(null);
+        }
+      },
+      {
+        401: () => {},
+        406: () => {
+          setMessageRequest("Time Out!");
+          setRequestFailed(true);
+        },
+      }
+    );
+  }
   const onSave = (order, questionId, choseAnswers) => {
     request(
       "post",
       "/quiz-test-choose_answer-by-user",
       (res) => {
-        setMessageRequest("Đã lưu vào hệ thống!");
+        setMessageRequest("STORED!");
         setRequestSuccessfully(true);
         checkState[order].submitted.set(true);
         checkState[order].lastSubmittedAnswers.set(choseAnswers);
       },
       {
         400: () => {
-          setMessageRequest("Không được để trống!");
+          setMessageRequest("Cannot be empty!");
           setRequestFailed(true);
         },
         406: () => {
-          setMessageRequest("Quá thời gian làm bài!");
+          setMessageRequest("Time Out!");
           setRequestFailed(true);
         },
       },
@@ -138,9 +184,74 @@ export default function StudentQuizDetail() {
   };
 
   useEffect(() => {
+    getQuizTestGroup();
     getQuestionList();
   }, []);
+  function updateCode() {
+    alert("update group code " + groupCode);
+  }
+  function checkoutQuestion() {
+    request(
+      "get",
+      "/check-questions-of-group/" + testQuizId + "/" + groupCode,
+      (res) => {
+        const {
+          listQuestion,
+          participationExecutionChoice,
+          ...quizGroupTestDetail
+        } = res.data;
 
+        setQuestions(listQuestion);
+        setQuizGroupTestDetail(quizGroupTestDetail);
+
+        setViewTypeId(quizGroupTestDetail.viewTypeId);
+
+        // Restore test result
+        // TODO: optimize code
+        const chkState = [];
+
+        listQuestion.forEach((question) => {
+          const choices = {};
+          const choseAnswers =
+            participationExecutionChoice[question.questionId];
+
+          question.quizChoiceAnswerList.forEach((ans) => {
+            choices[ans.choiceAnswerId] = false;
+          });
+
+          choices.submitted = false;
+          if (choseAnswers) {
+            choseAnswers.forEach((choseAnsId) => {
+              choices[choseAnsId] = true;
+            });
+
+            choices.submitted = true;
+            choices["lastSubmittedAnswers"] = choseAnswers;
+          } else {
+            choices["lastSubmittedAnswers"] = [];
+          }
+
+          chkState.push(choices);
+        });
+
+        checkState.set(chkState);
+      },
+      {
+        401: () => {},
+        406: () => {
+          setMessageRequest("Time Out!");
+          setRequestFailed(true);
+        },
+      }
+    );
+
+    setOpen(true);
+  }
+  function checkAndConfirmCode() {
+    history.push(
+      "/edu/class/student/quiztest-detail/check-confirm-code/" + testQuizId
+    );
+  }
   return (
     <div className={classes.root}>
       <Card style={{ padding: "20px 20px 20px 20px" }}>
@@ -165,16 +276,57 @@ export default function StudentQuizDetail() {
         <div style={{ padding: "0px 20px 20px 30px" }}>
           <div style={{ justifyContent: "space-between", display: "flex" }}>
             <h3>Quiz test: {quizGroupTestDetail.testName}</h3>
-            <h3>Môn: {quizGroupTestDetail.courseName}</h3>
+            <h3>QuizTestID: {testQuizId}</h3>
+            <h3>Course: {quizGroupTestDetail.courseName}</h3>
           </div>
-          <h4>Bắt đầu: {quizGroupTestDetail.scheduleDatetime}</h4>
-          <h4>Thời gian: {quizGroupTestDetail.duration} phút</h4>
+          {/*<h4>Start Time: {quizGroupTestDetail.scheduleDatetime}</h4>*/}
+          <h4>Duration: {quizGroupTestDetail.duration} minutes</h4>
+          <div style={{ justifyContent: "space-between", display: "flex" }}>
+            <h3>Code: {groupCode}</h3>
+            <Button variant="contained" onClick={checkAndConfirmCode}>
+              {" "}
+              Check & Confirm Code
+            </Button>
+            {/*
+              quizGroupTestDetail ? (
+              <div>
+                <TextField
+                  autoFocus
+                  required
+                  id="groupCode"
+                  label="groupCode"
+                  placeholder="groupCode"
+                  value={groupCode}
+                  onChange={(event) => {
+                    setGroupCode(event.target.value);
+                  }}
+                />
+              </div>
+            ) : (
+              <div>
+                <TextField
+                  autoFocus
+                  required
+                  id="groupCode"
+                  label="groupCode"
+                  placeholder="groupCode"
+                    value={groupCode}
+                    
+                  onChange={(event) => {
+                    setGroupCode(event.target.value);
+                  }}
+                />
+               
+              </div>
+                )*/}
+          </div>
+          {/*<Button onClick={checkoutQuestion}>Check</Button>*/}
         </div>
 
         {viewTypeId === "VIEW_STEP" ? (
-          <StudentQuizDetailStepForm />
+          <StudentQuizDetailStepForm testId={testQuizId} />
         ) : (
-          <StudentQuizDetailListForm />
+          <StudentQuizDetailListForm testId={testQuizId} />
         )}
 
         {/*
@@ -205,6 +357,14 @@ export default function StudentQuizDetail() {
           </Grid>
             */}
       </Card>
+      <CheckAndConfirmQuizGroupDialog
+        open={open}
+        onClose={onClose}
+        onUpdateInfo={onUpdateInfo}
+        questions={questions}
+        quizGroupTestDetail={quizGroupTestDetail}
+        checkState={checkState}
+      />
     </div>
   );
 }

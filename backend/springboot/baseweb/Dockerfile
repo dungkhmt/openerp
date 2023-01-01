@@ -1,20 +1,27 @@
-# syntax = docker/dockerfile:1.3
+# syntax = docker/dockerfile:1
 
-FROM openjdk:8-jdk-alpine as build
+FROM eclipse-temurin:8-jdk-alpine as build
 WORKDIR /workspace/app
 
 COPY mvnw .
-RUN chmod +x mvnw
 COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-RUN ./mvnw install -DskipTests
+RUN chmod +x mvnw && ./mvnw install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
-FROM openjdk:8-jdk-alpine
-RUN apk update && apk add --no-cache gcompat # For ortools
-RUN apk add --update ttf-dejavu && rm -rf /var/cache/apk/* # For Apache POI
+FROM eclipse-temurin:8-jdk-alpine
+
+# For ortools and Apache POI
+RUN apk update && apk add --no-cache \
+    gcompat \
+    ncurses-libs \
+    libgcc \
+    libstdc++ \
+    && apk add \
+    --update ttf-dejavu \
+    && rm -rf /var/cache/apk/*
 
 ENV JAVA_OPTS=""
 

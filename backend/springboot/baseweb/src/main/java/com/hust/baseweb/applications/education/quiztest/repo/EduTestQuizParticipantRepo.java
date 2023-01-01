@@ -11,6 +11,8 @@ public interface EduTestQuizParticipantRepo
 
     List<EduTestQuizParticipant> findByTestIdAndParticipantUserLoginId(String testId, String participantUserLoginId);
 
+    List<EduTestQuizParticipant> findByParticipantUserLoginIdAndStatusId(String participantUserLoginId, String statusId);
+
     List<EduTestQuizParticipant> findByTestIdAndStatusId(String testId, String statusId);
 
     EduTestQuizParticipant findEduTestQuizParticipantByParticipantUserLoginIdAndAndTestId(String userId, String testId);

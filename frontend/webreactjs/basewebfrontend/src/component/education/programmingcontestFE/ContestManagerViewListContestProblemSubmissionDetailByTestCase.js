@@ -1,17 +1,17 @@
 import MaterialTable from "material-table";
 import React from "react";
-import { request } from "../../../api";
-import { toFormattedDateTime } from "../../../utils/dateutils";
+import {request} from "../../../api";
+import {toFormattedDateTime} from "../../../utils/dateutils";
 //import withScreenSecurity from "../withScreenSecurity";
 
 export default function ContestManagerViewListContestProblemSubmissionDetailByTestCase() {
   const columns = [
-    { title: "Contest", field: "contestId" },
-    { title: "Problem", field: "problemId" },
-    { title: "User", field: "userLoginId" },
-    { title: "Status", field: "status" },
-    { title: "Point", field: "point" },
-    { title: "DateTime", field: "createdAt" },
+    {title: "Contest", field: "contestId"},
+    {title: "Problem", field: "problemId"},
+    {title: "User", field: "userLoginId"},
+    {title: "Status", field: "status"},
+    {title: "Point", field: "point"},
+    {title: "DateTime", field: "createdAt"},
   ];
 
   return (
@@ -56,7 +56,7 @@ export default function ContestManagerViewListContestProblemSubmissionDetailByTe
             );
           })
         }
-      ></MaterialTable>
+      />
     </div>
   );
 }

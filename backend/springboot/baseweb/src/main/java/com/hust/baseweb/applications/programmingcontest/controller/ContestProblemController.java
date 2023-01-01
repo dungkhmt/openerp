@@ -8,9 +8,12 @@ import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestProblemRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
+import com.hust.baseweb.applications.programmingcontest.repo.UserContestProblemRoleRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.UserRegistrationContestRepo;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
+import com.hust.baseweb.applications.programmingcontest.service.helper.cache.ProblemTestCaseServiceCache;
 import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.model.ListPersonModel;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.service.UserService;
 import io.lettuce.core.dynamic.annotation.Param;
@@ -44,17 +47,15 @@ public class ContestProblemController {
     ContestProblemRepo contestProblemRepo;
     UserService userService;
     UserRegistrationContestRepo userRegistrationContestRepo;
+    UserContestProblemRoleRepo userContestProblemRoleRepo;
+    ProblemTestCaseServiceCache cacheService;
 
-    // public static List<ModelGetContestDetailResponse> runningContests = new
-    // ArrayList();
     public static ConcurrentMap<String, ModelGetContestDetailResponse> runningContests = new ConcurrentHashMap();
 
     @PostMapping("/create-problem")
     public ResponseEntity<?> createContestProblem(Principal principal,
             @RequestParam("ModelCreateContestProblem") String json,
             @RequestParam("files") MultipartFile[] files) throws MiniLeetCodeException {
-        // problemTestCaseService.createContestProblem(modelCreateContestProblem,
-        // principal.getName());
         problemTestCaseService.createContestProblem(principal.getName(), json, files);
         return ResponseEntity.status(200).body(null);
     }
@@ -94,8 +95,7 @@ public class ContestProblemController {
     @PostMapping("/ide/{computerLanguage}")
     public ResponseEntity<?> runCode(@PathVariable("computerLanguage") String computerLanguage,
             @RequestBody ModelRunCodeFromIDE modelRunCodeFromIDE, Principal principal) throws Exception {
-        String response = null;
-        response = problemTestCaseService.executableIDECode(modelRunCodeFromIDE, principal.getName(), computerLanguage);
+        String response = problemTestCaseService.executableIDECode(modelRunCodeFromIDE, principal.getName(), computerLanguage);
         ModelRunCodeFromIDEOutput modelRunCodeFromIDEOutput = new ModelRunCodeFromIDEOutput();
         modelRunCodeFromIDEOutput.setOutput(response);
         return ResponseEntity.status(200).body(modelRunCodeFromIDEOutput);
@@ -177,7 +177,18 @@ public class ContestProblemController {
             @PathVariable("problemId") String problemId, Principal principal,
             @RequestParam("ModelUpdateContestProblem") String json, @RequestParam("files") MultipartFile[] files)
         throws Exception {
-        log.info("updateProblemDetails problemId {}", problemId);
+        //log.info("updateProblemDetails problemId {}", problemId);
+        List<UserContestProblemRole> L = userContestProblemRoleRepo.findAllByProblemIdAndUserId(problemId, principal.getName());
+        boolean hasPermission = false;
+        for(UserContestProblemRole e: L){
+            if(e.getRoleId().equals(UserContestProblemRole.ROLE_MANAGER) || e.getRoleId().equals(UserContestProblemRole.ROLE_OWNER)){
+                hasPermission = true; break;
+            }
+        }
+        if(!hasPermission){
+            //return ResponseEntity.status(401).body("No permission");
+            return ResponseEntity.status(HttpStatus.OK).body("No permission");
+        }
         ProblemEntity problemResponse = problemTestCaseService.updateContestProblem(problemId, principal.getName(), json, files);
         return ResponseEntity.status(HttpStatus.OK).body(problemResponse);
     }
@@ -252,28 +263,33 @@ public class ContestProblemController {
         log.info("edit contest modelUpdateContest {}", modelUpdateContest);
 
         problemTestCaseService.updateContest(modelUpdateContest, principal.getName(), contestId);
-        ModelGetContestDetailResponse runningContest = runningContests.get(contestId);
-        if (runningContest != null) {
-            removeContestFromCache(contestId);
-            if (modelUpdateContest.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
-                log.info("updateContest, found contest " + contestId + " is running in cache --> remove it");
-                // remove active contest from runningContests
-                // removeContestFromCache(contestId);
+//        ModelGetContestDetailResponse runningContest = runningContests.get(contestId);
+//        if (runningContest != null) {
+//            removeContestFromCache(contestId);
+//            if (modelUpdateContest.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
+//                log.info("updateContest, found contest " + contestId + " is running in cache --> remove it");
+//                // remove active contest from runningContests
+//                // removeContestFromCache(contestId);
+//
+//                // RELOAD Contest and Put into the cache
+//                log.info("editContest, status = RUNNING -> RELOAD from DB and put into cache");
+//                runningContest = problemTestCaseService.getContestDetailByContestId(contestId);
+//                if (runningContest != null)
+//                    checkAndAddRunningContest(runningContest);
+//            }
+//        }
 
-                // RELOAD Contest and Put into the cache
-                log.info("editContest, status = RUNNING -> RELOAD from DB and put into cache");
-                runningContest = problemTestCaseService.getContestDetailByContestId(contestId);
-                if (runningContest != null)
-                    checkAndAddRunningContest(runningContest);
-            }
+        ModelGetContestDetailResponse runningContest = problemTestCaseService.getContestDetailByContestId(contestId);
+        if (runningContest != null) {
+            cacheService.addContestDetailResponseToCache(runningContest, 60*60);
         }
         return ResponseEntity.status(200).body(null);
     }
 
-    synchronized static void removeContestFromCache(String contestId) {
-        log.info("removeContestFromCache synchronized remove from cache contestId " + contestId);
-        runningContests.remove(contestId);
-    }
+//    synchronized static void removeContestFromCache(String contestId) {
+//        log.info("removeContestFromCache synchronized remove from cache contestId " + contestId);
+//        runningContests.remove(contestId);
+//    }
 
     @GetMapping("/get-list-roles-contest")
     public ResponseEntity<?> getListRolesContest() {
@@ -345,6 +361,13 @@ public class ContestProblemController {
         return ResponseEntity.ok().body(res);
     }
 
+    @GetMapping("/get-list-contest-problem-student/{contestId}")
+    public ResponseEntity<?> getListContestProblemViewedByStudent(@PathVariable("contestId") String contestId) {
+        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+        List<ProblemEntity> listProblem = contestEntity.getProblems();
+        return ResponseEntity.status(200).body(listProblem);
+    }
+
     @GetMapping("/get-contest-detail-solving/{contestId}")
     public ResponseEntity<?> getContestDetailSolving(@PathVariable("contestId") String contestId, Principal principal)
             throws MiniLeetCodeException {
@@ -380,34 +403,41 @@ public class ContestProblemController {
          * }
          * }
          */
-        if (contestEntity.getUseCacheContestProblem() != null &&
-                contestEntity.getUseCacheContestProblem().equals(ContestEntity.USE_CACHE_CONTEST_PROBLEM_YES)) {
-            response = runningContests.get(contestId);
-            if (response == null) {
-                // load from DB and store in cache
-                log.info("getContestDetail constestid " + contestId
-                        + " USED_CACHE not found in the cache --> load from DB");
-                response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
-                if (response != null)
-                    checkAndAddRunningContest(response);
 
-            } else {
-                log.info("getContestDetail constestid {} use cache, found a running contest in cache!!!", contestId);
-            }
-        } else {
-            log.info("getContestDetail constestid {} NOT use cache -> load from DB", contestId);
+//        if (contestEntity.getUseCacheContestProblem() != null &&
+//                contestEntity.getUseCacheContestProblem().equals(ContestEntity.USE_CACHE_CONTEST_PROBLEM_YES)) {
+//            response = runningContests.get(contestId);
+//            if (response == null) {
+//                // load from DB and store in cache
+//                log.info("getContestDetail constestid " + contestId
+//                        + " USED_CACHE not found in the cache --> load from DB");
+//                response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
+//                if (response != null)
+//                    checkAndAddRunningContest(response);
+//
+//            } else {
+//                log.info("getContestDetail constestid {} use cache, found a running contest in cache!!!", contestId);
+//            }
+//        } else {
+//            log.info("getContestDetail constestid {} NOT use cache -> load from DB", contestId);
+//            response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
+//        }
+
+        response = cacheService.findContestDetailResponseInCache(contestId);
+        if (response == null) {
             response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
+            cacheService.addContestDetailResponseToCache(response, 60 * 60);
         }
         return ResponseEntity.status(200).body(response);
     }
 
-    synchronized static void checkAndAddRunningContest(ModelGetContestDetailResponse response) {
-        if (runningContests.get(response.getContestId()) == null) {
-            runningContests.put(response.getContestId(), response);
-            log.info("getContestDetail constestid " + response.getContestId()
-                    + " not found in the cache --> load from DB AND push successfully in cache");
-        }
-    }
+//    synchronized static void checkAndAddRunningContest(ModelGetContestDetailResponse response) {
+//        if (runningContests.get(response.getContestId()) == null) {
+//            runningContests.put(response.getContestId(), response);
+//            log.info("getContestDetail constestid " + response.getContestId()
+//                    + " not found in the cache --> load from DB AND push successfully in cache");
+//        }
+//    }
 
     @Secured("ROLE_STUDENT")
     @PostMapping("/student-register-contest/{contestId}")
@@ -544,7 +574,17 @@ public class ContestProblemController {
         }
         ListModelUserRegisteredContestInfo resp = problemTestCaseService.searchUser(pageable, contestId, keyword);
         return ResponseEntity.status(200).body(resp);
-
+    }
+    @Secured("ROLE_TEACHER")
+    @GetMapping("/search-user-based-keyword")
+    public ResponseEntity<?> searchUserBaseKeyword(Pageable pageable,
+                                        @Param("keyword") String keyword) {
+        if (keyword == null) {
+            keyword = "";
+        }
+        log.info("searchUserBaseKeywordm keyword = " + keyword);
+        ListPersonModel resp = problemTestCaseService.searchUserBaseKeyword(pageable, keyword);
+        return ResponseEntity.status(200).body(resp);
     }
 
     @Secured("ROLE_TEACHER")
@@ -596,7 +636,7 @@ public class ContestProblemController {
     @GetMapping("/get-contest-paging-registered")
     public ResponseEntity<?> getContestRegisteredByStudentPaging(Pageable pageable, @Param("sortBy") String sortBy,
             Principal principal) {
-        log.info("getContestRegisteredByStudentPaging sortBy {} pageable {}", sortBy, pageable);
+        //log.info("getContestRegisteredByStudentPaging sortBy {} pageable {}", sortBy, pageable);
         if (sortBy != null) {
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(sortBy));
         } else {
@@ -774,10 +814,10 @@ public class ContestProblemController {
         ContestEntity contestEntity = contestRepo.findContestByContestId(model.getContestId());
         if (contestEntity.getJudgeMode() != null &&
             contestEntity.getJudgeMode().equals(ContestEntity.ASYNCHRONOUS_JUDGE_MODE_QUEUE)) {
-            log.info("contestSubmitProblemViaUploadFileV3, mode using queue");
+            //log.info("contestSubmitProblemViaUploadFileV3, mode using queue");
             return contestSubmitProblemViaUploadFileV2(principal, inputJson, file);
         }
-        log.info("contestSubmitProblemViaUploadFileV3, mode synchronous, NOT using queue");
+        //log.info("contestSubmitProblemViaUploadFileV3, mode synchronous, NOT using queue");
         return contestSubmitProblemViaUploadFile(principal, inputJson, file);
     }
 
@@ -953,6 +993,7 @@ public class ContestProblemController {
             @RequestParam("inputJson") String inputJson,
             @RequestParam("file") MultipartFile file) {
 
+        String userId = principal.getName();
         Gson gson = new Gson();
         ModelContestSubmitProgramViaUploadFile model = gson.fromJson(inputJson,
                 ModelContestSubmitProgramViaUploadFile.class);
@@ -966,7 +1007,7 @@ public class ContestProblemController {
 
         List<UserRegistrationContestEntity> userRegistrations = userRegistrationContestRepo
                 .findUserRegistrationContestEntityByContestIdAndUserIdAndStatusAndRoleId(model.getContestId(),
-                        principal.getName(), UserRegistrationContestEntity.STATUS_SUCCESSFUL,
+                        userId, UserRegistrationContestEntity.STATUS_SUCCESSFUL,
                         UserRegistrationContestEntity.ROLE_PARTICIPANT);
         if (userRegistrations == null || userRegistrations.size() == 0) {
             ModelContestSubmissionResponse resp = buildSubmissionResponseNotRegistered();
@@ -983,10 +1024,25 @@ public class ContestProblemController {
         }
 
         int numOfSubmissions = contestSubmissionRepo
-                .countAllByContestIdAndUserIdAndProblemId(model.getContestId(), principal.getName(), model.getProblemId());
+                .countAllByContestIdAndUserIdAndProblemId(model.getContestId(), userId, model.getProblemId());
         if (numOfSubmissions >= contestEntity.getMaxNumberSubmissions()) {
             ModelContestSubmissionResponse resp = buildSubmissionResponseReachMaxSubmission(contestEntity.getMaxNumberSubmissions());
             return ResponseEntity.ok().body(resp);
+        }
+
+        long submissionInterval = contestEntity.getMinTimeBetweenTwoSubmissions();
+        if (submissionInterval > 0) {
+            Date now = new Date();
+            Long lastSubmitTime = cacheService.findUserLastProblemSubmissionTimeInCache(model.getProblemId(), userId);
+            if (lastSubmitTime != null) {
+                long diffBetweenNowAndLastSubmit = now.getTime() - lastSubmitTime;
+                if (diffBetweenNowAndLastSubmit < submissionInterval * 1000) {
+                    ModelContestSubmissionResponse resp = buildSubmissionResponseNotEnoughTimeBetweenSubmissions(
+                        submissionInterval);
+                    return ResponseEntity.ok().body(resp);
+                }
+            }
+            cacheService.addUserLastProblemSubmissionTimeToCache(model.getProblemId(), userId);
         }
 
         try {
@@ -1009,12 +1065,12 @@ public class ContestProblemController {
             if (contestEntity.getSubmissionActionType()
                     .equals(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)) {
                 if (cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
-                    resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
+                    resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId);
                 }else {
-                    problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, principal.getName());
+                    resp = problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, userId);
                 }
             } else {
-                resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
+                resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId);
             }
 
             return ResponseEntity.status(200).body(resp);
@@ -1040,7 +1096,8 @@ public class ContestProblemController {
     }
     private ModelContestSubmissionResponse buildSubmissionResponseNotRegistered() {
         return ModelContestSubmissionResponse.builder()
-                                             .status("TIME_OUT")
+                                             .status("PARTICIPANT_NOT_APPROVED_OR_REGISTERED")
+                                             .message("Participant is not approved or not registered")
                                              .testCasePass("0")
                                              .runtime(0L)
                                              .memoryUsage((float) 0)
@@ -1088,6 +1145,22 @@ public class ContestProblemController {
                                              .status("MAX_SOURCE_CODE_LENGTH_VIOLATIONS")
                                              .message("Max source code length violations " + sourceLength + " exceeded "
                                                       + maxLength + " ")
+                                             .testCasePass("0")
+                                             .runtime(0L)
+                                             .memoryUsage((float) 0)
+                                             .problemName("")
+                                             .contestSubmissionID(null)
+                                             .submittedAt(null)
+                                             .score(0)
+                                             .numberTestCasePassed(0)
+                                             .totalNumberTestCase(0)
+                                             .build();
+    }
+
+    private ModelContestSubmissionResponse buildSubmissionResponseNotEnoughTimeBetweenSubmissions(long interval) {
+        return ModelContestSubmissionResponse.builder()
+                                             .status("SUBMISSION_INTERVAL_VIOLATIONS")
+                                             .message("Not enough time between 2 submissions (" + interval + "s) ")
                                              .testCasePass("0")
                                              .runtime(0L)
                                              .memoryUsage((float) 0)
@@ -1307,12 +1380,12 @@ public class ContestProblemController {
     @GetMapping("/get-contest-submission-paging-of-a-user-and-contest/{contestId}")
     public ResponseEntity<?> getContestSubmissionPagingOfCurrentUser(Principal principal,
             @PathVariable String contestId, Pageable pageable) {
-        log.info(
-                "getContestSubmissionPagingOfCurrentUser, user = " + principal.getName() + " contestId = " + contestId);
+        //log.info(
+        //        "getContestSubmissionPagingOfCurrentUser, user = " + principal.getName() + " contestId = " + contestId);
         pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by("createdAt").descending());
         Page<ContestSubmission> page = problemTestCaseService
                 .findContestSubmissionByUserLoginIdAndContestIdPaging(pageable, principal.getName(), contestId);
-        log.info("page {}", page);
+        //log.info("page {}", page);
         return ResponseEntity.status(200).body(page);
     }
 
@@ -1432,5 +1505,38 @@ public class ContestProblemController {
     public ResponseEntity<?> updateProblemContest(Principal principal, @RequestBody ModelUpdateProblemContestInput I){
         boolean res = problemTestCaseService.updateProblemContest(principal.getName(), I);
         return ResponseEntity.ok().body(res);
+    }
+
+    @GetMapping("/get-user-contest-problem-roles/{problemId}")
+    public ResponseEntity<?> getUserContestProblemRoles(Principal principal, @PathVariable String problemId){
+        List<ModelResponseUserProblemRole> res = problemTestCaseService.getUserProblemRoles(problemId);
+        return ResponseEntity.ok().body(res);
+    }
+
+    @PostMapping("/add-contest-problem-role-to-user/")
+    public ResponseEntity<?> addContestProblemRole(Principal principal, @RequestBody ModelUserProblemRole input){
+        boolean ok = problemTestCaseService.addUserProblemRole(principal.getName(), input);
+        return ResponseEntity.ok().body(ok);
+    }
+    @PostMapping("/remove-contest-problem-role-to-user/")
+    public ResponseEntity<?> removeContestProblemRole(Principal principal, @RequestBody ModelUserProblemRole input){
+        boolean ok = problemTestCaseService.removeUserProblemRole(principal.getName(), input);
+        return ResponseEntity.ok().body(ok);
+    }
+
+    @GetMapping("/grant-manager-role-all-problems/{userId}/{roleId}")
+    public ResponseEntity<?> grantRole2AllProblems(Principal principal, @PathVariable String userId, @PathVariable String roleId){
+        //log.info("grantRole2AllProblems, userId = " + userId + " roleId = " + roleId);
+        boolean ok = problemTestCaseService.grantRole2AllProblems(principal.getName(), userId, roleId);
+        return ResponseEntity.ok().body(ok);
+    }
+
+    @GetMapping("/public/ranking-programming-contest/{contestId}")
+    public ResponseEntity<?> getRankingContestPublic(@PathVariable("contestId") String contestId, Pageable pageable) {
+        pageable = Pageable.unpaged();
+        List<ContestSubmissionsByUser> page = problemTestCaseService.getRankingByContestIdNew(pageable, contestId,
+                                                                                              Constants.GetPointForRankingType.HIGHEST);
+        // log.info("ranking page {}", page);
+        return ResponseEntity.status(200).body(page);
     }
 }
