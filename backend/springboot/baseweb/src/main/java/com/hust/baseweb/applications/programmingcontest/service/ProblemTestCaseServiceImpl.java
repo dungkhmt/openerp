@@ -1569,7 +1569,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                              "custom-" +
                                                              Math.random());
 
-        Map<UUID, String> submissionResponses = new HashMap<UUID, String>();
+        Map<UUID, String> submissionResponses = new HashMap<>();
         for (TestCaseEntity testCaseEntity : testCaseEntityList) {
             ContestSubmissionTestCaseEntity submissionTestCase = submissionTestCases
                 .stream()
@@ -1589,7 +1589,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             submissionResponses.put(submissionTestCase.getContestSubmissionTestcaseId(), response);
         }
 
-        // tempDir.removeDir(tempName);
+        tempDir.removeDir(tempName);
         submissionResponseHandler.processCustomSubmissionResponse(submission, submissionResponses);
     }
 
