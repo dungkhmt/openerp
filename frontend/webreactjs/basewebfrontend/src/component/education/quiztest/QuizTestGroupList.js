@@ -259,8 +259,6 @@ export default function QuizTestGroupList(props) {
 
   return (
     <>
-      <QuizGroupList testId={testId}/>
-
       <MaterialTable
         title=""
         columns={columns}

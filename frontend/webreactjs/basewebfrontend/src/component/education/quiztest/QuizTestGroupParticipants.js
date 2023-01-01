@@ -215,10 +215,6 @@ function QuizTestGroupParticipants(props) {
   }, []);
 
   return (
-    <>
-      <StudentAssignedToQuizGroups testId={testId}/>
-      <br/>
-
       <MaterialTable
         title={"Phân thí sinh vào các đề"}
         columns={columns}
@@ -248,7 +244,6 @@ function QuizTestGroupParticipants(props) {
           },
         ]}
       />
-    </>
   );
 }
 

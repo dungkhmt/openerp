@@ -24,7 +24,6 @@ import TertiaryButton from "../../button/TertiaryButton";
 import CustomizedDialogs from "../../dialog/CustomizedDialogs";
 import ErrorDialog from "../../dialog/ErrorDialog";
 import { style } from "./TeacherViewQuizDetailForAssignment";
-import StudentsApprovedToQuizTest from "./detail/StudentsApprovedToQuizTest";
 
 const useStyles = makeStyles((theme) => ({
   ...style(theme),
@@ -251,8 +250,6 @@ export default function QuizTestStudentList(props) {
 
   return (
     <>
-      <StudentsApprovedToQuizTest testId={testId}/>
-
       <MaterialTable
         title=""
         columns={cols}

@@ -172,6 +172,7 @@ function QuizTestDetail() {
   return courseInfo ? (
     <>
       <TeacherViewQuizTestDetail/>
+      <br/>
 
       <Card>
         <CardContent>

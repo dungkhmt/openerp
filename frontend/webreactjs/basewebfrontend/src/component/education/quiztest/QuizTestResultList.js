@@ -306,8 +306,6 @@ export default function QuizTestStudentListResult(props) {
 
   return (
     <>
-      <ResultListOfQuizTest testId={testId} isGeneral={isGeneral}/>
-
       <MaterialTable
         title=""
         columns={isGeneral ? generalColumns : columns}
