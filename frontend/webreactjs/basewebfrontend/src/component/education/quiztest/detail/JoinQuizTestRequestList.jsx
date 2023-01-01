@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { request } from "../../../../api";
 import {errorNoti} from "../../../../utils/notification";
 import StandardTable from "../../../table/StandardTable";
-import {Button} from "@mui/material";
-import {Card, CardContent} from "@material-ui/core";
+import {Button, Card, CardContent} from "@mui/material";
 
 export default function JoinQuizTestRequestList(props) {
   let testId = props.testId;

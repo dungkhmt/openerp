@@ -2,10 +2,9 @@ import {useEffect, useMemo, useState} from "react";
 import { request } from "../../../../api";
 import {defaultDatetimeFormat} from "../../../../utils/dateutils";
 import { exportResultListPdf } from "../TeacherQuizResultExportPDF.js";
-import ViewHistoryLogQuizGroupQuestionParticipationExecutionChoice from "../ViewHistoryLogQuizGroupQuestionParticipationExecutionChoice";
 import {errorNoti} from "../../../../utils/notification";
 import ExcelExporter from "../../../common/ExcelExporter";
-import {Button} from "@mui/material";
+import {Button, Card, CardContent} from "@mui/material";
 import StandardTable from "../../../table/StandardTable";
 import React from "react";
 
@@ -119,17 +118,10 @@ export default function ResultListOfQuizTest(props) {
     { title: "Điểm", width: { wch: "25" }, style: EXCEL_HEADER_CELL_STYLE }
   ]
 
-  const DataSet = [
-    {
-      columns: excelColumns,
-      data: displayedResults.map(mapGeneralResultToExcelDataRow),
-    },
-  ];
-
   const shareColumns = [
-    { field: "userLoginId", title: "UserLoginID", width: "40%" },
-    { field: "fullName", title: "Họ tên", width: "40%" },
-    { field: "groupId", title: "Group" }
+    { field: "userLoginId", title: "Login ID" },
+    { field: "fullName", title: "Họ tên" },
+    { field: "groupId", title: "Group ID" }
   ]
 
   const detailResultColumns = [
@@ -173,23 +165,22 @@ export default function ResultListOfQuizTest(props) {
   let tableTitle = isGeneral ? "Kết quả tổng quát" : "Kết quả chi tiết";
 
   return (
-    <>
-      <StandardTable
-        title={tableTitle}
-        columns={isGeneral ? generalResultColumns : detailResultColumns}
-        data={displayedResults}
-        hideCommandBar
-        options={{
-          selection: false,
-          search: true,
-          sorting: true,
-        }}
-        actions={actions}
-      />
-      <ViewHistoryLogQuizGroupQuestionParticipationExecutionChoice
-        testId={testId}
-      />
-    </>
+    <Card>
+      <CardContent>
+        <StandardTable
+          title={tableTitle}
+          columns={isGeneral ? generalResultColumns : detailResultColumns}
+          data={displayedResults}
+          hideCommandBar
+          options={{
+            selection: false,
+            search: true,
+            sorting: true,
+          }}
+          actions={actions}
+        />
+      </CardContent>
+    </Card>
   );
 }
 

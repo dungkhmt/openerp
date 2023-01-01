@@ -143,10 +143,12 @@ export function defaultDateFormat(date) {
 }
 
 export function defaultTimeFormat(time) {
+  if (!time) return "";
   return moment(time).format(DEFAULT_TIME_FORMAT);
 }
 
 export function defaultDatetimeFormat(datetime) {
+  if (!datetime) return "";
   return moment(datetime).format(DEFAULT_DATETIME_FORMAT);
 }
 

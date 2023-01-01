@@ -23,6 +23,7 @@ import QuizTestResultChart from "./QuizTestResultChart";
 import QuizTestStudentListResult from "./QuizTestResultList";
 import QuizTestStudentList from "./QuizTestStudentList";
 import {Card, CardContent} from "@material-ui/core";
+import TeacherViewQuizTestDetail from "./detail/TeacherViewQuizTestDetail";
 
 const styles = {
   btn: {
@@ -170,6 +171,8 @@ function QuizTestDetail() {
 
   return courseInfo ? (
     <>
+      <TeacherViewQuizTestDetail/>
+
       <Card>
         <CardContent>
           <Typography

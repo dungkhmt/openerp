@@ -3,7 +3,7 @@ import {request} from "../../../../api";
 import {errorNoti} from "../../../../utils/notification";
 import AssignQuizGroupForStudentDialog from "./AssignQuizGroupForStudentDialog";
 import StandardTable from "../../../table/StandardTable";
-import {Button} from "@mui/material";
+import {Button, Card, CardContent} from "@mui/material";
 
 export default function StudentsApprovedToQuizTest(props) {
   const testId = props.testId;
@@ -78,16 +78,16 @@ export default function StudentsApprovedToQuizTest(props) {
 
   // Action buttons
   const AssignQuizGroupButton = ({ student }) => (
-    <Button variant="contained"
-            color="primary"
+    <Button color="primary"
+            variant="outlined"
             onClick={() => openAssignQuizGroupDialog(student)} >
       Chọn đề
     </Button>
   )
 
-  const RejectStudentsFromQuizTestButton = ({ rejectedStudentIds }) => (
-    <Button variant="contained"
-            color="secondary"
+  const RejectStudentsFromQuizTestButton = ({ rejectedStudentIds, variant}) => (
+    <Button color="error"
+            variant={variant}
             onClick={() => rejectStudentsFromQuizTest(rejectedStudentIds)} >
       Loại
     </Button>
@@ -104,7 +104,8 @@ export default function StudentsApprovedToQuizTest(props) {
       render: student => (
         <div style={{ display: 'flex', columnGap: '10px' }}>
           <AssignQuizGroupButton student={student}/>
-          <RejectStudentsFromQuizTestButton rejectedStudentIds={[student.userLoginId]}/>
+          <RejectStudentsFromQuizTestButton rejectedStudentIds={[student.userLoginId]}
+                                            variant="outlined"/>
         </div>
       )
     }
@@ -114,26 +115,31 @@ export default function StudentsApprovedToQuizTest(props) {
     icon: () => (
       <RejectStudentsFromQuizTestButton
         rejectedStudentIds={selectedStudentIdsToReject}
+        variant="contained"
       />
     )
   }]
 
   return (
     <>
-      <StandardTable
-        title="Danh sách sinh viên"
-        columns={columns}
-        data={studentsApprovedToQuizTest}
-        hideCommandBar
-        options={{
-          selection: true,
-          search: true,
-          sorting: true,
-          showTitle: true
-        }}
-        actions={actions}
-        onSelectionChange={updateSelectedStudentIdsToReject}
-      />
+      <Card>
+        <CardContent>
+          <StandardTable
+            title="Danh sách sinh viên"
+            columns={columns}
+            data={studentsApprovedToQuizTest}
+            hideCommandBar
+            options={{
+              selection: true,
+              search: true,
+              sorting: true,
+              showTitle: true
+            }}
+            actions={actions}
+            onSelectionChange={updateSelectedStudentIdsToReject}
+          />
+        </CardContent>
+      </Card>
 
       <AssignQuizGroupForStudentDialog
         assignedStudent={selectedStudentToAssignQuizGroup}

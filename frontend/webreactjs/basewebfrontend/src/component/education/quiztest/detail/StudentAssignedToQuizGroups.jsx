@@ -5,10 +5,21 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import {errorNoti, infoNoti} from "utils/notification";
 import ExamQuestionsOfParticipantPDFDocument from "../template/ExamQuestionsOfParticipantPDFDocument";
-import {Button} from '@mui/material'
+import {Button, Card, CardContent } from '@mui/material'
 import {useHistory} from "react-router";
 import StandardTable from "../../../table/StandardTable";
 import React from "react";
+import {makeStyles} from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+    tableWrapper: {
+      '& table thead tr': {
+        '& th:nth-child(2)': {
+          maxWidth: '160px !important'
+        }
+      }
+    }
+}))
 
 async function generatePdfDocument(documentData, fileName, onCompleted) {
   const blob = await pdf(
@@ -22,6 +33,7 @@ async function generatePdfDocument(documentData, fileName, onCompleted) {
 
 export default function StudentAssignedToQuizGroups(props) {
   const history = useHistory();
+  const classes = useStyles();
   let testId = props.testId;
   const toastId = useRef(null);
   const [participantsOfQuizGroups, setParticipantsOfQuizGroups] = useState([]);
@@ -112,12 +124,12 @@ export default function StudentAssignedToQuizGroups(props) {
 
   const columns = [
     { title: "Group ID", field: "quizTestGroupId" },
-    { title: "Group code", field: "quizTestGroupCode" },
-    { title: "UserLoginId", field: "participantUserLoginId" },
-    { title: "FullName", field: "fullName" },
+    { title: "Mã đề", field: "quizTestGroupCode", cellStyle: { width: '160px' } },
+    { title: "Login ID", field: "participantUserLoginId" },
+    { title: "Họ tên", field: "fullName" },
     { title: "", field: "",
       render: (groupParticipant) => (
-        <div>
+        <div style={{ display: 'flex', columnGap: '10px' }}>
           <ViewGroupParticipantQuestionsButton groupParticipant={groupParticipant}/>
           <ButtonExportSingleDataToPdf participantLoginId={groupParticipant.participantUserLoginId}/>
         </div>
@@ -126,17 +138,21 @@ export default function StudentAssignedToQuizGroups(props) {
   ];
 
   return (
-    <StandardTable
-      title="Phân thí sinh vào các đề"
-      columns={columns}
-      data={participantsOfQuizGroups}
-      hideCommandBar
-      options={{
-        selection: false,
-        search: true,
-        sorting: true,
-      }}
-      actions={actions}
-    />
+    <Card>
+      <CardContent className={classes.tableWrapper}>
+        <StandardTable
+          title="Phân thí sinh vào các đề"
+          columns={columns}
+          data={participantsOfQuizGroups}
+          hideCommandBar
+          options={{
+            selection: false,
+            search: true,
+            sorting: true,
+          }}
+          actions={actions}
+        />
+      </CardContent>
+    </Card>
   );
 }

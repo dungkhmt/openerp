@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import SimpleBar from "simplebar-react";
 import {FcDocument} from "react-icons/fc";
 import CustomizedDialogs from "../../../dialog/CustomizedDialogs";
@@ -17,7 +17,6 @@ const useStyles = makeStyles(theme => ({
   customScrollBar: {
     height: "100%",
     maxHeight: 400,
-    width: 330,
     overflowX: "hidden",
     overscrollBehaviorY: "none",
   },
@@ -46,6 +45,17 @@ export default function AssignQuizGroupForStudentDialog(props) {
 
   const [selectedGroup, setSelectedGroup] = useState(null);
 
+  useEffect(initSelectedGroup, [assignedStudent]);
+
+  function initSelectedGroup() {
+    if (!assignedStudent) {
+      setSelectedGroup(null)
+    } else {
+      let initialSelectedGroup = quizGroups.find(group => group.groupCode === assignedStudent.testGroupCode)
+      setSelectedGroup(initialSelectedGroup)
+    }
+  }
+
   function assignQuizGroupForStudent() {
     if (!selectedGroup) return;
 
@@ -56,10 +66,9 @@ export default function AssignQuizGroupForStudentDialog(props) {
     let successHandler = res => {
       if (props.onAssignSuccess) {
         props.onAssignSuccess(selectedGroup);
-      } else {
-        successNoti("Phân đề thành công. Xem kết quả trên giao diện!", 3000);
-        props.onClose();
       }
+      successNoti("Phân đề thành công. Xem kết quả trên giao diện!", true);
+      props.onClose();
     }
     let errorHandlers = {
       onError: () => errorNoti("Đã xảy ra lỗi khi phân đề")

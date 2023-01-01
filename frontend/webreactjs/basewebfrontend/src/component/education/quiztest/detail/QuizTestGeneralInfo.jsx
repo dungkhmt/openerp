@@ -1,16 +1,16 @@
 import { Box, Typography } from "@material-ui/core/";
 import { teal } from "@material-ui/core/colors";
 import { Skeleton } from "@material-ui/lab";
-import { authGet, request } from "api";
+import { request } from "api";
 import PrimaryButton from "component/button/PrimaryButton";
 import TertiaryButton from "component/button/TertiaryButton";
 import { useEffect, useState } from "react";
 import { FcCalendar, FcClock } from "react-icons/fc";
-import { useParams } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
 import { addZeroBefore } from "utils/dateutils";
-import withScreenSecurity from "../../../withScreenSecurity";
-import {Card, CardContent} from "@material-ui/core";
+import {Card, CardContent, CardHeader} from "@mui/material";
+import Button from "@mui/material/Button";
+import {errorNoti} from "../../../../utils/notification";
 
 const styles = {
   btn: {
@@ -28,61 +28,76 @@ const styles = {
 
 const WEEK_DAYS = ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy",];
 
-function QuizTestDetail() {
-  let params = useParams();
-  let testId = params.id;
+export default function QuizTestGeneralInfo(props) {
+  let testId = props.testId;
   const [testInfo, setTestInfo] = useState();
   const [courseInfo, setCourseInfo] = useState();
 
-  function handleAssignStudents2QuizGroup() {
-    let data = { quizTestId: testId };
-
-    request("POST", "auto-assign-participants-2-quiz-test-group",
-      (res) => {
-        console.log("assign students to groups ", res);
-        alert("assign students to groups " + res.data);
-      },
-      { 401: () => {} },
-      data
-    );
-  }
-
-  function handleAssignQuestions2QuizGroup() {
-    let data = { quizTestId: testId, numberQuestions: 10 };
-
-    request("POST", "auto-assign-question-2-quiz-group",
-      (res) => {
-        console.log("assign questions to groups ", res);
-        alert("assign questions to groups " + res.data);
-      },
-      { 401: () => {} },
-      data
-    );
-  }
+  useEffect(getQuizTestDetail, []);
 
   async function getQuizTestDetail() {
-    let testInfo = await request("GET", `/get-quiz-test?testId=${params.id}`);
-    let courseInfo = await request("GET", `/edu/class/${testInfo.classId}`);
+    let testInfoRes= await request("GET", `/get-quiz-test?testId=${testId}`);
+    let testInfo = testInfoRes.data;
+    let courseInfoRes = await request("GET", `/edu/class/${testInfo.classId}`);
+    let courseInfo = courseInfoRes.data;
 
     const date = new Date(testInfo.scheduleDatetime), currentTime = new Date();
     const year = currentTime.getFullYear() === date.getFullYear() ? "" : ` ${date.getFullYear()},`;
     const scheduleDateTime = `${WEEK_DAYS[date.getDay()]},${date.getDate()} Tháng ${date.getMonth() + 1}, ${year} ` +
-                             `lúc ${addZeroBefore(date.getHours(), 2)}:${addZeroBefore(date.getMinutes(), 2)}`;
+      `lúc ${addZeroBefore(date.getHours(), 2)}:${addZeroBefore(date.getMinutes(), 2)}`;
+
+    console.log("courseInfo", courseInfo);
 
     setTestInfo({ ...testInfo, scheduleDateTime });
     setCourseInfo(courseInfo);
   }
 
-  useEffect(getQuizTestDetail, []);
+  function autoAssignStudents2QuizGroup() {
+    let data = { quizTestId: testId };
+    let successHandler = (res) => {
+      alert("Auto assign students to groups " + res.data);
+    }
+    let errorHandlers = {
+      onError: () => errorNoti("Đã xảy ra lỗi, vui lòng thử lại!")
+    }
+    request("POST", "auto-assign-participants-2-quiz-test-group", successHandler, errorHandlers, data);
+  }
+
+  function autoAssignQuestions2QuizGroup() {
+    let data = { quizTestId: testId, numberQuestions: 10 };
+    let successHandler = (res) => {
+      alert("Auto assign questions to groups " + res.data);
+    }
+    let errorHandlers = {
+      onError: () => errorNoti("Đã xảy ra lỗi, vui lòng thử lại!")
+    }
+    request("POST", "auto-assign-question-2-quiz-group", successHandler, errorHandlers, data);
+  }
 
   return courseInfo ? (
     <>
       <Card>
+        <CardHeader
+          title={(
+            <Typography variant="h5"
+                        sx={styles.courseName}>
+              {`${courseInfo.name} (${courseInfo.courseId})`}
+            </Typography>
+          )}
+          action={(
+          <Box display="flex" justifyContent="flex-end">
+            <PrimaryButton sx={styles.btn}
+                           onClick={autoAssignStudents2QuizGroup}>
+              Phân đề cho SV
+            </PrimaryButton>
+
+            <PrimaryButton sx={styles.btn}
+                           onClick={autoAssignQuestions2QuizGroup}>
+              Phân câu hỏi cho đề
+            </PrimaryButton>
+          </Box>
+        )}/>
         <CardContent>
-          <Typography variant="h5"
-                      sx={styles.courseName}>
-            {`${courseInfo.name} (${courseInfo.courseId})`}
-          </Typography>
           <Typography variant="subtitle1"
                       sx={styles.testName}>
             {`Kỳ thi: ${testInfo.testName}`}
@@ -122,28 +137,7 @@ function QuizTestDetail() {
         </CardContent>
       </Card>
 
-      <br />
-      <br />
 
-      <Box display="flex" justifyContent="flex-end">
-        <PrimaryButton
-          sx={styles.btn}
-          onClick={(e) => {
-            handleAssignStudents2QuizGroup(e);
-          }}
-        >
-          Phân đề cho SV
-        </PrimaryButton>
-
-        <PrimaryButton
-          sx={styles.btn}
-          onClick={(e) => {
-            handleAssignQuestions2QuizGroup(e);
-          }}
-        >
-          Phân câu hỏi cho đề
-        </PrimaryButton>
-      </Box>
 
       <br />
     </>
@@ -157,9 +151,7 @@ function QuizTestDetail() {
         <Skeleton width={200} variant="rect" animation="wave" />
       </Typography>
 
-      {/*  */}
       <Box display="flex" alignItems="center" pt={2}>
-        {/*  */}
         <Skeleton width={24} height={24} variant="circle" animation="wave" />
         <Typography component="span" sx={styles.time}>
           <Skeleton width={80} variant="rect" animation="wave" />
@@ -168,6 +160,3 @@ function QuizTestDetail() {
     </>
   );
 }
-
-const screenName = "SCREEN_VIEW_QUIZ_TEST_TEACHER";
-export default withScreenSecurity(QuizTestDetail, screenName, true);

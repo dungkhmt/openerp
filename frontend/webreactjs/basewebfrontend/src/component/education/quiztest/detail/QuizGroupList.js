@@ -1,11 +1,8 @@
-import { Delete } from "@material-ui/icons";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import React, { useEffect, useState } from "react";
 import {errorNoti, successNoti} from "../../../../utils/notification";
 import GenerateQuizTestGroupDialog from "./GenerateQuizTestGroupDialog";
 import {request} from "../../../../api";
-import {Button} from "@mui/material";
-import {Card, CardContent} from "@material-ui/core";
+import {Button, Card, CardContent} from "@mui/material";
 import StandardTable from "../../../table/StandardTable";
 import QuizTestGroupQuestionList from "../QuizTestGroupQuestionList";
 
@@ -57,8 +54,8 @@ export default function QuizGroupList(props) {
   const columns = [
     { field: "groupCode", title: "Mã đề" },
     { field: "note", title: "Ghi chú" },
-    { field: "numStudent", title: "Số sinh viên", type: "numeric", cellStyle: { textAlign: 'center' } },
-    { field: "numQuestion", title: "Số câu hỏi", type: "numeric", cellStyle: { textAlign: 'center' } },
+    { field: "numStudent", title: "Số sinh viên" },
+    { field: "numQuestion", title: "Số câu hỏi" },
     { field: "", title: "",
       render: (quizGroup) => (
         <DeleteQuizGroupButton deletedGroupIds={[quizGroup.quizGroupId]}
