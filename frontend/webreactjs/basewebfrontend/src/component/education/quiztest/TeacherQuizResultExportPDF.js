@@ -43,7 +43,7 @@ const questionContentDefaultStyles = {
   ul: { marginBottom: 5, bold: true, fontSize: 16 },
   li: { marginLeft: 5, bold: true, fontSize: 16 },
   table: { marginBottom: 5, bold: true, fontSize: 16 },
-  th: { bold: true, fillColor: "#EEEEEE", bold: true, fontSize: 16 },
+  th: { bold: true, fillColor: "#EEEEEE", fontSize: 16 },
 };
 
 const answerDefaultStyles = {

@@ -61,7 +61,7 @@ function StandardTable(props) {
           {...props}
           localization={{
             ...localization,
-            toolbar: { ...localization.toolbar, nRowsSelected: "" },
+            toolbar: { ...localization.toolbar, nRowsSelected: props.title },
             ...props.localization,
           }}
           icons={tableIcons}
