@@ -67,7 +67,6 @@ public class GccExecutor {
         return sourceSH;
     }
     public String genSubmitScriptFileChecker(String sourceChecker, TestCaseEntity testCase, String solutionOutput, String tmpName, int timeLimit){
-        System.out.println("genSubmitScriptFileChecker, sourceChecker = " + sourceChecker + " solutionOutput = " + solutionOutput);
         String genTestCase = "";
         //for(int i = 0; i < testCaseEntities.size(); i++){
             String testcase = "cat <<EOF >> testcase" + 0 + ".txt \n"
