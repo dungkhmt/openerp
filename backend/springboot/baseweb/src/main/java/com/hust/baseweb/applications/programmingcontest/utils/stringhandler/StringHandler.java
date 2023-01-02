@@ -4,10 +4,12 @@ import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionEntity;
 import com.hust.baseweb.applications.programmingcontest.entity.ProblemEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.TextStringBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -22,7 +24,7 @@ public class StringHandler {
             return ProblemSubmission.builder()
                                     .score(0)
                                     .runtime(0L)
-                                    .testCasePass(0+"/"+1)
+                                    .testCasePass(0 + " / " + 1)
                                     .status("Compile Error")
                                     .build();
         }
@@ -55,7 +57,7 @@ public class StringHandler {
                                 .score(score)
                                 //.status("OK")
                                 .status(status)
-                                .testCasePass("1/1")
+                                .testCasePass("1 / 1")
                                 .build();
     }
 
@@ -109,7 +111,7 @@ public class StringHandler {
                                 .score(score)
                                 .status(status)
                                 .message(orignalMessage)
-                                .testCasePass(cnt+"/"+testCaseAns.size())
+                                .testCasePass(cnt + " / " + testCaseAns.size())
                                 .nbTestCasePass(cnt)
                                 .testCaseAns(testCaseAns)
                                 .participantAns(participantAns)
@@ -183,20 +185,99 @@ public class StringHandler {
                                 .score(score)
                                 .status(status)
                                 .message(originalMessage)
-                                .testCasePass(cnt + "/" + testCaseAns.size())
+                                .testCasePass(cnt + " / " + testCaseAns.size())
                                 .nbTestCasePass(cnt)
                                 .testCaseAns(testCaseAns)
                                 .participantAns(Arrays.asList(ansArray))
                                 .build();
     }
 
-//    public static void hanlde
+    public static ProblemSubmission handleContestResponseSingleTestcase(
+        String response,
+        String testCaseAns,
+        int point,
+        String problemEvaluationType
+    ) {
+        // log.info("handleContestResponse, response {}", response);
+
+        String status = "";
+
+//        // remove the last '\n' character, which is redundant
+//        response = response.substring(0, response.length() - 1);
+
+//        // get status ("testcasedone" / "Compile Error")
+//        int statusIndex = response.lastIndexOf("\n") + 1;
+//        String status = response.substring(statusIndex);
+//
+//        if (status.contains(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
+//            return buildCompileErrorForSubmission(1, originalMessage);
+//        }
+
+//        response = response.substring(0, statusIndex - 1);
+//        int runTimeIndex = response.lastIndexOf("\n") + 1;
+//        String runtimeString = response.substring(runTimeIndex);
+//        Long runtime = Long.parseLong(runtimeString);
+
+        if (response.endsWith(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR + "\n")) {
+            return buildCompileErrorForSubmission(1, response);
+        }
+
+        // get testcase answer of participant
+        String participantAns = response.substring(
+            0,
+            response.indexOf(Constants.SPLIT_TEST_CASE));
+
+        int cnt = 0;
+        int score = 0;
+
+        String participantTestcaseAns = replaceSpaceV2(participantAns);
+//        String participantTestcaseAns = participantAns;
+
+        if (participantTestcaseAns.equals(Constants.TestCaseSubmissionError.TIME_LIMIT.getValue())) {
+            status = ContestSubmissionEntity.SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED;
+            participantAns = status;
+        }
+        else if (participantTestcaseAns.equals(Constants.TestCaseSubmissionError.FILE_LIMIT.getValue())) {
+            status = ContestSubmissionEntity.SUBMISSION_STATUS_OUTPUT_LIMIT_EXCEEDED;
+            participantAns = status;
+        }
+        else if (participantTestcaseAns.equals(Constants.TestCaseSubmissionError.MEMORY_LIMIT.getValue())) {
+            status = ContestSubmissionEntity.SUBMISSION_STATUS_MEMORY_ALLOCATION_ERROR;
+            participantAns = status;
+        }
+        else {
+            String correctTestcaseAns = replaceSpaceV2(testCaseAns);
+//            String correctTestcaseAns = testCaseAns;
+
+            if (problemEvaluationType.equals(Constants.ProblemResultEvaluationType.NORMAL.getValue())) {
+                if (!correctTestcaseAns.equals(participantTestcaseAns)) {
+                    status = ContestSubmissionEntity.SUBMISSION_STATUS_WRONG;
+                } else {
+                    status = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
+                    score += point;
+                    cnt++;
+                }
+            } else if (problemEvaluationType.equals(Constants.ProblemResultEvaluationType.CUSTOM.getValue())) {
+                status = ContestSubmissionEntity.SUBMISSION_STATUS_WAIT_FOR_CUSTOM_EVALUATION;
+            }
+        }
+
+        return ProblemSubmission.builder()
+//                                .runtime(runtime)
+                                .score(score)
+                                .status(status)
+                                .message(response)
+                                .testCasePass(cnt + " / " + 1)
+                                .nbTestCasePass(cnt)
+                                .participantAns(Collections.singletonList(participantAns))
+                                .build();
+    }
 
     private static ProblemSubmission buildCompileErrorForSubmission(int numTestCases, String message) {
         return ProblemSubmission.builder()
                                 .score(0)
                                 .runtime(0L)
-                                .testCasePass(0 + "/" + numTestCases)
+                                .testCasePass(0 + " / " + numTestCases)
                                 .status(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)
                                 .message(message)
                                 .build();
@@ -215,12 +296,13 @@ public class StringHandler {
     private static String replaceSpaceV2(String s) {
         if (s == null) return null;
 
-        TextStringBuilder stringBuilder = new TextStringBuilder(s);
+        return StringUtils.replace(s, "\n", " ").trim();
 
-        stringBuilder.replaceAll("\n", " ");
-        stringBuilder.replaceAll("( +)", " ").trim();
-//        s = s.replaceAll("\n", " ");
-        return stringBuilder.toString();
+//        TextStringBuilder stringBuilder = new TextStringBuilder(s);
+//
+//        stringBuilder.replaceAll("\n", " ");
+//        stringBuilder.replaceAll("( +)", " ").trim();
+//        return stringBuilder.toString();
 
     }
 
