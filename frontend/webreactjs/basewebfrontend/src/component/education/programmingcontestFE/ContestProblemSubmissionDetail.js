@@ -127,7 +127,7 @@ export default function ContestProblemSubmissionDetail() {
         title={"Source code - " + submissionLanguage}
         text={submissionSource}
       />
-      {message.length > 0 && <h3>Compile Message: {message}</h3>}
+      {message && message.length > 0 && <h3>Compile Message: {message}</h3>}
     </div>
   );
 }
