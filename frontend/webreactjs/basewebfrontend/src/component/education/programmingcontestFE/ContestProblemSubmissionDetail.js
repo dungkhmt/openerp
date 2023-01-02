@@ -61,6 +61,7 @@ export default function ContestProblemSubmissionDetail() {
       {}
     ).then();
   }, []);
+
   return (
     <div>
       <Typography variant={"h5"}>Submission detail - <em>{problemId}</em></Typography>

@@ -70,6 +70,10 @@ const StudentViewSubmission = forwardRef((props, ref) => {
             return { color: "green" };
           case "In Progress":
             return { color: "gold" };
+          case "Pending Evaluation":
+            return { color: "goldenrod" };
+          case "Evaluated":
+            return { color: "darkcyan" };
           default:
             return { color: "red" };
         }
@@ -86,7 +90,7 @@ const StudentViewSubmission = forwardRef((props, ref) => {
           <InfoIcon/>
         </IconButton>
       ), },
-    { title: t("submissionList.point"), field: "point" },
+    { title: t("submissionList.point"), field: "point", cellStyle: {fontWeight: 500} },
     { title: t("submissionList.language"), field: "sourceCodeLanguage" },
     {
       title: t("submissionList.numTestCases"),
