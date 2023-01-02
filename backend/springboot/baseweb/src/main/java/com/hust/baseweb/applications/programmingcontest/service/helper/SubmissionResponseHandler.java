@@ -43,7 +43,7 @@ public class SubmissionResponseHandler {
             ModelContestSubmission modelContestSubmission,
             ContestSubmissionEntity submission,
             String problemEvaluationType) throws Exception {
-        int runtime = 0;
+//        int runtime = 0;
         int score = 0;
         int nbTestCasePass = 0;
 
@@ -60,16 +60,22 @@ public class SubmissionResponseHandler {
         long startTime1 = System.nanoTime();
         for (TestCaseEntity testCaseEntity : testCaseEntityList) {
             String response = listSubmissionResponse.get(i++);
-            List<String> testCaseAns = Collections.singletonList(testCaseEntity.getCorrectAnswer());
-            List<Integer> points = Collections.singletonList(testCaseEntity.getTestCasePoint());
+//            List<String> testCaseAns = Collections.singletonList(testCaseEntity.getCorrectAnswer());
+//            List<Integer> points = Collections.singletonList(testCaseEntity.getTestCasePoint());
 
             ProblemSubmission problemSubmission;
 
             try {
-                problemSubmission = StringHandler.handleContestResponseV2(
+//                problemSubmission = StringHandler.handleContestResponseV2(
+//                        response,
+//                        testCaseAns,
+//                        points,
+//                        problemEvaluationType);
+
+                problemSubmission = StringHandler.handleContestResponseSingleTestcase(
                         response,
-                        testCaseAns,
-                        points,
+                        testCaseEntity.getCorrectAnswer(),
+                        testCaseEntity.getTestCasePoint(),
                         problemEvaluationType);
 
                 if (problemSubmission.getStatus().equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
@@ -87,7 +93,7 @@ public class SubmissionResponseHandler {
                 throw new Exception("error from StringHandler");
             }
 
-            runtime = runtime + problemSubmission.getRuntime().intValue();
+//            runtime = runtime + problemSubmission.getRuntime().intValue();
             score = score + problemSubmission.getScore();
             nbTestCasePass += problemSubmission.getNbTestCasePass();
 
@@ -111,7 +117,7 @@ public class SubmissionResponseHandler {
                     .build();
 
             long startTime = System.nanoTime();
-            contestSubmissionTestCaseEntityRepo.save(cste);
+            contestSubmissionTestCaseEntityRepo.saveAndFlush(cste);
             long endTime = System.nanoTime();
             log.info(
                     "Save contestSubmissionTestCaseEntity to DB, execution time = {} ms",
@@ -150,10 +156,10 @@ public class SubmissionResponseHandler {
         submissionEntity.setTestCasePass(nbTestCasePass + " / " + testCaseEntityList.size());
         submissionEntity.setSourceCode(modelContestSubmission.getSource());
         submissionEntity.setSourceCodeLanguage(modelContestSubmission.getLanguage());
-        submissionEntity.setRuntime((long) runtime);
+//        submissionEntity.setRuntime((long) runtime);
         submissionEntity.setMessage(message);
         submissionEntity.setUpdateAt(new Date());
-        contestSubmissionRepo.save(submissionEntity);
+        contestSubmissionRepo.saveAndFlush(submissionEntity);
 
         if (processing) {
             rabbitTemplate.convertAndSend(
