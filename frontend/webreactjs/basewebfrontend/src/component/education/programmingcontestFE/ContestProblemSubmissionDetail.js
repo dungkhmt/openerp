@@ -1,18 +1,17 @@
-import {useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import * as React from "react";
-import {useEffect, useState} from "react";
-import {request} from "./Request";
-import {Typography} from "@mui/material";
+import { useEffect, useState } from "react";
+import { request } from "./Request";
+import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
-import {Grid} from "@material-ui/core";
-import {getStatusColor} from "./lib";
-import ParticipantProgramSubmissionDetailTestCaseByTestCase
-  from "./ParticipantProgramSubmissionDetailTestCaseByTestCase";
+import { Grid } from "@material-ui/core";
+import { getStatusColor } from "./lib";
+import ParticipantProgramSubmissionDetailTestCaseByTestCase from "./ParticipantProgramSubmissionDetailTestCaseByTestCase";
 import HustCopyCodeBlock from "../../common/HustCopyCodeBlock";
-import {toFormattedDateTime} from "../../../utils/dateutils";
+import { toFormattedDateTime } from "../../../utils/dateutils";
 
 export default function ContestProblemSubmissionDetail() {
-  const {problemSubmissionId} = useParams();
+  const { problemSubmissionId } = useParams();
   const [memoryUsage, setMemoryUsage] = useState();
   const [problemId, setProblemId] = useState("");
   const [runTime, setRunTime] = useState();
@@ -45,7 +44,7 @@ export default function ContestProblemSubmissionDetail() {
     request(
       "get",
       "/get-contest-problem-submission-detail-viewed-by-participant/" +
-      problemSubmissionId,
+        problemSubmissionId,
       (res) => {
         setMemoryUsage(res.data.memoryUsage);
         setProblemId(res.data.problemId);
@@ -64,7 +63,9 @@ export default function ContestProblemSubmissionDetail() {
 
   return (
     <div>
-      <Typography variant={"h5"}>Submission detail - <em>{problemId}</em></Typography>
+      <Typography variant={"h5"}>
+        Submission detail - <em>{problemId}</em>
+      </Typography>
       <Box
         sx={{
           width: "100%",
@@ -88,9 +89,7 @@ export default function ContestProblemSubmissionDetail() {
           <Grid item xs>
             <Typography variant="h6" align="right">
               status:{" "}
-              <span
-                style={{color: getStatusColor(`${status}`)}}
-              >
+              <span style={{ color: getStatusColor(`${status}`) }}>
                 {`${status}`}
               </span>
             </Typography>
@@ -100,14 +99,14 @@ export default function ContestProblemSubmissionDetail() {
           <Grid item xs>
             <Typography variant="h6">
               Run Time: <i>{runTime}</i>
-              <br/>
+              <br />
               Memory Usage: <i>{memoryUsage} kb</i>
             </Typography>
           </Grid>
           <Grid item xs>
             <Typography variant="h6" align="right">
               Total point: <b>{score}</b>
-              <br/>
+              <br />
               Submitted at: {toFormattedDateTime(submittedAt)}
             </Typography>
           </Grid>
@@ -117,12 +116,13 @@ export default function ContestProblemSubmissionDetail() {
       {/*
       <Button onClick={updateCode}>Update Code</Button>
       */}
-      <br/>
-      <ParticipantProgramSubmissionDetailTestCaseByTestCase
-        submissionId={problemSubmissionId}
-      />
-
-      <br/>
+      <br />
+      {
+        <ParticipantProgramSubmissionDetailTestCaseByTestCase
+          submissionId={problemSubmissionId}
+        />
+      }
+      <br />
       <HustCopyCodeBlock
         title={"Source code - " + submissionLanguage}
         text={submissionSource}

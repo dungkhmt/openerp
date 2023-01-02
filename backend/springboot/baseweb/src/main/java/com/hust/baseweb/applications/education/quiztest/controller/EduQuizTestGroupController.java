@@ -136,8 +136,11 @@ public class EduQuizTestGroupController {
 
         if(eduQuizTest.getQuestionStatementViewTypeId() != null &&
            eduQuizTest.getQuestionStatementViewTypeId().equals(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_HIDDEN)) {
-            for (QuizQuestionDetailModel q : res.getListQuestion()) {
-                q.setStatement("");
+            //ìf(res != null && res.getListQuestion() != null){
+            if(res != null) if(res.getListQuestion() != null){
+                for (QuizQuestionDetailModel q : res.getListQuestion()) {
+                    q.setStatement("");
+                }
             }
         }
         return ResponseEntity.ok().body(res);

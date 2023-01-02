@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.hust.baseweb.applications.contentmanager.model.ContentHeaderModel;
 import com.hust.baseweb.applications.contentmanager.model.ContentModel;
 import com.hust.baseweb.applications.contentmanager.repo.MongoContentService;
+import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizRole;
 import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.docker.DockerClientBase;
@@ -25,6 +26,8 @@ import com.hust.baseweb.model.ListPersonModel;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.repo.UserLoginRepo;
 import com.hust.baseweb.service.UserService;
+import com.hust.baseweb.applications.notifications.service.NotificationsService;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -162,6 +165,36 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         upr.setCreatedStamp(new Date());
         upr.setLastUpdated(new Date());
         upr = userContestProblemRoleRepo.save(upr);
+
+
+        // grant manager role to user admin
+        UserLogin admin = userLoginRepo.findByUserLoginId("admin");
+        if(admin != null) {
+            upr = new UserContestProblemRole();
+            upr.setProblemId(problemEntity.getProblemId());
+            upr.setUserId(admin.getUserLoginId());
+            upr.setRoleId(UserContestProblemRole.ROLE_MANAGER);
+            upr.setUpdateByUserId(userID);
+            upr.setCreatedStamp(new Date());
+            upr.setLastUpdated(new Date());
+            upr = userContestProblemRoleRepo.save(upr);
+
+            upr = new UserContestProblemRole();
+            upr.setProblemId(problemEntity.getProblemId());
+            upr.setUserId(admin.getUserLoginId());
+            upr.setRoleId(UserContestProblemRole.ROLE_VIEW);
+            upr.setUpdateByUserId(userID);
+            upr.setCreatedStamp(new Date());
+            upr.setLastUpdated(new Date());
+            upr = userContestProblemRoleRepo.save(upr);
+
+            // push notification to admin
+            notificationsService.create(userID, admin.getUserLoginId(),
+                                        userID + " has created a contest problem ID " +
+                                        problemEntity.getProblemId()
+                , "");
+
+        }
 
     }
 
@@ -668,6 +701,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 urc.setUserId(admin);
                 urc.setStatus(UserRegistrationContestEntity.STATUS_SUCCESSFUL);
                 urc = userRegistrationContestRepo.save(urc);
+
+                //push notification to admin
+                notificationsService.create(userName, u.getUserLoginId(),
+                                            userName + " has created a contest " +
+                                            modelCreateContest.getContestId()
+                    , "");
+
             }
             return contestEntity;
         } catch (Exception e) {

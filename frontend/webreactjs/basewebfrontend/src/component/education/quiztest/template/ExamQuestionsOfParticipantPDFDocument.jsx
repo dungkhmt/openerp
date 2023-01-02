@@ -112,7 +112,7 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
                 </Text>
 
                 {/* Questions */}
-                {listQuestion.map((q, qIndex) => (
+                {listQuestion?.map((q, qIndex) => (
                   <View key={q.questionId} style={styles.question}>
                     {parse(q.statement).map((ele, eIndex) => {
                       if (eIndex > 0) {
@@ -147,7 +147,7 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
                       } else {
                         return (
                           <Text>
-                            <Text style={styles.bold}>Câu {qIndex + 1}. </Text>
+                            <Text style={styles.bold}>Question {qIndex + 1}. </Text>
                             {ele}
                           </Text>
                         );
