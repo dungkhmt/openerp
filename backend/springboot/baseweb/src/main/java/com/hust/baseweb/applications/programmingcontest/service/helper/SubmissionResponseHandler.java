@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +37,12 @@ public class SubmissionResponseHandler {
 
     @Transactional
     public void processSubmissionResponse(
-            List<TestCaseEntity> testCaseEntityList,
-            List<String> listSubmissionResponse,
-            ModelContestSubmission modelContestSubmission,
-            ContestSubmissionEntity submission,
-            String problemEvaluationType) throws Exception {
+        List<TestCaseEntity> testCaseEntityList,
+        List<String> listSubmissionResponse,
+        ModelContestSubmission modelContestSubmission,
+        ContestSubmissionEntity submission,
+        String problemEvaluationType
+    ) throws Exception {
 //        int runtime = 0;
         int score = 0;
         int nbTestCasePass = 0;
@@ -73,18 +73,18 @@ public class SubmissionResponseHandler {
 //                        problemEvaluationType);
 
                 problemSubmission = StringHandler.handleContestResponseSingleTestcase(
-                        response,
-                        testCaseEntity.getCorrectAnswer(),
-                        testCaseEntity.getTestCasePoint(),
-                        problemEvaluationType);
+                    response,
+                    testCaseEntity.getCorrectAnswer(),
+                    testCaseEntity.getTestCasePoint(),
+                    problemEvaluationType);
 
                 if (problemSubmission.getStatus().equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
                     message = problemSubmission.getMessage();
                     compileError = true;
                     break;
                 } else if (problemSubmission
-                        .getStatus()
-                        .equals(ContestSubmissionEntity.SUBMISSION_STATUS_WAIT_FOR_CUSTOM_EVALUATION)) {
+                    .getStatus()
+                    .equals(ContestSubmissionEntity.SUBMISSION_STATUS_WAIT_FOR_CUSTOM_EVALUATION)) {
                     processing = true;
                 }
             } catch (Exception e) {
@@ -101,34 +101,34 @@ public class SubmissionResponseHandler {
             String participantAns = output != null && output.size() > 0 ? output.get(0) : "";
 
             ContestSubmissionTestCaseEntity cste = ContestSubmissionTestCaseEntity.builder()
-                    .contestId(modelContestSubmission.getContestId())
-                    .contestSubmissionId(submission.getContestSubmissionId())
-                    .problemId(modelContestSubmission.getProblemId())
-                    .testCaseId(testCaseEntity.getTestCaseId())
-                    .submittedByUserLoginId(submission.getUserId())
-                    .point(problemSubmission.getScore())
-                    .status(StringHandler.removeNullCharacter(
-                            problemSubmission.getStatus()))
-                    .participantSolutionOtput(
-                            StringHandler.removeNullCharacter(
-                                    participantAns))
-                    .runtime(problemSubmission.getRuntime())
-                    .createdStamp(submission.getCreatedAt())
-                    .build();
+                                                                                  .contestId(modelContestSubmission.getContestId())
+                                                                                  .contestSubmissionId(submission.getContestSubmissionId())
+                                                                                  .problemId(modelContestSubmission.getProblemId())
+                                                                                  .testCaseId(testCaseEntity.getTestCaseId())
+                                                                                  .submittedByUserLoginId(submission.getUserId())
+                                                                                  .point(problemSubmission.getScore())
+                                                                                  .status(StringHandler.removeNullCharacter(
+                                                                                      problemSubmission.getStatus()))
+                                                                                  .participantSolutionOtput(
+                                                                                      StringHandler.removeNullCharacter(
+                                                                                          participantAns))
+                                                                                  .runtime(problemSubmission.getRuntime())
+                                                                                  .createdStamp(submission.getCreatedAt())
+                                                                                  .build();
 
             long startTime = System.nanoTime();
             contestSubmissionTestCaseEntityRepo.saveAndFlush(cste);
             long endTime = System.nanoTime();
             log.info(
-                    "Save contestSubmissionTestCaseEntity to DB, execution time = {} ms",
-                    (endTime - startTime) / 1000000);
+                "Save contestSubmissionTestCaseEntity to DB, execution time = {} ms",
+                (endTime - startTime) / 1000000);
 
         }
 
         long endTime1 = System.nanoTime();
         log.info(
-                "Total handle response time = {} ms",
-                (endTime1 - startTime1) / 1000000);
+            "Total handle response time = {} ms",
+            (endTime1 - startTime1) / 1000000);
 
         long used = memoryBean.getHeapMemoryUsage().getUsed() / mb;
         long committed = memoryBean.getHeapMemoryUsage().getCommitted() / mb;
@@ -149,7 +149,7 @@ public class SubmissionResponseHandler {
         }
 
         ContestSubmissionEntity submissionEntity = contestSubmissionRepo
-                .findContestSubmissionEntityByContestSubmissionId(submission.getContestSubmissionId());
+            .findContestSubmissionEntityByContestSubmissionId(submission.getContestSubmissionId());
 
         submissionEntity.setStatus(totalStatus);
         submissionEntity.setPoint(score);
@@ -163,32 +163,41 @@ public class SubmissionResponseHandler {
 
         if (processing) {
             rabbitTemplate.convertAndSend(
-                    EXCHANGE,
-                    JUDGE_CUSTOM_PROBLEM,
-                    submission.getContestSubmissionId());
+                EXCHANGE,
+                JUDGE_CUSTOM_PROBLEM,
+                submission.getContestSubmissionId());
         }
     }
 
     @Transactional
-    public void processCustomSubmissionResponse(ContestSubmissionEntity submission,
-            Map<UUID, String> submissionResponses) {
+    public void processCustomSubmissionResponse(
+        ContestSubmissionEntity submission,
+        Map<UUID, String> submissionResponses
+    ) {
 
         int totalPoint = 0;
-        
+
         for (Map.Entry<UUID, String> testCaseResponse : submissionResponses.entrySet()) {
             UUID submissionTestCaseId = testCaseResponse.getKey();
-            ContestSubmissionTestCaseEntity submissionTestCase = contestSubmissionTestCaseEntityRepo.findById(submissionTestCaseId).get();
+            ContestSubmissionTestCaseEntity submissionTestCase = contestSubmissionTestCaseEntityRepo
+                .findById(submissionTestCaseId)
+                .get();
 
             String response = testCaseResponse.getValue();
 
             int point = 0;
             String message = "";
             if (response.length() > 0) {
-                String pointString = response.substring(0, response.indexOf(' '));
-                point = Integer.parseInt(pointString);
-                totalPoint += point;
+                if (response.indexOf(' ') < 0) {
+                    message = "Invalid response";
+                } else {
+                    String pointString = response.substring(0, response.indexOf(' '));
+                    point = Integer.parseInt(pointString);
+                    totalPoint += point;
 
-                message = response.substring(response.indexOf(' '), response.indexOf(Constants.SPLIT_TEST_CASE));
+                    message = response.substring(response.indexOf(' '), response.indexOf(Constants.SPLIT_TEST_CASE));
+                }
+
             }
 
             submissionTestCase.setPoint(point);
