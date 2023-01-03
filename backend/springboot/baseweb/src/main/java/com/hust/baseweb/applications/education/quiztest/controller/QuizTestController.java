@@ -462,5 +462,9 @@ public class QuizTestController {
 
     }
 
-
+    @GetMapping("/get-list-quiz-test-status-ids")
+    public ResponseEntity<?> getListQuizTestStatusIds(){
+        List<String> statusIds = EduQuizTest.getListStatusIds();
+        return ResponseEntity.ok().body(statusIds);
+    }
 }
