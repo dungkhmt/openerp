@@ -128,6 +128,7 @@ function SClassDetail() {
       <StudentViewClassDetail />
       <br />
 
+      {/*
       <div className={classes.tabs}>
         <StyledTabs
           value={activeTab}
@@ -241,6 +242,8 @@ function SClassDetail() {
       <TabPanel value={activeTab} index={5}>
         <StudentViewLearningSessionList classId={params.id} />
       </TabPanel>
+
+            */}
     </Fragment>
   );
 }
