@@ -18,7 +18,7 @@ import static com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestConfig.DE
 import static com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestConfig.JUDGE_CUSTOM_PROBLEM_QUEUE;
 
 @Component
-public class CustomContestSubmissionListener {
+public class CustomContestSubmissionListener extends BaseRabbitListener {
 
     private final ObjectMapper objectMapper;
     private final ProblemTestCaseService problemTestCaseService;
@@ -35,6 +35,7 @@ public class CustomContestSubmissionListener {
         this.rabbitConfig = rabbitConfig;
     }
 
+    @Override
     @RabbitListener(queues = JUDGE_CUSTOM_PROBLEM_QUEUE)
     public void onMessage(
         Message message, String messageBody, Channel channel,
@@ -47,7 +48,8 @@ public class CustomContestSubmissionListener {
         }
     }
 
-    private void retryMessage(Message message, String messageBody, Channel channel) throws IOException {
+    @Override
+    protected void retryMessage(Message message, String messageBody, Channel channel) throws IOException {
         try {
             UUID contestSubmissionId = UUID.fromString(messageBody);
             problemTestCaseService.evaluateCustomProblemSubmission(contestSubmissionId);
@@ -58,7 +60,8 @@ public class CustomContestSubmissionListener {
         }
     }
 
-    private void sendMessageToDeadLetterQueue(Message message, Channel channel) throws IOException {
+    @Override
+    protected void sendMessageToDeadLetterQueue(Message message, Channel channel) throws IOException {
         channel.basicPublish(
             DEAD_LETTER_EXCHANGE,
             JUDGE_CUSTOM_PROBLEM_DL,
