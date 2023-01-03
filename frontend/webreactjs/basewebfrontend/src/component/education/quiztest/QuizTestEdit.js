@@ -5,6 +5,7 @@ import {
   KeyboardTimePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
+import { Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
@@ -61,6 +62,8 @@ function QuizTestEdit() {
   ] = useState([]);
   const [viewTypeId, setViewTypeId] = useState(null);
   const [listViewTypeIds, setListViewTypeIds] = useState([]);
+  const [statusId, setStatusId] = useState(null);
+  const [listStatusIds, setListStatusIds] = useState([]);
 
   const handleChangeDuration = (e) => {
     setDuration(e.target.value);
@@ -82,6 +85,20 @@ function QuizTestEdit() {
         );
         setListParticipantQuizGroupAssignmentMode(res.data);
 
+        //alert('assign questions to groups OK');
+      },
+      { 401: () => {} }
+    );
+  }
+  function getListQuizTestStatusIds() {
+    request(
+      // token,
+      // history,
+      "get",
+      "get-list-quiz-test-status-ids",
+      (res) => {
+        console.log("get-list-quiz-test-status-ids res = ", res);
+        setListStatusIds(res.data);
         //alert('assign questions to groups OK');
       },
       { 401: () => {} }
@@ -128,6 +145,7 @@ function QuizTestEdit() {
         console.log(res);
         setQuizTest(res.data);
         setDuration(res.data.duration);
+        setStatusId(res.data.statusId);
         setSelectedDate(res.data.scheduleDatetime);
         setQuestionStatementViewTypeId(res.data.questionStatementViewTypeId);
         setParticipantQuizGroupAssignmentMode(
@@ -173,6 +191,7 @@ function QuizTestEdit() {
       testId: testId,
       scheduleDate: selectedDate,
       duration: duration,
+      statusId: statusId,
       questionStatementViewTypeId: questionStatementViewTypeId,
       viewTypeId: viewTypeId,
       participantQuizGroupAssignmentMode: participantQuizGroupAssignmentMode,
@@ -194,6 +213,7 @@ function QuizTestEdit() {
     history.push("/edu/class/quiztest/detail/" + testId);
   }
   useEffect(() => {
+    getListQuizTestStatusIds();
     getListQuestionStatementViewTypeId();
     getListParticipantQuizGroupAssignmentMode();
     getListQuizTestViewTypeId();
@@ -201,163 +221,195 @@ function QuizTestEdit() {
   }, []);
 
   return (
-    <Grid container spacing={1} justify="center">
-      <Card
-        style={{
-          padding: "3% 10% 7% 10%",
-          minWidth: "1024px",
-        }}
-      >
-        Status: {quizTest ? quizTest.statusId : ""}
-        <form noValidate autoComplete="off">
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <Grid container spacing={10}>
-              <Grid item xs={4}>
-                <div style={styles.label}>Ngày thi </div>
-              </Grid>
-              <Grid item xs={4}>
-                <div style={styles.label}>Giờ thi </div>
-              </Grid>
-              <Grid item xs={4}>
-                <div style={styles.label}>Thời gian làm bài </div>
-              </Grid>
-            </Grid>
-            <div style={{ marginTop: "-80px" }}>
+    <div>
+      <Grid container spacing={1} justify="center">
+        <Card
+          style={{
+            padding: "3% 10% 7% 10%",
+            minWidth: "1024px",
+          }}
+        >
+          Status: {quizTest ? quizTest.statusId : ""}
+          <form noValidate autoComplete="off">
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container spacing={10}>
                 <Grid item xs={4}>
-                  <KeyboardDatePicker
-                    format="dd/MM/yyyy"
-                    margin="normal"
-                    label="Chọn ngày thi"
-                    value={selectedDate}
-                    onChange={handleDateChange}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date",
-                    }}
-                  />
+                  <div style={styles.label}>Ngày thi </div>
                 </Grid>
                 <Grid item xs={4}>
-                  <KeyboardTimePicker
-                    margin="normal"
-                    label="Chọn giờ thi"
-                    value={selectedDate}
-                    onChange={handleDateChange}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date",
-                    }}
-                  />
+                  <div style={styles.label}>Giờ thi </div>
                 </Grid>
                 <Grid item xs={4}>
-                  <TextField
-                    label="Tính bằng phút"
-                    placeholder="90"
-                    style={{ marginTop: "15px" }}
-                    fullWidth
-                    onChange={handleChangeDuration}
-                    value={duration}
-                    type="number"
-                  />
-                </Grid>
-                <Grid item xs={4}>
-                  <TextField
-                    autoFocus
-                    // required
-                    select
-                    id="questionStatementViewTypeId"
-                    label="QuestionStatementViewType"
-                    placeholder="QuestionStatementViewType"
-                    onChange={(event) => {
-                      setQuestionStatementViewTypeId(event.target.value);
-                    }}
-                    value={questionStatementViewTypeId}
-                  >
-                    {listQuestionStatementViewTypeId.map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-                <Grid item xs={4}>
-                  <TextField
-                    autoFocus
-                    // required
-                    select
-                    id="ViewTypeId"
-                    label="ViewType"
-                    placeholder="ViewType"
-                    onChange={(event) => {
-                      setViewTypeId(event.target.value);
-                    }}
-                    value={viewTypeId}
-                  >
-                    {listViewTypeIds.map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-                <Grid item xs={4}>
-                  <TextField
-                    autoFocus
-                    // required
-                    select
-                    id="participantQuizGroupAssignmentMode"
-                    label="participantQuizGroupAssignmentMode"
-                    placeholder="participantQuizGroupAssignmentMode"
-                    onChange={(event) => {
-                      setParticipantQuizGroupAssignmentMode(event.target.value);
-                    }}
-                    value={participantQuizGroupAssignmentMode}
-                  >
-                    {listParticipantQuizGroupAssignmentMode.map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+                  <div style={styles.label}>Thời gian làm bài </div>
                 </Grid>
               </Grid>
-            </div>
+              <div style={{ marginTop: "-80px" }}>
+                <Grid container spacing={10}>
+                  <Grid item xs={4}>
+                    <KeyboardDatePicker
+                      format="dd/MM/yyyy"
+                      margin="normal"
+                      label="Chọn ngày thi"
+                      value={selectedDate}
+                      onChange={handleDateChange}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <KeyboardTimePicker
+                      margin="normal"
+                      label="Chọn giờ thi"
+                      value={selectedDate}
+                      onChange={handleDateChange}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField
+                      label="Tính bằng phút"
+                      placeholder="90"
+                      style={{ marginTop: "15px" }}
+                      fullWidth
+                      onChange={handleChangeDuration}
+                      value={duration}
+                      type="number"
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography>Question Statement View</Typography>
+                    <TextField
+                      autoFocus
+                      // required
+                      select
+                      id="questionStatementViewTypeId"
+                      //label="QuestionStatementViewType"
+                      //placeholder="QuestionStatementViewType"
+                      onChange={(event) => {
+                        setQuestionStatementViewTypeId(event.target.value);
+                      }}
+                      value={questionStatementViewTypeId}
+                    >
+                      {listQuestionStatementViewTypeId.map((item) => (
+                        <MenuItem key={item} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography>Status</Typography>
+                    <TextField
+                      autoFocus
+                      // required
+                      select
+                      id="status"
+                      //label="status"
+                      //placeholder="status"
+                      onChange={(event) => {
+                        setStatusId(event.target.value);
+                      }}
+                      value={statusId}
+                    >
+                      {listStatusIds.map((item) => (
+                        <MenuItem key={item} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography>View Type</Typography>
+                    <TextField
+                      autoFocus
+                      // required
+                      select
+                      id="ViewTypeId"
+                      //label="ViewType"
+                      //placeholder="ViewType"
+                      onChange={(event) => {
+                        setViewTypeId(event.target.value);
+                      }}
+                      value={viewTypeId}
+                    >
+                      {listViewTypeIds.map((item) => (
+                        <MenuItem key={item} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography>
+                      Participant QuizGroup Assignment Mode
+                    </Typography>
+                    <TextField
+                      autoFocus
+                      // required
+                      select
+                      id="participantQuizGroupAssignmentMode"
+                      //label="participantQuizGroupAssignmentMode"
+                      //placeholder="participantQuizGroupAssignmentMode"
+                      onChange={(event) => {
+                        setParticipantQuizGroupAssignmentMode(
+                          event.target.value
+                        );
+                      }}
+                      value={participantQuizGroupAssignmentMode}
+                    >
+                      {listParticipantQuizGroupAssignmentMode.map((item) => (
+                        <MenuItem key={item} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      //fullWidth
+                      onClick={(e) => {
+                        handleSubmit();
+                      }}
+                    >
+                      Lưu
+                    </Button>
+                  </Grid>
+                </Grid>
+              </div>
 
-            {/* <div style={styles.label}>Ngày thi </div> */}
-          </MuiPickersUtilsProvider>
-        </form>
-        <div style={{ display: "flex" }}>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={(e) => {
-              handleSubmit();
-            }}
-          >
-            Lưu
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={(e) => {
-              handleOpenQuizTest();
-            }}
-          >
-            Mở
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={(e) => {
-              handleHideQuizTest();
-            }}
-          >
-            Ẩn
-          </Button>
-        </div>
-      </Card>
-    </Grid>
+              {/* <div style={styles.label}>Ngày thi </div> */}
+            </MuiPickersUtilsProvider>
+          </form>
+          {/*
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              onClick={(e) => {
+                handleOpenQuizTest();
+              }}
+            >
+              Mở
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              onClick={(e) => {
+                handleHideQuizTest();
+              }}
+            >
+              Ẩn
+            </Button>
+            */}
+        </Card>
+      </Grid>
+    </div>
   );
 }
 

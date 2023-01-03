@@ -135,6 +135,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
             eduQuizTest.setQuestionStatementViewTypeId(input.getQuestionStatementViewTypeId());
             eduQuizTest.setParticipantQuizGroupAssignmentMode(input.getParticipantQuizGroupAssignmentMode());
             eduQuizTest.setViewTypeId(input.getViewTypeId());
+            eduQuizTest.setStatusId(input.getStatusId());
             eduQuizTest = repo.save(eduQuizTest);
             log.info("update, testId = " +
                      input.getTestId() +
