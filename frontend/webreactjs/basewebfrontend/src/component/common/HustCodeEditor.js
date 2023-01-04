@@ -47,17 +47,7 @@ const HustCodeEditor = (props) => {
         theme="monokai"
         onChange={onChangeSourceCode}
         fontSize={16}
-        showPrintMargin={true}
-        showGutter={true}
-        highlightActiveLine={true}
-        value={sourceCode}
-        setOptions={{
-          enableBasicAutocompletion: false,
-          enableLiveAutocompletion: false,
-          enableSnippets: false,
-          showLineNumbers: true,
-          tabSize: 2,
-        }}/>
+        value={sourceCode}/>
     </Box>
 
   );

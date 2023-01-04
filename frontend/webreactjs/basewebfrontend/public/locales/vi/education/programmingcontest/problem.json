@@ -12,12 +12,14 @@
   "allowSubmittingOutput": "Cho phép người làm chỉ cần nộp output để đánh giá kết quả (không cần nộp source code)",
   "checkerSourceCode": "Checker Source code",
   "checkerSourceCodePlaceholder": "Code chấm điểm cho output của sinh viên",
+  "checkSolutionCompile": "Biên dịch",
   "problemList": {
     "title": "Danh sách bài tập"
   },
   "createProblem": "Tạo bài tập mới",
+  "editProblem": "Chỉnh sửa bài tập",
   "validateSubmit": {
-    "warningCheckSolutionCompile": "Bạn chưa hoàn thành bước \"CHECK SOLUTION COMPILE\"",
+    "warningCheckSolutionCompile": "Bạn chưa hoàn thành bước \"BIÊN DỊCH\"",
     "missingField": "Trường {{fieldName}} không được bỏ trống"
   }
 

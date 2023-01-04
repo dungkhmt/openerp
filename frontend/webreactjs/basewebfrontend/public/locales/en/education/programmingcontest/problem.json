@@ -12,12 +12,14 @@
   "allowSubmittingOutput": "Allow contestants to submit output only (without source code)",
   "checkerSourceCode": "Checker Source code",
   "checkerSourceCodePlaceholder": "Source code to evaluate contestant's output",
+  "checkSolutionCompile": "Check compile",
   "problemList": {
     "title": "Problems"
   },
   "createProblem": "Create new Problem",
+  "editProblem": "Edit problem",
   "validateSubmit": {
-      "warningCheckSolutionCompile": "Your source code must pass \"CHECK SOLUTION COMPILE\"",
+      "warningCheckSolutionCompile": "Your source code must pass \"CHECK COMPILE\" step",
       "missingField": "Missing required field: {{fieldName}}"
     }
 
