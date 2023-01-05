@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public interface ProblemTestCaseService {
 
-    void createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException;
+    ProblemEntity createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException;
 
     ProblemEntity updateContestProblem(String problemId, String userId, String json, MultipartFile[] files) throws Exception;
 

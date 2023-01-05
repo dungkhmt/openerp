@@ -37,6 +37,8 @@ public class ModelCreateContestProblemResponse {
 
     private String solutionCheckerSourceLanguage;
 
+    private String scoreEvaluationType;
+
     private String solution;
 
     private int levelOrder;

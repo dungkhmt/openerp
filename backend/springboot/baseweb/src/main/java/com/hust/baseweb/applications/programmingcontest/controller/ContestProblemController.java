@@ -56,8 +56,8 @@ public class ContestProblemController {
     public ResponseEntity<?> createContestProblem(Principal principal,
             @RequestParam("ModelCreateContestProblem") String json,
             @RequestParam("files") MultipartFile[] files) throws MiniLeetCodeException {
-        problemTestCaseService.createContestProblem(principal.getName(), json, files);
-        return ResponseEntity.status(200).body(null);
+        ProblemEntity resp = problemTestCaseService.createContestProblem(principal.getName(), json, files);
+        return ResponseEntity.status(200).body(resp);
     }
 
     @PostMapping("/get-test-case-result/{problemId}")
