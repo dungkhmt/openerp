@@ -248,6 +248,8 @@ public class StringHandler {
         else {
             String correctTestcaseAns = replaceSpaceV2(testCaseAns);
 //            String correctTestcaseAns = testCaseAns;
+            if(problemEvaluationType == null || problemEvaluationType.equals(""))
+                problemEvaluationType = Constants.ProblemResultEvaluationType.NORMAL.getValue();
 
             if (problemEvaluationType.equals(Constants.ProblemResultEvaluationType.NORMAL.getValue())) {
                 if (!correctTestcaseAns.equals(participantTestcaseAns)) {
