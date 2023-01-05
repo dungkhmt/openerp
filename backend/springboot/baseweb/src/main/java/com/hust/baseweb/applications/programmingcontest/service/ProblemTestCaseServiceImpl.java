@@ -85,7 +85,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private ProblemTestCaseServiceCache cacheService;
 
     @Override
-    public void createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException {
+    @Transactional
+    public ProblemEntity createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException {
         Gson gson = new Gson();
         ModelCreateContestProblem modelCreateContestProblem = gson.fromJson(json, ModelCreateContestProblem.class);
 
@@ -127,6 +128,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                    .solution(modelCreateContestProblem.getSolution())
                                                    .solutionCheckerSourceCode(modelCreateContestProblem.getSolutionChecker())
                                                    .solutionCheckerSourceLanguage(modelCreateContestProblem.getSolutionCheckerLanguage())
+                                                   .scoreEvaluationType(modelCreateContestProblem.getScoreEvaluationType())
                                                    .createdAt(new Date())
                                                    .isPublicProblem(modelCreateContestProblem.getIsPublic())
                                                    .levelOrder(constants
@@ -135,7 +137,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                    .attachment(String.join(";", attachmentId))
                                                    .userId(userID)
                                                    .build();
-        problemRepo.save(problemEntity);
+        problemEntity = problemRepo.save(problemEntity);
         cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.PROBLEM);
 
         // grant role owner, manager, view to current user
@@ -195,7 +197,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 , "");
 
         }
-
+        return problemEntity;
     }
 
     @Override
@@ -266,9 +268,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         problemEntity.setCorrectSolutionLanguage(modelUpdateContestProblem.getCorrectSolutionLanguage());
         problemEntity.setCorrectSolutionSourceCode(modelUpdateContestProblem.getCorrectSolutionSourceCode());
         problemEntity.setSolutionCheckerSourceCode(modelUpdateContestProblem.getSolutionChecker());
+        problemEntity.setScoreEvaluationType(modelUpdateContestProblem.getScoreEvaluationType());
         problemEntity.setPublicProblem(modelUpdateContestProblem.getIsPublic());
         problemEntity.setAttachment(String.join(";", attachmentId));
-        problemRepo.save(problemEntity);
+        problemEntity = problemRepo.save(problemEntity);
 
         cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.PROBLEM);
         return problemEntity;
@@ -325,6 +328,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             problemResponse.setCorrectSolutionLanguage(problemEntity.getCorrectSolutionLanguage());
             problemResponse.setSolutionCheckerSourceCode(problemEntity.getSolutionCheckerSourceCode());
             problemResponse.setSolutionCheckerSourceLanguage(problemEntity.getSolutionCheckerSourceLanguage());
+            problemResponse.setScoreEvaluationType(problemEntity.getScoreEvaluationType());
             problemResponse.setSolution(problemEntity.getSolution());
             problemResponse.setLevelOrder(problemEntity.getLevelOrder());
             problemResponse.setCreatedAt(problemEntity.getCreatedAt());

@@ -23,6 +23,7 @@ public class ModelUpdateContestProblem {
     private String solutionCheckerLanguage;
     private String solution;
     private Boolean isPublic;
+    private String scoreEvaluationType;
     private String[] fileId;
     private List<String> removedFilesId;
 }
