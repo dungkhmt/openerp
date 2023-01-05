@@ -1,5 +1,5 @@
 import {makeStyles} from "@material-ui/core";
-import {Box, Checkbox, FormControlLabel, InputAdornment, MenuItem, TextField, Typography} from "@mui/material";
+import {Box, Checkbox, FormControlLabel, InputAdornment, Link, MenuItem, TextField, Typography} from "@mui/material";
 import React, {useState} from "react";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import {useDispatch, useSelector} from "react-redux";
@@ -15,6 +15,7 @@ import HustCodeEditor from "../../common/HustCodeEditor";
 import {LoadingButton} from "@mui/lab";
 import RichTextEditor from "../../common/editor/RichTextEditor";
 import HustContainerCard from "../../common/HustContainerCard";
+import {CUSTOM_EVALUATION, NORMAL_EVALUATION} from "./Constant";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -56,7 +57,7 @@ function CreateProblem() {
   const [solutionCheckerLanguage, setSolutionCheckerLanguage] = useState("CPP");
   const [isPublic, setIsPublic] = useState(false);
 
-  const [allowSubmittingOutput, setAllowSubmittingOutput] = useState(false);
+  const [isCustomEvaluated, setIsCustomEvaluated] = useState(false);
   const [compileMessage, setCompileMessage] = useState("");
   const [attachmentFiles, setAttachmentFiles] = useState([]);
   const [showCompile, setShowCompile] = useState(false);
@@ -136,6 +137,7 @@ function CreateProblem() {
       solutionCheckerLanguage: solutionCheckerLanguage,
       isPublic: isPublic,
       fileId: fileId,
+      scoreEvaluationType: isCustomEvaluated ? CUSTOM_EVALUATION : NORMAL_EVALUATION,
     };
 
     let formData = new FormData();
@@ -160,9 +162,9 @@ function CreateProblem() {
     setLoading(true);
     authPostMultiPart(dispatch, token, "/create-problem", formData)
       .then(
-        (res) => {
+        () => {
           successNoti("Problem saved successfully", 1000);
-          sleep(1000).then((r) => {
+          sleep(1000).then(() => {
             history.push("/programming-contest/list-problems");
           });
         },
@@ -308,7 +310,6 @@ function CreateProblem() {
       >
         {t("checkSolutionCompile")}
       </LoadingButton>
-
       <CompileStatus
         showCompile={showCompile}
         statusSuccessful={statusSuccessful}
@@ -316,15 +317,19 @@ function CreateProblem() {
       />
 
       <FormControlLabel
-        label={t("allowSubmittingOutput")}
+        label={t("isCustomEvaluated")}
         control={
           <Checkbox
-            checked={allowSubmittingOutput}
-            onChange={() => setAllowSubmittingOutput(!allowSubmittingOutput)}
+            checked={isCustomEvaluated}
+            onChange={() => setIsCustomEvaluated(!isCustomEvaluated)}
           />}
       />
+      <Typography variant="body2" color="gray">{t("customEvaluationNote1")}</Typography>
+      <Link href="#" underline="hover">
+        <Typography variant="body2" color="gray">{t("customEvaluationNote2")}</Typography>
+      </Link>
 
-      {allowSubmittingOutput &&
+      {isCustomEvaluated &&
         <HustCodeEditor
           title={t("checkerSourceCode")}
           language={solutionCheckerLanguage}
