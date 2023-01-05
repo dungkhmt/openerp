@@ -1,34 +1,24 @@
 import {
   Box,
   Button,
-  CardActions,
-  CardContent,
+  Checkbox,
+  FormControlLabel,
   InputAdornment,
+  Link as MuiLink,
   MenuItem,
-  Paper,
-  TableHead,
-  TableRow,
   TextField,
   Typography
 } from "@mui/material";
 import {makeStyles} from "@material-ui/core/styles";
 import React, {useEffect, useState} from "react";
-import {Link, useHistory} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {Editor} from "react-draft-wysiwyg";
-import {ContentState, EditorState} from "draft-js";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import {authGet, authPostMultiPart} from "../../../api";
 import {CompileStatus} from "./CompileStatus";
-import {SubmitSuccess} from "./SubmitSuccess";
 import {useParams} from "react-router";
 import {request} from "./Request";
-import {sleep, StyledTableCell, StyledTableRow} from "./lib";
-import htmlToDraft from "html-to-draftjs";
-import TableContainer from "@mui/material/TableContainer";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
 import {getFileType, randomImageName, saveByteArray,} from "../../../utils/FileUpload/covert";
 import {useTranslation} from "react-i18next";
 import HustContainerCard from "../../common/HustContainerCard";
@@ -36,6 +26,9 @@ import HustDropzoneArea from "../../common/HustDropzoneArea";
 import RichTextEditor from "../../common/editor/RichTextEditor";
 import HustCodeEditor from "../../common/HustCodeEditor";
 import {LoadingButton} from "@mui/lab";
+import StandardTable from "../../table/StandardTable";
+import {errorNoti, successNoti, warningNoti} from "../../../utils/notification";
+import {CUSTOM_EVALUATION, NORMAL_EVALUATION} from "./Constant";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -91,7 +84,6 @@ function EditProblem() {
   const {problemId} = useParams();
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
-  const history = useHistory();
 
   const [problemName, setProblemName] = useState("");
   const [description, setDescription] = useState("");
@@ -102,11 +94,10 @@ function EditProblem() {
   const [codeSolution, setCodeSolution] = useState("");
   const [solutionCheckerLanguage, setSolutionCheckerLanguage] = useState("CPP");
   const [solutionChecker, setSolutionChecker] = useState("");
+  const [isCustomEvaluated, setIsCustomEvaluated] = useState(false);
   const [languageSolution, setLanguageSolution] = useState("CPP");
-  const [showSubmitWarming, setShowSubmitWarming] = useState(false);
   const [showCompile, setShowCompile] = useState(false);
   const [statusSuccessful, setStatusSuccessful] = useState(false);
-  const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
   const [testCases, setTestCases] = useState([]);
   const [compileMessage, setCompileMessage] = useState("");
@@ -128,6 +119,77 @@ function EditProblem() {
     );
     setRemovedFileIds([...removedFilesId, fileId]);
   };
+
+  const testcaseColumns = [
+    {title: "Input", field: "testCase"},
+    {title: "Correct Answer", field: "correctAns"},
+    {title: "Point", field: "point"},
+    {title: "Public", field: "public"},
+    {title: "Description", field: "description"},
+    {title: "Status", field: "status"},
+    {
+      render: (testCase) => (
+        <Link
+          to={
+            "/programming-contest/edit-testcase/" +
+            problemId +
+            "/" +
+            testCase.testCaseId
+          }
+          style={{
+            textDecoration: "none",
+            color: "black",
+            cursor: "",
+          }}
+        >
+          <Button variant="contained" color="success">
+            Edit
+          </Button>
+        </Link>
+      ),
+    },
+    {
+      render: (testCase) => (
+        <Button
+          variant="contained"
+          onClick={() => {
+            rerunTestCase(problemId, testCase.testCaseId);
+          }}
+        >
+          Rerun
+        </Button>
+      ),
+    },
+    {
+      render: (testCase) => (
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => {
+            request(
+              "delete",
+              "/delete-test-case/" + testCase.testCaseId,
+
+              (res) => {
+                request(
+                  "GET",
+                  "/get-test-case-list-by-problem/" + problemId,
+
+                  (res) => {
+                    setTestCases(res.data);
+                  },
+                  {}
+                ).then();
+              },
+              {}
+            ).then();
+          }}
+        >
+          Delete
+        </Button>
+      ),
+    },
+  ];
 
   useEffect(() => {
     authGet(dispatch, token, "/problem-details/" + problemId)
@@ -152,6 +214,7 @@ function EditProblem() {
         setCodeSolution(res.correctSolutionSourceCode);
         setSolutionCheckerLanguage(res.solutionCheckerLanguage);
         setSolutionChecker(res.solutionCheckerSourceCode || "");
+        setIsCustomEvaluated(res.scoreEvaluationType === CUSTOM_EVALUATION)
         setDescription(res.problemDescription);
       }, {})
       .then();
@@ -165,7 +228,6 @@ function EditProblem() {
       "/get-test-case-list-by-problem/" + problemId,
 
       (res) => {
-        console.log("res", res.data);
         setTestCases(res.data);
       },
       {}
@@ -189,13 +251,14 @@ function EditProblem() {
       source: codeSolution,
       computerLanguage: languageSolution,
     };
+
+    setLoading(true);
     request(
       "post",
       "/check-compile",
       (res) => {
-        if (res.data.status == "Successful") {
+        if (res.data.status === "Successful") {
           setShowCompile(true);
-          setShowSubmitWarming(false);
           setStatusSuccessful(true);
         } else {
           setShowCompile(true);
@@ -205,14 +268,31 @@ function EditProblem() {
       },
       {},
       body
-    ).then();
+    ).then(() => setLoading(false));
+  }
+
+  const validateSubmit = () => {
+    if (problemName === "") {
+      errorNoti(t("missingField", {ns: "validation", fieldName: t("problemName")}), 3000);
+      return false;
+    }
+    if (timeLimit <= 0 || timeLimit > 60) {
+      errorNoti(t("numberBetween", {ns: "validation", fieldName: t("timeLimit"), min: 1, max: 60}), 3000);
+      return false;
+    }
+    if (memoryLimit <= 0 || timeLimit > 1024) {
+      errorNoti(t("numberBetween", {ns: "validation", fieldName: t("memoryLimit"), min: 1, max: 1024}), 3000);
+      return false;
+    }
+    if (!statusSuccessful) {
+      warningNoti(t("validateSubmit.warningCheckSolutionCompile"), 5000);
+      return false;
+    }
+    return true;
   }
 
   function handleSubmit() {
-    if (!statusSuccessful) {
-      setShowSubmitWarming(true);
-      return;
-    }
+    if (!validateSubmit()) return;
 
     let fileId = [];
     if (attachmentFiles.length > 0) {
@@ -240,6 +320,7 @@ function EditProblem() {
       isPublic: isPublic,
       fileId: fileId,
       removedFilesId: removedFilesId,
+      scoreEvaluationType: isCustomEvaluated ? CUSTOM_EVALUATION : NORMAL_EVALUATION,
     };
 
     let formData = new FormData();
@@ -248,27 +329,18 @@ function EditProblem() {
       formData.append("files", file);
     }
 
-    try {
-      authPostMultiPart(
-        dispatch,
-        token,
-        "/update-problem-detail/" + problemId,
-        formData
-      ).then(
-        (res) => {
-          setShowSubmitSuccess(true);
-          sleep(1000).then((r) => {
-            history.push("/programming-contest/list-problems");
-          });
-        },
-        {},
-        () => {
-          alert("Cập nhật thất bại");
-        }
-      );
-    } catch (error) {
-      alert(error);
-    }
+    setLoading(true);
+    authPostMultiPart(
+      dispatch,
+      token,
+      "/update-problem-detail/" + problemId,
+      formData
+    ).then(
+      (res) => {
+        successNoti("Problem saved successfully", 10000);
+      })
+      .catch(() => errorNoti(t("error", {ns: "common"}), 3000))
+      .finally(() => setLoading(false));
   }
 
   return (
@@ -487,157 +559,57 @@ function EditProblem() {
         message={compileMessage}
       />
 
-      <HustCodeEditor
-        title={t("checkerSourceCode")}
-        language={solutionCheckerLanguage}
-        onChangeLanguage={(event) => {
-          setSolutionCheckerLanguage(event.target.value);
+      <FormControlLabel
+        label={t("isCustomEvaluated")}
+        control={
+          <Checkbox
+            checked={isCustomEvaluated}
+            onChange={() => setIsCustomEvaluated(!isCustomEvaluated)}
+          />}
+      />
+      <Typography variant="body2" color="gray">{t("customEvaluationNote1")}</Typography>
+      <MuiLink href="#" underline="hover">
+        <Typography variant="body2" color="gray">{t("customEvaluationNote2")}</Typography>
+      </MuiLink>
+
+      {isCustomEvaluated &&
+        <HustCodeEditor
+          title={t("checkerSourceCode")}
+          language={solutionCheckerLanguage}
+          onChangeLanguage={(event) => {
+            setSolutionCheckerLanguage(event.target.value);
+          }}
+          sourceCode={solutionChecker}
+          onChangeSourceCode={(code) => {
+            setSolutionChecker(code);
+          }}
+          placeholder={t("checkerSourceCodePlaceholder")}
+        />
+      }
+
+      <StandardTable
+        title={"Testcases"}
+        columns={testcaseColumns}
+        data={testCases}
+        hideCommandBar
+        options={{
+          selection: false,
+          pageSize: 5,
+          search: true,
+          sorting: true,
         }}
-        sourceCode={solutionChecker}
-        onChangeSourceCode={(code) => {
-          setSolutionChecker(code);
-        }}
-        placeholder={t("checkerSourceCodePlaceholder")}
       />
 
-      <Typography>
-        <h2>Test case</h2>
-      </Typography>
-
-      <TableContainer component={Paper}>
-        <Table sx={{minWidth: 750}} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell></StyledTableCell>
-              <StyledTableCell align="left">TestCase</StyledTableCell>
-              <StyledTableCell align="left">Correct Answer</StyledTableCell>
-              <StyledTableCell align="left">Point</StyledTableCell>
-              <StyledTableCell align="left">Public</StyledTableCell>
-              <StyledTableCell align="left">Description</StyledTableCell>
-              <StyledTableCell align="left">Status</StyledTableCell>
-              <StyledTableCell align="left">Edit</StyledTableCell>
-              <StyledTableCell align="left">Rerun</StyledTableCell>
-              <StyledTableCell align="left">Delete</StyledTableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {testCases.map((testCase, idx) => (
-              <StyledTableRow>
-                <StyledTableCell component="th" scope="row">
-                  {idx}
-                </StyledTableCell>
-                <StyledTableCell
-                  align="left"
-                  sx={{
-                    maxWidth: "120px",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {testCase.testCase}
-                </StyledTableCell>
-                <StyledTableCell
-                  align="left"
-                  sx={{
-                    maxWidth: "120px",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {testCase.correctAns}
-                </StyledTableCell>
-                <StyledTableCell align="left">
-                  {testCase.point}
-                </StyledTableCell>
-                <StyledTableCell align="left">
-                  {testCase.isPublic}
-                </StyledTableCell>
-                <StyledTableCell align="left">
-                  {testCase.description}
-                </StyledTableCell>
-                <StyledTableCell align="left">
-                  {testCase.status}
-                </StyledTableCell>
-
-                <StyledTableCell align="left">
-                  <Link
-                    to={
-                      "/programming-contest/edit-testcase/" +
-                      problemId +
-                      "/" +
-                      testCase.testCaseId
-                    }
-                    style={{
-                      textDecoration: "none",
-                      color: "black",
-                      cursor: "",
-                    }}
-                  >
-                    <Button variant="contained">
-                      Edit
-                    </Button>
-                  </Link>
-                </StyledTableCell>
-                <StyledTableCell align="left">
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      rerunTestCase(problemId, testCase.testCaseId);
-                    }}
-                  >
-                    Rerun
-                  </Button>
-                </StyledTableCell>
-                <StyledTableCell align="left">
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      request(
-                        "delete",
-                        "/delete-test-case/" + testCase.testCaseId,
-
-                        (res) => {
-                          request(
-                            "GET",
-                            "/get-test-case-list-by-problem/" + problemId,
-
-                            (res) => {
-                              console.log("res", res.data);
-                              setTestCases(res.data);
-                            },
-                            {}
-                          ).then();
-                        },
-                        {}
-                      ).then();
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <CardActions>
-        <Button
+      <Box width="100%" sx={{marginTop: "16px"}}>
+        <LoadingButton
           variant="contained"
-          style={{marginLeft: "45px"}}
+          color="success"
+          loading={loading}
           onClick={handleSubmit}
         >
-          Save
-        </Button>
-
-        <SubmitSuccess
-          showSubmitSuccess={showSubmitSuccess}
-          content={"You have saved problem"}
-        />
-      </CardActions>
+          {t("save", {ns: "common"})}
+        </LoadingButton>
+      </Box>
     </HustContainerCard>
   );
 }
