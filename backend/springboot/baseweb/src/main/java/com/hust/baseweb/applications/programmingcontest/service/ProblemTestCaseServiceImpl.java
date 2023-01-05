@@ -128,7 +128,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                    .solution(modelCreateContestProblem.getSolution())
                                                    .solutionCheckerSourceCode(modelCreateContestProblem.getSolutionChecker())
                                                    .solutionCheckerSourceLanguage(modelCreateContestProblem.getSolutionCheckerLanguage())
-                                                   .scoreEvaluationType(modelCreateContestProblem.getScoreEvaluationType())
+                                                   .scoreEvaluationType(modelCreateContestProblem.getScoreEvaluationType() != null?
+                                                                            modelCreateContestProblem.getScoreEvaluationType():
+                                                       Constants.ProblemResultEvaluationType.NORMAL.getValue())
                                                    .createdAt(new Date())
                                                    .isPublicProblem(modelCreateContestProblem.getIsPublic())
                                                    .levelOrder(constants
