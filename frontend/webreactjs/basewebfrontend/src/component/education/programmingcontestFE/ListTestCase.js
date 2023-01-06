@@ -61,7 +61,7 @@ export default function ListTestCase() {
         title: "Input (Preview)",
         render: (testCase) => (
           <>
-            {testCase.testCase.length > 20
+            {testCase?.testCase && testCase.testCase.length > 20
               ? testCase.testCase.substring(0, 19) + "..."
               : testCase.testCase}
           </>
@@ -71,7 +71,7 @@ export default function ListTestCase() {
         title: "Output (Preview)",
         render: (testCase) => (
           <>
-            {testCase.correctAns.length > 20
+            {testCase?.correctAns && testCase.correctAns.length > 20
               ? testCase.correctAns.substring(0, 19) + "..."
               : testCase.correctAns}
           </>
@@ -117,11 +117,6 @@ export default function ListTestCase() {
               "/" +
               testCase.testCaseId
             }
-            style={{
-              textDecoration: "none",
-              color: "black",
-              cursor: "",
-            }}
           >
             <IconButton variant="contained" color="success">
               <EditIcon/>
