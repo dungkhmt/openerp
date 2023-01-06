@@ -4,7 +4,8 @@ import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import StudentViewProblemList from "./StudentViewProblemList";
+// import StudentViewProblemList from "./StudentViewProblemList";
+import StudentViewProblemList from "./StudentViewProblemListV2";
 import StudentViewSubmission from "./StudentViewSubmission";
 
 function TabPanel(props) {
