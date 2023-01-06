@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import {makeStyles} from "@material-ui/core/styles";
 import React, {useEffect, useState} from "react";
-import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -26,9 +25,9 @@ import HustDropzoneArea from "../../common/HustDropzoneArea";
 import RichTextEditor from "../../common/editor/RichTextEditor";
 import HustCodeEditor from "../../common/HustCodeEditor";
 import {LoadingButton} from "@mui/lab";
-import StandardTable from "../../table/StandardTable";
 import {errorNoti, successNoti, warningNoti} from "../../../utils/notification";
 import {CUSTOM_EVALUATION, NORMAL_EVALUATION} from "./Constant";
+import ListTestCase from "./ListTestCase";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -99,7 +98,6 @@ function EditProblem() {
   const [showCompile, setShowCompile] = useState(false);
   const [statusSuccessful, setStatusSuccessful] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
-  const [testCases, setTestCases] = useState([]);
   const [compileMessage, setCompileMessage] = useState("");
   const [attachmentFiles, setAttachmentFiles] = useState([]);
   const [fetchedImageArray, setFetchedImageArray] = useState([]);
@@ -119,77 +117,6 @@ function EditProblem() {
     );
     setRemovedFileIds([...removedFilesId, fileId]);
   };
-
-  const testcaseColumns = [
-    {title: "Input", field: "testCase"},
-    {title: "Correct Answer", field: "correctAns"},
-    {title: "Point", field: "point"},
-    {title: "Public", field: "public"},
-    {title: "Description", field: "description"},
-    {title: "Status", field: "status"},
-    {
-      render: (testCase) => (
-        <Link
-          to={
-            "/programming-contest/edit-testcase/" +
-            problemId +
-            "/" +
-            testCase.testCaseId
-          }
-          style={{
-            textDecoration: "none",
-            color: "black",
-            cursor: "",
-          }}
-        >
-          <Button variant="contained" color="success">
-            Edit
-          </Button>
-        </Link>
-      ),
-    },
-    {
-      render: (testCase) => (
-        <Button
-          variant="contained"
-          onClick={() => {
-            rerunTestCase(problemId, testCase.testCaseId);
-          }}
-        >
-          Rerun
-        </Button>
-      ),
-    },
-    {
-      render: (testCase) => (
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            request(
-              "delete",
-              "/delete-test-case/" + testCase.testCaseId,
-
-              (res) => {
-                request(
-                  "GET",
-                  "/get-test-case-list-by-problem/" + problemId,
-
-                  (res) => {
-                    setTestCases(res.data);
-                  },
-                  {}
-                ).then();
-              },
-              {}
-            ).then();
-          }}
-        >
-          Delete
-        </Button>
-      ),
-    },
-  ];
 
   useEffect(() => {
     authGet(dispatch, token, "/problem-details/" + problemId)
@@ -219,32 +146,7 @@ function EditProblem() {
       }, {})
       .then();
 
-    getTestCases();
   }, [problemId]);
-
-  function getTestCases() {
-    request(
-      "GET",
-      "/get-test-case-list-by-problem/" + problemId,
-
-      (res) => {
-        setTestCases(res.data);
-      },
-      {}
-    );
-  }
-
-  function rerunTestCase(problemId, testCaseId) {
-    request(
-      "GET",
-      "/rerun-create-testcase-solution/" + problemId + "/" + testCaseId,
-
-      (res) => {
-        getTestCases();
-      },
-      {}
-    );
-  }
 
   function checkCompile() {
     let body = {
@@ -587,18 +489,7 @@ function EditProblem() {
         />
       }
 
-      <StandardTable
-        title={"Testcases"}
-        columns={testcaseColumns}
-        data={testCases}
-        hideCommandBar
-        options={{
-          selection: false,
-          pageSize: 5,
-          search: true,
-          sorting: true,
-        }}
-      />
+      <ListTestCase/>
 
       <Box width="100%" sx={{marginTop: "16px"}}>
         <LoadingButton
