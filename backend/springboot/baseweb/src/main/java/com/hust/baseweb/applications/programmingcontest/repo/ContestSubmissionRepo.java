@@ -2,13 +2,14 @@ package com.hust.baseweb.applications.programmingcontest.repo;
 
 import com.hust.baseweb.applications.admin.dataadmin.education.model.ProgrammingContestSubmissionOM;
 import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionEntity;
+import com.hust.baseweb.applications.programmingcontest.model.ModelProblemMaxSubmissionPoint;
+
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import javax.persistence.SqlResultSetMapping;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +31,24 @@ public interface ContestSubmissionRepo extends JpaRepository<ContestSubmissionEn
             nativeQuery = true
     )
     List<Object[]> calculatorContest(@Param("contest_id") String contest_id);
+
+    @Query(value = "select distinct problem_id from contest_submission_new " +
+                   "where user_submission_id = :user_id " +
+                   "and contest_id = :contest_id " +
+                   "and status = 'Accept'"
+        ,
+           nativeQuery = true
+    )
+    List<String> findAcceptedProblemsOfUser(@Param("user_id") String user_id, @Param("contest_id") String contest_id);
+
+    @Query(value = "select problem_id as problemId, max(point) as maxPoint from contest_submission_new " +
+                   "where user_submission_id = :user_id " +
+                   "and contest_id = :contest_id " +
+                   "group by problemId "
+        ,
+           nativeQuery = true
+    )
+    List<ModelProblemMaxSubmissionPoint> findSubmittedProblemsOfUser(@Param("user_id") String user_id, @Param("contest_id") String contest_id);
 
     ContestSubmissionEntity findContestSubmissionEntityByContestSubmissionId(UUID contestSubmissionId);
 

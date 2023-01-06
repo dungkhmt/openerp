@@ -368,6 +368,45 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(listProblem);
     }
 
+    @GetMapping("/get-list-contest-problem-student-V2/{contestId}")
+    public ResponseEntity<?> getListContestProblemViewedByStudentV2(@PathVariable("contestId") String contestId, Principal principal) {
+        String userId = principal.getName();
+        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+
+        List<ProblemEntity> listProblem = contestEntity.getProblems();
+        List<String> listAcceptedProblem = contestSubmissionRepo.findAcceptedProblemsOfUser(userId, contestId);
+        List<ModelProblemMaxSubmissionPoint> listTriedProblem = contestSubmissionRepo.findSubmittedProblemsOfUser(userId, contestId);
+
+        Map<String, Integer> mapProblemToMaxSubmissionPoint = new HashMap<>();
+        for (ModelProblemMaxSubmissionPoint problem : listTriedProblem) {
+            mapProblemToMaxSubmissionPoint.put(problem.getProblemId(), problem.getMaxPoint());
+        }
+        
+        List<ModelStudentOverviewProblem> responses = new ArrayList<>();
+
+        for (ProblemEntity problem : listProblem) {
+            String problemId = problem.getProblemId();
+
+            ModelStudentOverviewProblem response = new ModelStudentOverviewProblem();
+            response.setProblemId(problemId);
+            response.setProblemName(problem.getProblemName());
+            response.setLevelId(problem.getLevelId());
+
+            if (mapProblemToMaxSubmissionPoint.keySet().contains(problemId)) {
+                response.setSubmitted(true);
+                response.setMaxSubmittedPoint(mapProblemToMaxSubmissionPoint.get(problemId));
+            }
+
+            if (listAcceptedProblem.contains(problemId)) {
+                response.setAccepted(true);
+            }
+
+            responses.add(response);
+        }
+
+        return ResponseEntity.status(200).body(responses);
+    }
+
     @GetMapping("/get-contest-detail-solving/{contestId}")
     public ResponseEntity<?> getContestDetailSolving(@PathVariable("contestId") String contestId, Principal principal)
             throws MiniLeetCodeException {
