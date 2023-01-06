@@ -1,6 +1,6 @@
 import {makeStyles, MuiThemeProvider, styled} from "@material-ui/core/styles";
 import {Box, Card, Typography} from "@mui/material";
-import MaterialTable, {MTableToolbar} from "material-table";
+import MaterialTable, {MTableCell, MTableToolbar} from "material-table";
 import PropTypes from "prop-types";
 import {useCallback} from "react";
 import {components, localization, tableIcons, themeTable,} from "utils/MaterialTableUtils";
@@ -91,6 +91,12 @@ function StandardTable(props) {
                 searchFieldStyle={{
                   height: 40,
                 }}
+              />
+            ),
+            Cell: (props) => (
+              <MTableCell
+                {...props}
+                style={{padding: "6px 16px"}}
               />
             ),
             ...props.components,
