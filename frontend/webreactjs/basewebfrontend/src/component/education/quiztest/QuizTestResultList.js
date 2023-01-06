@@ -187,6 +187,7 @@ export default function QuizTestStudentListResult(props) {
           let question = {
             content: elm.questionContent,
             grade: elm.grade,
+            quizGroupCode: elm.quizGroupCode,
             listAnswer: elm.quizChoiceAnswerList,
             listchooseAns: elm.chooseAnsIds,
           };
@@ -195,6 +196,7 @@ export default function QuizTestStudentListResult(props) {
             let userObj = {
               fullName: elm.participationFullName,
               groupId: elm.quizGroupId,
+              quizGroupCode: elm.quizGroupCode,
               listQuestion: [],
               totalGrade: elm.grade,
             };
@@ -208,12 +210,12 @@ export default function QuizTestStudentListResult(props) {
           );
         });
 
-        // console.log(objectPdf);
+        console.log("objectPDF = ", objectPdf);
         Object.keys(objectPdf).map((ele) => {
           dataPdf.push(objectPdf[ele]);
         });
 
-        // console.log(dataPdf);
+        console.log("dataPDF = ", dataPdf);
 
         dataPdf.sort(function (firstEl, secondEl) {
           if (firstEl.fullName === null || secondEl.fullName === null)
@@ -242,6 +244,7 @@ export default function QuizTestStudentListResult(props) {
           if (objectResult[elm.participationUserLoginId] == null) {
             let userObj = {
               groupId: elm.quizGroupId,
+              quizGroupCode: elm.quizGroupCode,
               fullName: elm.participationFullName,
               grade: elm.grade,
               userLoginId: elm.participationUserLoginId,
@@ -280,6 +283,7 @@ export default function QuizTestStudentListResult(props) {
             userLoginId: elm.participationUserLoginId,
             fullName: elm.participationFullName,
             groupId: elm.quizGroupId,
+            quizGroupCode: elm.quizGroupCode,
             questionId: elm.questionId,
             grade: elm.grade,
             createdStamp: elm.createdStamp

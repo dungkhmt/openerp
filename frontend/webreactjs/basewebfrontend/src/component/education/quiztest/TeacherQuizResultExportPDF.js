@@ -81,6 +81,9 @@ function resultDetailList(dataPdf) {
         "\n" +
         "Nhóm                " +
         resultDetail.groupId +
+        "\n" +
+        "Code                " +
+        resultDetail.quizGroupCode +
         "\n\n" +
         "Chi tiết bài làm:",
       fontSize: 13,
@@ -329,6 +332,7 @@ export function exportResultListPdf(
     let tmp = {};
     tmp.fullName = student.fullName;
     tmp.groupId = student.groupId;
+    tmp.quizGroupCode = student.quizGroupCode;
     tmp.grade = student.grade;
     resultData.push(tmp);
   });
