@@ -1,6 +1,7 @@
 package com.hust.baseweb.applications.education.classmanagement.service;
 
 import com.hust.baseweb.applications.education.classmanagement.enumeration.RegistStatus;
+import com.hust.baseweb.applications.education.classmanagement.model.ModelResponseEduClassDetail;
 import com.hust.baseweb.applications.education.entity.AssignmentSubmission;
 import com.hust.baseweb.applications.education.entity.EduClass;
 import com.hust.baseweb.applications.education.entity.EduClassUserLoginRole;
@@ -29,6 +30,8 @@ public interface ClassService {
     SimpleResponse register(UUID classId, String studentId);
 
     Map<String, SimpleResponse> updateRegistStatus(UUID classId, Set<String> studentIds, RegistStatus status);
+
+    List<ModelResponseEduClassDetail> getAllClass();
 
     List<GetClassesOfTeacherOM> getClassesOfTeacher(String teacherId);
 
