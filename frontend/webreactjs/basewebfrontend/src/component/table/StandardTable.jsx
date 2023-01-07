@@ -56,7 +56,7 @@ function StandardTable(props) {
       <MuiThemeProvider theme={themeTable}>
         <MaterialTable
           {...props}
-          title={props.title ? <Typography variant="h5" color="#00acc1">{props.title}</Typography> : <></>}
+          title={props.title ? <Typography variant="h5">{props.title}</Typography> : <></>}
           localization={{
             ...localization,
             toolbar: {
@@ -69,8 +69,8 @@ function StandardTable(props) {
             selection: true,
             pageSize: 20,
             headerStyle: {
-              backgroundColor: "#00acc1",
-              color: "#FFF",
+              backgroundColor: "#f4f4f4",
+              color: "#404040",
               fontWeight: 600,
             },
             rowStyle: rowStyle,
@@ -96,7 +96,7 @@ function StandardTable(props) {
             Cell: (props) => (
               <MTableCell
                 {...props}
-                style={{padding: "6px 16px"}}
+                style={{padding: "16px 16px"}}
               />
             ),
             ...props.components,
