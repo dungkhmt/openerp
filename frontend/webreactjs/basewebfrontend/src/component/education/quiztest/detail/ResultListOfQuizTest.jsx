@@ -7,6 +7,7 @@ import ExcelExporter from "../../../common/ExcelExporter";
 import {Button, Card, CardContent} from "@mui/material";
 import StandardTable from "../../../table/StandardTable";
 import React from "react";
+import {makeStyles} from "@material-ui/core/styles";
 
 const EXCEL_CELL_STYLE =  {
   alignment: {
@@ -31,7 +32,17 @@ const EXCEL_HEADER_CELL_STYLE = {
   ...EXCEL_CELL_STYLE
 }
 
+const useStyles = makeStyles(theme => ({
+  tableWrapper: {
+    '& [class^=MTableToolbar-actions]>div>div>span>button': {
+      padding: 'unset',
+      paddingLeft: '8px'
+    }
+  }
+}))
+
 export default function ResultListOfQuizTest(props) {
+  const classes = useStyles();
   let testId = props.testId;
   let isGeneral = props.isGeneral;
   const [rawResultList, setRawResultList] = useState([]);
@@ -166,7 +177,7 @@ export default function ResultListOfQuizTest(props) {
 
   return (
     <Card>
-      <CardContent>
+      <CardContent className={classes.tableWrapper}>
         <StandardTable
           title={tableTitle}
           columns={isGeneral ? generalResultColumns : detailResultColumns}

@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
+import EditQuizTest from "./detail/EditQuizTest";
 
 const styles = {
   label: {
@@ -222,6 +223,9 @@ function QuizTestEdit() {
 
   return (
     <div>
+      <EditQuizTest/>
+      <br/>
+
       <Grid container spacing={1} justify="center">
         <Card
           style={{

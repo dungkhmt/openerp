@@ -8,8 +8,13 @@ import {
   View,
 } from "@react-pdf/renderer";
 import parse from "html-react-parser";
-import { subPageTotalPagesState } from "../QuizTestGroupList";
 import Footer from "./Footer";
+import {createState} from "@hookstate/core";
+
+export const subPageTotalPagesState = createState({
+  fulfilled: false,
+  totalPages: [],
+});
 
 Font.register({
   family: "Inter",
