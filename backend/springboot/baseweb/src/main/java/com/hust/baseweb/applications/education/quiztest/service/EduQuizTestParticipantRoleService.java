@@ -13,4 +13,6 @@ public interface EduQuizTestParticipantRoleService {
     List<QuizTestParticipantRoleModel> getAllQuizTests();
 
     List<QuizTestParticipantRoleModel> getParticipantRolesOfUserInQuizTest(String userId, String testId);
+
+    void deleteParticipantRole(String testId, String participantId, String role);
 }

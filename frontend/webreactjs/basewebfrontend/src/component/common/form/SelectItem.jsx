@@ -1,14 +1,15 @@
 import React from 'react';
-import {FormControl, FormLabel, MenuItem, Select, TextField} from "@mui/material";
+import {FormControl, FormLabel, MenuItem, Select} from "@mui/material";
 
 export default function SelectItem(props) {
 
   return (
-    <FormControl {...props}>
+    <FormControl style={props.style}
+                 disabled={props.disabled}>
       <FormLabel>{props.label}</FormLabel>
       <Select
-        multiple={props.multiple}
         value={props.value}
+        multiple={props.multiple}
         onChange={event => props.onChange(event.target.value)}
       >
         { props.options.map(option => (

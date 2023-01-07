@@ -143,6 +143,14 @@ public class QuizTestController {
         return ResponseEntity.ok().body(eduTestQuizRole);
     }
 
+    @DeleteMapping("/quiz-test-participant-role")
+    public ResponseEntity<?> deleteQuizTestParticipantRole(@RequestParam String testId,
+                                                           @RequestParam String userId,
+                                                           @RequestParam String roleId) {
+        eduQuizTestParticipantRoleService.deleteParticipantRole(testId, userId, roleId);
+        return ResponseEntity.ok().build();
+    }
+
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @GetMapping("/get-all-quiz-test-by-user")
     public ResponseEntity<?> getAllQuizTestByUserLogin(
