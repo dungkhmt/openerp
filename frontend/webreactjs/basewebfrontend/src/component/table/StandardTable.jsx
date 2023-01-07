@@ -1,5 +1,5 @@
 import {makeStyles, MuiThemeProvider, styled} from "@material-ui/core/styles";
-import {Box, Card, Typography} from "@mui/material";
+import {Box, Paper, Typography} from "@mui/material";
 import MaterialTable, {MTableCell, MTableToolbar} from "material-table";
 import PropTypes from "prop-types";
 import {useCallback} from "react";
@@ -31,7 +31,7 @@ function StandardTable(props) {
   );
 
   return (
-    <Card sx={{mt: 1, mb: 1, pl: "1px", pr: "1px"}}>
+    <>
       {!props.hideCommandBar && (
         <>
           <Box
@@ -82,6 +82,12 @@ function StandardTable(props) {
           onRowClick={props.onRowClick}
           components={{
             ...components,
+            Container: (props) => (
+              <Paper
+                {...props}
+                elevation={3}
+              />
+            ),
             Toolbar: (props) => (
               <MTableToolbar
                 {...props}
@@ -103,7 +109,7 @@ function StandardTable(props) {
           }}
         />
       </MuiThemeProvider>
-    </Card>
+    </>
   );
 }
 
