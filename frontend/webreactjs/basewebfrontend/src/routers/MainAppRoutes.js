@@ -18,6 +18,7 @@ import TaskManagementRoute from "./TaskManagementRoute";
 import WhiteBoardRoute from "./WhiteBoardRoute";
 import BigDataAnalysisRoute from "./BigDataAnalysisRoutes";
 import ContestManagerRankingPublic from "../component/education/programmingcontestFE/ContestManagerRankingPublic";
+import WMSv2Route from "./WMSv2Route";
 
 // const NotFound = lazy(() => import("../views/errors/NotFound"));
 // const AccountActivationRoute = lazy(() => import("./AccountActivationRoute"));
@@ -106,6 +107,8 @@ function MainAppRoute(props) {
             isAuthenticated={props.isAuthenticated}
             path="/user-group"
           />
+
+          <PrivateRoute component={WMSv2Route} path="/wmsv2" />
 
           {/* <Route component={error} path="*" /> */}
           <Route component={NotFound} />
