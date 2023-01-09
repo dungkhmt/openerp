@@ -1,7 +1,7 @@
 package com.hust.baseweb.applications.admin.dataadmin.education.controller;
 
 import com.hust.baseweb.applications.admin.dataadmin.education.service.DoingPracticeQuizLogsService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @RequestMapping("/admin/data/education/doing-practice-quiz-logs")
 public class DoingPracticeQuizLogsController {
 
