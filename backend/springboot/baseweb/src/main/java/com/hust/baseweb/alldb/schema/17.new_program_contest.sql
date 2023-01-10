@@ -254,3 +254,22 @@ create table code_plagiarism(
     constraint fk_code_plagiarism_contest foreign key(contest_id) references contest_new(contest_id),
     constraint fk_code_plagiarism_problem foreign key(problem_id) references contest_problem_new(problem_id)
 );
+
+create table tag
+(
+    tag_id varchar (100) not null ,
+    name varchar (100),
+    description text,
+    constraint pk_tag_id primary key(tag_id)
+);
+
+create table problem_tag
+(
+    tag_id varchar (100) not null ,
+    problem_id varchar (100) not null ,
+    constraint fk_tag_id_tag_contest_problem_new foreign key(tag_id) references tag(tag_id),
+    constraint fk_problem_id_tag_contest_problem_new foreign key(problem_id) references contest_problem_new(problem_id)
+);
+
+
+
