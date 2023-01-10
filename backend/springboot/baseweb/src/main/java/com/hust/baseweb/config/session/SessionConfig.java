@@ -30,7 +30,7 @@ public class SessionConfig {
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
-        config.setPassword(props.getPassword(password));
+        config.setPassword(password);
 
         return new LettuceConnectionFactory(config);
     }
