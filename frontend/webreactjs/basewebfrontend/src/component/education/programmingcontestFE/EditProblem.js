@@ -1,11 +1,17 @@
 import {
   Box,
   Button,
-  Checkbox, Chip, FormControl,
+  Checkbox,
+  Chip,
+  FormControl,
   FormControlLabel,
-  InputAdornment, InputLabel,
-  Link as MuiLink, ListItemText,
-  MenuItem, OutlinedInput, Select,
+  InputAdornment,
+  InputLabel,
+  Link as MuiLink,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
+  Select,
   TextField,
   Typography
 } from "@mui/material";
@@ -120,8 +126,13 @@ function EditProblem() {
     ).then();
   }, [])
 
+
   const handleSelectTags = (event) => {
-    setSelectedTags(event.target.value);
+    const selectingTags = event.target.value;
+
+    const filteredTags = [...new Map(selectingTags.map(tag => [tag.tagId, tag])).values()]
+
+    setSelectedTags(filteredTags);
   };
 
   const handleAttachmentFiles = (files) => {
@@ -367,7 +378,7 @@ function EditProblem() {
           >
             {tags.map((tag) => (
               <MenuItem key={tag.tagId} value={tag}>
-                <Checkbox checked={selectedTags.indexOf(tag) > -1}/>
+                <Checkbox checked={selectedTags.some(selectedTag => selectedTag.tagId === tag.tagId)}/>
                 <ListItemText primary={tag.name} secondary={tag?.description}/>
               </MenuItem>
             ))}

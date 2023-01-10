@@ -233,6 +233,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             throw new MiniLeetCodeException("permission denied");
         }
 
+        List<TagEntity> tags = new ArrayList<>();
+            String[] tagIds = modelUpdateContestProblem.getTagIds();
+            for (String tagId : tagIds) {
+                TagEntity tag = tagRepo.findByTagId(tagId);
+                tags.add(tag);
+            }
+
         List<String> attachmentId = new ArrayList<>();
         attachmentId.add(oldProblem.getAttachment());
         String[] fileId = modelUpdateContestProblem.getFileId();
@@ -282,6 +289,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         problemEntity.setScoreEvaluationType(modelUpdateContestProblem.getScoreEvaluationType());
         problemEntity.setPublicProblem(modelUpdateContestProblem.getIsPublic());
         problemEntity.setAttachment(String.join(";", attachmentId));
+        problemEntity.setTags(tags);
+
         problemEntity = problemRepo.save(problemEntity);
 
         cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.PROBLEM);
