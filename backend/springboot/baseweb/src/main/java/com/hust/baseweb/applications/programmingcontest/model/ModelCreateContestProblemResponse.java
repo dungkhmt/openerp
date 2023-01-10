@@ -3,6 +3,7 @@ package com.hust.baseweb.applications.programmingcontest.model;
 import java.util.Date;
 import java.util.List;
 
+import com.hust.baseweb.applications.programmingcontest.entity.TagEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -50,4 +51,6 @@ public class ModelCreateContestProblemResponse {
     private List<byte[]> attachment;
 
     private List<String> attachmentNames;
+
+    private List<TagEntity> tags;
 }

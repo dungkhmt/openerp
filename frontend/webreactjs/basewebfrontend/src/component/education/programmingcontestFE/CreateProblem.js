@@ -1,6 +1,16 @@
 import {makeStyles} from "@material-ui/core";
-import {Box, Checkbox, FormControlLabel, InputAdornment, Link, MenuItem, TextField, Typography} from "@mui/material";
-import React, {useState} from "react";
+import {
+  Box,
+  Checkbox, Chip, FormControl,
+  FormControlLabel,
+  InputAdornment,
+  InputLabel,
+  Link, ListItemText,
+  MenuItem, OutlinedInput, Select,
+  TextField,
+  Typography
+} from "@mui/material";
+import React, {useEffect, useState} from "react";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import {useDispatch, useSelector} from "react-redux";
 import {useHistory} from "react-router-dom";
@@ -23,7 +33,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     flexWrap: "wrap",
     "& .MuiTextField-root": {
-      marginRight: theme.spacing(4),
+      marginLeft: theme.spacing(2),
+      marginRight: theme.spacing(2),
       marginBottom: theme.spacing(2),
       width: "28%",
       minWidth: 120,
@@ -56,6 +67,8 @@ function CreateProblem() {
   const [solutionChecker, setSolutionChecker] = useState("");
   const [solutionCheckerLanguage, setSolutionCheckerLanguage] = useState("CPP");
   const [isPublic, setIsPublic] = useState(false);
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const [isCustomEvaluated, setIsCustomEvaluated] = useState(false);
   const [compileMessage, setCompileMessage] = useState("");
@@ -64,6 +77,21 @@ function CreateProblem() {
   const [statusSuccessful, setStatusSuccessful] = useState(false);
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    request(
+      "get",
+      "/get-all-tags/",
+      (res) => {
+        setTags(res.data)
+      },
+      {}
+    ).then();
+  }, [])
+
+  const handleSelectTags = (event) => {
+    setSelectedTags(event.target.value);
+  };
 
   const handleAttachmentFiles = (files) => {
     setAttachmentFiles(files);
@@ -122,6 +150,7 @@ function CreateProblem() {
     if (!validateSubmit()) return;
 
     const fileId = attachmentFiles.map((file) => file.name);
+    const tagIds = selectedTags.map((tag) => tag.tagId);
 
     let body = {
       problemId: problemId,
@@ -138,6 +167,7 @@ function CreateProblem() {
       isPublic: isPublic,
       fileId: fileId,
       scoreEvaluationType: isCustomEvaluated ? CUSTOM_EVALUATION : NORMAL_EVALUATION,
+      tagIds: tagIds,
     };
 
     let formData = new FormData();
@@ -270,6 +300,37 @@ function CreateProblem() {
             {t("no", {ns: "common"})}
           </MenuItem>
         </TextField>
+
+        <FormControl sx={{m: 1, width: "90%"}}>
+          <InputLabel id="select-tag-label">Tags</InputLabel>
+          <Select
+            labelId="select-tag-label"
+            id="select-tag"
+            multiple
+            value={selectedTags}
+            onChange={handleSelectTags}
+            input={<OutlinedInput label="Tags"/>}
+            renderValue={(selectedTags) => (
+              <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.8}}>
+                {selectedTags.map((selectedTag) => (
+                  <Chip size="small" label={selectedTag.name} sx={{
+                    marginRight: "6px",
+                    marginBottom: "6px",
+                    border: "1px solid lightgray",
+                    fontStyle: "italic"
+                  }}/>
+                ))}
+              </Box>
+            )}
+          >
+            {tags.map((tag) => (
+              <MenuItem key={tag.tagId} value={tag}>
+                <Checkbox checked={selectedTags.indexOf(tag) > -1}/>
+                <ListItemText primary={tag.name} secondary={tag?.description}/>
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Box>
 
       <Box className={classes.description}>

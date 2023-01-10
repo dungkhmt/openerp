@@ -87,19 +87,26 @@ export default function StudentViewProblemList() {
       ),
     },
     {
-      title: t("submitted"),
-      field: "submitted",
-      render: (rowData) => (
-        <Checkbox onChange={() => {
-        }} checked={rowData.submitted} color="secondary"/>
-      ),
-    },
-    {
       title: t("accepted"),
       field: "accepted",
       render: (rowData) => (
-        <Checkbox onChange={() => {
-        }} checked={rowData.accepted} color="success"/>
+        <Checkbox
+          onChange={() => {}}
+          checked={rowData.accepted} color="success"
+        />
+      ),
+    },
+    {
+      title: "Tags",
+      render: (rowData) => (
+        <Box>
+          {rowData.tags.length > 0 && rowData.tags.map(tag =>
+            <Chip
+              size="small"
+              label={tag}
+              sx={{marginRight: "6px", marginBottom: "6px", border: "1px solid lightgray", fontStyle: "italic"}}
+            />)}
+        </Box>
       ),
     },
   ];

@@ -5,11 +5,7 @@ import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
 import com.hust.baseweb.applications.programmingcontest.model.*;
-import com.hust.baseweb.applications.programmingcontest.repo.ContestProblemRepo;
-import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
-import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
-import com.hust.baseweb.applications.programmingcontest.repo.UserContestProblemRoleRepo;
-import com.hust.baseweb.applications.programmingcontest.repo.UserRegistrationContestRepo;
+import com.hust.baseweb.applications.programmingcontest.repo.*;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import com.hust.baseweb.applications.programmingcontest.service.helper.cache.ProblemTestCaseServiceCache;
 import com.hust.baseweb.entity.UserLogin;
@@ -35,6 +31,7 @@ import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -392,7 +389,10 @@ public class ContestProblemController {
             response.setProblemName(problem.getProblemName());
             response.setLevelId(problem.getLevelId());
 
-            if (mapProblemToMaxSubmissionPoint.keySet().contains(problemId)) {
+            List<String> tags = problem.getTags().stream().map(TagEntity::getName).collect(Collectors.toList());
+            response.setTags(tags);
+
+            if (mapProblemToMaxSubmissionPoint.containsKey(problemId)) {
                 response.setSubmitted(true);
                 response.setMaxSubmittedPoint(mapProblemToMaxSubmissionPoint.get(problemId));
             }
@@ -405,6 +405,13 @@ public class ContestProblemController {
         }
 
         return ResponseEntity.status(200).body(responses);
+    }
+
+    @GetMapping("/get-all-tags")
+    public ResponseEntity<?> getAllTags() {
+
+        List<TagEntity> listTag = problemTestCaseService.getAllTags();
+        return ResponseEntity.status(200).body(listTag);
     }
 
     @GetMapping("/get-contest-detail-solving/{contestId}")

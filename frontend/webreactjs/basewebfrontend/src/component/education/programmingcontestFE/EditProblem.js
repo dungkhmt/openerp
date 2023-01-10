@@ -1,11 +1,11 @@
 import {
   Box,
   Button,
-  Checkbox,
+  Checkbox, Chip, FormControl,
   FormControlLabel,
-  InputAdornment,
-  Link as MuiLink,
-  MenuItem,
+  InputAdornment, InputLabel,
+  Link as MuiLink, ListItemText,
+  MenuItem, OutlinedInput, Select,
   TextField,
   Typography
 } from "@mui/material";
@@ -99,6 +99,8 @@ function EditProblem() {
   const [statusSuccessful, setStatusSuccessful] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
   const [compileMessage, setCompileMessage] = useState("");
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
   const [attachmentFiles, setAttachmentFiles] = useState([]);
   const [fetchedImageArray, setFetchedImageArray] = useState([]);
   const [removedFilesId, setRemovedFileIds] = useState([]);
@@ -106,6 +108,21 @@ function EditProblem() {
   const defaultLevel = ["easy", "medium", "hard"];
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    request(
+      "get",
+      "/get-all-tags/",
+      (res) => {
+        setTags(res.data)
+      },
+      {}
+    ).then();
+  }, [])
+
+  const handleSelectTags = (event) => {
+    setSelectedTags(event.target.value);
+  };
 
   const handleAttachmentFiles = (files) => {
     setAttachmentFiles(files);
@@ -143,6 +160,7 @@ function EditProblem() {
         setSolutionChecker(res.solutionCheckerSourceCode || "");
         setIsCustomEvaluated(res.scoreEvaluationType === CUSTOM_EVALUATION)
         setDescription(res.problemDescription);
+        setSelectedTags(res.tags);
       }, {})
       .then();
 
@@ -196,6 +214,8 @@ function EditProblem() {
   function handleSubmit() {
     if (!validateSubmit()) return;
 
+    const tagIds = selectedTags.map((tag) => tag.tagId);
+
     let fileId = [];
     if (attachmentFiles.length > 0) {
       fileId = attachmentFiles.map((file) => {
@@ -223,6 +243,7 @@ function EditProblem() {
       fileId: fileId,
       removedFilesId: removedFilesId,
       scoreEvaluationType: isCustomEvaluated ? CUSTOM_EVALUATION : NORMAL_EVALUATION,
+      tagIds: tagIds,
     };
 
     let formData = new FormData();
@@ -321,6 +342,37 @@ function EditProblem() {
           InputProps={{endAdornment: <InputAdornment position="end">MB</InputAdornment>,}}
           sx={{width: "15%"}}
         />
+
+        <FormControl sx={{m: 1, width: "90%"}}>
+          <InputLabel id="select-tag-label">Tags</InputLabel>
+          <Select
+            labelId="select-tag-label"
+            id="select-tag"
+            multiple
+            value={selectedTags}
+            onChange={handleSelectTags}
+            input={<OutlinedInput label="Tags"/>}
+            renderValue={(selectedTags) => (
+              <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.8}}>
+                {selectedTags.map((selectedTag) => (
+                  <Chip size="small" label={selectedTag.name} sx={{
+                    marginRight: "6px",
+                    marginBottom: "6px",
+                    border: "1px solid lightgray",
+                    fontStyle: "italic"
+                  }}/>
+                ))}
+              </Box>
+            )}
+          >
+            {tags.map((tag) => (
+              <MenuItem key={tag.tagId} value={tag}>
+                <Checkbox checked={selectedTags.indexOf(tag) > -1}/>
+                <ListItemText primary={tag.name} secondary={tag?.description}/>
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Box>
 
       <Box className={classes.description}>
