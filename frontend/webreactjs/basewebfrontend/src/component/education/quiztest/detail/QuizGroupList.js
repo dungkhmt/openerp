@@ -1,14 +1,56 @@
-import React, { useEffect, useState } from "react";
-import {errorNoti, successNoti} from "../../../../utils/notification";
+import React, { useEffect, useState, useRef } from "react";
+import {errorNoti, infoNoti, successNoti} from "../../../../utils/notification";
 import GenerateQuizTestGroupDialog from "./GenerateQuizTestGroupDialog";
-import {request} from "../../../../api";
+import {isFunction, request} from "../../../../api";
 import {Button, Card, CardContent} from "@mui/material";
 import StandardTable from "../../../table/StandardTable";
 import QuizTestGroupQuestionList from "../QuizTestGroupQuestionList";
+import {toast} from "react-toastify";
+import {pdf} from "@react-pdf/renderer";
+import ExamQuestionsOfParticipantPDFDocument from "../template/ExamQuestionsOfParticipantPDFDocument";
+import FileSaver from "file-saver";
+import { subPageTotalPagesState } from "../template/ExamQuestionsOfParticipantPDFDocument";
+import {makeStyles} from "@material-ui/core/styles";
+
+const useStyles = makeStyles(theme => ({
+  tableWrapper: {
+    '& [class^=MTableToolbar-actions]>div>div>span>button': {
+      padding: 'unset',
+      paddingLeft: '8px'
+    }
+  }
+}))
+
+async function generatePdfDocument(documentData, fileName, onCompleted) {
+  subPageTotalPagesState.set({
+    fulfilled: false,
+    totalPages: Array.from(new Array(documentData.length)),
+  });
+
+  // Calculate value for elements of subPageTotalPagesState
+  await pdf(<ExamQuestionsOfParticipantPDFDocument data={documentData} />).toBlob();
+  // Generate PDF only one time
+  let done = false;
+
+  // Spend time for subPageTotalPagesState to update new state
+  const timer = setInterval(async () => {
+    if (subPageTotalPagesState.fulfilled.get() && !done) {
+      done = true;
+      clearInterval(timer);
+
+      const blob = await pdf(<ExamQuestionsOfParticipantPDFDocument data={documentData} />).toBlob();
+      if (isFunction(onCompleted)) onCompleted();
+      FileSaver.saveAs(blob, fileName);
+    }
+  }, 50);
+}
 
 export default function QuizGroupList(props) {
+  const classes = useStyles();
   let testId = props.testId;
+  const toastId = useRef(null);
   const [quizGroups, setQuizGroups] = useState([]);
+  const [studentQuestions, setStudentQuestions] = useState();
   const [quizGroupIdsToDelete, setQuizGroupIdsToDelete] = useState([]);
   const [generateQuizGroupDlgOpen, setGenerateQuizGroupDlgOpen] = useState(false);
 
@@ -20,6 +62,21 @@ export default function QuizGroupList(props) {
       onError: (error) => errorNoti("Đã xảy ra lỗi trong khi tải dữ liệu!", 3000)
     }
     request("GET", `/get-test-groups-info?testId=${testId}`, successHandler, errorHandlers);
+  }
+
+  async function getQuestionsOfParticipants() {
+    let questionsOfParticipants;
+    let successHandler = (res) => {
+      questionsOfParticipants = res.data;
+      setStudentQuestions(questionsOfParticipants);
+    }
+    const errorHandlers = {
+      onError: () => errorNoti("Đã xảy ra lỗi trong khi tải dữ liệu", true)
+    }
+
+    await request("GET", `get-all-quiz-test-group-with-questions-detail/${testId}`,
+                  successHandler, errorHandlers);
+    return questionsOfParticipants;
   }
 
   function updateQuizGroupIdsToDelete(newSelectedGroups) {
@@ -51,6 +108,23 @@ export default function QuizGroupList(props) {
     request("POST", "/delete-quiz-test-groups", successHandler, errorHandlers, formData);
   }
 
+  async function exportExamQuestionsOfAllStudents() {
+    let questionsOfStudents;
+
+    if (!studentQuestions)
+      questionsOfStudents = await getQuestionsOfParticipants();
+    else questionsOfStudents = studentQuestions;
+
+    const data = questionsOfStudents.map((quizGroupTestDetailModel) => ({
+      userDetail: { id: " ", fullName: " " },
+      ...quizGroupTestDetailModel,
+    }));
+
+    generatePdfDocument(data, `${testId}.pdf`, () => {
+      toast.dismiss(toastId.current);
+    });
+  }
+
   const columns = [
     { field: "groupCode", title: "Mã đề" },
     { field: "note", title: "Ghi chú" },
@@ -66,6 +140,7 @@ export default function QuizGroupList(props) {
 
   const actions = [
     { icon: () => GenerateQuizGroupButton, isFreeAction: true },
+    { icon: () => ButtonExportAllDataToPdf, isFreeAction: true },
     {
       icon: () => (
         <DeleteQuizGroupButton deletedGroupIds={quizGroupIdsToDelete}
@@ -82,6 +157,16 @@ export default function QuizGroupList(props) {
     </Button>
   )
 
+  const ButtonExportAllDataToPdf = (
+    <Button color="primary" variant="contained"
+            onClick={() => {
+              toastId.current = infoNoti("Hệ thống đang chuẩn bị tệp PDF ...");
+              exportExamQuestionsOfAllStudents();
+            }}>
+      Export PDF
+    </Button>
+  );
+
   const DeleteQuizGroupButton = ({deletedGroupIds, variant}) => (
     <Button color="error"
             variant={variant}
@@ -93,7 +178,7 @@ export default function QuizGroupList(props) {
   return (
     <>
       <Card>
-        <CardContent>
+        <CardContent className={classes.tableWrapper}>
           <StandardTable
             title="Danh sách đề thi"
             columns={columns}
