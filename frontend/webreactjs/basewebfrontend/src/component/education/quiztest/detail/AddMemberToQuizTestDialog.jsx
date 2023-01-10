@@ -1,15 +1,14 @@
-
 import { makeStyles } from "@material-ui/core/styles";
 
 import PrimaryButton from "component/button/PrimaryButton";
 import TertiaryButton from "component/button/TertiaryButton";
 import CustomizedDialogs from "component/dialog/CustomizedDialogs";
-import React, {useEffect, useMemo, useState} from "react";
-import {request} from "../../../../api";
-import {errorNoti, successNoti} from "../../../../utils/notification";
+import React, { useEffect, useMemo, useState } from "react";
+import { request } from "../../../../api";
+import { errorNoti, successNoti } from "../../../../utils/notification";
 import AutocompleteItem from "../../../common/form/AutocompleteItem";
 import SelectItem from "../../../common/form/SelectItem";
-import {Stack} from "@mui/system";
+import { Stack } from "@mui/material";
 
 const useStyles = makeStyles((theme) => ({
   dialogContent: {
@@ -26,49 +25,62 @@ export default function AddMemberToQuizTestDialog(props) {
   const [assignableRoles, setAssignableRoles] = useState([]);
 
   const roleOptions = useMemo(() => {
-    return assignableRoles.map(role => ({ value: role, label: role}));
-  }, [assignableRoles])
+    return assignableRoles.map((role) => ({ value: role, label: role }));
+  }, [assignableRoles]);
 
   async function getUsers(keyword, currentPage, pageSize) {
     let users;
 
     const config = {
-      params: { keyword, page: currentPage, size: pageSize }
-    }
+      params: { keyword, page: currentPage, size: pageSize },
+    };
     let successHandler = (res) => {
-      users = res.data.contents.content.map(user => ({
+      users = res.data.contents.content.map((user) => ({
         userName: user.userName,
         fullName: [user.lastName, user.middleName, user.firstName].join(" "),
       }));
-    }
+    };
     let errorHandlers = {
       onError: (error) => errorNoti("Đã xảy ra lỗi khi lấy dữ liệu user", true),
     };
-    await request("GET", "/search-user", successHandler, errorHandlers, null, config);
+    await request(
+      "GET",
+      "/search-user",
+      successHandler,
+      errorHandlers,
+      null,
+      config
+    );
 
     return users;
   }
 
   async function getUserOptions(search) {
     let users = await getUsers(search, 0, 1000);
-    return users.map(user => ({
+    return users.map((user) => ({
       value: user.userName,
-      label: `${user.fullName} (${user.userName})`
-    })) ;
+      label: `${user.fullName} (${user.userName})`,
+    }));
   }
 
   useEffect(() => {
     setSelectedRole("");
-    getRolesNotGrantedToUser(selectedUserId)
+    getRolesNotGrantedToUser(selectedUserId);
   }, [selectedUserId]);
 
   function getRolesNotGrantedToUser(userId) {
-    if  (!userId) return;
+    if (!userId) return;
     let successHandler = (res) => setAssignableRoles(res.data);
     let errorHandlers = {
-      onError: (error) => errorNoti("Đã xảy ra lỗi khi lấy dữ liệu vai trò", true),
+      onError: (error) =>
+        errorNoti("Đã xảy ra lỗi khi lấy dữ liệu vai trò", true),
     };
-    request("GET", `/get-roles-user-not-granted-in-quiz-test/${props.testId}/${userId}`, successHandler, errorHandlers);
+    request(
+      "GET",
+      `/get-roles-user-not-granted-in-quiz-test/${props.testId}/${userId}`,
+      successHandler,
+      errorHandlers
+    );
   }
 
   function addMemberRole() {
@@ -83,9 +95,16 @@ export default function AddMemberToQuizTestDialog(props) {
       closeAndResetData();
     };
     let errorHandlers = {
-      onError: (error) => errorNoti("Đã xảy ra lỗi khi thêm vai trò thành viên", true)
+      onError: (error) =>
+        errorNoti("Đã xảy ra lỗi khi thêm vai trò thành viên", true),
     };
-    request("POST", "/add-quiz-test-participant-role", successHandler, errorHandlers, newMemberRole);
+    request(
+      "POST",
+      "/add-quiz-test-participant-role",
+      successHandler,
+      errorHandlers,
+      newMemberRole
+    );
   }
 
   function closeAndResetData() {
@@ -100,28 +119,30 @@ export default function AddMemberToQuizTestDialog(props) {
       handleClose={closeAndResetData}
       title="Thêm thành viên vào bài thi"
       content={
-        <Stack spacing={2} style={{ padding: '4px 12px'}}>
-          <AutocompleteItem label="Thành viên"
-                            style={{ width: '100%' }}
-                            optionsRetriever={getUserOptions}
-                            placeholder="Nhập login ID để tìm kiếm"
-                            onChange={(value) => setSelectedUserId(value)}/>
-          <SelectItem label="Vai trò"
-                      style={{ width: '100%' }}
-                      value={selectedRole}
-                      options={roleOptions}
-                      disabled={!selectedUserId}
-                      onChange={(value) => setSelectedRole(value)}/>
+        <Stack spacing={2} style={{ padding: "4px 12px" }}>
+          <AutocompleteItem
+            label="Thành viên"
+            style={{ width: "100%" }}
+            optionsRetriever={getUserOptions}
+            placeholder="Nhập login ID để tìm kiếm"
+            onChange={(value) => setSelectedUserId(value)}
+          />
+          <SelectItem
+            label="Vai trò"
+            style={{ width: "100%" }}
+            value={selectedRole}
+            options={roleOptions}
+            disabled={!selectedUserId}
+            onChange={(value) => setSelectedRole(value)}
+          />
         </Stack>
       }
       actions={
         <>
-          <TertiaryButton className={classes.btn}
-                          onClick={closeAndResetData}>
+          <TertiaryButton className={classes.btn} onClick={closeAndResetData}>
             Huỷ
           </TertiaryButton>
-          <PrimaryButton className={classes.btn}
-                         onClick={addMemberRole}>
+          <PrimaryButton className={classes.btn} onClick={addMemberRole}>
             Cập nhật
           </PrimaryButton>
         </>
