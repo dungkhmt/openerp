@@ -60,4 +60,6 @@ public interface QuizTestService {
     public List<ModelResponseGetMyQuizTest> getQuizTestListOfUser(String userId);
 
     public boolean confirmUpdateGroupInQuizTest(String userId, String groupCode, String testId);
+
+    public boolean updateFromQuizTestExecutionSubmission(UUID submissionId);
 }

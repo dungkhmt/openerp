@@ -20,6 +20,7 @@ public class EduQuizTest {
     public static final String QUIZ_TEST_STATUS_CREATED = "CREATED";
     public static final String QUIZ_TEST_STATUS_DISABLED = "DISABLED";
     public static final String QUIZ_TEST_STATUS_OPEN = "OPEN";
+    public static final String QUIZ_TEST_STATUS_RUNNING = "RUNNING";
     public static final String QUIZ_TEST_STATUS_HIDDEN = "HIDDEN";
 
 
@@ -38,6 +39,7 @@ public class EduQuizTest {
         L.add(QUIZ_TEST_STATUS_DISABLED);
         L.add(QUIZ_TEST_STATUS_OPEN);
         L.add(QUIZ_TEST_STATUS_HIDDEN);
+        L.add(QUIZ_TEST_STATUS_RUNNING);
         return L;
     }
     public static List<String> getListParticipantQuizGroupAssignmentModes(){

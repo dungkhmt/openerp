@@ -166,6 +166,24 @@ create table quiz_group_question_participation_execution_choice(
     constraint fk_quiz_group_question_participation_execution_choice_answer foreign key(choice_answer_id) references quiz_choice_answer(choice_answer_id)
 );
 
+create table quiz_test_execution_submission(
+    submission_id uuid not null default uuid_generate_v1(),
+    question_id uuid,
+    quiz_group_id uuid,
+    participation_user_login_id varchar(60),
+    choice_answer_ids varchar(2000),
+    status_id varchar(200),
+    last_updated_stamp            TIMESTAMP,
+    created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    constraint pk_quiz_test_execution_submission primary key(submission_id),
+    constraint fk_quiz_test_execution_submission_user_login foreign key(participation_user_login_id) references user_login(user_login_id),
+    constraint fk_quiz_test_execution_submission_quiz_group foreign key(quiz_group_id) references edu_test_quiz_group(quiz_group_id),
+    constraint fk_quiz_test_execution_submission_question foreign key(question_id) references quiz_question(question_id)
+
+);
+
+
 create table history_log_quiz_group_question_participation_execution_choice(
     log_id uuid not null default uuid_generate_v1(),
     question_id uuid,

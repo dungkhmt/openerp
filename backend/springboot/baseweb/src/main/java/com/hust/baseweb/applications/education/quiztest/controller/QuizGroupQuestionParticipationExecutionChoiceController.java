@@ -4,11 +4,13 @@ import com.hust.baseweb.applications.education.classmanagement.service.ClassServ
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
 import com.hust.baseweb.applications.education.quiztest.entity.HistoryLogQuizGroupQuestionParticipationExecutionChoice;
 import com.hust.baseweb.applications.education.quiztest.entity.QuizGroupQuestionParticipationExecutionChoice;
+import com.hust.baseweb.applications.education.quiztest.entity.QuizTestExecutionSubmission;
 import com.hust.baseweb.applications.education.quiztest.model.HistoryLogQuizGroupQuestionParticipationExecutionChoiceDetailModel;
 import com.hust.baseweb.applications.education.quiztest.model.QuizGroupQuestionParticipationExecutionChoiceInputModel;
 import com.hust.baseweb.applications.education.quiztest.repo.EduQuizTestRepo;
 import com.hust.baseweb.applications.education.quiztest.repo.HistoryLogQuizGroupQuestionParticipationExecutionChoiceRepo;
 import com.hust.baseweb.applications.education.quiztest.repo.QuizGroupQuestionParticipationExecutionChoiceRepo;
+import com.hust.baseweb.applications.education.quiztest.repo.QuizTestExecutionSubmissionRepo;
 import com.hust.baseweb.applications.education.service.CourseService;
 import com.hust.baseweb.service.PersonService;
 import com.hust.baseweb.service.UserService;
@@ -38,6 +40,7 @@ import java.util.UUID;
 
 public class QuizGroupQuestionParticipationExecutionChoiceController {
 
+    QuizTestExecutionSubmissionRepo quizTestExecutionSubmissionRepo;
     QuizGroupQuestionParticipationExecutionChoiceRepo quizGroupQuestionParticipationExecutionChoiceRepo;
     EduQuizTestRepo eduQuizTestRepo;
     HistoryLogQuizGroupQuestionParticipationExecutionChoiceRepo historyLogQuizGroupQuestionParticipationExecutionChoiceRepo;
@@ -45,6 +48,60 @@ public class QuizGroupQuestionParticipationExecutionChoiceController {
     PersonService personService;
     ClassService classService;
     CourseService courseService;
+
+
+    @PostMapping("/quiz-test-choose_answer-by-user-v2-asynchronous")
+    public ResponseEntity<?> quizChooseAnswerVersion2Asynchronous(
+        Principal principal,
+        @RequestBody @Valid QuizGroupQuestionParticipationExecutionChoiceInputModel input
+    ) {
+        EduQuizTest test = eduQuizTestRepo.findById(input.getTestId()).get();
+        Date currentDate = new Date();
+        Date testStartDate = test.getScheduleDatetime();
+        int timeTest = ((int) (currentDate.getTime() - testStartDate.getTime())) / (60 * 1000); //minutes
+        //System.out.println(currentDate);
+        //System.out.println(testStartDate);
+        //System.out.println(timeTest);
+        //System.out.println(test.getDuration());
+
+        if (timeTest > test.getDuration()) {
+            log.info("quizChooseAnswerVersion2Asynchronous, user " + principal.getName() + " try to submit BUT out time~!");
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
+        }
+        if(!test.getStatusId().equals(EduQuizTest.QUIZ_TEST_STATUS_RUNNING)){
+            log.info("quizChooseAnswerVersion2Asynchronous, user " + principal.getName() + " try to submit BUT quiz test is NOT running!");
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
+        }
+
+        UUID questionId = input.getQuestionId();
+        UUID groupId = input.getQuizGroupId();
+        String userId = principal.getName();
+        List<UUID> chooseAnsIds = input.getChooseAnsIds();
+
+        Date createdStamp = new Date();
+        String choiceAnsIds = "";
+        for (int i = 0; i < chooseAnsIds.size(); i++) {
+            UUID choiceId = chooseAnsIds.get(i);
+            choiceAnsIds = choiceAnsIds + choiceId.toString();
+            if(i < chooseAnsIds.size()-1)
+                choiceAnsIds += ",";
+        }
+        QuizTestExecutionSubmission sub = new QuizTestExecutionSubmission();
+        sub.setQuestionId(questionId);
+        sub.setParticipationUserLoginId(userId);
+        sub.setChoiceAnswerIds(choiceAnsIds);
+        sub.setQuizGroupId(groupId);
+        sub.setStatusId(QuizTestExecutionSubmission.STATUS_IN_PROGRESS);
+        sub.setCreatedStamp(createdStamp);
+        sub =  quizTestExecutionSubmissionRepo.save(sub);
+
+        // create a message and send to rabbitMQ HERE
+        // after the message is process: update QuizGroupQuestionParticipationExecutionChoice
+        // then QuizTestExecutionSubmission.statusId is changed to SOLVED
+
+        return ResponseEntity.ok().body(sub);
+    }
+
 
     @PostMapping("/quiz-test-choose_answer-by-user")
     public ResponseEntity<?> quizChooseAnswer(
@@ -61,14 +118,20 @@ public class QuizGroupQuestionParticipationExecutionChoiceController {
         //System.out.println(test.getDuration());
 
         if (timeTest > test.getDuration()) {
-            //System.out.println("out time~!");
+            log.info("quizChooseAnswer, user " + principal.getName() + " try to submit BUT out time~!");
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
         }
+        if(!test.getStatusId().equals(EduQuizTest.QUIZ_TEST_STATUS_RUNNING)){
+            log.info("quizChooseAnswer, user " + principal.getName() + " try to submit BUT quiz test is NOT running!");
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
+        }
+
         UUID questionId = input.getQuestionId();
         UUID groupId = input.getQuizGroupId();
         String userId = principal.getName();
         List<UUID> chooseAnsIds = input.getChooseAnsIds();
 
+        /*
         if(userId.equals("20210293")) {
             if (chooseAnsIds == null) {
                 log.info("quizChooseAnswer, chooseAnsIds = null");
@@ -76,6 +139,7 @@ public class QuizGroupQuestionParticipationExecutionChoiceController {
                 log.info("quizChooseAnswer, chooseAnsIds = " + chooseAnsIds.size());
             }
         }
+        */
 
         List<QuizGroupQuestionParticipationExecutionChoice> a = quizGroupQuestionParticipationExecutionChoiceRepo.findQuizGroupQuestionParticipationExecutionChoicesByParticipationUserLoginIdAndQuizGroupIdAndQuestionId(
             userId,
@@ -103,12 +167,16 @@ public class QuizGroupQuestionParticipationExecutionChoiceController {
             tmp.setCreatedStamp(createdStamp);
             tmp = quizGroupQuestionParticipationExecutionChoiceRepo.save(tmp);
             res.add(tmp);
+            /*
             if(userId.equals("20210293")) {
                 log.info("quizChooseAnswer, saved record user " +
                          tmp.getParticipationUserLoginId() +
                          " chose " +
                          tmp.getChoiceAnswerId());
             }
+            */
+
+
             // create history log
             HistoryLogQuizGroupQuestionParticipationExecutionChoice historyLogQuizGroupQuestionParticipationExecutionChoice
                 = new HistoryLogQuizGroupQuestionParticipationExecutionChoice();
@@ -121,6 +189,23 @@ public class QuizGroupQuestionParticipationExecutionChoiceController {
                 .save(historyLogQuizGroupQuestionParticipationExecutionChoice);
         }
 
+
+        // create a quiz-test submission
+        String choiceAnsIds = "";
+        for (int i = 0; i < chooseAnsIds.size(); i++) {
+            UUID choiceId = chooseAnsIds.get(i);
+            choiceAnsIds = choiceAnsIds + choiceId.toString();
+            if(i < chooseAnsIds.size()-1)
+                choiceAnsIds += ",";
+        }
+        QuizTestExecutionSubmission sub = new QuizTestExecutionSubmission();
+        sub.setQuestionId(questionId);
+        sub.setParticipationUserLoginId(userId);
+        sub.setChoiceAnswerIds(choiceAnsIds);
+        sub.setQuizGroupId(groupId);
+        sub.setStatusId(QuizTestExecutionSubmission.STATUS_SOLVED);
+        sub.setCreatedStamp(createdStamp);
+        sub =  quizTestExecutionSubmissionRepo.save(sub);
 
         //return ResponseEntity.ok().body(chooseAnsIds);
         return ResponseEntity.ok().body(res);
