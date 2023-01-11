@@ -13,10 +13,6 @@ export default function StudentsApprovedToQuizTest(props) {
   const [importedExcelFile, setImportedExcelFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  useEffect(() => {
-    console.log("File", importedExcelFile);
-  }, [importedExcelFile])
-
   const [studentsApprovedToQuizTest, setStudentsApprovedToQuizTest] = useState([]);
   useEffect(getStudentsApprovedToQuizTest, []);
 
@@ -85,7 +81,7 @@ export default function StudentsApprovedToQuizTest(props) {
     request("POST", "/reject-students-in-test", successHandler, errorHandlers, formData);
   }
 
-  const importStudentsFromExcel = (event) => {
+  function importStudentsFromExcel(event) {
     event.preventDefault();
 
     setIsProcessing(true);
