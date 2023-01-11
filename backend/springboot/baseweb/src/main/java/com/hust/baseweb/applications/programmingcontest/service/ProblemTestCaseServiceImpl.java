@@ -78,6 +78,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private ContestSubmissionHistoryRepo contestSubmissionHistoryRepo;
     private ContestProblemRepo contestProblemRepo;
     private UserContestProblemRoleRepo userContestProblemRoleRepo;
+    private TagRepo tagRepo;
     private MongoContentService mongoContentService;
     private ObjectMapper objectMapper;
     private RabbitTemplate rabbitTemplate;
@@ -92,6 +93,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
         if (problemRepo.findByProblemId(modelCreateContestProblem.getProblemId()) != null) {
             throw new MiniLeetCodeException("problem id already exist");
+        }
+
+        List<TagEntity> tags = new ArrayList<>();
+        String[] tagIds = modelCreateContestProblem.getTagIds();
+        for (String tagId : tagIds) {
+            TagEntity tag = tagRepo.findByTagId(tagId);
+            tags.add(tag);
         }
 
         List<String> attachmentId = new ArrayList<>();
@@ -137,6 +145,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                    .getMapLevelOrder()
                                                                    .get(modelCreateContestProblem.getLevelId()))
                                                    .attachment(String.join(";", attachmentId))
+                                                   .tags(tags)
                                                    .userId(userID)
                                                    .build();
         problemEntity = problemRepo.save(problemEntity);
@@ -224,6 +233,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             throw new MiniLeetCodeException("permission denied");
         }
 
+        List<TagEntity> tags = new ArrayList<>();
+            String[] tagIds = modelUpdateContestProblem.getTagIds();
+            for (String tagId : tagIds) {
+                TagEntity tag = tagRepo.findByTagId(tagId);
+                tags.add(tag);
+            }
+
         List<String> attachmentId = new ArrayList<>();
         attachmentId.add(oldProblem.getAttachment());
         String[] fileId = modelUpdateContestProblem.getFileId();
@@ -273,6 +289,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         problemEntity.setScoreEvaluationType(modelUpdateContestProblem.getScoreEvaluationType());
         problemEntity.setPublicProblem(modelUpdateContestProblem.getIsPublic());
         problemEntity.setAttachment(String.join(";", attachmentId));
+        problemEntity.setTags(tags);
+
         problemEntity = problemRepo.save(problemEntity);
 
         cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.PROBLEM);
@@ -335,6 +353,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             problemResponse.setLevelOrder(problemEntity.getLevelOrder());
             problemResponse.setCreatedAt(problemEntity.getCreatedAt());
             problemResponse.setPublicProblem(problemEntity.isPublicProblem());
+            problemResponse.setTags(problemEntity.getTags());
 
             if (problemEntity.getAttachment() != null) {
                 String[] fileId = problemEntity.getAttachment().split(";", -1);
@@ -4075,4 +4094,43 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
         return true;
     }
+
+    @Override
+    public List<TagEntity> getAllTags() {
+        return tagRepo.findAll();
+    }
+
+    @Override
+    public TagEntity addNewTag(ModelTag tag) {
+        TagEntity tagEntity = new TagEntity();
+        tagEntity.setName(tag.getName());
+
+        if (tag.getDescription() != null)
+            tagEntity.setDescription(tag.getDescription());
+        else tagEntity.setDescription("");
+
+        return tagRepo.save(tagEntity);
+    }
+
+    @Override
+    public TagEntity updateTag(String tagId, ModelTag newTag) {
+        TagEntity tagEntity = tagRepo.findByTagId(tagId);
+
+        tagEntity.setName(newTag.getName());
+
+        if (newTag.getDescription() != null) {
+            tagEntity.setDescription(newTag.getDescription());
+        } else {
+            tagEntity.setDescription("");
+        }
+
+        return tagRepo.save(tagEntity);
+    }
+
+    @Override
+    public void deleteTag(String tagId) {
+        TagEntity tagEntity = tagRepo.findByTagId(tagId);
+        tagRepo.delete(tagEntity);
+    }
+
 }

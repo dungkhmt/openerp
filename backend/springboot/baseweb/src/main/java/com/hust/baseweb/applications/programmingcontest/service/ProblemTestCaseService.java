@@ -169,4 +169,13 @@ public interface ProblemTestCaseService {
     boolean grantRole2AllProblems(String userLoginId, String userId, String roleId);
 
     void evaluateCustomProblemSubmission(UUID contestSubmissionId) throws Exception;
+
+    List<TagEntity> getAllTags();
+
+    TagEntity addNewTag(ModelTag tag);
+
+    TagEntity updateTag(String tagId, ModelTag tag);
+
+    void deleteTag(String tagId);
+
 }
