@@ -1593,4 +1593,12 @@ public class ContestProblemController {
         // log.info("ranking page {}", page);
         return ResponseEntity.status(200).body(page);
     }
+
+    @PostMapping("/switch-judge-mode")
+    public ResponseEntity<?> switchAllContestJudgeMode(@RequestParam("mode") String judgeMode) {
+
+        problemTestCaseService.switchAllContestJudgeMode(judgeMode);
+
+        return ResponseEntity.status(200).body("ok");
+    }
 }

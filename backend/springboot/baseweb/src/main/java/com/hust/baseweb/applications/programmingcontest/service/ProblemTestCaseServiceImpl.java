@@ -4101,6 +4101,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    @Transactional
     public TagEntity addNewTag(ModelTag tag) {
         TagEntity tagEntity = new TagEntity();
         tagEntity.setName(tag.getName());
@@ -4113,6 +4114,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    @Transactional
     public TagEntity updateTag(Integer tagId, ModelTag newTag) {
         TagEntity tagEntity = tagRepo.findByTagId(tagId);
 
@@ -4128,9 +4130,17 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    @Transactional
     public void deleteTag(Integer tagId) {
         TagEntity tagEntity = tagRepo.findByTagId(tagId);
         tagRepo.delete(tagEntity);
+    }
+
+    @Override
+    @Transactional
+    public void switchAllContestJudgeMode(String judgeMode) {
+        contestRepo.switchAllContestToJudgeMode(judgeMode);
+        cacheService.flushAllCache();
     }
 
 }

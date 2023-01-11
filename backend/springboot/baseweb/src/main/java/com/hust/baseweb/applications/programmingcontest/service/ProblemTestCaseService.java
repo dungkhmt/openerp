@@ -178,4 +178,5 @@ public interface ProblemTestCaseService {
 
     void deleteTag(Integer tagId);
 
+    void switchAllContestJudgeMode(String judgeMode);
 }

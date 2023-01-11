@@ -1,22 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { request } from "./Request";
-import { API_URL } from "../../../config/config";
-import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
-import {
-  Button,
-  Grid,
-  MenuItem,
-  Table,
-  TableBody,
-  TableHead,
-  TextField,
-} from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
-import { StyledTableCell, StyledTableRow } from "./lib";
-import { Link } from "react-router-dom";
-import Pagination from "@material-ui/lab/Pagination";
+import React, {useEffect, useState} from "react";
+import {request} from "./Request";
+import {Button,} from "@mui/material";
+import {Link} from "react-router-dom";
 import MaterialTable from "material-table";
+import {successNoti} from "../../../utils/notification";
 
 export function ListContestManagerByRegistration() {
   const [page, setPage] = useState(1);
@@ -40,11 +27,11 @@ export function ListContestManagerByRegistration() {
         </Link>
       ),
     },
-    { title: "Created By", field: "userId" },
-    { title: "Created Date", field: "createdAt" },
-    { title: "Contest Status", field: "statusId" },
-    { title: "Role", field: "roleId" },
-    { title: "Reg. Status", field: "registrationStatusId" },
+    {title: "Created By", field: "userId"},
+    {title: "Created Date", field: "createdAt"},
+    {title: "Contest Status", field: "statusId"},
+    {title: "Role", field: "roleId"},
+    {title: "Reg. Status", field: "registrationStatusId"},
   ];
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -61,13 +48,14 @@ export function ListContestManagerByRegistration() {
       setContests(res.data);
     }).then();
   }
+
   async function getContestList() {
     request(
       "get",
       "/get-contest-paging-by-user-manager?size=" +
-        pageSize +
-        "&page=" +
-        (page - 1),
+      pageSize +
+      "&page=" +
+      (page - 1),
       (res) => {
         console.log("contest list", res.data);
         setTotalPage(res.data.totalPages);
@@ -86,13 +74,36 @@ export function ListContestManagerByRegistration() {
     getContestListByUserRole();
   }, []);
 
+  const switchJudgeMode = (mode) => {
+    request(
+      "post",
+      "/switch-judge-mode?mode=" + mode,
+      () => successNoti("Saved", 5000)
+    ).then();
+  }
+
   return (
     <div>
+      <Button
+        variant="contained"
+        sx={{marginBottom: "12px", marginRight: "16px"}}
+        onClick={() => switchJudgeMode("ASYNCHRONOUS_JUDGE_MODE_QUEUE")}
+      >
+        Switch all to judge mode QUEUE
+      </Button>
+      <Button
+        variant="contained"
+        sx={{marginBottom: "12px"}}
+        onClick={() => switchJudgeMode("SYNCHRONOUS_JUDGE_MODE")}
+      >
+        Switch all to judge mode non-QUEUE
+      </Button>
+
       <MaterialTable
         title="DS Contests được phân quyền"
         columns={columns}
         data={contests}
-      ></MaterialTable>
+      />
     </div>
   );
 }
