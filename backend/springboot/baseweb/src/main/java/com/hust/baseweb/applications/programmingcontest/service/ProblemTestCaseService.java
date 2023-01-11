@@ -174,8 +174,8 @@ public interface ProblemTestCaseService {
 
     TagEntity addNewTag(ModelTag tag);
 
-    TagEntity updateTag(String tagId, ModelTag tag);
+    TagEntity updateTag(Integer tagId, ModelTag tag);
 
-    void deleteTag(String tagId);
+    void deleteTag(Integer tagId);
 
 }

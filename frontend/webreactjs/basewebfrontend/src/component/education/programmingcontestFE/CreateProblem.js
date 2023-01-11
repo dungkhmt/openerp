@@ -1,12 +1,18 @@
 import {makeStyles} from "@material-ui/core";
 import {
   Box,
-  Checkbox, Chip, FormControl,
+  Button,
+  Checkbox,
+  Chip,
+  FormControl,
   FormControlLabel,
   InputAdornment,
   InputLabel,
-  Link, ListItemText,
-  MenuItem, OutlinedInput, Select,
+  Link,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
+  Select,
   TextField,
   Typography
 } from "@mui/material";
@@ -26,6 +32,9 @@ import {LoadingButton} from "@mui/lab";
 import RichTextEditor from "../../common/editor/RichTextEditor";
 import HustContainerCard from "../../common/HustContainerCard";
 import {CUSTOM_EVALUATION, NORMAL_EVALUATION} from "./Constant";
+import {getAllTags} from "./service/TagService";
+import ModelAddNewTag from "./ModelAddNewTag";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -78,15 +87,11 @@ function CreateProblem() {
 
   const [loading, setLoading] = useState(false);
 
+  const [openModalAddNewTag, setOpenModalAddNewTag] = useState(false);
+
+  const handleGetTagsSuccess = (res) => setTags(res.data);
   useEffect(() => {
-    request(
-      "get",
-      "/get-all-tags/",
-      (res) => {
-        setTags(res.data)
-      },
-      {}
-    ).then();
+    getAllTags(handleGetTagsSuccess);
   }, [])
 
   const handleSelectTags = (event) => {
@@ -323,6 +328,20 @@ function CreateProblem() {
               </Box>
             )}
           >
+            <Button
+              sx={{marginLeft: "20px"}}
+              startIcon={<AddCircleIcon/>}
+              onClick={() => setOpenModalAddNewTag(true)}
+            >
+              {t("common:addNew")}
+            </Button>
+            <ModelAddNewTag
+              isOpen={openModalAddNewTag}
+              handleSuccess={() => {
+                getAllTags(handleGetTagsSuccess)
+              }}
+              handleClose={() => setOpenModalAddNewTag(false)}
+            />
             {tags.map((tag) => (
               <MenuItem key={tag.tagId} value={tag}>
                 <Checkbox checked={selectedTags.indexOf(tag) > -1}/>
@@ -331,6 +350,7 @@ function CreateProblem() {
             ))}
           </Select>
         </FormControl>
+
       </Box>
 
       <Box className={classes.description}>

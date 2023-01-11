@@ -34,6 +34,9 @@ import {LoadingButton} from "@mui/lab";
 import {errorNoti, successNoti, warningNoti} from "../../../utils/notification";
 import {CUSTOM_EVALUATION, NORMAL_EVALUATION} from "./Constant";
 import ListTestCase from "./ListTestCase";
+import {getAllTags} from "./service/TagService";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import ModelAddNewTag from "./ModelAddNewTag";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -115,15 +118,11 @@ function EditProblem() {
 
   const [loading, setLoading] = useState(false);
 
+  const [openModalAddNewTag, setOpenModalAddNewTag] = useState(false);
+
+  const handleGetTagsSuccess = (res) => setTags(res.data);
   useEffect(() => {
-    request(
-      "get",
-      "/get-all-tags/",
-      (res) => {
-        setTags(res.data)
-      },
-      {}
-    ).then();
+    getAllTags(handleGetTagsSuccess);
   }, [])
 
 
@@ -373,9 +372,24 @@ function EditProblem() {
                     fontStyle: "italic"
                   }}/>
                 ))}
+
               </Box>
             )}
           >
+            <Button
+              sx={{marginLeft: "20px"}}
+              startIcon={<AddCircleIcon/>}
+              onClick={() => setOpenModalAddNewTag(true)}
+            >
+              {t("common:addNew")}
+            </Button>
+            <ModelAddNewTag
+              isOpen={openModalAddNewTag}
+              handleSuccess={() => {
+                getAllTags(handleGetTagsSuccess)
+              }}
+              handleClose={() => setOpenModalAddNewTag(false)}
+            />
             {tags.map((tag) => (
               <MenuItem key={tag.tagId} value={tag}>
                 <Checkbox checked={selectedTags.some(selectedTag => selectedTag.tagId === tag.tagId)}/>

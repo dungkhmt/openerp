@@ -25,6 +25,6 @@ public class ModelUpdateContestProblem {
     private Boolean isPublic;
     private String scoreEvaluationType;
     private String[] fileId;
-    private String[] tagIds;
+    private Integer[] tagIds;
     private List<String> removedFilesId;
 }

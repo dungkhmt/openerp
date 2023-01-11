@@ -96,8 +96,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
 
         List<TagEntity> tags = new ArrayList<>();
-        String[] tagIds = modelCreateContestProblem.getTagIds();
-        for (String tagId : tagIds) {
+        Integer[] tagIds = modelCreateContestProblem.getTagIds();
+        for (Integer tagId : tagIds) {
             TagEntity tag = tagRepo.findByTagId(tagId);
             tags.add(tag);
         }
@@ -234,8 +234,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
 
         List<TagEntity> tags = new ArrayList<>();
-            String[] tagIds = modelUpdateContestProblem.getTagIds();
-            for (String tagId : tagIds) {
+            Integer[] tagIds = modelUpdateContestProblem.getTagIds();
+            for (Integer tagId : tagIds) {
                 TagEntity tag = tagRepo.findByTagId(tagId);
                 tags.add(tag);
             }
@@ -4113,7 +4113,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public TagEntity updateTag(String tagId, ModelTag newTag) {
+    public TagEntity updateTag(Integer tagId, ModelTag newTag) {
         TagEntity tagEntity = tagRepo.findByTagId(tagId);
 
         tagEntity.setName(newTag.getName());
@@ -4128,7 +4128,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public void deleteTag(String tagId) {
+    public void deleteTag(Integer tagId) {
         TagEntity tagEntity = tagRepo.findByTagId(tagId);
         tagRepo.delete(tagEntity);
     }

@@ -414,6 +414,14 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(listTag);
     }
 
+    @PostMapping("/add-tag")
+    public ResponseEntity<?> addNewTag(@RequestBody ModelTag tagInput) {
+
+        TagEntity tag = problemTestCaseService.addNewTag(tagInput);
+
+        return ResponseEntity.status(200).body(tag);
+    }
+
     @GetMapping("/get-contest-detail-solving/{contestId}")
     public ResponseEntity<?> getContestDetailSolving(@PathVariable("contestId") String contestId, Principal principal)
             throws MiniLeetCodeException {

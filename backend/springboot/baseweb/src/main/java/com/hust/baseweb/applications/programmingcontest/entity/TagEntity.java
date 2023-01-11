@@ -2,10 +2,9 @@ package com.hust.baseweb.applications.programmingcontest.entity;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Getter
 @Setter
@@ -17,8 +16,10 @@ import javax.persistence.Table;
 public class TagEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "incrementDomain")
+    @GenericGenerator(name = "incrementDomain", strategy = "increment")
     @Column(name = "tag_id")
-    private String tagId;
+    private Integer tagId;
 
     @Column(name = "name", unique = true)
     private String name;
