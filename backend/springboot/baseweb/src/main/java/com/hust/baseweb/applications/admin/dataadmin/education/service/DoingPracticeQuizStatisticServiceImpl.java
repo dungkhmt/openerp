@@ -5,6 +5,7 @@ import com.hust.baseweb.applications.admin.dataadmin.education.model.statistic.T
 import com.hust.baseweb.applications.admin.dataadmin.education.repo.DoingPracticeQuizStatisticRepo;
 import com.hust.baseweb.applications.education.repo.LogUserLoginQuizQuestionRepo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,28 +14,29 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DoingPracticeQuizStatisticServiceImpl implements DoingPracticeQuizStatisticService {
 
     private static final Date latestStatisticTime = null;
 
-    private final LogUserLoginQuizQuestionRepo doingPracticeQuizLogRepo;
-
     private final DoingPracticeQuizStatisticRepo doingPracticeQuizStatisticRepo;
 
+    @Override
     public Map<String, Long> statisticTotalQuizDoingTimes(Date statisticFrom) {
         List<TotalQuizDoingTimeModel> doingTimes = doingPracticeQuizStatisticRepo.countTotalQuizDoingTimes(statisticFrom);
 
+        log.error("doingTimes size" + doingTimes.size());
         return doingTimes.stream().collect(
             Collectors.toMap(elem -> elem.getLoginId(), elem -> elem.getTotalQuizDoingTimes())
         );
     }
 
-    @Override
     public long countTotalQuizDoingTimes(String studentLoginId, UUID classId) {
         return doingPracticeQuizStatisticRepo.countTotalQuizDoingTimes(studentLoginId, classId);
     }
 
+    @Override
     public Map<String, LocalDateTime> statisticLatestTimeDoingQuiz(Date statisticFrom) {
         List<QuizDoingTimeModel> latestDoingTimes = doingPracticeQuizStatisticRepo.findLatestTimesDoingQuiz(statisticFrom);
 
@@ -43,11 +45,11 @@ public class DoingPracticeQuizStatisticServiceImpl implements DoingPracticeQuizS
         );
     }
 
-    @Override
     public Date findLatestTimeDoingQuiz(String studentLoginId, UUID classId) {
         return doingPracticeQuizStatisticRepo.findLatestTimeDoingQuiz(studentLoginId, classId);
     }
 
+    @Override
     public Map<String, Long> statisticNumberOfQuizDoingPeriods(Date statisticFrom, int hoursBetweenPeriods) {
         List<QuizDoingTimeModel> doingTimes = doingPracticeQuizStatisticRepo.findDoingTimesSortAsc(statisticFrom);
         Map<String, List<QuizDoingTimeModel>> mapDoingTimesByLoginId = doingTimes.stream().collect(
@@ -99,7 +101,6 @@ public class DoingPracticeQuizStatisticServiceImpl implements DoingPracticeQuizS
         return numberOfPeriods;
     }
 
-    @Override
     public long countNumberOfQuizDoingPeriods(String studentLoginId, UUID classId, int hoursBetweenTwoPeriod) {
         ArrayList<LocalDateTime> doingTimes = doingPracticeQuizStatisticRepo.findAllDoingTimesSortAsc(studentLoginId, classId);
 

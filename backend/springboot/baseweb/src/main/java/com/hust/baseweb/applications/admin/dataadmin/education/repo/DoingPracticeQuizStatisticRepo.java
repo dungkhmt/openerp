@@ -34,8 +34,9 @@ public interface DoingPracticeQuizStatisticRepo extends JpaRepository<LogUserLog
     ArrayList<LocalDateTime> findAllDoingTimesSortAsc(@Param("loginId") String loginId, @Param("classId") UUID classId);
 
     @Query(
-        "SELECT lg.userLoginId, COUNT(*) FROM LogUserLoginQuizQuestion lg " +
-        "WHERE :statisticFrom IS NULL OR lg.createStamp > :statisticFrom " +
+        "SELECT lg.userLoginId as loginId, COUNT(*) as totalQuizDoingTimes " +
+        "FROM LogUserLoginQuizQuestion lg " +
+        "WHERE lg.createStamp > :statisticFrom " +
         "GROUP BY lg.userLoginId"
     )
     List<TotalQuizDoingTimeModel> countTotalQuizDoingTimes(@Param("statisticFrom") Date statisticFrom);

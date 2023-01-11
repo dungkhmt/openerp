@@ -1,13 +1,14 @@
 package com.hust.baseweb.applications.admin.dataadmin.education.service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.UUID;
+import java.util.Map;
 
 public interface DoingPracticeQuizStatisticService {
 
-    long countTotalQuizDoingTimes(String studentLoginId, UUID classId);
+    Map<String, Long> statisticTotalQuizDoingTimes(Date statisticFrom);
 
-    Date findLatestTimeDoingQuiz(String studentLoginId, UUID classId);
+    Map<String, LocalDateTime> statisticLatestTimeDoingQuiz(Date statisticFrom);
 
-    long countNumberOfQuizDoingPeriods(String studentLoginId, UUID classId, int hoursBetweenTwoPeriod);
+    Map<String, Long> statisticNumberOfQuizDoingPeriods(Date statisticFrom, int hoursBetweenPeriods);
 }
