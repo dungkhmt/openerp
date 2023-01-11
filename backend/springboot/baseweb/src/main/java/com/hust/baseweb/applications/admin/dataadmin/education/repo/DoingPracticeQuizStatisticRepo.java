@@ -1,4 +1,4 @@
-package com.hust.baseweb.applications.admin.dataadmin.education.model.repo;
+package com.hust.baseweb.applications.admin.dataadmin.education.repo;
 
 import com.hust.baseweb.applications.admin.dataadmin.education.model.statistic.QuizDoingTimeModel;
 import com.hust.baseweb.applications.admin.dataadmin.education.model.statistic.TotalQuizDoingTimeModel;

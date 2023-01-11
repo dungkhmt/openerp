@@ -1,12 +1,16 @@
 package com.hust.baseweb.applications.admin.dataadmin.education.service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Map;
 
 public interface ProgrammingContestStatisticService {
 
-    long countTotalCodeSubmissions(String studentLoginId, String contestId);
+    Map<String, Long> statisticTotalSubmissions(Date statisticFrom);
 
-    Date findLatestTimeSubmittingCode(String studentLoginId, String contestId);
+    Map<String, LocalDateTime> statisticLatestTimesSubmittingCode(Date statisticFrom);
 
+    Map<String, Long> statisticTotalSubmissionsAcceptedOnTheFirstSubmit(Date statisticFrom);
 
+    Map<String, Long> statisticTotalErrorSubmissions(Date statisticFrom);
 }

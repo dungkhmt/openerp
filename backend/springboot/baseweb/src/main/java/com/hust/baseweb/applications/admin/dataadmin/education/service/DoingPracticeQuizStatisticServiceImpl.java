@@ -2,7 +2,7 @@ package com.hust.baseweb.applications.admin.dataadmin.education.service;
 
 import com.hust.baseweb.applications.admin.dataadmin.education.model.statistic.QuizDoingTimeModel;
 import com.hust.baseweb.applications.admin.dataadmin.education.model.statistic.TotalQuizDoingTimeModel;
-import com.hust.baseweb.applications.admin.dataadmin.education.model.repo.DoingPracticeQuizStatisticRepo;
+import com.hust.baseweb.applications.admin.dataadmin.education.repo.DoingPracticeQuizStatisticRepo;
 import com.hust.baseweb.applications.education.repo.LogUserLoginQuizQuestionRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
