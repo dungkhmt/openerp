@@ -9,5 +9,6 @@
   "public": "Public",
   "yes": "Yes",
   "no": "No",
-  "missingField": "không được bỏ trống"
+  "missingField": "must not be null",
+  "addNew": "Add new"
 }

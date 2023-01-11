@@ -9,5 +9,6 @@
     "public": "Công khai",
     "yes": "Có",
     "no": "Không",
-    "missingField": "không được bỏ trống"
+    "missingField": "không được bỏ trống",
+    "addNew": "Thêm mới"
 }
