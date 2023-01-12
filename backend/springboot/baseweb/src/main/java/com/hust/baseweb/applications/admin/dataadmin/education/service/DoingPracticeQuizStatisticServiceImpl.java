@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,23 +18,22 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DoingPracticeQuizStatisticServiceImpl implements DoingPracticeQuizStatisticService {
-
-    private static final Date latestStatisticTime = null;
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final DoingPracticeQuizStatisticRepo doingPracticeQuizStatisticRepo;
+
+    @Override
+    public Date findLatestStatisticTime() {
+        return null;
+    }
 
     @Override
     public Map<String, Long> statisticTotalQuizDoingTimes(Date statisticFrom) {
         List<TotalQuizDoingTimeModel> doingTimes = doingPracticeQuizStatisticRepo.countTotalQuizDoingTimes(statisticFrom);
 
-        log.error("doingTimes size" + doingTimes.size());
         return doingTimes.stream().collect(
             Collectors.toMap(elem -> elem.getLoginId(), elem -> elem.getTotalQuizDoingTimes())
         );
-    }
-
-    public long countTotalQuizDoingTimes(String studentLoginId, UUID classId) {
-        return doingPracticeQuizStatisticRepo.countTotalQuizDoingTimes(studentLoginId, classId);
     }
 
     @Override
@@ -43,10 +43,6 @@ public class DoingPracticeQuizStatisticServiceImpl implements DoingPracticeQuizS
         return latestDoingTimes.stream().collect(
             Collectors.toMap(elem -> elem.getLoginId(), elem -> elem.getDoingTime())
         );
-    }
-
-    public Date findLatestTimeDoingQuiz(String studentLoginId, UUID classId) {
-        return doingPracticeQuizStatisticRepo.findLatestTimeDoingQuiz(studentLoginId, classId);
     }
 
     @Override
@@ -84,7 +80,8 @@ public class DoingPracticeQuizStatisticServiceImpl implements DoingPracticeQuizS
 
         long numberOfPeriods = 0;
         LocalDateTime firstDoingTimeAfterLatestStatistic = doingTimesAfterLatestStatistic.get(0).getDoingTime();
-        if (latestDoingTimeBeforeLatestStatistic.plusHours(hoursBetweenPeriods)
+        if (latestDoingTimeBeforeLatestStatistic == null ||
+            latestDoingTimeBeforeLatestStatistic.plusHours(hoursBetweenPeriods)
                                                 .isBefore(firstDoingTimeAfterLatestStatistic)) {
             numberOfPeriods = 1;
         }
@@ -99,24 +96,6 @@ public class DoingPracticeQuizStatisticServiceImpl implements DoingPracticeQuizS
         }
 
         return numberOfPeriods;
-    }
-
-    public long countNumberOfQuizDoingPeriods(String studentLoginId, UUID classId, int hoursBetweenTwoPeriod) {
-        ArrayList<LocalDateTime> doingTimes = doingPracticeQuizStatisticRepo.findAllDoingTimesSortAsc(studentLoginId, classId);
-
-        if (doingTimes.size() == 0) return 0;
-
-        long numberOfQuizDoingPeriods = 1;
-        for (int i = 0; i < doingTimes.size() - 1; i++) {
-            LocalDateTime aDoingTime = doingTimes.get(i);
-            LocalDateTime nextDoingTime = doingTimes.get(i+1);
-
-            if (aDoingTime.plusHours(hoursBetweenTwoPeriod).isAfter(nextDoingTime)) {
-                numberOfQuizDoingPeriods++;
-            }
-        }
-
-        return numberOfQuizDoingPeriods;
     }
 
 }

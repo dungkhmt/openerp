@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+
 @RestController
 @RequestMapping("/statistic/learning")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -16,7 +18,7 @@ public class LearningStatisticController {
     private final LearningStatisticService learningStatisticService;
 
     @GetMapping("/basic")
-    public ResponseEntity<?> basicLearningStatistic() {
+    public ResponseEntity<?> basicLearningStatistic() throws ParseException {
         learningStatisticService.statisticLearningGeneral();
         return ResponseEntity.ok().build();
     }

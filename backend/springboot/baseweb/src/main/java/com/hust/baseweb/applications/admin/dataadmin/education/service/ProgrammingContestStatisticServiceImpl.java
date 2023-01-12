@@ -3,14 +3,18 @@ package com.hust.baseweb.applications.admin.dataadmin.education.service;
 import com.hust.baseweb.applications.admin.dataadmin.education.model.statistic.CodeSubmissionTimeModel;
 import com.hust.baseweb.applications.admin.dataadmin.education.model.statistic.TotalCodeSubmissionModel;
 import com.hust.baseweb.applications.admin.dataadmin.education.repo.ProgrammingContestStatisticRepo;
-import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionEntity.*;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -37,8 +41,8 @@ public class ProgrammingContestStatisticServiceImpl implements ProgrammingContes
     }
 
     private static final List<String> ACCEPT_STATUSES = Arrays.asList(
-        ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED,
-        ContestSubmissionEntity.SUBMISSION_STATUS_PARTIAL
+        SUBMISSION_STATUS_ACCEPTED,
+        SUBMISSION_STATUS_PARTIAL
     );
 
     @Override
@@ -52,8 +56,23 @@ public class ProgrammingContestStatisticServiceImpl implements ProgrammingContes
         );
     }
 
+    private static final List<String> ERROR_STATUSES = Arrays.asList(
+        SUBMISSION_STATUS_FAILED,
+        SUBMISSION_STATUS_WRONG,
+        SUBMISSION_STATUS_TIME_LIMIT_EXCEEDED,
+        SUBMISSION_STATUS_OUTPUT_LIMIT_EXCEEDED,
+        SUBMISSION_STATUS_MEMORY_ALLOCATION_ERROR,
+        SUBMISSION_STATUS_COMPILE_ERROR
+    );
+
     @Override
     public Map<String, Long> statisticTotalErrorSubmissions(Date statisticFrom) {
-        return null;
+        List<TotalCodeSubmissionModel> totalErrorSubmissions = programmingContestStatisticRepo.countTotalCodeSubmissionsHasStatusIn(
+            statisticFrom, ERROR_STATUSES
+        );
+
+        return totalErrorSubmissions.stream().collect(
+            Collectors.toMap(elem -> elem.getLoginId(), elem -> elem.getTotalSubmissions())
+        );
     }
 }

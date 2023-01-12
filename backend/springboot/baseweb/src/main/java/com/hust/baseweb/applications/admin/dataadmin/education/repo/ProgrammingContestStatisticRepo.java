@@ -15,44 +15,33 @@ import java.util.UUID;
 public interface ProgrammingContestStatisticRepo extends JpaRepository<ContestSubmissionEntity, UUID> {
 
     @Query(
-        "SELECT cs.userId AS loginId, COUNT(*) AS totalCodeSubmissions " +
+        "SELECT cs.userId AS loginId, COUNT(*) AS totalSubmissions " +
         "FROM ContestSubmissionEntity cs " +
-        "WHERE :statisticFrom IS NULL OR cs.createdAt > :statisticFrom " +
+        "WHERE cs.createdAt > :statisticFrom " +
         "GROUP BY cs.userId"
     )
     List<TotalCodeSubmissionModel> countTotalCodeSubmissions(@Param("statisticFrom") Date statisticFrom);
 
     @Query(
+        "SELECT cs.userId AS loginId, COUNT(*) AS totalSubmissions " +
+        "FROM ContestSubmissionEntity cs " +
+        "WHERE cs.createdAt > :statisticFrom AND cs.status IN :statuses " +
+        "GROUP BY cs.userId"
+    )
+    List<TotalCodeSubmissionModel> countTotalCodeSubmissionsHasStatusIn(@Param("statisticFrom") Date statisticFrom,
+                                                                        @Param("statuses") Collection<String> statuses);
+
+    @Query(
         "SELECT cs.userId as loginId, MAX(cs.createdAt) as submitTime " +
         "FROM ContestSubmissionEntity cs " +
-        "WHERE :statisticFrom IS NULL OR cs.createdAt > :statisticFrom " +
+        "WHERE cs.createdAt > :statisticFrom " +
         "GROUP BY cs.userId"
     )
     List<CodeSubmissionTimeModel> findLatestTimesSubmittingCode(@Param("statisticFrom") Date statisticFrom);
 
-//    @Query(
-//        "SELECT tmp.userId as loginId, COUNT(*) as totalSubmissionsAcceptedOnTheFirstSubmit " +
-//        "FROM ( " +
-//                "SELECT TOP 1 old_cs.userId, old_cs.problemId, old_cs.status " +
-//                "FROM ContestSubmissionEntity old_cs " +
-//                "WHERE old_cs.createdAt > :statisticFrom " +
-//                    "AND CONCAT(new_cs.userId, '_', new_cs.problemId) NOT IN ( " +
-//                        "SELECT DISTINCT CONCAT(new_cs.userId, '_', new_cs.problemId) " +
-//                        "FROM ContestSubmissionEntity new_cs " +
-//                        "WHERE new_cs.createdAt <= :statisticFrom " +
-//                    ") " +
-//                "GROUP BY old_cs.userId, old_cs.problemId " +
-//                "ORDER BY old_cs.createdAt ASC " +
-//            ") tmp " +
-//        "WHERE tmp.status IN :statuses " +
-//        "GROUP BY tmp.userId"
-//    )
-//    List<TotalCodeSubmissionModel> countSubmissionsHasFirstSubmitStatusIn(@Param("statisticFrom") Date statisticFrom,
-//                                                        @Param("statuses") Collection<String> statuses);
-
     @Query(
         nativeQuery = true,
-        value = "SELECT tmp.user_id as loginId, COUNT(*) as totalSubmissionsAcceptedOnTheFirstSubmit " +
+        value = "SELECT tmp.user_id as loginId, COUNT(*) as totalSubmissions " +
                 "FROM ( " +
                      "SELECT old_cs.user_submission_id AS user_id, " +
                            "old_cs.problem_id AS problem_id, " +
