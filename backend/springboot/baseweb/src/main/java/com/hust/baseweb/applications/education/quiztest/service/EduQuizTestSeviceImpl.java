@@ -1252,7 +1252,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
 
         for(EduTestQuizParticipant e: eduTestQuizParticipants){
             EduQuizTest quizTest = repo.findById(e.getTestId()).orElse(null);
-            if(quizTest != null && quizTest.getStatusId().equals(EduQuizTest.QUIZ_TEST_STATUS_OPEN)){
+            if(quizTest != null && quizTest.getStatusId().equals(EduQuizTest.QUIZ_TEST_STATUS_OPEN)||quizTest.getStatusId().equals(EduQuizTest.QUIZ_TEST_STATUS_RUNNING)){
                 ModelResponseGetMyQuizTest resItem = new ModelResponseGetMyQuizTest();
                 resItem.setTestId(e.getTestId());
                 resItem.setViewTypeId(quizTest.getViewTypeId());
