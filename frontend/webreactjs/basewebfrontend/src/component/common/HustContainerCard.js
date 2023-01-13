@@ -24,7 +24,7 @@ const HustContainerCard = (props) => {
           {title}
         </Typography>}
       <Divider/>
-      <CardContent sx={{padding: "28px"}}>
+      <CardContent sx={{padding: title ? "28px" : "0"}}>
         {children}
       </CardContent>
 
