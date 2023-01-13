@@ -16,10 +16,11 @@ const commandBarStyles = {
   mb: 3,
 };
 const StudentViewSubmission = forwardRef((props, ref) => {
-  const { t } = useTranslation(
+  const {t} = useTranslation(
     "education/programmingcontest/studentviewcontestdetail"
   );
-  const { contestId } = useParams();
+  const {contestId} = useParams();
+  const problemId = props?.problemId || "";
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,9 +28,14 @@ const StudentViewSubmission = forwardRef((props, ref) => {
   const [openModalMessage, setOpenModalMessage] = useState(false);
 
   const getSubmissions = async () => {
-    request(
+    let requestUrl = "";
+    if (problemId !== "")
+      requestUrl = "/get-contest-submission-in-problem-paging-of-a-user-and-contest?contestid=" + contestId + "&problemid=" + problemId;
+    else requestUrl = "/get-contest-submission-paging-of-a-user-and-contest/" + contestId;
+
+    await request(
       "get",
-      "/get-contest-submission-paging-of-a-user-and-contest/" + contestId,
+      requestUrl,
       (res) => {
         setSubmissions(res.data.content);
         setLoading(false);
@@ -56,30 +62,31 @@ const StudentViewSubmission = forwardRef((props, ref) => {
               rowData["contestSubmissionId"],
           }}
         >
-          {rowData["contestSubmissionId"]}
+          {rowData["contestSubmissionId"].substring(0, 6)}
         </Link>
       ),
     },
-    { title: t("problem"), field: "problemId" },
+    {title: t("problem"), field: "problemId"},
     {
       title: t("submissionList.status"),
       field: "status",
       cellStyle: (status) => {
         switch (status) {
           case "Accept":
-            return { color: "green" };
+            return {color: "green"};
           case "In Progress":
-            return { color: "gold" };
+            return {color: "gold"};
           case "Pending Evaluation":
-            return { color: "goldenrod" };
+            return {color: "goldenrod"};
           case "Evaluated":
-            return { color: "darkcyan" };
+            return {color: "darkcyan"};
           default:
-            return { color: "red" };
+            return {color: "red"};
         }
       },
     },
-    { title: "Message", field: "message", render: (rowData) => (
+    {
+      title: "Message", field: "message", render: (rowData) => (
         <IconButton
           color="primary"
           onClick={() => {
@@ -89,15 +96,16 @@ const StudentViewSubmission = forwardRef((props, ref) => {
         >
           <InfoIcon/>
         </IconButton>
-      ), },
-    { title: t("submissionList.point"), field: "point", cellStyle: {fontWeight: 500} },
-    { title: t("submissionList.language"), field: "sourceCodeLanguage" },
+      ),
+    },
+    {title: t("submissionList.point"), field: "point", cellStyle: {fontWeight: 500}},
+    {title: t("submissionList.language"), field: "sourceCodeLanguage"},
     {
       title: t("submissionList.numTestCases"),
       field: "testCasePass",
       align: "center",
     },
-    { title: t("submissionList.at"), field: "createAt" },
+    {title: t("submissionList.at"), field: "createAt"},
   ];
 
   function handleRefresh() {
@@ -146,7 +154,7 @@ const StudentViewSubmission = forwardRef((props, ref) => {
   };
 
   return (
-    <Box sx={{ marginTop: "20px" }}>
+    <Box sx={{marginTop: "20px"}}>
       {/*
       <MuiThemeProvider theme={themeTable}>
         <Button
@@ -211,7 +219,7 @@ const StudentViewSubmission = forwardRef((props, ref) => {
                 {" "}
                 REFRESH
               </Button>
-              {loading && <CircularProgress />}
+              {loading && <CircularProgress/>}
               <ModalMessage rowData={selectedRowData}/>
             </>
           }

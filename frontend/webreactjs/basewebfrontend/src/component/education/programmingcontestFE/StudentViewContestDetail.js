@@ -3,13 +3,14 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
-import { useTranslation } from "react-i18next";
+import {useTranslation} from "react-i18next";
 // import StudentViewProblemList from "./StudentViewProblemList";
 import StudentViewProblemList from "./StudentViewProblemListV2";
 import StudentViewSubmission from "./StudentViewSubmission";
+import HustContainerCard from "../../common/HustContainerCard";
 
 function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+  const {children, value, index, ...other} = props;
 
   return (
     <div
@@ -20,7 +21,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{paddingTop: 3}}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -36,7 +37,7 @@ function a11yProps(index) {
 }
 
 export default function StudentViewContestDetail() {
-  const { t } = useTranslation("education/programmingcontest/studentviewcontestdetail");
+  const {t} = useTranslation("education/programmingcontest/studentviewcontestdetail");
 
   const [tab, setTab] = React.useState(0);
 
@@ -45,23 +46,23 @@ export default function StudentViewContestDetail() {
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+    <HustContainerCard>
+      <Box sx={{borderBottom: 1, borderColor: "divider"}}>
         <Tabs
           value={tab}
           onChange={handleChangeTab}
-          aria-label="basic tabs example"
+          variant="fullWidth"
         >
           <Tab label={t("problemList.title")} {...a11yProps(0)} />
           <Tab label={t("submissionList.title")} {...a11yProps(1)} />
         </Tabs>
       </Box>
       <TabPanel value={tab} index={0}>
-        <StudentViewProblemList />
+        <StudentViewProblemList/>
       </TabPanel>
       <TabPanel value={tab} index={1}>
-        <StudentViewSubmission />
+        <StudentViewSubmission/>
       </TabPanel>
-    </Box>
+    </HustContainerCard>
   );
 }
