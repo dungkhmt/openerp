@@ -52,6 +52,8 @@ public class DoingPracticeQuizStatisticServiceImpl implements DoingPracticeQuizS
             Collectors.groupingBy(elem -> elem.getLoginId(), Collectors.toList())
         );
 
+        if (doingTimes.isEmpty()) return new HashMap<>();
+
         List<QuizDoingTimeModel> latestDoingTimesBeforeLatestStatistic = doingPracticeQuizStatisticRepo.findLatestDoingTimesBefore(
             statisticFrom, mapDoingTimesByLoginId.keySet()
         );
