@@ -1511,6 +1511,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         Date submitTime = new Date();
         ContestSubmissionEntity submission = ContestSubmissionEntity.builder()
                                                                     .contestId(modelContestSubmission.getContestId())
+                                                                    .problemId(modelContestSubmission.getProblemId())
                                                                     .sourceCode(modelContestSubmission.getSource())
                                                                     .sourceCodeLanguage(modelContestSubmission.getLanguage())
                                                                     .status(ContestSubmissionEntity.SUBMISSION_STATUS_EVALUATION_IN_PROGRESS)
@@ -1521,15 +1522,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                     .createdAt(submitTime)
                                                                     .build();
         //log.info("submitContestProblemTestCaseByTestCaseWithFile, save submission to DB");
-        submission = contestSubmissionRepo.save(submission);
+        submission = contestSubmissionRepo.saveAndFlush(submission);
 
-        ModelContestSubmissionMessage msg = new ModelContestSubmissionMessage();
-        msg.setModelContestSubmission(modelContestSubmission);
-        msg.setSubmission(submission);
         rabbitTemplate.convertAndSend(
             EXCHANGE,
             JUDGE_PROBLEM,
-            objectMapper.writeValueAsString(msg)
+            submission.getContestSubmissionId()
         );
 
         return ModelContestSubmissionResponse.builder()
@@ -1540,12 +1538,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
     @Override
     public void submitContestProblemTestCaseByTestCaseWithFileProcessor(
-        ModelContestSubmission modelContestSubmission,
-        ContestSubmissionEntity submission
+        UUID submissionId
     ) throws Exception {
 
-        ProblemEntity problemEntity = cacheService.findProblemAndUpdateCache(modelContestSubmission.getProblemId());
-        ContestEntity contest = cacheService.findContestAndUpdateCache(modelContestSubmission.getContestId());
+        ContestSubmissionEntity submission = contestSubmissionRepo.findContestSubmissionEntityByContestSubmissionId(submissionId);
+        ProblemEntity problem = cacheService.findProblemAndUpdateCache(submission.getProblemId());
+        ContestEntity contest = cacheService.findContestAndUpdateCache(submission.getContestId());
 
         String userId = submission.getUserId();
 
@@ -1556,7 +1554,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                .equals(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_YES);
 
         testCaseEntityList = cacheService.findListTestCaseAndUpdateCache(
-            modelContestSubmission.getProblemId(),
+            submission.getProblemId(),
             evaluatePrivatePublic);
 
         List<TestCaseEntity> listTestCaseAvailable = new ArrayList<>();
@@ -1569,8 +1567,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         testCaseEntityList = listTestCaseAvailable;
 
         String tempName = tempDir.createRandomScriptFileName(userId + "-" +
-                                                             modelContestSubmission.getContestId() + "-" +
-                                                             modelContestSubmission.getProblemId() + "-" +
+                                                             submission.getContestId() + "-" +
+                                                             submission.getProblemId() + "-" +
                                                              Math.random());
 
         List<String> listSubmissionResponse = new ArrayList<>();
@@ -1579,13 +1577,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             L.add(testCaseEntity);
 
             String response = submission(
-                modelContestSubmission.getSource(),
-                modelContestSubmission.getLanguage(),
+                submission.getSourceCode(),
+                submission.getSourceCodeLanguage(),
                 tempName,
                 L,
                 "language not found",
-                problemEntity.getTimeLimit(),
-                problemEntity.getMemoryLimit());
+                problem.getTimeLimit(),
+                problem.getMemoryLimit());
 
             listSubmissionResponse.add(response);
         }
@@ -1594,9 +1592,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         submissionResponseHandler.processSubmissionResponse(
             testCaseEntityList,
             listSubmissionResponse,
-            modelContestSubmission,
             submission,
-            problemEntity.getScoreEvaluationType());
+            problem.getScoreEvaluationType());
     }
 
     @Override

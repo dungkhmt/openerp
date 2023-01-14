@@ -39,7 +39,6 @@ public class SubmissionResponseHandler {
     public void processSubmissionResponse(
         List<TestCaseEntity> testCaseEntityList,
         List<String> listSubmissionResponse,
-        ModelContestSubmission modelContestSubmission,
         ContestSubmissionEntity submission,
         String problemEvaluationType
     ) throws Exception {
@@ -101,9 +100,9 @@ public class SubmissionResponseHandler {
             String participantAns = output != null && output.size() > 0 ? output.get(0) : "";
 
             ContestSubmissionTestCaseEntity cste = ContestSubmissionTestCaseEntity.builder()
-                                                                                  .contestId(modelContestSubmission.getContestId())
+                                                                                  .contestId(submission.getContestId())
                                                                                   .contestSubmissionId(submission.getContestSubmissionId())
-                                                                                  .problemId(modelContestSubmission.getProblemId())
+                                                                                  .problemId(submission.getProblemId())
                                                                                   .testCaseId(testCaseEntity.getTestCaseId())
                                                                                   .submittedByUserLoginId(submission.getUserId())
                                                                                   .point(problemSubmission.getScore())
@@ -154,8 +153,8 @@ public class SubmissionResponseHandler {
         submissionEntity.setStatus(totalStatus);
         submissionEntity.setPoint(score);
         submissionEntity.setTestCasePass(nbTestCasePass + " / " + testCaseEntityList.size());
-        submissionEntity.setSourceCode(modelContestSubmission.getSource());
-        submissionEntity.setSourceCodeLanguage(modelContestSubmission.getLanguage());
+        submissionEntity.setSourceCode(submission.getSourceCode());
+        submissionEntity.setSourceCodeLanguage(submission.getSourceCodeLanguage());
 //        submissionEntity.setRuntime((long) runtime);
         submissionEntity.setMessage(message);
         submissionEntity.setUpdateAt(new Date());
