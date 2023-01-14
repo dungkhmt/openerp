@@ -1,11 +1,5 @@
-import {Button, CircularProgress, Grid, MenuItem, TableHead, TextField, Typography,} from "@material-ui/core";
-import InfoIcon from "@mui/icons-material/Info";
-import {Box, IconButton} from "@mui/material";
-import Paper from "@material-ui/core/Paper";
-import TableRow from "@material-ui/core/TableRow";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableContainer from "@mui/material/TableContainer";
+import {Button, CircularProgress, Grid, Typography,} from "@material-ui/core";
+import {Box} from "@mui/material";
 import {ContentState, EditorState} from "draft-js";
 import htmlToDraft from "html-to-draftjs";
 import React, {useEffect, useRef, useState} from "react";
@@ -13,16 +7,12 @@ import {Editor} from "react-draft-wysiwyg";
 import {useDispatch, useSelector} from "react-redux";
 import {useParams} from "react-router";
 import {authGet, authPostMultiPart} from "../../../api";
-import {StyledTableCell, StyledTableRow} from "./lib";
-import {request} from "./Request";
 import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
-import FileSaver from "file-saver";
 import StudentViewSubmission from "./StudentViewSubmission";
 import {getFileType, randomImageName, saveByteArray,} from "utils/FileUpload/covert";
 import {makeStyles} from "@material-ui/core/styles";
 import {errorNoti, successNoti} from "../../../utils/notification";
-import {copyAllTestCases, downloadAllTestCases} from "./service/TestCaseService";
 import HustCodeLanguagePicker from "../../common/HustCodeLanguagePicker";
 
 const editorStyle = {
@@ -142,6 +132,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
         inputRef.current.value = null;
       });
   };
+
   function getProblemDetail() {
     authGet(
       dispatch,

@@ -10,14 +10,15 @@ import {
   Table,
   TableBody,
   TableHead,
+  TableRow,
   TextField,
-} from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
+} from "@mui/material";
 import { StyledTableCell, StyledTableRow } from "./lib";
 import { Link } from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
 import { ListContestManagerByRegistration } from "./ListContestManagerByRegistration";
 import ListContestByRole from "./ListContestByRole";
+import {successNoti} from "../../../utils/notification";
 
 export default function AllContestsManager() {
   const [page, setPage] = useState(1);
@@ -25,6 +26,14 @@ export default function AllContestsManager() {
   const [totalPages, setTotalPage] = useState(0);
   const pageSizes = [20, 50, 100];
   const [contests, setContests] = useState([]);
+
+  const switchJudgeMode = (mode) => {
+    request(
+      "post",
+      "/switch-judge-mode?mode=" + mode,
+      () => successNoti("Saved", 5000)
+    ).then();
+  }
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -59,6 +68,20 @@ export default function AllContestsManager() {
   return (
     <div>
       <div>
+        <Button
+          variant="contained"
+          sx={{marginBottom: "12px", marginRight: "16px"}}
+          onClick={() => switchJudgeMode("ASYNCHRONOUS_JUDGE_MODE_QUEUE")}
+        >
+          Switch all to judge mode QUEUE
+        </Button>
+        <Button
+          variant="contained"
+          sx={{marginBottom: "12px"}}
+          onClick={() => switchJudgeMode("SYNCHRONOUS_JUDGE_MODE")}
+        >
+          Switch all to judge mode non-QUEUE
+        </Button>
         <div>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 100 }} aria-label="customized table">
@@ -117,7 +140,7 @@ export default function AllContestsManager() {
                           hover: { color: "#00D8FF", textPrimary: "#00D8FF" },
                         }}
                       >
-                        <Button variant="contained" color="light">
+                        <Button variant="contained" >
                           Detail
                         </Button>
                       </Link>
@@ -135,7 +158,7 @@ export default function AllContestsManager() {
                           cursor: "",
                         }}
                       >
-                        <Button variant="contained" color="light">
+                        <Button variant="contained">
                           Edit
                         </Button>
                       </Link>
