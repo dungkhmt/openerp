@@ -1,31 +1,27 @@
-import { TableHead, Typography } from "@material-ui/core";
+import {TableHead, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core/styles";
+import {makeStyles} from "@material-ui/core/styles";
 import TableRow from "@material-ui/core/TableRow";
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, Button, IconButton } from "@mui/material";
+import {Box, Button, IconButton} from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import HustModal from "component/common/HustModal";
-import { ContentState, EditorState } from "draft-js";
-import FileSaver from "file-saver";
+import {ContentState, EditorState} from "draft-js";
 import htmlToDraft from "html-to-draftjs";
-import React, { useEffect, useState } from "react";
-import { Editor } from "react-draft-wysiwyg";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { useHistory } from "react-router-dom";
-import {
-  getFileType,
-  randomImageName,
-  saveByteArray,
-} from "utils/FileUpload/covert";
-import { authGet } from "../../../api";
+import React, {useEffect, useState} from "react";
+import {Editor} from "react-draft-wysiwyg";
+import {useDispatch, useSelector} from "react-redux";
+import {useParams} from "react-router";
+import {useHistory} from "react-router-dom";
+import {getFileType, randomImageName, saveByteArray,} from "utils/FileUpload/covert";
+import {authGet} from "../../../api";
 import ContestsUsingAProblem from "./ContestsUsingAProblem";
-import { StyledTableCell, StyledTableRow } from "./lib";
-import { request } from "./Request";
+import {StyledTableCell, StyledTableRow} from "./lib";
+import {request} from "./Request";
+import {copyAllTestCases, downloadAllTestCases} from "./service/TestCaseService";
 
 const editorStyle = {
   toolbar: {
@@ -155,34 +151,6 @@ export default function ManagerViewProblemDetail() {
     getTestCases();
   }, []);
 
-  const copyAllHandler = () => {
-    let allTestCases = "";
-    for (const testCase_ith of testCases) {
-      allTestCases +=
-        "------------- \nINPUT: \n" +
-        testCase_ith.testCase +
-        "\n\nOUTPUT: \n" +
-        testCase_ith.correctAns +
-        "\n\n";
-    }
-    navigator.clipboard.writeText(allTestCases);
-  };
-  const downloadAllHandler = () => {
-    for (let i = 0; i < testCases.length; i++) {
-      var testCase_ith = testCases[i];
-      var blob = new Blob(
-        [
-          "INPUT: \n" +
-            testCase_ith.testCase +
-            "\n\nOUTPUT: \n" +
-            testCase_ith.correctAns,
-        ],
-        { type: "text/plain;charset=utf-8" }
-      );
-      FileSaver.saveAs(blob, "Testcase_" + (i + 1) + ".txt");
-    }
-  };
-
   const ModalPreview = (chosenTestcase) => {
     return (
       <HustModal
@@ -205,7 +173,6 @@ export default function ManagerViewProblemDetail() {
   };
 
   function handleEdit() {
-    //alert("edit problem");
     history.push("/programming-contest/edit-problem/" + problemId);
   }
   function addTestCase() {
@@ -333,7 +300,6 @@ export default function ManagerViewProblemDetail() {
       </div>
 
       <TableContainer component={Paper}>
-        {console.log(testCases)}
         <Table sx={{ minWidth: 750 }} aria-label="customized table">
           <TableHead>
             <TableRow>
@@ -345,12 +311,12 @@ export default function ManagerViewProblemDetail() {
               <StyledTableCell align="left">Submit Output</StyledTableCell>
               */}
               <StyledTableCell align="left">
-                <Button variant="contained" onClick={copyAllHandler}>
+                <Button variant="contained" onClick={() => copyAllTestCases(testCases)}>
                   Copy Tests
                 </Button>
               </StyledTableCell>
               <StyledTableCell align="left">
-                <Button variant="contained" onClick={downloadAllHandler}>
+                <Button variant="contained" onClick={() => downloadAllTestCases(testCases)}>
                   Download Tests
                 </Button>
               </StyledTableCell>
