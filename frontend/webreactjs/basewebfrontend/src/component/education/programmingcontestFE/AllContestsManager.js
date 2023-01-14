@@ -1,23 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { request } from "./Request";
-import { API_URL } from "../../../config/config";
-import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
+import React, {useEffect, useState} from "react";
+import {request} from "./Request";
 import {
   Button,
   Grid,
   MenuItem,
+  Paper,
   Table,
   TableBody,
+  TableContainer,
   TableHead,
   TableRow,
   TextField,
 } from "@mui/material";
-import { StyledTableCell, StyledTableRow } from "./lib";
-import { Link } from "react-router-dom";
+import {StyledTableCell, StyledTableRow} from "./lib";
+import {Link} from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
-import { ListContestManagerByRegistration } from "./ListContestManagerByRegistration";
-import ListContestByRole from "./ListContestByRole";
+import {ListContestManagerByRegistration} from "./ListContestManagerByRegistration";
 import {successNoti} from "../../../utils/notification";
 
 export default function AllContestsManager() {
@@ -49,9 +47,9 @@ export default function AllContestsManager() {
     request(
       "get",
       "/get-all-contests-paging-by-admin?size=" +
-        pageSize +
-        "&page=" +
-        (page - 1),
+      pageSize +
+      "&page=" +
+      (page - 1),
       (res) => {
         console.log("contest list", res.data);
         setTotalPage(res.data.totalPages);
@@ -84,16 +82,14 @@ export default function AllContestsManager() {
         </Button>
         <div>
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 100 }} aria-label="customized table">
+            <Table sx={{minWidth: 100}} aria-label="customized table">
               <TableHead>
                 <TableRow>
                   <StyledTableCell></StyledTableCell>
-                  <StyledTableCell align="left">Title</StyledTableCell>
-                  <StyledTableCell align="left">Status</StyledTableCell>
-                  <StyledTableCell align="left">Created By</StyledTableCell>
-                  <StyledTableCell align="left">Created Date</StyledTableCell>
-                  <StyledTableCell align="center">Detail</StyledTableCell>
-                  <StyledTableCell align="center">Edit</StyledTableCell>
+                  <StyledTableCell align="left"><b>Title</b></StyledTableCell>
+                  <StyledTableCell align="left"><b>Status</b></StyledTableCell>
+                  <StyledTableCell align="left"><b>Created By</b></StyledTableCell>
+                  <StyledTableCell align="left"><b>Created At</b></StyledTableCell>
                   {/*<StyledTableCell align="center">Delete</StyledTableCell>*/}
                 </TableRow>
               </TableHead>
@@ -112,20 +108,20 @@ export default function AllContestsManager() {
                         style={{
                           textDecoration: "none",
                           color: "#000000",
-                          hover: { color: "#00D8FF", textPrimary: "#00D8FF" },
+                          hover: {color: "#00D8FF", textPrimary: "#00D8FF"},
                         }}
                       >
-                        <b>{contest.contestName}</b>
+                        {contest.contestName}
                       </Link>
                     </StyledTableCell>
                     <StyledTableCell align="left">
-                      <b>{contest.statusId}</b>
+                      {contest.statusId}
                     </StyledTableCell>
                     <StyledTableCell align="left">
-                      <b>{contest.userId}</b>
+                      {contest.userId}
                     </StyledTableCell>
                     <StyledTableCell align="left">
-                      <b>{contest.createdAt}</b>
+                      {contest.createdAt}
                     </StyledTableCell>
 
                     <StyledTableCell align="left">
@@ -137,10 +133,10 @@ export default function AllContestsManager() {
                         style={{
                           textDecoration: "none",
                           color: "#000000",
-                          hover: { color: "#00D8FF", textPrimary: "#00D8FF" },
+                          hover: {color: "#00D8FF", textPrimary: "#00D8FF"},
                         }}
                       >
-                        <Button variant="contained" >
+                        <Button variant="contained" disableElevation>
                           Detail
                         </Button>
                       </Link>
@@ -158,7 +154,7 @@ export default function AllContestsManager() {
                           cursor: "",
                         }}
                       >
-                        <Button variant="contained">
+                        <Button variant="contained" disableElevation>
                           Edit
                         </Button>
                       </Link>
@@ -224,7 +220,7 @@ export default function AllContestsManager() {
           </Grid>
         </Grid>
       </div>
-      <ListContestManagerByRegistration />
+      <ListContestManagerByRegistration/>
       {/*
       <ListContestByRole />
       */}

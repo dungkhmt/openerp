@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {request} from "./Request";
-import {Button,} from "@mui/material";
 import {Link} from "react-router-dom";
-import MaterialTable from "material-table";
-import {successNoti} from "../../../utils/notification";
+import StandardTable from "../../table/StandardTable";
 
 export function ListContestManagerByRegistration() {
   const [page, setPage] = useState(1);
@@ -28,8 +26,8 @@ export function ListContestManagerByRegistration() {
       ),
     },
     {title: "Created By", field: "userId"},
-    {title: "Created Date", field: "createdAt"},
-    {title: "Contest Status", field: "statusId"},
+    {title: "Created At", field: "createdAt"},
+    {title: "Status", field: "statusId"},
     {title: "Role", field: "roleId"},
     {title: "Reg. Status", field: "registrationStatusId"},
   ];
@@ -76,11 +74,17 @@ export function ListContestManagerByRegistration() {
 
   return (
     <div>
-
-      <MaterialTable
+      <StandardTable
         title="DS Contests được phân quyền"
         columns={columns}
         data={contests}
+        hideCommandBar
+        options={{
+          pageSize: 10,
+          selection: false,
+          search: true,
+          sorting: true,
+        }}
       />
     </div>
   );
