@@ -1443,6 +1443,15 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(page);
     }
 
+    @GetMapping("/get-contest-submission-in-problem-paging-of-a-user-and-contest")
+    public ResponseEntity<?> getContestSubmissionInProblemPagingOfCurrentUser(Principal principal,
+            @RequestParam("contestid") String contestId, @RequestParam("problemid") String problemId, Pageable pageable) {
+        pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by("createdAt").descending());
+        Page<ContestSubmission> page = problemTestCaseService
+                .findContestSubmissionByUserLoginIdAndContestIdAndProblemIdPaging(pageable, principal.getName(), contestId, problemId);
+        return ResponseEntity.status(200).body(page);
+    }
+
     @GetMapping("/get-contest-submission-paging/{contestId}")
     public ResponseEntity<?> getContestSubmissionPaging(@PathVariable("contestId") String contestId,
             Pageable pageable) {

@@ -2537,6 +2537,35 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public Page<ContestSubmission> findContestSubmissionByUserLoginIdAndContestIdAndProblemIdPaging(
+        Pageable pageable,
+        String userLoginId,
+        String contestId,
+        String problemId
+    ) {
+        //log.info("findContestSubmissionByUserLoginIdAndContestIdPaging, user = " + userLoginId + " contestId = " + contestId);
+        return contestSubmissionPagingAndSortingRepo.findAllByUserIdAndContestIdAndProblemId(pageable, userLoginId, contestId, problemId)
+                                                    .map(contestSubmissionEntity -> ContestSubmission
+                                                        .builder()
+                                                        .contestSubmissionId(contestSubmissionEntity.getContestSubmissionId())
+                                                        .contestId(contestSubmissionEntity.getContestId())
+                                                        .createAt(contestSubmissionEntity.getCreatedAt() != null
+                                                                      ? DateTimeUtils.dateToString(
+                                                            contestSubmissionEntity.getCreatedAt(),
+                                                            DateTimeUtils.DateTimeFormat.DATE_TIME_ISO_FORMAT)
+                                                                      : null)
+                                                        .sourceCodeLanguage(contestSubmissionEntity.getSourceCodeLanguage())
+                                                        .point(contestSubmissionEntity.getPoint())
+                                                        .problemId(contestSubmissionEntity.getProblemId())
+                                                        .testCasePass(contestSubmissionEntity.getTestCasePass())
+                                                        .status(contestSubmissionEntity.getStatus())
+                                                        .message(contestSubmissionEntity.getMessage())
+                                                        .userId(contestSubmissionEntity.getUserId())
+                                                        .build()
+                                                    );
+    }
+
+    @Override
     public List<ContestSubmission> getNewestSubmissionResults(String userLoginId) {
         List<ContestSubmissionEntity> lst = contestSubmissionPagingAndSortingRepo
             .findAllByUserId(userLoginId);

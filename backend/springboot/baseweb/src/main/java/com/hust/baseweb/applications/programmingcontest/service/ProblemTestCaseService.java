@@ -116,6 +116,7 @@ public interface ProblemTestCaseService {
     Page<ContestSubmission> findContestNotEvaluatedSubmissionByContestIdPaging(Pageable pageable, String contestId);
     Page<ContestSubmission> findContestSubmissionByUserLoginIdPaging(Pageable pageable, String userLoginId);
     Page<ContestSubmission> findContestSubmissionByUserLoginIdAndContestIdPaging(Pageable pageable, String userLoginId, String contestId);
+    Page<ContestSubmission> findContestSubmissionByUserLoginIdAndContestIdAndProblemIdPaging(Pageable pageable, String userLoginId, String contestId, String problemId);
     List<ContestSubmission> getNewestSubmissionResults(String userLoginId);
 
 
