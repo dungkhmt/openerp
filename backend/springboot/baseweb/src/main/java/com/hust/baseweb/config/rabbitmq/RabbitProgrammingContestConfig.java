@@ -12,6 +12,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,6 +26,9 @@ public class RabbitProgrammingContestConfig {
     public static final String JUDGE_PROBLEM_QUEUE = "judge_problem_queue";
     public static final String DEAD_LETTER_EXCHANGE = "programming_contest_dead_letter_exchange";
     public static final String JUDGE_PROBLEM_DEAD_LETTER_QUEUE = "judge_problem_dead_letter_queue";
+
+    @Value("${spring.rabbitmq.listener.simple.auto-startup}")
+    private boolean autoStartup;
 
     @Autowired
     private RabbitProgrammingContestProperties rabbitConfig;
@@ -53,6 +57,7 @@ public class RabbitProgrammingContestConfig {
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 
+        factory.setAutoStartup(autoStartup);
         factory.setConnectionFactory(connectionFactory);
         factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         factory.setMessageConverter(jsonMessageConverter());
