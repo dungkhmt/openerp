@@ -9,4 +9,5 @@ import java.util.List;
 @Builder
 public class ModelGetContestPageResponse {
     List<ModelGetContestResponse> contents;
+    long count;
 }
