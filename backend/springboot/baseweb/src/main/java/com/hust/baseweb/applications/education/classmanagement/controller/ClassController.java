@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.hust.baseweb.applications.contentmanager.model.ContentModel;
 import com.hust.baseweb.applications.contentmanager.repo.MongoContentService;
 import com.hust.baseweb.applications.education.classmanagement.model.ModelAddUser2ClassInput;
+import com.hust.baseweb.applications.education.classmanagement.model.ModelResponseEduClassDetail;
 import com.hust.baseweb.applications.education.classmanagement.service.ClassServiceImpl;
 import com.hust.baseweb.applications.education.content.Video;
 import com.hust.baseweb.applications.education.content.VideoService;
@@ -125,7 +126,11 @@ public class ClassController {
         classService.deleteEduClassUserLoginRole(deletedPermission);
         return ResponseEntity.noContent().build();
     }
-
+    @GetMapping("/get-all-class")
+    public ResponseEntity<?> getAllClass(Principal principal){
+        List<ModelResponseEduClassDetail> res = classService.getAllClass();
+        return ResponseEntity.ok().body(res);
+    }
     @GetMapping("/get-classes-of-user/{userLoginId}")
     public ResponseEntity getClassesOfUser(Principal principal, @PathVariable String userLoginId) {
         String currentUserLoginId = principal.getName();

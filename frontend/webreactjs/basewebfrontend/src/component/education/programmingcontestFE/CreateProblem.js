@@ -1,17 +1,22 @@
 import {makeStyles} from "@material-ui/core";
 import {
   Box,
-  Card,
-  CardContent,
+  Button,
   Checkbox,
-  Divider,
+  Chip,
+  FormControl,
   FormControlLabel,
   InputAdornment,
+  InputLabel,
+  Link,
+  ListItemText,
   MenuItem,
+  OutlinedInput,
+  Select,
   TextField,
   Typography
 } from "@mui/material";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import {useDispatch, useSelector} from "react-redux";
 import {useHistory} from "react-router-dom";
@@ -25,6 +30,11 @@ import {errorNoti, successNoti, warningNoti} from "../../../utils/notification";
 import HustCodeEditor from "../../common/HustCodeEditor";
 import {LoadingButton} from "@mui/lab";
 import RichTextEditor from "../../common/editor/RichTextEditor";
+import HustContainerCard from "../../common/HustContainerCard";
+import {CUSTOM_EVALUATION, NORMAL_EVALUATION} from "./Constant";
+import {getAllTags} from "./service/TagService";
+import ModelAddNewTag from "./ModelAddNewTag";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -32,7 +42,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     flexWrap: "wrap",
     "& .MuiTextField-root": {
-      marginRight: theme.spacing(4),
+      marginLeft: theme.spacing(2),
+      marginRight: theme.spacing(2),
       marginBottom: theme.spacing(2),
       width: "28%",
       minWidth: 120,
@@ -45,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 
 function CreateProblem() {
   const {t} = useTranslation(
-    "education/programmingcontest/problem"
+    ["education/programmingcontest/problem", "common", "validation"]
   );
   const classes = useStyles();
   const history = useHistory();
@@ -65,14 +76,27 @@ function CreateProblem() {
   const [solutionChecker, setSolutionChecker] = useState("");
   const [solutionCheckerLanguage, setSolutionCheckerLanguage] = useState("CPP");
   const [isPublic, setIsPublic] = useState(false);
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
-  const [allowSubmittingOutput, setAllowSubmittingOutput] = useState(false);
+  const [isCustomEvaluated, setIsCustomEvaluated] = useState(false);
   const [compileMessage, setCompileMessage] = useState("");
   const [attachmentFiles, setAttachmentFiles] = useState([]);
   const [showCompile, setShowCompile] = useState(false);
   const [statusSuccessful, setStatusSuccessful] = useState(false);
 
   const [loading, setLoading] = useState(false);
+
+  const [openModalAddNewTag, setOpenModalAddNewTag] = useState(false);
+
+  const handleGetTagsSuccess = (res) => setTags(res.data);
+  useEffect(() => {
+    getAllTags(handleGetTagsSuccess);
+  }, [])
+
+  const handleSelectTags = (event) => {
+    setSelectedTags(event.target.value);
+  };
 
   const handleAttachmentFiles = (files) => {
     setAttachmentFiles(files);
@@ -105,11 +129,19 @@ function CreateProblem() {
 
   const validateSubmit = () => {
     if (problemId === "") {
-      errorNoti(t("validateSubmit.missingField", {fieldName: "Problem ID"}), 3000);
+      errorNoti(t("missingField", {ns: "validation", fieldName: t("problemId")}), 3000);
       return false;
     }
     if (problemName === "") {
-      errorNoti(t("validateSubmit.missingField", {fieldName: "Problem Name"}), 3000);
+      errorNoti(t("missingField", {ns: "validation", fieldName: t("problemName")}), 3000);
+      return false;
+    }
+    if (timeLimit <= 0 || timeLimit > 60) {
+      errorNoti(t("numberBetween", {ns: "validation", fieldName: t("timeLimit"), min: 1, max: 60}), 3000);
+      return false;
+    }
+    if (memoryLimit <= 0 || timeLimit > 1024) {
+      errorNoti(t("numberBetween", {ns: "validation", fieldName: t("memoryLimit"), min: 1, max: 1024}), 3000);
       return false;
     }
     if (!statusSuccessful) {
@@ -123,6 +155,7 @@ function CreateProblem() {
     if (!validateSubmit()) return;
 
     const fileId = attachmentFiles.map((file) => file.name);
+    const tagIds = selectedTags.map((tag) => tag.tagId);
 
     let body = {
       problemId: problemId,
@@ -138,6 +171,8 @@ function CreateProblem() {
       solutionCheckerLanguage: solutionCheckerLanguage,
       isPublic: isPublic,
       fileId: fileId,
+      scoreEvaluationType: isCustomEvaluated ? CUSTOM_EVALUATION : NORMAL_EVALUATION,
+      tagIds: tagIds,
     };
 
     let formData = new FormData();
@@ -160,20 +195,17 @@ function CreateProblem() {
     }
     */
     setLoading(true);
-    try {
-      authPostMultiPart(dispatch, token, "/create-problem", formData).then(
-        (res) => {
+    authPostMultiPart(dispatch, token, "/create-problem", formData)
+      .then(
+        () => {
           successNoti("Problem saved successfully", 1000);
-          sleep(1000).then((r) => {
+          sleep(1000).then(() => {
             history.push("/programming-contest/list-problems");
           });
         },
-      );
-    } catch (error) {
-      errorNoti(error);
-    } finally {
-      setLoading(false);
-    }
+      )
+      .catch(() => errorNoti(t("error", {ns: "common"}), 3000))
+      .finally(() => setLoading(false));
 
     // request(
     //   "post",
@@ -191,108 +223,144 @@ function CreateProblem() {
   }
 
   return (
-    <Box>
-      <Card>
-        <Typography
-          fontWeight="600"
-          variant="h5"
-          component="div"
-          sx={{margin: "12px 0 10px 18px"}}
-          color="#2972bb"
+    <HustContainerCard title={t("createProblem")}>
+      <Box className={classes.main}>
+        <TextField
+          autoFocus={true}
+          required
+          id={"problemId"}
+          label={t("problemId")}
+          placeholder="Problem ID"
+          value={problemId}
+          onChange={(event) => {
+            setProblemID(event.target.value);
+          }}
+        />
+        <TextField
+          required
+          id="problemName"
+          label={t("problemName")}
+          placeholder="Problem Name"
+          value={problemName}
+          onChange={(event) => {
+            setProblemName(event.target.value);
+          }}
+        />
+
+        <TextField
+          required
+          select
+          id="levelId"
+          label={t("level")}
+          value={levelId}
+          onChange={(event) => {
+            setLevelId(event.target.value);
+          }}
         >
-          {t("createProblem")}
+          {defaultLevel.map((item) => (
+            <MenuItem key={item} value={item}>
+              {item}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          required
+          id="timeLimit"
+          label={t("timeLimit")}
+          placeholder="Time Limit"
+          type="number"
+          value={timeLimit}
+          onChange={(event) => {
+            setTimeLimit(event.target.value);
+          }}
+          InputProps={{endAdornment: <InputAdornment position="end">s</InputAdornment>,}}
+        />
+
+        <TextField
+          required
+          id="memoryLimit"
+          label={t("memoryLimit")}
+          type="number"
+          value={memoryLimit}
+          onChange={(event) => {
+            setMemoryLimit(event.target.value);
+          }}
+          InputProps={{endAdornment: <InputAdornment position="end">MB</InputAdornment>,}}
+        />
+
+        <TextField
+          select
+          id="isPublicProblem"
+          label={t("public", {ns: "common"})}
+          onChange={(event) => {
+            setIsPublic(event.target.value);
+          }}
+          value={isPublic}
+        >
+          <MenuItem key={"true"} value={true}>
+            {t("yes", {ns: "common"})}
+          </MenuItem>
+          <MenuItem key={"false"} value={false}>
+            {t("no", {ns: "common"})}
+          </MenuItem>
+        </TextField>
+
+        <FormControl sx={{m: 1, width: "90%"}}>
+          <InputLabel id="select-tag-label">Tags</InputLabel>
+          <Select
+            labelId="select-tag-label"
+            id="select-tag"
+            multiple
+            value={selectedTags}
+            onChange={handleSelectTags}
+            input={<OutlinedInput label="Tags"/>}
+            renderValue={(selectedTags) => (
+              <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.8}}>
+                {selectedTags.map((selectedTag) => (
+                  <Chip size="small" label={selectedTag.name} sx={{
+                    marginRight: "6px",
+                    marginBottom: "6px",
+                    border: "1px solid lightgray",
+                    fontStyle: "italic"
+                  }}/>
+                ))}
+              </Box>
+            )}
+          >
+            <Button
+              sx={{marginLeft: "20px"}}
+              startIcon={<AddCircleIcon/>}
+              onClick={() => setOpenModalAddNewTag(true)}
+            >
+              {t("common:addNew")}
+            </Button>
+            <ModelAddNewTag
+              isOpen={openModalAddNewTag}
+              handleSuccess={() => {
+                getAllTags(handleGetTagsSuccess)
+              }}
+              handleClose={() => setOpenModalAddNewTag(false)}
+            />
+            {tags.map((tag) => (
+              <MenuItem key={tag.tagId} value={tag}>
+                <Checkbox checked={selectedTags.indexOf(tag) > -1}/>
+                <ListItemText primary={tag.name} secondary={tag?.description}/>
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+      </Box>
+
+      <Box className={classes.description}>
+        <Typography variant="h5" component="div" sx={{marginTop: "12px", marginBottom: "8px"}}>
+          {t("problemDescription")}
         </Typography>
-        <Divider/>
-        <CardContent sx={{padding: "24px"}}>
-          <Box className={classes.main}>
-            <TextField
-              autoFocus={true}
-              required
-              id={t("problemId")}
-              label="Problem ID"
-              placeholder="Problem ID"
-              onChange={(event) => {
-                setProblemID(event.target.value);
-              }}
-            />
-            <TextField
-              required
-              id="problemName"
-              label={t("problemName")}
-              placeholder="Problem Name"
-              onChange={(event) => {
-                setProblemName(event.target.value);
-              }}
-            />
-
-            <TextField
-              required
-              select
-              id="levelId"
-              label={t("level")}
-              value={levelId}
-              onChange={(event) => {
-                setLevelId(event.target.value);
-              }}
-            >
-              {defaultLevel.map((item) => (
-                <MenuItem key={item} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </TextField>
-
-            <TextField
-              required
-              id="timeLimit"
-              label={t("timeLimit")}
-              placeholder="Time Limit"
-              type="number"
-              value={timeLimit}
-              onChange={(event) => {
-                setTimeLimit(event.target.value);
-              }}
-              InputProps={{endAdornment: <InputAdornment position="end">s</InputAdornment>,}}
-            />
-
-            <TextField
-              required
-              id="memoryLimit"
-              label={t("memoryLimit")}
-              type="number"
-              value={memoryLimit}
-              onChange={(event) => {
-                setMemoryLimit(event.target.value);
-              }}
-              InputProps={{endAdornment: <InputAdornment position="end">MB</InputAdornment>,}}
-            />
-
-            <TextField
-              select
-              id="isPublicProblem"
-              label="Public Problem"
-              onChange={(event) => {
-                setIsPublic(event.target.value);
-              }}
-              value={isPublic}
-            >
-              <MenuItem key={"true"} value={true}>
-                {"true"}
-              </MenuItem>
-              <MenuItem key={"false"} value={false}>
-                {"false"}
-              </MenuItem>
-            </TextField>
-          </Box>
-
-          <Box className={classes.description}>
-            <Typography variant="h5" component="div" sx={{marginTop: "12px", marginBottom: "8px"}}>
-              {t("problemDescription")}
-            </Typography>
-            <RichTextEditor content={description} onContentChange={text => setDescription(text)}/>
-            <HustDropzoneArea onChangeAttachment={(files) => handleAttachmentFiles(files)}/>
-          </Box>
-          {/* this function is not implemented yet
+        <RichTextEditor content={description} onContentChange={text => setDescription(text)}/>
+        <HustDropzoneArea onChangeAttachment={(files) => handleAttachmentFiles(files)}/>
+      </Box>
+      {/* this function is not implemented yet
               <Box>
                 <Typography>
                   <h2>{t("problemSuggestion")}</h2>
@@ -304,69 +372,70 @@ function CreateProblem() {
               </Box>
               */}
 
-          <HustCodeEditor
-            title={t("correctSourceCode")}
-            language={languageSolution}
-            onChangeLanguage={(event) => {
-              setLanguageSolution(event.target.value);
-            }}
-            sourceCode={codeSolution}
-            onChangeSourceCode={(code) => {
-              setCodeSolution(code);
-            }}
-          />
-          <LoadingButton
-            variant="contained"
-            loading={loading}
-            onClick={checkCompile}
-            sx={{marginTop: "12px", marginBottom: "6px"}}
-          >
-            Check Solution Compile
-          </LoadingButton>
+      <HustCodeEditor
+        title={t("correctSourceCode")}
+        language={languageSolution}
+        onChangeLanguage={(event) => {
+          setLanguageSolution(event.target.value);
+        }}
+        sourceCode={codeSolution}
+        onChangeSourceCode={(code) => {
+          setCodeSolution(code);
+        }}
+      />
+      <LoadingButton
+        variant="contained"
+        loading={loading}
+        onClick={checkCompile}
+        sx={{marginTop: "12px", marginBottom: "6px"}}
+      >
+        {t("checkSolutionCompile")}
+      </LoadingButton>
+      <CompileStatus
+        showCompile={showCompile}
+        statusSuccessful={statusSuccessful}
+        message={compileMessage}
+      />
 
-          <CompileStatus
-            showCompile={showCompile}
-            statusSuccessful={statusSuccessful}
-            message={compileMessage}
-          />
-          <FormControlLabel
-            label={t("allowSubmittingOutput")}
-            control={
-              <Checkbox
-                checked={allowSubmittingOutput}
-                onChange={() => setAllowSubmittingOutput(!allowSubmittingOutput)}
-              />}
-          />
+      <FormControlLabel
+        label={t("isCustomEvaluated")}
+        control={
+          <Checkbox
+            checked={isCustomEvaluated}
+            onChange={() => setIsCustomEvaluated(!isCustomEvaluated)}
+          />}
+      />
+      <Typography variant="body2" color="gray">{t("customEvaluationNote1")}</Typography>
+      <Link href="#" underline="hover">
+        <Typography variant="body2" color="gray">{t("customEvaluationNote2")}</Typography>
+      </Link>
 
-          {allowSubmittingOutput &&
-            <HustCodeEditor
-              title={t("checkerSourceCode")}
-              language={solutionCheckerLanguage}
-              onChangeLanguage={(event) => {
-                setSolutionCheckerLanguage(event.target.value);
-              }}
-              sourceCode={solutionChecker}
-              onChangeSourceCode={(code) => {
-                setSolutionChecker(code);
-              }}
-              placeholder={t("checkerSourceCodePlaceholder")}
-            />
-          }
+      {isCustomEvaluated &&
+        <HustCodeEditor
+          title={t("checkerSourceCode")}
+          language={solutionCheckerLanguage}
+          onChangeLanguage={(event) => {
+            setSolutionCheckerLanguage(event.target.value);
+          }}
+          sourceCode={solutionChecker}
+          onChangeSourceCode={(code) => {
+            setSolutionChecker(code);
+          }}
+          placeholder={t("checkerSourceCodePlaceholder")}
+        />
+      }
 
-          <Box width="100%" sx={{marginTop: "16px"}}>
-            <LoadingButton
-              variant="contained"
-              color="success"
-              loading={loading}
-              onClick={handleSubmit}
-            >
-              Save
-            </LoadingButton>
-          </Box>
-        </CardContent>
-
-      </Card>
-    </Box>
+      <Box width="100%" sx={{marginTop: "16px"}}>
+        <LoadingButton
+          variant="contained"
+          color="success"
+          loading={loading}
+          onClick={handleSubmit}
+        >
+          {t("save", {ns: "common"})}
+        </LoadingButton>
+      </Box>
+    </HustContainerCard>
   );
 }
 

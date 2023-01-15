@@ -5,11 +5,7 @@ import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
 import com.hust.baseweb.applications.programmingcontest.model.*;
-import com.hust.baseweb.applications.programmingcontest.repo.ContestProblemRepo;
-import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
-import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
-import com.hust.baseweb.applications.programmingcontest.repo.UserContestProblemRoleRepo;
-import com.hust.baseweb.applications.programmingcontest.repo.UserRegistrationContestRepo;
+import com.hust.baseweb.applications.programmingcontest.repo.*;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import com.hust.baseweb.applications.programmingcontest.service.helper.cache.ProblemTestCaseServiceCache;
 import com.hust.baseweb.entity.UserLogin;
@@ -35,6 +31,7 @@ import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -56,8 +53,8 @@ public class ContestProblemController {
     public ResponseEntity<?> createContestProblem(Principal principal,
             @RequestParam("ModelCreateContestProblem") String json,
             @RequestParam("files") MultipartFile[] files) throws MiniLeetCodeException {
-        problemTestCaseService.createContestProblem(principal.getName(), json, files);
-        return ResponseEntity.status(200).body(null);
+        ProblemEntity resp = problemTestCaseService.createContestProblem(principal.getName(), json, files);
+        return ResponseEntity.status(200).body(resp);
     }
 
     @PostMapping("/get-test-case-result/{problemId}")
@@ -366,6 +363,63 @@ public class ContestProblemController {
         ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
         List<ProblemEntity> listProblem = contestEntity.getProblems();
         return ResponseEntity.status(200).body(listProblem);
+    }
+
+    @GetMapping("/get-list-contest-problem-student-V2/{contestId}")
+    public ResponseEntity<?> getListContestProblemViewedByStudentV2(@PathVariable("contestId") String contestId, Principal principal) {
+        String userId = principal.getName();
+        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+
+        List<ProblemEntity> listProblem = contestEntity.getProblems();
+        List<String> listAcceptedProblem = contestSubmissionRepo.findAcceptedProblemsOfUser(userId, contestId);
+        List<ModelProblemMaxSubmissionPoint> listTriedProblem = contestSubmissionRepo.findSubmittedProblemsOfUser(userId, contestId);
+
+        Map<String, Integer> mapProblemToMaxSubmissionPoint = new HashMap<>();
+        for (ModelProblemMaxSubmissionPoint problem : listTriedProblem) {
+            mapProblemToMaxSubmissionPoint.put(problem.getProblemId(), problem.getMaxPoint());
+        }
+        
+        List<ModelStudentOverviewProblem> responses = new ArrayList<>();
+
+        for (ProblemEntity problem : listProblem) {
+            String problemId = problem.getProblemId();
+
+            ModelStudentOverviewProblem response = new ModelStudentOverviewProblem();
+            response.setProblemId(problemId);
+            response.setProblemName(problem.getProblemName());
+            response.setLevelId(problem.getLevelId());
+
+            List<String> tags = problem.getTags().stream().map(TagEntity::getName).collect(Collectors.toList());
+            response.setTags(tags);
+
+            if (mapProblemToMaxSubmissionPoint.containsKey(problemId)) {
+                response.setSubmitted(true);
+                response.setMaxSubmittedPoint(mapProblemToMaxSubmissionPoint.get(problemId));
+            }
+
+            if (listAcceptedProblem.contains(problemId)) {
+                response.setAccepted(true);
+            }
+
+            responses.add(response);
+        }
+
+        return ResponseEntity.status(200).body(responses);
+    }
+
+    @GetMapping("/get-all-tags")
+    public ResponseEntity<?> getAllTags() {
+
+        List<TagEntity> listTag = problemTestCaseService.getAllTags();
+        return ResponseEntity.status(200).body(listTag);
+    }
+
+    @PostMapping("/add-tag")
+    public ResponseEntity<?> addNewTag(@RequestBody ModelTag tagInput) {
+
+        TagEntity tag = problemTestCaseService.addNewTag(tagInput);
+
+        return ResponseEntity.status(200).body(tag);
     }
 
     @GetMapping("/get-contest-detail-solving/{contestId}")
@@ -718,7 +772,7 @@ public class ContestProblemController {
         UUID testCaseUUID = UUID.fromString(testCaseId);
         log.info("uploadUpdateTestCase, problemId = " + problemId + " tesCaseId = " + testCaseId + " testCaseUUID = "
                 + testCaseUUID);
-        String testCase = "";
+        StringBuilder testCase = new StringBuilder();
         ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
         if (file != null) {
             try {
@@ -726,7 +780,7 @@ public class ContestProblemController {
                 Scanner in = new Scanner(inputStream);
                 while (in.hasNext()) {
                     String line = in.nextLine();
-                    testCase += line + "\n";
+                    testCase.append(line).append("\n");
                     // System.out.println("contestSubmitProblemViaUploadFile: read line: " + line);
                 }
                 in.close();
@@ -739,8 +793,8 @@ public class ContestProblemController {
         }
         // res = problemTestCaseService.addTestCase(testCase, modelUploadTestCase,
         // principal.getName());
-        res = problemTestCaseService.uploadUpdateTestCase(testCaseUUID, testCase, modelUploadTestCase,
-                principal.getName());
+        res = problemTestCaseService.uploadUpdateTestCase(testCaseUUID, testCase.toString(), modelUploadTestCase,
+                                                          principal.getName());
         return ResponseEntity.ok().body(res);
 
         // res.setStatus("FAILURE");
@@ -780,18 +834,18 @@ public class ContestProblemController {
                 ModelProgrammingContestUploadTestCase.class);
         String problemId = modelUploadTestCase.getProblemId();
         log.info("uploadTestCase, problemId = " + problemId);
-        String testCase = "";
+        StringBuilder testCase = new StringBuilder();
         ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
         try {
             InputStream inputStream = file.getInputStream();
             Scanner in = new Scanner(inputStream);
             while (in.hasNext()) {
                 String line = in.nextLine();
-                testCase += line + "\n";
+                testCase.append(line).append("\n");
                 // System.out.println("contestSubmitProblemViaUploadFile: read line: " + line);
             }
             in.close();
-            res = problemTestCaseService.addTestCase(testCase, modelUploadTestCase, principal.getName());
+            res = problemTestCaseService.addTestCase(testCase.toString(), modelUploadTestCase, principal.getName());
             return ResponseEntity.ok().body(res);
         } catch (Exception e) {
             e.printStackTrace();
@@ -934,12 +988,12 @@ public class ContestProblemController {
         }
 
         try {
-            String source = "";
+            StringBuilder source = new StringBuilder();
             InputStream inputStream = file.getInputStream();
             Scanner in = new Scanner(inputStream);
             while (in.hasNext()) {
                 String line = in.nextLine();
-                source += line + "\n";
+                source.append(line).append("\n");
                 // System.out.println("contestSubmitProblemViaUploadFile: read line: " + line);
             }
             in.close();
@@ -964,7 +1018,7 @@ public class ContestProblemController {
                 return ResponseEntity.ok().body(resp);
             }
             ModelContestSubmission request = new ModelContestSubmission(model.getContestId(), model.getProblemId(),
-                    source, model.getLanguage());
+                                                                        source.toString(), model.getLanguage());
             ModelContestSubmissionResponse resp = null;
             if (contestEntity.getSubmissionActionType()
                     .equals(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)) {
@@ -1210,17 +1264,17 @@ public class ContestProblemController {
         Gson gson = new Gson();
         ModelSubmitSolutionOutputOfATestCase model = gson.fromJson(inputJson, ModelSubmitSolutionOutputOfATestCase.class);
         try {
-            String solutionOutput = "";
+            StringBuilder solutionOutput = new StringBuilder();
             InputStream inputStream = file.getInputStream();
             Scanner in = new Scanner(inputStream);
             while (in.hasNext()) {
                 String line = in.nextLine();
-                solutionOutput += line + "\n";
+                solutionOutput.append(line).append("\n");
                 //System.out.println("submitSolutionOutputOfATestCase: read line: " + line);
             }
             in.close();
             ModelContestSubmissionResponse resp = problemTestCaseService.submitSolutionOutputOfATestCase(principale.getName(),
-                                                                                                         solutionOutput,
+                                                                                                         solutionOutput.toString(),
                                                                                               model
                                                                                               );
             log.info("resp {}", resp);
@@ -1239,19 +1293,19 @@ public class ContestProblemController {
         Gson gson = new Gson();
         ModelSubmitSolutionOutput model = gson.fromJson(inputJson, ModelSubmitSolutionOutput.class);
         try {
-            String solutionOutput = "";
+            StringBuilder solutionOutput = new StringBuilder();
             InputStream inputStream = file.getInputStream();
             Scanner in = new Scanner(inputStream);
             while (in.hasNext()) {
                 String line = in.nextLine();
-                solutionOutput += line + "\n";
+                solutionOutput.append(line).append("\n");
                 System.out.println("submitSolutionOutput: read line: " + line);
             }
             in.close();
-            ModelContestSubmissionResponse resp = problemTestCaseService.submitSolutionOutput(solutionOutput,
-                    model.getContestId(),
-                    model.getProblemId(), model.getTestCaseId(),
-                    principale.getName());
+            ModelContestSubmissionResponse resp = problemTestCaseService.submitSolutionOutput(solutionOutput.toString(),
+                                                                                              model.getContestId(),
+                                                                                              model.getProblemId(), model.getTestCaseId(),
+                                                                                              principale.getName());
             log.info("resp {}", resp);
             return ResponseEntity.status(200).body(resp);
         } catch (Exception e) {
@@ -1386,6 +1440,15 @@ public class ContestProblemController {
         Page<ContestSubmission> page = problemTestCaseService
                 .findContestSubmissionByUserLoginIdAndContestIdPaging(pageable, principal.getName(), contestId);
         //log.info("page {}", page);
+        return ResponseEntity.status(200).body(page);
+    }
+
+    @GetMapping("/get-contest-submission-in-problem-paging-of-a-user-and-contest")
+    public ResponseEntity<?> getContestSubmissionInProblemPagingOfCurrentUser(Principal principal,
+            @RequestParam("contestid") String contestId, @RequestParam("problemid") String problemId, Pageable pageable) {
+        pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by("createdAt").descending());
+        Page<ContestSubmission> page = problemTestCaseService
+                .findContestSubmissionByUserLoginIdAndContestIdAndProblemIdPaging(pageable, principal.getName(), contestId, problemId);
         return ResponseEntity.status(200).body(page);
     }
 
@@ -1538,5 +1601,13 @@ public class ContestProblemController {
                                                                                               Constants.GetPointForRankingType.HIGHEST);
         // log.info("ranking page {}", page);
         return ResponseEntity.status(200).body(page);
+    }
+
+    @PostMapping("/switch-judge-mode")
+    public ResponseEntity<?> switchAllContestJudgeMode(@RequestParam("mode") String judgeMode) {
+
+        problemTestCaseService.switchAllContestJudgeMode(judgeMode);
+
+        return ResponseEntity.status(200).body("ok");
     }
 }

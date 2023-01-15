@@ -28,6 +28,7 @@ import CustomizedDialogs from "../../dialog/CustomizedDialogs";
 import ErrorDialog from "../../dialog/ErrorDialog";
 import QuizTestGroupQuestionList from "./QuizTestGroupQuestionList";
 import ExamQuestionsOfParticipantPDFDocument from "./template/ExamQuestionsOfParticipantPDFDocument";
+import { subPageTotalPagesState } from "./template/ExamQuestionsOfParticipantPDFDocument";
 
 export const style = (theme) => ({
   testBtn: {
@@ -92,11 +93,6 @@ const headerProperties = {
 };
 
 let count = 0;
-
-export const subPageTotalPagesState = createState({
-  fulfilled: false,
-  totalPages: [],
-});
 
 export const generatePdfDocument = async (
   documentData,

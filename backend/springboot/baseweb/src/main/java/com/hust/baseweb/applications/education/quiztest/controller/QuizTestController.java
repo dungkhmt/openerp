@@ -143,6 +143,14 @@ public class QuizTestController {
         return ResponseEntity.ok().body(eduTestQuizRole);
     }
 
+    @DeleteMapping("/quiz-test-participant-role")
+    public ResponseEntity<?> deleteQuizTestParticipantRole(@RequestParam String testId,
+                                                           @RequestParam String userId,
+                                                           @RequestParam String roleId) {
+        eduQuizTestParticipantRoleService.deleteParticipantRole(testId, userId, roleId);
+        return ResponseEntity.ok().build();
+    }
+
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @GetMapping("/get-all-quiz-test-by-user")
     public ResponseEntity<?> getAllQuizTestByUserLogin(
@@ -278,9 +286,6 @@ public class QuizTestController {
         /* for (StudentInTestQueryReturnModel studentInTestQueryReturn : list) {
             System.out.println(studentInTestQueryReturn);
         } */
-        if (list.isEmpty()) {
-            return ResponseEntity.ok().body("Error");
-        }
         return ResponseEntity.ok().body(list);
 
     }
@@ -465,5 +470,9 @@ public class QuizTestController {
 
     }
 
-
+    @GetMapping("/get-list-quiz-test-status-ids")
+    public ResponseEntity<?> getListQuizTestStatusIds(){
+        List<String> statusIds = EduQuizTest.getListStatusIds();
+        return ResponseEntity.ok().body(statusIds);
+    }
 }

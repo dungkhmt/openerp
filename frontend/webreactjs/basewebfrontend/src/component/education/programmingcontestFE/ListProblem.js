@@ -1,25 +1,11 @@
-import Pagination from "@material-ui/lab/Pagination";
-import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Grid,
-  MenuItem,
-  Table,
-  TableBody,
-  TableHead,
-  TextField,
-} from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
-import { Link } from "react-router-dom";
-import { request } from "./Request";
-import { API_URL } from "../../../config/config";
-import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
-import { getColorLevel, StyledTableCell, StyledTableRow } from "./lib";
-import { useTranslation } from "react-i18next";
-import { toFormattedDateTime } from "../../../utils/dateutils";
-import MaterialTable from "material-table";
+import React, {useEffect, useState} from "react";
+import {Link} from "react-router-dom";
+import {request} from "./Request";
+import {useTranslation} from "react-i18next";
+import {toFormattedDateTime} from "../../../utils/dateutils";
 import StandardTable from "component/table/StandardTable";
+import {Box, Chip} from "@mui/material";
+
 function ListProblem() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -28,7 +14,7 @@ function ListProblem() {
   const [contestProblems, setContestProblems] = useState([]);
   const [problems, setProblems] = useState([]);
 
-  const { t } = useTranslation("education/programmingcontest/listproblem");
+  const {t} = useTranslation("education/programmingcontest/listproblem");
 
   const columns = [
     {
@@ -46,10 +32,23 @@ function ListProblem() {
         </Link>
       ),
     },
-    { title: "Name", field: "problemName" },
-    { title: "Created By", field: "userId" },
-    { title: "Created Date", field: "createdAt" },
-    { title: "Level", field: "levelId" },
+    {title: "Name", field: "problemName"},
+    {title: "Created By", field: "userId"},
+    {title: "Created Date", field: "createdAt"},
+    {title: "Level", field: "levelId"},
+    {
+      title: "Tags",
+      render: (rowData) => (
+        <Box>
+          {rowData?.tags.length > 0 && rowData.tags.map(tag =>
+            <Chip
+              size="small"
+              label={tag.name}
+              sx={{marginRight: "6px", marginBottom: "6px", border: "1px solid lightgray", fontStyle: "italic"}}
+            />)}
+        </Box>
+      ),
+    },
   ];
 
   const handlePageChange = (event, value) => {
@@ -64,24 +63,24 @@ function ListProblem() {
 
   function getProblems() {
     request("get", "/get-all-contest-problems", (res) => {
-      const data = res.data.map((e) => ({
-        problemId: e.problemId,
-        problemName: e.problemName,
-        userId: e.userId,
-        createdAt: toFormattedDateTime(e.createdAt),
-        levelId: e.levelId,
+      const data = res.data.map((problem) => ({
+        problemId: problem.problemId,
+        problemName: problem.problemName,
+        userId: problem.userId,
+        createdAt: toFormattedDateTime(problem.createdAt),
+        levelId: problem.levelId,
+        tags: problem.tags,
       }));
       //setProblems(res.data);
       setProblems(data);
     }).then();
   }
+
   async function getProblemContestList() {
-    console.log("p ", page);
     request(
       "get",
       "/get-contest-problem-paging?size=" + pageSize + "&page=" + (page - 1),
       (res) => {
-        console.log("problem list", res.data);
         setTotalPage(res.data.totalPages);
         setContestProblems(res.data.content);
       }
@@ -89,7 +88,6 @@ function ListProblem() {
   }
 
   useEffect(() => {
-    console.log("use effect");
     getProblems();
     getProblemContestList().then();
   }, [page, pageSize]);
@@ -107,7 +105,7 @@ function ListProblem() {
           search: true,
           sorting: true,
         }}
-      ></StandardTable>
+      />
       {/*
       <div>
         <TableContainer component={Paper}>
@@ -240,4 +238,5 @@ function ListProblem() {
     </div>
   );
 }
+
 export default ListProblem;

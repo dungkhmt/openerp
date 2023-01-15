@@ -3,6 +3,9 @@
   "problem": "Problem",
   "problemId": "Problem ID",
   "level": "Level",
+  "submitted": "Submitted",
+  "accepted": "Accepted",
+  "maxPoint": "Achieved Point",
   "problemList": {
     "title": "Problems"
   },

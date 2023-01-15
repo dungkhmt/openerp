@@ -36,7 +36,7 @@ export default function StudentQuizDetailListForm(props) {
   const [requestFailed, setRequestFailed] = React.useState(false);
   const [messageRequest, setMessageRequest] = React.useState(false);
   const [quizGroupTestDetail, setQuizGroupTestDetail] = React.useState({});
-
+  const [loading, setLoading] = React.useState(false);
   // Keep track of checking state of all choices of all quiz
   const checkState = useState([]);
 
@@ -95,6 +95,7 @@ export default function StudentQuizDetailListForm(props) {
   }
 
   const onSave = (order, questionId, choseAnswers) => {
+    setLoading(true);
     request(
       "post",
       "/quiz-test-choose_answer-by-user",
@@ -109,15 +110,18 @@ export default function StudentQuizDetailListForm(props) {
         }
         console.log("res choseanswer = ", resChoseAnswer);
         checkState[order].lastSubmittedAnswers.set(resChoseAnswer);
+        setLoading(false);
       },
       {
         400: () => {
           setMessageRequest("Cannot be empty!");
           setRequestFailed(true);
+          setLoading(false);
         },
         406: () => {
           setMessageRequest("Time Out!");
           setRequestFailed(true);
+          setLoading(false);
         },
       },
       {
@@ -185,6 +189,7 @@ export default function StudentQuizDetailListForm(props) {
                   choseAnswers={checkState[idx]}
                   order={idx}
                   onSave={onSave}
+                  loading={loading}
                 />
               ))
             ) : (

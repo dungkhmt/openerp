@@ -1,6 +1,7 @@
 package com.hust.baseweb.applications.education.classmanagement.service;
 
 import com.hust.baseweb.applications.education.classmanagement.enumeration.RegistStatus;
+import com.hust.baseweb.applications.education.classmanagement.model.ModelResponseEduClassDetail;
 import com.hust.baseweb.applications.education.entity.*;
 import com.hust.baseweb.applications.education.exception.SimpleResponse;
 import com.hust.baseweb.applications.education.model.*;
@@ -267,6 +268,24 @@ public class ClassServiceImpl implements ClassService {
                         break;
                 }
             }
+        }
+        return res;
+    }
+
+    @Override
+    public List<ModelResponseEduClassDetail> getAllClass() {
+        List<ModelResponseEduClassDetail> res = new ArrayList();
+        List<EduClass> cls = classRepo.findAll();
+        for(EduClass c: cls){
+            ModelResponseEduClassDetail m = new ModelResponseEduClassDetail();
+            m.setClassCode(c.getClassCode());
+            m.setId(c.getId());
+            m.setCourseId(c.getEduCourse().getId());
+            m.setCourseName(c.getEduCourse().getName());
+            m.setCreatedByUserId(c.getTeacher().getUserLoginId());
+            m.setSemesterId(c.getSemester().getName());
+            m.setCreatedStamp(c.getCreatedStamp());
+            res.add(m);
         }
         return res;
     }

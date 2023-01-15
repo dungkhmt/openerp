@@ -1,16 +1,12 @@
-import { makeStyles, MuiThemeProvider, styled } from "@material-ui/core/styles";
-import { Box } from "@mui/material";
-import MaterialTable, { MTableToolbar } from "material-table";
+import {makeStyles, MuiThemeProvider, styled} from "@material-ui/core/styles";
+import {Box, Paper, Typography} from "@mui/material";
+import MaterialTable, {MTableCell, MTableToolbar} from "material-table";
 import PropTypes from "prop-types";
-import { useCallback } from "react";
-import {
-  components,
-  localization,
-  tableIcons,
-  themeTable,
-} from "utils/MaterialTableUtils";
+import {useCallback} from "react";
+import {components, localization, tableIcons, themeTable,} from "utils/MaterialTableUtils";
+import {useTranslation} from "react-i18next";
 
-export const Offset = styled("div")(({ theme }) => ({
+export const Offset = styled("div")(({theme}) => ({
   display: "flex",
   alignItems: "center",
   padding: theme.spacing(0, 1),
@@ -20,11 +16,12 @@ export const Offset = styled("div")(({ theme }) => ({
 }));
 
 const useStyles = makeStyles(() => ({
-  tableToolbarHighlight: { backgroundColor: "transparent" },
+  tableToolbarHighlight: {backgroundColor: "transparent"},
 }));
 
 function StandardTable(props) {
   const classes = useStyles();
+  const {t} = useTranslation(["common"]);
 
   const rowStyle = useCallback(
     (rowData) => ({
@@ -59,9 +56,12 @@ function StandardTable(props) {
       <MuiThemeProvider theme={themeTable}>
         <MaterialTable
           {...props}
+          title={props.title ? <Typography variant="h5">{props.title}</Typography> : <></>}
           localization={{
             ...localization,
-            toolbar: { ...localization.toolbar, nRowsSelected: "" },
+            toolbar: {
+              searchPlaceholder: t("search"),
+            },
             ...props.localization,
           }}
           icons={tableIcons}
@@ -69,7 +69,9 @@ function StandardTable(props) {
             selection: true,
             pageSize: 20,
             headerStyle: {
-              backgroundColor: "transparent",
+              backgroundColor: "#f4f4f4",
+              color: "#404040",
+              fontWeight: 600,
             },
             rowStyle: rowStyle,
             ...props.options,
@@ -80,16 +82,27 @@ function StandardTable(props) {
           onRowClick={props.onRowClick}
           components={{
             ...components,
+            Container: (props) => (
+              <Paper
+                {...props}
+                elevation={3}
+              />
+            ),
             Toolbar: (props) => (
               <MTableToolbar
                 {...props}
                 classes={{
                   highlight: classes.tableToolbarHighlight,
                 }}
-                searchFieldVariant="outlined"
                 searchFieldStyle={{
                   height: 40,
                 }}
+              />
+            ),
+            Cell: (props) => (
+              <MTableCell
+                {...props}
+                style={{padding: "16px 16px"}}
               />
             ),
             ...props.components,
@@ -110,6 +123,7 @@ StandardTable.propTypes = {
   components: PropTypes.object,
   title: PropTypes.string,
   columns: PropTypes.array.isRequired,
+  actions: PropTypes.array,
   data: PropTypes.array,
   commandBarComponents: PropTypes.element,
 };

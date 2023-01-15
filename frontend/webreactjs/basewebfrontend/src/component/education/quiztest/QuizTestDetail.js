@@ -22,6 +22,8 @@ import QuizTestJoinRequestList from "./QuizTestJoinRequestList";
 import QuizTestResultChart from "./QuizTestResultChart";
 import QuizTestStudentListResult from "./QuizTestResultList";
 import QuizTestStudentList from "./QuizTestStudentList";
+import {Card, CardContent} from "@material-ui/core";
+import TeacherViewQuizTestDetail from "./detail/TeacherViewQuizTestDetail";
 
 const styles = {
   btn: {
@@ -174,47 +176,54 @@ function QuizTestDetail() {
 
   return courseInfo ? (
     <>
-      <Typography
-        variant="h5"
-        sx={styles.courseName}
-      >{`${courseInfo.courseName} (${courseInfo.id})`}</Typography>
-      <Typography
-        variant="subtitle1"
-        sx={styles.testName}
-      >{`Kỳ thi: ${testInfo.testName}`}</Typography>
-      <Typography
-        variant="subtitle1"
-        sx={styles.testName}
-      >{`Mã kỳ thi: ${testInfo.testId}`}</Typography>
-      <Typography
-        variant="subtitle1"
-        sx={styles.testName}
-      >{`Trạng thái: ${testInfo.statusId}`}</Typography>
+      <TeacherViewQuizTestDetail/>
+      <br/>
 
-      <Box display="flex" alignItems="center" pt={2}>
-        <FcClock size={24} />
-        <Typography
-          component="span"
-          sx={styles.time}
-        >{`${testInfo.duration} phút`}</Typography>
+      <Card>
+        <CardContent>
+          <Typography
+            variant="h5"
+            sx={styles.courseName}
+          >{`${courseInfo.courseName} (${courseInfo.id})`}</Typography>
+          <Typography
+            variant="subtitle1"
+            sx={styles.testName}
+          >{`Kỳ thi: ${testInfo.testName}`}</Typography>
+          <Typography
+            variant="subtitle1"
+            sx={styles.testName}
+          >{`Mã kỳ thi: ${testInfo.testId}`}</Typography>
+          <Typography
+            variant="subtitle1"
+            sx={styles.testName}
+          >{`Trạng thái: ${testInfo.statusId}`}</Typography>
 
-        <FcCalendar size={24} style={{ marginLeft: 40 }} />
-        <Typography
-          component="span"
-          sx={styles.time}
-        >{`${testInfo.scheduleDateTime}`}</Typography>
+          <Box display="flex" alignItems="center" pt={2}>
+            <FcClock size={24} />
+            <Typography
+              component="span"
+              sx={styles.time}
+            >{`${testInfo.duration} phút`}</Typography>
 
-        <TertiaryButton
-          sx={{
-            ml: 2,
-            fontWeight: (theme) => theme.typography.fontWeightRegular,
-          }}
-          component={RouterLink}
-          to={`/edu/class/quiztest/edit/${testId}`}
-        >
-          Chỉnh sửa
-        </TertiaryButton>
-      </Box>
+            <FcCalendar size={24} style={{ marginLeft: 40 }} />
+            <Typography
+              component="span"
+              sx={styles.time}
+            >{`${testInfo.scheduleDateTime}`}</Typography>
+
+            <TertiaryButton
+              sx={{
+                ml: 2,
+                fontWeight: (theme) => theme.typography.fontWeightRegular,
+              }}
+              component={RouterLink}
+              to={`/edu/class/quiztest/edit/${testId}`}
+            >
+              Chỉnh sửa
+            </TertiaryButton>
+          </Box>
+        </CardContent>
+      </Card>
 
       <br />
       <br />

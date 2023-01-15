@@ -55,7 +55,8 @@ public class ProblemTestCaseServiceCache {
     public ProblemEntity findProblemAndUpdateCache(String problemId) {
         ProblemEntity problem = findProblemInCache(problemId);
         if (problem == null) {
-            problem = problemRepo.findByProblemId(problemId);
+            problem = problemRepo.findByProblemIdWithTagFetched(problemId);
+
             addProblemToCache(problem, 60 * 60);
         }
         return problem;

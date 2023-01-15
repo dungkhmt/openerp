@@ -24,8 +24,11 @@ public class RabbitProgrammingContestConfig {
 
     public static final String EXCHANGE = "programming_contest_exchange";
     public static final String JUDGE_PROBLEM_QUEUE = "judge_problem_queue";
+    public static final String JUDGE_CUSTOM_PROBLEM_QUEUE = "judge_custom_problem_queue";
+
     public static final String DEAD_LETTER_EXCHANGE = "programming_contest_dead_letter_exchange";
     public static final String JUDGE_PROBLEM_DEAD_LETTER_QUEUE = "judge_problem_dead_letter_queue";
+    public static final String JUDGE_CUSTOM_PROBLEM_DEAD_LETTER_QUEUE = "judge_custom_problem_dead_letter_queue";
 
     @Value("${spring.rabbitmq.listener.simple.auto-startup}")
     private boolean autoStartup;
@@ -85,17 +88,30 @@ public class RabbitProgrammingContestConfig {
         Map<String, Object> args = new HashMap<>();
         args.put("x-queue-type", "quorum");
         args.put("x-overflow", "reject-publish");
-        // args.put("x-dead-letter-exchange", DEAD_LETTER_EXCHANGE);
-        // args.put("x-dead-letter-exchange", "");
-        // args.put("x-dead-letter-routing-key", ProblemContestRoutingKey.JUDGE_PROBLEM_DL);
-        // args.put("x-delivery-limit", 2);
 
         return new Queue(JUDGE_PROBLEM_QUEUE, true, false, false, args);
     }
 
     @Bean
+    public Queue judgeCustomProblemQueue() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-queue-type", "quorum");
+        args.put("x-overflow", "reject-publish");
+
+        return new Queue(JUDGE_CUSTOM_PROBLEM_QUEUE, true, false, false, args);
+    }
+
+    @Bean
     public Binding judgeProblemBinding() {
         return BindingBuilder.bind(judgeProblemQueue()).to(exchange()).with(ProblemContestRoutingKey.JUDGE_PROBLEM);
+    }
+
+    @Bean
+    public Binding judgeCustomProblemBinding() {
+        return BindingBuilder
+            .bind(judgeCustomProblemQueue())
+            .to(exchange())
+            .with(ProblemContestRoutingKey.JUDGE_CUSTOM_PROBLEM);
     }
 
     // DeadLetterExchange & DeadLetterQueue
@@ -116,10 +132,30 @@ public class RabbitProgrammingContestConfig {
     }
 
     @Bean
+    public Queue judgeCustomProblemDeadLetterQueue() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-queue-type", "quorum");
+        args.put("x-dead-letter-exchange", EXCHANGE);
+        args.put("x-dead-letter-routing-key", ProblemContestRoutingKey.JUDGE_CUSTOM_PROBLEM);
+        args.put("x-message-ttl", rabbitConfig.getDeadMessageTtl());
+
+        return new Queue(JUDGE_CUSTOM_PROBLEM_DEAD_LETTER_QUEUE, true, false, false, args);
+    }
+
+    @Bean
     public Binding judgeProblemDeadLetterBinding() {
         return BindingBuilder
             .bind(judgeProblemDeadLetterQueue())
             .to(deadLetterExchange())
             .with(ProblemContestRoutingKey.JUDGE_PROBLEM_DL);
     }
+
+    @Bean
+    public Binding judgeCustomProblemDeadLetterBinding() {
+        return BindingBuilder
+            .bind(judgeCustomProblemDeadLetterQueue())
+            .to(deadLetterExchange())
+            .with(ProblemContestRoutingKey.JUDGE_CUSTOM_PROBLEM_DL);
+    }
+
 }

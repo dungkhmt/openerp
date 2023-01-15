@@ -60,6 +60,7 @@ export default function ContestProblemSubmissionDetail() {
       {}
     ).then();
   }, []);
+
   return (
     <div>
       <Typography variant={"h5"}>
@@ -126,9 +127,7 @@ export default function ContestProblemSubmissionDetail() {
         title={"Source code - " + submissionLanguage}
         text={submissionSource}
       />
-      {message != null
-        ? message.length > 0 && <h3>Compile Message: {message}</h3>
-        : null}
+      {message && message.length > 0 && <h3>Compile Message: {message}</h3>}
     </div>
   );
 }

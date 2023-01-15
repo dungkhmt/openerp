@@ -1,46 +1,52 @@
-import DateFnsUtils from "@date-io/date-fns";
-import {Card, CardActions, CardContent, MenuItem, TextField, Typography,} from "@material-ui/core/";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  FormControl,
+  FormControlLabel,
+  InputAdornment,
+  InputLabel,
+  Link as MuiLink,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  TextField,
+  Typography
+} from "@mui/material";
 import {makeStyles} from "@material-ui/core/styles";
-import {MuiPickersUtilsProvider} from "@material-ui/pickers";
 import React, {useEffect, useState} from "react";
-import {Link, useHistory} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {Editor} from "react-draft-wysiwyg";
-import {ContentState, convertToRaw, EditorState} from "draft-js";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import {authGet, authPostMultiPart} from "../../../api";
-import {Button, TableHead} from "@material-ui/core";
-import draftToHtml from "draftjs-to-html";
-import {SubmitWarming} from "./SubmitWarming";
 import {CompileStatus} from "./CompileStatus";
-import {SubmitSuccess} from "./SubmitSuccess";
 import {useParams} from "react-router";
 import {request} from "./Request";
-import {sleep, StyledTableCell, StyledTableRow} from "./lib";
-import htmlToDraft from "html-to-draftjs";
-import Paper from "@material-ui/core/Paper";
-import TableContainer from "@mui/material/TableContainer";
-import Table from "@mui/material/Table";
-import TableRow from "@material-ui/core/TableRow";
-import TableBody from "@mui/material/TableBody";
 import {getFileType, randomImageName, saveByteArray,} from "../../../utils/FileUpload/covert";
-import {DropzoneArea} from "material-ui-dropzone";
-import {Box} from "@mui/material";
+import {useTranslation} from "react-i18next";
+import HustContainerCard from "../../common/HustContainerCard";
+import HustDropzoneArea from "../../common/HustDropzoneArea";
+import RichTextEditor from "../../common/editor/RichTextEditor";
+import HustCodeEditor from "../../common/HustCodeEditor";
+import {LoadingButton} from "@mui/lab";
+import {errorNoti, successNoti, warningNoti} from "../../../utils/notification";
+import {CUSTOM_EVALUATION, NORMAL_EVALUATION} from "./Constant";
+import ListTestCase from "./ListTestCase";
+import {getAllTags} from "./service/TagService";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import ModelAddNewTag from "./ModelAddNewTag";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: theme.spacing(4),
+  main: {
+    display: "flex",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
     "& .MuiTextField-root": {
-      margin: theme.spacing(1),
-      width: "40%",
-      minWidth: 120,
+      marginBottom: theme.spacing(2),
+      minWidth: 80,
     },
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    maxWidth: 300,
   },
   fileContainer: {
     marginTop: "12px",
@@ -75,67 +81,58 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
   },
 }));
-const descriptionStyles = makeStyles((theme) => ({
-  root: {
-    padding: theme.spacing(4),
-    "& .MuiTextField-root": {
-      margin: theme.spacing(1),
-      width: "100%",
-      minWidth: 120,
-    },
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    maxWidth: 300,
-  },
-}));
-
-const editorStyle = {
-  toolbar: {
-    background: "#FFFFFF",
-  },
-  editor: {
-    border: "1px solid black",
-    minHeight: "300px",
-  },
-};
 
 function EditProblem() {
-  const { problemId } = useParams();
+  const {t} = useTranslation(
+    ["education/programmingcontest/problem", "common", "validation"]
+  );
+
+  const classes = useStyles();
+
+  const {problemId} = useParams();
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
-  const history = useHistory();
+
   const [problemName, setProblemName] = useState("");
-  const [problemDescriptions, setProblemDescription] = useState();
+  const [description, setDescription] = useState("");
+  const [solution, setSolution] = useState("");
   const [timeLimit, setTimeLimit] = useState(1);
   const [memoryLimit, setMemoryLimit] = useState(1);
   const [levelId, setLevelId] = useState("");
-  const [categoryId, setCategoryId] = useState();
-  const defaultLevel = ["easy", "medium", "hard"];
-  const listCategory = [];
-  const classes = useStyles();
-  const descriptionClass = descriptionStyles();
-  const [editorStateDescription, setEditorStateDescription] = useState(
-    EditorState.createEmpty()
-  );
-  const [editorStateSolution, setEditorStateSolution] = useState(
-    EditorState.createEmpty()
-  );
   const [codeSolution, setCodeSolution] = useState("");
-  const [codeChecker, setCodeChecker] = useState("");
+  const [solutionCheckerLanguage, setSolutionCheckerLanguage] = useState("CPP");
+  const [solutionChecker, setSolutionChecker] = useState("");
+  const [isCustomEvaluated, setIsCustomEvaluated] = useState(false);
   const [languageSolution, setLanguageSolution] = useState("CPP");
-  const computerLanguageList = ["CPP", "GOLANG", "JAVA", "PYTHON3"];
-  const [showSubmitWarming, setShowSubmitWarming] = useState(false);
   const [showCompile, setShowCompile] = useState(false);
   const [statusSuccessful, setStatusSuccessful] = useState(false);
-  const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
-  const [testCases, setTestCases] = useState([]);
   const [compileMessage, setCompileMessage] = useState("");
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
   const [attachmentFiles, setAttachmentFiles] = useState([]);
   const [fetchedImageArray, setFetchedImageArray] = useState([]);
   const [removedFilesId, setRemovedFileIds] = useState([]);
+
+  const defaultLevel = ["easy", "medium", "hard"];
+
+  const [loading, setLoading] = useState(false);
+
+  const [openModalAddNewTag, setOpenModalAddNewTag] = useState(false);
+
+  const handleGetTagsSuccess = (res) => setTags(res.data);
+  useEffect(() => {
+    getAllTags(handleGetTagsSuccess);
+  }, [])
+
+
+  const handleSelectTags = (event) => {
+    const selectingTags = event.target.value;
+
+    const filteredTags = [...new Map(selectingTags.map(tag => [tag.tagId, tag])).values()]
+
+    setSelectedTags(filteredTags);
+  };
 
   const handleAttachmentFiles = (files) => {
     setAttachmentFiles(files);
@@ -151,9 +148,6 @@ function EditProblem() {
   useEffect(() => {
     authGet(dispatch, token, "/problem-details/" + problemId)
       .then((res) => {
-        console.log("PROBLEM DETAIL", res.attachment);
-        // setEditorStateDescription(EditorState.set(res.data.problemDescription));
-
         if (res.attachment && res.attachment.length !== 0) {
           const newFileURLArray = res.attachment.map((url) => ({
             id: randomImageName(),
@@ -167,88 +161,34 @@ function EditProblem() {
 
         setProblemName(res.problemName);
         setLevelId(res.levelId);
-        setMemoryLimit(res.memoryLimit);
-        setCodeSolution(res.correctSolutionSourceCode);
-
-        setCodeChecker(
-          res.solutionCheckerSourceCode != null
-            ? res.solutionCheckerSourceCode
-            : " "
-        );
         setTimeLimit(res.timeLimit);
+        setMemoryLimit(res.memoryLimit);
         setIsPublic(res.publicProblem);
-        let problemDescriptionHtml = htmlToDraft(res.problemDescription);
-        let { contentBlocks, entityMap } = problemDescriptionHtml;
-        let contentDescriptionState = ContentState.createFromBlockArray(
-          contentBlocks,
-          entityMap
-        );
-        let statementDescription = EditorState.createWithContent(
-          contentDescriptionState
-        );
-        setEditorStateDescription(statementDescription);
-
-        let solutionHtml = htmlToDraft(res.solution);
-        let contentBlocks1 = solutionHtml.contentBlocks;
-        let entityMap1 = solutionHtml.entityMap;
-        let contentSolutionState = ContentState.createFromBlockArray(
-          contentBlocks1,
-          entityMap1
-        );
-        let statementSolution =
-          EditorState.createWithContent(contentSolutionState);
-        setEditorStateSolution(statementSolution);
+        setLanguageSolution(res.correctSolutionLanguage);
+        setCodeSolution(res.correctSolutionSourceCode);
+        setSolutionCheckerLanguage(res.solutionCheckerLanguage);
+        setSolutionChecker(res.solutionCheckerSourceCode || "");
+        setIsCustomEvaluated(res.scoreEvaluationType === CUSTOM_EVALUATION)
+        setDescription(res.problemDescription);
+        setSelectedTags(res.tags);
       }, {})
       .then();
 
-    getTestCases();
   }, [problemId]);
-
-  function getTestCases() {
-    request(
-      "GET",
-      "/get-test-case-list-by-problem/" + problemId,
-
-      (res) => {
-        console.log("res", res.data);
-        setTestCases(res.data);
-      },
-      {}
-    );
-  }
-
-  function rerunTestCase(problemId, testCaseId) {
-    request(
-      "GET",
-      "/rerun-create-testcase-solution/" + problemId + "/" + testCaseId,
-
-      (res) => {
-        getTestCases();
-      },
-      {}
-    );
-  }
-
-  const onChangeEditorStateDescription = (editorState) => {
-    setEditorStateDescription(editorState);
-  };
-
-  const onChangeEditorStateSolution = (editorState) => {
-    setEditorStateSolution(editorState);
-  };
 
   function checkCompile() {
     let body = {
       source: codeSolution,
       computerLanguage: languageSolution,
     };
+
+    setLoading(true);
     request(
       "post",
       "/check-compile",
       (res) => {
-        if (res.data.status == "Successful") {
+        if (res.data.status === "Successful") {
           setShowCompile(true);
-          setShowSubmitWarming(false);
           setStatusSuccessful(true);
         } else {
           setShowCompile(true);
@@ -258,20 +198,33 @@ function EditProblem() {
       },
       {},
       body
-    ).then();
+    ).then(() => setLoading(false));
+  }
+
+  const validateSubmit = () => {
+    if (problemName === "") {
+      errorNoti(t("missingField", {ns: "validation", fieldName: t("problemName")}), 3000);
+      return false;
+    }
+    if (timeLimit <= 0 || timeLimit > 60) {
+      errorNoti(t("numberBetween", {ns: "validation", fieldName: t("timeLimit"), min: 1, max: 60}), 3000);
+      return false;
+    }
+    if (memoryLimit <= 0 || timeLimit > 1024) {
+      errorNoti(t("numberBetween", {ns: "validation", fieldName: t("memoryLimit"), min: 1, max: 1024}), 3000);
+      return false;
+    }
+    if (!statusSuccessful) {
+      warningNoti(t("validateSubmit.warningCheckSolutionCompile"), 5000);
+      return false;
+    }
+    return true;
   }
 
   function handleSubmit() {
-    if (!statusSuccessful) {
-      setShowSubmitWarming(true);
-      return;
-    }
-    let description = draftToHtml(
-      convertToRaw(editorStateDescription.getCurrentContent())
-    );
-    let solution = draftToHtml(
-      convertToRaw(editorStateSolution.getCurrentContent())
-    );
+    if (!validateSubmit()) return;
+
+    const tagIds = selectedTags.map((tag) => tag.tagId);
 
     let fileId = [];
     if (attachmentFiles.length > 0) {
@@ -291,15 +244,16 @@ function EditProblem() {
       problemDescription: description,
       timeLimit: timeLimit,
       levelId: levelId,
-      categoryId: categoryId,
       memoryLimit: memoryLimit,
       correctSolutionLanguage: languageSolution,
       solution: solution,
       correctSolutionSourceCode: codeSolution,
-      solutionChecker: codeChecker,
+      solutionChecker: solutionChecker,
       isPublic: isPublic,
       fileId: fileId,
       removedFilesId: removedFilesId,
+      scoreEvaluationType: isCustomEvaluated ? CUSTOM_EVALUATION : NORMAL_EVALUATION,
+      tagIds: tagIds,
     };
 
     let formData = new FormData();
@@ -308,525 +262,324 @@ function EditProblem() {
       formData.append("files", file);
     }
 
-    try {
-      authPostMultiPart(
-        dispatch,
-        token,
-        "/update-problem-detail/" + problemId,
-        formData
-      ).then(
-        (res) => {
-          setShowSubmitSuccess(true);
-          sleep(1000).then((r) => {
-            history.push("/programming-contest/list-problems");
-          });
-        },
-        {},
-        () => {
-          alert("Cập nhật thất bại");
-        }
-      );
-    } catch (error) {
-      alert(error);
-    }
+    setLoading(true);
+    authPostMultiPart(
+      dispatch,
+      token,
+      "/update-problem-detail/" + problemId,
+      formData
+    ).then(
+      (res) => {
+        successNoti("Problem saved successfully", 10000);
+      })
+      .catch(() => errorNoti(t("error", {ns: "common"}), 3000))
+      .finally(() => setLoading(false));
   }
 
   return (
-    <div>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Card>
-          <CardContent>
-            <Typography variant="h5" component="h2">
-              Edit Problem <Typography variant="h4"> {problemId}</Typography>
-            </Typography>
-            <form className={classes.root} noValidate autoComplete="off">
-              <div>
-                <TextField
-                  value={problemName}
-                  autoFocus
-                  required
-                  id="problemName"
-                  label="Problem Name"
-                  placeholder="Problem Name"
-                  onChange={(event) => {
-                    setProblemName(event.target.value);
-                  }}
-                ></TextField>
+    <HustContainerCard title={t("editProblem")}>
+      <Box className={classes.main}>
+        <TextField
+          required
+          id="problemName"
+          label={t("problemName")}
+          placeholder="Problem Name"
+          value={problemName}
+          onChange={(event) => {
+            setProblemName(event.target.value);
+          }}
+          sx={{width: "30%"}}
+        />
+        <TextField
+          select
+          id="isPublicProblem"
+          label={t("public", {ns: "common"})}
+          onChange={(event) => {
+            setIsPublic(event.target.value);
+          }}
+          value={isPublic}
+          sx={{width: "15%"}}
+        >
+          <MenuItem key={"true"} value={true}>
+            {t("yes", {ns: "common"})}
+          </MenuItem>
+          <MenuItem key={"false"} value={false}>
+            {t("no", {ns: "common"})}
+          </MenuItem>
+        </TextField>
 
-                <TextField
-                  autoFocus
-                  required
-                  id="timeLimit"
-                  label="Time Limit"
-                  placeholder="Time Limit"
-                  onChange={(event) => {
-                    setTimeLimit(event.target.value);
-                  }}
-                  value={timeLimit}
-                ></TextField>
+        <TextField
+          required
+          select
+          id="levelId"
+          label={t("level")}
+          value={levelId}
+          onChange={(event) => {
+            setLevelId(event.target.value);
+          }}
+          sx={{width: "15%"}}
+        >
+          {defaultLevel.map((item) => (
+            <MenuItem key={item} value={item}>
+              {item}
+            </MenuItem>
+          ))}
+        </TextField>
 
-                <TextField
-                  autoFocus
-                  required
-                  id="memoryLimit"
-                  label="Memory Limit"
-                  placeholder="Memory Limit"
-                  onChange={(event) => {
-                    setMemoryLimit(event.target.value);
-                  }}
-                  value={memoryLimit}
-                ></TextField>
+        <TextField
+          required
+          id="timeLimit"
+          label={t("timeLimit")}
+          placeholder="Time Limit"
+          type="number"
+          value={timeLimit}
+          onChange={(event) => {
+            setTimeLimit(event.target.value);
+          }}
+          InputProps={{endAdornment: <InputAdornment position="end">s</InputAdornment>,}}
+          sx={{width: "15%"}}
+        />
 
-                <TextField
-                  autoFocus
-                  required
-                  select
-                  id="levelId"
-                  label="Level ID"
-                  placeholder="Level ID"
-                  onChange={(event) => {
-                    setLevelId(event.target.value);
-                  }}
-                  value={levelId}
-                >
-                  {defaultLevel.map((item) => (
-                    <MenuItem key={item} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))}
-                </TextField>
+        <TextField
+          required
+          id="memoryLimit"
+          label={t("memoryLimit")}
+          type="number"
+          value={memoryLimit}
+          onChange={(event) => {
+            setMemoryLimit(event.target.value);
+          }}
+          InputProps={{endAdornment: <InputAdornment position="end">MB</InputAdornment>,}}
+          sx={{width: "15%"}}
+        />
 
-                <TextField
-                  autoFocus
-                  // required
-                  select
-                  id="categoryId"
-                  label="Category ID"
-                  placeholder="Category ID"
-                  onChange={(event) => {
-                    setCategoryId(event.target.value);
-                  }}
-                  value={categoryId}
-                >
-                  {listCategory.map((item) => (
-                    <MenuItem key={item} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))}
-                </TextField>
-
-                <TextField
-                  autoFocus
-                  // required
-                  select
-                  id="Public Problem"
-                  label="Public Problem"
-                  placeholder="Public Problem"
-                  onChange={(event) => {
-                    setIsPublic(event.target.value);
-                  }}
-                  value={isPublic}
-                >
-                  <MenuItem key={"true"} value={true}>
-                    {"true"}
-                  </MenuItem>
-                  <MenuItem key={"false"} value={false}>
-                    {"false"}
-                  </MenuItem>
-                </TextField>
-              </div>
-            </form>
-            <form
-              className={descriptionClass.root}
-              noValidate
-              autoComplete="off"
-            >
-              <div>
-                <Typography>
-                  <h2>Problem Description</h2>
-                </Typography>
-                <Editor
-                  editorState={editorStateDescription}
-                  handlePastedText={() => false}
-                  onEditorStateChange={onChangeEditorStateDescription}
-                  toolbarStyle={editorStyle.toolbar}
-                  editorStyle={editorStyle.editor}
-                />
-                <Typography
-                  variant="subtitle1"
-                  display="block"
-                  style={{ margin: "5px 10px 0 5px", width: "100%" }}
-                >
-                  File đính kèm
-                </Typography>
-                <DropzoneArea
-                  dropzoneClass={classes.dropZone}
-                  filesLimit={20}
-                  maxFileSize={10 * 1024 * 1024}
-                  showPreviews={true}
-                  showPreviewsInDropzone={false}
-                  useChipsForPreview
-                  dropzoneText="Kéo thả tệp vào đây hoặc nhấn để chọn tệp"
-                  previewText="Xem trước:"
-                  previewChipProps={{
-                    variant: "outlined",
-                    color: "primary",
-                    size: "medium",
-                  }}
-                  getFileAddedMessage={(fileName) =>
-                    `Tệp ${fileName} tải lên thành công`
-                  }
-                  getFileRemovedMessage={(fileName) =>
-                    `Tệp ${fileName} đã loại bỏ`
-                  }
-                  getFileLimitExceedMessage={(filesLimit) =>
-                    `Vượt quá số lượng tệp tối đa được cho phép. Chỉ được phép tải lên tối đa ${filesLimit} tệp.`
-                  }
-                  alertSnackbarProps={{
-                    anchorOrigin: {vertical: "bottom", horizontal: "right"},
-                    autoHideDuration: 1800,
-                  }}
-                  onChange={(files) => handleAttachmentFiles(files)}
-                />
-
-                {fetchedImageArray.length !== 0 &&
-                  fetchedImageArray.map((file) => (
-                    <div key={file.id} className={classes.fileContainer}>
-                      <div className={classes.fileWrapper}>
-                        {getFileType(file.fileName) === "img" && (
-                          <img
-                            src={`data:image/jpeg;base64,${file.content}`}
-                            alt={file.fileName}
-                            className={classes.imageQuiz}
-                          />
-                        )}
-                        {getFileType(file.fileName) === "pdf" && (
-                          <Box className={classes.fileDownload}>
-                            <Typography
-                              variant="subtitle2"
-                              className={classes.fileName}
-                            >
-                              {file.fileName}
-                            </Typography>
-                            <Button
-                              variant="contained"
-                              color="success"
-                              className={classes.downloadButton}
-                              onClick={() =>
-                                saveByteArray(
-                                  file.fileName,
-                                  file.content,
-                                  "pdf"
-                                )
-                              }
-                            >
-                              Download
-                            </Button>
-                          </Box>
-                        )}
-                        {getFileType(file.fileName) === "word" && (
-                          <Box className={classes.fileDownload}>
-                            <Typography
-                              variant="subtitle2"
-                              className={classes.fileName}
-                            >
-                              {file.fileName}
-                            </Typography>
-                            <Button
-                              variant="contained"
-                              color="success"
-                              className={classes.downloadButton}
-                              onClick={() =>
-                                saveByteArray(
-                                  file.fileName,
-                                  file.content,
-                                  "word"
-                                )
-                              }
-                            >
-                              Download
-                            </Button>
-                          </Box>
-                        )}
-                        {getFileType(file.fileName) === "txt" && (
-                          <Box className={classes.fileDownload}>
-                            <Typography
-                              variant="subtitle2"
-                              className={classes.fileName}
-                            >
-                              {file.fileName}
-                            </Typography>
-                            <Button
-                              variant="contained"
-                              color="success"
-                              className={classes.downloadButton}
-                              onClick={() =>
-                                saveByteArray(
-                                  file.fileName,
-                                  file.content,
-                                  "txt"
-                                )
-                              }
-                            >
-                              Download
-                            </Button>
-                          </Box>
-                        )}
-                        <HighlightOffIcon
-                          className={classes.buttonClearImage}
-                          onClick={() =>
-                            handleDeleteImageAttachment(file.fileName)
-                          }
-                        />
-                      </div>
-                    </div>
-                  ))}
-              </div>
-              <div>
-                <Typography>
-                  <h2>Problem Solution</h2>
-                </Typography>
-                <Editor
-                  editorState={editorStateSolution}
-                  handlePastedText={() => false}
-                  onEditorStateChange={onChangeEditorStateSolution}
-                  toolbarStyle={editorStyle.toolbar}
-                  editorStyle={editorStyle.editor}
-                />
-              </div>
-            </form>
-            <Typography>
-              <h2>Correct Solution Source Code</h2>
-            </Typography>
-            <TextField
-              style={{ width: 0.075 * window.innerWidth, margin: 20 }}
-              variant={"outlined"}
-              size={"small"}
-              autoFocus
-              value={languageSolution}
-              select
-              id="computerLanguage"
-              onChange={(event) => {
-                setLanguageSolution(event.target.value);
-              }}
-            >
-              {computerLanguageList.map((item) => (
-                <MenuItem key={item} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              style={{
-                width: 0.65 * window.innerWidth,
-                margin: 20,
-              }}
-              multiline
-              maxRows={20}
-              value={codeSolution}
-              onChange={(event) => {
-                setCodeSolution(event.target.value);
-              }}
-            />
-            <Typography>
-              <h2>Solution Checker</h2>
-            </Typography>
-            <TextField
-              style={{
-                width: 0.65 * window.innerWidth,
-                margin: 20,
-              }}
-              multiline
-              maxRows={20}
-              value={codeChecker}
-              onChange={(event) => {
-                setCodeChecker(event.target.value);
-              }}
-            />
-            <TextField
-              style={{ width: 0.075 * window.innerWidth, margin: 20 }}
-              variant={"outlined"}
-              size={"small"}
-              autoFocus
-              value={languageSolution}
-              select
-              id="computerLanguage"
-              onChange={(event) => {
-                setLanguageSolution(event.target.value);
-              }}
-            >
-              {computerLanguageList.map((item) => (
-                <MenuItem key={item} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </TextField>
-            <br />
-            <CompileStatus
-              showCompile={showCompile}
-              statusSuccessful={statusSuccessful}
-              message={compileMessage}
-            />
-          </CardContent>
-          <CardActions>
-            <Button
-              variant="contained"
-              color="light"
-              style={{ marginLeft: "45px" }}
-              onClick={checkCompile}
-            >
-              Check Solution Compile
-            </Button>
-            <SubmitWarming
-              showSubmitWarming={showSubmitWarming}
-              content={"Your source must be pass compile process"}
-            />
-          </CardActions>
-
-          <Typography>
-            <h2>Test case</h2>
-          </Typography>
-
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 750 }} aria-label="customized table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell></StyledTableCell>
-                  <StyledTableCell align="left">TestCase</StyledTableCell>
-                  <StyledTableCell align="left">Correct Answer</StyledTableCell>
-                  <StyledTableCell align="left">Point</StyledTableCell>
-                  <StyledTableCell align="left">Public</StyledTableCell>
-                  <StyledTableCell align="left">Description</StyledTableCell>
-                  <StyledTableCell align="left">Status</StyledTableCell>
-                  <StyledTableCell align="left">Edit</StyledTableCell>
-                  <StyledTableCell align="left">Rerun</StyledTableCell>
-                  <StyledTableCell align="left">Delete</StyledTableCell>
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {testCases.map((testCase, idx) => (
-                  <StyledTableRow>
-                    <StyledTableCell component="th" scope="row">
-                      {idx}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      align="left"
-                      sx={{
-                        maxWidth: "120px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {testCase.testCase}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      align="left"
-                      sx={{
-                        maxWidth: "120px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {testCase.correctAns}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {testCase.point}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {testCase.isPublic}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {testCase.description}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {testCase.status}
-                    </StyledTableCell>
-
-                    <StyledTableCell align="left">
-                      <Link
-                        to={
-                          "/programming-contest/edit-testcase/" +
-                          problemId +
-                          "/" +
-                          testCase.testCaseId
-                        }
-                        style={{
-                          textDecoration: "none",
-                          color: "black",
-                          cursor: "",
-                        }}
-                      >
-                        <Button variant="contained" color="light">
-                          Edit
-                        </Button>
-                      </Link>
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      <Button
-                        variant="contained"
-                        color="light"
-                        onClick={() => {
-                          rerunTestCase(problemId, testCase.testCaseId);
-                        }}
-                      >
-                        Rerun
-                      </Button>
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      <Button
-                        variant="contained"
-                        color="light"
-                        onClick={() => {
-                          request(
-                            "delete",
-                            "/delete-test-case/" + testCase.testCaseId,
-
-                            (res) => {
-                              request(
-                                "GET",
-                                "/get-test-case-list-by-problem/" + problemId,
-
-                                (res) => {
-                                  console.log("res", res.data);
-                                  setTestCases(res.data);
-                                },
-                                {}
-                              ).then();
-                            },
-                            {}
-                          ).then();
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </StyledTableCell>
-                  </StyledTableRow>
+        <FormControl sx={{m: 1, width: "90%"}}>
+          <InputLabel id="select-tag-label">Tags</InputLabel>
+          <Select
+            labelId="select-tag-label"
+            id="select-tag"
+            multiple
+            value={selectedTags}
+            onChange={handleSelectTags}
+            input={<OutlinedInput label="Tags"/>}
+            renderValue={(selectedTags) => (
+              <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.8}}>
+                {selectedTags.map((selectedTag) => (
+                  <Chip size="small" label={selectedTag.name} sx={{
+                    marginRight: "6px",
+                    marginBottom: "6px",
+                    border: "1px solid lightgray",
+                    fontStyle: "italic"
+                  }}/>
                 ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
 
-          <CardActions>
+              </Box>
+            )}
+          >
             <Button
-              variant="contained"
-              color="light"
-              style={{ marginLeft: "45px" }}
-              onClick={handleSubmit}
+              sx={{marginLeft: "20px"}}
+              startIcon={<AddCircleIcon/>}
+              onClick={() => setOpenModalAddNewTag(true)}
             >
-              Save
+              {t("common:addNew")}
             </Button>
-
-            <SubmitSuccess
-              showSubmitSuccess={showSubmitSuccess}
-              content={"You have saved problem"}
+            <ModelAddNewTag
+              isOpen={openModalAddNewTag}
+              handleSuccess={() => {
+                getAllTags(handleGetTagsSuccess)
+              }}
+              handleClose={() => setOpenModalAddNewTag(false)}
             />
-          </CardActions>
-        </Card>
-      </MuiPickersUtilsProvider>
-    </div>
+            {tags.map((tag) => (
+              <MenuItem key={tag.tagId} value={tag}>
+                <Checkbox checked={selectedTags.some(selectedTag => selectedTag.tagId === tag.tagId)}/>
+                <ListItemText primary={tag.name} secondary={tag?.description}/>
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
+      <Box className={classes.description}>
+        <Typography variant="h5" component="div" sx={{marginTop: "12px", marginBottom: "8px"}}>
+          {t("problemDescription")}
+        </Typography>
+        <RichTextEditor content={description} onContentChange={text => setDescription(text)}/>
+        <HustDropzoneArea onChangeAttachment={(files) => handleAttachmentFiles(files)}/>
+      </Box>
+
+      {fetchedImageArray.length !== 0 &&
+        fetchedImageArray.map((file) => (
+          <div key={file.id} className={classes.fileContainer}>
+            <div className={classes.fileWrapper}>
+              {getFileType(file.fileName) === "img" && (
+                <img
+                  src={`data:image/jpeg;base64,${file.content}`}
+                  alt={file.fileName}
+                  className={classes.imageQuiz}
+                />
+              )}
+              {getFileType(file.fileName) === "pdf" && (
+                <Box className={classes.fileDownload}>
+                  <Typography
+                    variant="subtitle2"
+                    className={classes.fileName}
+                  >
+                    {file.fileName}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    className={classes.downloadButton}
+                    onClick={() =>
+                      saveByteArray(
+                        file.fileName,
+                        file.content,
+                        "pdf"
+                      )
+                    }
+                  >
+                    Download
+                  </Button>
+                </Box>
+              )}
+              {getFileType(file.fileName) === "word" && (
+                <Box className={classes.fileDownload}>
+                  <Typography
+                    variant="subtitle2"
+                    className={classes.fileName}
+                  >
+                    {file.fileName}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    className={classes.downloadButton}
+                    onClick={() =>
+                      saveByteArray(
+                        file.fileName,
+                        file.content,
+                        "word"
+                      )
+                    }
+                  >
+                    Download
+                  </Button>
+                </Box>
+              )}
+              {getFileType(file.fileName) === "txt" && (
+                <Box className={classes.fileDownload}>
+                  <Typography
+                    variant="subtitle2"
+                    className={classes.fileName}
+                  >
+                    {file.fileName}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    className={classes.downloadButton}
+                    onClick={() =>
+                      saveByteArray(
+                        file.fileName,
+                        file.content,
+                        "txt"
+                      )
+                    }
+                  >
+                    Download
+                  </Button>
+                </Box>
+              )}
+              <HighlightOffIcon
+                className={classes.buttonClearImage}
+                onClick={() =>
+                  handleDeleteImageAttachment(file.fileName)
+                }
+              />
+            </div>
+          </div>
+        ))}
+      {/* this function is not implemented yet
+              <Box>
+                <Typography>
+                  <h2>{t("problemSuggestion")}</h2>
+                </Typography>
+                <RichTextEditor
+                  content={solution}
+                  onContentChange={text => setSolution(text)}
+                />
+              </Box>
+              */}
+
+      <HustCodeEditor
+        title={t("correctSourceCode")}
+        language={languageSolution}
+        onChangeLanguage={(event) => {
+          setLanguageSolution(event.target.value);
+        }}
+        sourceCode={codeSolution}
+        onChangeSourceCode={(code) => {
+          setCodeSolution(code);
+        }}
+      />
+      <LoadingButton
+        variant="contained"
+        loading={loading}
+        onClick={checkCompile}
+        sx={{marginTop: "12px", marginBottom: "6px"}}
+      >
+        {t("checkSolutionCompile")}
+      </LoadingButton>
+
+      <CompileStatus
+        showCompile={showCompile}
+        statusSuccessful={statusSuccessful}
+        message={compileMessage}
+      />
+
+      <FormControlLabel
+        label={t("isCustomEvaluated")}
+        control={
+          <Checkbox
+            checked={isCustomEvaluated}
+            onChange={() => setIsCustomEvaluated(!isCustomEvaluated)}
+          />}
+      />
+      <Typography variant="body2" color="gray">{t("customEvaluationNote1")}</Typography>
+      <MuiLink href="#" underline="hover">
+        <Typography variant="body2" color="gray">{t("customEvaluationNote2")}</Typography>
+      </MuiLink>
+
+      {isCustomEvaluated &&
+        <HustCodeEditor
+          title={t("checkerSourceCode")}
+          language={solutionCheckerLanguage}
+          onChangeLanguage={(event) => {
+            setSolutionCheckerLanguage(event.target.value);
+          }}
+          sourceCode={solutionChecker}
+          onChangeSourceCode={(code) => {
+            setSolutionChecker(code);
+          }}
+          placeholder={t("checkerSourceCodePlaceholder")}
+        />
+      }
+
+      <ListTestCase/>
+
+      <Box width="100%" sx={{marginTop: "16px"}}>
+        <LoadingButton
+          variant="contained"
+          color="success"
+          loading={loading}
+          onClick={handleSubmit}
+        >
+          {t("save", {ns: "common"})}
+        </LoadingButton>
+      </Box>
+    </HustContainerCard>
   );
 }
+
 export default EditProblem;

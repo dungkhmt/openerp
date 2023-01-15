@@ -20,6 +20,7 @@ public class EduQuizTest {
     public static final String QUIZ_TEST_STATUS_CREATED = "CREATED";
     public static final String QUIZ_TEST_STATUS_DISABLED = "DISABLED";
     public static final String QUIZ_TEST_STATUS_OPEN = "OPEN";
+    public static final String QUIZ_TEST_STATUS_RUNNING = "RUNNING";
     public static final String QUIZ_TEST_STATUS_HIDDEN = "HIDDEN";
 
 
@@ -32,6 +33,15 @@ public class EduQuizTest {
     public static final String PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_ASSIGN_GROUP_BEFORE_HANDOUT = "ASSIGN_GROUP_BEFORE_HANDOUT"; // quiz group is assigned to participant by teacher on the system before hand-out
     public static final String PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_HANDOUT_THEN_UPDATE_GROUP = "HANDOUT_THEN_UPDATE_GROUP";// quiz group questions is distributed (hard copy) randomly among participants and participants check and confirm update quiz group
 
+    public static List<String> getListStatusIds(){
+        List<String> L = new ArrayList();
+        L.add(QUIZ_TEST_STATUS_CREATED);
+        L.add(QUIZ_TEST_STATUS_DISABLED);
+        L.add(QUIZ_TEST_STATUS_OPEN);
+        L.add(QUIZ_TEST_STATUS_HIDDEN);
+        L.add(QUIZ_TEST_STATUS_RUNNING);
+        return L;
+    }
     public static List<String> getListParticipantQuizGroupAssignmentModes(){
         List<String> L = new ArrayList();
         L.add(PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_ASSIGN_GROUP_BEFORE_HANDOUT);

@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.service.helper;
 
+import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionEntity;
 import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionTestCaseEntity;
 import com.hust.baseweb.applications.programmingcontest.entity.TestCaseEntity;
@@ -10,16 +11,20 @@ import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.Prob
 import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.StringHandler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static com.hust.baseweb.config.rabbitmq.ProblemContestRoutingKey.JUDGE_CUSTOM_PROBLEM;
+import static com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestConfig.EXCHANGE;
 
 @Slf4j
 @Service
@@ -28,22 +33,23 @@ public class SubmissionResponseHandler {
 
     private ContestSubmissionRepo contestSubmissionRepo;
     private ContestSubmissionTestCaseEntityRepo contestSubmissionTestCaseEntityRepo;
+    private RabbitTemplate rabbitTemplate;
 
     @Transactional
     public void processSubmissionResponse(
         List<TestCaseEntity> testCaseEntityList,
         List<String> listSubmissionResponse,
-        ModelContestSubmission modelContestSubmission,
-        ContestSubmissionEntity submission
+        ContestSubmissionEntity submission,
+        String problemEvaluationType
     ) throws Exception {
-        int runtime = 0;
+//        int runtime = 0;
         int score = 0;
         int nbTestCasePass = 0;
 
-        String totalStatus = "";
-        List<String> statusList = new ArrayList<>();
+        String totalStatus;
         String message = "";
         boolean compileError = false;
+        boolean processing = false;
 
         int mb = 1000 * 1000;
         MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
@@ -53,37 +59,50 @@ public class SubmissionResponseHandler {
         long startTime1 = System.nanoTime();
         for (TestCaseEntity testCaseEntity : testCaseEntityList) {
             String response = listSubmissionResponse.get(i++);
-            List<String> testCaseAns = Collections.singletonList(testCaseEntity.getCorrectAnswer());
-            List<Integer> points = Collections.singletonList(testCaseEntity.getTestCasePoint());
+//            List<String> testCaseAns = Collections.singletonList(testCaseEntity.getCorrectAnswer());
+//            List<Integer> points = Collections.singletonList(testCaseEntity.getTestCasePoint());
 
             ProblemSubmission problemSubmission;
 
             try {
-                problemSubmission = StringHandler.handleContestResponseV2(response, testCaseAns, points);
+//                problemSubmission = StringHandler.handleContestResponseV2(
+//                        response,
+//                        testCaseAns,
+//                        points,
+//                        problemEvaluationType);
+
+                problemSubmission = StringHandler.handleContestResponseSingleTestcase(
+                    response,
+                    testCaseEntity.getCorrectAnswer(),
+                    testCaseEntity.getTestCasePoint(),
+                    problemEvaluationType);
 
                 if (problemSubmission.getStatus().equals(ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR)) {
                     message = problemSubmission.getMessage();
                     compileError = true;
                     break;
+                } else if (problemSubmission
+                    .getStatus()
+                    .equals(ContestSubmissionEntity.SUBMISSION_STATUS_WAIT_FOR_CUSTOM_EVALUATION)) {
+                    processing = true;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-//                System.out.println("LOG FOR TESTING STRING HANDLER ERROR: " + response);
+                // System.out.println("LOG FOR TESTING STRING HANDLER ERROR: " + response);
                 throw new Exception("error from StringHandler");
             }
 
-            runtime = runtime + problemSubmission.getRuntime().intValue();
+//            runtime = runtime + problemSubmission.getRuntime().intValue();
             score = score + problemSubmission.getScore();
             nbTestCasePass += problemSubmission.getNbTestCasePass();
-            statusList.add(problemSubmission.getStatus());
 
             List<String> output = problemSubmission.getParticipantAns();
             String participantAns = output != null && output.size() > 0 ? output.get(0) : "";
 
             ContestSubmissionTestCaseEntity cste = ContestSubmissionTestCaseEntity.builder()
-                                                                                  .contestId(modelContestSubmission.getContestId())
+                                                                                  .contestId(submission.getContestId())
                                                                                   .contestSubmissionId(submission.getContestSubmissionId())
-                                                                                  .problemId(modelContestSubmission.getProblemId())
+                                                                                  .problemId(submission.getProblemId())
                                                                                   .testCaseId(testCaseEntity.getTestCaseId())
                                                                                   .submittedByUserLoginId(submission.getUserId())
                                                                                   .point(problemSubmission.getScore())
@@ -97,7 +116,7 @@ public class SubmissionResponseHandler {
                                                                                   .build();
 
             long startTime = System.nanoTime();
-            contestSubmissionTestCaseEntityRepo.save(cste);
+            contestSubmissionTestCaseEntityRepo.saveAndFlush(cste);
             long endTime = System.nanoTime();
             log.info(
                 "Save contestSubmissionTestCaseEntity to DB, execution time = {} ms",
@@ -116,7 +135,9 @@ public class SubmissionResponseHandler {
 
         if (compileError) {
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_COMPILE_ERROR;
-            //log.info("submitContestProblemTestCaseByTestCaseWithFileProcessor, Summary Compile error " + message);
+        } else if (processing) {
+            message = "Evaluating";
+            totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_WAIT_FOR_CUSTOM_EVALUATION;
         } else if (nbTestCasePass == 0) {
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_FAILED;
         } else if (nbTestCasePass > 0 && nbTestCasePass < testCaseEntityList.size()) {
@@ -126,18 +147,71 @@ public class SubmissionResponseHandler {
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
         }
 
-        ContestSubmissionEntity submissionEntity = contestSubmissionRepo.
-            findContestSubmissionEntityByContestSubmissionId(submission.getContestSubmissionId());
+        ContestSubmissionEntity submissionEntity = contestSubmissionRepo
+            .findContestSubmissionEntityByContestSubmissionId(submission.getContestSubmissionId());
 
         submissionEntity.setStatus(totalStatus);
         submissionEntity.setPoint(score);
-        submissionEntity.setTestCasePass(nbTestCasePass + "/" + testCaseEntityList.size());
-        submissionEntity.setSourceCode(modelContestSubmission.getSource());
-        submissionEntity.setSourceCodeLanguage(modelContestSubmission.getLanguage());
-        submissionEntity.setRuntime((long) runtime);
+        submissionEntity.setTestCasePass(nbTestCasePass + " / " + testCaseEntityList.size());
+        submissionEntity.setSourceCode(submission.getSourceCode());
+        submissionEntity.setSourceCodeLanguage(submission.getSourceCodeLanguage());
+//        submissionEntity.setRuntime((long) runtime);
         submissionEntity.setMessage(message);
         submissionEntity.setUpdateAt(new Date());
-        contestSubmissionRepo.save(submissionEntity);
+        contestSubmissionRepo.saveAndFlush(submissionEntity);
+
+        if (processing) {
+            rabbitTemplate.convertAndSend(
+                EXCHANGE,
+                JUDGE_CUSTOM_PROBLEM,
+                submission.getContestSubmissionId());
+        }
+    }
+
+    @Transactional
+    public void processCustomSubmissionResponse(
+        ContestSubmissionEntity submission,
+        Map<UUID, String> submissionResponses
+    ) {
+
+        int totalPoint = 0;
+
+        for (Map.Entry<UUID, String> testCaseResponse : submissionResponses.entrySet()) {
+            UUID submissionTestCaseId = testCaseResponse.getKey();
+            ContestSubmissionTestCaseEntity submissionTestCase = contestSubmissionTestCaseEntityRepo
+                .findById(submissionTestCaseId)
+                .get();
+
+            String response = testCaseResponse.getValue();
+
+            int point = 0;
+            String message = "";
+            if (response.length() > 0) {
+                if (response.indexOf(' ') < 0) {
+                    message = "Invalid response";
+                } else {
+                    String pointString = response.substring(0, response.indexOf(' '));
+                    point = Integer.parseInt(pointString);
+                    totalPoint += point;
+
+                    message = response.substring(response.indexOf(' '), response.indexOf(Constants.SPLIT_TEST_CASE));
+                }
+
+            }
+
+            submissionTestCase.setPoint(point);
+            submissionTestCase.setStatus(message);
+
+            contestSubmissionTestCaseEntityRepo.save(submissionTestCase);
+        }
+
+        submission.setPoint(totalPoint);
+        submission.setStatus(ContestSubmissionEntity.SUBMISSION_STATUS_CUSTOM_EVALUATED);
+        submission.setMessage(ContestSubmissionEntity.SUBMISSION_STATUS_CUSTOM_EVALUATED);
+        submission.setTestCasePass("_ / " + submissionResponses.size());
+        submission.setUpdateAt(new Date());
+
+        contestSubmissionRepo.save(submission);
     }
 
 }

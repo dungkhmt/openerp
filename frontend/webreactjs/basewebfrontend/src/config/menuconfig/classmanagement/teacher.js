@@ -22,6 +22,15 @@ export const eduTeachingManagement = {
       child: [],
     },
     {
+      id: "MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_VIEW_ALL_CLASS",
+      path: "/edu/teacher/all-class/list",
+      isPublic: false,
+      icon: null,
+      text: "All Classes",
+      child: [],
+    },
+
+    {
       id: "MENU_EDUCATION_TEACHING_MANAGEMENT_TEACHER_CREATE_CLASS",
       path: "/edu/class/add",
       isPublic: false,

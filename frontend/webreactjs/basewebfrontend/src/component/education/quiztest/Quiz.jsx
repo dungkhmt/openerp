@@ -9,6 +9,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@mui/material";
 import ReactHtmlParser from "react-html-parser";
 
+import { LoadingButton } from "@mui/lab";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -29,7 +31,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Quiz({ question, order, choseAnswers, onSave }) {
+export default function Quiz({
+  question,
+  order,
+  choseAnswers,
+  onSave,
+  loading,
+}) {
   const classes = useStyles();
   const {
     questionId,
@@ -125,17 +133,22 @@ export default function Quiz({ question, order, choseAnswers, onSave }) {
                     Đã lưu
                   </Button>
                 ) : ( */}
-                <Button
+
+                {/*<Button*/}
+                <LoadingButton
                   variant="contained"
                   color="primary"
                   onClick={handleSubmit}
+                  loading={loading}
                   style={{
                     textTransform: "none",
                     width: 100,
                   }}
                 >
                   Save
-                </Button>
+                </LoadingButton>
+                {/*</Button>*/}
+
                 {/* )} */}
               </div>
               {checkState.lastSubmittedAnswers.get().length > 0 && (

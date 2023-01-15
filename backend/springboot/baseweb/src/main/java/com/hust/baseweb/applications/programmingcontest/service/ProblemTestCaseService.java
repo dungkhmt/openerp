@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public interface ProblemTestCaseService {
 
-    void createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException;
+    ProblemEntity createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException;
 
     ProblemEntity updateContestProblem(String problemId, String userId, String json, MultipartFile[] files) throws Exception;
 
@@ -58,7 +58,7 @@ public interface ProblemTestCaseService {
     ModelContestSubmissionResponse submitContestProblem(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
     ModelContestSubmissionResponse submitContestProblemTestCaseByTestCase(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
     ModelContestSubmissionResponse submitContestProblemTestCaseByTestCaseWithFile(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
-    void submitContestProblemTestCaseByTestCaseWithFileProcessor(ModelContestSubmission modelContestSubmission, ContestSubmissionEntity submissionEntity) throws Exception;
+    void submitContestProblemTestCaseByTestCaseWithFileProcessor(UUID contestSubmissionId) throws Exception;
     ModelContestSubmissionResponse submitContestProblemStoreOnlyNotExecute(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
 
 
@@ -116,6 +116,7 @@ public interface ProblemTestCaseService {
     Page<ContestSubmission> findContestNotEvaluatedSubmissionByContestIdPaging(Pageable pageable, String contestId);
     Page<ContestSubmission> findContestSubmissionByUserLoginIdPaging(Pageable pageable, String userLoginId);
     Page<ContestSubmission> findContestSubmissionByUserLoginIdAndContestIdPaging(Pageable pageable, String userLoginId, String contestId);
+    Page<ContestSubmission> findContestSubmissionByUserLoginIdAndContestIdAndProblemIdPaging(Pageable pageable, String userLoginId, String contestId, String problemId);
     List<ContestSubmission> getNewestSubmissionResults(String userLoginId);
 
 
@@ -167,4 +168,16 @@ public interface ProblemTestCaseService {
     boolean addUserProblemRole(String userName, ModelUserProblemRole input);
     boolean removeUserProblemRole(String userName, ModelUserProblemRole input);
     boolean grantRole2AllProblems(String userLoginId, String userId, String roleId);
+
+    void evaluateCustomProblemSubmission(UUID contestSubmissionId) throws Exception;
+
+    List<TagEntity> getAllTags();
+
+    TagEntity addNewTag(ModelTag tag);
+
+    TagEntity updateTag(Integer tagId, ModelTag tag);
+
+    void deleteTag(Integer tagId);
+
+    void switchAllContestJudgeMode(String judgeMode);
 }

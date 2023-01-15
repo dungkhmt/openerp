@@ -7,6 +7,7 @@ import { Link, useHistory } from "react-router-dom";
 import { authGet } from "../../../api";
 import withScreenSecurity from "../../withScreenSecurity";
 import QuizTestsOfParticipantRole from "./QuizTestsOfParticipantRole";
+import QuizTestListOfCurrentTeacher from "../../../views/Education/quiztest/teacher/QuizTestListOfCurrentTeacher";
 const nextLine = <pre></pre>;
 
 function createData(
@@ -172,6 +173,8 @@ function QuizTestList() {
 
   return (
     <>
+      <QuizTestListOfCurrentTeacher/>
+
       {/* <Grid container spacing={5} justify='flex-end' direction="row">
                     <Tooltip title="Thêm mới một đề thi" aria-label="Thêm mới một đề thi" placement="top">
                         <Button

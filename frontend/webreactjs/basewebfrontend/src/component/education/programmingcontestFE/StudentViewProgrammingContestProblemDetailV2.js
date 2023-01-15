@@ -503,7 +503,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
       </div>
       <div>
         <br></br>
-        <StudentViewSubmission ref={listSubmissionRef}/>
+        <StudentViewSubmission problemId={problemId} ref={listSubmissionRef}/>
       </div>
     </div>
   );

@@ -8,8 +8,13 @@ import {
   View,
 } from "@react-pdf/renderer";
 import parse from "html-react-parser";
-import { subPageTotalPagesState } from "../QuizTestGroupList";
 import Footer from "./Footer";
+import {createState} from "@hookstate/core";
+
+export const subPageTotalPagesState = createState({
+  fulfilled: false,
+  totalPages: [],
+});
 
 Font.register({
   family: "Inter",
@@ -112,7 +117,7 @@ function ExamQuestionsOfParticipantPDFDocument({ data }) {
                 </Text>
 
                 {/* Questions */}
-                {listQuestion.map((q, qIndex) => (
+                {listQuestion?.map((q, qIndex) => (
                   <View key={q.questionId} style={styles.question}>
                     {parse(q.statement).map((ele, eIndex) => {
                       if (eIndex > 0) {

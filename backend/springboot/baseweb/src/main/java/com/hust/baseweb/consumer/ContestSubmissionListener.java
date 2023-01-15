@@ -14,13 +14,14 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import static com.hust.baseweb.config.rabbitmq.ProblemContestRoutingKey.JUDGE_PROBLEM_DL;
 import static com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestConfig.DEAD_LETTER_EXCHANGE;
 import static com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestConfig.JUDGE_PROBLEM_QUEUE;
 
 @Component
-public class ContestSubmissionListener {
+public class ContestSubmissionListener extends BaseRabbitListener {
 
     private final ObjectMapper objectMapper;
     private final ProblemTestCaseService problemTestCaseService;
@@ -37,6 +38,7 @@ public class ContestSubmissionListener {
         this.rabbitConfig = rabbitConfig;
     }
 
+    @Override
     @RabbitListener(queues = JUDGE_PROBLEM_QUEUE)
     public void onMessage(
         Message message, String messageBody, Channel channel,
@@ -49,7 +51,8 @@ public class ContestSubmissionListener {
         }
     }
 
-    private void retryMessage(Message message, String messageBody, Channel channel) throws IOException {
+    @Override
+    protected void retryMessage(Message message, String messageBody, Channel channel) throws IOException {
 //        if (true) {
 //            System.out.println("Nack");
 //            channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
@@ -57,14 +60,8 @@ public class ContestSubmissionListener {
 //        }
 
         try {
-            ModelContestSubmissionMessage msg = objectMapper.readValue(
-                messageBody,
-                ModelContestSubmissionMessage.class);
-            ModelContestSubmission contestSubmission = msg.getModelContestSubmission();
-            ContestSubmissionEntity submissionEntity = msg.getSubmission();
-            problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFileProcessor(
-                contestSubmission,
-                submissionEntity);
+            UUID contestSubmissionId = UUID.fromString(messageBody);
+            problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFileProcessor(contestSubmissionId);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,7 +69,8 @@ public class ContestSubmissionListener {
         }
     }
 
-    private void sendMessageToDeadLetterQueue(Message message, Channel channel) throws IOException {
+    @Override
+    protected void sendMessageToDeadLetterQueue(Message message, Channel channel) throws IOException {
         channel.basicPublish(
             DEAD_LETTER_EXCHANGE,
             JUDGE_PROBLEM_DL,

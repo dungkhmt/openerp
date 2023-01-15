@@ -21,5 +21,7 @@ public class ModelCreateContestProblem {
     private String solutionCheckerLanguage;
     private String solution;
     private Boolean isPublic;
+    private String scoreEvaluationType;
     private String[] fileId;
+    private Integer[] tagIds;
 }

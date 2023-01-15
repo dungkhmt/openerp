@@ -135,13 +135,20 @@ export function dateFnFormat(date, formatString) {
 }
 
 const DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
+const DEFAULT_TIME_FORMAT = "HH:mm:ss";
 const DEFAULT_DATETIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
 export function defaultDateFormat(date) {
   return moment(date).format(DEFAULT_DATE_FORMAT);
 }
 
+export function defaultTimeFormat(time) {
+  if (!time) return "";
+  return moment(time).format(DEFAULT_TIME_FORMAT);
+}
+
 export function defaultDatetimeFormat(datetime) {
+  if (!datetime) return "";
   return moment(datetime).format(DEFAULT_DATETIME_FORMAT);
 }
 

@@ -52,6 +52,7 @@ import StudentLearningProgressDetail from "../views/Education/ClassManagement/Te
 import TAssignmentDetail from "../views/Education/ClassManagement/Teacher/TAssignmentDetail";
 import TClassDetail from "../views/Education/ClassManagement/Teacher/TClassDetail";
 import TClassList from "../views/Education/ClassManagement/Teacher/TClassList";
+import TAllClassList from "../views/Education/ClassManagement/Teacher/TAllClassList";
 import TeacherViewDetailClass from "../views/Education/ClassManagement/Teacher/TeacherViewDetailClass";
 import TeacherViewLearningSessionDetail from "../views/Education/ClassManagement/Teacher/TeacherViewLearningSessionDetail";
 
@@ -294,6 +295,11 @@ export default function EduRoute() {
         <Route
           component={TClassList}
           path={`${path}/teacher/class/list`}
+          exact
+        />
+        <Route
+          component={TAllClassList}
+          path={`${path}/teacher/all-class/list`}
           exact
         />
 
