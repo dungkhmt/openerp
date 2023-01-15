@@ -2089,7 +2089,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public ModelGetContestPageResponse getAllContestsPagingByAdmin(String userName, Pageable pageable) {
         //List<ContestEntity> contestEntities = contestPagingAndSortingRepo.findAll();
         Page<ContestEntity> contestEntities = contestPagingAndSortingRepo.findAll(pageable);
-        return getModelGetContestPageResponse(contestEntities);
+        long count = contestPagingAndSortingRepo.count();
+        return getModelGetContestPageResponse(contestEntities, count);
     }
 
     @Override
@@ -3332,6 +3333,31 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
         return ModelGetContestPageResponse.builder()
                                           .contents(lists)
+                                          .build();
+    }
+
+    private ModelGetContestPageResponse getModelGetContestPageResponse(Page<ContestEntity> contestPage, long count) {
+        List<ModelGetContestResponse> lists = new ArrayList<>();
+        if (contestPage != null) {
+            contestPage.forEach(contest -> {
+                ModelGetContestResponse modelGetContestResponse = ModelGetContestResponse.builder()
+                                                                                         .contestId(contest.getContestId())
+                                                                                         .contestName(contest.getContestName())
+                                                                                         .contestTime(contest.getContestSolvingTime())
+                                                                                         .countDown(contest.getCountDown())
+                                                                                         .startAt(contest.getStartedAt())
+                                                                                         .isPublic(contest.getIsPublic())
+                                                                                         .statusId(contest.getStatusId())
+                                                                                         .userId(contest.getUserId())
+                                                                                         .createdAt(contest.getCreatedAt())
+                                                                                         .build();
+                lists.add(modelGetContestResponse);
+            });
+        }
+
+        return ModelGetContestPageResponse.builder()
+                                          .contents(lists)
+                                          .count(count)
                                           .build();
     }
 
