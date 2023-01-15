@@ -37,6 +37,7 @@ import ListTestCase from "./ListTestCase";
 import {getAllTags} from "./service/TagService";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ModelAddNewTag from "./ModelAddNewTag";
+import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -47,38 +48,6 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(2),
       minWidth: 80,
     },
-  },
-  fileContainer: {
-    marginTop: "12px",
-  },
-  fileWrapper: {
-    position: "relative",
-  },
-  fileDownload: {
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: "16px",
-    alignItems: "center",
-  },
-  fileName: {
-    fontStyle: "italic",
-    paddingRight: "12px",
-  },
-  downloadButton: {
-    marginLeft: "12px",
-  },
-  imageQuiz: {
-    maxWidth: "70%",
-  },
-  buttonClearImage: {
-    position: "absolute",
-    top: "12px",
-    right: "12px",
-    zIndex: 3,
-    color: "red",
-    width: 32,
-    height: 32,
-    cursor: "pointer",
   },
 }));
 
@@ -410,95 +379,7 @@ function EditProblem() {
 
       {fetchedImageArray.length !== 0 &&
         fetchedImageArray.map((file) => (
-          <div key={file.id} className={classes.fileContainer}>
-            <div className={classes.fileWrapper}>
-              {getFileType(file.fileName) === "img" && (
-                <img
-                  src={`data:image/jpeg;base64,${file.content}`}
-                  alt={file.fileName}
-                  className={classes.imageQuiz}
-                />
-              )}
-              {getFileType(file.fileName) === "pdf" && (
-                <Box className={classes.fileDownload}>
-                  <Typography
-                    variant="subtitle2"
-                    className={classes.fileName}
-                  >
-                    {file.fileName}
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    className={classes.downloadButton}
-                    onClick={() =>
-                      saveByteArray(
-                        file.fileName,
-                        file.content,
-                        "pdf"
-                      )
-                    }
-                  >
-                    Download
-                  </Button>
-                </Box>
-              )}
-              {getFileType(file.fileName) === "word" && (
-                <Box className={classes.fileDownload}>
-                  <Typography
-                    variant="subtitle2"
-                    className={classes.fileName}
-                  >
-                    {file.fileName}
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    className={classes.downloadButton}
-                    onClick={() =>
-                      saveByteArray(
-                        file.fileName,
-                        file.content,
-                        "word"
-                      )
-                    }
-                  >
-                    Download
-                  </Button>
-                </Box>
-              )}
-              {getFileType(file.fileName) === "txt" && (
-                <Box className={classes.fileDownload}>
-                  <Typography
-                    variant="subtitle2"
-                    className={classes.fileName}
-                  >
-                    {file.fileName}
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    className={classes.downloadButton}
-                    onClick={() =>
-                      saveByteArray(
-                        file.fileName,
-                        file.content,
-                        "txt"
-                      )
-                    }
-                  >
-                    Download
-                  </Button>
-                </Box>
-              )}
-              <HighlightOffIcon
-                className={classes.buttonClearImage}
-                onClick={() =>
-                  handleDeleteImageAttachment(file.fileName)
-                }
-              />
-            </div>
-          </div>
+          <FileUploadZone file={file} removable={true} onRemove={() => handleDeleteImageAttachment(file.fileName)}/>
         ))}
       {/* this function is not implemented yet
               <Box>

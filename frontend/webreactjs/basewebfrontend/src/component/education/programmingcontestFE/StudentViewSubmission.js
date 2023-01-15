@@ -155,43 +155,6 @@ const StudentViewSubmission = forwardRef((props, ref) => {
 
   return (
     <Box sx={{marginTop: "20px"}}>
-      {/*
-      <MuiThemeProvider theme={themeTable}>
-        <Button
-          onClick={() => {
-            handleRefresh();
-          }}
-        >
-          Refresh
-        </Button>
-        <MaterialTable
-          title={<h1>{t("submissionList.title")}</h1>}
-          columns={columns}
-          data={submissions}
-          localization={{
-            ...localization,
-          }}
-          options={{
-            pageSize: 20,
-            headerStyle: {
-              fontWeight: "700",
-            },
-          }}
-          components={{
-            ...components,
-            Toolbar: (props) => (
-              <MTableToolbar
-                {...props}
-                searchFieldVariant="outlined"
-                searchFieldStyle={{
-                  height: 40,
-                }}
-              />
-            ),
-          }}
-        />
-      </MuiThemeProvider>
-        */}
       <div>
         <StandardTable
           title={"Submissions"}

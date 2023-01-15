@@ -1,5 +1,5 @@
 import {Button, CircularProgress, Grid, Typography,} from "@material-ui/core";
-import {Box} from "@mui/material";
+import {Box, Divider} from "@mui/material";
 import {ContentState, EditorState} from "draft-js";
 import htmlToDraft from "html-to-draftjs";
 import React, {useEffect, useRef, useState} from "react";
@@ -10,10 +10,10 @@ import {authGet, authPostMultiPart} from "../../../api";
 import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import StudentViewSubmission from "./StudentViewSubmission";
-import {getFileType, randomImageName, saveByteArray,} from "utils/FileUpload/covert";
-import {makeStyles} from "@material-ui/core/styles";
+import {randomImageName,} from "utils/FileUpload/covert";
 import {errorNoti, successNoti} from "../../../utils/notification";
 import HustCodeLanguagePicker from "../../common/HustCodeLanguagePicker";
+import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
 
 const editorStyle = {
   toolbar: {
@@ -24,34 +24,9 @@ const editorStyle = {
     minHeight: "300px",
   },
 };
-const useStyles = makeStyles((theme) => ({
-  fileContainer: {
-    marginTop: "12px",
-  },
-  fileWrapper: {
-    position: "relative",
-  },
-  fileDownload: {
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: "16px",
-    alignItems: "center",
-  },
-  fileName: {
-    fontStyle: "italic",
-    paddingRight: "12px",
-  },
-  downloadButton: {
-    marginLeft: "12px",
-  },
-  imageQuiz: {
-    maxWidth: "70%",
-  },
-}));
 
 export default function StudentViewProgrammingContestProblemDetail() {
   const params = useParams();
-  const classes = useStyles();
   const problemId = params.problemId;
   const contestId = params.contestId;
   const [problem, setProblem] = useState(null);
@@ -217,84 +192,16 @@ export default function StudentViewProgrammingContestProblemDetail() {
         />
         {fetchedImageArray.length !== 0 &&
           fetchedImageArray.map((file) => (
-            <div key={file.id} className={classes.fileContainer}>
-              <div className={classes.fileWrapper}>
-                {getFileType(file.fileName) === "img" && (
-                  <img
-                    src={`data:image/jpeg;base64,${file.content}`}
-                    alt={file.fileName}
-                    className={classes.imageQuiz}
-                  />
-                )}
-                {getFileType(file.fileName) === "pdf" && (
-                  <Box className={classes.fileDownload}>
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.fileName}
-                    >
-                      {file.fileName}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      className={classes.downloadButton}
-                      onClick={() =>
-                        saveByteArray(file.fileName, file.content, "pdf")
-                      }
-                    >
-                      Download
-                    </Button>
-                  </Box>
-                )}
-                {getFileType(file.fileName) === "word" && (
-                  <Box className={classes.fileDownload}>
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.fileName}
-                    >
-                      {file.fileName}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      className={classes.downloadButton}
-                      onClick={() =>
-                        saveByteArray(file.fileName, file.content, "word")
-                      }
-                    >
-                      Download
-                    </Button>
-                  </Box>
-                )}
-                {getFileType(file.fileName) === "txt" && (
-                  <Box className={classes.fileDownload}>
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.fileName}
-                    >
-                      {file.fileName}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      className={classes.downloadButton}
-                      onClick={() =>
-                        saveByteArray(file.fileName, file.content, "txt")
-                      }
-                    >
-                      Download
-                    </Button>
-                  </Box>
-                )}
-              </div>
-            </div>
+            <FileUploadZone file={file} removable={false}/>
           ))}
       </div>
 
+      <Divider/>
+
       <ModalPreview chosenTestcase={selectedTestcase}/>
-      <div>
+      <Box sx={{mt: 2}}>
         <form onSubmit={handleFormSubmit}>
-          <Grid container spacing={1} alignItems="flex-end">
+          <Grid container spacing={1} alignItems="center">
             <Grid item xs={3}>
               <input
                 type="file"
@@ -304,7 +211,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 ref={inputRef}
               />
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={1}>
               <HustCodeLanguagePicker language={language} onChangeLanguage={(e) => setLanguage(e.target.value)}/>
             </Grid>
 
@@ -330,11 +237,10 @@ export default function StudentViewProgrammingContestProblemDetail() {
         <div>
           <h3>Message: <em>{message}</em></h3>
         </div>
-      </div>
-      <div>
-        <br></br>
+      </Box>
+      <Box sx={{paddingTop: 2}}>
         <StudentViewSubmission problemId={problemId} ref={listSubmissionRef}/>
-      </div>
+      </Box>
     </div>
   );
 }
