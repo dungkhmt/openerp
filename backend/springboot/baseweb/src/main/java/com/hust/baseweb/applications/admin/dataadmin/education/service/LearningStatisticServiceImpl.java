@@ -1,10 +1,13 @@
 package com.hust.baseweb.applications.admin.dataadmin.education.service;
 
 import com.hust.baseweb.applications.admin.dataadmin.education.entity.LearningStatisticEntity;
+import com.hust.baseweb.applications.admin.dataadmin.education.model.statistic.LearningStatisticResultsModel;
 import com.hust.baseweb.applications.admin.dataadmin.education.repo.LearningStatisticRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -26,12 +29,8 @@ public class LearningStatisticServiceImpl implements LearningStatisticService {
     private final LearningStatisticRepo learningStatisticRepo;
 
     @Override
-    public void statisticLearningGeneral() throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date MIN_STATISTIC_TIME = formatter.parse("2000-01-01 00:00:00");
-
-        Optional<Date> optionalLatestStatisticTime = learningStatisticRepo.findLatestStatisticTime();
-        Date latestStatisticTime = optionalLatestStatisticTime.isPresent() ? optionalLatestStatisticTime.get() : MIN_STATISTIC_TIME;
+    public void statisticLearningGeneral() {
+        Date latestStatisticTime = findLatestStatisticTime();
 
         Map<String, Long> totalDoingTimes = doingQuizStatisticService.statisticTotalQuizDoingTimes(latestStatisticTime);
         Map<String, LocalDateTime> latestDoingTimes = doingQuizStatisticService.statisticLatestTimeDoingQuiz(latestStatisticTime);
@@ -67,6 +66,19 @@ public class LearningStatisticServiceImpl implements LearningStatisticService {
         });
 
         learningStatisticRepo.saveAll(newOrChangedStatistics);
+    }
+
+    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final String MIN_STATISTIC_TIME_STR = "2000-01-01 00:00:00";
+    private Date findLatestStatisticTime() {
+        Date MIN_STATISTIC_TIME = null;
+        try {
+            MIN_STATISTIC_TIME = FORMATTER.parse(MIN_STATISTIC_TIME_STR);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        Optional<Date> optionalLatestStatisticTime = learningStatisticRepo.findLatestStatisticTime();
+        return optionalLatestStatisticTime.isPresent() ? optionalLatestStatisticTime.get() : MIN_STATISTIC_TIME;
     }
 
     private List<LearningStatisticEntity> getNewOrChangedStatistics(Collection<String> statisticLoginIds) {
@@ -118,5 +130,20 @@ public class LearningStatisticServiceImpl implements LearningStatisticService {
         if (additionalErrorSubmissions != null) {
             statistic.setTotalErrorSubmissions(statistic.getTotalErrorSubmissions() + additionalErrorSubmissions);
         }
+    }
+
+    @Override
+    public LearningStatisticResultsModel findLearningStatisticResults(String partOfLoginId, Pageable pageable) {
+        LearningStatisticResultsModel result = new LearningStatisticResultsModel();
+        result.setStatisticResults(learningStatisticRepo.findByLoginIdContainsIgnoreCase(partOfLoginId, pageable));
+
+        Date latestStatisticTime = findLatestStatisticTime();
+        if (MIN_STATISTIC_TIME_STR.equals(FORMATTER.format(latestStatisticTime))) {
+            result.setLatestStatisticTime(null);
+        } else {
+            result.setLatestStatisticTime(latestStatisticTime);
+        }
+
+        return result;
     }
 }
