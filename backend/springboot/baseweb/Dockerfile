@@ -31,14 +31,14 @@ RUN apk update && apk add --no-cache \
     --update ttf-dejavu \
     && rm -rf /var/cache/apk/*
 
-RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
+# RUN addgroup -S spring && adduser -S spring -G spring
+# USER spring:spring
 
 ENV JAVA_OPTS=""
 
 # /tmp (inside the container) will be a volume
 # When running the container, a random numbers and characters named directory will be created in /var/lib/docker/volumes
-VOLUME /tmp
+# VOLUME /tmp
 
 ARG DEPENDENCY=/workspace/app/target/dependency
 COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
