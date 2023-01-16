@@ -16,7 +16,7 @@ import javax.validation.constraints.Min;
 @ConfigurationProperties(prefix = "spring.rabbitmq.programming-contest")
 public class RabbitProgrammingContestProperties {
 
-    @Min(2)
+    @Min(1)
     private int concurrentConsumers;
 
     @Max(10)

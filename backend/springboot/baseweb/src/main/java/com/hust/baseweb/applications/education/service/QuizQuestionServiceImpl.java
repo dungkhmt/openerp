@@ -443,7 +443,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     }
 
     @Override
-    public QuizQuestion update(UUID questionId, String json, MultipartFile[] files, MultipartFile[] addedSolutionAttachments) {
+    public QuizQuestion update(String userId, UUID questionId, String json, MultipartFile[] files, MultipartFile[] addedSolutionAttachments) {
 //        Date now = new Date();
 //        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 //        String prefixFileName = formatter.format(now);
@@ -505,6 +505,9 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         quizQuestion.setQuestionId(questionId);
         quizQuestion.setLevelId(input.getLevelId());
         quizQuestion.setQuestionContent(input.getQuestionContent());
+        quizQuestion.setCreatedByUserLoginId(userId);
+        //quizQuestion.setCreatedByUserLoginId(quizQuestionTemp.getCreatedByUserLoginId());
+
         QuizCourseTopic quizCourseTopic = quizCourseTopicRepo.findById(input.getQuizCourseTopicId()).orElse(null);
         if (quizCourseTopic == null) {
             return null;

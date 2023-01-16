@@ -146,7 +146,7 @@ public class QuizController {
             return ResponseEntity.ok().body("No permission");
         }
         
-        QuizQuestion quizQuestion = quizQuestionService.update(questionId, json, files, addedSolutionAttachments);
+        QuizQuestion quizQuestion = quizQuestionService.update(principal.getName(), questionId, json, files, addedSolutionAttachments);
         return ResponseEntity.ok().body(quizQuestion);
     }
 

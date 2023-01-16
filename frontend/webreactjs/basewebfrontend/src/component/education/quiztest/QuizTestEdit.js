@@ -65,6 +65,8 @@ function QuizTestEdit() {
   const [listViewTypeIds, setListViewTypeIds] = useState([]);
   const [statusId, setStatusId] = useState(null);
   const [listStatusIds, setListStatusIds] = useState([]);
+  const [judgeMode, setJudgeMode] = useState(null);
+  const [listJudgeModes, setListJudgeModes] = useState([]);
 
   const handleChangeDuration = (e) => {
     setDuration(e.target.value);
@@ -72,6 +74,22 @@ function QuizTestEdit() {
   const handleDateChange = (event) => {
     setSelectedDate(event);
   };
+
+  function getListJudgeModes() {
+    request(
+      // token,
+      // history,
+      "get",
+      "get-list-judge-modes",
+      (res) => {
+        console.log("get-list-judge-modes res = ", res);
+        setListJudgeModes(res.data);
+
+        //alert('assign questions to groups OK');
+      },
+      { 401: () => {} }
+    );
+  }
 
   function getListParticipantQuizGroupAssignmentMode() {
     request(
@@ -152,6 +170,7 @@ function QuizTestEdit() {
         setParticipantQuizGroupAssignmentMode(
           res.data.participantQuizGroupAssignmentMode
         );
+        setJudgeMode(res.data.judgeMode);
         //alert('assign questions to groups OK');
       },
       { 401: () => {} }
@@ -196,6 +215,7 @@ function QuizTestEdit() {
       questionStatementViewTypeId: questionStatementViewTypeId,
       viewTypeId: viewTypeId,
       participantQuizGroupAssignmentMode: participantQuizGroupAssignmentMode,
+      judgeMode: judgeMode,
     };
     request(
       // token,
@@ -219,12 +239,13 @@ function QuizTestEdit() {
     getListParticipantQuizGroupAssignmentMode();
     getListQuizTestViewTypeId();
     getQuizTestDetail();
+    getListJudgeModes();
   }, []);
 
   return (
     <div>
-      <EditQuizTest/>
-      <br/>
+      <EditQuizTest />
+      <br />
 
       <Grid container spacing={1} justify="center">
         <Card
@@ -371,6 +392,28 @@ function QuizTestEdit() {
                       ))}
                     </TextField>
                   </Grid>
+                  <Grid item xs={4}>
+                    <Typography>JudgeMode</Typography>
+                    <TextField
+                      autoFocus
+                      // required
+                      select
+                      id="judgeMode"
+                      //label="participantQuizGroupAssignmentMode"
+                      //placeholder="participantQuizGroupAssignmentMode"
+                      onChange={(event) => {
+                        setJudgeMode(event.target.value);
+                      }}
+                      value={judgeMode}
+                    >
+                      {listJudgeModes.map((item) => (
+                        <MenuItem key={item} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+
                   <Grid item xs={4}>
                     <Button
                       variant="contained"

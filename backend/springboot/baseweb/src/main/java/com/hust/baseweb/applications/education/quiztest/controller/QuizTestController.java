@@ -475,4 +475,10 @@ public class QuizTestController {
         List<String> statusIds = EduQuizTest.getListStatusIds();
         return ResponseEntity.ok().body(statusIds);
     }
+
+    @GetMapping("/get-list-judge-modes")
+    public ResponseEntity<?> getListJudgeModes(){
+        List<String> judgeModes = EduQuizTest.getListJudgeModes();
+        return ResponseEntity.ok().body(judgeModes);
+    }
 }

@@ -36,6 +36,8 @@ public class EduQuizTestGroupServiceImpl implements EduQuizTestGroupService {
     private EduTestQuizGroupParticipationAssignmentRepo eduTestQuizGroupParticipationAssignmentRepo;
     private QuizGroupQuestionParticipationExecutionChoiceRepo quizGroupQuestionParticipationExecutionChoiceRepo;
     private EduTestQuizParticipantService eduTestQuizParticipantService;
+    private QuizTestExecutionSubmissionRepo quizTestExecutionSubmissionRepo;
+
     private static Random R = new Random();
 
     @Override
@@ -186,6 +188,7 @@ public class EduQuizTestGroupServiceImpl implements EduQuizTestGroupService {
                 participationExecutionChoice.put(quesId, tmp);
             }
         });
+
 
         ArrayList<QuizQuestionDetailModel> sorted_lst = new ArrayList();
         for(int i = 0; i < indices.length; i++){
