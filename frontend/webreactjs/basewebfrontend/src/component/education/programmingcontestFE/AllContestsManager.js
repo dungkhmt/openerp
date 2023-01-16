@@ -1,30 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { request } from "./Request";
-import { API_URL } from "../../../config/config";
-import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
-import {
-  Button,
-  Grid,
-  MenuItem,
-  Table,
-  TableBody,
-  TableHead,
-  TextField,
-} from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
-import { StyledTableCell, StyledTableRow } from "./lib";
-import { Link } from "react-router-dom";
-import Pagination from "@material-ui/lab/Pagination";
-import { ListContestManagerByRegistration } from "./ListContestManagerByRegistration";
-import ListContestByRole from "./ListContestByRole";
+import React, {useEffect, useState} from "react";
+import {request} from "./Request";
+import {Box, Button, IconButton,} from "@mui/material";
+import {Link} from "react-router-dom";
+import {ListContestManagerByRegistration} from "./ListContestManagerByRegistration";
+import {successNoti} from "../../../utils/notification";
+import EditIcon from "@mui/icons-material/Edit";
+import StandardTable from "../../table/StandardTable";
+import TablePagination from "@mui/material/TablePagination";
 
 export default function AllContestsManager() {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPage] = useState(0);
-  const pageSizes = [20, 50, 100];
+  const pageSizes = [10, 20, 50, 100];
   const [contests, setContests] = useState([]);
+
+  const switchJudgeMode = (mode) => {
+    request(
+      "post",
+      "/switch-judge-mode?mode=" + mode,
+      () => successNoti("Saved", 5000)
+    ).then();
+  }
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -32,7 +29,7 @@ export default function AllContestsManager() {
 
   const handlePageSizeChange = (event) => {
     setPageSize(event.target.value);
-    setPage(1);
+    setPage(0);
     // getProblemContestList();
   };
 
@@ -40,171 +37,107 @@ export default function AllContestsManager() {
     request(
       "get",
       "/get-all-contests-paging-by-admin?size=" +
-        pageSize +
-        "&page=" +
-        (page - 1),
+      pageSize +
+      "&page=" +
+      page,
       (res) => {
-        console.log("contest list", res.data);
-        setTotalPage(res.data.totalPages);
+        setTotalPage(res.data.count);
         setContests(res.data.contents);
       }
     ).then();
   }
 
   useEffect(() => {
-    console.log("use effect");
     getContestList().then();
   }, [page, pageSize]);
 
+  const columns = [
+      {
+        title: "Contest",
+        render: (contest) => (
+          <Link
+            to={
+              "/programming-contest/contest-manager/" +
+              contest.contestId
+            }
+            style={{
+              textDecoration: "none",
+              color: "blue",
+            }}
+          >
+            {contest.contestName}
+          </Link>
+        )
+      },
+      {title: "Status", field: "statusId"},
+      {title: "Created By", field: "userId"},
+      {title: "Created At", field: "createdAt"},
+      {
+        title: "Edit",
+        render: (contest) => (
+          <Link
+            to={
+              "/programming-contest/contest-edit/" +
+              contest.contestId
+            }
+          >
+            <IconButton variant="contained" color="success">
+              <EditIcon/>
+            </IconButton>
+          </Link>
+        ),
+      },
+    ]
+  ;
+
   return (
-    <div>
-      <div>
-        <div>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 100 }} aria-label="customized table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell></StyledTableCell>
-                  <StyledTableCell align="left">Title</StyledTableCell>
-                  <StyledTableCell align="left">Status</StyledTableCell>
-                  <StyledTableCell align="left">Created By</StyledTableCell>
-                  <StyledTableCell align="left">Created Date</StyledTableCell>
-                  <StyledTableCell align="center">Detail</StyledTableCell>
-                  <StyledTableCell align="center">Edit</StyledTableCell>
-                  {/*<StyledTableCell align="center">Delete</StyledTableCell>*/}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {contests.map((contest, index) => (
-                  <StyledTableRow>
-                    <StyledTableCell component="th" scope="row">
-                      {pageSize * (page - 1) + index + 1}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      <Link
-                        to={
-                          "/programming-contest/contest-manager/" +
-                          contest.contestId
-                        }
-                        style={{
-                          textDecoration: "none",
-                          color: "#000000",
-                          hover: { color: "#00D8FF", textPrimary: "#00D8FF" },
-                        }}
-                      >
-                        <b>{contest.contestName}</b>
-                      </Link>
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      <b>{contest.statusId}</b>
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      <b>{contest.userId}</b>
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      <b>{contest.createdAt}</b>
-                    </StyledTableCell>
+    <>
+      <Box sx={{marginBottom: 4}}>
+        <Button
+          variant="contained"
+          sx={{marginBottom: "12px", marginRight: "16px"}}
+          onClick={() => switchJudgeMode("ASYNCHRONOUS_JUDGE_MODE_QUEUE")}
+        >
+          Switch all to judge mode QUEUE
+        </Button>
+        <Button
+          variant="contained"
+          sx={{marginBottom: "12px"}}
+          onClick={() => switchJudgeMode("SYNCHRONOUS_JUDGE_MODE")}
+        >
+          Switch all to judge mode non-QUEUE
+        </Button>
 
-                    <StyledTableCell align="left">
-                      <Link
-                        to={
-                          "/programming-contest/contest-manager/" +
-                          contest.contestId
-                        }
-                        style={{
-                          textDecoration: "none",
-                          color: "#000000",
-                          hover: { color: "#00D8FF", textPrimary: "#00D8FF" },
-                        }}
-                      >
-                        <Button variant="contained" color="light">
-                          Detail
-                        </Button>
-                      </Link>
-                    </StyledTableCell>
-
-                    <StyledTableCell align="center">
-                      <Link
-                        to={
-                          "/programming-contest/contest-edit/" +
-                          contest.contestId
-                        }
-                        style={{
-                          textDecoration: "none",
-                          color: "black",
-                          cursor: "",
-                        }}
-                      >
-                        <Button variant="contained" color="light">
-                          Edit
-                        </Button>
-                      </Link>
-                    </StyledTableCell>
-                    {/*<StyledTableCell align="center">*/}
-                    {/*  <Button*/}
-                    {/*    variant="contained"*/}
-                    {/*    color="light"*/}
-                    {/*    onClick={*/}
-                    {/*      ()=>{*/}
-                    {/*        request(*/}
-                    {/*          "delete",*/}
-                    {/*          "/delete-contest/"+contest.contestId,*/}
-                    {/*          (res)=>{*/}
-                    {/*            // window.location.reload();*/}
-                    {/*            getContestList().then();*/}
-                    {/*          }*/}
-                    {/*        ).then();*/}
-                    {/*      }*/}
-                    {/*    }*/}
-                    {/*  >*/}
-                    {/*    Delete*/}
-                    {/*  </Button>*/}
-                    {/*</StyledTableCell>*/}
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
-        <br></br>
-        <Grid container spacing={12}>
-          <Grid item xs={6}>
-            <TextField
-              variant={"outlined"}
-              autoFocus
-              size={"small"}
-              required
-              select
-              id="pageSize"
-              value={pageSize}
-              onChange={handlePageSizeChange}
-            >
-              {pageSizes.map((item) => (
-                <MenuItem key={item} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid item>
-            <Pagination
-              className="my-3"
-              count={totalPages}
-              page={page}
-              siblingCount={1}
-              boundaryCount={1}
-              variant="outlined"
-              shape="rounded"
-              onChange={handlePageChange}
-            />
-          </Grid>
-        </Grid>
-      </div>
-      <ListContestManagerByRegistration />
+        <StandardTable
+          title={"All Contests"}
+          columns={columns}
+          data={contests}
+          hideCommandBar
+          options={{
+            selection: false,
+            pageSize: 10,
+            search: true,
+            sorting: true,
+          }}
+          components={{
+            Pagination: props => (
+              <TablePagination
+                {...props}
+                rowsPerPageOptions={pageSizes}
+                rowsPerPage={pageSize}
+                count={totalPages}
+                page={page}
+                onPageChange={handlePageChange}
+                onRowsPerPageChange={handlePageSizeChange}
+              />
+            ),
+          }}
+        />
+      </Box>
+      <ListContestManagerByRegistration/>
       {/*
       <ListContestByRole />
       */}
-    </div>
+    </>
   );
 }

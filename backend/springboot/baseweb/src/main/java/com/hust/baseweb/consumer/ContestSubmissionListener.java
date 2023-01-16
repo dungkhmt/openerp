@@ -14,6 +14,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import static com.hust.baseweb.config.rabbitmq.ProblemContestRoutingKey.JUDGE_PROBLEM_DL;
 import static com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestConfig.DEAD_LETTER_EXCHANGE;
@@ -59,14 +60,8 @@ public class ContestSubmissionListener extends BaseRabbitListener {
 //        }
 
         try {
-            ModelContestSubmissionMessage msg = objectMapper.readValue(
-                messageBody,
-                ModelContestSubmissionMessage.class);
-            ModelContestSubmission contestSubmission = msg.getModelContestSubmission();
-            ContestSubmissionEntity submissionEntity = msg.getSubmission();
-            problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFileProcessor(
-                contestSubmission,
-                submissionEntity);
+            UUID contestSubmissionId = UUID.fromString(messageBody);
+            problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFileProcessor(contestSubmissionId);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (Exception e) {
             e.printStackTrace();

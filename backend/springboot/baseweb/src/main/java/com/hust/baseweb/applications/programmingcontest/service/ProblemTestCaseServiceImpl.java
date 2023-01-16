@@ -1511,6 +1511,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         Date submitTime = new Date();
         ContestSubmissionEntity submission = ContestSubmissionEntity.builder()
                                                                     .contestId(modelContestSubmission.getContestId())
+                                                                    .problemId(modelContestSubmission.getProblemId())
                                                                     .sourceCode(modelContestSubmission.getSource())
                                                                     .sourceCodeLanguage(modelContestSubmission.getLanguage())
                                                                     .status(ContestSubmissionEntity.SUBMISSION_STATUS_EVALUATION_IN_PROGRESS)
@@ -1521,15 +1522,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                     .createdAt(submitTime)
                                                                     .build();
         //log.info("submitContestProblemTestCaseByTestCaseWithFile, save submission to DB");
-        submission = contestSubmissionRepo.save(submission);
+        submission = contestSubmissionRepo.saveAndFlush(submission);
 
-        ModelContestSubmissionMessage msg = new ModelContestSubmissionMessage();
-        msg.setModelContestSubmission(modelContestSubmission);
-        msg.setSubmission(submission);
         rabbitTemplate.convertAndSend(
             EXCHANGE,
             JUDGE_PROBLEM,
-            objectMapper.writeValueAsString(msg)
+            submission.getContestSubmissionId()
         );
 
         return ModelContestSubmissionResponse.builder()
@@ -1540,12 +1538,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
     @Override
     public void submitContestProblemTestCaseByTestCaseWithFileProcessor(
-        ModelContestSubmission modelContestSubmission,
-        ContestSubmissionEntity submission
+        UUID submissionId
     ) throws Exception {
 
-        ProblemEntity problemEntity = cacheService.findProblemAndUpdateCache(modelContestSubmission.getProblemId());
-        ContestEntity contest = cacheService.findContestAndUpdateCache(modelContestSubmission.getContestId());
+        ContestSubmissionEntity submission = contestSubmissionRepo.findContestSubmissionEntityByContestSubmissionId(submissionId);
+        ProblemEntity problem = cacheService.findProblemAndUpdateCache(submission.getProblemId());
+        ContestEntity contest = cacheService.findContestAndUpdateCache(submission.getContestId());
 
         String userId = submission.getUserId();
 
@@ -1556,7 +1554,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                .equals(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_YES);
 
         testCaseEntityList = cacheService.findListTestCaseAndUpdateCache(
-            modelContestSubmission.getProblemId(),
+            submission.getProblemId(),
             evaluatePrivatePublic);
 
         List<TestCaseEntity> listTestCaseAvailable = new ArrayList<>();
@@ -1569,8 +1567,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         testCaseEntityList = listTestCaseAvailable;
 
         String tempName = tempDir.createRandomScriptFileName(userId + "-" +
-                                                             modelContestSubmission.getContestId() + "-" +
-                                                             modelContestSubmission.getProblemId() + "-" +
+                                                             submission.getContestId() + "-" +
+                                                             submission.getProblemId() + "-" +
                                                              Math.random());
 
         List<String> listSubmissionResponse = new ArrayList<>();
@@ -1579,13 +1577,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             L.add(testCaseEntity);
 
             String response = submission(
-                modelContestSubmission.getSource(),
-                modelContestSubmission.getLanguage(),
+                submission.getSourceCode(),
+                submission.getSourceCodeLanguage(),
                 tempName,
                 L,
                 "language not found",
-                problemEntity.getTimeLimit(),
-                problemEntity.getMemoryLimit());
+                problem.getTimeLimit(),
+                problem.getMemoryLimit());
 
             listSubmissionResponse.add(response);
         }
@@ -1594,9 +1592,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         submissionResponseHandler.processSubmissionResponse(
             testCaseEntityList,
             listSubmissionResponse,
-            modelContestSubmission,
             submission,
-            problemEntity.getScoreEvaluationType());
+            problem.getScoreEvaluationType());
     }
 
     @Override
@@ -2092,7 +2089,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public ModelGetContestPageResponse getAllContestsPagingByAdmin(String userName, Pageable pageable) {
         //List<ContestEntity> contestEntities = contestPagingAndSortingRepo.findAll();
         Page<ContestEntity> contestEntities = contestPagingAndSortingRepo.findAll(pageable);
-        return getModelGetContestPageResponse(contestEntities);
+        long count = contestPagingAndSortingRepo.count();
+        return getModelGetContestPageResponse(contestEntities, count);
     }
 
     @Override
@@ -2516,6 +2514,35 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     ) {
         //log.info("findContestSubmissionByUserLoginIdAndContestIdPaging, user = " + userLoginId + " contestId = " + contestId);
         return contestSubmissionPagingAndSortingRepo.findAllByUserIdAndContestId(pageable, userLoginId, contestId)
+                                                    .map(contestSubmissionEntity -> ContestSubmission
+                                                        .builder()
+                                                        .contestSubmissionId(contestSubmissionEntity.getContestSubmissionId())
+                                                        .contestId(contestSubmissionEntity.getContestId())
+                                                        .createAt(contestSubmissionEntity.getCreatedAt() != null
+                                                                      ? DateTimeUtils.dateToString(
+                                                            contestSubmissionEntity.getCreatedAt(),
+                                                            DateTimeUtils.DateTimeFormat.DATE_TIME_ISO_FORMAT)
+                                                                      : null)
+                                                        .sourceCodeLanguage(contestSubmissionEntity.getSourceCodeLanguage())
+                                                        .point(contestSubmissionEntity.getPoint())
+                                                        .problemId(contestSubmissionEntity.getProblemId())
+                                                        .testCasePass(contestSubmissionEntity.getTestCasePass())
+                                                        .status(contestSubmissionEntity.getStatus())
+                                                        .message(contestSubmissionEntity.getMessage())
+                                                        .userId(contestSubmissionEntity.getUserId())
+                                                        .build()
+                                                    );
+    }
+
+    @Override
+    public Page<ContestSubmission> findContestSubmissionByUserLoginIdAndContestIdAndProblemIdPaging(
+        Pageable pageable,
+        String userLoginId,
+        String contestId,
+        String problemId
+    ) {
+        //log.info("findContestSubmissionByUserLoginIdAndContestIdPaging, user = " + userLoginId + " contestId = " + contestId);
+        return contestSubmissionPagingAndSortingRepo.findAllByUserIdAndContestIdAndProblemId(pageable, userLoginId, contestId, problemId)
                                                     .map(contestSubmissionEntity -> ContestSubmission
                                                         .builder()
                                                         .contestSubmissionId(contestSubmissionEntity.getContestSubmissionId())
@@ -3306,6 +3333,31 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
         return ModelGetContestPageResponse.builder()
                                           .contents(lists)
+                                          .build();
+    }
+
+    private ModelGetContestPageResponse getModelGetContestPageResponse(Page<ContestEntity> contestPage, long count) {
+        List<ModelGetContestResponse> lists = new ArrayList<>();
+        if (contestPage != null) {
+            contestPage.forEach(contest -> {
+                ModelGetContestResponse modelGetContestResponse = ModelGetContestResponse.builder()
+                                                                                         .contestId(contest.getContestId())
+                                                                                         .contestName(contest.getContestName())
+                                                                                         .contestTime(contest.getContestSolvingTime())
+                                                                                         .countDown(contest.getCountDown())
+                                                                                         .startAt(contest.getStartedAt())
+                                                                                         .isPublic(contest.getIsPublic())
+                                                                                         .statusId(contest.getStatusId())
+                                                                                         .userId(contest.getUserId())
+                                                                                         .createdAt(contest.getCreatedAt())
+                                                                                         .build();
+                lists.add(modelGetContestResponse);
+            });
+        }
+
+        return ModelGetContestPageResponse.builder()
+                                          .contents(lists)
+                                          .count(count)
                                           .build();
     }
 

@@ -40,7 +40,7 @@ function ListProblem() {
       title: "Tags",
       render: (rowData) => (
         <Box>
-          {rowData.tags.length > 0 && rowData.tags.map(tag =>
+          {rowData?.tags.length > 0 && rowData.tags.map(tag =>
             <Chip
               size="small"
               label={tag.name}

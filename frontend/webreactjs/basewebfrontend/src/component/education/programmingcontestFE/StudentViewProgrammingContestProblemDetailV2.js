@@ -1,11 +1,5 @@
-import {Button, CircularProgress, Grid, MenuItem, TableHead, TextField, Typography,} from "@material-ui/core";
-import InfoIcon from "@mui/icons-material/Info";
-import {Box, IconButton} from "@mui/material";
-import Paper from "@material-ui/core/Paper";
-import TableRow from "@material-ui/core/TableRow";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableContainer from "@mui/material/TableContainer";
+import {Button, CircularProgress, Grid, Typography,} from "@material-ui/core";
+import {Box, Divider} from "@mui/material";
 import {ContentState, EditorState} from "draft-js";
 import htmlToDraft from "html-to-draftjs";
 import React, {useEffect, useRef, useState} from "react";
@@ -13,15 +7,13 @@ import {Editor} from "react-draft-wysiwyg";
 import {useDispatch, useSelector} from "react-redux";
 import {useParams} from "react-router";
 import {authGet, authPostMultiPart} from "../../../api";
-import {StyledTableCell, StyledTableRow} from "./lib";
-import {request} from "./Request";
 import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
-import FileSaver from "file-saver";
 import StudentViewSubmission from "./StudentViewSubmission";
-import {getFileType, randomImageName, saveByteArray,} from "utils/FileUpload/covert";
-import {makeStyles} from "@material-ui/core/styles";
+import {randomImageName,} from "utils/FileUpload/covert";
 import {errorNoti, successNoti} from "../../../utils/notification";
+import HustCodeLanguagePicker from "../../common/HustCodeLanguagePicker";
+import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
 
 const editorStyle = {
   toolbar: {
@@ -32,34 +24,9 @@ const editorStyle = {
     minHeight: "300px",
   },
 };
-const useStyles = makeStyles((theme) => ({
-  fileContainer: {
-    marginTop: "12px",
-  },
-  fileWrapper: {
-    position: "relative",
-  },
-  fileDownload: {
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: "16px",
-    alignItems: "center",
-  },
-  fileName: {
-    fontStyle: "italic",
-    paddingRight: "12px",
-  },
-  downloadButton: {
-    marginLeft: "12px",
-  },
-  imageQuiz: {
-    maxWidth: "70%",
-  },
-}));
 
 export default function StudentViewProgrammingContestProblemDetail() {
   const params = useParams();
-  const classes = useStyles();
   const problemId = params.problemId;
   const contestId = params.contestId;
   const [problem, setProblem] = useState(null);
@@ -141,18 +108,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
       });
   };
 
-  function getTestCases() {
-    request(
-      "GET",
-      "/get-test-case-list-by-problem/" + problemId,
-
-      (res) => {
-        setTestCases(res.data.filter((item) => item.isPublic === "Y"));
-      },
-      {}
-    );
-  }
-
   function getProblemDetail() {
     authGet(
       dispatch,
@@ -196,36 +151,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
 
   useEffect(() => {
     getProblemDetail();
-    //getTestCases();
   }, []);
-
-  const copyAllHandler = () => {
-    let allTestCases = "";
-    for (const testCase_ith of testCases) {
-      allTestCases +=
-        "------------- \nINPUT: \n" +
-        testCase_ith.testCase +
-        "\n\nOUTPUT: \n" +
-        testCase_ith.correctAns +
-        "\n\n";
-    }
-    navigator.clipboard.writeText(allTestCases);
-  };
-  const downloadAllHandler = () => {
-    for (let i = 0; i < testCases.length; i++) {
-      var testCase_ith = testCases[i];
-      var blob = new Blob(
-        [
-          "INPUT: \n" +
-          testCase_ith.testCase +
-          "\n\nOUTPUT: \n" +
-          testCase_ith.correctAns,
-        ],
-        {type: "text/plain;charset=utf-8"}
-      );
-      FileSaver.saveAs(blob, "Testcase_" + (i + 1) + ".txt");
-    }
-  };
 
   const ModalPreview = (chosenTestcase) => {
     return (
@@ -266,184 +192,16 @@ export default function StudentViewProgrammingContestProblemDetail() {
         />
         {fetchedImageArray.length !== 0 &&
           fetchedImageArray.map((file) => (
-            <div key={file.id} className={classes.fileContainer}>
-              <div className={classes.fileWrapper}>
-                {getFileType(file.fileName) === "img" && (
-                  <img
-                    src={`data:image/jpeg;base64,${file.content}`}
-                    alt={file.fileName}
-                    className={classes.imageQuiz}
-                  />
-                )}
-                {getFileType(file.fileName) === "pdf" && (
-                  <Box className={classes.fileDownload}>
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.fileName}
-                    >
-                      {file.fileName}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      className={classes.downloadButton}
-                      onClick={() =>
-                        saveByteArray(file.fileName, file.content, "pdf")
-                      }
-                    >
-                      Download
-                    </Button>
-                  </Box>
-                )}
-                {getFileType(file.fileName) === "word" && (
-                  <Box className={classes.fileDownload}>
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.fileName}
-                    >
-                      {file.fileName}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      className={classes.downloadButton}
-                      onClick={() =>
-                        saveByteArray(file.fileName, file.content, "word")
-                      }
-                    >
-                      Download
-                    </Button>
-                  </Box>
-                )}
-                {getFileType(file.fileName) === "txt" && (
-                  <Box className={classes.fileDownload}>
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.fileName}
-                    >
-                      {file.fileName}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      className={classes.downloadButton}
-                      onClick={() =>
-                        saveByteArray(file.fileName, file.content, "txt")
-                      }
-                    >
-                      Download
-                    </Button>
-                  </Box>
-                )}
-              </div>
-            </div>
+            <FileUploadZone file={file} removable={false}/>
           ))}
       </div>
 
-      <TableContainer component={Paper}>
-        <Table sx={{minWidth: 750}} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell></StyledTableCell>
-              <StyledTableCell align="left">Test case</StyledTableCell>
-              <StyledTableCell align="left">Correct answer</StyledTableCell>
-              <StyledTableCell align="left">Point</StyledTableCell>
-              {/*
-              <StyledTableCell align="left">Submit Output</StyledTableCell>
-              */}
-              <StyledTableCell align="left">
-                <Button variant="contained" onClick={copyAllHandler}>
-                  Copy Tests
-                </Button>
-              </StyledTableCell>
-              <StyledTableCell align="left">
-                <Button variant="contained" onClick={downloadAllHandler}>
-                  Download Tests
-                </Button>
-              </StyledTableCell>
-            </TableRow>
-          </TableHead>
+      <Divider/>
 
-          <TableBody>
-            {testCases.map((testCase, idx) => {
-              return (
-                testCase.isPublic === "Y" && (
-                  <StyledTableRow>
-                    <StyledTableCell component="th" scope="row">
-                      <h6>{idx + 1}</h6>
-                    </StyledTableCell>
-                    <StyledTableCell
-                      align="left"
-                      sx={{
-                        maxWidth: "120px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {testCase.testCase}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      align="left"
-                      sx={{
-                        maxWidth: "120px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {testCase.correctAns}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {testCase.point}
-                    </StyledTableCell>
-
-                    {/*
-                    <StyledTableCell align="left">
-                      <Link
-                        to={
-                          "/programming-contest/submit-solution-output/" +
-                          contestId +
-                          "/" +
-                          problemId +
-                          "/" +
-                          testCase.testCaseId
-                        }
-                        style={{
-                          textDecoration: "none",
-                          color: "black",
-                          cursor: "",
-                        }}
-                      >
-                        <Button variant="contained" color="light">
-                          Submit Solution
-                        </Button>
-                      </Link>
-                    </StyledTableCell>
-                      */}
-                    <StyledTableCell align="left">
-                      <IconButton
-                        color="primary"
-                        onClick={() => {
-                          setSelectedTestcase(testCase);
-                          setOpenModalPreview(true);
-                        }}
-                      >
-                        <InfoIcon/>
-                      </IconButton>
-                    </StyledTableCell>
-                    <StyledTableCell align="left"></StyledTableCell>
-                  </StyledTableRow>
-                )
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
       <ModalPreview chosenTestcase={selectedTestcase}/>
-      <div>
+      <Box sx={{mt: 2}}>
         <form onSubmit={handleFormSubmit}>
-          <Grid container spacing={1} alignItems="flex-end">
+          <Grid container spacing={1} alignItems="center">
             <Grid item xs={3}>
               <input
                 type="file"
@@ -453,29 +211,8 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 ref={inputRef}
               />
             </Grid>
-            <Grid item xs={2}>
-              <TextField
-                autoFocus
-                // required
-                select
-                id="language"
-                label="Language"
-                placeholder="Language"
-                onChange={(event) => {
-                  setLanguage(event.target.value);
-                }}
-                value={language}
-              >
-                <MenuItem key={"CPP"} value="CPP">
-                  {"CPP"}
-                </MenuItem>
-                <MenuItem key={"JAVA"} value="JAVA">
-                  {"JAVA"}
-                </MenuItem>
-                <MenuItem key={"PYTHON3"} value="PYTHON3">
-                  {"PYTHON3"}
-                </MenuItem>
-              </TextField>
+            <Grid item xs={1}>
+              <HustCodeLanguagePicker language={language} onChangeLanguage={(e) => setLanguage(e.target.value)}/>
             </Grid>
 
             <Grid item xs={2}>
@@ -500,11 +237,10 @@ export default function StudentViewProgrammingContestProblemDetail() {
         <div>
           <h3>Message: <em>{message}</em></h3>
         </div>
-      </div>
-      <div>
-        <br></br>
-        <StudentViewSubmission ref={listSubmissionRef}/>
-      </div>
+      </Box>
+      <Box sx={{paddingTop: 2}}>
+        <StudentViewSubmission problemId={problemId} ref={listSubmissionRef}/>
+      </Box>
     </div>
   );
 }

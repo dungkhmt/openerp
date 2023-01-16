@@ -58,7 +58,7 @@ public interface ProblemTestCaseService {
     ModelContestSubmissionResponse submitContestProblem(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
     ModelContestSubmissionResponse submitContestProblemTestCaseByTestCase(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
     ModelContestSubmissionResponse submitContestProblemTestCaseByTestCaseWithFile(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
-    void submitContestProblemTestCaseByTestCaseWithFileProcessor(ModelContestSubmission modelContestSubmission, ContestSubmissionEntity submissionEntity) throws Exception;
+    void submitContestProblemTestCaseByTestCaseWithFileProcessor(UUID contestSubmissionId) throws Exception;
     ModelContestSubmissionResponse submitContestProblemStoreOnlyNotExecute(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
 
 
@@ -116,6 +116,7 @@ public interface ProblemTestCaseService {
     Page<ContestSubmission> findContestNotEvaluatedSubmissionByContestIdPaging(Pageable pageable, String contestId);
     Page<ContestSubmission> findContestSubmissionByUserLoginIdPaging(Pageable pageable, String userLoginId);
     Page<ContestSubmission> findContestSubmissionByUserLoginIdAndContestIdPaging(Pageable pageable, String userLoginId, String contestId);
+    Page<ContestSubmission> findContestSubmissionByUserLoginIdAndContestIdAndProblemIdPaging(Pageable pageable, String userLoginId, String contestId, String problemId);
     List<ContestSubmission> getNewestSubmissionResults(String userLoginId);
 
 

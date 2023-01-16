@@ -11,6 +11,9 @@ import java.util.List;
 public interface ProblemRepo extends JpaRepository<ProblemEntity, String> {
     ProblemEntity findByProblemId(String problemId);
 
+    @Query("SELECT p FROM ProblemEntity p LEFT JOIN FETCH p.tags WHERE p.problemId = (:problemId)")
+    ProblemEntity findByProblemIdWithTagFetched(@Param("problemId") String problemId);    
+
     @Query("select p.problemName from ProblemEntity p")
     ArrayList<String> findAllProblemName();
 

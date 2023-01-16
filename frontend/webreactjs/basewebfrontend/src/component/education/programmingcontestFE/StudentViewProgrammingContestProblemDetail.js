@@ -1,34 +1,26 @@
-import {
-  Button,
-  CircularProgress,
-  Grid,
-  MenuItem,
-  TableHead,
-  TextField,
-  Typography,
-} from "@material-ui/core";
+import {Button, CircularProgress, Grid, MenuItem, TableHead, TextField, Typography,} from "@material-ui/core";
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, IconButton } from "@mui/material";
+import {Box, IconButton} from "@mui/material";
 import Paper from "@material-ui/core/Paper";
 import TableRow from "@material-ui/core/TableRow";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
-import { ContentState, EditorState } from "draft-js";
+import {ContentState, EditorState} from "draft-js";
 import htmlToDraft from "html-to-draftjs";
-import React, { useEffect, useState } from "react";
-import { Editor } from "react-draft-wysiwyg";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { authGet, authPostMultiPart } from "../../../api";
-import { StyledTableCell, StyledTableRow } from "./lib";
-import { request } from "./Request";
+import React, {useEffect, useState} from "react";
+import {Editor} from "react-draft-wysiwyg";
+import {useDispatch, useSelector} from "react-redux";
+import {useParams} from "react-router";
+import {authGet, authPostMultiPart} from "../../../api";
+import {StyledTableCell, StyledTableRow} from "./lib";
+import {request} from "./Request";
 import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
-import FileSaver from "file-saver";
 import StudentViewSubmission from "./StudentViewSubmission";
-import { getFileType, randomImageName, saveByteArray } from "utils/FileUpload/covert";
-import { makeStyles } from "@material-ui/core/styles";
+import {getFileType, randomImageName, saveByteArray} from "utils/FileUpload/covert";
+import {makeStyles} from "@material-ui/core/styles";
+import {copyAllTestCases, downloadAllTestCases} from "./service/TestCaseService";
 
 const editorStyle = {
   toolbar: {
@@ -220,34 +212,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
   //   XLSX.writeFile(wb, "TestCasesProblem.xlsx", wb_opts);
   // };
 
-  const copyAllHandler = () => {
-    let allTestCases = "";
-    for (const testCase_ith of testCases) {
-      allTestCases +=
-        "------------- \nINPUT: \n" +
-        testCase_ith.testCase +
-        "\n\nOUTPUT: \n" +
-        testCase_ith.correctAns +
-        "\n\n";
-    }
-    navigator.clipboard.writeText(allTestCases);
-  };
-  const downloadAllHandler = () => {
-    for (let i = 0; i < testCases.length; i++) {
-      var testCase_ith = testCases[i];
-      var blob = new Blob(
-        [
-          "INPUT: \n" +
-            testCase_ith.testCase +
-            "\n\nOUTPUT: \n" +
-            testCase_ith.correctAns,
-        ],
-        { type: "text/plain;charset=utf-8" }
-      );
-      FileSaver.saveAs(blob, "Testcase_" + (i + 1) + ".txt");
-    }
-  };
-
   const ModalPreview = (chosenTestcase) => {
     return (
       <HustModal
@@ -358,12 +322,12 @@ export default function StudentViewProgrammingContestProblemDetail() {
               <StyledTableCell align="left">Submit Output</StyledTableCell>
               */}
               <StyledTableCell align="left">
-                <Button variant="contained" onClick={copyAllHandler}>
+                <Button variant="contained" onClick={() => copyAllTestCases(testCases)}>
                   Copy Tests
                 </Button>
               </StyledTableCell>
               <StyledTableCell align="left">
-                <Button variant="contained" onClick={downloadAllHandler}>
+                <Button variant="contained" onClick={() => downloadAllTestCases(testCases)}>
                   Download Tests
                 </Button>
               </StyledTableCell>

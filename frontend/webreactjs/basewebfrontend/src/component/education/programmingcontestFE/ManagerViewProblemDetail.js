@@ -1,31 +1,27 @@
-import { TableHead, Typography } from "@material-ui/core";
+import {TableHead, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core/styles";
 import TableRow from "@material-ui/core/TableRow";
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, Button, IconButton } from "@mui/material";
+import {Button, IconButton} from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import HustModal from "component/common/HustModal";
-import { ContentState, EditorState } from "draft-js";
-import FileSaver from "file-saver";
+import {ContentState, EditorState} from "draft-js";
 import htmlToDraft from "html-to-draftjs";
-import React, { useEffect, useState } from "react";
-import { Editor } from "react-draft-wysiwyg";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { useHistory } from "react-router-dom";
-import {
-  getFileType,
-  randomImageName,
-  saveByteArray,
-} from "utils/FileUpload/covert";
-import { authGet } from "../../../api";
+import React, {useEffect, useState} from "react";
+import {Editor} from "react-draft-wysiwyg";
+import {useDispatch, useSelector} from "react-redux";
+import {useParams} from "react-router";
+import {useHistory} from "react-router-dom";
+import {randomImageName,} from "utils/FileUpload/covert";
+import {authGet} from "../../../api";
 import ContestsUsingAProblem from "./ContestsUsingAProblem";
-import { StyledTableCell, StyledTableRow } from "./lib";
-import { request } from "./Request";
+import {StyledTableCell, StyledTableRow} from "./lib";
+import {request} from "./Request";
+import {copyAllTestCases, downloadAllTestCases} from "./service/TestCaseService";
+import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
 
 const editorStyle = {
   toolbar: {
@@ -37,44 +33,8 @@ const editorStyle = {
   },
 };
 
-const useStyles = makeStyles((theme) => ({
-  fileContainer: {
-    marginTop: "12px",
-  },
-  fileWrapper: {
-    position: "relative",
-  },
-  fileDownload: {
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: "16px",
-    alignItems: "center",
-  },
-  fileName: {
-    fontStyle: "italic",
-    paddingRight: "12px",
-  },
-  downloadButton: {
-    marginLeft: "12px",
-  },
-  imageQuiz: {
-    maxWidth: "70%",
-  },
-  buttonClearImage: {
-    position: "absolute",
-    top: "12px",
-    right: "12px",
-    zIndex: 3,
-    color: "red",
-    width: 32,
-    height: 32,
-    cursor: "pointer",
-  },
-}));
-
 export default function ManagerViewProblemDetail() {
   const params = useParams();
-  const classes = useStyles();
 
   const problemId = params.problemId;
   const history = useHistory();
@@ -101,6 +61,7 @@ export default function ManagerViewProblemDetail() {
   function onFileChange(event) {
     setFilename(event.target.files[0]);
   }
+
   const onInputChange = (event) => {
     let name = event.target.value;
     setFilename(name);
@@ -138,7 +99,7 @@ export default function ManagerViewProblemDetail() {
       }
       //setProblemStatement(res.data.problemStatement);
       let problemDescriptionHtml = htmlToDraft(res.problemStatement);
-      let { contentBlocks, entityMap } = problemDescriptionHtml;
+      let {contentBlocks, entityMap} = problemDescriptionHtml;
       let contentDescriptionState = ContentState.createFromBlockArray(
         contentBlocks,
         entityMap
@@ -154,34 +115,6 @@ export default function ManagerViewProblemDetail() {
     getProblemDetail();
     getTestCases();
   }, []);
-
-  const copyAllHandler = () => {
-    let allTestCases = "";
-    for (const testCase_ith of testCases) {
-      allTestCases +=
-        "------------- \nINPUT: \n" +
-        testCase_ith.testCase +
-        "\n\nOUTPUT: \n" +
-        testCase_ith.correctAns +
-        "\n\n";
-    }
-    navigator.clipboard.writeText(allTestCases);
-  };
-  const downloadAllHandler = () => {
-    for (let i = 0; i < testCases.length; i++) {
-      var testCase_ith = testCases[i];
-      var blob = new Blob(
-        [
-          "INPUT: \n" +
-            testCase_ith.testCase +
-            "\n\nOUTPUT: \n" +
-            testCase_ith.correctAns,
-        ],
-        { type: "text/plain;charset=utf-8" }
-      );
-      FileSaver.saveAs(blob, "Testcase_" + (i + 1) + ".txt");
-    }
-  };
 
   const ModalPreview = (chosenTestcase) => {
     return (
@@ -205,19 +138,21 @@ export default function ManagerViewProblemDetail() {
   };
 
   function handleEdit() {
-    //alert("edit problem");
     history.push("/programming-contest/edit-problem/" + problemId);
   }
+
   function addTestCase() {
     history.push(
       "/programming-contest/problem-detail-create-test-case/" + problemId
     );
   }
+
   function userRoleManagement() {
     history.push(
       "/programming-contest/user-contest-problem-role-management/" + problemId
     );
   }
+
   return (
     <div>
       <Button
@@ -258,83 +193,12 @@ export default function ManagerViewProblemDetail() {
         />
         {fetchedImageArray.length !== 0 &&
           fetchedImageArray.map((file) => (
-            <div key={file.id} className={classes.fileContainer}>
-              <div className={classes.fileWrapper}>
-                {getFileType(file.fileName) === "img" && (
-                  <img
-                    src={`data:image/jpeg;base64,${file.content}`}
-                    alt={file.fileName}
-                    className={classes.imageQuiz}
-                  />
-                )}
-                {getFileType(file.fileName) === "pdf" && (
-                  <Box className={classes.fileDownload}>
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.fileName}
-                    >
-                      {file.fileName}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      className={classes.downloadButton}
-                      onClick={() =>
-                        saveByteArray(file.fileName, file.content, "pdf")
-                      }
-                    >
-                      Download
-                    </Button>
-                  </Box>
-                )}
-                {getFileType(file.fileName) === "word" && (
-                  <Box className={classes.fileDownload}>
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.fileName}
-                    >
-                      {file.fileName}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      className={classes.downloadButton}
-                      onClick={() =>
-                        saveByteArray(file.fileName, file.content, "word")
-                      }
-                    >
-                      Download
-                    </Button>
-                  </Box>
-                )}
-                {getFileType(file.fileName) === "txt" && (
-                  <Box className={classes.fileDownload}>
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.fileName}
-                    >
-                      {file.fileName}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      className={classes.downloadButton}
-                      onClick={() =>
-                        saveByteArray(file.fileName, file.content, "txt")
-                      }
-                    >
-                      Download
-                    </Button>
-                  </Box>
-                )}
-              </div>
-            </div>
+            <FileUploadZone file={file} removable={false}/>
           ))}
       </div>
 
       <TableContainer component={Paper}>
-        {console.log(testCases)}
-        <Table sx={{ minWidth: 750 }} aria-label="customized table">
+        <Table sx={{minWidth: 750}} aria-label="customized table">
           <TableHead>
             <TableRow>
               <StyledTableCell></StyledTableCell>
@@ -345,12 +209,12 @@ export default function ManagerViewProblemDetail() {
               <StyledTableCell align="left">Submit Output</StyledTableCell>
               */}
               <StyledTableCell align="left">
-                <Button variant="contained" onClick={copyAllHandler}>
+                <Button variant="contained" onClick={() => copyAllTestCases(testCases)}>
                   Copy Tests
                 </Button>
               </StyledTableCell>
               <StyledTableCell align="left">
-                <Button variant="contained" onClick={downloadAllHandler}>
+                <Button variant="contained" onClick={() => downloadAllTestCases(testCases)}>
                   Download Tests
                 </Button>
               </StyledTableCell>
@@ -427,7 +291,7 @@ export default function ManagerViewProblemDetail() {
                           setOpenModal(true);
                         }}
                       >
-                        <InfoIcon />
+                        <InfoIcon/>
                       </IconButton>
                     </StyledTableCell>
                     <StyledTableCell align="left"></StyledTableCell>
@@ -438,9 +302,9 @@ export default function ManagerViewProblemDetail() {
           </TableBody>
         </Table>
       </TableContainer>
-      <ModalPreview chosenTestcase={selectedTestcase} />
+      <ModalPreview chosenTestcase={selectedTestcase}/>
 
-      <ContestsUsingAProblem problemId={problemId} />
+      <ContestsUsingAProblem problemId={problemId}/>
     </div>
   );
 }

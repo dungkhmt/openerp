@@ -2,7 +2,6 @@ import {makeStyles} from "@material-ui/core/styles";
 import {Button, IconButton} from "@mui/material";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import HustModal from "component/common/HustModal";
-import FileSaver from "file-saver";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router";
 import {Link, useHistory} from "react-router-dom";
@@ -12,7 +11,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import Box from "@mui/material/Box";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {successNoti} from "../../../utils/notification";
+import {copyAllTestCases, downloadAllTestCases} from "./service/TestCaseService";
 
 const useStyles = makeStyles((theme) => ({}));
 
@@ -157,36 +156,6 @@ export default function ListTestCase() {
     ]
   ;
 
-
-  const copyAllHandler = () => {
-    let allTestCases = "";
-    for (const testCase_ith of testCases) {
-      allTestCases +=
-        "------------- \nINPUT: \n" +
-        testCase_ith.testCase +
-        "\n\nOUTPUT: \n" +
-        testCase_ith.correctAns +
-        "\n\n";
-    }
-    navigator.clipboard.writeText(allTestCases).then(successNoti("Copied", 1000));
-  };
-
-  const downloadAllHandler = () => {
-    for (let i = 0; i < testCases.length; i++) {
-      var testCase_ith = testCases[i];
-      var blob = new Blob(
-        [
-          "INPUT: \n" +
-          testCase_ith.testCase +
-          "\n\nOUTPUT: \n" +
-          testCase_ith.correctAns,
-        ],
-        {type: "text/plain;charset=utf-8"}
-      );
-      FileSaver.saveAs(blob, "Testcase_" + (i + 1) + ".txt");
-    }
-  };
-
   const ModalPreview = (chosenTestcase) => {
     return (
       <HustModal
@@ -243,7 +212,7 @@ export default function ListTestCase() {
         <Button
           variant="contained"
           onClick={() => {
-            copyAllHandler();
+            copyAllTestCases(testCases);
           }}
           sx={{mr: 2}}
         >
@@ -252,7 +221,7 @@ export default function ListTestCase() {
         <Button
           variant="contained"
           onClick={() => {
-            downloadAllHandler();
+            downloadAllTestCases(testCases);
           }}
         >
           Download all Testcases
