@@ -2,6 +2,7 @@ package com.hust.baseweb.applications.programmingcontest.docker;
 
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.utils.ComputerLanguage;
+import com.hust.baseweb.applications.programmingcontest.utils.TempDir;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerClient.ExecCreateParam;
@@ -208,11 +209,11 @@ public class DockerClientBase {
                 log.info("language err");
                 return "err";
         }
-        File slidesDir = new File("./temp_dir/");
+        File slidesDir = new File(TempDir.TEMPDIR);
         if (!slidesDir.exists()) {
             slidesDir.mkdirs();
         }
-        dockerClient.copyToContainer(new java.io.File("./temp_dir/" + dirName).toPath(), containerId, "/workdir/");
+        dockerClient.copyToContainer(new java.io.File(TempDir.TEMPDIR + dirName).toPath(), containerId, "/workdir/");
 
         //log.info("runExecutable, dirName = " + dirName + " language = " + languages + " copyToContainer OK");
         ExecCreation runExecCreation = dockerClient.execCreate(

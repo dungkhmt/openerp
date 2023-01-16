@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.utils;
 
+import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.TestCaseEntity;
 import com.hust.baseweb.applications.programmingcontest.utils.executor.GccExecutor;
 import com.hust.baseweb.applications.programmingcontest.utils.executor.GolangExecutor;
@@ -24,7 +25,7 @@ import java.util.Date;
 @Configuration
 public class TempDir {
 
-    private static final String TEMPDIR = "./temp_dir/";
+    public static final String TEMPDIR = Constants.FILE_PATH_ROOT + "temp_dir/";
 
     private final GccExecutor gccExecutor = new GccExecutor();
 
@@ -178,7 +179,7 @@ public class TempDir {
     }
 
     public void removeDir(String dirName){
-        FileSystemUtils.deleteRecursively(new File("./temp_dir/"+dirName));
+        FileSystemUtils.deleteRecursively(new File(TEMPDIR + dirName));
     }
 
 
@@ -188,7 +189,7 @@ public class TempDir {
             while(true){
                 while ((dirName = concurrentLinkedQueue.poll()) != null){
 //                    System.out.println("rm dir " + dirName);
-                    FileSystemUtils.deleteRecursively(new File("./temp_dir/"+dirName));
+                    FileSystemUtils.deleteRecursively(new File(TEMPDIR + dirName));
                 }
             }
         }

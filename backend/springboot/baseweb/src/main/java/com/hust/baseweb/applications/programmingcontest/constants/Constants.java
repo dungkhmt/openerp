@@ -16,6 +16,8 @@ public class Constants {
 
     private Map<String, Integer> MapLevelOrder = new HashMap<>();
 
+    public static final String FILE_PATH_ROOT = "./app/data_upload/education/";
+
     @Bean
     public void initConstants() {
         MapLevelOrder.put("easy", 1);
