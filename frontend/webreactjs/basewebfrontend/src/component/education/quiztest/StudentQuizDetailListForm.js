@@ -98,15 +98,22 @@ export default function StudentQuizDetailListForm(props) {
     setLoading(true);
     request(
       "post",
-      "/quiz-test-choose_answer-by-user",
+      //"/quiz-test-choose_answer-by-user",
+      //"/quiz-test-choose_answer-by-user-v2-asynchronous",
+      "/submit-quiz-test-choose_answer-by-user",
       (res) => {
         setMessageRequest("STORED!");
         setRequestSuccessfully(true);
         checkState[order].submitted.set(true);
         //checkState[order].lastSubmittedAnswers.set(choseAnswers);
         let resChoseAnswer = [];
-        for (let i = 0; i < res.data.length; i++) {
-          resChoseAnswer.push(res.data[i].choiceAnswerId);
+        //for (let i = 0; i < res.data.length; i++) {
+        //  resChoseAnswer.push(res.data[i].choiceAnswerId);
+        //}
+        if (res.data.submissionId != null) {
+          for (let i = 0; i < res.data.choiceAnswerIds.length; i++) {
+            resChoseAnswer.push(res.data.choiceAnswerIds[i]);
+          }
         }
         console.log("res choseanswer = ", resChoseAnswer);
         checkState[order].lastSubmittedAnswers.set(resChoseAnswer);

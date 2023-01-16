@@ -38,4 +38,7 @@ public class QuizTestExecutionSubmission {
     @Column(name="created_stamp")
     private Date createdStamp;
 
+    @Column(name="last_updated_stamp")
+    private Date lastUpdatedStamp;
+
 }

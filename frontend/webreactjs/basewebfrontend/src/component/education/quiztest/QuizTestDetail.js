@@ -22,7 +22,7 @@ import QuizTestJoinRequestList from "./QuizTestJoinRequestList";
 import QuizTestResultChart from "./QuizTestResultChart";
 import QuizTestStudentListResult from "./QuizTestResultList";
 import QuizTestStudentList from "./QuizTestStudentList";
-import {Card, CardContent} from "@material-ui/core";
+import { Card, CardContent } from "@material-ui/core";
 import TeacherViewQuizTestDetail from "./detail/TeacherViewQuizTestDetail";
 
 const styles = {
@@ -104,6 +104,19 @@ function QuizTestDetail() {
     // console.log(datasend);
   }
 
+  function handleSummarizeResult() {
+    setIsProcessing(true);
+
+    request(
+      "get",
+      "summarize-quiz-test-execution-choice/" + testId,
+      (res) => {
+        alert("summarize finished " + res.data);
+        setIsProcessing(false);
+      },
+      { 401: () => {} }
+    );
+  }
   function handleAssignQuestions2QuizGroup() {
     setIsProcessing(true);
     let data = { quizTestId: testId, numberQuestions: 10 };
@@ -176,8 +189,8 @@ function QuizTestDetail() {
 
   return courseInfo ? (
     <>
-      <TeacherViewQuizTestDetail/>
-      <br/>
+      <TeacherViewQuizTestDetail />
+      <br />
 
       <Card>
         <CardContent>
@@ -246,6 +259,14 @@ function QuizTestDetail() {
           }}
         >
           Phân câu hỏi cho đề
+        </PrimaryButton>
+        <PrimaryButton
+          sx={styles.btn}
+          onClick={(e) => {
+            handleSummarizeResult(e);
+          }}
+        >
+          Tổng hợp kết quả
         </PrimaryButton>
       </Box>
 

@@ -22,12 +22,16 @@ import java.util.Map;
 public class RabbitProgrammingContestConfig {
 
     public static final String EXCHANGE = "programming_contest_exchange";
+    public static final String QUIZ_EXCHANGE = "quiz_exchange";
     public static final String JUDGE_PROBLEM_QUEUE = "judge_problem_queue";
     public static final String JUDGE_CUSTOM_PROBLEM_QUEUE = "judge_custom_problem_queue";
+    public static final String QUIZ_QUEUE = "quiz_queue";
 
     public static final String DEAD_LETTER_EXCHANGE = "programming_contest_dead_letter_exchange";
+    public static final String QUIZ_DEAD_LETTER_EXCHANGE = "quiz_dead_letter_exchange";
     public static final String JUDGE_PROBLEM_DEAD_LETTER_QUEUE = "judge_problem_dead_letter_queue";
     public static final String JUDGE_CUSTOM_PROBLEM_DEAD_LETTER_QUEUE = "judge_custom_problem_dead_letter_queue";
+    public static final String QUIZ_DEAD_LETTER_QUEUE = "quiz_dead_letter_queue";
 
     @Autowired
     private RabbitProgrammingContestProperties rabbitConfig;
@@ -153,4 +157,47 @@ public class RabbitProgrammingContestConfig {
             .with(ProblemContestRoutingKey.JUDGE_CUSTOM_PROBLEM_DL);
     }
 
+    @Bean
+    public DirectExchange quizExchange() {
+        return new DirectExchange(QUIZ_EXCHANGE, true, false);
+    }
+
+    @Bean
+    public Queue quizQueue() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-queue-type", "quorum");
+        args.put("x-overflow", "reject-publish");
+
+        return new Queue(QUIZ_QUEUE, true, false, false, args);
+    }
+
+    @Bean
+    public Binding judgeQuizBinding() {
+        return BindingBuilder.bind(quizQueue()).to(quizExchange()).with(QuizRoutingKey.QUIZ);
+    }
+
+    // DeadLetterExchange & DeadLetterQueue
+    @Bean
+    public DirectExchange quizDeadLetterExchange() {
+        return new DirectExchange(QUIZ_DEAD_LETTER_EXCHANGE, true, false);
+    }
+
+    @Bean
+    public Queue judgeQuizDeadLetterQueue() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-queue-type", "quorum");
+        args.put("x-dead-letter-exchange", EXCHANGE);
+        args.put("x-dead-letter-routing-key", QuizRoutingKey.QUIZ_DL);
+        args.put("x-message-ttl", rabbitConfig.getDeadMessageTtl());
+
+        return new Queue(QUIZ_DEAD_LETTER_QUEUE, true, false, false, args);
+    }
+
+    @Bean
+    public Binding judgeQuizDeadLetterBinding() {
+        return BindingBuilder
+            .bind(judgeQuizDeadLetterQueue())
+            .to(quizDeadLetterExchange())
+            .with(QuizRoutingKey.QUIZ_DL);
+    }
 }

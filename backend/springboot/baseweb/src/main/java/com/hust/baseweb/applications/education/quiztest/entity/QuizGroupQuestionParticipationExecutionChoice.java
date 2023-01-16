@@ -31,6 +31,9 @@ public class QuizGroupQuestionParticipationExecutionChoice {
     @Column(name = "choice_answer_id")
     private UUID choiceAnswerId;
 
+    @Column(name = "submission_id")
+    private UUID submissionId;
+
     @Column(name="created_stamp")
     private Date createdStamp;
 

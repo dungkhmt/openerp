@@ -27,6 +27,7 @@ import com.hust.baseweb.applications.education.repo.QuizChoiceAnswerRepo;
 import com.hust.baseweb.applications.education.repo.QuizQuestionRepo;
 import com.hust.baseweb.applications.education.service.QuizQuestionService;
 import com.hust.baseweb.applications.notifications.service.NotificationsService;
+import com.hust.baseweb.config.rabbitmq.QuizRoutingKey;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.repo.UserLoginRepo;
@@ -35,13 +36,17 @@ import com.hust.baseweb.service.UserService;
 import com.hust.baseweb.utils.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestConfig.QUIZ_EXCHANGE;
 
 @Log4j2
 @Service
@@ -66,7 +71,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
     UserService userService;
     QuizTestExecutionSubmissionRepo quizTestExecutionSubmissionRepo;
     HistoryLogQuizGroupQuestionParticipationExecutionChoiceRepo historyLogQuizGroupQuestionParticipationExecutionChoiceRepo;
-
+    private RabbitTemplate rabbitTemplate;
     private NotificationsService notificationsService;
 
     private EduTestQuizRoleRepo eduTestQuizRoleRepo;
@@ -89,6 +94,8 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         newRecord.setQuestionStatementViewTypeId(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_VISIBLE);
         newRecord.setParticipantQuizGroupAssignmentMode(EduQuizTest.PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_HANDOUT_THEN_UPDATE_GROUP);
         newRecord.setViewTypeId(EduQuizTest.QUIZ_TEST_VIEW_TYPE_LIST);
+        newRecord.setJudgeMode(EduQuizTest.JUDGE_MODE_SYNCHRONOUS);
+
         newRecord = repo.save(newRecord);
 
         EduTestQuizRole role = new EduTestQuizRole();
@@ -138,6 +145,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
             eduQuizTest.setParticipantQuizGroupAssignmentMode(input.getParticipantQuizGroupAssignmentMode());
             eduQuizTest.setViewTypeId(input.getViewTypeId());
             eduQuizTest.setStatusId(input.getStatusId());
+            eduQuizTest.setJudgeMode(input.getJudgeMode());
             eduQuizTest = repo.save(eduQuizTest);
             log.info("update, testId = " +
                      input.getTestId() +
@@ -1335,11 +1343,159 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
     }
 
     @Override
-    public boolean updateFromQuizTestExecutionSubmission(UUID submissionId) {
-        QuizTestExecutionSubmission sub = quizTestExecutionSubmissionRepo.findById(submissionId).orElse(null);
+    public QuizTestExecutionSubmission submitSynchronousQuizTestExecutionChoice(
+        UUID questionId,
+        UUID groupId,
+        String userId,
+        List<UUID> chooseAnsIds
+    ) {
+        Date createdStamp = new Date();
+
+        // create a quiz-test submission
+        String choiceAnsIds = "";
+        for (int i = 0; i < chooseAnsIds.size(); i++) {
+            UUID choiceId = chooseAnsIds.get(i);
+            choiceAnsIds = choiceAnsIds + choiceId.toString();
+            if(i < chooseAnsIds.size()-1)
+                choiceAnsIds += ",";
+        }
+        QuizTestExecutionSubmission sub = new QuizTestExecutionSubmission();
+        sub.setQuestionId(questionId);
+        sub.setParticipationUserLoginId(userId);
+        sub.setChoiceAnswerIds(choiceAnsIds);
+        sub.setQuizGroupId(groupId);
+        sub.setStatusId(QuizTestExecutionSubmission.STATUS_SOLVED);
+        sub.setCreatedStamp(createdStamp);
+        sub =  quizTestExecutionSubmissionRepo.save(sub);
+
+        List<QuizGroupQuestionParticipationExecutionChoice> a = quizGroupQuestionParticipationExecutionChoiceRepo.findQuizGroupQuestionParticipationExecutionChoicesByParticipationUserLoginIdAndQuizGroupIdAndQuestionId(
+            userId,
+            groupId,
+            questionId);
+
+
+        a.forEach(quizGroupQuestionParticipationExecutionChoice -> {
+            quizGroupQuestionParticipationExecutionChoiceRepo.delete(quizGroupQuestionParticipationExecutionChoice);
+            //log.info("quizChooseAnswer, chooseAnsIds, delete previous choice answer for question " +
+            //         questionId +
+            //         " of groupId " +
+            //         groupId +
+            //         " of user " +
+            //         userId);
+        });
+
+        List<QuizGroupQuestionParticipationExecutionChoice> res = new ArrayList();
+        for (UUID choiceId :
+            chooseAnsIds) {
+            QuizGroupQuestionParticipationExecutionChoice tmp = new QuizGroupQuestionParticipationExecutionChoice();
+            tmp.setQuestionId(questionId);
+            tmp.setQuizGroupId(groupId);
+            tmp.setParticipationUserLoginId(userId);
+            tmp.setChoiceAnswerId(choiceId);
+            tmp.setCreatedStamp(createdStamp);
+            tmp.setSubmissionId(sub.getSubmissionId());
+            tmp = quizGroupQuestionParticipationExecutionChoiceRepo.save(tmp);
+            res.add(tmp);
+            /*
+            if(userId.equals("20210293")) {
+                log.info("quizChooseAnswer, saved record user " +
+                         tmp.getParticipationUserLoginId() +
+                         " chose " +
+                         tmp.getChoiceAnswerId());
+            }
+            */
+
+
+            // create history log
+            HistoryLogQuizGroupQuestionParticipationExecutionChoice historyLogQuizGroupQuestionParticipationExecutionChoice
+                = new HistoryLogQuizGroupQuestionParticipationExecutionChoice();
+            historyLogQuizGroupQuestionParticipationExecutionChoice.setChoiceAnswerId(choiceId);
+            historyLogQuizGroupQuestionParticipationExecutionChoice.setParticipationUserLoginId(userId);
+            historyLogQuizGroupQuestionParticipationExecutionChoice.setQuestionId(questionId);
+            historyLogQuizGroupQuestionParticipationExecutionChoice.setQuizGroupId(groupId);
+            historyLogQuizGroupQuestionParticipationExecutionChoice.setCreatedStamp(createdStamp);
+            historyLogQuizGroupQuestionParticipationExecutionChoice = historyLogQuizGroupQuestionParticipationExecutionChoiceRepo
+                .save(historyLogQuizGroupQuestionParticipationExecutionChoice);
+        }
+
+
+
+        return sub;
+    }
+
+    @Override
+    public QuizTestExecutionSubmission submitAsynchronousQuizTestExecutionChoiceUsingRabbitMQ(
+        UUID questionId,
+        UUID groupId,
+        String userId,
+        List<UUID> chooseAnsIds
+    ) {
+        Date createdStamp = new Date();
+        String choiceAnsIds = "";
+        for (int i = 0; i < chooseAnsIds.size(); i++) {
+            UUID choiceId = chooseAnsIds.get(i);
+            choiceAnsIds = choiceAnsIds + choiceId.toString();
+            if(i < chooseAnsIds.size()-1)
+                choiceAnsIds += ",";
+        }
+        QuizTestExecutionSubmission sub = new QuizTestExecutionSubmission();
+        sub.setQuestionId(questionId);
+        sub.setParticipationUserLoginId(userId);
+        sub.setChoiceAnswerIds(choiceAnsIds);
+        sub.setQuizGroupId(groupId);
+        sub.setStatusId(QuizTestExecutionSubmission.STATUS_IN_PROGRESS);
+        sub.setCreatedStamp(createdStamp);
+        sub =  quizTestExecutionSubmissionRepo.save(sub);
+
+        // create a message and send to rabbitMQ HERE
+        // after the message is process: update QuizGroupQuestionParticipationExecutionChoice
+        // then QuizTestExecutionSubmission.statusId is changed to SOLVED
+        rabbitTemplate.convertAndSend(
+            QUIZ_EXCHANGE,
+            QuizRoutingKey.QUIZ,
+            sub.getSubmissionId()
+        );
+
+
+        return sub;
+
+
+    }
+
+    @Override
+    public QuizTestExecutionSubmission submitQuizTestExecutionChoiceBatchLazyEvaluation(
+        UUID questionId,
+        UUID groupId,
+        String userId,
+        List<UUID> chooseAnsIds
+    ) {
+        Date createdStamp = new Date();
+        String choiceAnsIds = "";
+        for (int i = 0; i < chooseAnsIds.size(); i++) {
+            UUID choiceId = chooseAnsIds.get(i);
+            choiceAnsIds = choiceAnsIds + choiceId.toString();
+            if(i < chooseAnsIds.size()-1)
+                choiceAnsIds += ",";
+        }
+        QuizTestExecutionSubmission sub = new QuizTestExecutionSubmission();
+        sub.setQuestionId(questionId);
+        sub.setParticipationUserLoginId(userId);
+        sub.setChoiceAnswerIds(choiceAnsIds);
+        sub.setQuizGroupId(groupId);
+        sub.setStatusId(QuizTestExecutionSubmission.STATUS_IN_PROGRESS);
+        sub.setCreatedStamp(createdStamp);
+        sub =  quizTestExecutionSubmissionRepo.save(sub);
+
+        return sub;
+    }
+
+    private boolean updateFromQuizTestExecutionSubmission(QuizTestExecutionSubmission sub){
         if(sub == null){
             return false;
         }
+
+        Date createdStamp = new Date();
+
         if(sub.getChoiceAnswerIds() != null && !sub.getChoiceAnswerIds().equals("")) {
             String[] choiceAnsIds = sub.getChoiceAnswerIds().split(",");
             if(choiceAnsIds != null && choiceAnsIds.length > 0){
@@ -1365,7 +1521,6 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                     //         userId);
                 });
 
-                Date createdStamp = new Date();
                 for (UUID choiceId :
                     chooseAnsIds) {
                     QuizGroupQuestionParticipationExecutionChoice tmp = new QuizGroupQuestionParticipationExecutionChoice();
@@ -1374,8 +1529,9 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                     tmp.setParticipationUserLoginId(userId);
                     tmp.setChoiceAnswerId(choiceId);
                     tmp.setCreatedStamp(createdStamp);
-                    quizGroupQuestionParticipationExecutionChoiceRepo.save(tmp);
-
+                    tmp.setSubmissionId(sub.getSubmissionId());
+                    tmp = quizGroupQuestionParticipationExecutionChoiceRepo.save(tmp);
+                    log.info("updateFromQuizTestExecutionSubmission, transactional subID = " + sub.getSubmissionId() + " save choice " + choiceId);
 
                     // create history log
                     HistoryLogQuizGroupQuestionParticipationExecutionChoice historyLogQuizGroupQuestionParticipationExecutionChoice
@@ -1388,9 +1544,135 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                     historyLogQuizGroupQuestionParticipationExecutionChoice = historyLogQuizGroupQuestionParticipationExecutionChoiceRepo
                         .save(historyLogQuizGroupQuestionParticipationExecutionChoice);
                 }
+                sub.setStatusId(QuizTestExecutionSubmission.STATUS_SOLVED);
+                sub.setLastUpdatedStamp(createdStamp);
+                sub = quizTestExecutionSubmissionRepo.save(sub);
+
                 return true;
             }
+            sub.setStatusId(QuizTestExecutionSubmission.STATUS_SOLVED);
+            sub.setLastUpdatedStamp(createdStamp);
+            sub = quizTestExecutionSubmissionRepo.save(sub);
+        }
+
+        return true;
+    }
+    @Override
+    @Transactional
+    public boolean updateFromQuizTestExecutionSubmission(UUID submissionId) {
+        QuizTestExecutionSubmission sub = quizTestExecutionSubmissionRepo.findById(submissionId).orElse(null);
+        if(sub == null){
+            return false;
+        }
+        return updateFromQuizTestExecutionSubmission(sub);
+        /*
+        log.info("updateFromQuizTestExecutionSubmission, subID = " + submissionId);
+        Date createdStamp = new Date();
+
+        if(sub.getChoiceAnswerIds() != null && !sub.getChoiceAnswerIds().equals("")) {
+            String[] choiceAnsIds = sub.getChoiceAnswerIds().split(",");
+            if(choiceAnsIds != null && choiceAnsIds.length > 0){
+                List<UUID> chooseAnsIds = new ArrayList();
+                for(int i = 0; i < choiceAnsIds.length; i++){
+                    UUID choiceId = UUID.fromString(choiceAnsIds[i]);
+                    chooseAnsIds.add(choiceId);
+                }
+                String userId = sub.getParticipationUserLoginId();
+                UUID questionId = sub.getQuestionId();
+                UUID groupId = sub.getQuizGroupId();
+                List<QuizGroupQuestionParticipationExecutionChoice> a = quizGroupQuestionParticipationExecutionChoiceRepo.findQuizGroupQuestionParticipationExecutionChoicesByParticipationUserLoginIdAndQuizGroupIdAndQuestionId(
+                    userId,
+                    groupId,
+                    questionId);
+                a.forEach(quizGroupQuestionParticipationExecutionChoice -> {
+                    quizGroupQuestionParticipationExecutionChoiceRepo.delete(quizGroupQuestionParticipationExecutionChoice);
+                    //log.info("quizChooseAnswer, chooseAnsIds, delete previous choice answer for question " +
+                    //         questionId +
+                    //         " of groupId " +
+                    //         groupId +
+                    //         " of user " +
+                    //         userId);
+                });
+
+                for (UUID choiceId :
+                    chooseAnsIds) {
+                    QuizGroupQuestionParticipationExecutionChoice tmp = new QuizGroupQuestionParticipationExecutionChoice();
+                    tmp.setQuestionId(questionId);
+                    tmp.setQuizGroupId(groupId);
+                    tmp.setParticipationUserLoginId(userId);
+                    tmp.setChoiceAnswerId(choiceId);
+                    tmp.setCreatedStamp(createdStamp);
+                    tmp = quizGroupQuestionParticipationExecutionChoiceRepo.save(tmp);
+                    log.info("updateFromQuizTestExecutionSubmission, transactional subID = " + submissionId + " save choice " + choiceId);
+
+                    // create history log
+                    HistoryLogQuizGroupQuestionParticipationExecutionChoice historyLogQuizGroupQuestionParticipationExecutionChoice
+                        = new HistoryLogQuizGroupQuestionParticipationExecutionChoice();
+                    historyLogQuizGroupQuestionParticipationExecutionChoice.setChoiceAnswerId(choiceId);
+                    historyLogQuizGroupQuestionParticipationExecutionChoice.setParticipationUserLoginId(userId);
+                    historyLogQuizGroupQuestionParticipationExecutionChoice.setQuestionId(questionId);
+                    historyLogQuizGroupQuestionParticipationExecutionChoice.setQuizGroupId(groupId);
+                    historyLogQuizGroupQuestionParticipationExecutionChoice.setCreatedStamp(createdStamp);
+                    historyLogQuizGroupQuestionParticipationExecutionChoice = historyLogQuizGroupQuestionParticipationExecutionChoiceRepo
+                        .save(historyLogQuizGroupQuestionParticipationExecutionChoice);
+                }
+                sub.setStatusId(QuizTestExecutionSubmission.STATUS_SOLVED);
+                sub.setLastUpdatedStamp(createdStamp);
+                sub = quizTestExecutionSubmissionRepo.save(sub);
+
+                return true;
+            }
+            sub.setStatusId(QuizTestExecutionSubmission.STATUS_SOLVED);
+            sub.setLastUpdatedStamp(createdStamp);
+            sub = quizTestExecutionSubmissionRepo.save(sub);
         }
         return false;
+        */
+    }
+
+    @Transactional
+    @Override
+    public int summarizeQuizTestExecutionChoice(String testId) {
+        // warning: heavy batch processing,
+        int cnt = 0;
+        List<EduTestQuizGroup> groups = eduQuizTestGroupRepo.findByTestId(testId);
+        List<UUID> groupIds = new ArrayList<UUID>();
+        Map<UUID, List<UUID>> mGroupID2QuestionIds = new HashMap();
+        for(EduTestQuizGroup g: groups){
+            groupIds.add(g.getQuizGroupId());
+            mGroupID2QuestionIds.put(g.getQuizGroupId(), new ArrayList());
+        }
+        List<QuizGroupQuestionAssignment> qgAss = quizGroupQuestionAssignmentRepo.findAllByQuizGroupIdIn(groupIds);
+
+        for(QuizGroupQuestionAssignment e: qgAss){
+            UUID gid = e.getQuizGroupId();
+            UUID questionId = e.getQuestionId();
+            mGroupID2QuestionIds.get(gid).add(questionId);
+        }
+        List<EduTestQuizGroupParticipationAssignment> ugAss = eduTestQuizGroupParticipationAssignmentRepo.findAllByQuizGroupIdIn(groupIds);
+        for(EduTestQuizGroupParticipationAssignment a: ugAss){
+            UUID groupId = a.getQuizGroupId();
+            String userId = a.getParticipationUserLoginId();
+            List<UUID> questionIds = mGroupID2QuestionIds.get(groupId);
+            if(questionIds != null){
+                for(UUID qId: questionIds){
+                    // get most recently submission of userId for question qId in group groupId
+                    QuizTestExecutionSubmission sub = null;
+                    List<QuizTestExecutionSubmission> subs = quizTestExecutionSubmissionRepo
+                        .findAllByQuestionIdAndQuizGroupIdAndParticipationUserLoginIdOrderByCreatedStampDesc(qId, groupId, userId);
+                    if(subs != null && subs.size() > 0){
+                        sub = subs.get(0); // get most recently submitted record
+                    }
+                    if(sub != null){
+                        log.debug("summarizeQuizTestExecutionChoice, get most recently record " + sub.getSubmissionId() + " time = " + sub.getCreatedStamp());
+                        boolean ok = updateFromQuizTestExecutionSubmission(sub);
+                        if(ok){
+                            cnt += 1;
+                        }
+                    }
+                }
+            }
+        }
+        return cnt;
     }
 }

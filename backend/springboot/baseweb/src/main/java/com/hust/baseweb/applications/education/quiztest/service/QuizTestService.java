@@ -2,6 +2,8 @@ package com.hust.baseweb.applications.education.quiztest.service;
 
 import com.hust.baseweb.applications.education.quiztest.UserQuestionQuizExecutionOM;
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
+import com.hust.baseweb.applications.education.quiztest.entity.QuizGroupQuestionParticipationExecutionChoice;
+import com.hust.baseweb.applications.education.quiztest.entity.QuizTestExecutionSubmission;
 import com.hust.baseweb.applications.education.quiztest.model.EditQuizTestInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.EduQuizTestModel;
 import com.hust.baseweb.applications.education.quiztest.model.ModelResponseGetMyQuizTest;
@@ -61,5 +63,11 @@ public interface QuizTestService {
 
     public boolean confirmUpdateGroupInQuizTest(String userId, String groupCode, String testId);
 
+    public QuizTestExecutionSubmission submitSynchronousQuizTestExecutionChoice(UUID questionId, UUID groupId, String userId, List<UUID> chooseAnsIds);
+    public QuizTestExecutionSubmission submitAsynchronousQuizTestExecutionChoiceUsingRabbitMQ(UUID questionId, UUID groupId, String userId, List<UUID> chooseAnsIds);
+    public QuizTestExecutionSubmission submitQuizTestExecutionChoiceBatchLazyEvaluation(UUID questionId, UUID groupId, String userId, List<UUID> chooseAnsIds);
+
     public boolean updateFromQuizTestExecutionSubmission(UUID submissionId);
+
+    public int summarizeQuizTestExecutionChoice(String testId);
 }

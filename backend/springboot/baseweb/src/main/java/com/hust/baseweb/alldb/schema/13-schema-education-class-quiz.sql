@@ -89,6 +89,7 @@ create table edu_quiz_test(
     class_id uuid,
     session_id uuid,
     participant_quiz_group_assignment_mode varchar(100),
+    judge_mode varchar(200),
     view_type_id varchar(100),
     question_statement_view_type_id varchar(200),
     status_id varchar(30),
@@ -156,6 +157,7 @@ create table quiz_group_question_participation_execution_choice(
     quiz_group_id uuid,
     participation_user_login_id varchar(60),
     choice_answer_id uuid,
+    submission_id uuid,
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

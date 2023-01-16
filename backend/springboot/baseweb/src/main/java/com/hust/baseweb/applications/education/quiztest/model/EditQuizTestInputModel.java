@@ -20,4 +20,5 @@ public class EditQuizTestInputModel {
     private String questionStatementViewTypeId;
     private String viewTypeId;
     private String participantQuizGroupAssignmentMode;
+    private String judgeMode;
 }
