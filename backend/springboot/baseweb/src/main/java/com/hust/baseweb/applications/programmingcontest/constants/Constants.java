@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.programmingcontest.constants;
 
+import com.hust.baseweb.config.FileSystemStorageProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,9 @@ public class Constants {
 
     private Map<String, Integer> MapLevelOrder = new HashMap<>();
 
-    public static final String FILE_PATH_ROOT = "./app/data_upload/education/";
+    private static FileSystemStorageProperties properties;
+
+    public static final String FILE_PATH_ROOT = properties.getFilesystemRoot();
 
     @Bean
     public void initConstants() {
@@ -32,7 +35,7 @@ public class Constants {
         SUCCESSFUL("SUCCESSFUL"),
         FAILED("FAILED");
 
-        private String value;
+        private final String value;
 
         RegistrationType(String value) {
             this.value = value;
@@ -47,7 +50,7 @@ public class Constants {
     public enum RegisterCourseStatus {
         SUCCESSES("SUCCESSES"), FAILED("FAILED");
 
-        private String value;
+        private final String value;
 
         RegisterCourseStatus(String value) {
             this.value = value;
@@ -61,7 +64,7 @@ public class Constants {
     public enum GetPointForRankingType {
         LATEST("LATEST"), HIGHEST("HIGHEST");
 
-        private String value;
+        private final String value;
 
         GetPointForRankingType(String value) {
             this.value = value;
@@ -77,7 +80,7 @@ public class Constants {
         MEMORY_LIMIT("Segmentation fault"),
         TIME_LIMIT("Killed");
 
-        private String value;
+        private final String value;
 
         TestCaseSubmissionError(String value) {
             this.value = value;
@@ -94,7 +97,7 @@ public class Constants {
         JAVA("JAVA"),
         GOLANG("GOLANG");
 
-        private String value;
+        private final String value;
 
         Languages(String value) {
             this.value = value;
@@ -109,7 +112,7 @@ public class Constants {
     public enum DockerImage {
         GCC("gcc:8.5-buster"), JAVA("openjdk:13-buster"), PYTHON3("python:3.6-buster"), GOLANG("golang:1.16-buster");
 
-        private String value;
+        private final String value;
 
         DockerImage(String value) {
             this.value = value;
@@ -124,7 +127,7 @@ public class Constants {
     public enum DockerContainer {
         GCC("/gcc"), JAVA("/java"), PYTHON3("/python3"), GOLANG("/golang");
 
-        private String value;
+        private final String value;
 
         DockerContainer(String value) {
             this.value = value;
@@ -139,7 +142,7 @@ public class Constants {
         NORMAL("NORMAL_EVALUATION"),
         CUSTOM("CUSTOM_EVALUATION");
 
-        private String value;
+        private final String value;
 
         ProblemResultEvaluationType(String value) {
             this.value = value;

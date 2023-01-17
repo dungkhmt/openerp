@@ -25,7 +25,7 @@ import java.util.Date;
 @Configuration
 public class TempDir {
 
-    public static final String TEMPDIR = Constants.FILE_PATH_ROOT + "temp_dir/";
+    public static final String TEMPDIR = Constants.FILE_PATH_ROOT + "/temp_dir/";
 
     private final GccExecutor gccExecutor = new GccExecutor();
 
