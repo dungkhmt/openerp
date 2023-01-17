@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 @Builder
 public class ModelGetContestPageResponse {
-    List<ModelGetContestResponse> contents;
+    List<ModelGetContestResponse> contests;
     long count;
 }
