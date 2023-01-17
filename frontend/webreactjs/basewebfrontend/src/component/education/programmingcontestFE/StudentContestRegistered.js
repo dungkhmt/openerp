@@ -1,23 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { request } from "./Request";
-import { API_URL } from "../../../config/config";
-import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
-import {
-  Button,
-  Grid,
-  MenuItem,
-  Table,
-  TableBody,
-  TableHead,
-  TextField,
-} from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
-import { StyledTableCell, StyledTableRow } from "./lib";
-import { Link } from "react-router-dom";
-import Pagination from "@material-ui/lab/Pagination";
-import { successNoti } from "../../../utils/notification";
-import { Timer } from "./Timer";
+import React, {useEffect, useState} from "react";
+import {request} from "./Request";
 import ContestStudentList from "./ContestStudentList";
 
 export function StudentContestRegistered() {
@@ -42,14 +24,10 @@ export function StudentContestRegistered() {
       "get",
       "/get-contest-paging-registered?size=" + pageSize + "&page=" + (page - 1),
       (res) => {
-        console.log("contest list", res.data);
         setTotalPage(res.data.totalPages);
-        setContests(res.data.contents);
-        let arr = res.data.contents.map((c, idx) => {
-          if (c.isPublic) {
-            return false;
-          }
-          return true;
+        setContests(res.data.contests);
+        let arr = res.data.contests.map((c) => {
+          return !c.isPublic;
         });
         console.log("arr ", arr);
         setIsCountDowns(arr);
@@ -58,15 +36,12 @@ export function StudentContestRegistered() {
   }
 
   useEffect(() => {
-    console.log("use effect");
     getContestList().then();
   }, [page, pageSize]);
 
-  function handleRegister(contestId) {}
-
   return (
     <div>
-      <ContestStudentList />
+      <ContestStudentList/>
       {/*
       <div>
         <div>

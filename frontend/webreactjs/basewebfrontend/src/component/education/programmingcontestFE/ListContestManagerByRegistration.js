@@ -57,7 +57,7 @@ export function ListContestManagerByRegistration() {
       (res) => {
         console.log("contest list", res.data);
         setTotalPage(res.data.totalPages);
-        setContests(res.data.contents);
+        setContests(res.data.contests);
       }
     ).then();
   }

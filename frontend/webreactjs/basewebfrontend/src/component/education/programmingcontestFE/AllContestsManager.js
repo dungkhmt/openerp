@@ -42,7 +42,7 @@ export default function AllContestsManager() {
       page,
       (res) => {
         setTotalPage(res.data.count);
-        setContests(res.data.contents);
+        setContests(res.data.contests);
       }
     ).then();
   }

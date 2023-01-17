@@ -1,23 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { request } from "./Request";
-import { API_URL } from "../../../config/config";
-import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
-import {
-  Button,
-  Grid,
-  MenuItem,
-  Table,
-  TableBody,
-  TableHead,
-  TextField,
-} from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
-import { StyledTableCell, StyledTableRow } from "./lib";
-import { Link } from "react-router-dom";
-import Pagination from "@material-ui/lab/Pagination";
-import { ListContestManagerByRegistration } from "./ListContestManagerByRegistration";
-import ListContestByRole from "./ListContestByRole";
+import React, {useEffect, useState} from "react";
+import {request} from "./Request";
+import {ListContestManagerByRegistration} from "./ListContestManagerByRegistration";
 
 export function ListContestManager() {
   const [page, setPage] = useState(1);
@@ -46,13 +29,12 @@ export function ListContestManager() {
       (res) => {
         console.log("contest list", res.data);
         setTotalPage(res.data.totalPages);
-        setContests(res.data.contents);
+        setContests(res.data.contests);
       }
     ).then();
   }
 
   useEffect(() => {
-    console.log("use effect");
     getContestList().then();
   }, [page, pageSize]);
 

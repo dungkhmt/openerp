@@ -157,7 +157,7 @@ const StudentViewSubmission = forwardRef((props, ref) => {
     <Box sx={{marginTop: "20px"}}>
       <div>
         <StandardTable
-          title={"Submissions"}
+          title={t("submissionList.title")}
           columns={columns}
           data={submissions}
           options={{
