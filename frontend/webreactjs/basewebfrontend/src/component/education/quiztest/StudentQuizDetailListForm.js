@@ -142,6 +142,59 @@ export default function StudentQuizDetailListForm(props) {
   function handleClickViewQuestion() {
     getQuestionList();
   }
+  function handleRefresh() {
+    request(
+      "get",
+      "/get-quiz-test-participation-group-question-reload-heavy/" + testQuizId,
+      (res) => {
+        const {
+          listQuestion,
+          participationExecutionChoice,
+          ...quizGroupTestDetail
+        } = res.data;
+
+        setQuestions(listQuestion);
+        setQuizGroupTestDetail(quizGroupTestDetail);
+
+        // Restore test result
+        // TODO: optimize code
+        const chkState = [];
+
+        listQuestion.forEach((question) => {
+          const choices = {};
+          const choseAnswers =
+            participationExecutionChoice[question.questionId];
+
+          question.quizChoiceAnswerList.forEach((ans) => {
+            choices[ans.choiceAnswerId] = false;
+          });
+
+          choices.submitted = false;
+          if (choseAnswers) {
+            choseAnswers.forEach((choseAnsId) => {
+              choices[choseAnsId] = true;
+            });
+
+            choices.submitted = true;
+            choices["lastSubmittedAnswers"] = choseAnswers;
+          } else {
+            choices["lastSubmittedAnswers"] = [];
+          }
+
+          chkState.push(choices);
+        });
+
+        checkState.set(chkState);
+      },
+      {
+        401: () => {},
+        406: () => {
+          setMessageRequest("Time Out!");
+          setRequestFailed(true);
+        },
+      }
+    );
+  }
   const handleCloseSuccess = () => {
     setRequestSuccessfully(false);
   };
@@ -182,6 +235,9 @@ export default function StudentQuizDetailListForm(props) {
             onClick={handleClickViewQuestion}
           >
             View Questions
+          </Button>
+          <Button variant="contained" color="secondary" onClick={handleRefresh}>
+            REFRESH (limited)
           </Button>
         </div>
 
