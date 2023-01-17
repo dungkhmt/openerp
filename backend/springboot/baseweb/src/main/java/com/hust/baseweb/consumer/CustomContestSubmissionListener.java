@@ -1,10 +1,10 @@
 package com.hust.baseweb.consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestProperties;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Header;
@@ -17,20 +17,18 @@ import static com.hust.baseweb.config.rabbitmq.ProblemContestRoutingKey.JUDGE_CU
 import static com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestConfig.DEAD_LETTER_EXCHANGE;
 import static com.hust.baseweb.config.rabbitmq.RabbitProgrammingContestConfig.JUDGE_CUSTOM_PROBLEM_QUEUE;
 
+@Slf4j
 @Component
 public class CustomContestSubmissionListener extends BaseRabbitListener {
 
-    private final ObjectMapper objectMapper;
     private final ProblemTestCaseService problemTestCaseService;
 
     private final RabbitProgrammingContestProperties rabbitConfig;
 
     public CustomContestSubmissionListener(
-        ObjectMapper objectMapper,
         ProblemTestCaseService problemTestCaseService,
         RabbitProgrammingContestProperties rabbitConfig
     ) {
-        this.objectMapper = objectMapper;
         this.problemTestCaseService = problemTestCaseService;
         this.rabbitConfig = rabbitConfig;
     }
@@ -55,6 +53,7 @@ public class CustomContestSubmissionListener extends BaseRabbitListener {
             problemTestCaseService.evaluateCustomProblemSubmission(contestSubmissionId);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (Exception e) {
+            log.info("An error happened when processing message (JUDGE_CUSTOM_PROBLEM_QUEUE). Retry later");
             e.printStackTrace();
             channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
         }
