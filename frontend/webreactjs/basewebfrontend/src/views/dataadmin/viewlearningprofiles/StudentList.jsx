@@ -40,30 +40,28 @@ export default function StudentList(props) {
   ]
 
   return (
-    <MuiThemeProvider>
-      <Card>
-        <CardContent>
-          <StandardTable
-            title="Danh sách sinh viên"
-            columns={columns}
-            data={studentsOfCurrentPage.content}
-            hideCommandBar
-            options={{
-              selection: false,
-              search: true,
-              sorting: true,
-              pageSize: filterParams.size,
-              searchText: filterParams.search,
-              debounceInterval: 300
-            }}
-            page={filterParams.page}
-            totalCount={studentsOfCurrentPage.totalElements}
-            onChangePage={ (page, size) => setFilterParams({...filterParams, page, size}) }
-            onSearchChange={ search => setFilterParams({page: 0, size: filterParams.size, search}) }
-            onRowClick={ (event, student) => navigateToLeaningProfilesPageOfStudent(student.userLoginId) }
-          />
-        </CardContent>
-      </Card>
-    </MuiThemeProvider>
+    <Card>
+      <CardContent>
+        <StandardTable
+          title="Danh sách sinh viên"
+          columns={columns}
+          data={studentsOfCurrentPage.content}
+          hideCommandBar
+          options={{
+            selection: false,
+            search: true,
+            sorting: true,
+            pageSize: filterParams.size,
+            searchText: filterParams.search,
+            debounceInterval: 300
+          }}
+          page={filterParams.page}
+          totalCount={studentsOfCurrentPage.totalElements}
+          onChangePage={ (page, size) => setFilterParams({...filterParams, page, size}) }
+          onSearchChange={ search => setFilterParams({page: 0, size: filterParams.size, search}) }
+          onRowClick={ (event, student) => navigateToLeaningProfilesPageOfStudent(student.userLoginId) }
+        />
+      </CardContent>
+    </Card>
   );
 }

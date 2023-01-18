@@ -52,7 +52,8 @@ function ClassRegistrationTable(props) {
         search: true,
         sorting: true,
         pageSize: filterParams.pageSize,
-        searchText: filterParams.searchText
+        searchText: filterParams.searchText,
+        debounceInterval: 500
       }}
       onPageChange={ page => setFilterParams({...filterParams, page})}
       onRowsPerPageChange={ pageSize => setFilterParams({...filterParams, pageSize}) }

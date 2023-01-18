@@ -5,8 +5,8 @@ import ViewCourseVideo from "../component/dataadmin/ViewCourseVideo";
 import ViewLogUserDoPraticeQuizs from "../component/dataadmin/ViewLogUserDoPraticeQuizs";
 import MainDashBoard from "../component/dataadmin/MainDashBoard";
 import ViewProgrammingContestSubmission from "../component/dataadmin/ViewProgrammingContestSubmission";
-import StudentList from "../views/dataadmin/viewlearningprofiles/StudentList";
 import StudentLearningProfiles from "../views/dataadmin/viewlearningprofiles/StudentLearningProfiles";
+import LearningProfileList from "../views/dataadmin/viewlearningprofiles/LearningProfileList";
 
 export default function AdminRoute() {
   let { path } = useRouteMatch();
@@ -41,7 +41,7 @@ export default function AdminRoute() {
         ></Route>
 
         <Route path={`${path}/view-learning-profiles/users`}
-               component={StudentList}
+               component={LearningProfileList}
                exact />
         <Route path={`${path}/view-learning-profiles/users/:studentLoginId`}
                component={StudentLearningProfiles}
