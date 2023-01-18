@@ -451,12 +451,13 @@ public class QuizTestController {
             r = sheetInfo.getRow(2);
             c = r.getCell(1);
             String quizGroupCode = c.getStringCellValue();
-            log.debug("uploadSolutionExcelQuizTestOfStudent, userId = " + userId + " testId = " + testId + " groupCode = " + quizGroupCode);
             EduTestQuizGroup group = eduQuizTestGroupService.getQuizTestGroupFrom(quizGroupCode, testId);
             UUID groupId = null;
             if(group != null){
                 groupId = group.getQuizGroupId();
             }
+            log.debug("uploadSolutionExcelQuizTestOfStudent, userId = " + userId + " testId = " + testId + " groupCode = " + quizGroupCode
+            + " groupId = " + groupId);
 
             QuizGroupTestDetailModel res = eduQuizTestGroupService.getTestGroupQuestionDetailNotUsePermutationConfig(userId,testId);
 
@@ -465,10 +466,11 @@ public class QuizTestController {
                 r = sheet.getRow(i);
                 c = r.getCell(0);
                 String questionIdx = c.getStringCellValue();
+                c = r.getCell(1);
                 String[] choices = c.getStringCellValue().split(",");
                 QuizQuestionDetailModel question = res.getListQuestion().get(i-1);
                 UUID questionId = question.getQuestionId();
-
+                log.debug("uploadSolutionExcelQuizTestOfStudent, question " + questionIdx + " questionId = " + questionId + " choices (len = " + choices.length + ") " + c.getStringCellValue());
                 if(choices != null && choices.length > 0) {
                     List<UUID> chooseAnsIds = new ArrayList();
                     for(int j = 0; j < choices.length; j++){
@@ -478,8 +480,9 @@ public class QuizTestController {
                                 chooseAnsIds.add(a.getChoiceAnswerId()); break;
                             }
                         }
+                        log.debug("uploadSolutionExcelQuizTestOfStudent, question " + questionIdx + " choiceCode = " + choiceCode);
                     }
-
+                    log.debug("uploadSolutionExcelQuizTestOfStudent, question " + questionIdx + " chooseAnsIds = " + chooseAnsIds.size());
                     quizTestService.submitSynchronousQuizTestExecutionChoice(questionId, groupId, userId, chooseAnsIds);
                 }
             }

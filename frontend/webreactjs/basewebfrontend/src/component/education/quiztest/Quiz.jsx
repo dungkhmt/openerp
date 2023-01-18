@@ -114,6 +114,7 @@ export default function Quiz({
                     }}
                     style={{ maxHeight: 42 }}
                   />
+                  (ChoiceCode {ans.choiceAnswerCode}):
                   {ReactHtmlParser(ans.choiceAnswerContent)}
                 </div>
               ))}
