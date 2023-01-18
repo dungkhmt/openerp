@@ -29,6 +29,7 @@ create table quiz_question(
 
 create table quiz_choice_answer(
     choice_answer_id uuid not null default uuid_generate_v1(),
+    choice_answer_code varchar(20),
     choice_answer_content text,
     question_id uuid,
     is_correct_answer char,

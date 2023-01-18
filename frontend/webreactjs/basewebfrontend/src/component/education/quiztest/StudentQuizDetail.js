@@ -7,10 +7,15 @@ import Alert from "@material-ui/lab/Alert";
 import React, { useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { request } from "../../../api";
+import { errorNoti, successNoti } from "../../../utils/notification";
 import StudentQuizDetailListForm from "./StudentQuizDetailListForm";
 import StudentQuizDetailStepForm from "./StudentQuizDetailStepForm";
-import { TextField, Button } from "@mui/material";
+import { TextField, Button, Chip } from "@mui/material";
 import CheckAndConfirmQuizGroupDialog from "./CheckAndConfirmQuizGroupDialog";
+import XLSX from "xlsx";
+import { LoadingButton } from "@mui/lab";
+import PublishIcon from "@mui/icons-material/Publish";
+import SendIcon from "@mui/icons-material/Send";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -42,6 +47,8 @@ export default function StudentQuizDetail() {
   const [quizGroupTestDetail, setQuizGroupTestDetail] = React.useState({});
   const [groupCode, setGroupCode] = React.useState(null);
   const [open, setOpen] = React.useState(false);
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  const [importedExcelFile, setImportedExcelFile] = React.useState(null);
 
   const [viewTypeId, setViewTypeId] = React.useState(null);
   //const [viewTypeId, setViewTypeId] = React.useState(
@@ -252,6 +259,80 @@ export default function StudentQuizDetail() {
       "/edu/class/student/quiztest-detail/check-confirm-code/" + testQuizId
     );
   }
+  function handleDownloadExcel() {
+    var wbcols = [];
+    wbcols.push({ wpx: 80 });
+    wbcols.push({ wpx: 120 });
+    wbcols.push({ wpx: 120 });
+    let data = [];
+    for (let i = 0; i < questions.length; i++) {
+      let row = {};
+      row["Question"] = "Question " + (i + 1);
+      row["choices"] = "";
+      row["notes"] = "fill codes of choice answers, separated by a comma ,";
+      data[i] = row;
+    }
+
+    var sheet = XLSX.utils.json_to_sheet(data);
+    var wb = XLSX.utils.book_new();
+    sheet["!cols"] = wbcols;
+
+    XLSX.utils.book_append_sheet(wb, sheet, "answers");
+
+    // create data about userId and testId
+    var wbhcols = [];
+    wbhcols.push({ wpx: 80 });
+    wbhcols.push({ wpx: 120 });
+
+    let dataHeader = [];
+    let row1 = {};
+    row1["userId"] = "dungpq";
+    dataHeader[0] = row1;
+
+    let row2 = {};
+    row2["testId"] = testQuizId;
+    dataHeader[1] = row2;
+
+    let row3 = {};
+    row3["code"] = "a code";
+    dataHeader[2] = row3;
+
+    var sheetHeader = XLSX.utils.json_to_sheet(dataHeader);
+    //var wbh = XLSX.utils.book_new();
+    sheetHeader["!cols"] = wbhcols;
+
+    XLSX.utils.book_append_sheet(wb, sheetHeader, "info");
+
+    XLSX.writeFile(wb, "quiz-test.xlsx");
+  }
+
+  function handleUploadSolutionQuiz(event) {
+    event.preventDefault();
+
+    setIsProcessing(true);
+    let formData = new FormData();
+    formData.append("inputJson", JSON.stringify({ testQuizId }));
+    formData.append("file", importedExcelFile);
+
+    let successHandler = (res) => {
+      setIsProcessing(false);
+      setImportedExcelFile(undefined);
+      successNoti("Upload successfully", true);
+    };
+    let errorHandlers = {
+      onError: (error) => {
+        setIsProcessing(false);
+        errorNoti("Error when uploading solution", true);
+      },
+    };
+    request(
+      "POST",
+      "/upload-solution-excel-quiz-of-student",
+      successHandler,
+      errorHandlers,
+      formData
+    );
+  }
   return (
     <div className={classes.root}>
       <Card style={{ padding: "20px 20px 20px 20px" }}>
@@ -287,6 +368,39 @@ export default function StudentQuizDetail() {
               {" "}
               Check & Confirm Code
             </Button>
+            <Button variant="contained" onClick={handleDownloadExcel}>
+              {" "}
+              Download Template excel
+            </Button>
+            <Button color="primary" variant="contained" component="label">
+              <PublishIcon /> Select excel file to import
+              <input
+                type="file"
+                hidden
+                onChange={(event) =>
+                  setImportedExcelFile(event.target.files[0])
+                }
+              />
+            </Button>
+            {importedExcelFile && (
+              <Chip
+                color="success"
+                variant="outlined"
+                label={importedExcelFile.name}
+                onDelete={() => setImportedExcelFile(undefined)}
+              />
+            )}
+            <LoadingButton
+              loading={isProcessing}
+              endIcon={<SendIcon />}
+              disabled={!importedExcelFile}
+              color="primary"
+              variant="contained"
+              onClick={handleUploadSolutionQuiz}
+            >
+              Upload solution excel
+            </LoadingButton>
+
             {/*
               quizGroupTestDetail ? (
               <div>

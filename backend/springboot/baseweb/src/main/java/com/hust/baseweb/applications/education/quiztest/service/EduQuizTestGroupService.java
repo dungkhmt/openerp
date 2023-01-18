@@ -25,5 +25,5 @@ public interface EduQuizTestGroupService {
 
     QuizGroupTestDetailModel getQuestionsDetailWithUserExecutionChoideOfQuizGroupNotUsePermutationConfig(String userLoginId, String groupCode, String testID);
 
-
+    EduTestQuizGroup getQuizTestGroupFrom(String groupCode, String testId);
 }

@@ -12,6 +12,7 @@ import com.hust.baseweb.applications.education.model.quiz.QuizQuestionCreateInpu
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailModel;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionUpdateInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.QuizChoiceAnswerHideCorrectAnswer;
+import com.hust.baseweb.applications.education.quiztest.utils.Utils;
 import com.hust.baseweb.applications.education.repo.*;
 import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.config.FileSystemStorageProperties;
@@ -294,7 +295,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         //quizQuestionDetailModel.setQuizChoiceAnswerList(quizChoiceAnswers);
         List<QuizChoiceAnswerHideCorrectAnswer> ans = new ArrayList();
         for(QuizChoiceAnswer a: quizChoiceAnswers){
-            ans.add(new QuizChoiceAnswerHideCorrectAnswer(a.getChoiceAnswerId(),a.getChoiceAnswerContent()));
+            ans.add(new QuizChoiceAnswerHideCorrectAnswer(a.getChoiceAnswerId(),a.getChoiceAnswerCode(),a.getChoiceAnswerContent()));
         }
         quizQuestionDetailModel.setQuizChoiceAnswerList(ans);
 
@@ -410,7 +411,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         List<QuizChoiceAnswer> quizChoiceAnswers = quizChoiceAnswerRepo.findAllByQuizQuestion(quizQuestion);
         List<QuizChoiceAnswerHideCorrectAnswer> ans = new ArrayList();
         for(QuizChoiceAnswer a: quizChoiceAnswers){
-            ans.add(new QuizChoiceAnswerHideCorrectAnswer(a.getChoiceAnswerId(),a.getChoiceAnswerContent()));
+            ans.add(new QuizChoiceAnswerHideCorrectAnswer(a.getChoiceAnswerId(),a.getChoiceAnswerCode(),a.getChoiceAnswerContent()));
         }
         //quizQuestionDetailModel.setQuizChoiceAnswerList(quizChoiceAnswers);
         quizQuestionDetailModel.setQuizChoiceAnswerList(ans);
@@ -564,5 +565,23 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     public List<QuizQuestionUserRole> getUsersGranttedToQuizQuestion(UUID questionId){
         List<QuizQuestionUserRole> res = quizQuestionUserRoleRepo.findAllByQuestionId(questionId);
         return res;
+    }
+
+    @Override
+    public int generateChoiceCodesForAllQuizQuestions() {
+        int cnt = 0;
+        List<QuizQuestion> questions = quizQuestionRepo.findAll();
+        for(QuizQuestion q: questions){
+            List<QuizChoiceAnswer> choices = quizChoiceAnswerRepo.findAllByQuizQuestion(q);
+            int idx = 0;
+            for(QuizChoiceAnswer a: choices){
+                idx += 1;
+                String code = Utils.stdCode(idx,3);
+                a.setChoiceAnswerCode(code);
+                a = quizChoiceAnswerRepo.save(a);
+                cnt += 1;
+            }
+        }
+        return cnt;
     }
 }
