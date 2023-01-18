@@ -1,11 +1,12 @@
 package com.hust.baseweb.applications.programmingcontest.utils;
 
-import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.TestCaseEntity;
 import com.hust.baseweb.applications.programmingcontest.utils.executor.GccExecutor;
 import com.hust.baseweb.applications.programmingcontest.utils.executor.GolangExecutor;
 import com.hust.baseweb.applications.programmingcontest.utils.executor.JavaExecutor;
 import com.hust.baseweb.applications.programmingcontest.utils.executor.Python3Executor;
+import com.hust.baseweb.config.FileSystemStorageProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.FileSystemUtils;
@@ -16,16 +17,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.PrimitiveIterator.OfInt;
-import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Configuration
 public class TempDir {
-
-    public static final String TEMPDIR = Constants.FILE_PATH_ROOT + "/temp_dir/";
 
     private final GccExecutor gccExecutor = new GccExecutor();
 
@@ -37,8 +34,16 @@ public class TempDir {
 
     public static ConcurrentLinkedQueue<String> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
+    public static String TEMPDIR = null;
+
+    @Autowired
+    public TempDir(FileSystemStorageProperties properties) {
+        // TEMPDIR = properties.getFilesystemRoot() + "temp_dir/";
+        TEMPDIR = properties.getFilesystemRoot() + "./temp_dir/";
+    }
+
     @Bean
-    public void initTmepDir(){
+    public void initTempDir(){
         File theDir = new File(TEMPDIR);
         if (!theDir.exists()){
             theDir.mkdirs();

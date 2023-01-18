@@ -1,6 +1,5 @@
 package com.hust.baseweb.applications.programmingcontest.constants;
 
-import com.hust.baseweb.config.FileSystemStorageProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +15,6 @@ import java.util.Map;
 public class Constants {
 
     private Map<String, Integer> MapLevelOrder = new HashMap<>();
-
-    private static FileSystemStorageProperties properties;
-
-    public static final String FILE_PATH_ROOT = properties.getFilesystemRoot();
 
     @Bean
     public void initConstants() {
