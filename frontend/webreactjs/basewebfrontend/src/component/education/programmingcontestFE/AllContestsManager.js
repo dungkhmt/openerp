@@ -5,7 +5,7 @@ import {Link} from "react-router-dom";
 import {ListContestManagerByRegistration} from "./ListContestManagerByRegistration";
 import {successNoti} from "../../../utils/notification";
 import EditIcon from "@mui/icons-material/Edit";
-import StandardTable from "../../table/StandardTable";
+import StandardTable, {TablePaginationActions} from "../../table/StandardTable";
 import TablePagination from "@mui/material/TablePagination";
 
 export default function AllContestsManager() {
@@ -129,6 +129,7 @@ export default function AllContestsManager() {
                 page={page}
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handlePageSizeChange}
+                ActionsComponent={TablePaginationActions}
               />
             ),
           }}
