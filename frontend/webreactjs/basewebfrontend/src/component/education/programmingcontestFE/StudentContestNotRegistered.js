@@ -1,15 +1,13 @@
 import React, {useEffect, useState} from "react";
 import {request} from "./Request";
-import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
-import {Button, Grid, MenuItem, Table, TableBody, TableHead, TextField,} from "@mui/material";
-import TableRow from "@material-ui/core/TableRow";
-import {StyledTableCell, StyledTableRow} from "./lib";
-import Pagination from "@material-ui/lab/Pagination";
 import {successNoti} from "../../../utils/notification";
+import HustContainerCard from "../../common/HustContainerCard";
+import StandardTable, {TablePaginationActions} from "../../table/StandardTable";
+import TablePagination from "@mui/material/TablePagination";
+import {Button} from "@mui/material";
 
 export function StudentContestNotRegistered() {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPage] = useState(0);
   const pageSizes = [10, 20, 50, 100];
@@ -23,7 +21,7 @@ export function StudentContestNotRegistered() {
 
   const handlePageSizeChange = (event) => {
     setPageSize(event.target.value);
-    setPage(1);
+    setPage(0);
   };
 
   async function getContestList() {
@@ -32,9 +30,9 @@ export function StudentContestNotRegistered() {
       "/get-contest-paging-not-registered?size=" +
       pageSize +
       "&page=" +
-      (page - 1),
+      page,
       (res) => {
-        setTotalPage(res.data.totalPages);
+        setTotalPage(res.data.count);
         setContests(res.data.contests);
       }
     ).then();
@@ -45,6 +43,7 @@ export function StudentContestNotRegistered() {
   }, [page, pageSize]);
 
   function handleRegister(contestId) {
+    setLoading(true);
     request(
       "post",
       "/student-register-contest/" + contestId,
@@ -52,81 +51,60 @@ export function StudentContestNotRegistered() {
         successNoti(res.data.message, true);
         getContestList();
       }
-    ).then();
+    ).then(() => setLoading(false));
   }
 
-  return (
-    <div>
-      <div>
-        <TableContainer component={Paper}>
-          <Table sx={{minWidth: 100}} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell></StyledTableCell>
-                <StyledTableCell align="left">Title</StyledTableCell>
-                <StyledTableCell align="center">
-                  Register Contest
-                </StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {contests.map((contest, index) => (
-                <StyledTableRow>
-                  <StyledTableCell component="th" scope="row">
-                    {pageSize * (page - 1) + index + 1}
-                  </StyledTableCell>
-
-                  <StyledTableCell align="left">
-                    <b>{contest.contestName}</b>
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    <Button
-                      variant="contained"
-                      onClick={() => handleRegister(contest.contestId)}
-                    >
-                      Register
-                    </Button>
-                  </StyledTableCell>
-                </StyledTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-      <br></br>
-      <Grid container spacing={12}>
-        <Grid item xs={6}>
-          <TextField
-            variant={"outlined"}
-            autoFocus
-            size={"small"}
-            required
-            select
-            id="pageSize"
-            value={pageSize}
-            onChange={handlePageSizeChange}
+  const columns = [
+      {
+        title: "Contest",
+        field: "contestName",
+      },
+      {
+        title: "Created By",
+        field: "userId",
+      },
+      {
+        render: (contest) => (
+          <Button
+            variant="contained"
+            disabled={loading}
+            onClick={() => handleRegister(contest.contestId)}
           >
-            {pageSizes.map((item) => (
-              <MenuItem key={item} value={item}>
-                {item}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
+            Register
+          </Button>
+        ),
+      },
+    ]
+  ;
 
-        <Grid item>
-          <Pagination
-            className="my-3"
-            count={totalPages}
-            page={page}
-            siblingCount={1}
-            boundaryCount={1}
-            variant="outlined"
-            shape="rounded"
-            onChange={handlePageChange}
-          />
-        </Grid>
-      </Grid>
-    </div>
+  return (
+    <HustContainerCard>
+      <StandardTable
+        title={"List Contests"}
+        columns={columns}
+        data={contests}
+        hideCommandBar
+        options={{
+          selection: false,
+          pageSize: 10,
+          search: true,
+          sorting: true,
+        }}
+        components={{
+          Pagination: props => (
+            <TablePagination
+              {...props}
+              rowsPerPageOptions={pageSizes}
+              rowsPerPage={pageSize}
+              count={totalPages}
+              page={page}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handlePageSizeChange}
+              ActionsComponent={TablePaginationActions}
+            />
+          ),
+        }}
+      />
+    </HustContainerCard>
   );
 }

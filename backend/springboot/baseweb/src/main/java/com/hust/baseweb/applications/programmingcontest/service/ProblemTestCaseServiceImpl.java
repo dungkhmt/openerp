@@ -2250,7 +2250,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         Page<ContestEntity> list = userRegistrationContestPagingAndSortingRepo.getNotRegisteredContestByUserLogin(
             pageable,
             userName);
-        return getModelGetContestPageResponse(list);
+        long count = userRegistrationContestPagingAndSortingRepo.getNumberOfNotRegisteredContestByUserLogin(userName);
+        return getModelGetContestPageResponse(list, count);
     }
 
     @Override
