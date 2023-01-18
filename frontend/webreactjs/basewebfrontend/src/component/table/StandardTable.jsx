@@ -1,10 +1,14 @@
 import {makeStyles, MuiThemeProvider, styled} from "@material-ui/core/styles";
-import {Box, Paper, Typography} from "@mui/material";
+import {Box, IconButton, Paper, Typography} from "@mui/material";
 import MaterialTable, {MTableCell, MTableToolbar} from "material-table";
 import PropTypes from "prop-types";
-import {useCallback} from "react";
+import React, {useCallback} from "react";
 import {components, localization, tableIcons, themeTable,} from "utils/MaterialTableUtils";
 import {useTranslation} from "react-i18next";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import LastPageIcon from "@mui/icons-material/LastPage";
 
 export const Offset = styled("div")(({theme}) => ({
   display: "flex",
@@ -15,11 +19,65 @@ export const Offset = styled("div")(({theme}) => ({
   justifyContent: "flex-end",
 }));
 
+export function TablePaginationActions(props) {
+  const {count, page, rowsPerPage, onPageChange} = props;
+
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{flexShrink: 0, ml: 2.5}}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        <FirstPageIcon/>
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        <KeyboardArrowLeft/>
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        <KeyboardArrowRight/>
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        <LastPageIcon/>
+      </IconButton>
+    </Box>
+  );
+}
+
+
 const useStyles = makeStyles(() => ({
   tableToolbarHighlight: {backgroundColor: "transparent"},
 }));
 
-function StandardTable(props) {
+export default function StandardTable(props) {
   const classes = useStyles();
   const {t} = useTranslation(["common"]);
 
@@ -128,4 +186,3 @@ StandardTable.propTypes = {
   commandBarComponents: PropTypes.element,
 };
 
-export default StandardTable;
