@@ -7,10 +7,7 @@ import com.hust.baseweb.applications.education.entity.EduClass;
 import com.hust.baseweb.applications.education.entity.QuizQuestion;
 import com.hust.baseweb.applications.education.model.quiz.QuizQuestionDetailModel;
 import com.hust.baseweb.applications.education.quiztest.UserQuestionQuizExecutionOM;
-import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
-import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizParticipant;
-import com.hust.baseweb.applications.education.quiztest.entity.EduTestQuizRole;
-import com.hust.baseweb.applications.education.quiztest.entity.QuizGroupQuestionAssignment;
+import com.hust.baseweb.applications.education.quiztest.entity.*;
 import com.hust.baseweb.applications.education.quiztest.model.*;
 import com.hust.baseweb.applications.education.quiztest.model.edutestquizparticipation.GetQuizTestParticipationExecutionResultInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.edutestquizparticipation.QuizTestParticipationExecutionResultOutputModel;
@@ -434,6 +431,67 @@ public class QuizTestController {
         return ResponseEntity.ok().body(cnt);
     }
 
+    @PostMapping("/upload-solution-excel-quiz-of-student")
+    public ResponseEntity<?> uploadSolutionExcelQuizTestOfStudent(Principal principal,
+                                                                  @RequestParam("inputJson") String inputJson,
+                                                                  @RequestParam("file") MultipartFile file){
+        Gson gson = new Gson();
+        ModelUploadSolutionExcelQuizTestOfStudent modelUpload = gson.fromJson(
+            inputJson,ModelUploadSolutionExcelQuizTestOfStudent.class);
+        try (InputStream is = file.getInputStream()) {
+            XSSFWorkbook wb = new XSSFWorkbook(is);
+            XSSFSheet sheet = wb.getSheetAt(0);
+            XSSFSheet sheetInfo = wb.getSheetAt(1);
+            Row r = sheetInfo.getRow(0);
+            Cell c = r.getCell(1);
+            String userId = c.getStringCellValue();
+            r = sheetInfo.getRow(1);
+            c = r.getCell(1);
+            String testId = c.getStringCellValue();
+            r = sheetInfo.getRow(2);
+            c = r.getCell(1);
+            String quizGroupCode = c.getStringCellValue();
+            EduTestQuizGroup group = eduQuizTestGroupService.getQuizTestGroupFrom(quizGroupCode, testId);
+            UUID groupId = null;
+            if(group != null){
+                groupId = group.getQuizGroupId();
+            }
+            log.debug("uploadSolutionExcelQuizTestOfStudent, userId = " + userId + " testId = " + testId + " groupCode = " + quizGroupCode
+            + " groupId = " + groupId);
+
+            QuizGroupTestDetailModel res = eduQuizTestGroupService.getTestGroupQuestionDetailNotUsePermutationConfig(userId,testId);
+
+            int lastRowNum = sheet.getLastRowNum();
+            for(int i = 1; i <= lastRowNum; i++){
+                r = sheet.getRow(i);
+                c = r.getCell(0);
+                String questionIdx = c.getStringCellValue();
+                c = r.getCell(1);
+                String[] choices = c.getStringCellValue().split(",");
+                QuizQuestionDetailModel question = res.getListQuestion().get(i-1);
+                UUID questionId = question.getQuestionId();
+                log.debug("uploadSolutionExcelQuizTestOfStudent, question " + questionIdx + " questionId = " + questionId + " choices (len = " + choices.length + ") " + c.getStringCellValue());
+                if(choices != null && choices.length > 0) {
+                    List<UUID> chooseAnsIds = new ArrayList();
+                    for(int j = 0; j < choices.length; j++){
+                        String choiceCode = choices[j].trim();
+                        for(QuizChoiceAnswerHideCorrectAnswer a: question.getQuizChoiceAnswerList()){
+                            if(choiceCode.equals(a.getChoiceAnswerCode())){
+                                chooseAnsIds.add(a.getChoiceAnswerId()); break;
+                            }
+                        }
+                        log.debug("uploadSolutionExcelQuizTestOfStudent, question " + questionIdx + " choiceCode = " + choiceCode);
+                    }
+                    log.debug("uploadSolutionExcelQuizTestOfStudent, question " + questionIdx + " chooseAnsIds = " + chooseAnsIds.size());
+                    quizTestService.submitSynchronousQuizTestExecutionChoice(questionId, groupId, userId, chooseAnsIds);
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+
+    }
     @PostMapping("/upload-excel-student-list")
     public ResponseEntity<?> uploadExcelStudentListOfQuizTest(Principal principal,
                                             @RequestParam("inputJson") String inputJson,

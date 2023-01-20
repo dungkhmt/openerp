@@ -46,4 +46,5 @@ public interface QuizQuestionService {
 
     List<QuizQuestionUserRole> getUsersGranttedToQuizQuestion(UUID questionId);
 
+    int generateChoiceCodesForAllQuizQuestions();
 }

@@ -1209,4 +1209,14 @@ public class EduQuizTestGroupServiceImpl implements EduQuizTestGroupService {
         return quizGroupTestDetailModel;
 
     }
+
+    @Override
+    public EduTestQuizGroup getQuizTestGroupFrom(String groupCode, String testId) {
+        List<EduTestQuizGroup> groups = eduQuizTestGroupRepo.findAllByTestIdAndGroupCode(testId, groupCode);
+        log.debug("getQuizTestGroupFrom, testId = " + testId + " groupCode = " + groupCode + " len = " + groupCode.length() + " ret.sz = " + groups.size());
+        if(groups != null && groups.size() > 0){
+            return groups.get(0);
+        }
+        return null;
+    }
 }

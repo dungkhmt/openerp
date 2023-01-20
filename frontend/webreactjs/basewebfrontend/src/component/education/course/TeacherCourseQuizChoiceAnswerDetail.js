@@ -145,7 +145,10 @@ function TeacherCourseQuizChoiceAnswerDetail() {
       },
       (error) => {
         alert("Cập nhật không thành công");
-        history.push("/edu/teacher/course/quiz/detail/" + questionId);
+        //history.push("/edu/teacher/course/quiz/detail/" + questionId);
+        history.push(
+          "/edu/teacher/course/quiz/detail/" + questionId + "/" + courseId
+        );
       }
     );
   }
@@ -162,11 +165,17 @@ function TeacherCourseQuizChoiceAnswerDetail() {
         } else {
           alert("Xóa không thành công");
         }
-        history.push("/edu/teacher/course/quiz/detail/" + questionId);
+        //history.push("/edu/teacher/course/quiz/detail/" + questionId);
+        history.push(
+          "/edu/teacher/course/quiz/detail/" + questionId + "/" + courseId
+        );
       },
       (error) => {
         alert("Xóa không thành công");
-        history.push("/edu/teacher/course/quiz/detail/" + questionId);
+        //history.push("/edu/teacher/course/quiz/detail/" + questionId);
+        history.push(
+          "/edu/teacher/course/quiz/detail/" + questionId + "/" + courseId
+        );
       }
     );
   }

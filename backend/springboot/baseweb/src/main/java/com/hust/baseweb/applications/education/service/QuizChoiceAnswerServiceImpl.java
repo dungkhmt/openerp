@@ -3,6 +3,7 @@ package com.hust.baseweb.applications.education.service;
 import com.hust.baseweb.applications.education.entity.QuizChoiceAnswer;
 import com.hust.baseweb.applications.education.entity.QuizQuestion;
 import com.hust.baseweb.applications.education.model.quiz.QuizChoiceAnswerCreateInputModel;
+import com.hust.baseweb.applications.education.quiztest.utils.Utils;
 import com.hust.baseweb.applications.education.repo.QuizChoiceAnswerRepo;
 import com.hust.baseweb.applications.education.repo.QuizQuestionRepo;
 import lombok.AllArgsConstructor;
@@ -10,9 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -27,12 +26,38 @@ public class QuizChoiceAnswerServiceImpl implements QuizChoiceAnswerService {
         return quizChoiceAnswerRepo.findAll();
     }
 
+    private String getNextChoiceCode(QuizQuestion quizQuestion){
+        List<QuizChoiceAnswer> answers = quizChoiceAnswerRepo.findAllByQuizQuestion(quizQuestion);
+        Set<Integer> codes = new HashSet();
+        for(QuizChoiceAnswer a: answers){
+            String c = a.getChoiceAnswerCode();
+            try{
+                int code = Integer.valueOf(c);
+                codes.add(code);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        int idx = 1;
+        while(true){
+            if(!codes.contains(idx)){
+                break;
+            }
+            idx += 1;
+        }
+        return Utils.stdCode(idx,3);
+    }
     @Override
     public QuizChoiceAnswer save(QuizChoiceAnswerCreateInputModel input) {
+        QuizQuestion quizQuestion = quizQuestionRepo.findById(input.getQuizQuestionId()).orElse(null);
+
         QuizChoiceAnswer quizChoiceAnswer = new QuizChoiceAnswer();
         quizChoiceAnswer.setChoiceAnswerContent(input.getChoiceAnswerContent());
         quizChoiceAnswer.setIsCorrectAnswer(input.getIsCorrectAnswer());
-        QuizQuestion quizQuestion = quizQuestionRepo.findById(input.getQuizQuestionId()).orElse(null);
+        String choiceCode = getNextChoiceCode(quizQuestion);
+        log.debug("save, choiceCode = " + choiceCode);
+
+        quizChoiceAnswer.setChoiceAnswerCode(choiceCode);
         quizChoiceAnswer.setQuizQuestion(quizQuestion);
 
         quizChoiceAnswer = quizChoiceAnswerRepo.save(quizChoiceAnswer);

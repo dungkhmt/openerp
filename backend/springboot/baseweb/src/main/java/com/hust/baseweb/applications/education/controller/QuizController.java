@@ -414,6 +414,12 @@ public class QuizController {
         QuizChoiceAnswer quizChoiceAnswer = quizChoiceAnswerService.save(input);
         return ResponseEntity.ok().body(quizChoiceAnswer);
     }
+    @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
+    @GetMapping("/generate-choice-answer-code-for-all-quiz-questions")
+    public ResponseEntity<?> genChoiceCodeForAllQuizQuestions(Principal principal){
+        int cnt = quizQuestionService.generateChoiceCodesForAllQuizQuestions();
+        return ResponseEntity.ok().body(cnt);
+    }
 
     @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @PostMapping("/update-quiz-choice-answer/{choiceAnswerId}")

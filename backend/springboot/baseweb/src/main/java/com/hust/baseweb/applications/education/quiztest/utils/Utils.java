@@ -3,6 +3,13 @@ package com.hust.baseweb.applications.education.quiztest.utils;
 import java.util.Random;
 
 public class Utils {
+    public static String stdCode(int i, int len){
+        String s = "" + i;
+        while(s.length() < len){
+            s = "0" + s;
+        }
+        return s ;
+    }
     public static String genRandomPermutation(int n){
         Random R = new Random();
         int[] a=  new int[n];
@@ -92,6 +99,9 @@ public class Utils {
         return p;
     }
     public static void main(String[] args){
+        String code = stdCode(123,5);
+        System.out.println("standard code = " + code);
+
         String p = Utils.genRandomPermutation(10);
         System.out.println(" p = " + p);
 
