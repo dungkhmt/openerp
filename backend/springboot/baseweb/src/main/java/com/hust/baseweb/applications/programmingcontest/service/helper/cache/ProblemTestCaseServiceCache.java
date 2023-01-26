@@ -52,67 +52,67 @@ public class ProblemTestCaseServiceCache {
         }
     }
 
-    public ProblemEntity findProblemAndUpdateCache(String problemId) {
-        ProblemEntity problem = findProblemInCache(problemId);
-        if (problem == null) {
-            problem = problemRepo.findByProblemIdWithTagFetched(problemId);
-            addProblemToCache(problem, 60 * 60);
-        }
-        return problem;
-    }
-
-    public ProblemEntity findProblemInCache(String problemId) {
-        return cacheService.getCachedObject(RedisHashPrefix.PROBLEM.getValue(), problemId, ProblemEntity.class);
-    }
-
-    public void addProblemToCache(ProblemEntity problem, int expireTime) {
-        cacheService.pushCachedWithExpire(
-            RedisHashPrefix.PROBLEM.getValue(),
-            problem.getProblemId(),
-            problem,
-            expireTime * 1000);
-    }
-
-
-    public ContestEntity findContestAndUpdateCache(String contestId) {
-        ContestEntity contest = findContestInCache(contestId);
-        if (contest == null) {
-            contest = contestRepo.findContestByContestId(contestId);
-            addContestToCache(contest, 60 * 60);
-        }
-        return contest;
-    }
-
-    public ContestEntity findContestInCache(String contestId) {
-        return cacheService.getCachedObject(RedisHashPrefix.CONTEST.getValue(), contestId, ContestEntity.class);
-    }
-
-    public void addContestToCache(ContestEntity contest, int expireTime) {
-        cacheService.pushCachedWithExpire(
-            RedisHashPrefix.CONTEST.getValue(),
-            contest.getContestId(),
-            contest,
-            expireTime * 1000);
-    }
+//    public ProblemEntity findProblemAndUpdateCache(String problemId) {
+//        ProblemEntity problem = findProblemInCache(problemId);
+//        if (problem == null) {
+//            problem = problemRepo.findByProblemIdWithTagFetched(problemId);
+//            addProblemToCache(problem, 60 * 60);
+//        }
+//        return problem;
+//    }
+//
+//    public ProblemEntity findProblemInCache(String problemId) {
+//        return cacheService.getCachedObject(RedisHashPrefix.PROBLEM.getValue(), problemId, ProblemEntity.class);
+//    }
+//
+//    public void addProblemToCache(ProblemEntity problem, int expireTime) {
+//        cacheService.pushCachedWithExpire(
+//            RedisHashPrefix.PROBLEM.getValue(),
+//            problem.getProblemId(),
+//            problem,
+//            expireTime * 1000);
+//    }
 
 
-    public List<TestCaseEntity> findListTestCaseAndUpdateCache(String problemId, boolean isPublicTestCase) {
-        List<TestCaseEntity> testCaseEntityList = findListTestCaseInCache(problemId, isPublicTestCase);
-        if (testCaseEntityList == null || testCaseEntityList.isEmpty()) {
-            if (isPublicTestCase) {
-                testCaseEntityList = testCaseRepo.findAllByProblemId(problemId);
-            } else {
-                testCaseEntityList = testCaseRepo.findAllByProblemIdAndIsPublic(problemId, "N");
-            }
-            addListTestCaseToCache(problemId, testCaseEntityList, isPublicTestCase, 60 * 60);
-        }
-        return testCaseEntityList;
-    }
+//    public ContestEntity findContestAndUpdateCache(String contestId) {
+//        ContestEntity contest = findContestInCache(contestId);
+//        if (contest == null) {
+//            contest = contestRepo.findContestByContestId(contestId);
+//            addContestToCache(contest, 60 * 60);
+//        }
+//        return contest;
+//    }
+//
+//    public ContestEntity findContestInCache(String contestId) {
+//        return cacheService.getCachedObject(RedisHashPrefix.CONTEST.getValue(), contestId, ContestEntity.class);
+//    }
+//
+//    public void addContestToCache(ContestEntity contest, int expireTime) {
+//        cacheService.pushCachedWithExpire(
+//            RedisHashPrefix.CONTEST.getValue(),
+//            contest.getContestId(),
+//            contest,
+//            expireTime * 1000);
+//    }
 
-    public List<TestCaseEntity> findListTestCaseInCache(String problemId, boolean isPublicTestCase) {
-        String key = generateKeyTestCase(problemId, isPublicTestCase);
-        return cacheService.getCachedSpecialListObject(RedisHashPrefix.TEST_CASE.getValue(), key);
-    }
+
+//    public List<TestCaseEntity> findListTestCaseAndUpdateCache(String problemId, boolean isPublicTestCase) {
+//        List<TestCaseEntity> testCaseEntityList = findListTestCaseInCache(problemId, isPublicTestCase);
+//        if (testCaseEntityList == null || testCaseEntityList.isEmpty()) {
+//            if (isPublicTestCase) {
+//                testCaseEntityList = testCaseRepo.findAllByProblemId(problemId);
+//            } else {
+//                testCaseEntityList = testCaseRepo.findAllByProblemIdAndIsPublic(problemId, "N");
+//            }
+//            addListTestCaseToCache(problemId, testCaseEntityList, isPublicTestCase, 60 * 60);
+//        }
+//        return testCaseEntityList;
+//    }
+//
+//    public List<TestCaseEntity> findListTestCaseInCache(String problemId, boolean isPublicTestCase) {
+//        String key = generateKeyTestCase(problemId, isPublicTestCase);
+//        return cacheService.getCachedSpecialListObject(RedisHashPrefix.TEST_CASE.getValue(), key);
+//    }
 
     public Long findUserLastProblemSubmissionTimeInCache(String problemId, String userId) {
         String key = generateKeySubmissionInterval(problemId, userId);
@@ -133,26 +133,26 @@ public class ProblemTestCaseServiceCache {
         return problemId + "__" + userId;
     }
 
-    public void addListTestCaseToCache(
-        String problemId,
-        List<TestCaseEntity> testCaseEntityList,
-        boolean isPublicTestCase,
-        int expireTime
-    ) {
-        String key = generateKeyTestCase(problemId, isPublicTestCase);
-        cacheService.pushCachedWithExpire(
-            RedisHashPrefix.TEST_CASE.getValue(),
-            key,
-            testCaseEntityList,
-            expireTime * 1000);
-    }
-
-    private String generateKeyTestCase(String problemId, boolean isPublicTestCase) {
-        if (isPublicTestCase) {
-            return problemId + "_Y";
-        }
-        return problemId + "_N";
-    }
+//    public void addListTestCaseToCache(
+//        String problemId,
+//        List<TestCaseEntity> testCaseEntityList,
+//        boolean isPublicTestCase,
+//        int expireTime
+//    ) {
+//        String key = generateKeyTestCase(problemId, isPublicTestCase);
+//        cacheService.pushCachedWithExpire(
+//            RedisHashPrefix.TEST_CASE.getValue(),
+//            key,
+//            testCaseEntityList,
+//            expireTime * 1000);
+//    }
+//
+//    private String generateKeyTestCase(String problemId, boolean isPublicTestCase) {
+//        if (isPublicTestCase) {
+//            return problemId + "_Y";
+//        }
+//        return problemId + "_N";
+//    }
 
 
     public ModelGetContestDetailResponse findContestDetailResponseInCache(String contestId) {

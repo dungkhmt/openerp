@@ -3,6 +3,7 @@ package com.hust.baseweb.applications.programmingcontest.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.UUID;
 
 @Getter
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Builder
 //@Table(name = "test_case")
 @Table(name = "test_case_new")
-public class TestCaseEntity {
+public class TestCaseEntity implements Serializable {
     public static final String STATUS_DISABLED = "DISABLED";
     public static final String STATUS_ENABLED = "ENABLED";
 

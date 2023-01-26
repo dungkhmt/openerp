@@ -1,6 +1,5 @@
 package com.hust.baseweb.applications.programmingcontest.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.hust.baseweb.applications.contentmanager.model.ContentHeaderModel;
 import com.hust.baseweb.applications.contentmanager.model.ContentModel;
@@ -77,14 +76,20 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private UserContestProblemRoleRepo userContestProblemRoleRepo;
     private TagRepo tagRepo;
     private MongoContentService mongoContentService;
-    private ObjectMapper objectMapper;
+    private ProblemService problemService;
+    private ContestService contestService;
+    private TestCaseService testCaseService;
     private RabbitTemplate rabbitTemplate;
     private SubmissionResponseHandler submissionResponseHandler;
     private ProblemTestCaseServiceCache cacheService;
 
     @Override
     @Transactional
-    public ProblemEntity createContestProblem(String userID, String json, MultipartFile[] files) throws MiniLeetCodeException {
+    public ProblemEntity createContestProblem(
+        String userID,
+        String json,
+        MultipartFile[] files
+    ) throws MiniLeetCodeException {
         Gson gson = new Gson();
         ModelCreateContestProblem modelCreateContestProblem = gson.fromJson(json, ModelCreateContestProblem.class);
 
@@ -145,8 +150,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                    .tags(tags)
                                                    .userId(userID)
                                                    .build();
-        problemEntity = problemRepo.save(problemEntity);
-        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.PROBLEM);
+        problemEntity = problemService.saveProblem(problemEntity);
 
         // grant role owner, manager, view to current user
         UserContestProblemRole upr = new UserContestProblemRole();
@@ -220,8 +224,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             throw new MiniLeetCodeException("problem id not found");
         }
 
-        ProblemEntity oldProblem = problemRepo.findByProblemId(problemId);
-
         Gson gson = new Gson();
         ModelUpdateContestProblem modelUpdateContestProblem = gson.fromJson(json, ModelUpdateContestProblem.class);
 
@@ -231,20 +233,20 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
 
         List<TagEntity> tags = new ArrayList<>();
-            Integer[] tagIds = modelUpdateContestProblem.getTagIds();
-            for (Integer tagId : tagIds) {
-                TagEntity tag = tagRepo.findByTagId(tagId);
-                tags.add(tag);
-            }
+        Integer[] tagIds = modelUpdateContestProblem.getTagIds();
+        for (Integer tagId : tagIds) {
+            TagEntity tag = tagRepo.findByTagId(tagId);
+            tags.add(tag);
+        }
 
         List<String> attachmentId = new ArrayList<>();
-        attachmentId.add(oldProblem.getAttachment());
+        attachmentId.add(problemEntity.getAttachment());
         String[] fileId = modelUpdateContestProblem.getFileId();
         List<MultipartFile> fileArray = Arrays.asList(files);
 
         List<String> removedFilesId = modelUpdateContestProblem.getRemovedFilesId();
-        if (oldProblem.getAttachment() != null && !oldProblem.getAttachment().equals("")) {
-            List<String> oldAttachmentIds = Arrays.asList(oldProblem.getAttachment().split(";"));
+        if (problemEntity.getAttachment() != null && !problemEntity.getAttachment().equals("")) {
+            List<String> oldAttachmentIds = Arrays.asList(problemEntity.getAttachment().split(";"));
             for (String s : oldAttachmentIds) {
                 try {
                     GridFsResource content = mongoContentService.getById(s);
@@ -280,6 +282,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         problemEntity.setCategoryId(modelUpdateContestProblem.getCategoryId());
         problemEntity.setSolution(modelUpdateContestProblem.getSolution());
         problemEntity.setTimeLimit(modelUpdateContestProblem.getTimeLimit());
+        problemEntity.setMemoryLimit(modelUpdateContestProblem.getMemoryLimit());
         problemEntity.setCorrectSolutionLanguage(modelUpdateContestProblem.getCorrectSolutionLanguage());
         problemEntity.setCorrectSolutionSourceCode(modelUpdateContestProblem.getCorrectSolutionSourceCode());
         problemEntity.setSolutionCheckerSourceCode(modelUpdateContestProblem.getSolutionChecker());
@@ -288,9 +291,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         problemEntity.setAttachment(String.join(";", attachmentId));
         problemEntity.setTags(tags);
 
-        problemEntity = problemRepo.save(problemEntity);
-
-        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.PROBLEM);
+        problemEntity = problemService.updateProblemWithCache(problemEntity);
         return problemEntity;
     }
 
@@ -541,18 +542,14 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     @Override
     public TestCaseEntity saveTestCase(String problemId, ModelSaveTestcase modelSaveTestcase) {
 
-//        ProblemEntity problemEntity = problemRepo.findByProblemId(problemId);
         TestCaseEntity testCaseEntity = TestCaseEntity.builder()
                                                       .correctAnswer(modelSaveTestcase.getResult())
                                                       .testCase(modelSaveTestcase.getInput())
                                                       .testCasePoint(modelSaveTestcase.getPoint())
-//                .problem(problemEntity)
                                                       .problemId(problemId)
                                                       .isPublic(modelSaveTestcase.getIsPublic())
                                                       .build();
-        TestCaseEntity testCase = testCaseRepo.save(testCaseEntity);
-        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.TEST_CASE);
-        return testCase;
+        return testCaseService.saveTestCase(testCaseEntity);
     }
 
 
@@ -635,7 +632,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                              .evaluateBothPublicPrivateTestcase(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_NO)
                                              .createdAt(new Date())
                                              .build();
-                contestEntity = contestRepo.save(contestEntity);
             } else {
                 contestEntity = ContestEntity.builder()
                                              .contestId(modelCreateContest.getContestId())
@@ -650,9 +646,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                              .maxSourceCodeLength(modelCreateContest.getMaxSourceCodeLength())
                                              .createdAt(new Date())
                                              .build();
-                contestEntity = contestRepo.save(contestEntity);
             }
-            cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.CONTEST);
+            contestEntity = contestService.saveContest(contestEntity);
 
             // create corresponding entities in ContestRole
             ContestRole contestRole = new ContestRole();
@@ -806,7 +801,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .minTimeBetweenTwoSubmissions(modelUpdateContest.getMinTimeBetweenTwoSubmissions())
                                                        .judgeMode(modelUpdateContest.getJudgeMode())
                                                        .build();
-            return contestRepo.save(contestEntity);
+            return contestService.updateContestWithCache(contestEntity);
 
         } else {
             ContestEntity contestEntity = ContestEntity.builder()
@@ -818,9 +813,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .countDown(modelUpdateContest.getCountDownTime())
                                                        .statusId(modelUpdateContest.getStatusId())
                                                        .build();
-            return contestRepo.save(contestEntity);
+            return contestService.updateContestWithCache(contestEntity);
         }
-
 
     }
 
@@ -1532,8 +1526,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     ) throws Exception {
 
         ContestSubmissionEntity submission = contestSubmissionRepo.findContestSubmissionEntityByContestSubmissionId(submissionId);
-        ProblemEntity problem = cacheService.findProblemAndUpdateCache(submission.getProblemId());
-        ContestEntity contest = cacheService.findContestAndUpdateCache(submission.getContestId());
+        ProblemEntity problem = problemService.findProblemWithCache(submission.getProblemId());
+        ContestEntity contest = contestService.findContestWithCache(submission.getContestId());
 
         String userId = submission.getUserId();
 
@@ -1543,7 +1537,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                         contest.getEvaluateBothPublicPrivateTestcase()
                                                .equals(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_YES);
 
-        testCaseEntityList = cacheService.findListTestCaseAndUpdateCache(
+        testCaseEntityList = testCaseService.findListTestCaseWithCache(
             submission.getProblemId(),
             evaluatePrivatePublic);
 
@@ -1590,8 +1584,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public void evaluateCustomProblemSubmission(UUID submissionId) throws Exception {
 
         ContestSubmissionEntity submission = contestSubmissionRepo.findContestSubmissionEntityByContestSubmissionId(submissionId);
-        ProblemEntity problemEntity = cacheService.findProblemAndUpdateCache(submission.getProblemId());
-        ContestEntity contest = cacheService.findContestAndUpdateCache(submission.getContestId());
+        ProblemEntity problemEntity = problemService.findProblemWithCache(submission.getProblemId());
+        ContestEntity contest = contestService.findContestWithCache(submission.getContestId());
         List<ContestSubmissionTestCaseEntity> submissionTestCases = contestSubmissionTestCaseEntityRepo.findAllByContestSubmissionId(submissionId);
 
         String userId = submission.getUserId();
@@ -1602,7 +1596,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                         contest.getEvaluateBothPublicPrivateTestcase()
                                                .equals(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_YES);
 
-        testCaseEntityList = cacheService.findListTestCaseAndUpdateCache(
+        testCaseEntityList = testCaseService.findListTestCaseWithCache(
             submission.getProblemId(),
             evaluatePrivatePublic);
 
@@ -1644,7 +1638,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         tempDir.removeDir(tempName);
         submissionResponseHandler.processCustomSubmissionResponse(submission, submissionResponses);
     }
-
 
 
     @Override
@@ -2423,8 +2416,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         testCase.setCorrectAnswer(modelSaveTestcase.getResult());
         testCase.setTestCasePoint(modelSaveTestcase.getPoint());
         testCase.setIsPublic(modelSaveTestcase.getIsPublic());
-        testCaseRepo.save(testCase);
-        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.TEST_CASE);
+        testCaseService.updateTestCaseWithCache(testCase);
     }
 
     @Override
@@ -2533,25 +2525,26 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         String problemId
     ) {
         //log.info("findContestSubmissionByUserLoginIdAndContestIdPaging, user = " + userLoginId + " contestId = " + contestId);
-        return contestSubmissionPagingAndSortingRepo.findAllByUserIdAndContestIdAndProblemId(pageable, userLoginId, contestId, problemId)
-                                                    .map(contestSubmissionEntity -> ContestSubmission
-                                                        .builder()
-                                                        .contestSubmissionId(contestSubmissionEntity.getContestSubmissionId())
-                                                        .contestId(contestSubmissionEntity.getContestId())
-                                                        .createAt(contestSubmissionEntity.getCreatedAt() != null
-                                                                      ? DateTimeUtils.dateToString(
-                                                            contestSubmissionEntity.getCreatedAt(),
-                                                            DateTimeUtils.DateTimeFormat.DATE_TIME_ISO_FORMAT)
-                                                                      : null)
-                                                        .sourceCodeLanguage(contestSubmissionEntity.getSourceCodeLanguage())
-                                                        .point(contestSubmissionEntity.getPoint())
-                                                        .problemId(contestSubmissionEntity.getProblemId())
-                                                        .testCasePass(contestSubmissionEntity.getTestCasePass())
-                                                        .status(contestSubmissionEntity.getStatus())
-                                                        .message(contestSubmissionEntity.getMessage())
-                                                        .userId(contestSubmissionEntity.getUserId())
-                                                        .build()
-                                                    );
+        return contestSubmissionPagingAndSortingRepo
+            .findAllByUserIdAndContestIdAndProblemId(pageable, userLoginId, contestId, problemId)
+            .map(contestSubmissionEntity -> ContestSubmission
+                .builder()
+                .contestSubmissionId(contestSubmissionEntity.getContestSubmissionId())
+                .contestId(contestSubmissionEntity.getContestId())
+                .createAt(contestSubmissionEntity.getCreatedAt() != null
+                              ? DateTimeUtils.dateToString(
+                    contestSubmissionEntity.getCreatedAt(),
+                    DateTimeUtils.DateTimeFormat.DATE_TIME_ISO_FORMAT)
+                              : null)
+                .sourceCodeLanguage(contestSubmissionEntity.getSourceCodeLanguage())
+                .point(contestSubmissionEntity.getPoint())
+                .problemId(contestSubmissionEntity.getProblemId())
+                .testCasePass(contestSubmissionEntity.getTestCasePass())
+                .status(contestSubmissionEntity.getStatus())
+                .message(contestSubmissionEntity.getMessage())
+                .userId(contestSubmissionEntity.getUserId())
+                .build()
+            );
     }
 
     @Override
@@ -2681,10 +2674,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
 
         testCase.setStatusId(TestCaseEntity.STATUS_DISABLED);
-        testCase = testCaseRepo.save(testCase);
-        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.TEST_CASE);
-
-        //testCaseRepo.deleteTestCaseEntityByTestCaseId(testcaseId);
+        testCaseService.updateTestCaseWithCache(testCase);
 
     }
 
@@ -3813,8 +3803,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         tc.setTestCasePoint(modelUploadTestCase.getPoint());
         tc.setCorrectAnswer(output);
         tc.setDescription(modelUploadTestCase.getDescription());
-        tc = testCaseRepo.save(tc);
-        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.TEST_CASE);
+        testCaseService.saveTestCase(tc);
         res.setMessage("Upload Successfully!");
         res.setStatus("OK");
         return res;
@@ -3854,8 +3843,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         output = output.substring(0, lastLinetIndexExpected);
         //  log.info("rerunCreateTestCaseSolution, output " + output);
         tc.setCorrectAnswer(output);
-        tc = testCaseRepo.save(tc);
-        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.TEST_CASE);
+        tc = testCaseService.updateTestCaseWithCache(tc);
         res.setMessage("Upload Successfully!");
         res.setStatus("OK");
 
@@ -3909,8 +3897,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         tc.setTestCasePoint(modelUploadTestCase.getPoint());
         tc.setDescription(modelUploadTestCase.getDescription());
         tc.setCorrectAnswer(modelUploadTestCase.getCorrectAnswer());
-        tc = testCaseRepo.save(tc);
-        cacheService.flushCache(ProblemTestCaseServiceCache.RedisHashPrefix.TEST_CASE);
+        tc = testCaseService.updateTestCaseWithCache(tc);
         ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
         res.setMessage("Successfully");
         res.setStatus("OK");
@@ -4151,9 +4138,11 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         TagEntity tagEntity = new TagEntity();
         tagEntity.setName(tag.getName());
 
-        if (tag.getDescription() != null)
+        if (tag.getDescription() != null) {
             tagEntity.setDescription(tag.getDescription());
-        else tagEntity.setDescription("");
+        } else {
+            tagEntity.setDescription("");
+        }
 
         return tagRepo.save(tagEntity);
     }

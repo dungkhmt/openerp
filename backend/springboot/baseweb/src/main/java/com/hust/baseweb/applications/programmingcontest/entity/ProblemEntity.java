@@ -3,6 +3,7 @@ package com.hust.baseweb.applications.programmingcontest.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @Builder
 //@Table(name = "contest_problem")
 @Table(name = "contest_problem_new")
-public class ProblemEntity {
+public class ProblemEntity implements Serializable {
     @Id
     @Column(name = "problem_id")
     private String problemId;
