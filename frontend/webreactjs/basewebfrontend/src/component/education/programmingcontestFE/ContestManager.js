@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { request } from "./Request";
 
-import { Tab, Tabs } from "@material-ui/core";
+import { Tab, Tabs } from "@mui/material";
 import { a11yProps, TabPanelVertical } from "./TabPanel";
 
 import ContestManagerViewListContestProblemSubmissionDetailByTestCase from "./ContestManagerViewListContestProblemSubmissionDetailByTestCase";
@@ -17,7 +17,6 @@ import ContestManagerListRegisteredParticipant from "./ContestManagerListRegiste
 import ContestManagerAddMember from "./ContestManagerAddMember";
 import ContestManagerAddMember2Contest from "./ContestManagerAddMember2Contest";
 
-import ContestManagerRanking from "./ContestManagerRanking";
 import ContestManagerUserSubmission from "./ContestManagerUserSubmission";
 import ContestManagerUserSubmissionNotEvaluated from "./ContestManagerUserSubmissionNotEvaluated";
 import ContestManagerRankingNew from "./ContestManagerRankingNew";

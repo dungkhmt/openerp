@@ -1,27 +1,16 @@
 import * as React from "react";
-import { Link, useParams, NavLink } from "react-router-dom";
-import { Fragment, useEffect, useState } from "react";
-import { request } from "./Request";
+import {useEffect, useState} from "react";
+import {useHistory} from "react-router-dom";
+import {request} from "./Request";
 import Typography from "@mui/material/Typography";
-import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
-import Table from "@mui/material/Table";
-import { useHistory } from "react-router-dom";
+import {Button, CircularProgress, InputAdornment, TextField} from "@mui/material";
 import StandardTable from "component/table/StandardTable";
-import {
-  Button,
-  TableHead,
-  CircularProgress,
-  TextField,
-} from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
-import { getColorLevel, StyledTableCell, StyledTableRow } from "./lib";
-import TableBody from "@mui/material/TableBody";
-import { pdf } from "@react-pdf/renderer";
+import {pdf} from "@react-pdf/renderer";
 import FileSaver from "file-saver";
 import SubmissionOfParticipantPDFDocument from "./template/SubmissionOfParticipantPDFDocument";
 import UpdateProblemContestDialog from "./UpdateProblemContestDialog";
-import { errorNoti, successNoti } from "utils/notification";
+import {errorNoti, successNoti} from "utils/notification";
+import Box from "@mui/material/Box";
 
 export function ContestManagerListProblem(props) {
   const contestId = props.contestId;
@@ -38,11 +27,10 @@ export function ContestManagerListProblem(props) {
   const [modes, setModes] = useState([]);
 
   const columns = [
-    { title: "Index", field: "index" },
-    { title: "Problem Name", field: "problemName" },
-    { title: "Level", field: "levelId" },
-    { title: "Created By", field: "createdByUserId" },
-    { title: "Submission Mode", field: "submissionMode" },
+    {title: "Problem", field: "problemName"},
+    {title: "Level", field: "levelId"},
+    {title: "Created By", field: "createdByUserId"},
+    {title: "Submission Mode", field: "submissionMode"},
     {
       title: "Submission Mode",
       render: (row) => (
@@ -55,7 +43,7 @@ export function ContestManagerListProblem(props) {
 
   const generatePdfDocument = async (documentData, fileName) => {
     const blob = await pdf(
-      <SubmissionOfParticipantPDFDocument data={documentData} />
+      <SubmissionOfParticipantPDFDocument data={documentData}/>
     ).toBlob();
 
     FileSaver.saveAs(blob, fileName);
@@ -66,6 +54,7 @@ export function ContestManagerListProblem(props) {
     setSelectedProblemId(problemId);
     setOpenUpdateDialog(true);
   }
+
   function onUpdateInfo(
     selectedSubmissionMode,
     selectedProblemId,
@@ -102,6 +91,7 @@ export function ContestManagerListProblem(props) {
       body
     );
   }
+
   function handleModelClose() {
     setOpenUpdateDialog(false);
   }
@@ -121,6 +111,7 @@ export function ContestManagerListProblem(props) {
       setTimeLimit(res.data.contestTime);
     }).then();
   }
+
   useEffect(() => {
     getContestDetail();
     getSubmissionModes();
@@ -129,6 +120,7 @@ export function ContestManagerListProblem(props) {
   function handleEdit() {
     history.push("/programming-contest/contest-edit/" + contestId);
   }
+
   function handleRejudgeContest(event) {
     //alert("Rejudge");
     event.preventDefault();
@@ -145,6 +137,7 @@ export function ContestManagerListProblem(props) {
       }
     ).then();
   }
+
   function handleJudgeContest(event) {
     //alert("Rejudge");
     event.preventDefault();
@@ -161,6 +154,7 @@ export function ContestManagerListProblem(props) {
       }
     ).then();
   }
+
   function handleExportParticipantSubmission() {
     // TODO
     request(
@@ -182,6 +176,7 @@ export function ContestManagerListProblem(props) {
 
     // build and download PDF from data userSubmissions
   }
+
   function handleCheckPlagiarism(event) {
     event.preventDefault();
     setIsProcessing(true);
@@ -199,6 +194,7 @@ export function ContestManagerListProblem(props) {
       body
     );
   }
+
   return (
     <div>
       <Typography variant="h4" component="h2">
@@ -207,78 +203,83 @@ export function ContestManagerListProblem(props) {
       <Typography variant="h5" component="h2">
         Time Limit: {timeLimit} minutes
       </Typography>
-      <Typography variant="h5" component="h2">
-        <Button variant="contained" color="primary" onClick={handleEdit}>
-          {" "}
-          EDIT
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleRejudgeContest}
-        >
-          {" "}
-          Rejudge
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleJudgeContest}
-        >
-          {" "}
-          Judge
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleExportParticipantSubmission}
-        >
-          {" "}
-          Export participant submissions
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleCheckPlagiarism}
-        >
-          {" "}
-          Check Plagiarism
-        </Button>
+      <Box component="div" sx={{width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+        <Box sx={{width: "90%", height: "2.5rem", marginTop: "1rem"}}>
+          <Button
+            sx={{marginRight: "4px"}}
+            variant="contained"
+            color="primary"
+            onClick={handleEdit}
+          >
+            EDIT
+          </Button>
+          <Button
+            sx={{marginRight: "4px"}}
+            variant="contained"
+            color="primary"
+            onClick={handleRejudgeContest}
+          >
+            Rejudge
+          </Button>
+          <Button
+            sx={{marginRight: "4px"}}
+            variant="contained"
+            color="primary"
+            onClick={handleJudgeContest}
+          >
+            Judge
+          </Button>
+          <Button
+            sx={{marginRight: "4px"}}
+            variant="contained"
+            color="primary"
+            onClick={handleExportParticipantSubmission}
+          >
+            Export participant submissions
+          </Button>
+          <Button
+            sx={{marginRight: "4px"}}
+            variant="contained"
+            color="primary"
+            onClick={handleCheckPlagiarism}
+          >
+            Check Plagiarism
+          </Button>
+        </Box>
+
         <TextField
           autoFocus
           required
+          type="number"
           id="Threshold"
           label="Threshold"
-          placeholder="Threshold"
+          InputProps={{
+            endAdornment: <InputAdornment position="end">%</InputAdornment>,
+          }}
           value={threshold}
           onChange={(event) => {
             setThreshold(event.target.value);
           }}
-        ></TextField>
-        (%)
-        {isProcessing ? <CircularProgress /> : ""}
-      </Typography>
+          sx={{width: "10%"}}
+        />
+        {isProcessing ? <CircularProgress/> : ""}
+      </Box>
 
-      <Typography
-        variant="h5"
-        component="h2"
-        style={{ marginTop: 10, marginBottom: 10 }}
-      >
-        List Problem
-      </Typography>
+      <Box sx={{margin: "14px 0"}}>
+        <StandardTable
+          title={"Problems"}
+          columns={columns}
+          data={problems}
+          hideCommandBar
+          options={{
+            selection: false,
+            pageSize: 20,
+            search: true,
+            sorting: true,
+          }}
+        />
+      </Box>
 
-      <StandardTable
-        title={"Problems"}
-        columns={columns}
-        data={problems}
-        hideCommandBar
-        options={{
-          selection: false,
-          pageSize: 20,
-          search: true,
-          sorting: true,
-        }}
-      />
       <UpdateProblemContestDialog
         open={openUpdateDialog}
         onClose={handleModelClose}
@@ -287,44 +288,6 @@ export function ContestManagerListProblem(props) {
         selectedContestId={contestId}
         modes={modes}
       />
-      <TableContainer component={Paper}>
-        <Table
-          sx={{ minWidth: window.innerWidth - 500 }}
-          aria-label="customized table"
-        >
-          <TableHead>
-            <TableRow>
-              <StyledTableCell></StyledTableCell>
-              <StyledTableCell>Question</StyledTableCell>
-              <StyledTableCell align="center">Level</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {problems.map((problem, index) => (
-              <StyledTableRow>
-                <StyledTableCell>
-                  <b>{index + 1}</b>
-                </StyledTableCell>
-                <StyledTableCell component="th" scope="row">
-                  <b>{problem.problemName}</b>
-                </StyledTableCell>
-                <StyledTableCell component="th" scope="row" align="center">
-                  <span style={{ color: getColorLevel(`${problem.levelId}`) }}>
-                    {" "}
-                    <b>{`${problem.levelId}`} </b>{" "}
-                  </span>
-                </StyledTableCell>
-                <StyledTableCell component="th" scope="row">
-                  <b>{problem.createdByUserId}</b>
-                </StyledTableCell>
-                <StyledTableCell component="th" scope="row">
-                  <b>{problem.submissionMode}</b>
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
     </div>
   );
 }
