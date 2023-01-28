@@ -4,7 +4,6 @@ import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionEntity;
 import com.hust.baseweb.applications.programmingcontest.entity.ContestSubmissionTestCaseEntity;
 import com.hust.baseweb.applications.programmingcontest.entity.TestCaseEntity;
-import com.hust.baseweb.applications.programmingcontest.model.ModelContestSubmission;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionTestCaseEntityRepo;
 import com.hust.baseweb.applications.programmingcontest.utils.stringhandler.ProblemSubmission;
@@ -147,18 +146,15 @@ public class SubmissionResponseHandler {
             totalStatus = ContestSubmissionEntity.SUBMISSION_STATUS_ACCEPTED;
         }
 
-        ContestSubmissionEntity submissionEntity = contestSubmissionRepo
-            .findContestSubmissionEntityByContestSubmissionId(submission.getContestSubmissionId());
-
-        submissionEntity.setStatus(totalStatus);
-        submissionEntity.setPoint(score);
-        submissionEntity.setTestCasePass(nbTestCasePass + " / " + testCaseEntityList.size());
-        submissionEntity.setSourceCode(submission.getSourceCode());
-        submissionEntity.setSourceCodeLanguage(submission.getSourceCodeLanguage());
-//        submissionEntity.setRuntime((long) runtime);
-        submissionEntity.setMessage(message);
-        submissionEntity.setUpdateAt(new Date());
-        contestSubmissionRepo.saveAndFlush(submissionEntity);
+        submission.setStatus(totalStatus);
+        submission.setPoint(score);
+        submission.setTestCasePass(nbTestCasePass + " / " + testCaseEntityList.size());
+        submission.setSourceCode(submission.getSourceCode());
+        submission.setSourceCodeLanguage(submission.getSourceCodeLanguage());
+//        submission.setRuntime((long) runtime);
+        submission.setMessage(message);
+        submission.setUpdateAt(new Date());
+        contestSubmissionRepo.saveAndFlush(submission);
 
         if (processing) {
             rabbitTemplate.convertAndSend(
