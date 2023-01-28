@@ -850,9 +850,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
     @Override
     public ModelGetContestDetailResponse getContestDetailByContestIdAndTeacher(String contestId, String userName) {
-//        UserLogin userLogin = userLoginRepo.findByUserLoginId(userName);
-
-
         //ContestEntity contestEntity = contestRepo.findContestEntityByContestIdAndUserId(contestId, userName);
         boolean ok = false;
         // check role of teacher
@@ -886,124 +883,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                 .unauthorized(true)
                                                 .build();
         }
-        return getModelGetContestDetailResponse(contestId, contestEntity);
+        return contestService.getModelGetContestDetailResponse(contestEntity);
     }
 
     @Override
     public ModelGetContestDetailResponse getContestDetailByContestId(String contestId) {
-        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
-        //   log.info("contestEntity {}", contestEntity);
-        if (contestEntity == null) {
-            //   log.info("user does not create contest");
-            return ModelGetContestDetailResponse.builder()
-                                                .unauthorized(true)
-                                                .build();
-        }
-        return getModelGetContestDetailResponse(contestId, contestEntity);
-    }
-
-    private ModelGetContestDetailResponse getModelGetContestDetailResponse(
-        String contestId,
-        ContestEntity contestEntity
-    ) {
-        List<ModelGetProblemDetailResponse> problems = new ArrayList<>();
-
-        contestEntity.getProblems().forEach(contestProblem -> {
-            ContestProblem cp = contestProblemRepo.findByContestIdAndProblemId(
-                contestEntity.getContestId(),
-                contestProblem.getProblemId());
-            String submissionMode = "";
-            if (cp != null) {
-                submissionMode = cp.getSubmissionMode();
-            }
-            ModelGetProblemDetailResponse p = ModelGetProblemDetailResponse.builder()
-                                                                           .levelId(contestProblem.getLevelId())
-                                                                           .problemId(contestProblem.getProblemId())
-                                                                           .problemName(contestProblem.getProblemName())
-                                                                           .levelOrder(contestProblem.getLevelOrder())
-                                                                           .problemDescription(contestProblem.getProblemDescription())
-                                                                           .createdByUserId(contestProblem.getUserId())
-                                                                           .submissionMode(submissionMode)
-                                                                           .build();
-            problems.add(p);
-        });
-        return ModelGetContestDetailResponse
-            .builder()
-            .contestId(contestId)
-            .contestName(contestEntity.getContestName())
-            .contestTime(contestEntity.getContestSolvingTime())
-            .startAt(contestEntity.getStartedAt())
-            .list(problems)
-            .unauthorized(false)
-            .isPublic(contestEntity.getIsPublic())
-            .statusId(contestEntity.getStatusId())
-            .listStatusIds(ContestEntity.getStatusIds())
-            .listSubmissionActionTypes(ContestEntity.getSubmissionActionTypes())
-            .listParticipantViewModes(ContestEntity.getParticipantViewResultModes())
-            .listMaxNumberSubmissions(ContestEntity.getListMaxNumberSubmissions())
-            .listProblemDescriptionViewTypes(ContestEntity.getProblemDescriptionViewTypes())
-            .listUseCacheContestProblems(ContestEntity.getListUseCacheContestProblems())
-            .listJudgeModes(ContestEntity.getJudgeModes())
-            .listEvaluateBothPublicPrivateTestcases(ContestEntity.getListEvaluateBothPublicPrivateTestcases())
-            .submissionActionType(contestEntity.getSubmissionActionType())
-            .maxNumberSubmission(contestEntity.getMaxNumberSubmissions())
-            .participantViewResultMode(contestEntity.getParticipantViewResultMode())
-            .problemDescriptionViewType(contestEntity.getProblemDescriptionViewType())
-            .useCacheContestProblem(contestEntity.getUseCacheContestProblem())
-            .evaluateBothPublicPrivateTestcase(contestEntity.getEvaluateBothPublicPrivateTestcase())
-            .maxSourceCodeLength(contestEntity.getMaxSourceCodeLength())
-            .minTimeBetweenTwoSubmissions(contestEntity.getMinTimeBetweenTwoSubmissions())
-            .judgeMode(contestEntity.getJudgeMode())
-            .build();
-    }
-
-    @Override
-    public ModelGetContestDetailResponse getContestSolvingDetailByContestId(
-        String contestId,
-        String userName
-    ) throws MiniLeetCodeException {
-//        UserLogin userLogin = userLoginRepo.findByUserLoginId(userName);
-        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
-        //   log.info("getContestSolvingDetailByContestId, contestId = " + contestId + " now = " + now + " contest start at " +
-        //            contestEntity.getStartedAt());
-
-        //if(now.before(contestEntity.getStartedAt()) ){
-        //    throw new MiniLeetCodeException("Wait contest start");
-        //}
-
-        if (!contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
-            return ModelGetContestDetailResponse.builder()
-                                                .contestId(contestId)
-                                                .contestName(contestEntity.getContestName())
-                                                .contestTime(contestEntity.getContestSolvingTime())
-                                                .startAt(contestEntity.getStartedAt())
-                                                .list(new ArrayList())
-                                                .unauthorized(false)
-                                                .isPublic(contestEntity.getIsPublic())
-                                                .statusId(contestEntity.getStatusId())
-                                                .listStatusIds(ContestEntity.getStatusIds())
-                                                .build();
-        }
-
-        //UserRegistrationContestEntity userRegistrationContest = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(contestId, userName, Constants.RegistrationType.SUCCESSFUL.getValue());
-        UserRegistrationContestEntity userRegistrationContest = null;
-        List<UserRegistrationContestEntity> userRegistrationContests = userRegistrationContestRepo.findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(
-            contestId,
-            userName,
-            Constants.RegistrationType.SUCCESSFUL.getValue());
-        if (userRegistrationContests != null && userRegistrationContests.size() > 0) {
-            userRegistrationContest = userRegistrationContests.get(0);
-        }
-
-        //   log.info("contestEntity {}", contestEntity.getIsPublic());
-
-        if (userRegistrationContest == null) {
-            //   log.info("unauthorized");
-            return ModelGetContestDetailResponse.builder()
-                                                .unauthorized(true)
-                                                .build();
-        }
-        return getModelGetContestDetailResponse(contestId, contestEntity);
+        ContestEntity contestEntity = contestService.findContestWithCache(contestId);
+        return contestService.getModelGetContestDetailResponse(contestEntity);
     }
 
     @Override

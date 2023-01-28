@@ -3,12 +3,13 @@ package com.hust.baseweb.applications.programmingcontest.model;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Data
 @Builder
-public class ModelGetContestDetailResponse {
+public class ModelGetContestDetailResponse implements Serializable {
     private String contestId;
     private String contestName;
     private long contestTime;

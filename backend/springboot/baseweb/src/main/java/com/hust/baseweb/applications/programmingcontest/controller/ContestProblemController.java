@@ -6,6 +6,7 @@ import com.hust.baseweb.applications.programmingcontest.entity.*;
 import com.hust.baseweb.applications.programmingcontest.exception.MiniLeetCodeException;
 import com.hust.baseweb.applications.programmingcontest.model.*;
 import com.hust.baseweb.applications.programmingcontest.repo.*;
+import com.hust.baseweb.applications.programmingcontest.service.ContestService;
 import com.hust.baseweb.applications.programmingcontest.service.ProblemTestCaseService;
 import com.hust.baseweb.applications.programmingcontest.service.helper.cache.ProblemTestCaseServiceCache;
 import com.hust.baseweb.entity.UserLogin;
@@ -43,6 +44,7 @@ public class ContestProblemController {
     ContestSubmissionRepo contestSubmissionRepo;
     ContestProblemRepo contestProblemRepo;
     UserService userService;
+    ContestService contestService;
     UserRegistrationContestRepo userRegistrationContestRepo;
     UserContestProblemRoleRepo userContestProblemRoleRepo;
     ProblemTestCaseServiceCache cacheService;
@@ -260,26 +262,7 @@ public class ContestProblemController {
         log.info("edit contest modelUpdateContest {}", modelUpdateContest);
 
         problemTestCaseService.updateContest(modelUpdateContest, principal.getName(), contestId);
-//        ModelGetContestDetailResponse runningContest = runningContests.get(contestId);
-//        if (runningContest != null) {
-//            removeContestFromCache(contestId);
-//            if (modelUpdateContest.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
-//                log.info("updateContest, found contest " + contestId + " is running in cache --> remove it");
-//                // remove active contest from runningContests
-//                // removeContestFromCache(contestId);
-//
-//                // RELOAD Contest and Put into the cache
-//                log.info("editContest, status = RUNNING -> RELOAD from DB and put into cache");
-//                runningContest = problemTestCaseService.getContestDetailByContestId(contestId);
-//                if (runningContest != null)
-//                    checkAndAddRunningContest(runningContest);
-//            }
-//        }
 
-        ModelGetContestDetailResponse runningContest = problemTestCaseService.getContestDetailByContestId(contestId);
-        if (runningContest != null) {
-            cacheService.addContestDetailResponseToCache(runningContest, 60*60);
-        }
         return ResponseEntity.status(200).body(null);
     }
 
@@ -425,11 +408,8 @@ public class ContestProblemController {
     @GetMapping("/get-contest-detail-solving/{contestId}")
     public ResponseEntity<?> getContestDetailSolving(@PathVariable("contestId") String contestId, Principal principal)
             throws MiniLeetCodeException {
-        log.info("getContestDetail constestid {}", contestId);
+//        log.info("getContestDetail constestid {}", contestId);
         ModelGetContestDetailResponse response = null;
-        // ModelGetContestDetailResponse response =
-        // problemTestCaseService.getContestSolvingDetailByContestId(contestId,
-        // principal.getName());
 
         ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
         if (!contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
@@ -446,42 +426,8 @@ public class ContestProblemController {
                     .build();
             return ResponseEntity.status(200).body(response);
         }
-        // USE cache
-        /*
-         * for(ModelGetContestDetailResponse res: runningContests){
-         * if(res.getContestId().equals(contestId)){
-         * log.
-         * info("getContestDetail constestid {} use cache, found a running contest!!!",
-         * contestId);
-         * response = res; break;
-         * }
-         * }
-         */
 
-//        if (contestEntity.getUseCacheContestProblem() != null &&
-//                contestEntity.getUseCacheContestProblem().equals(ContestEntity.USE_CACHE_CONTEST_PROBLEM_YES)) {
-//            response = runningContests.get(contestId);
-//            if (response == null) {
-//                // load from DB and store in cache
-//                log.info("getContestDetail constestid " + contestId
-//                        + " USED_CACHE not found in the cache --> load from DB");
-//                response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
-//                if (response != null)
-//                    checkAndAddRunningContest(response);
-//
-//            } else {
-//                log.info("getContestDetail constestid {} use cache, found a running contest in cache!!!", contestId);
-//            }
-//        } else {
-//            log.info("getContestDetail constestid {} NOT use cache -> load from DB", contestId);
-//            response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
-//        }
-
-        response = cacheService.findContestDetailResponseInCache(contestId);
-        if (response == null) {
-            response = problemTestCaseService.getContestSolvingDetailByContestId(contestId, principal.getName());
-            cacheService.addContestDetailResponseToCache(response, 60 * 60);
-        }
+        response = contestService.getContestSolvingDetailByContestId(contestId, principal.getName());
         return ResponseEntity.status(200).body(response);
     }
 

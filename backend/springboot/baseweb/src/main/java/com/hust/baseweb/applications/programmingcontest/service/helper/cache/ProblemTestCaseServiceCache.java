@@ -153,20 +153,20 @@ public class ProblemTestCaseServiceCache {
 //        }
 //        return problemId + "_N";
 //    }
-
-
-    public ModelGetContestDetailResponse findContestDetailResponseInCache(String contestId) {
-        return cacheService.getCachedObject(
-            RedisHashPrefix.CONTEST_DETAIL_SOLVING.getValue(),
-            contestId,
-            ModelGetContestDetailResponse.class);
-    }
-
-    public void addContestDetailResponseToCache(ModelGetContestDetailResponse contest, int expireTime) {
-        cacheService.pushCachedWithExpire(
-            RedisHashPrefix.CONTEST_DETAIL_SOLVING.getValue(),
-            contest.getContestId(),
-            contest,
-            expireTime * 1000);
-    }
+//
+//
+//    public ModelGetContestDetailResponse findContestDetailResponseInCache(String contestId) {
+//        return cacheService.getCachedObject(
+//            RedisHashPrefix.CONTEST_DETAIL_SOLVING.getValue(),
+//            contestId,
+//            ModelGetContestDetailResponse.class);
+//    }
+//
+//    public void addContestDetailResponseToCache(ModelGetContestDetailResponse contest, int expireTime) {
+//        cacheService.pushCachedWithExpire(
+//            RedisHashPrefix.CONTEST_DETAIL_SOLVING.getValue(),
+//            contest.getContestId(),
+//            contest,
+//            expireTime * 1000);
+//    }
 }
