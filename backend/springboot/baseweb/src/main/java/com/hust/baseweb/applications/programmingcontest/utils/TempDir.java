@@ -141,7 +141,7 @@ public class TempDir {
                 sourceSh = gccExecutor.genSubmitScriptFile(testCases, source, tmpName, timeout, memoryLimit);
                 break;
             case JAVA:
-                sourceSh = javaExecutor.genSubmitScriptFile(testCases, source, tmpName, timeout);
+                sourceSh = javaExecutor.genSubmitScriptFile(testCases, source, tmpName, timeout, memoryLimit);
                 break;
             case PYTHON3:
                 sourceSh = python3Executor.genSubmitScriptFile(testCases, source, tmpName, timeout);
