@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -26,4 +27,6 @@ public class FacilityV2 {
     private Integer width;
     private Integer length;
     private String address;
+    private BigDecimal longitude;
+    private BigDecimal latitude;
 }
