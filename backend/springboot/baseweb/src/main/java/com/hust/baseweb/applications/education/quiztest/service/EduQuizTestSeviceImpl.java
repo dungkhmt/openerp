@@ -284,7 +284,8 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         for (EduQuizTest eduEntity :
             listEdu) {
             if (eduEntity.getStatusId() == null ||
-                !eduEntity.getStatusId().equals(EduQuizTest.QUIZ_TEST_STATUS_OPEN)) {
+                (!eduEntity.getStatusId().equals(EduQuizTest.QUIZ_TEST_STATUS_OPEN) &&
+                !eduEntity.getStatusId().equals(EduQuizTest.QUIZ_TEST_STATUS_RUNNING))) {
                 continue;
             }
 

@@ -79,6 +79,10 @@ public class EduClassSessionServiceImpl implements EduClassSessionService{
         eduQuizTest.setCreatedStamp(new Date());
         eduQuizTest.setDuration(duration);// default
         eduQuizTest.setStatusId(EduQuizTest.QUIZ_TEST_STATUS_CREATED);
+        eduQuizTest.setJudgeMode(EduQuizTest.JUDGE_MODE_SYNCHRONOUS);
+        eduQuizTest.setQuestionStatementViewTypeId(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_VISIBLE);
+        eduQuizTest.setParticipantQuizGroupAssignmentMode(EduQuizTest.PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_ASSIGN_GROUP_BEFORE_HANDOUT);
+
         eduQuizTest = eduQuizTestRepo.save(eduQuizTest);
 
         // update automatically participants by participants of classId
