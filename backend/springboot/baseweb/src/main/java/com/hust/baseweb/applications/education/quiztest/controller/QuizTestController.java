@@ -442,13 +442,13 @@ public class QuizTestController {
             XSSFWorkbook wb = new XSSFWorkbook(is);
             XSSFSheet sheet = wb.getSheetAt(0);
             XSSFSheet sheetInfo = wb.getSheetAt(1);
-            Row r = sheetInfo.getRow(0);
+            Row r = sheetInfo.getRow(1);
             Cell c = r.getCell(1);
             String userId = c.getStringCellValue();
-            r = sheetInfo.getRow(1);
+            r = sheetInfo.getRow(2);
             c = r.getCell(1);
             String testId = c.getStringCellValue();
-            r = sheetInfo.getRow(2);
+            r = sheetInfo.getRow(3);
             c = r.getCell(1);
             String quizGroupCode = c.getStringCellValue();
             EduTestQuizGroup group = eduQuizTestGroupService.getQuizTestGroupFrom(quizGroupCode, testId);

@@ -46,6 +46,7 @@ export default function StudentQuizDetail() {
   const [messageRequest, setMessageRequest] = React.useState(false);
   const [quizGroupTestDetail, setQuizGroupTestDetail] = React.useState({});
   const [groupCode, setGroupCode] = React.useState(null);
+  const [userId, setUserId] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [importedExcelFile, setImportedExcelFile] = React.useState(null);
@@ -286,15 +287,21 @@ export default function StudentQuizDetail() {
 
     let dataHeader = [];
     let row1 = {};
-    row1["userId"] = "dungpq";
+    //row1["userId"] = quizGroupTestDetail.participantUserId; //"dungpq";
+    row1["key"] = "userId";
+    row1["value"] = quizGroupTestDetail.participantUserId;
     dataHeader[0] = row1;
 
     let row2 = {};
-    row2["testId"] = testQuizId;
+    //row2["testId"] = testQuizId;
+    row2["key"] = "testId";
+    row2["value"] = testQuizId;
     dataHeader[1] = row2;
 
     let row3 = {};
-    row3["code"] = "a code";
+    //row3["code"] = groupCode; // "a code";
+    row3["key"] = "code";
+    row3["value"] = groupCode;
     dataHeader[2] = row3;
 
     var sheetHeader = XLSX.utils.json_to_sheet(dataHeader);

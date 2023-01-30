@@ -143,6 +143,7 @@ public class EduQuizTestGroupController {
                 }
             }
         }
+        res.setParticipantUserId(principal.getName());
         return ResponseEntity.ok().body(res);
     }
     @GetMapping("/get-quiz-test-participation-group-question-reload-heavy/{testID}")

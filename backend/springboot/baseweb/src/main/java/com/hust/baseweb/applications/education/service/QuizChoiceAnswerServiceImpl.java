@@ -32,6 +32,7 @@ public class QuizChoiceAnswerServiceImpl implements QuizChoiceAnswerService {
         for(QuizChoiceAnswer a: answers){
             String c = a.getChoiceAnswerCode();
             try{
+                c = c.substring(1); // remove prefix character "C" (PREFIX_CHOICE_CODE)
                 int code = Integer.valueOf(c);
                 codes.add(code);
             }catch(Exception e){
@@ -45,7 +46,7 @@ public class QuizChoiceAnswerServiceImpl implements QuizChoiceAnswerService {
             }
             idx += 1;
         }
-        return Utils.stdCode(idx,3);
+        return QuizQuestionServiceImpl.PREFIX_CHOICE_CODE + Utils.stdCode(idx,3);
     }
     @Override
     public QuizChoiceAnswer save(QuizChoiceAnswerCreateInputModel input) {
