@@ -1,5 +1,8 @@
-import { Box, Button, FormGroup, Grid, InputAdornment, OutlinedInput, TextField, Typography } from "@material-ui/core";
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import SearchBox from '../components/searchBox.js';
+import Maps from '../components/maps.js';
+import MapIcon from '@mui/icons-material/Map';
+import { Box, Button, Grid, InputAdornment, OutlinedInput, TextField, Typography, Modal } from "@material-ui/core";
+import React, { Fragment, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { setCanvasSize } from "../utilities.js"
 import { Stage, Layer, Rect } from "react-konva";
@@ -27,7 +30,8 @@ const CreateFacility = () => {
   const [width, setWidth] = useState();
   const [warehouseHeight, setWarehouseHeight] = useState();
   const [height, setHeight] = useState();
-
+  const [openModal, setOpenModal] = useState(false);
+  const [selectPosition, setSelectPosition] = useState(null);
 
   const handleAddShelf = () => {
     setListShelf([...listShelf, holderShelf])
@@ -46,16 +50,17 @@ const CreateFacility = () => {
   const addFile = (e) => {
     e.preventDefault();
     const reader = new FileReader();
-    reader.readAsText(e.target.files[0],"UTF-8");
+    reader.readAsText(e.target.files[0], "UTF-8");
     reader.onload = (e) => {
       const text = e.target.result;
       setListShelf(JSON.parse(text))
     };
   };
 
-
   let submitForm = (data) => {
     data.listShelf = listShelf.filter((element) => JSON.stringify(element) !== JSON.stringify(holderShelf));
+    data.longitude = selectPosition.lon;
+    data.latitude = selectPosition.lat;
     request(
       "post",
       "/wmsv2/admin/facility",
@@ -64,7 +69,8 @@ const CreateFacility = () => {
         successNoti("Tạo kho thành công")
         // history.push(`${path.replace('/create', '')}/${id}`);
       },
-      { 401: () => { },
+      {
+        401: () => { },
         400: (e) => { console.log("Error message: ", e.response.data.errors[0].message); errorNoti(e.response.data.errors[0].message); }
       },
       data
@@ -83,7 +89,7 @@ const CreateFacility = () => {
     const data = getValues();
     const width = parseInt(data.facilityWidth)
     const length = parseInt(data.facilityLength)
-    if( isNaN(width) || isNaN(length) || width <= 0 || length <= 0 ){
+    if (isNaN(width) || isNaN(length) || width <= 0 || length <= 0) {
       errorNoti(
         "Vui lòng điền kích thước kho"
       );
@@ -125,6 +131,42 @@ const CreateFacility = () => {
 
   return (
     <Fragment>
+      <Modal open={openModal}
+        onClose={() => setOpenModal(!openModal)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: '75%',
+          height: '90%',
+          transform: 'translate(-50%, -50%)',
+          bgcolor: 'background.paper',
+          border: '2px solid #000',
+          boxShadow: 24,
+          p: 4,
+        }}>
+          <Typography variant="h5">
+            Chọn vị trí kho <Button variant="contained" className={classes.addButton} type="submit" onClick={() => setOpenModal(false)} >Lưu</Button>
+          </Typography>
+          
+          <div style={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            height: "100%",
+          }}>
+            <div style={{ width: "50%", height: "90%", marginRight: 10 }}>
+              <Maps selectPosition={selectPosition} setSelectPosition={setSelectPosition}  />
+            </div>
+            <div style={{ width: "50%", height: "90%" }}>
+              <SearchBox selectPosition={selectPosition} setSelectPosition={setSelectPosition} />
+            </div>
+          </div>
+        </Box>
+      </Modal>
       <Box className={classes.warehousePage} >
         <Grid container justifyContent="space-between" className={classes.headerBox} >
           <Grid>
@@ -184,7 +226,7 @@ const CreateFacility = () => {
                     <Grid item xs={12}>
                       <Box className={classes.inputWrap}>
                         <Box className={classes.labelInput}>
-                          Địa chỉ
+                          Địa chỉ <Button style={{ "margin-bottom": 0 }} onClick={() => setOpenModal(!openModal)}><MapIcon /></Button>
                         </Box>
                         <TextField
                           fullWidth
@@ -196,6 +238,8 @@ const CreateFacility = () => {
                           name="address"
                           error={!!errors.address}
                           helperText={errors.address?.message}
+                          disabled
+                          value={selectPosition?.display_name}
                         />
                       </Box>
                     </Grid>
@@ -246,16 +290,16 @@ const CreateFacility = () => {
               Thông tin chi tiết kho
 
               <input
-                    style={{ display: 'none' }}
-                    id="raised-button-file"
-                    onChange={addFile}
-                    type="file"
-                  />
-                  <label htmlFor="raised-button-file">
-                    <Button variant="raised" component="span" style={{fontSize:"18px !important", color: "#1976d2", marginLeft: 94, textTransform:"none"}}>
-                      Tải file lên
-                    </Button>
-                  </label>
+                style={{ display: 'none' }}
+                id="raised-button-file"
+                onChange={addFile}
+                type="file"
+              />
+              <label htmlFor="raised-button-file">
+                <Button variant="raised" component="span" style={{ fontSize: "18px !important", color: "#1976d2", marginLeft: 94, textTransform: "none" }}>
+                  Tải file lên
+                </Button>
+              </label>
             </Typography>
             <Grid container className={classes.detailWrap}>
               <Grid xs={3} sx={{ display: "flex", }} item className={classes.boxWrap}>
@@ -304,7 +348,7 @@ const CreateFacility = () => {
                     <AddCircleOutlineIcon className={classes.addIcon} />
                     <Typography>Thêm kệ hàng</Typography>
                   </Box>
-                  </Box>
+                </Box>
               </Grid>
 
 

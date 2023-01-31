@@ -53,7 +53,9 @@ create table facility
     code        varchar(100),
     width       int,
     length      int,
-    address     varchar(100)
+    address     varchar(100),
+    longitude  decimal(20, 14),
+    latitude   decimal(20, 14)
 );
 
 create table product

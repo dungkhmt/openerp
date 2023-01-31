@@ -7,6 +7,7 @@ import lombok.ToString;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -22,6 +23,8 @@ public class NewFacilityRequest {
     private int facilityLength;
     @Min(value = 0)
     private int facilityWidth;
+    private BigDecimal longitude;
+    private BigDecimal latitude;
     @Valid
     private List<Shelf> listShelf;
 
