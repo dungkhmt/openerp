@@ -339,6 +339,8 @@ export default function StudentQuizDetail() {
       errorHandlers,
       formData
     );
+    getQuizTestGroup();
+    getQuestionList();
   }
   return (
     <div className={classes.root}>
@@ -375,38 +377,43 @@ export default function StudentQuizDetail() {
               {" "}
               Check & Confirm Code
             </Button>
-            <Button variant="contained" onClick={handleDownloadExcel}>
-              {" "}
-              Download Template excel
-            </Button>
-            <Button color="primary" variant="contained" component="label">
-              <PublishIcon /> Select excel file to import
-              <input
-                type="file"
-                hidden
-                onChange={(event) =>
-                  setImportedExcelFile(event.target.files[0])
-                }
-              />
-            </Button>
-            {importedExcelFile && (
-              <Chip
-                color="success"
-                variant="outlined"
-                label={importedExcelFile.name}
-                onDelete={() => setImportedExcelFile(undefined)}
-              />
-            )}
-            <LoadingButton
-              loading={isProcessing}
-              endIcon={<SendIcon />}
-              disabled={!importedExcelFile}
-              color="primary"
-              variant="contained"
-              onClick={handleUploadSolutionQuiz}
-            >
-              Upload solution excel
-            </LoadingButton>
+
+            {quizGroupTestDetail.judgeMode === "OFFLINE_VIA_EXCEL_UPLOAD" ? (
+              <div>
+                <Button variant="contained" onClick={handleDownloadExcel}>
+                  {" "}
+                  Download Template excel
+                </Button>
+                <Button color="primary" variant="contained" component="label">
+                  <PublishIcon /> Select excel file to import
+                  <input
+                    type="file"
+                    hidden
+                    onChange={(event) =>
+                      setImportedExcelFile(event.target.files[0])
+                    }
+                  />
+                </Button>
+                {importedExcelFile && (
+                  <Chip
+                    color="success"
+                    variant="outlined"
+                    label={importedExcelFile.name}
+                    onDelete={() => setImportedExcelFile(undefined)}
+                  />
+                )}
+                <LoadingButton
+                  loading={isProcessing}
+                  endIcon={<SendIcon />}
+                  disabled={!importedExcelFile}
+                  color="primary"
+                  variant="contained"
+                  onClick={handleUploadSolutionQuiz}
+                >
+                  Upload solution excel
+                </LoadingButton>
+              </div>
+            ) : null}
 
             {/*
               quizGroupTestDetail ? (

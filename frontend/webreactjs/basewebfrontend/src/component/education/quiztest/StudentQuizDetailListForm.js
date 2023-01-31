@@ -236,9 +236,15 @@ export default function StudentQuizDetailListForm(props) {
           >
             View Questions
           </Button>
-          <Button variant="contained" color="secondary" onClick={handleRefresh}>
-            REFRESH (limited)
-          </Button>
+          {quizGroupTestDetail.judgeMode === "BATCH_LAZY_EVALUATION" ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleRefresh}
+            >
+              REFRESH (limited)
+            </Button>
+          ) : null}
         </div>
 
         {/* Quiz */}
@@ -253,6 +259,7 @@ export default function StudentQuizDetailListForm(props) {
                   order={idx}
                   onSave={onSave}
                   loading={loading}
+                  judgeMode={quizGroupTestDetail.judgeMode}
                 />
               ))
             ) : (

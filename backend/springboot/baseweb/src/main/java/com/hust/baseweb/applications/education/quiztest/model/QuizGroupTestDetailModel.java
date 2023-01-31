@@ -28,7 +28,7 @@ public class QuizGroupTestDetailModel {
     private String groupCode;
 
     private String viewTypeId;
-
+    private String judgeMode;
     private List<QuizQuestionDetailModel> listQuestion;
 
     private Map<String, List<UUID>> participationExecutionChoice; //question id, list<choiceAnswerId>
