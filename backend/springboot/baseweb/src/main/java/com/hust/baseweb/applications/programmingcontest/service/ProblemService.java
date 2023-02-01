@@ -18,12 +18,16 @@ public class ProblemService {
 
     @Cacheable(value = HASH, key = "#problemId")
     public ProblemEntity findProblemWithCache(String problemId) {
-        return problemRepo.findByProblemIdWithTagFetched(problemId);
+        return findProblem(problemId);
     }
 
-    @CachePut(value = HASH, key = "#problem.problemId")
-    public ProblemEntity updateProblemWithCache(ProblemEntity problem) {
-        return problemRepo.save(problem);
+    @CachePut(value = HASH, key = "#result.problemId")
+    public ProblemEntity saveProblemWithCache(ProblemEntity problem) {
+        return saveProblem(problem);
+    }
+
+    public ProblemEntity findProblem(String problemId) {
+        return problemRepo.findByProblemIdWithTagFetched(problemId);
     }
 
     public ProblemEntity saveProblem(ProblemEntity problem) {

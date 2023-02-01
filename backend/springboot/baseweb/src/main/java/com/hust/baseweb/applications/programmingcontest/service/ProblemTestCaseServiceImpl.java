@@ -150,7 +150,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                    .tags(tags)
                                                    .userId(userID)
                                                    .build();
-        problemEntity = problemService.saveProblem(problemEntity);
+        problemEntity = problemService.saveProblemWithCache(problemEntity);
 
         // grant role owner, manager, view to current user
         UserContestProblemRole upr = new UserContestProblemRole();
@@ -291,7 +291,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         problemEntity.setAttachment(String.join(";", attachmentId));
         problemEntity.setTags(tags);
 
-        problemEntity = problemService.updateProblemWithCache(problemEntity);
+        problemEntity = problemService.saveProblemWithCache(problemEntity);
         return problemEntity;
     }
 
@@ -549,7 +549,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                       .problemId(problemId)
                                                       .isPublic(modelSaveTestcase.getIsPublic())
                                                       .build();
-        return testCaseService.saveTestCase(testCaseEntity);
+        return testCaseService.saveTestCaseWithCache(testCaseEntity);
     }
 
 
@@ -647,7 +647,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                              .createdAt(new Date())
                                              .build();
             }
-            contestEntity = contestService.saveContest(contestEntity);
+            contestEntity = contestService.saveContestWithCache(contestEntity);
 
             // create corresponding entities in ContestRole
             ContestRole contestRole = new ContestRole();
@@ -2302,7 +2302,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         testCase.setCorrectAnswer(modelSaveTestcase.getResult());
         testCase.setTestCasePoint(modelSaveTestcase.getPoint());
         testCase.setIsPublic(modelSaveTestcase.getIsPublic());
-        testCaseService.updateTestCaseWithCache(testCase);
+        testCaseService.saveTestCaseWithCache(testCase);
     }
 
     @Override
@@ -2560,7 +2560,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         }
 
         testCase.setStatusId(TestCaseEntity.STATUS_DISABLED);
-        testCaseService.updateTestCaseWithCache(testCase);
+        testCaseService.saveTestCaseWithCache(testCase);
 
     }
 
@@ -3689,7 +3689,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         tc.setTestCasePoint(modelUploadTestCase.getPoint());
         tc.setCorrectAnswer(output);
         tc.setDescription(modelUploadTestCase.getDescription());
-        testCaseService.saveTestCase(tc);
+        testCaseService.saveTestCaseWithCache(tc);
         res.setMessage("Upload Successfully!");
         res.setStatus("OK");
         return res;
@@ -3729,7 +3729,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         output = output.substring(0, lastLinetIndexExpected);
         //  log.info("rerunCreateTestCaseSolution, output " + output);
         tc.setCorrectAnswer(output);
-        tc = testCaseService.updateTestCaseWithCache(tc);
+        tc = testCaseService.saveTestCaseWithCache(tc);
         res.setMessage("Upload Successfully!");
         res.setStatus("OK");
 
@@ -3783,7 +3783,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         tc.setTestCasePoint(modelUploadTestCase.getPoint());
         tc.setDescription(modelUploadTestCase.getDescription());
         tc.setCorrectAnswer(modelUploadTestCase.getCorrectAnswer());
-        tc = testCaseService.updateTestCaseWithCache(tc);
+        tc = testCaseService.saveTestCaseWithCache(tc);
         ModelUploadTestCaseOutput res = new ModelUploadTestCaseOutput();
         res.setMessage("Successfully");
         res.setStatus("OK");

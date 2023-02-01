@@ -32,17 +32,31 @@ public class ContestService {
 
     @Cacheable(value = HASH_CONTEST, key = "#contestId")
     public ContestEntity findContestWithCache(String contestId) {
-        return contestRepo.findContestByContestId(contestId);
+        return findContest(contestId);
     }
 
     @CachePut(value = HASH_CONTEST, key = "#contest.contestId")
     public ContestEntity updateContestWithCache(ContestEntity contest) {
+        return updateContest(contest);
+    }
+
+    @CachePut(value = HASH_CONTEST, key = "#result.contestId")
+    public ContestEntity saveContestWithCache(ContestEntity contest) {
+        return saveContest(contest);
+    }
+
+    public ContestEntity findContest(String contestId) {
+        return contestRepo.findContestByContestId(contestId);
+    }
+
+    public ContestEntity updateContest(ContestEntity contest) {
         return contestRepo.save(contest);
     }
 
     public ContestEntity saveContest(ContestEntity contest) {
         return contestRepo.save(contest);
     }
+
 
     public ModelGetContestDetailResponse getContestSolvingDetailByContestId(
         String contestId,
