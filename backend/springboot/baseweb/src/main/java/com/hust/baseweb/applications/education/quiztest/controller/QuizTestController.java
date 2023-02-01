@@ -27,6 +27,7 @@ import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.poi.ss.usermodel.CellType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -442,13 +443,13 @@ public class QuizTestController {
             XSSFWorkbook wb = new XSSFWorkbook(is);
             XSSFSheet sheet = wb.getSheetAt(0);
             XSSFSheet sheetInfo = wb.getSheetAt(1);
-            Row r = sheetInfo.getRow(0);
+            Row r = sheetInfo.getRow(1);
             Cell c = r.getCell(1);
             String userId = c.getStringCellValue();
-            r = sheetInfo.getRow(1);
+            r = sheetInfo.getRow(2);
             c = r.getCell(1);
             String testId = c.getStringCellValue();
-            r = sheetInfo.getRow(2);
+            r = sheetInfo.getRow(3);
             c = r.getCell(1);
             String quizGroupCode = c.getStringCellValue();
             EduTestQuizGroup group = eduQuizTestGroupService.getQuizTestGroupFrom(quizGroupCode, testId);
@@ -459,20 +460,47 @@ public class QuizTestController {
             log.debug("uploadSolutionExcelQuizTestOfStudent, userId = " + userId + " testId = " + testId + " groupCode = " + quizGroupCode
             + " groupId = " + groupId);
 
-            QuizGroupTestDetailModel res = eduQuizTestGroupService.getTestGroupQuestionDetailNotUsePermutationConfig(userId,testId);
+            EduQuizTest eduQuizTest = quizTestService.getQuizTestById(testId);
+            if(eduQuizTest.getJudgeMode()== null ||
+               !eduQuizTest.getJudgeMode().equals(EduQuizTest.JUDGE_MODE_OFFLINE_VIA_EXCEL_UPLOAD)){
+               return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Mode Not Allowed");
+            }
 
+            QuizGroupTestDetailModel res = eduQuizTestGroupService.getTestGroupQuestionDetailNotUsePermutationConfig(userId,testId);
+            if(res == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found Quiz Test Group");
+            }
+            if(res.getListQuestion() == null || res.getListQuestion().size() == 0){
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not Found Questions of the Quiz Test Group");
+            }
             int lastRowNum = sheet.getLastRowNum();
             for(int i = 1; i <= lastRowNum; i++){
                 r = sheet.getRow(i);
                 c = r.getCell(0);
                 String questionIdx = c.getStringCellValue();
                 c = r.getCell(1);
-                String[] choices = c.getStringCellValue().split(",");
+                String[] choices = null;
+                //if(c == null){
+                //    continue;
+                //}
+                //if(!c.getCellType().equals(CellType.STRING)){
+                //    continue;
+                //}
+                if(c != null)
+                    if(c.getCellType().equals(CellType.STRING)) {
+                        if (c.getStringCellValue() != null && !c.getStringCellValue().equals("")) {
+                            choices = c.getStringCellValue().split(",");
+                        }
+                    }
+                if(i-1 >= res.getListQuestion().size()) {
+                    log.debug("uploadSolutionExcelQuizTestOfStudent, question " + questionIdx + " i = " + i + " -> continue");
+                    continue;
+                }
+                //if(choices == null || choices.length == 0) continue;
                 QuizQuestionDetailModel question = res.getListQuestion().get(i-1);
                 UUID questionId = question.getQuestionId();
-                log.debug("uploadSolutionExcelQuizTestOfStudent, question " + questionIdx + " questionId = " + questionId + " choices (len = " + choices.length + ") " + c.getStringCellValue());
+                List<UUID> chooseAnsIds = new ArrayList();
                 if(choices != null && choices.length > 0) {
-                    List<UUID> chooseAnsIds = new ArrayList();
                     for(int j = 0; j < choices.length; j++){
                         String choiceCode = choices[j].trim();
                         for(QuizChoiceAnswerHideCorrectAnswer a: question.getQuizChoiceAnswerList()){
@@ -483,13 +511,15 @@ public class QuizTestController {
                         log.debug("uploadSolutionExcelQuizTestOfStudent, question " + questionIdx + " choiceCode = " + choiceCode);
                     }
                     log.debug("uploadSolutionExcelQuizTestOfStudent, question " + questionIdx + " chooseAnsIds = " + chooseAnsIds.size());
-                    quizTestService.submitSynchronousQuizTestExecutionChoice(questionId, groupId, userId, chooseAnsIds);
                 }
+                log.debug("uploadSolutionExcelQuizTestOfStudent, question " + questionIdx + " questionId = " + questionId + " choices (len = " + chooseAnsIds.size() + ") ");
+
+                quizTestService.submitSynchronousQuizTestExecutionChoice(questionId, groupId, userId, chooseAnsIds);
             }
         }catch(Exception e){
             e.printStackTrace();
         }
-        return null;
+        return ResponseEntity.ok().body("OK");
 
     }
     @PostMapping("/upload-excel-student-list")

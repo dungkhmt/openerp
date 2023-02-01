@@ -37,6 +37,7 @@ export default function Quiz({
   choseAnswers,
   onSave,
   loading,
+  judgeMode,
 }) {
   const classes = useStyles();
   const {
@@ -114,7 +115,9 @@ export default function Quiz({
                     }}
                     style={{ maxHeight: 42 }}
                   />
-                  (ChoiceCode {ans.choiceAnswerCode}):
+                  {judgeMode === "OFFLINE_VIA_EXCEL_UPLOAD" ? (
+                    <p>(ChoiceCode {ans.choiceAnswerCode}):</p>
+                  ) : null}
                   {ReactHtmlParser(ans.choiceAnswerContent)}
                 </div>
               ))}

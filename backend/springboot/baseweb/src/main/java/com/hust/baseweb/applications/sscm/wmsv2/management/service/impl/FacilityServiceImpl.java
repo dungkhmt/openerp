@@ -34,6 +34,8 @@ public class FacilityServiceImpl implements FacilityService {
                                                                   .width(request.getFacilityWidth())
                                                                   .length(request.getFacilityLength())
                                                                   .code(request.getCode())
+                                                                  .latitude(request.getLatitude())
+                                                                  .longitude(request.getLongitude())
                                                                   .build());
         log.info("Start save list shelf");
         List<NewFacilityRequest.Shelf> listShelf = request.getListShelf();

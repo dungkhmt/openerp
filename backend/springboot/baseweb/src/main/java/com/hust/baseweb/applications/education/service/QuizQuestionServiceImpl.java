@@ -47,7 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class QuizQuestionServiceImpl implements QuizQuestionService {
-
+    public static final String PREFIX_CHOICE_CODE = "C";
     private QuizQuestionRepo quizQuestionRepo;
 
     private QuizCourseTopicRepo quizCourseTopicRepo;
@@ -576,7 +576,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
             int idx = 0;
             for(QuizChoiceAnswer a: choices){
                 idx += 1;
-                String code = Utils.stdCode(idx,3);
+                String code = PREFIX_CHOICE_CODE + Utils.stdCode(idx,3);
                 a.setChoiceAnswerCode(code);
                 a = quizChoiceAnswerRepo.save(a);
                 cnt += 1;

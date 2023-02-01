@@ -36,12 +36,14 @@ public class EduQuizTest {
     public static final String JUDGE_MODE_SYNCHRONOUS = "SYNCHRONOUS";
     public static final String JUDGE_MODE_ASYNCHRONOUS_QUEUE = "ASYNCHRONOUS_WITH_QUEUE";
     public static final String JUDGE_MODE_BATCH_LAZY_EVALUATION = "BATCH_LAZY_EVALUATION";
+    public static final String JUDGE_MODE_OFFLINE_VIA_EXCEL_UPLOAD = "OFFLINE_VIA_EXCEL_UPLOAD";
 
     public static List<String> getListJudgeModes(){
         List<String> L = new ArrayList();
         L.add(JUDGE_MODE_SYNCHRONOUS);
         L.add(JUDGE_MODE_ASYNCHRONOUS_QUEUE);
         L.add(JUDGE_MODE_BATCH_LAZY_EVALUATION);
+        L.add(JUDGE_MODE_OFFLINE_VIA_EXCEL_UPLOAD);
         return L;
     }
     public static List<String> getListStatusIds(){

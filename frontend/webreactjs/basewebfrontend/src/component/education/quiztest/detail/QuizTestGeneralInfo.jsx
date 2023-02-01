@@ -143,12 +143,14 @@ export default function QuizTestGeneralInfo(props) {
               >
                 Phân câu hỏi cho đề
               </PrimaryButton>
-              <PrimaryButton
-                sx={styles.btn}
-                onClick={processUpdateSubmissionParticipant}
-              >
-                Xử lý cập nhật bài làm SV
-              </PrimaryButton>
+              {testInfo.judgeMode === "BATCH_LAZY_EVALUATION" ? (
+                <PrimaryButton
+                  sx={styles.btn}
+                  onClick={processUpdateSubmissionParticipant}
+                >
+                  Xử lý cập nhật bài làm SV
+                </PrimaryButton>
+              ) : null}
             </Box>
           }
         />
@@ -161,6 +163,9 @@ export default function QuizTestGeneralInfo(props) {
           </Typography>
           <Typography variant="subtitle1" sx={styles.testName}>
             {`Trạng thái: ${testInfo.statusId}`}
+          </Typography>
+          <Typography variant="subtitle1" sx={styles.testName}>
+            {`Chế độ chấm: ${testInfo.judgeMode}`}
           </Typography>
 
           <Box display="flex" alignItems="center" pt={2}>
