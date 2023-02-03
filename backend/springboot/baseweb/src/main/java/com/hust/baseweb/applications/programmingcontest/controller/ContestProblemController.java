@@ -364,29 +364,30 @@ public class ContestProblemController {
         
         List<ModelStudentOverviewProblem> responses = new ArrayList<>();
 
-        for (ProblemEntity problem : listProblem) {
-            String problemId = problem.getProblemId();
+        if(contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
+            for (ProblemEntity problem : listProblem) {
+                String problemId = problem.getProblemId();
 
-            ModelStudentOverviewProblem response = new ModelStudentOverviewProblem();
-            response.setProblemId(problemId);
-            response.setProblemName(problem.getProblemName());
-            response.setLevelId(problem.getLevelId());
+                ModelStudentOverviewProblem response = new ModelStudentOverviewProblem();
+                response.setProblemId(problemId);
+                response.setProblemName(problem.getProblemName());
+                response.setLevelId(problem.getLevelId());
 
-            List<String> tags = problem.getTags().stream().map(TagEntity::getName).collect(Collectors.toList());
-            response.setTags(tags);
+                List<String> tags = problem.getTags().stream().map(TagEntity::getName).collect(Collectors.toList());
+                response.setTags(tags);
 
-            if (mapProblemToMaxSubmissionPoint.containsKey(problemId)) {
-                response.setSubmitted(true);
-                response.setMaxSubmittedPoint(mapProblemToMaxSubmissionPoint.get(problemId));
+                if (mapProblemToMaxSubmissionPoint.containsKey(problemId)) {
+                    response.setSubmitted(true);
+                    response.setMaxSubmittedPoint(mapProblemToMaxSubmissionPoint.get(problemId));
+                }
+
+                if (listAcceptedProblem.contains(problemId)) {
+                    response.setAccepted(true);
+                }
+
+                responses.add(response);
             }
-
-            if (listAcceptedProblem.contains(problemId)) {
-                response.setAccepted(true);
-            }
-
-            responses.add(response);
         }
-
         return ResponseEntity.status(200).body(responses);
     }
 
