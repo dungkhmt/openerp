@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { request } from "../../../api";
+import { request, authPostMultiPart } from "../../../api";
 import StandardTable from "component/table/StandardTable";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { errorNoti, successNoti } from "utils/notification";
 import { toFormattedDateTime } from "utils/dateutils";
 import UpdatePermissionMemberOfContestDialog from "./UpdatePermissionMemberOfContestDialog";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 export default function ContestManagerListMember(props) {
   const contestId = props.contestId;
   const [members, setMembers] = useState([]);
@@ -12,6 +14,11 @@ export default function ContestManagerListMember(props) {
   const [openUpdateMemberDialog, setOpenUpdateMemberDialog] = useState(false);
   const [permissionIds, setPermissionIds] = useState([]);
   const [selectedUserRegisId, setSelectedUserRegisId] = useState(null);
+
+  const token = useSelector((state) => state.auth.token);
+  const [filename, setFilename] = useState(null);
+  const [uploadMessage, setUploadMessage] = useState("");
+  const dispatch = useDispatch();
 
   const columns = [
     { title: "Index", field: "index" },
@@ -114,12 +121,55 @@ export default function ContestManagerListMember(props) {
       setPermissionIds(res.data);
     });
   }
+
+  const handleUploadExcelStudentList = (event) => {
+    event.preventDefault();
+    setIsProcessing(true);
+    setUploadMessage("");
+    //alert("handleUploadExcelStudentList " + testId);
+    let body = {
+      contestId: contestId,
+    };
+    let formData = new FormData();
+    formData.append("inputJson", JSON.stringify(body));
+    formData.append("file", filename);
+
+    authPostMultiPart(
+      dispatch,
+      token,
+      "/upload-excel-student-list-to-contest",
+      formData
+    )
+      .then((res) => {
+        setIsProcessing(false);
+        console.log("handleFormSubmit, res = ", res);
+        setUploadMessage(res.message);
+        //if (res.status == "TIME_OUT") {
+        //  alert("Time Out!!!");
+        //} else {
+        //}
+      })
+      .catch((e) => {
+        setIsProcessing(false);
+        console.error(e);
+        //alert("Time Out!!!");
+      });
+  };
+
+  function onFileChange(event) {
+    setFilename(event.target.files[0]);
+  }
+
   useEffect(() => {
     getMembersOfContest();
     getPermissions();
   }, []);
   return (
     <div>
+      <input type="file" id="selected-upload-file" onChange={onFileChange} />
+      <Button onClick={handleUploadExcelStudentList}>Upload</Button>
+      {isProcessing ? <CircularProgress /> : ""}
+
       <StandardTable
         title={"DS Users"}
         columns={columns}
