@@ -16,6 +16,10 @@ import com.hust.baseweb.service.UserService;
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -364,29 +368,30 @@ public class ContestProblemController {
         
         List<ModelStudentOverviewProblem> responses = new ArrayList<>();
 
-        for (ProblemEntity problem : listProblem) {
-            String problemId = problem.getProblemId();
+        if(contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
+            for (ProblemEntity problem : listProblem) {
+                String problemId = problem.getProblemId();
 
-            ModelStudentOverviewProblem response = new ModelStudentOverviewProblem();
-            response.setProblemId(problemId);
-            response.setProblemName(problem.getProblemName());
-            response.setLevelId(problem.getLevelId());
+                ModelStudentOverviewProblem response = new ModelStudentOverviewProblem();
+                response.setProblemId(problemId);
+                response.setProblemName(problem.getProblemName());
+                response.setLevelId(problem.getLevelId());
 
-            List<String> tags = problem.getTags().stream().map(TagEntity::getName).collect(Collectors.toList());
-            response.setTags(tags);
+                List<String> tags = problem.getTags().stream().map(TagEntity::getName).collect(Collectors.toList());
+                response.setTags(tags);
 
-            if (mapProblemToMaxSubmissionPoint.containsKey(problemId)) {
-                response.setSubmitted(true);
-                response.setMaxSubmittedPoint(mapProblemToMaxSubmissionPoint.get(problemId));
+                if (mapProblemToMaxSubmissionPoint.containsKey(problemId)) {
+                    response.setSubmitted(true);
+                    response.setMaxSubmittedPoint(mapProblemToMaxSubmissionPoint.get(problemId));
+                }
+
+                if (listAcceptedProblem.contains(problemId)) {
+                    response.setAccepted(true);
+                }
+
+                responses.add(response);
             }
-
-            if (listAcceptedProblem.contains(problemId)) {
-                response.setAccepted(true);
-            }
-
-            responses.add(response);
         }
-
         return ResponseEntity.status(200).body(responses);
     }
 
@@ -1555,5 +1560,46 @@ public class ContestProblemController {
         problemTestCaseService.switchAllContestJudgeMode(judgeMode);
 
         return ResponseEntity.status(200).body("ok");
+    }
+
+    @PostMapping("/upload-excel-student-list-to-contest")
+    public ResponseEntity<?> uploadExcelStudentListOfContest(Principal principal,
+                                                              @RequestParam("inputJson") String inputJson,
+                                                              @RequestParam("file") MultipartFile file) {
+        Gson gson = new Gson();
+        ModelUploadExcelParticipantToContestInput modelUpload = gson.fromJson(
+            inputJson,ModelUploadExcelParticipantToContestInput.class);
+        List<String> uploadedUsers = new ArrayList();
+        String contestId = modelUpload.getContestId();
+        try (InputStream is = file.getInputStream()) {
+            XSSFWorkbook wb = new XSSFWorkbook(is);
+            XSSFSheet sheet = wb.getSheetAt(0);
+            int lastRowNum = sheet.getLastRowNum();
+            //System.out.println("uploadExcelStudentListOfQuizTest, lastRowNum = " + lastRowNum);
+            for (int i = 1; i <= lastRowNum; i++) {
+                Row row = sheet.getRow(i);
+                Cell c = row.getCell(0);
+
+                String userId = c.getStringCellValue();
+                UserLogin u = userService.findById(userId);
+                if(u == null){
+                    log.info("uploadExcelStudentListOfContest, user " + userId + " NOT EXISTS");
+                    continue;
+                }
+                ModelAddUserToContest m = new ModelAddUserToContest();
+                m.setContestId(contestId);
+                m.setUserId(userId);
+                m.setRole(UserRegistrationContestEntity.ROLE_PARTICIPANT);
+                int cnt = problemTestCaseService.addUserToContest(m);
+                //if(cnt == 1){
+                    uploadedUsers.add(userId);
+                //}
+                //System.out.print("get user " + userId);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.ok().body(uploadedUsers);
     }
 }
