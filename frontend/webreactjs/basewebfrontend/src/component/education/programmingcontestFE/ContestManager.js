@@ -20,6 +20,7 @@ import ContestManagerAddMember2Contest from "./ContestManagerAddMember2Contest";
 import ContestManagerUserSubmission from "./ContestManagerUserSubmission";
 import ContestManagerUserSubmissionNotEvaluated from "./ContestManagerUserSubmissionNotEvaluated";
 import ContestManagerRankingNew from "./ContestManagerRankingNew";
+import ContestResultDistribution from "./ContestResultDistribution";
 
 export function ContestManager() {
   const { contestId } = useParams();
@@ -249,8 +250,13 @@ export function ContestManager() {
         <Tab label="Register User" {...a11yProps(2)} style={{ width: "10%" }} />
         <Tab label="Add User" {...a11yProps(3)} style={{ width: "10%" }} />
         <Tab label="Ranking" {...a11yProps(4)} style={{ width: "10%" }} />
+        {/*<Tab*/}
+        {/*  label="User Submission (NA)"*/}
+        {/*  {...a11yProps(5)}*/}
+        {/*  style={{ width: "10%" }}*/}
+        {/*/>*/}
         <Tab
-          label="User Submission (NA)"
+          label="Result Distribution"
           {...a11yProps(5)}
           style={{ width: "10%" }}
         />
@@ -300,8 +306,11 @@ export function ContestManager() {
         <ContestManagerRankingNew contestId={contestId} />
       </TabPanelVertical>
 
+      {/*<TabPanelVertical value={value} index={5}>*/}
+      {/*  <ContestManagerUserSubmissionNotEvaluated contestId={contestId} />*/}
+      {/*</TabPanelVertical>*/}
       <TabPanelVertical value={value} index={5}>
-        <ContestManagerUserSubmissionNotEvaluated contestId={contestId} />
+        <ContestResultDistribution contestId={contestId} />
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={6}>
