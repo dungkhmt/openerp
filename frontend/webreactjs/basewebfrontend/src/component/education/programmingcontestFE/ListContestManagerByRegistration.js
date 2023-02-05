@@ -2,6 +2,8 @@ import React, {useEffect, useState} from "react";
 import {request} from "./Request";
 import {Link} from "react-router-dom";
 import StandardTable from "../../table/StandardTable";
+import Typography from "@mui/material/Typography";
+import {toFormattedDateTime} from "../../../utils/dateutils";
 
 export function ListContestManagerByRegistration() {
   const [page, setPage] = useState(1);
@@ -21,12 +23,20 @@ export function ListContestManagerByRegistration() {
               "/programming-contest/contest-manager/" + rowData["contestId"],
           }}
         >
-          {rowData["contestId"]}
+          {rowData["contestName"]}
         </Link>
       ),
     },
     {title: "Created By", field: "userId"},
-    {title: "Created At", field: "createdAt"},
+    {
+      title: "Created At",
+      field: "startAt",
+      render: (rowData) => (
+        <Typography>
+          {toFormattedDateTime(rowData["startAt"])}
+        </Typography>
+      ),
+    },
     {title: "Status", field: "statusId"},
     {title: "Role", field: "roleId"},
     {title: "Reg. Status", field: "registrationStatusId"},
