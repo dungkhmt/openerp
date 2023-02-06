@@ -15,7 +15,7 @@ export const WMSV2 = {
     },
     {
       id: "MENU_WMSv2_VIEW_FACILITY",
-      path: "/wmsv2/facility/list", // TODO: Update latter
+      path: "/wmsv2/facility/list",
       isPublic: false,
       icon: "StarBorder",
       text: "Danh sách kho",
