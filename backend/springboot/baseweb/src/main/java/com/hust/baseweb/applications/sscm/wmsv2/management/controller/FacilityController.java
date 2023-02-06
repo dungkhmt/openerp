@@ -5,11 +5,13 @@ import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.NewFaci
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.FacilityService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/wmsv2/admin/facility")
@@ -23,5 +25,17 @@ public class FacilityController {
     @PostMapping()
     public ResponseEntity<FacilityV2> createFacility(@Valid @RequestBody NewFacilityRequest request) {
         return ResponseEntity.ok(facilityService.createFacility(request));
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<FacilityV2>> getAll() {
+        return ResponseEntity.ok(facilityService.getAll());
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<List<String>> delete(@RequestBody List<String> facilityIds) {
+        return facilityService.delete(facilityIds) ?
+            ResponseEntity.ok(facilityIds) :
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(facilityIds);
     }
 }

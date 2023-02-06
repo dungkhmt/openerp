@@ -57,4 +57,35 @@ public class FacilityServiceImpl implements FacilityService {
         log.info(String.format("Saved facility entity with id %s", facilityV2.getFacilityId()));
         return facilityV2;
     }
+
+    @Override
+    public List<FacilityV2> getAll() {
+        log.info("Start get all facilities in service");
+        List<FacilityV2> response = facilityRepository.findAll();
+        // TODO: Filter by company or something else... user can not view all facility in database
+        log.info("Get %d facilities".format(String.valueOf(response.size())));
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public boolean delete(List<String> facilityIds) {
+        if (facilityIds.isEmpty()) {
+            log.info("Empty facility id list for delete");
+            return true;
+        }
+        try {
+            for (String facilityId : facilityIds) {
+                log.info(String.format("Start delete data about facility id: %s", facilityId));
+                UUID id = UUID.fromString(facilityId);
+                bayRepository.deleteBaysByFacilityId(id);
+                facilityRepository.deleteById(id);
+            }
+            log.info("Deleted facility ids: " + facilityIds);
+            return true;
+        } catch (Exception e) {
+            log.info("Error when deleting facility ids: " + facilityIds);
+            return false;
+        }
+    }
 }
