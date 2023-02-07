@@ -1184,13 +1184,13 @@ public class ContestProblemController {
         return ResponseEntity.ok().body(s);
     }
 
-    @GetMapping("/evaluate-submission/{submissionId}")
+    @PostMapping("/evaluate-submission/{submissionId}")
     public ResponseEntity<?> evaluateSubmission(Principal principal, @PathVariable UUID submissionId) {
-        ModelContestSubmissionResponse res = problemTestCaseService.evaluateSubmission(submissionId);
-        return ResponseEntity.ok().body(res);
+        problemTestCaseService.evaluateSubmission(submissionId);
+        return ResponseEntity.ok().body("ok");
     }
 
-    @GetMapping("/evaluate-batch-submission-of-contest/{contestId}")
+    @PostMapping("/evaluate-batch-submission-of-contest/{contestId}")
     public ResponseEntity<?> evaluateBatchSubmissionContest(Principal principal, @PathVariable String contestId) {
         log.info("evaluateBatchSubmissionContest, contestId = " + contestId);
         // ModelEvaluateBatchSubmissionResponse res =
@@ -1199,7 +1199,7 @@ public class ContestProblemController {
         return ResponseEntity.ok().body(res);
     }
 
-    @GetMapping("/evaluate-batch-not-evaluated-submission-of-contest/{contestId}")
+    @PostMapping("/evaluate-batch-not-evaluated-submission-of-contest/{contestId}")
     public ResponseEntity<?> evaluateBatchNotEvaluatedSubmissionContest(Principal principal,
             @PathVariable String contestId) {
         log.info("evaluateBatchNotEvaluatedSubmissionContest, contestId = " + contestId);

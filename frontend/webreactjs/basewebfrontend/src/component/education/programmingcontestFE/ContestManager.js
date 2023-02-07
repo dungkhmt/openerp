@@ -213,7 +213,7 @@ export function ContestManager() {
     event.preventDefault();
     setIsProcessing(true);
     request(
-      "get",
+      "post",
       "/evaluate-batch-submission-of-contest/" + contestId,
       (res) => {
         console.log("handleRejudgeContest", res.data);

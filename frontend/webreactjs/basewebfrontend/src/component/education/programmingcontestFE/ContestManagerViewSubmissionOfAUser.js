@@ -53,7 +53,7 @@ export default function ContestManagerViewSubmissionOfAUser(props) {
 
   function handleRejudge(submissionId) {
     //alert("rejudge submission " + submissionId);
-    request("get", "/evaluate-submission/" + submissionId, (res) => {
+    request("post", "/evaluate-submission/" + submissionId, (res) => {
       console.log("evaluate submission", res.data);
     }).then();
   }

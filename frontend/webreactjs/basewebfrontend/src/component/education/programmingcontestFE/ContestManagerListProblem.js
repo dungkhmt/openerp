@@ -126,7 +126,7 @@ export function ContestManagerListProblem(props) {
     event.preventDefault();
     setIsProcessing(true);
     request(
-      "get",
+      "post",
       "/evaluate-batch-submission-of-contest/" + contestId,
       (res) => {
         console.log("handleRejudgeContest", res.data);
@@ -143,7 +143,7 @@ export function ContestManagerListProblem(props) {
     event.preventDefault();
     setIsProcessing(true);
     request(
-      "get",
+      "post",
       "/evaluate-batch-not-evaluated-submission-of-contest/" + contestId,
       (res) => {
         console.log("handleJudgeContest", res.data);
