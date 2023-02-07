@@ -9,15 +9,19 @@ import com.hust.baseweb.applications.programmingcontest.model.ModelGetContestDet
 import com.hust.baseweb.applications.programmingcontest.model.ModelGetProblemDetailResponse;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestProblemRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.ContestRepo;
+import com.hust.baseweb.applications.programmingcontest.repo.ContestSubmissionRepo;
 import com.hust.baseweb.applications.programmingcontest.repo.UserRegistrationContestRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -26,6 +30,7 @@ public class ContestService {
     private ContestRepo contestRepo;
     private UserRegistrationContestRepo userRegistrationContestRepo;
     private ContestProblemRepo contestProblemRepo;
+    private ContestSubmissionRepo contestSubmissionRepo;
 
     private static final String HASH_CONTEST = "CONTEST";
     private static final String HASH_CONTEST_SOLVING_DETAIL = "CONTEST_SOLVING_DETAIL";
@@ -151,5 +156,10 @@ public class ContestService {
             .minTimeBetweenTwoSubmissions(contestEntity.getMinTimeBetweenTwoSubmissions())
             .judgeMode(contestEntity.getJudgeMode())
             .build();
+    }
+
+    @Transactional
+    public void updateContestSubmissionStatus(UUID submissionId, String status){
+        contestSubmissionRepo.updateContestSubmissionStatus(submissionId, status);
     }
 }

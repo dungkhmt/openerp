@@ -132,8 +132,9 @@ public interface ProblemTestCaseService {
     ModelEvaluateBatchSubmissionResponse reJudgeAllSubmissionsOfContest(String contestId);
     ModelEvaluateBatchSubmissionResponse judgeAllSubmissionsOfContest(String contestId);
 
-    ModelContestSubmissionResponse evaluateSubmission(UUID submisionId);
-    ModelContestSubmissionResponse evaluateSubmission(ContestSubmissionEntity sub, ContestEntity contest);
+    void evaluateSubmission(UUID submisionId);
+    void evaluateSubmission(ContestSubmissionEntity sub, ContestEntity contest);
+    void evaluateSubmissionUsingQueue(ContestSubmissionEntity submission, ContestEntity contest);
 
     List<ModelContestByRoleResponse> getContestsByRoleOfUser(String userLoginId);
 

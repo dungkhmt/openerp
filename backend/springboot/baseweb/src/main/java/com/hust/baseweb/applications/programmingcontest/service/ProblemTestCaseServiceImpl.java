@@ -2698,17 +2698,34 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public ModelContestSubmissionResponse evaluateSubmission(UUID submissionId) {
+    public void evaluateSubmission(UUID submissionId) {
         // log.info("evaluateSubmission(" + submissionId);
-        ContestSubmissionEntity sub = contestSubmissionRepo.findById(submissionId).orElse(null);
-        ContestEntity contest = contestRepo.findContestByContestId(sub.getContestId());
-        return evaluateSubmission(sub, contest);
+        ContestSubmissionEntity submission = contestSubmissionRepo.findById(submissionId).orElse(null);
+        ContestEntity contest = contestService.findContestWithCache(submission.getContestId());
+        evaluateSubmission(submission, contest);
     }
 
     @Override
-    public ModelContestSubmissionResponse evaluateSubmission(ContestSubmissionEntity sub, ContestEntity contest) {
-        //   log.info("evaluateSubmission");
+    public void evaluateSubmissionUsingQueue(ContestSubmissionEntity submission, ContestEntity contest) {
+        contestService.updateContestSubmissionStatus(submission.getContestSubmissionId(), ContestSubmissionEntity.SUBMISSION_STATUS_EVALUATION_IN_PROGRESS);
+        rabbitTemplate.convertAndSend(
+            EXCHANGE,
+            JUDGE_PROBLEM,
+            submission.getContestSubmissionId()
+        );
+    }
+
+    
+    @Override
+    public void evaluateSubmission(ContestSubmissionEntity sub, ContestEntity contest) {
         if (sub != null) {
+            // QUEUE MODE
+            if (contest.getJudgeMode().equals(ContestEntity.ASYNCHRONOUS_JUDGE_MODE_QUEUE)) {
+                evaluateSubmissionUsingQueue(sub, contest);
+                return;
+            }
+
+            //NORMAL MODE
             // set status of submission and store in DB
             sub.setStatus(ContestSubmissionEntity.SUBMISSION_STATUS_EVALUATION_IN_PROGRESS);
             sub = contestSubmissionRepo.save(sub);
@@ -2717,7 +2734,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             ProblemEntity p = problemRepo.findById(sub.getProblemId()).orElse(null);
             if (p == null) {
                 //     log.info("evaluateSubmission, problem is NULL???");
-                return null;
+                return;
             }
             //   log.info("evaluateBatchSubmissionContest, consider participant " + sub.getUserId() + " problem " +
             //     sub.getProblemId() + " submissions " + sub.getContestSubmissionId());
@@ -2866,7 +2883,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             //log.info("c {}", c.getRuntime());
 
         }
-        return null;
     }
 
     @Override
@@ -2890,7 +2906,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 for (int i = 0; i < submissions.size(); i++) {// take the last submission in the sorted list
                     ContestSubmissionEntity sub = submissions.get(i);
                     //   log.info("evaluateBatchSubmissionContest, consider participant " + userLoginId + " problem " + problemId + " submissions " + sub.getContestSubmissionId());
-                    ModelContestSubmissionResponse res = evaluateSubmission(sub, contestEntity);
+                    evaluateSubmission(sub, contestEntity);
 
                 }
             }
@@ -2921,7 +2937,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
                     ///      log.info("evaluateBatchSubmissionContest, consider participant " + userLoginId + " problem " + problemId + " submissions " + sub.getContestSubmissionId());
                     if (sub.getStatus() == null || sub.getStatus().equals("")) {
-                        ModelContestSubmissionResponse res = evaluateSubmission(sub, contestEntity);
+                        evaluateSubmission(sub, contestEntity);
                     } else {
                         //     log.info("evaluateBatchSubmissionContest, consider participant " + userLoginId + " problem " + problemId +
                         //            " submissions " + sub.getContestSubmissionId() + " has evaluated --> IGNORE");
@@ -2936,17 +2952,15 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private ModelEvaluateBatchSubmissionResponse judgeAllSubmissionsOfContestBasedSubmissionDate(String contestId) {
         List<ContestSubmissionEntity> submissions = contestSubmissionRepo.findAllByContestIdAndStatus(
             contestId,
-            ContestSubmissionEntity.SUBMISSION_STATUS_NOT_AVAILABLE);
-        ContestEntity contest = contestRepo.findContestByContestId(contestId);
-        for (int i = 0; i < submissions.size(); i++) {// take the last submission in the sorted list
-            ContestSubmissionEntity sub = submissions.get(i);
-
+            ContestSubmissionEntity.SUBMISSION_STATUS_EVALUATION_IN_PROGRESS);
+        ContestEntity contest = contestService.findContestWithCache(contestId);
+        for (ContestSubmissionEntity sub : submissions) {// take the last submission in the sorted list
             //  log.info("evaluateBatchSubmissionContest, start " + i + "/" + submissions.size()
             //         + " consider submission " + sub.getContestSubmissionId() + " participant " + sub.getUserId() + " problem "
 //
             //                   + sub.getProblemId() + " submissions " + sub.getContestSubmissionId());
 
-            ModelContestSubmissionResponse res = evaluateSubmission(sub, contest);
+            evaluateSubmission(sub, contest);
             /*
             if(sub.getStatus() == null || sub.getStatus().equals("")) {
                 ModelContestSubmissionResponse res = evaluateSubmission(sub);
