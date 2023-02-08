@@ -1529,7 +1529,8 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     @Override
     public ModelContestSubmissionResponse submitContestProblemStoreOnlyNotExecute(
         ModelContestSubmission modelContestSubmission,
-        String userName
+        String userName,
+        String submittedByUserId
     ) {
         String problemId = modelContestSubmission.getProblemId();
         String contestId = modelContestSubmission.getContestId();

@@ -17,6 +17,8 @@ import { request } from "./Request";
 import Pagination from "@material-ui/lab/Pagination";
 import { getStatusColor, StyledTableCell, StyledTableRow } from "./lib";
 import ContestManagerViewSubmissionOfAUserDialog from "./ContestManagerViewSubmissionOfAUserDialog";
+import ManagerSubmitCodeOfParticipant from "./ManagerSubmitCodeOfParticipant";
+import ManagerSubmitCodeOfParticipantDialog from "./ManagerSubmitCodeOfParticipantDialog";
 
 export default function ContestManagerUserSubmission(props) {
   const contestId = props.contestId;
@@ -29,6 +31,10 @@ export default function ContestManagerUserSubmission(props) {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [
+    isOpenManagerSubmitCodeOfParticipant,
+    setIsOpenManagerSubmitCodeOfParticipant,
+  ] = useState(false);
 
   function handleCloseDialog() {
     setIsOpen(false);
@@ -85,6 +91,10 @@ export default function ContestManagerUserSubmission(props) {
       }
     ).then();
   }
+
+  function handleSubmitCodeParticipant() {
+    setIsOpenManagerSubmitCodeOfParticipant(true);
+  }
   useEffect(() => {
     getSubmission(pageSubmissionSize, 1);
   }, []);
@@ -122,6 +132,14 @@ export default function ContestManagerUserSubmission(props) {
           onClick={ViewAllSubmissions}
         >
           View All
+        </Button>
+
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleSubmitCodeParticipant}
+        >
+          Submit Code Of Participant
         </Button>
       </section>
 
@@ -270,6 +288,11 @@ export default function ContestManagerUserSubmission(props) {
         onClose={handleCloseDialog}
         contestId={contestId}
         userId={selectedUserId}
+      />
+      <ManagerSubmitCodeOfParticipantDialog
+        open={isOpenManagerSubmitCodeOfParticipant}
+        onClose={handleCloseDialog}
+        contestId={contestId}
       />
     </div>
   );

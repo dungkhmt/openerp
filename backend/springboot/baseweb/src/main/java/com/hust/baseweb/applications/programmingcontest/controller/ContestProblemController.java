@@ -975,7 +975,7 @@ public class ContestProblemController {
                     .equals(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)) {
                 if(cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
                     //log.info("contestSubmitProblemViaUploadFile, mode submit output");
-                    resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
+                    resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName(),principal.getName());
                 }else {
                     resp = problemTestCaseService.submitContestProblemTestCaseByTestCase(
                         request,
@@ -983,7 +983,7 @@ public class ContestProblemController {
 
                 }
             } else {
-                resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName());
+                resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, principal.getName(),principal.getName());
             }
             //log.info("resp {}", resp);
             return ResponseEntity.status(200).body(resp);
@@ -1070,12 +1070,12 @@ public class ContestProblemController {
             if (contestEntity.getSubmissionActionType()
                     .equals(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)) {
                 if (cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
-                    resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId);
+                    resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId, userId );
                 }else {
                     resp = problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, userId);
                 }
             } else {
-                resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId);
+                resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId, userId);
             }
 
             return ResponseEntity.status(200).body(resp);
@@ -1601,5 +1601,120 @@ public class ContestProblemController {
         }
 
         return ResponseEntity.ok().body(uploadedUsers);
+    }
+
+    @PostMapping("/manager-submit-code-of-participant")
+    public ResponseEntity<?> ManagerSubmitCodeOfParticipant(
+        Principal principal,
+        @RequestParam("inputJson") String inputJson,
+        @RequestParam("file") MultipartFile file
+    ) {
+        Gson gson = new Gson();
+        ModelInputManagerSubmitCodeOfParticipant model = gson.fromJson(
+            inputJson,
+            ModelInputManagerSubmitCodeOfParticipant.class);
+        ContestEntity contestEntity = contestRepo.findContestByContestId(model.getContestId());
+        String filename = file.getOriginalFilename();
+        log.info("ManagerSubmitCodeOfParticipant, filename = " + file.getOriginalFilename());
+        String[] s = filename.split(".");
+        if(s == null || s.length < 2){
+            return ResponseEntity.ok().body("Filename " + filename + " Invalid");
+        }
+        String language = s[1].trim();
+
+        s = s[0].split("_");
+
+        if(s == null || s.length == 0){
+            return ResponseEntity.ok().body("Filename " + filename + " Invalid");
+        }
+        String userId = s[0].trim();
+        String problemCode = s[1].trim();
+        String contestId = model.getContestId();
+        String problemId = null;
+        ContestProblem cp = contestProblemRepo.findByContestIdAndProblemRecode(contestId, problemCode);
+
+        if(cp != null)
+            problemId = cp.getProblemId();
+
+        if (!contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
+            ModelContestSubmissionResponse resp = buildSubmissionResponseTimeOut();
+            return ResponseEntity.ok().body(resp);
+        }
+
+        List<UserRegistrationContestEntity> userRegistrations = userRegistrationContestRepo
+            .findUserRegistrationContestEntityByContestIdAndUserIdAndStatusAndRoleId(model.getContestId(),
+                                                                                     userId, UserRegistrationContestEntity.STATUS_SUCCESSFUL,
+                                                                                     UserRegistrationContestEntity.ROLE_PARTICIPANT);
+        if (userRegistrations == null || userRegistrations.size() == 0) {
+            ModelContestSubmissionResponse resp = buildSubmissionResponseNotRegistered();
+            return ResponseEntity.ok().body(resp);
+
+        }
+
+        for (UserRegistrationContestEntity u : userRegistrations) {
+            if (u.getPermissionId() != null
+                && u.getPermissionId().equals(UserRegistrationContestEntity.PERMISSION_FORBIDDEN_SUBMIT)) {
+                ModelContestSubmissionResponse resp = buildSubmissionResponseNoPermission();
+                return ResponseEntity.ok().body(resp);
+            }
+        }
+
+        int numOfSubmissions = contestSubmissionRepo
+            .countAllByContestIdAndUserIdAndProblemId(model.getContestId(), userId, problemId);
+        if (numOfSubmissions >= contestEntity.getMaxNumberSubmissions()) {
+            ModelContestSubmissionResponse resp = buildSubmissionResponseReachMaxSubmission(contestEntity.getMaxNumberSubmissions());
+            return ResponseEntity.ok().body(resp);
+        }
+
+        long submissionInterval = contestEntity.getMinTimeBetweenTwoSubmissions();
+        if (submissionInterval > 0) {
+            Date now = new Date();
+            Long lastSubmitTime = cacheService.findUserLastProblemSubmissionTimeInCache(problemId, userId);
+            if (lastSubmitTime != null) {
+                long diffBetweenNowAndLastSubmit = now.getTime() - lastSubmitTime;
+                if (diffBetweenNowAndLastSubmit < submissionInterval * 1000) {
+                    ModelContestSubmissionResponse resp = buildSubmissionResponseNotEnoughTimeBetweenSubmissions(
+                        submissionInterval);
+                    return ResponseEntity.ok().body(resp);
+                }
+            }
+            cacheService.addUserLastProblemSubmissionTimeToCache(problemId, userId);
+        }
+
+        try {
+            StringBuilder source = new StringBuilder();
+            InputStream inputStream = file.getInputStream();
+            Scanner in = new Scanner(inputStream);
+            while (in.hasNext()) {
+                String line = in.nextLine();
+                source.append(line).append("\n");
+            }
+            in.close();
+
+            if (source.length() > contestEntity.getMaxSourceCodeLength()) {
+                ModelContestSubmissionResponse resp = buildSubmissionResponseReachMaxSourceLength(source.length(), contestEntity.getMaxSourceCodeLength());
+                return ResponseEntity.ok().body(resp);
+            }
+            ModelContestSubmission request = new ModelContestSubmission(model.getContestId(), problemId,
+                                                                        source.toString(), language);
+            ModelContestSubmissionResponse resp = null;
+            if (contestEntity.getSubmissionActionType()
+                             .equals(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)) {
+                if (cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
+                    resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId, principal.getName());
+                }else {
+                    resp = problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, userId);
+                }
+            } else {
+                resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId, principal.getName());
+            }
+
+            return ResponseEntity.status(200).body(resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body("OK");
+
+
     }
 }
