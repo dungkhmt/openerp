@@ -5,12 +5,12 @@ import SvgIcon from "@material-ui/core/SvgIcon";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { default as MenuIcon } from "@material-ui/icons/Menu";
+import { useKeycloak } from "@react-keycloak/web";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { ReactComponent as Logo } from "../assets/icons/logo.svg";
 import bgImage from "../assets/img/sidebar-2.webp";
-import { useAuthState } from "../state/AuthState";
 import AccountButton from "./account/AccountButton";
 import LanguageSwitch from "./languageswitcher/LanguageSwitch";
 import NotificationButton from "./notification/NotificationButton";
@@ -85,7 +85,7 @@ function Layout({ children }) {
   const isMeeting = pathname.startsWith("/chat/voice/main");
 
   //
-  const { isAuthenticated } = useAuthState();
+  const { keycloak } = useKeycloak();
 
   //
   const [open, setOpen] = React.useState(true);
@@ -121,7 +121,7 @@ function Layout({ children }) {
           <div style={{ flexGrow: 1 }} />
           <div className={classes.sectionDesktop}>
             <LanguageSwitch />
-            {isAuthenticated.get() && (
+            {keycloak.authenticated && (
               <>
                 <NotificationButton />
                 <AccountButton />

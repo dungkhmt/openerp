@@ -1,9 +1,9 @@
 import { useState } from "@hookstate/core";
 import { Avatar, IconButton } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import { useKeycloak } from "@react-keycloak/web";
 import randomColor from "randomcolor";
 import React, { useEffect } from "react";
-import { request } from "../../api";
 import { AccountMenu } from "./AccountMenu";
 
 const bgColor = randomColor({
@@ -25,7 +25,8 @@ function AccountButton() {
   const classes = useStyles();
 
   //
-  const user = useState({});
+  const { keycloak } = useKeycloak();
+
   const open = useState(false);
 
   // return focus to the button when we transitioned from !open -> open
@@ -45,23 +46,6 @@ function AccountButton() {
     prevOpen.current = open.get();
   }, [open.get()]);
 
-  useEffect(() => {
-    request(
-      "get",
-      "/my-account/",
-      (res) => {
-        let data = res.data;
-
-        user.set({
-          name: data.name,
-          userName: data.user,
-          partyId: data.partyId,
-        });
-      },
-      { 401: () => {} }
-    );
-  }, []);
-
   return (
     <>
       <IconButton
@@ -74,9 +58,11 @@ function AccountButton() {
         onClick={handleToggle}
       >
         <Avatar alt="account button" className={classes.avatar}>
-          {user.name.get()
-            ? user.name.get().substring(0, 1).toLocaleUpperCase()
-            : ""}
+          {keycloak.tokenParsed.name
+            .split(" ")
+            .pop()
+            .substring(0, 1)
+            .toLocaleUpperCase()}
         </Avatar>
       </IconButton>
       <AccountMenu
@@ -84,7 +70,6 @@ function AccountButton() {
         id={menuId}
         anchorRef={anchorRef}
         avatarBgColor={bgColor}
-        user={user}
       />
     </>
   );

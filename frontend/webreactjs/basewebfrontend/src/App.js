@@ -1,16 +1,19 @@
-import {CssBaseline} from "@material-ui/core";
-import {createTheme, MuiThemeProvider} from "@material-ui/core/styles";
-import {useEffect} from "react";
-import {I18nextProvider} from "react-i18next";
-import {QueryClient, QueryClientProvider} from "react-query";
-import {useDispatch} from "react-redux";
-import {Router} from "react-router-dom";
-import {Slide, ToastContainer} from "react-toastify";
+import { CssBaseline } from "@material-ui/core";
+import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
+import { SvgIcon, Typography } from "@mui/material";
+import { Box } from "@mui/system";
+import { ReactKeycloakProvider } from "@react-keycloak/web";
+import { FacebookCircularProgress } from "component/common/progressBar/CustomizedCircularProgress.jsx";
+import keycloak, { initOptions } from "config/keycloak.js";
+import { useEffect } from "react";
+import { I18nextProvider } from "react-i18next";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { Router } from "react-router-dom";
+import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {success} from "./action/index.js";
+import { ReactComponent as Logo } from "./assets/icons/logo.svg";
 import history from "./history.js";
 import Routes from "./Routes";
-import {useAuthState} from "./state/AuthState.js";
 import i18n from "./translation/i18n";
 
 const theme = createTheme({
@@ -48,13 +51,44 @@ const queryClient = new QueryClient({
   },
 });
 
-function App() {
-  const dispatch = useDispatch();
-  const {isAuthenticated, token} = useAuthState();
+const AppLoading = (
+  <Box
+    sx={{
+      height: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "column",
+    }}
+  >
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        flexGrow: 1,
+      }}
+    >
+      <SvgIcon sx={{ fontSize: 150, mb: 4 }} viewBox="150 150">
+        <Logo width={132} height={132} x={9} y={9} />
+      </SvgIcon>
+      <Box>
+        <FacebookCircularProgress />
+      </Box>
+    </Box>
+    <Box>
+      <Typography sx={{ mb: 4 }}>OpenERP Team</Typography>
+    </Box>
+  </Box>
+);
 
-  useEffect(() => {
-    if (isAuthenticated.get()) dispatch(success(token.get()));
-  }, [isAuthenticated.get()]);
+function App() {
+  const onEvent = async (event, error) => {
+    // console.log(event);
+    if (event === "onAuthSuccess") {
+    }
+  };
 
   // Fix the bug is described here: https://github.com/facebook/create-react-app/issues/11773
   useEffect(() => {
@@ -64,31 +98,36 @@ function App() {
   }, []);
 
   return (
-    <I18nextProvider i18n={i18n}>
-      <QueryClientProvider client={queryClient}>
-        <MuiThemeProvider theme={theme}>
-          <CssBaseline/>
-          {/* <Router> */}
-          <Router history={history}>
-            <Routes/>
-            <ToastContainer
-              position="bottom-center"
-              transition={Slide}
-              autoClose={3000}
-              limit={3}
-              hideProgressBar={true}
-              newestOnTop
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-            />
-          </Router>
-          {/* </Router> */}
-        </MuiThemeProvider>
-      </QueryClientProvider>
-    </I18nextProvider>
+    <ReactKeycloakProvider
+      authClient={keycloak}
+      initOptions={initOptions}
+      LoadingComponent={AppLoading}
+      onEvent={onEvent}
+    >
+      <I18nextProvider i18n={i18n}>
+        <QueryClientProvider client={queryClient}>
+          <MuiThemeProvider theme={theme}>
+            <CssBaseline />
+            <Router history={history}>
+              <Routes />
+              <ToastContainer
+                position="bottom-center"
+                transition={Slide}
+                autoClose={3000}
+                limit={3}
+                hideProgressBar={true}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+              />
+            </Router>
+          </MuiThemeProvider>
+        </QueryClientProvider>
+      </I18nextProvider>
+    </ReactKeycloakProvider>
   );
 }
 

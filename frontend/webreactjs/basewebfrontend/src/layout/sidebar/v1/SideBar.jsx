@@ -2,14 +2,13 @@ import { Box, Typography } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import { useKeycloak } from "@react-keycloak/web";
 import PropTypes from "prop-types";
-import React, { useEffect } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { useEffect } from "react";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 import PrimaryButton from "../../../component/button/PrimaryButton";
 import { MENU_LIST } from "../../../config/menuconfig";
-import { useAuthState } from "../../../state/AuthState";
 import { fetchMenu } from "../../../state/MenuState";
 import GroupMenuItem, { menuItemBaseStyle } from "./GroupMenuItem";
 import { blackColor, whiteColor } from "./MenuItem";
@@ -85,11 +84,12 @@ const useStyles = makeStyles((theme) => ({
 export default function SideBar(props) {
   const classes = useStyles();
   const { open, image, color: bgColor } = props;
-  const { isAuthenticated, isValidating } = useAuthState();
+
+  const { keycloak } = useKeycloak();
 
   useEffect(() => {
-    if (isAuthenticated.get()) fetchMenu();
-  }, [isAuthenticated.get()]);
+    if (keycloak.authenticated) fetchMenu();
+  }, [keycloak.authenticated]);
 
   return (
     <Drawer
@@ -119,7 +119,7 @@ export default function SideBar(props) {
           ))}
         </List>
       </SimpleBar>
-      {!isAuthenticated.get() && !isValidating.get() && open && (
+      {!keycloak.authenticated && open && (
         <Box
           className={classes.signInContainer}
           display="flex"
@@ -133,8 +133,7 @@ export default function SideBar(props) {
             Đăng nhập ngay để sử dụng những tính năng dành riêng cho bạn
           </Typography>
           <PrimaryButton
-            component={RouterLink}
-            to="/login"
+            onClick={() => keycloak.login()}
             style={{ width: 160, borderRadius: 25 }}
           >
             Đăng nhập

@@ -5,7 +5,7 @@ import {
   Divider,
   ListItemAvatar,
   MenuItem,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { grey } from "@material-ui/core/colors";
@@ -18,11 +18,12 @@ import { makeStyles, withStyles } from "@material-ui/core/styles";
 import AccountCircleRoundedIcon from "@material-ui/icons/AccountCircleRounded";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import FeedbackIcon from "@material-ui/icons/Feedback";
-import VpnKeyRoundedIcon from "@material-ui/icons/VpnKeyRounded";
-import React, { lazy } from "react";
+import { useKeycloak } from "@react-keycloak/web";
+import { logoutSuccessfully } from "action";
+import { lazy } from "react";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
-import { logout } from "../../action";
+import { menuState } from "state/MenuState";
+import { notificationState } from "state/NotificationState";
 
 const FeedbackDialog = lazy(() => import("./FeedbackDialog"));
 
@@ -97,10 +98,15 @@ export const menuItemWrapperStyles = { padding: "0px 8px" };
 
 export function AccountMenu(props) {
   const classes = useStyles();
-  const history = useHistory();
   const dispatch = useDispatch();
 
-  const { open, id, anchorRef, user, avatarBgColor } = props;
+  //
+  const { keycloak } = useKeycloak();
+  const token = keycloak.tokenParsed;
+  const accountUrl = keycloak.createAccountUrl();
+
+  //
+  const { open, id, anchorRef, avatarBgColor } = props;
   const openFeedback = useState(false);
 
   // Menu
@@ -120,21 +126,33 @@ export function AccountMenu(props) {
   }
 
   //
-  const handlePasswordChange = (event) => {
+  const handleOpenFeedbackDialog = (event) => {
     handleClose(event);
-    history.push(`/userlogin/change-password/${user.userName.get()}`);
+    openFeedback.set(true);
   };
 
   const handleViewAccount = (event) => {
     handleClose(event);
-    history.push(`/userlogin/${user.partyId.get()}`);
+    window.location.href = accountUrl;
   };
 
-  const handleLogout = () => dispatch(logout());
+  // TODO: Consider remove this logic!
+  const logout = () => {
+    menuState.permittedFunctions.set(new Set());
+    notificationState.merge({
+      notifications: undefined,
+      numUnRead: 0,
+      hasMore: false,
+    });
 
-  const handleOpenFeedbackDialog = (event) => {
-    handleClose(event);
-    openFeedback.set(true);
+    return (dispatch, getState) => {
+      dispatch(logoutSuccessfully()); // de store tro ve trang thai khoi tao ban dau. xem index.js, co the can giu lai
+    };
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    keycloak.logout();
   };
 
   const menuItems = [
@@ -161,16 +179,7 @@ export function AccountMenu(props) {
         />
       ),
     },
-    {
-      text: "Đổi mật khẩu",
-      onClick: handlePasswordChange,
-      icon: (
-        <VpnKeyRoundedIcon
-          style={iconStyles}
-          // fontSize="medium"
-        />
-      ),
-    },
+
     { topDivider: true },
     {
       text: "Đăng xuất",
@@ -225,9 +234,11 @@ export function AccountMenu(props) {
                           background: avatarBgColor,
                         }}
                       >
-                        {user.name.get()
-                          ? user.name.get().substring(0, 1).toLocaleUpperCase()
-                          : ""}
+                        {token.name
+                          .split(" ")
+                          .pop()
+                          .substring(0, 1)
+                          .toLocaleUpperCase()}
                       </Avatar>
 
                       <Box
@@ -237,7 +248,7 @@ export function AccountMenu(props) {
                         flexShrink={1}
                       >
                         <Typography className={classes.text}>
-                          {user.name.get()}
+                          {token.name}
                         </Typography>
                       </Box>
                     </Box>
