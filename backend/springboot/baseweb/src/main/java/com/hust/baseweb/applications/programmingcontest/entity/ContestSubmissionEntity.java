@@ -28,6 +28,10 @@ public class ContestSubmissionEntity {
     public static final String SUBMISSION_STATUS_WAIT_FOR_CUSTOM_EVALUATION = "Pending Evaluation";
     public static final String SUBMISSION_STATUS_CUSTOM_EVALUATED = "Evaluated";
 
+    public static final String LANGUAGE_CPP = "CPP";
+    public static final String LANGUAGE_JAVA = "JAVA";
+    public static final String LANGUAGE_PYTHON = "PYTHON3";
+
     @Id
     @Column(name = "contest_submission_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -78,6 +82,9 @@ public class ContestSubmissionEntity {
 
     @Column(name = "status")
     private String status;
+
+    @Column(name="submitted_by_user_id")
+    private String submittedByUserId;
 
     @Column(name = "created_stamp")
     private Date createdAt;

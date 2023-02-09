@@ -11,7 +11,10 @@ export default function ManagerSubmitCodeOfParticipantDialog(props) {
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Submissions</DialogTitle>
       <DialogContent>
-        <ManagerSubmitCodeOfParticipant contestId={contestId} />
+        <ManagerSubmitCodeOfParticipant
+          contestId={contestId}
+          onClose={onClose}
+        />
         <Button onClick={handleClick}>Close</Button>
       </DialogContent>
     </Dialog>

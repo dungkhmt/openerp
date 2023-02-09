@@ -333,4 +333,8 @@ public class DateTimeUtils {
         zonedDateTime = zonedDateTime.plusMinutes(minutes);
         return Date.from(zonedDateTime.toInstant());
     }
+
+    public static void main(String[] args){
+        System.out.println("test");
+    }
 }

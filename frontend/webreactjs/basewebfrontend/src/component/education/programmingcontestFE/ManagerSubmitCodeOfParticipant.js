@@ -8,7 +8,7 @@ import SendIcon from "@mui/icons-material/Send";
 import { LoadingButton } from "@mui/lab";
 
 export default function ManagerSubmitCodeOfParticipant(props) {
-  const { contestId } = props;
+  const { contestId, onClose } = props;
   const [filename, setFilename] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   function submitCode(event) {
@@ -37,6 +37,8 @@ export default function ManagerSubmitCodeOfParticipant(props) {
       errorHandlers,
       formData
     );
+
+    onClose();
   }
   return (
     <div>

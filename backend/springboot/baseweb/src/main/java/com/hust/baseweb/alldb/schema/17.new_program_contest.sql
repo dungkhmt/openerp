@@ -134,6 +134,7 @@ create table contest_submission_new
     contest_id varchar (100) not null ,
     problem_id varchar (100) not null ,
     user_submission_id varchar (100) not null ,
+    submitted_by_user_id varchar(100),
 --     problem_submission_id UUID,
     status varchar (20),
     point int,

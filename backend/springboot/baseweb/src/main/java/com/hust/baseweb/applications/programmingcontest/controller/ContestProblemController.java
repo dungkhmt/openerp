@@ -1072,7 +1072,7 @@ public class ContestProblemController {
                 if (cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
                     resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId, userId );
                 }else {
-                    resp = problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, userId);
+                    resp = problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, userId, userId);
                 }
             } else {
                 resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId, userId);
@@ -1088,6 +1088,34 @@ public class ContestProblemController {
     private ModelContestSubmissionResponse buildSubmissionResponseTimeOut() {
         return ModelContestSubmissionResponse.builder()
                                              .status("TIME_OUT")
+                                             .testCasePass("0")
+                                             .runtime(0L)
+                                             .memoryUsage((float) 0)
+                                             .problemName("")
+                                             .contestSubmissionID(null)
+                                             .submittedAt(null)
+                                             .score(0)
+                                             .numberTestCasePassed(0)
+                                             .totalNumberTestCase(0)
+                                             .build();
+    }
+    private ModelContestSubmissionResponse buildSubmissionResponseProblemNotFound() {
+        return ModelContestSubmissionResponse.builder()
+                                             .status("PROBLEM_NO_FOUND")
+                                             .testCasePass("0")
+                                             .runtime(0L)
+                                             .memoryUsage((float) 0)
+                                             .problemName("")
+                                             .contestSubmissionID(null)
+                                             .submittedAt(null)
+                                             .score(0)
+                                             .numberTestCasePassed(0)
+                                             .totalNumberTestCase(0)
+                                             .build();
+    }
+    private ModelContestSubmissionResponse buildSubmissionResponseInvalidFilename(String fn) {
+        return ModelContestSubmissionResponse.builder()
+                                             .status("Invalid filename " + fn)
                                              .testCasePass("0")
                                              .runtime(0L)
                                              .memoryUsage((float) 0)
@@ -1616,26 +1644,39 @@ public class ContestProblemController {
         ContestEntity contestEntity = contestRepo.findContestByContestId(model.getContestId());
         String filename = file.getOriginalFilename();
         log.info("ManagerSubmitCodeOfParticipant, filename = " + file.getOriginalFilename());
-        String[] s = filename.split(".");
+        String[] s = filename.split("\\.");
+        log.info("ManagerSubmitCodeOfParticipant, extract from filename, s.length = " + s.length);
         if(s == null || s.length < 2){
             return ResponseEntity.ok().body("Filename " + filename + " Invalid");
         }
         String language = s[1].trim();
-
-        s = s[0].split("_");
-
-        if(s == null || s.length == 0){
-            return ResponseEntity.ok().body("Filename " + filename + " Invalid");
+        if(language.equals("cpp")){
+            language = ContestSubmissionEntity.LANGUAGE_CPP;
+        }else if(language.equals("java")){
+            language = ContestSubmissionEntity.LANGUAGE_JAVA;
+        }else if(language.equals("py")){
+            language = ContestSubmissionEntity.LANGUAGE_PYTHON;
         }
-        String userId = s[0].trim();
-        String problemCode = s[1].trim();
+
+        String[] s1 = s[0].split("_");
+        log.info("ManagerSubmitCodeOfParticipant, extract from filename, s[0] = " + s[0] + " s1 = " + s1.length);
+        if(s1 == null || s1.length < 2){
+            ModelContestSubmissionResponse resp = buildSubmissionResponseInvalidFilename(filename);
+            return ResponseEntity.ok().body(resp);
+        }
+        String userId = s1[0].trim();
+        String problemCode = s1[1].trim();
         String contestId = model.getContestId();
         String problemId = null;
         ContestProblem cp = contestProblemRepo.findByContestIdAndProblemRecode(contestId, problemCode);
 
         if(cp != null)
             problemId = cp.getProblemId();
-
+        else{
+            log.info("ManagerSubmitCodeOfParticipant, not found problem of code " + problemCode);
+            ModelContestSubmissionResponse resp = buildSubmissionResponseProblemNotFound();
+            return ResponseEntity.ok().body(resp);
+        }
         if (!contestEntity.getStatusId().equals(ContestEntity.CONTEST_STATUS_RUNNING)) {
             ModelContestSubmissionResponse resp = buildSubmissionResponseTimeOut();
             return ResponseEntity.ok().body(resp);
@@ -1703,12 +1744,12 @@ public class ContestProblemController {
                 if (cp != null && cp.getSubmissionMode() != null && cp.getSubmissionMode().equals(ContestProblem.SUBMISSION_MODE_SOLUTION_OUTPUT)){
                     resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId, principal.getName());
                 }else {
-                    resp = problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, userId);
+                    resp = problemTestCaseService.submitContestProblemTestCaseByTestCaseWithFile(request, userId,  principal.getName());
                 }
             } else {
                 resp = problemTestCaseService.submitContestProblemStoreOnlyNotExecute(request, userId, principal.getName());
             }
-
+            log.info("ManagerSubmitCodeOfParticipant, submitted successfully");
             return ResponseEntity.status(200).body(resp);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1717,4 +1758,5 @@ public class ContestProblemController {
 
 
     }
+
 }

@@ -36,6 +36,10 @@ export default function ContestManagerUserSubmission(props) {
     setIsOpenManagerSubmitCodeOfParticipant,
   ] = useState(false);
 
+  function handleCloseManagerSubmitParticipantCode() {
+    setIsOpenManagerSubmitCodeOfParticipant(false);
+    getSubmission(pageSubmissionSize, 1);
+  }
   function handleCloseDialog() {
     setIsOpen(false);
   }
@@ -291,7 +295,7 @@ export default function ContestManagerUserSubmission(props) {
       />
       <ManagerSubmitCodeOfParticipantDialog
         open={isOpenManagerSubmitCodeOfParticipant}
-        onClose={handleCloseDialog}
+        onClose={handleCloseManagerSubmitParticipantCode}
         contestId={contestId}
       />
     </div>

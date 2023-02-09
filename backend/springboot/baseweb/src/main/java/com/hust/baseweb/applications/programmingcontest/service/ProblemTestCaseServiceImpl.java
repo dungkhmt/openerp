@@ -1376,7 +1376,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     @Override
     public ModelContestSubmissionResponse submitContestProblemTestCaseByTestCaseWithFile(
         ModelContestSubmission modelContestSubmission,
-        String userId
+        String userId, String submittedByUserId
     ) throws Exception {
         Date submitTime = new Date();
         ContestSubmissionEntity submission = ContestSubmissionEntity.builder()
@@ -1388,6 +1388,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                                     .point(0)
                                                                     .problemId(modelContestSubmission.getProblemId())
                                                                     .userId(userId)
+                                                                    .submittedByUserId(submittedByUserId)
                                                                     .runtime(0L)
                                                                     .createdAt(submitTime)
                                                                     .build();
@@ -1542,6 +1543,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                            .point(0)
                                                            .problemId(modelContestSubmission.getProblemId())
                                                            .userId(userName)
+                                                           .submittedByUserId(submittedByUserId)
                                                            .testCasePass("")
                                                            .sourceCode(modelContestSubmission.getSource())
                                                            .sourceCodeLanguage(modelContestSubmission.getLanguage())
