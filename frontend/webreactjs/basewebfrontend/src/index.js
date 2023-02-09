@@ -5,7 +5,6 @@ import { applyMiddleware, createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { createLogger } from "redux-logger";
 import thunkMiddleware from "redux-thunk";
-import { LOGOUT_SUCCESS } from "./action/Auth";
 import App from "./App";
 import "./index.css";
 import appReducer from "./reducers";
@@ -30,11 +29,11 @@ startState = {
 };
 
 const rootReducer = (state, action) => {
-  // Clean store.
-  if (action.type === LOGOUT_SUCCESS) {
-    // If the state given to a reducer is undefined, it will return the initial state.
-    state = undefined;
-  }
+  //// Clean store.
+  // if (action.type === LOGOUT_SUCCESS) {
+  //   // If the state given to a reducer is undefined, it will return the initial state.
+  //   state = undefined;
+  // }
 
   return appReducer(state, action);
 };
@@ -45,10 +44,7 @@ export const store = createStore(
   composeWithDevTools(applyMiddleware(...middleware))
 );
 
-store.subscribe(() => {
-  if (store.getState().auth.token !== undefined)
-    localStorage.setItem("TOKEN", store.getState().auth.token);
-});
+store.subscribe(() => {});
 
 ReactDOM.render(
   <Provider store={store}>

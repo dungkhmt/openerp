@@ -3,11 +3,13 @@ import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { SvgIcon, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { ReactKeycloakProvider } from "@react-keycloak/web";
+import { getScrSecurInfo } from "action/Screen";
 import { FacebookCircularProgress } from "component/common/progressBar/CustomizedCircularProgress.jsx";
 import keycloak, { initOptions } from "config/keycloak.js";
 import { useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { useDispatch } from "react-redux";
 import { Router } from "react-router-dom";
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -84,9 +86,12 @@ const AppLoading = (
 );
 
 function App() {
+  const dispatch = useDispatch();
+
   const onEvent = async (event, error) => {
-    // console.log(event);
+    console.log(event);
     if (event === "onAuthSuccess") {
+      dispatch(getScrSecurInfo());
     }
   };
 

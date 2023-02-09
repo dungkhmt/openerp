@@ -19,7 +19,6 @@ import AccountCircleRoundedIcon from "@material-ui/icons/AccountCircleRounded";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import FeedbackIcon from "@material-ui/icons/Feedback";
 import { useKeycloak } from "@react-keycloak/web";
-import { logoutSuccessfully } from "action";
 import { lazy } from "react";
 import { useDispatch } from "react-redux";
 import { menuState } from "state/MenuState";
@@ -144,14 +143,10 @@ export function AccountMenu(props) {
       numUnRead: 0,
       hasMore: false,
     });
-
-    return (dispatch, getState) => {
-      dispatch(logoutSuccessfully()); // de store tro ve trang thai khoi tao ban dau. xem index.js, co the can giu lai
-    };
   };
 
   const handleLogout = () => {
-    dispatch(logout());
+    logout();
     keycloak.logout();
   };
 

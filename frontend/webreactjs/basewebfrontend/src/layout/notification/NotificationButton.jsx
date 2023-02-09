@@ -3,11 +3,11 @@ import { grey } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import clsx from "clsx";
+import keycloak from "config/keycloak";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import randomColor from "randomcolor";
 import React from "react";
-import { store } from "../..";
-import { request } from "../../api";
+import { bearerAuth, request } from "../../api";
 import { API_URL } from "../../config/config";
 import { useNotificationState } from "../../state/NotificationState";
 import NotificationMenu from "./NotificationMenu";
@@ -213,7 +213,7 @@ function NotificationButton() {
 
       es = new EventSourcePolyfill(`${API_URL}/notification/subscription`, {
         headers: {
-          "X-Auth-Token": store.getState().auth.token,
+          Authorization: bearerAuth(keycloak.token),
           // Count: count++,
         },
         heartbeatTimeout: 120000,
