@@ -12,10 +12,8 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@mui/material/Alert";
-import { axiosPost } from "api";
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import * as yup from "yup";
+import { request } from "api";
+import { useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -37,15 +35,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-let schema = yup.object().shape({
-  name: yup.string().required(),
-  email: yup.string().email("Email invalid").required(),
-  userLogin: yup.string(),
-});
-
 export default function ModalCreate({ open, handleClose }) {
   const classes = useStyles();
-  const token = useSelector((state) => state.auth.token);
+
   const [name, setName] = useState("");
   const [alert, setAlert] = useState(false);
   const [alertContent, setAlertContent] = useState("");
@@ -53,20 +45,26 @@ export default function ModalCreate({ open, handleClose }) {
   // const toastId = React.useRef(null);
 
   const createDomain = () => {
-    const data = JSON.stringify({ name: name });
-    axiosPost(token, "/domain", data)
-      .then((res) => {
+    request(
+      "post",
+      "/domain",
+      (res) => {
         console.log("crean, domain ", res.data);
         if (res.data == true) {
           setAlertContent("Create susscessed");
           setAlert(true);
         }
-      })
-      .catch((error) => {
-        setAlertContent("Create failed");
-        setAlert(true);
-      });
+      },
+      {
+        onError: (error) => {
+          setAlertContent("Create failed");
+          setAlert(true);
+        },
+      },
+      { name: name }
+    );
   };
+
   const handleSubmit = () => {
     createDomain();
   };

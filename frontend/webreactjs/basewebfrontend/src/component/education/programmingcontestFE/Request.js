@@ -1,8 +1,13 @@
-import {errorNoti,  infoNoti, wifiOffNotify} from "../../../utils/notification";
+import { bearerAuth } from "api";
 import axios from "axios";
-import {API_URL} from "../../../config/config";
-import {store} from "../../../index";
+import keycloak from "config/keycloak";
+import { API_URL } from "../../../config/config";
 import history from "../../../history";
+import {
+  errorNoti,
+  infoNoti,
+  wifiOffNotify,
+} from "../../../utils/notification";
 const wifiOffNotifyToastId = "cannot connect to server";
 
 const isFunction = (func) =>
@@ -29,7 +34,7 @@ export async function request(
       data: data,
       ...config,
       headers: {
-        "X-Auth-Token": store.getState().auth.token,
+        Authorization: bearerAuth(keycloak.token),
         ...config?.headers,
       },
     });
@@ -37,7 +42,6 @@ export async function request(
       successHandler(res);
     }
   } catch (e) {
-
     // Handling work to do when encountering all kinds of errors, e.g turn off the loading icon.
     if (isFunction(errorHandlers["onError"])) {
       errorHandlers["onError"](e);
@@ -65,14 +69,18 @@ export async function request(
           if (isFunction(errorHandlers[400])) {
             errorHandlers[400](e);
           } else {
-            e.response.data.message != undefined? errorNoti(e.response.data.message, true) : errorNoti("Bad Request");
+            e.response.data.message != undefined
+              ? errorNoti(e.response.data.message, true)
+              : errorNoti("Bad Request");
           }
           break;
         case 500:
           if (isFunction(errorHandlers[500])) {
             errorHandlers[500](e);
           } else {
-            e.response.data.message != undefined? errorNoti(e.response.data.message, true) : errorNoti("Something is wrong in server")
+            e.response.data.message != undefined
+              ? errorNoti(e.response.data.message, true)
+              : errorNoti("Something is wrong in server");
           }
           break;
         default:

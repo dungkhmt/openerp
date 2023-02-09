@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import XLSX from "xlsx";
-import { axiosGet, axiosPost } from "../../../api";
+import { request } from "../../../api";
 import { tableIcons } from "../../../utils/iconutil";
 import {
   errorNoti,
@@ -58,12 +58,15 @@ function CourseList() {
 
   // Functions.
   const getAllCourses = () => {
-    axiosGet(token, "/edu/course/all")
-      .then((res) => {
+    request(
+      "get",
+      "/edu/course/all",
+      (res) => {
         console.log("getAllCourses, courses ", res.data);
         setCourses(res.data);
-      })
-      .catch((error) => console.log("getAllCourses, error ", error));
+      },
+      { onError: (e) => console.log("getAllCourses, error ", e) }
+    );
   };
 
   const onClickCreateNewButton = () => {
@@ -259,12 +262,10 @@ function CourseList() {
           }
 
           // Everything is OK!.
-          axiosPost(
-            token,
+          request(
+            "post",
             "/edu/course/add-list-of-courses",
-            XLSX.utils.sheet_to_json(sheet)
-          )
-            .then((res) => {
+            (res) => {
               if (toast.isActive(toastId.current)) {
                 updateSuccessNoti(toastId, res.data);
               } else {
@@ -272,16 +273,20 @@ function CourseList() {
               }
 
               getAllCourses();
-            })
-            .catch((error) => {
-              if (toast.isActive(toastId.current)) {
-                updateErrorNoti(toastId, "Rất tiếc! Đã xảy ra lỗi :((");
-              } else {
-                errorNoti("Rất tiếc! Đã xảy ra lỗi :((");
-              }
+            },
+            {
+              onError: (error) => {
+                if (toast.isActive(toastId.current)) {
+                  updateErrorNoti(toastId, "Rất tiếc! Đã xảy ra lỗi :((");
+                } else {
+                  errorNoti("Rất tiếc! Đã xảy ra lỗi :((");
+                }
 
-              console.log("onClickSaveButton, error ", error);
-            });
+                console.log("onClickSaveButton, error ", error);
+              },
+            },
+            XLSX.utils.sheet_to_json(sheet)
+          );
         } else {
           updateErrorNoti(toastId, `Không tìm thấy sheet "${sheetName}"`);
           return;

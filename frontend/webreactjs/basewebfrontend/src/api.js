@@ -1,9 +1,8 @@
 import axios from "axios";
-import { failed, logout } from "./action/Auth";
+import keycloak from "config/keycloak";
+import { failed } from "./action/Auth";
 import { API_URL } from "./config/config";
 import history from "./history";
-import { store } from "./index";
-import { authState } from "./state/AuthState";
 import { infoNoti, wifiOffNotify } from "./utils/notification";
 
 export const authPost = (dispatch, token, url, body) => {
@@ -72,6 +71,7 @@ export const authPostMultiPart = (dispatch, token, url, body) => {
     }
   );
 };
+
 export const authPut = (dispatch, token, url, body) => {
   return fetch(API_URL + url, {
     method: "PUT",
@@ -82,15 +82,7 @@ export const authPut = (dispatch, token, url, body) => {
     body: JSON.stringify(body),
   });
 };
-export const authGetImg = (dispatch, token, url) => {
-  return fetch(API_URL + url, {
-    method: "GET",
-    headers: {
-      "X-Auth-Token": token,
-      "content-type": "application/octet-stream",
-    },
-  });
-};
+
 export const authGet = (dispatch, token, url) => {
   return fetch(API_URL + url, {
     method: "GET",
@@ -121,37 +113,6 @@ export const authGet = (dispatch, token, url) => {
   );
 };
 
-export const authGetBody = (dispatch, token, url, body) => {
-  debugger;
-  return fetch(API_URL + url, {
-    method: "GET",
-    headers: {
-      "content-type": "application/json",
-      "X-Auth-Token": token,
-    },
-    body: body,
-  }).then(
-    (res) => {
-      if (!res.ok) {
-        if (res.status === 401) {
-          dispatch(failed());
-          throw Error("Unauthorized");
-        } else {
-          console.log(res);
-          try {
-            res.json().then((res1) => console.log(res1));
-          } catch (err) {}
-          throw Error();
-        }
-        // return null;
-      }
-      return res.json();
-    },
-    (error) => {
-      console.log(error);
-    }
-  );
-};
 export const authDelete = (dispatch, token, url, body) => {
   return fetch(API_URL + url, {
     method: "DELETE",
@@ -183,42 +144,6 @@ export const authDelete = (dispatch, token, url, body) => {
   );
 };
 
-export const axiosPost = (token, url, data, dispatch) => {
-  return axios.post(API_URL + url, data, {
-    headers: {
-      "content-type": "application/json",
-      "X-Auth-Token": token,
-    },
-  });
-};
-
-export const axiosPatch = (token, url, data, dispatch) => {
-  return axios.patch(API_URL + url, data, {
-    headers: {
-      "content-type": "application/json",
-      "X-Auth-Token": token,
-    },
-  });
-};
-
-export const axiosGet = (token, url, dispatch) => {
-  return axios.get(API_URL + url, {
-    headers: {
-      "content-type": "application/json",
-      "X-Auth-Token": token,
-    },
-  });
-};
-
-export const axiosPut = (token, url, data, dispatch) => {
-  return axios.put(API_URL + url, data, {
-    headers: {
-      "content-type": "application/json",
-      "X-Auth-Token": token,
-    },
-  });
-};
-
 export const isFunction = (func) =>
   func &&
   (Object.prototype.toString.call(func) === "[object Function]" ||
@@ -233,6 +158,10 @@ const axiosInstance = axios.create({
 axiosInstance.defaults.headers.common["Content-Type"] = "application/json";
 
 const wifiOffNotifyToastId = "cannot connect to server";
+
+export function bearerAuth(token) {
+  return `Bearer ${token}`;
+}
 
 /**
  * url, method, and data properties don't need to be specified in config.
@@ -258,7 +187,7 @@ export async function request(
       data: data,
       ...config,
       headers: {
-        "X-Auth-Token": authState.token.get(),
+        Authorization: bearerAuth(keycloak.token),
         ...config?.headers,
       },
     });
@@ -281,7 +210,6 @@ export async function request(
             errorHandlers[401](e);
           } else {
             history.push({ pathname: "/login" });
-            store.dispatch(logout());
           }
           break;
         case 403:

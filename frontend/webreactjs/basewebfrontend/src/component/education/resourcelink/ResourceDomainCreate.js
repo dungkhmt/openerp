@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import Alert from '@mui/material/Alert';
-import { makeStyles } from "@material-ui/core/styles";
 import {
+  Button,
   Card,
   CardActions,
   CardContent,
   TextField,
   Typography,
-  Button
 } from "@material-ui/core/";
-import { Link, useHistory } from "react-router-dom";
-import { axiosGet, axiosPost } from "../../../api";
+import { makeStyles } from "@material-ui/core/styles";
+import Alert from "@mui/material/Alert";
+import { request } from "api";
+import { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,75 +31,73 @@ const useStyles = makeStyles((theme) => ({
 function ResourceDomainCreate(props) {
   const history = useHistory();
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
-  const [name, setName] = useState(null);
-  const [alert,setAlert] = useState(false);
-  const [alertContent, setAlertContent] = useState('');
-  const columns = [
-    { field: "name", title: "Name" },
-  ];
 
-  const [domain, setDomain] = useState([]);
+  const [name, setName] = useState(null);
+  const [alert, setAlert] = useState(false);
+  const [alertContent, setAlertContent] = useState("");
+
   // Functions.
   const createDomain = () => {
-    const data = JSON.stringify({name:name})
-    axiosPost(token, "/domain",data)
-      .then((res) => {
+    request(
+      "post",
+      "/domain",
+      (res) => {
         console.log("crean, domain ", res.data);
         if (res.data == true) {
           setAlertContent("Create susscessed");
           setAlert(true);
         }
-      })
-      .catch((error) => {
-        setAlertContent("Create failed");
-        setAlert(true);
-      })
+      },
+      {
+        onError: (error) => {
+          setAlertContent("Create failed");
+          setAlert(true);
+        },
+      },
+      { name: name }
+    );
   };
+
   const handleSubmit = () => {
     createDomain();
-  }
-
+  };
 
   return (
     <Card>
-        <CardContent>
-          <Typography variant="h5" component="h2">
-            Tạo nguồn tham khảo
-          </Typography>
-          <form className={classes.root} noValidate autoComplete="off">
-            <div>
-              <TextField
-                required
-                id="name"
-                label="Name"
-                value={name}
-                fullWidth
-                onChange={(event) => {
-                  setName(event.target.value);
-                }}
-              >
-     
-              </TextField>
-              </div>
-              </form>
-        </CardContent>
-        {alert ? <Alert severity='error'>{alertContent}</Alert> : <></> }
-        <CardActions>
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ marginLeft: "45px" }}
-            onClick={handleSubmit}
-          >
-            Lưu
-          </Button>
-          <Button variant="contained" onClick={() => history.push("")}>
-            Hủy
-          </Button>
-        </CardActions>
-      </Card>
+      <CardContent>
+        <Typography variant="h5" component="h2">
+          Tạo nguồn tham khảo
+        </Typography>
+        <form className={classes.root} noValidate autoComplete="off">
+          <div>
+            <TextField
+              required
+              id="name"
+              label="Name"
+              value={name}
+              fullWidth
+              onChange={(event) => {
+                setName(event.target.value);
+              }}
+            ></TextField>
+          </div>
+        </form>
+      </CardContent>
+      {alert ? <Alert severity="error">{alertContent}</Alert> : <></>}
+      <CardActions>
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ marginLeft: "45px" }}
+          onClick={handleSubmit}
+        >
+          Lưu
+        </Button>
+        <Button variant="contained" onClick={() => history.push("")}>
+          Hủy
+        </Button>
+      </CardActions>
+    </Card>
   );
 }
 

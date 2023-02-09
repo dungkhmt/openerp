@@ -12,9 +12,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { DataGrid } from "@material-ui/data-grid";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import SearchIcon from "@material-ui/icons/Search";
-import { axiosPost, request } from "api";
+import { request } from "api";
 import React, { useEffect, useReducer, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
@@ -133,15 +132,8 @@ function reducer(state, action) {
 }
 
 export default function TeacherList() {
+  const classes = useStyles();
   const [state, localDispatch] = useReducer(reducer, initState);
-
-  const [openTeacherAdd, setOpenTeacherAdd] = useState(false);
-
-  const token = useSelector((state) => state.auth.token);
-
-  // Snackbar
-  const toastId = React.useRef(null);
-
   const {
     data,
     page,
@@ -153,11 +145,16 @@ export default function TeacherList() {
     sortType,
   } = state;
 
-  const classes = useStyles();
+  const [openTeacherAdd, setOpenTeacherAdd] = useState(false);
 
+  // Snackbar
+  const toastId = React.useRef(null);
+
+  //
   useEffect(() => {
     let url = "/get-all-teachers-by-page";
     url += `?page=${page}&pageSize=${pageSize}`;
+
     if (sortBy) url += `&sortBy=${sortBy}&sortType=${sortType}`;
     if (keyword !== "") url += `&keyword=${keyword}`;
     console.log(url);
@@ -431,12 +428,10 @@ export default function TeacherList() {
           }
 
           // Everything is OK!.
-          axiosPost(
-            token,
+          request(
+            "post",
             "/edu/teacher/add-list-of-teachers",
-            XLSX.utils.sheet_to_json(sheet)
-          )
-            .then((res) => {
+            (res) => {
               if (toast.isActive(toastId.current)) {
                 updateSuccessNoti(toastId, res.data);
               } else {
@@ -444,16 +439,20 @@ export default function TeacherList() {
               }
 
               // getAllTeachers();
-            })
-            .catch((error) => {
-              if (toast.isActive(toastId.current)) {
-                updateErrorNoti(toastId, "Rất tiếc! Đã xảy ra lỗi :((");
-              } else {
-                errorNoti("Rất tiếc! Đã xảy ra lỗi :((");
-              }
+            },
+            {
+              onError: (error) => {
+                if (toast.isActive(toastId.current)) {
+                  updateErrorNoti(toastId, "Rất tiếc! Đã xảy ra lỗi :((");
+                } else {
+                  errorNoti("Rất tiếc! Đã xảy ra lỗi :((");
+                }
 
-              console.log("onClickSaveButton, error ", error);
-            });
+                console.log("onClickSaveButton, error ", error);
+              },
+            },
+            XLSX.utils.sheet_to_json(sheet)
+          );
         } else {
           updateErrorNoti(toastId, `Không tìm thấy sheet "${sheetName}"`);
           return;

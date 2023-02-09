@@ -12,11 +12,8 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@mui/material/Alert";
-import { axiosPost } from "api";
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
-import * as yup from "yup";
+import { request } from "api";
+import { useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -38,18 +35,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-let schema = yup.object().shape({
-  name: yup.string().required(),
-  email: yup.string().email("Email invalid").required(),
-  userLogin: yup.string(),
-});
-
 export default function ModalCreateResource({ open, handleClose, domainId }) {
   const classes = useStyles();
-  const history = useHistory();
-  const token = useSelector((state) => state.auth.token);
+
   const [link, setLink] = useState(null);
-  const [status, setStatus] = useState(null);
   const [description, setDescription] = useState(null);
   const [alert, setAlert] = useState(false);
   const [alertContent, setAlertContent] = useState("");
@@ -57,24 +46,30 @@ export default function ModalCreateResource({ open, handleClose, domainId }) {
   // const toastId = React.useRef(null);
 
   const createResource = () => {
-    const data = JSON.stringify({
-      link: link,
-      description: description,
-      statusId: "RESOURCE_CREATED",
-    });
-    axiosPost(token, `/domains/${domainId}/resource`, data)
-      .then((res) => {
+    request(
+      "post",
+      `/domains/${domainId}/resource`,
+      (res) => {
         console.log("create, resource ", res.data);
         if (res.data == true) {
           setAlertContent("Create susscessed");
           setAlert(true);
         }
-      })
-      .catch((error) => {
-        setAlertContent("Create failed");
-        setAlert(true);
-      });
+      },
+      {
+        onError: (error) => {
+          setAlertContent("Create failed");
+          setAlert(true);
+        },
+      },
+      {
+        link: link,
+        description: description,
+        statusId: "RESOURCE_CREATED",
+      }
+    );
   };
+
   const handleSubmit = () => {
     createResource();
   };
