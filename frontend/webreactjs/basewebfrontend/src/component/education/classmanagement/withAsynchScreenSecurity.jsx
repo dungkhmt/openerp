@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router";
 import {
   getScrSecurInfoFailure,
   getScrSecurInfoSuccess,
@@ -12,10 +11,7 @@ import NotAuthorized from "../../common/NotAuthorzied";
 
 function withAsynchScreenSecurity(SecuredScreen, id) {
   return function AsynchSecuredScreen(props) {
-    console.log("RENDER");
-    const history = useHistory();
     const dispatch = useDispatch();
-    const token = useSelector((state) => state.auth.token);
 
     const { fetched, requestSuccess, permissions } = useSelector(
       (state) => state.screenSecurity,
@@ -28,8 +24,6 @@ function withAsynchScreenSecurity(SecuredScreen, id) {
     // Functions.
     const getViewPermissions = () => {
       request(
-        // token,
-        // history,
         "get",
         `/screen-security`,
         (res) => {
