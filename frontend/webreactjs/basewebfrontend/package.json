@@ -1,5 +1,5 @@
 {
-  "name": "baseweb",
+  "name": "openerp-ui",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -26,7 +26,6 @@
     "@welldone-software/why-did-you-render": "^6.2.0",
     "ace-builds": "^1.14.0",
     "axios": "^0.21.1",
-    "base-64": "^0.1.0",
     "chart.js": "^2.9.3",
     "classnames": "^2.2.6",
     "clsx": "^1.1.1",
@@ -66,7 +65,6 @@
     "react-data-export": "^0.6.0",
     "react-dom": "^17.0.2",
     "react-draft-wysiwyg": "^1.14.7",
-    "react-dropzone": "^10.2.2",
     "react-full-screen": "^1.1.0",
     "react-hook-form": "^5.7.2",
     "react-html-parser": "^2.0.2",
@@ -76,7 +74,6 @@
     "react-infinite-scroll-component": "^4.1.0",
     "react-konva": "^17.0.2-6",
     "react-leaflet": "^3.2.5",
-    "react-loading-overlay": "^1.0.1",
     "react-number-format": "^4.4.1",
     "react-player": "^2.9.0",
     "react-query": "^3.38.0",
@@ -89,7 +86,6 @@
     "react-split-pane": "^2.0.3",
     "react-text-mask": "^5.4.3",
     "react-toastify": "^6.2.0",
-    "react-tooltip": "^4.2.21",
     "react-webcam": "^5.2.0",
     "redux": "^4.0.4",
     "redux-devtools-extension": "^2.13.8",
