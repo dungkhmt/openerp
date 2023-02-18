@@ -114,13 +114,19 @@ public class ContestService {
                 contestEntity.getContestId(),
                 contestProblem.getProblemId());
             String submissionMode = "";
+            String problemRename = "";
+            String problemRecode = "";
             if (cp != null) {
                 submissionMode = cp.getSubmissionMode();
+                problemRename = cp.getProblemRename();
+                problemRecode = cp.getProblemRecode();
             }
             ModelGetProblemDetailResponse p = ModelGetProblemDetailResponse.builder()
                                                                            .levelId(contestProblem.getLevelId())
                                                                            .problemId(contestProblem.getProblemId())
                                                                            .problemName(contestProblem.getProblemName())
+                                                                           .problemRename(problemRename)
+                                                                           .problemRecode(problemRecode)
                                                                            .levelOrder(contestProblem.getLevelOrder())
                                                                            .problemDescription(contestProblem.getProblemDescription())
                                                                            .createdByUserId(contestProblem.getUserId())
@@ -128,6 +134,7 @@ public class ContestService {
                                                                            .build();
             problems.add(p);
         });
+
         return ModelGetContestDetailResponse
             .builder()
             .contestId(contestId)

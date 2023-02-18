@@ -12,6 +12,7 @@ public class ModelStudentOverviewProblem {
 
     private String problemId;
     private String problemName;
+    private String problemCode;
     private String levelId;
     private boolean submitted = false;
     private boolean accepted = false;

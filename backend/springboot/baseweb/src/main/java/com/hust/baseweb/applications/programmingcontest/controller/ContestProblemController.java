@@ -78,6 +78,12 @@ public class ContestProblemController {
         return ResponseEntity.ok().body(problems);
     }
 
+    @GetMapping("/get-all-contest-problems-general-info")
+    public ResponseEntity<?> getAllContestProblemsGeneralInfo(Principal principal) {
+        List<ModelProblemGeneralInfo> problems = problemTestCaseService.getAllProblemsGeneralInfo();
+        return ResponseEntity.ok().body(problems);
+    }
+
     @GetMapping("/get-contest-problem-paging")
     public ResponseEntity<?> getContestProblemPaging(Pageable pageable, @Param("sortBy") String sortBy,
             @Param("desc") String desc) {
@@ -270,6 +276,29 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(null);
     }
 
+    @PostMapping("/save-problem-to-contest")
+    public ResponseEntity<?> saveProblemToContest(
+        @RequestBody ModelProblemInfoInContest modelProblemInfoInContest,
+        Principal principal
+    ) throws Exception {
+
+        problemTestCaseService.saveProblemInfoInContest(modelProblemInfoInContest, principal.getName());
+
+        return ResponseEntity.status(200).body("ok");
+    }
+
+    @DeleteMapping("/remove-problem-from-contest")
+    public ResponseEntity<?> removeProblemFromContest(
+        @RequestParam String contestId,
+        @RequestParam String problemId,
+        Principal principal
+    ) {
+
+        problemTestCaseService.removeProblemFromContest(contestId, problemId, principal.getName());
+
+        return ResponseEntity.status(200).body("ok");
+    }
+
 //    synchronized static void removeContestFromCache(String contestId) {
 //        log.info("removeContestFromCache synchronized remove from cache contestId " + contestId);
 //        runningContests.remove(contestId);
@@ -355,7 +384,7 @@ public class ContestProblemController {
     @GetMapping("/get-list-contest-problem-student-V2/{contestId}")
     public ResponseEntity<?> getListContestProblemViewedByStudentV2(@PathVariable("contestId") String contestId, Principal principal) {
         String userId = principal.getName();
-        ContestEntity contestEntity = contestRepo.findContestByContestId(contestId);
+        ContestEntity contestEntity = contestService.findContest(contestId);
 
         List<ProblemEntity> listProblem = contestEntity.getProblems();
         List<String> listAcceptedProblem = contestSubmissionRepo.findAcceptedProblemsOfUser(userId, contestId);
@@ -372,9 +401,13 @@ public class ContestProblemController {
             for (ProblemEntity problem : listProblem) {
                 String problemId = problem.getProblemId();
 
+                ContestProblem contestProblem = contestProblemRepo.findByContestIdAndProblemId(contestId, problemId);
+
                 ModelStudentOverviewProblem response = new ModelStudentOverviewProblem();
                 response.setProblemId(problemId);
-                response.setProblemName(problem.getProblemName());
+//                response.setProblemName(problem.getProblemName());
+                response.setProblemName(contestProblem.getProblemRename());
+                response.setProblemCode(contestProblem.getProblemRecode());
                 response.setLevelId(problem.getLevelId());
 
                 List<String> tags = problem.getTags().stream().map(TagEntity::getName).collect(Collectors.toList());
