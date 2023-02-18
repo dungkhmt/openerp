@@ -162,7 +162,7 @@ const StudentViewSubmission = forwardRef((props, ref) => {
           data={submissions}
           options={{
             selection: false,
-            pageSize: 20,
+            pageSize: 10,
             search: true,
             sorting: true,
           }}

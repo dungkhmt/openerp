@@ -14,6 +14,7 @@ import {randomImageName,} from "utils/FileUpload/covert";
 import {errorNoti, successNoti} from "../../../utils/notification";
 import HustCodeLanguagePicker from "../../common/HustCodeLanguagePicker";
 import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
+import HustContainerCard from "../../common/HustContainerCard";
 
 const editorStyle = {
   toolbar: {
@@ -174,12 +175,8 @@ export default function StudentViewProgrammingContestProblemDetail() {
   };
 
   return (
-    <div>
-      <div>
-        <h2>Name: {problem ? problem.problemName : ""}</h2>
-      </div>
-
-      <div>
+    <HustContainerCard title={"Problem: " + (problem ? problem.problemName : "")}>
+      <Box>
         <Typography>
           <h3>Description</h3>
         </Typography>
@@ -193,7 +190,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
           fetchedImageArray.map((file) => (
             <FileUploadZone file={file} removable={false}/>
           ))}
-      </div>
+      </Box>
 
       <Divider/>
 
@@ -240,6 +237,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
       <Box sx={{paddingTop: 2}}>
         <StudentViewSubmission problemId={problemId} ref={listSubmissionRef}/>
       </Box>
-    </div>
+    </HustContainerCard>
   );
 }
