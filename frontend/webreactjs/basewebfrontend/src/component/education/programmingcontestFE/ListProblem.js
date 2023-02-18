@@ -27,6 +27,11 @@ function ListProblem() {
               "/programming-contest/manager-view-problem-detail/" +
               rowData["problemId"],
           }}
+          style={{
+            textDecoration: "none",
+            color: "blue",
+            cursor: "",
+          }}
         >
           {rowData["problemId"]}
         </Link>

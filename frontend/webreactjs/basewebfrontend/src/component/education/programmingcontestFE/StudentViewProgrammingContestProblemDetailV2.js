@@ -120,7 +120,6 @@ export default function StudentViewProgrammingContestProblemDetail() {
       .then(
         (res) => {
           setProblem(res);
-          console.log(res);
           //setProblemStatement(res.data.problemStatement);
           if (res.attachment && res.attachment.length !== 0) {
             const newFileURLArray = res.attachment.map((url) => ({

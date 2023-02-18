@@ -1,4 +1,4 @@
-import {request} from "../Request";
+import {request} from "../../../../api";
 
 export const getAllTags = (successHandler) => {
   request(
