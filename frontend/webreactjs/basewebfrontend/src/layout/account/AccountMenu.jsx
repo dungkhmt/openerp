@@ -147,7 +147,9 @@ export function AccountMenu(props) {
 
   const handleLogout = () => {
     logout();
-    keycloak.logout();
+
+    const logoutOptions = { redirectUri: window.location.origin };
+    keycloak.logout(logoutOptions);
   };
 
   const menuItems = [

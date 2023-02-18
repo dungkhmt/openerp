@@ -88,10 +88,33 @@ const AppLoading = (
 function App() {
   const dispatch = useDispatch();
 
-  const onEvent = async (event, error) => {
+  const onKeycloakEvent = async (event, error) => {
     console.log(event);
     if (event === "onAuthSuccess") {
+      // // Currently maybe not necessary
+      // // Check token validity every 10 seconds (10 000 ms) and, if necessary, update the token.
+      // // Refresh token if it's valid for less then 60 seconds
+      // const updateTokenInterval = setInterval(
+      //   () =>
+      //     keycloak
+      //       .updateToken(60)
+      //       .then((refreshed) => {
+      //         if (refreshed) {
+      //           console.debug(`Access token refreshed`);
+      //         } else {
+      //           console.warn(`Refresh token refreshed`);
+      //         }
+      //       })
+      //       .catch(() => {
+      //         console.error(`Failed to refresh authentication tokens`);
+      //         keycloak.clearToken();
+      //       }),
+      //   10 * 1000
+      // );
+
       dispatch(getScrSecurInfo());
+    } else if (event === "onAuthError") {
+      console.error("Authenticated failed");
     }
   };
 
@@ -107,7 +130,7 @@ function App() {
       authClient={keycloak}
       initOptions={initOptions}
       LoadingComponent={AppLoading}
-      onEvent={onEvent}
+      onEvent={onKeycloakEvent}
     >
       <I18nextProvider i18n={i18n}>
         <QueryClientProvider client={queryClient}>
