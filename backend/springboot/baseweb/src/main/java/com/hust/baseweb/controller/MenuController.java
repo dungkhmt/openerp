@@ -35,8 +35,10 @@ public class MenuController {
 //        System.out.println(module + "::getMenu, userName = " + principal.getName());
 
         List<SecurityPermission> permissionList = new ArrayList<>();
-        for (SecurityGroup securityGroup : userLogin.getRoles()) {
-            permissionList.addAll(securityGroup.getPermissions());
+        if (userLogin != null) {
+            for (SecurityGroup securityGroup : userLogin.getRoles()) {
+                permissionList.addAll(securityGroup.getPermissions());
+            }
         }
 //        System.out.println(module + "::getMenu, userName = " + principal.getName() + ", meu.lst = " + permissionList.size());
         return ResponseEntity.ok().body(
