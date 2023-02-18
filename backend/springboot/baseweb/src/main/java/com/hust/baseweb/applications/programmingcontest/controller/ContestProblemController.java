@@ -171,7 +171,8 @@ public class ContestProblemController {
                 model.setProblemStatement(problemEntity.getProblemDescription());
 
             model.setSubmissionMode(cp.getSubmissionMode());
-            model.setProblemName(problemEntity.getProblemName());
+            model.setProblemName(cp.getProblemRename());
+            model.setProblemCode(cp.getProblemRecode());
             model.setAttachment(problemEntity.getAttachment());
             model.setAttachmentNames(problemEntity.getAttachmentNames());
             return ResponseEntity.ok().body(model);
