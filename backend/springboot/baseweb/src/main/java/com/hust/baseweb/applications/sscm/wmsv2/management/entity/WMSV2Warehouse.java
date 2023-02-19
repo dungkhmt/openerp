@@ -16,12 +16,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @ToString
-@Table(name = "facility")
-public class FacilityV2 {
+@Table(name = "wmsv2_warehouse")
+public class WMSV2Warehouse {
     @Id
     @GenericGenerator(name = "uuid1", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "uuid1")
-    private UUID facilityId;
+    private UUID warehouseId;
     private String name;
     private String code;
     private Integer width;

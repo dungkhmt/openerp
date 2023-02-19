@@ -4,8 +4,9 @@ import CommandBarButton from "../components/commandBarButton";
 import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import StandardTable from "component/table/StandardTable";
+import { API_PATH } from "../apiPaths";
 
-const ListFacility = () => {
+const ListWarehouse = () => {
 
   const [isHideCommandBar, setHideCommandBar] = useState(true);
   const [facilitiesTableData, setFacilitiesTableData] = useState([]);
@@ -13,7 +14,7 @@ const ListFacility = () => {
   useEffect(() => {
     request(
       "get",
-      "/wmsv2/admin/facility",
+      API_PATH.WAREHOUSE,
       (res) => {
         const tableData = res.data.map(obj => {
           obj.tableData = { "checked": false };
@@ -33,7 +34,7 @@ const ListFacility = () => {
     const selectedFacilityIds = facilitiesTableData.filter((facility) => facility.tableData.checked == true).map((obj) => obj.facilityId);
     request(
       "delete",
-      "/wmsv2/admin/facility",
+      API_PATH.WAREHOUSE,
       (res) => { 
         successNoti("Xóa thành công");
       const newTableData = facilitiesTableData.filter((facility) => !selectedFacilityIds.includes(facility.facilityId));
@@ -66,7 +67,7 @@ const ListFacility = () => {
           search: true,
           sorting: true,
         }}
-        // onRowClick={ (selectedRows) => console.log(selectedRows) }
+        onRowClick={ (selectedRows) => console.log("Click on row ->", selectedRows) }
         onSelectionChange={onSelectionChangeHandle}
         commandBarComponents={ <CommandBarButton onClick={removeSelectedFacilities}>Xóa</CommandBarButton> }
       />
@@ -74,4 +75,4 @@ const ListFacility = () => {
   </div>
 }
 
-export default ListFacility;
+export default ListWarehouse;

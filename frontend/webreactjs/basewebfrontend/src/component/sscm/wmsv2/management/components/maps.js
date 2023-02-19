@@ -11,6 +11,12 @@ const icon = L.icon({
 
 const NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse?";
 
+/**
+ * This method return address in String of selected latitude and longtitude
+ * @param {*} lat 
+ * @param {*} lon 
+ * @returns 
+ */
 const reverse = async (lat, lon) => {
   // fetch(NOMINATIM_REVERSE_URL + "lat=" + lat + "&lon=" + lon + "&format=json");
   const response = await fetch(NOMINATIM_REVERSE_URL + new URLSearchParams({lat: lat, lon: lon, format: 'json'}), {method: 'GET'});
@@ -82,4 +88,9 @@ export default function Maps(props) {
       <ResetCenterView selectPosition={selectPosition} />
     </MapContainer>
   );
+}
+
+export function ListingMaps( props ) {
+  const { facility } = props;
+
 }

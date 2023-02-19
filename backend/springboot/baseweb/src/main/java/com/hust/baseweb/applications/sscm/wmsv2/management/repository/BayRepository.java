@@ -9,6 +9,6 @@ import java.util.UUID;
 @Repository
 public interface BayRepository extends JpaRepository<Bay, UUID> {
 
-    void deleteBaysByFacilityId(UUID facilityId);
+    void deleteBaysByWarehouseId(UUID warehouseId);
 
 }

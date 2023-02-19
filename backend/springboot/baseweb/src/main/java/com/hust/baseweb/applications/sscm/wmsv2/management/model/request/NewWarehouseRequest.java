@@ -12,7 +12,7 @@ import java.util.List;
 
 @Data
 @ToString
-public class NewFacilityRequest {
+public class NewWarehouseRequest {
     @NotBlank
     private String address;
     @NotBlank

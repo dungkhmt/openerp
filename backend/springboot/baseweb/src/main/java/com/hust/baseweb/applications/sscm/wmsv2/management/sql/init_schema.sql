@@ -12,14 +12,13 @@ create
     extension if not exists "uuid-ossp";
 -- SELECT * FROM pg_extension;
 select uuid_generate_v1();
-drop table inventory_item;
 ---
-create table inventory_item
+create table wmsv2_inventory_item
 (
     inventory_item_id      uuid           not null default uuid_generate_v1() primary key,
     product_id             uuid           not null,
     lot_id                 varchar(60)    not null,
-    facility_id            uuid           not null,
+    warehouse_id            uuid           not null,
     bay_id                 uuid           NOT NULL,
     quantity_on_hand_total decimal(18, 2) not null, -- Do hàng hóa có thể tính theo cân nặng nên quantity có data type là decimal
     import_price           decimal(18, 2) not null,
@@ -38,7 +37,7 @@ create table inventory_item
 --     available_to_promise_total DECIMAL(18, 6),
 );
 
-create table inventory_item_detail
+create table wmsv2_inventory_item_detail
 (
     inventory_item_detail_id uuid           not null default uuid_generate_v1() primary key,
     inventory_item_id        uuid           not null,
@@ -46,9 +45,9 @@ create table inventory_item_detail
     effective_date           timestamp      not null default current_timestamp
 );
 
-create table facility
+create table wmsv2_warehouse
 (
-    facility_id uuid         not null default uuid_generate_v1() primary key,
+    warehouse_id uuid         not null default uuid_generate_v1() primary key,
     name        varchar(100) not null,
     code        varchar(100),
     width       int,
@@ -58,7 +57,7 @@ create table facility
     latitude   decimal(20, 14)
 );
 
-create table product
+create table wmsv2_product
 (
     product_id  uuid         not null default uuid_generate_v1() primary key,
     code        varchar(60)  not null,
@@ -68,10 +67,10 @@ create table product
     weight      decimal(18, 2)
 );
 
-create table bay
+create table wmsv2_bay
 (
     bay_id      uuid        not null default uuid_generate_v1() primary key,
-    facility_id uuid        not null,
+    warehouse_id uuid        not null,
     code        varchar(60) not null,
     x           int         not null,
     y           int         not null,
@@ -79,15 +78,16 @@ create table bay
     y_long       int         not null
 );
 
-create table product_facility
+create table wmsv2_product_warehouse
 (
-    product_facility_id uuid not null default uuid_generate_v1() primary key,
+    product_warehouse_id uuid not null default uuid_generate_v1() primary key,
     product_id          uuid not null,
-    facility_id         uuid not null,
+    warehouse_id         uuid not null,
     quantity_on_hand    decimal(18, 2)
 );
 
-alter table bay
-    add constraint fk_bay_facility_id foreign key (facility_id) references facility (facility_id);
+alter table wmsv2_bay
+    add constraint fk_bay_warehouse_id foreign key (warehouse_id) references wmsv2_warehouse (warehouse_id);
 
-alter table facility rename column facility to code;
+-- alter table wmsv2_warehouse rename column facility to code;
+-- TODO: Add constraint for tables

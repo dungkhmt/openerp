@@ -14,8 +14,9 @@ import { useRouteMatch } from "react-router-dom";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CachedIcon from '@mui/icons-material/Cached';
+import { API_PATH } from '../apiPaths.js';
 
-const CreateFacility = () => {
+const CreateWarehouse = () => {
   const holderShelf = { x: "", y: "", width: "", lenght: "", num: "" };
   const classes = useStyles();
   const [listShelf, setListShelf] = useState([holderShelf]);
@@ -63,7 +64,7 @@ const CreateFacility = () => {
     data.latitude = selectPosition.lat;
     request(
       "post",
-      "/wmsv2/admin/facility",
+      API_PATH.WAREHOUSE,
       (res) => {
         let id = res.data.id;
         successNoti("Tạo kho thành công")
@@ -403,4 +404,4 @@ const CreateFacility = () => {
   );
 }
 
-export default CreateFacility;
+export default CreateWarehouse;
