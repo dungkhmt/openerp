@@ -2,7 +2,7 @@ import { Grid, TableHead } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
-import { Box } from "@mui/material";
+import {Box, LinearProgress} from "@mui/material";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -12,12 +12,15 @@ import { useEffect, useState } from "react";
 import XLSX from "xlsx";
 import { StyledTableCell, StyledTableRow } from "./lib";
 import { request } from "./Request";
+import HustContainerCard from "../../common/HustContainerCard";
 
 export default function ContestManagerRankingNew(props) {
   const contestId = props.contestId;
   const [ranking, setRanking] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loading, setLoading] = useState(false);
+
   const [getPointForRankingType, setGetPointForRankingType] =
     useState("HIGHEST");
 
@@ -69,6 +72,7 @@ export default function ContestManagerRankingNew(props) {
   };
 
   function getRanking() {
+    setLoading(true);
     request(
       "get",
       "/get-ranking-contest-new/" +
@@ -78,7 +82,7 @@ export default function ContestManagerRankingNew(props) {
       (res) => {
         setRanking(res.data.sort((a, b) => b.totalPoint - a.totalPoint));
       }
-    ).then();
+    ).then(() => setLoading(false));
   }
 
   useEffect(() => {
@@ -90,40 +94,45 @@ export default function ContestManagerRankingNew(props) {
   }, [getPointForRankingType]);
 
   return (
-    <Box>
+    <HustContainerCard title={"Contest Ranking"}>
       <Box
         sx={{
-          width: "900px",
+          width: "100%",
           marginBottom: "20px",
+          paddingLeft: "4px",
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
         }}
       >
         <Typography variant="h5">
-          Contest Ranking - {getPointForRankingType} Submission
+          {getPointForRankingType} Submission
         </Typography>
-        {getPointForRankingType === "HIGHEST" ? (
-          <Button
-            variant="contained"
-            onClick={() => setGetPointForRankingType("LATEST")}
-          >
-            Switch to Latest Submission Score
+        <Box>
+          {getPointForRankingType === "HIGHEST" ? (
+            <Button
+              variant="contained"
+              onClick={() => setGetPointForRankingType("LATEST")}
+            >
+              Switch to Latest Submission Score
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              onClick={() => setGetPointForRankingType("HIGHEST")}
+            >
+              Switch to Highest Submission Score
+            </Button>
+          )}
+          <Button variant="contained" onClick={downloadHandler} color="success" sx={{marginLeft: "12px"}}>
+            Export
           </Button>
-        ) : (
-          <Button
-            variant="contained"
-            onClick={() => setGetPointForRankingType("HIGHEST")}
-          >
-            Switch to Highest Submission Score
-          </Button>
-        )}
-        <Button variant="contained" onClick={downloadHandler} color="success">
-          Export
-        </Button>
+        </Box>
+
       </Box>
 
       <Box>
+        {loading && <LinearProgress/>}
         <TableContainer component={Paper}>
           <Table
             sx={{ minWidth: window.innerWidth - 500 }}
@@ -200,6 +209,6 @@ export default function ContestManagerRankingNew(props) {
           </Grid>
         </Grid>
       </Box>
-    </Box>
+    </HustContainerCard>
   );
 }

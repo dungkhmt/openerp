@@ -232,7 +232,7 @@ export function ContestManager() {
         onChange={handleChange}
         indicatorColor={"primary"}
         autoFocus
-        style={{
+        sx={{
           width: "100%",
           display: "inline-table",
           border: "1px solid transparent ",
