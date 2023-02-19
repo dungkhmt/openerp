@@ -13,6 +13,8 @@ import { useDispatch } from "react-redux";
 import { Router } from "react-router-dom";
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { menuState } from "state/MenuState";
+import { notificationState } from "state/NotificationState";
 import { ReactComponent as Logo } from "./assets/icons/logo.svg";
 import history from "./history.js";
 import Routes from "./Routes";
@@ -88,6 +90,16 @@ const AppLoading = (
 function App() {
   const dispatch = useDispatch();
 
+  // TODO: Consider remove this logic!
+  const logout = () => {
+    menuState.permittedFunctions.set(new Set());
+    notificationState.merge({
+      notifications: undefined,
+      numUnRead: 0,
+      hasMore: false,
+    });
+  };
+
   const onKeycloakEvent = async (event, error) => {
     console.log(event);
     if (event === "onAuthSuccess") {
@@ -115,6 +127,8 @@ function App() {
       dispatch(getScrSecurInfo());
     } else if (event === "onAuthError") {
       console.error("Authenticated failed");
+    } else if (event === "onAuthLogout") {
+      logout();
     }
   };
 

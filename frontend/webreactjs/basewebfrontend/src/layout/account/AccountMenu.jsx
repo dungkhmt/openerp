@@ -20,9 +20,6 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import FeedbackIcon from "@material-ui/icons/Feedback";
 import { useKeycloak } from "@react-keycloak/web";
 import { lazy } from "react";
-import { useDispatch } from "react-redux";
-import { menuState } from "state/MenuState";
-import { notificationState } from "state/NotificationState";
 
 const FeedbackDialog = lazy(() => import("./FeedbackDialog"));
 
@@ -97,7 +94,6 @@ export const menuItemWrapperStyles = { padding: "0px 8px" };
 
 export function AccountMenu(props) {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   //
   const { keycloak } = useKeycloak();
@@ -135,19 +131,7 @@ export function AccountMenu(props) {
     window.location.href = accountUrl;
   };
 
-  // TODO: Consider remove this logic!
-  const logout = () => {
-    menuState.permittedFunctions.set(new Set());
-    notificationState.merge({
-      notifications: undefined,
-      numUnRead: 0,
-      hasMore: false,
-    });
-  };
-
   const handleLogout = () => {
-    logout();
-
     const logoutOptions = { redirectUri: window.location.origin };
     keycloak.logout(logoutOptions);
   };

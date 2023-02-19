@@ -187,7 +187,7 @@ export async function request(
       data: data,
       ...config,
       headers: {
-        Authorization: bearerAuth(keycloak.token),
+        authorization: bearerAuth(keycloak.token),
         ...config?.headers,
       },
     });

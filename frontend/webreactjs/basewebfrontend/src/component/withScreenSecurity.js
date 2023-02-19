@@ -1,38 +1,40 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { authGet } from "../api";
+import { useEffect, useState } from "react";
+import { request } from "../api";
 import Loading from "./common/Loading";
-import NotAuthorized from "./common/NotAuthorzied";
+import NotAuthorized from "./common/NotAuthorized";
 
-function withScreenSecurity(SecurityComponet, screenName, viewError) {
+function withScreenSecurity(SecuredComponent, screenName, viewError) {
   return function ScreenSecurityComponent({ ...props }) {
-    const token = useSelector((state) => state.auth.token);
-    const dispatch = useDispatch();
     const [isChecking, setIsChecking] = useState(true);
     const [isAuthorized, setIsAuthorized] = useState(false);
-    console.log(SecurityComponet.name);
+
+    // console.log(SecurityComponent.name);
+
     useEffect(() => {
       setIsChecking(true);
-      authGet(
-        dispatch,
-        token,
-        "/check-authority" + "?applicationId=" + screenName
-      ).then(
+
+      request(
+        "get",
+        `/check-authority?applicationId=${screenName}`,
         (res) => {
-          console.log(res);
+          // console.log(res);
           setIsChecking(false);
-          if (res.result === "INCLUDED") setIsAuthorized(true);
+          if (res.data.result === "INCLUDED") setIsAuthorized(true);
         },
-        (error) => {
-          console.log("error");
-          setIsChecking(false);
+        {
+          onError: (e) => {
+            setIsChecking(false);
+            console.log(e);
+          },
         }
       );
     }, []);
+
     if (isChecking) return <Loading />;
-    else if (isAuthorized) return <SecurityComponet {...props} />;
+    else if (isAuthorized) return <SecuredComponent {...props} />;
     else if (viewError) return <NotAuthorized />;
     else return "";
   };
 }
+
 export default withScreenSecurity;
