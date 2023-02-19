@@ -8,8 +8,9 @@ const icon = L.icon({
   iconUrl: PLACE_HOLDER_ICON_URL,
   iconSize: [38, 38],
 });
-
 const NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse?";
+const TILE_LAYER_URL = "https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=GsqVDsxlKcMfyPpnz8xW";
+const TILE_LAYER_ATTRIBUTE = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 /**
  * This method return address in String of selected latitude and longtitude
@@ -75,8 +76,8 @@ export default function Maps(props) {
     >
       <LocationFinderDummy />
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=GsqVDsxlKcMfyPpnz8xW"
+        attribution={TILE_LAYER_ATTRIBUTE}
+        url={TILE_LAYER_URL}
       />
       {selectPosition && (
         <Marker position={locationSelection} icon={icon}>
@@ -91,6 +92,36 @@ export default function Maps(props) {
 }
 
 export function ListingMaps( props ) {
-  const { facility } = props;
+  const { warehouses } = props;
+  const center = [Math.max(...warehouses.map(w => w.latitude)), 
+    Math.max(...warehouses.map(w => w.longitude))]; // TODO: calculate center points by warehouses location
 
+  return (
+    <MapContainer
+      center={center}
+      zoom={8}
+      style={{ width: "100%", height: "100%" }}
+    >
+      <TileLayer
+        attribution={TILE_LAYER_ATTRIBUTE}
+        url={TILE_LAYER_URL}
+      />
+      {
+        warehouses.length > 0 &&
+        warehouses.map((warehouse) => {
+          console.log("Warehouse -> ", warehouse);
+          return (
+            <Marker 
+              position={[ warehouse.latitude, warehouse.longitude ]}
+              icon={icon}
+            >
+              <Popup>
+                {warehouse.name}
+              </Popup>
+            </Marker>
+          );
+        })
+      }
+    </MapContainer>
+  )
 }
