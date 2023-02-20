@@ -11,12 +11,17 @@ export default function WMSv2Route() {
         <Route
           component={CreateWarehouse}
           exact
-          path={`${path}/facility/create`}
+          path={`${path}/warehouse/create`}
         ></Route>
         <Route
           component={ListWarehouse}
           exact
-          path={`${path}/facility/list`}
+          path={`${path}/warehouse`}
+        ></Route>
+        <Route
+          component={CreateWarehouse}
+          exact
+          path={`${path}/warehouse/update/:id`}
         ></Route>
       </Switch>
     </div>

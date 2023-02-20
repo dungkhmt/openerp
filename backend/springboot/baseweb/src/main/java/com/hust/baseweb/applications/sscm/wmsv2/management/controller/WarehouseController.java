@@ -1,7 +1,7 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.controller;
 
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.WMSV2Warehouse;
-import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.NewWarehouseRequest;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.WarehouseWithBays;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.WarehouseService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +22,8 @@ public class WarehouseController {
 
     private WarehouseService warehouseService;
 
-    @PostMapping()
-    public ResponseEntity<WMSV2Warehouse> createWarehouse(@Valid @RequestBody NewWarehouseRequest request) {
+    @PutMapping()
+    public ResponseEntity<WMSV2Warehouse> createWarehouse(@Valid @RequestBody WarehouseWithBays request) {
         return ResponseEntity.ok(warehouseService.createWarehouse(request));
     }
 
@@ -38,4 +38,10 @@ public class WarehouseController {
             ResponseEntity.ok(warehouseIds) :
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(warehouseIds);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<WarehouseWithBays> getByWarehouseId(@PathVariable String id) {
+        return ResponseEntity.ok(warehouseService.getById(id));
+    }
+
 }

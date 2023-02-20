@@ -1,6 +1,7 @@
-package com.hust.baseweb.applications.sscm.wmsv2.management.model.request;
+package com.hust.baseweb.applications.sscm.wmsv2.management.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
@@ -12,7 +13,9 @@ import java.util.List;
 
 @Data
 @ToString
-public class NewWarehouseRequest {
+@Builder
+public class WarehouseWithBays {
+    private String id;
     @NotBlank
     private String address;
     @NotBlank
@@ -20,9 +23,9 @@ public class NewWarehouseRequest {
     @NotBlank
     private String name;
     @Min(value = 0)
-    private int facilityLength;
+    private int warehouseLength;
     @Min(value = 0)
-    private int facilityWidth;
+    private int warehouseWidth;
     private BigDecimal longitude;
     private BigDecimal latitude;
     @Valid
@@ -30,7 +33,9 @@ public class NewWarehouseRequest {
 
     @Data
     @AllArgsConstructor
+    @Builder
     public static class Shelf {
+        private String id;
         @NotBlank
         private String code;
         @Min(value = 0)

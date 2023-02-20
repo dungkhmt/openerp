@@ -5,17 +5,17 @@ export const WMSV2 = {
   icon: "HomeSharpIcon",
   text: "QL Kho version 2",
   child: [
-    {
-      id: "MENU_WMSv2_CREATE_FACILITY",
-      path: "/wmsv2/facility/create",
-      isPublic: false,
-      icon: "StarBorder",
-      text: "Tạo mới kho",
-      child: [],
-    },
+    // {
+    //   id: "MENU_WMSv2_CREATE_FACILITY",
+    //   path: "/wmsv2/warehouse/create",
+    //   isPublic: false,
+    //   icon: "StarBorder",
+    //   text: "Tạo mới kho",
+    //   child: [],
+    // },
     {
       id: "MENU_WMSv2_VIEW_FACILITY",
-      path: "/wmsv2/facility/list",
+      path: "/wmsv2/warehouse",
       isPublic: false,
       icon: "StarBorder",
       text: "Danh sách kho",
