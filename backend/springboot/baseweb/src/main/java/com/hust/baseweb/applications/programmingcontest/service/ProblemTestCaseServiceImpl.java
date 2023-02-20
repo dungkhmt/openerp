@@ -309,6 +309,12 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
+    public List<ModelProblemGeneralInfo> getAllProblemsGeneralInfo() {
+        List<ModelProblemGeneralInfo> problems = problemRepo.getAllProblemGeneralInformation();
+        return problems;
+    }
+
+    @Override
     public String executableIDECode(
         ModelRunCodeFromIDE modelRunCodeFromIDE,
         String userName,
@@ -817,6 +823,56 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             return contestService.updateContestWithCache(contestEntity);
         }
 
+    }
+
+    @Override
+    public ContestProblem saveProblemInfoInContest(ModelProblemInfoInContest modelProblemInfoInContest, String userName) {
+        String contestId = modelProblemInfoInContest.getContestId();
+        String problemId = modelProblemInfoInContest.getProblemId();
+
+//        ContestEntity contest = contestService.findContest(contestId);
+//        List<ProblemEntity> problems = contest.getProblems();
+
+//        if (problems.stream().anyMatch(p -> p.getProblemId().equals(problemId)))
+//            return null;
+
+        // ProblemEntity newProblem = problemService.findProblem(problemId);
+        // problems.add(newProblem);
+        // contest.setProblems(problems);
+
+        // contestService.saveContest(contest);
+
+        ContestProblem contestProblem = contestProblemRepo.findByContestIdAndProblemId(contestId, problemId);
+
+        if (contestProblem == null) {
+            contestProblem = new ContestProblem();
+            contestProblem.setContestId(contestId);
+            contestProblem.setProblemId(problemId);
+        }
+
+        if (modelProblemInfoInContest.getProblemRename().isEmpty()) {
+            contestProblem.setProblemRename(modelProblemInfoInContest.getProblemName());
+        } else {
+            contestProblem.setProblemRename(modelProblemInfoInContest.getProblemRename());
+        }
+
+        if (modelProblemInfoInContest.getProblemRecode().isEmpty()) {
+            contestProblem.setProblemRecode("P__" + modelProblemInfoInContest.getProblemName());
+        } else {
+            contestProblem.setProblemRecode(modelProblemInfoInContest.getProblemRecode());
+        }
+
+        contestProblem.setSubmissionMode(modelProblemInfoInContest.getSubmissionMode());
+
+        return contestProblemRepo.save(contestProblem);
+    }
+
+    @Override
+    public void removeProblemFromContest(String contestId, String problemId, String userName) {
+        ContestProblem contestProblem = contestProblemRepo.findByContestIdAndProblemId(contestId, problemId);
+        if (contestProblem != null) {
+            contestProblemRepo.delete(contestProblem);
+        }
     }
 
     @Override

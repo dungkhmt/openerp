@@ -184,7 +184,7 @@ export default function ListTestCase() {
   }
 
   return (
-    <Box>
+    <Box sx={{marginTop: "12px"}}>
       <StandardTable
         title={"Problem's Testcases"}
         columns={testcaseColumns}

@@ -44,6 +44,10 @@ export default function StudentViewProblemList() {
 
   const columns = [
     {
+      title: "Code",
+      field: "problemCode",
+    },
+    {
       title: t("problem"),
       field: "problemName",
       render: (rowData) => (

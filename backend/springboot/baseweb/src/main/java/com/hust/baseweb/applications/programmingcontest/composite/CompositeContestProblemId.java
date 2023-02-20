@@ -1,15 +1,13 @@
 package com.hust.baseweb.applications.programmingcontest.composite;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode
 public class CompositeContestProblemId implements Serializable {
     private String contestId;

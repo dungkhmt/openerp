@@ -21,6 +21,7 @@ import ContestManagerUserSubmission from "./ContestManagerUserSubmission";
 import ContestManagerUserSubmissionNotEvaluated from "./ContestManagerUserSubmissionNotEvaluated";
 import ContestManagerRankingNew from "./ContestManagerRankingNew";
 import ContestResultDistribution from "./ContestResultDistribution";
+import {ContestManagerManageProblem} from "./ContestManagerManageProblem";
 
 export function ContestManager() {
   const { contestId } = useParams();
@@ -275,6 +276,11 @@ export function ContestManager() {
           {...a11yProps(8)}
           style={{ width: "10%" }}
         />
+        <Tab
+          label="Manage Problems"
+          {...a11yProps(9)}
+          style={{ width: "10%" }}
+        />
       </Tabs>
 
       <TabPanelVertical value={value} index={0}>
@@ -323,6 +329,10 @@ export function ContestManager() {
 
       <TabPanelVertical value={value} index={8}>
         <CodeSimilarityCheck contestId={contestId} />
+      </TabPanelVertical>
+
+      <TabPanelVertical value={value} index={9}>
+        <ContestManagerManageProblem contestId={contestId} />
       </TabPanelVertical>
     </div>
   );

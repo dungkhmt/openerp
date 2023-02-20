@@ -20,6 +20,7 @@ public interface ProblemTestCaseService {
 
     Page<ProblemEntity> getContestProblemPaging(Pageable pageable);
     List<ProblemEntity> getAllProblems();
+    List<ModelProblemGeneralInfo> getAllProblemsGeneralInfo();
 
     String executableIDECode(ModelRunCodeFromIDE modelRunCodeFromIDE, String userName, String computerLanguage) throws Exception;
 
@@ -40,6 +41,10 @@ public interface ProblemTestCaseService {
     ContestEntity createContest(ModelCreateContest modelCreateContest, String userName) throws Exception;
 
     ContestEntity updateContest(ModelUpdateContest modelUpdateContest, String userName, String contestId) throws Exception;
+
+    ContestProblem saveProblemInfoInContest(ModelProblemInfoInContest modelProblemInfoInContest, String userName) throws Exception;
+
+    void removeProblemFromContest(String contestId, String problemId, String userName);
 
     ModelProblemSubmissionDetailResponse findProblemSubmissionById(UUID id, String userName) throws MiniLeetCodeException;
 

@@ -73,6 +73,7 @@ public class JavaExecutor {
 
         String outputFileName = tmpName + "_output.txt";
         String errorFileName = tmpName + "_error.txt";
+        
         String sourceSH = SHFileStart
                           + "mkdir -p " + tmpName + "\n"
                           + "cd " + tmpName + "\n"
@@ -90,7 +91,7 @@ public class JavaExecutor {
                           + "f=\"testcase\"$n\".txt\"" + "\n"
                           + "cat $f | (ulimit -t " + timeLimit
                                             // + " -v " + (memoryLimit * 1024)
-                                            + " -f 20000; "
+                                            + " -f 25000; "
                           + "java -Xmx" + memoryLimit + "m Main > " + outputFileName + " 2>&1; ) &> " + errorFileName + "\n"
                           + "ERROR=$(head -1 " + errorFileName +") \n"
                           + "FILE_LIMIT='" + FILE_LIMIT_ERROR + "' \n"
