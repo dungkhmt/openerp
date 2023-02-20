@@ -141,6 +141,7 @@ public interface ProblemTestCaseService {
     List<CodePlagiarism> findAllByContestId(String contestId);
     List<CodePlagiarism> findAllBy(ModelGetCodeSimilarityParams input);
     List<ModelSimilarityClusterOutput> computeSimilarityClusters(ModelGetCodeSimilarityParams input);
+    List<ModelReponseCodeSimilaritySummaryParticipant> getListModelReponseCodeSimilaritySummaryParticipant(String contestId);
 
     ContestSubmissionEntity updateContestSubmissionSourceCode(ModelUpdateContestSubmission input);
 

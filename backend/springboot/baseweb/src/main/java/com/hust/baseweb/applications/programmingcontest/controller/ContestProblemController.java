@@ -318,7 +318,11 @@ public class ContestProblemController {
         ContestSubmissionEntity sub = problemTestCaseService.updateContestSubmissionSourceCode(input);
         return ResponseEntity.ok().body(sub);
     }
-
+    @GetMapping("/get-code-similarity-summary-of-participants/{contestId}")
+    public ResponseEntity<?> getCodeSimilaritySummaryOfParticipants(Principal principal, @PathVariable String contestId){
+        List<ModelReponseCodeSimilaritySummaryParticipant> res = problemTestCaseService.getListModelReponseCodeSimilaritySummaryParticipant(contestId);
+        return ResponseEntity.ok().body(res);
+    }
     @PostMapping("/get-code-similarity")
     public ResponseEntity<?> getCodeSimilarity(Principal principal, @RequestBody ModelGetCodeSimilarityParams input) {
         // String contestId = input.getContestId();
