@@ -1,29 +1,28 @@
 import SearchBox from '../components/searchBox.js';
 import Maps from '../components/maps.js';
 import MapIcon from '@mui/icons-material/Map';
-import { Box, Button, Grid, InputAdornment, OutlinedInput, TextField, Typography, Modal } from "@material-ui/core";
-import React, { Fragment, useRef, useState } from "react";
+import { Box, Button, Grid, InputAdornment, OutlinedInput, TextField, Typography,
+  Modal } from "@material-ui/core";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { setCanvasSize } from "../utilities.js"
 import { Stage, Layer, Rect } from "react-konva";
 import useStyles from "../../../wms/management/CreateWarehouse/CreateWarehouse.style";
-import { useHistory } from "react-router";
 import { request } from "api";
 import { errorNoti, successNoti } from "utils/notification";
-import { useRouteMatch } from "react-router-dom";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CachedIcon from '@mui/icons-material/Cached';
+import { API_PATH } from '../apiPaths.js';
+import { warehouse } from 'config/menuconfig/warehouse.js';
 
-const CreateFacility = () => {
-  const holderShelf = { x: "", y: "", width: "", lenght: "", num: "" };
+const CreateWarehouse = ( props ) => {
+  const holderShelf = { x: "", y: "", width: "", length: "", num: "" };
   const classes = useStyles();
   const [listShelf, setListShelf] = useState([holderShelf]);
   const [canvanData, setCanvasData] = useState([]);
   const [scale, setScale] = useState();
   const { register, errors, handleSubmit, watch, getValues } = useForm();
-  const history = useHistory();
-  const { path } = useRouteMatch();
   const [pos, setPos] = useState();
   const [shelf, setShelf] = useState();
   const stageCanvasRef = useRef();
@@ -32,6 +31,37 @@ const CreateFacility = () => {
   const [height, setHeight] = useState();
   const [openModal, setOpenModal] = useState(false);
   const [selectPosition, setSelectPosition] = useState(null);
+  const warehouseId = props.match?.params?.id;
+  const [warehouseInfo, setWarehouseInfo] = useState(null);
+  const isCreateForm = warehouseId == null;
+  // Use to determine what value of Address text field
+  // if updateAddress = true -> Address text field = new select address from map
+  // else -> current warehouse address or null
+  const [updateAddress, setUpdateAddress] = useState(false); 
+
+  useEffect(() => {
+    if (warehouseId != null) {
+      request(
+        "get",
+        API_PATH.WAREHOUSE + "/" + warehouseId,
+        (res) => {
+          setWarehouseInfo(res.data);
+          setListShelf([...res.data.listShelf, ...listShelf]);
+        },
+        {
+          401: () => { },
+          503: () => { errorNoti("Có lỗi khi tải dữ liệu của kho") }
+        }
+      );
+    }
+  }, [warehouseId])
+
+  useEffect(() => {
+    if (selectPosition != null) {
+      setUpdateAddress(true);
+      console.log("Update address is set to true");
+    }
+  }, [selectPosition])
 
   const handleAddShelf = () => {
     setListShelf([...listShelf, holderShelf])
@@ -42,7 +72,6 @@ const CreateFacility = () => {
     newFormValues.splice(i, 1);
     setListShelf(newFormValues)
   }
-
 
   const addWareHouse = () => {
   }
@@ -58,20 +87,23 @@ const CreateFacility = () => {
   };
 
   let submitForm = (data) => {
-    data.listShelf = listShelf.filter((element) => JSON.stringify(element) !== JSON.stringify(holderShelf));
-    data.longitude = selectPosition.lon;
-    data.latitude = selectPosition.lat;
+    data.listShelf = listShelf.filter((element) => 
+      JSON.stringify(element) !== JSON.stringify(holderShelf));
+    data.longitude = updateAddress ? selectPosition.lon : warehouse.longitude;
+    data.latitude = updateAddress ? selectPosition.lat : warehouse.latitude;
+    data.id = isCreateForm ? null : warehouseId;
+    console.log("Data in request body -> ", data);
     request(
-      "post",
-      "/wmsv2/admin/facility",
+      "put",
+      API_PATH.WAREHOUSE,
       (res) => {
         let id = res.data.id;
-        successNoti("Tạo kho thành công")
+        successNoti(isCreateForm ? "Tạo kho thành công" : "Cập nhật kho thành công");
         // history.push(`${path.replace('/create', '')}/${id}`);
       },
       {
         401: () => { },
-        400: (e) => { console.log("Error message: ", e.response.data.errors[0].message); errorNoti(e.response.data.errors[0].message); }
+        400: (e) => { errorNoti(e.response.data.errors[0].message); }
       },
       data
     );
@@ -87,8 +119,8 @@ const CreateFacility = () => {
 
   const resetCanvas = () => {
     const data = getValues();
-    const width = parseInt(data.facilityWidth)
-    const length = parseInt(data.facilityLength)
+    const width = parseInt(data.warehouseWidth)
+    const length = parseInt(data.warehouseLength)
     if (isNaN(width) || isNaN(length) || width <= 0 || length <= 0) {
       errorNoti(
         "Vui lòng điền kích thước kho"
@@ -99,8 +131,9 @@ const CreateFacility = () => {
     if (stageCanvasRef.current) {
       setWidth(stageCanvasRef.current.offsetWidth);
       setHeight(stageCanvasRef.current.offsetHeight);
-      setWarehouseHeight(stageCanvasRef.current.offsetWidth * data.facilityLength / data.facilityWidth)
-      setScale(stageCanvasRef.current.offsetWidth / data.facilityWidth)
+      setWarehouseHeight(stageCanvasRef.current.offsetWidth 
+        * data.warehouseLength / data.warehouseWidth)
+      setScale(stageCanvasRef.current.offsetWidth / data.warehouseWidth)
     }
   };
 
@@ -149,7 +182,13 @@ const CreateFacility = () => {
           p: 4,
         }}>
           <Typography variant="h5">
-            Chọn vị trí kho <Button variant="contained" className={classes.addButton} type="submit" onClick={() => setOpenModal(false)} >Lưu</Button>
+            Chọn vị trí kho 
+            <Button variant="contained" 
+            className={classes.addButton} 
+            type="submit" 
+            onClick={() => setOpenModal(false)} >
+              Lưu
+            </Button>
           </Typography>
           
           <div style={{
@@ -159,23 +198,27 @@ const CreateFacility = () => {
             height: "100%",
           }}>
             <div style={{ width: "50%", height: "90%", marginRight: 10 }}>
-              <Maps selectPosition={selectPosition} setSelectPosition={setSelectPosition}  />
+              <Maps selectPosition={selectPosition} 
+                setSelectPosition={setSelectPosition} />
             </div>
             <div style={{ width: "50%", height: "90%" }}>
-              <SearchBox selectPosition={selectPosition} setSelectPosition={setSelectPosition} />
+              <SearchBox selectPosition={selectPosition} 
+                setSelectPosition={setSelectPosition} />
             </div>
           </div>
         </Box>
       </Modal>
       <Box className={classes.warehousePage} >
-        <Grid container justifyContent="space-between" className={classes.headerBox} >
+        <Grid container justifyContent="space-between" 
+          className={classes.headerBox} >
           <Grid>
             <Typography variant="h5">
-              Tạo Mới Kho
+              {isCreateForm ? "Tạo Mới Kho" : "Xem thông tin kho"}
             </Typography>
           </Grid>
           <Grid className={classes.buttonWrap}>
-            <Button variant="contained" className={classes.addButton} type="submit" onClick={handleSubmit(submitForm)} >Lưu</Button>
+            <Button variant="contained" className={classes.addButton} 
+              type="submit" onClick={handleSubmit(submitForm)} >Lưu</Button>
           </Grid>
         </Grid>
       </Box>
@@ -204,6 +247,13 @@ const CreateFacility = () => {
                           name="name"
                           error={!!errors.name}
                           helperText={errors.name?.message}
+                          value={warehouseInfo?.name}
+                          onChange={(e) => {
+                            setWarehouseInfo({
+                              ...warehouseInfo,
+                              name: e.target.value
+                            });
+                          }}
                         />
                       </Box>
                     </Grid>
@@ -220,13 +270,21 @@ const CreateFacility = () => {
                           name="code"
                           error={!!errors.code}
                           helperText={errors.code?.message}
+                          value={warehouseInfo?.code}
+                          onChange={(e) => {
+                            setWarehouseInfo({
+                              ...warehouseInfo,
+                              code: e.target.value
+                            });
+                          }}
                         />
                       </Box>
                     </Grid>
                     <Grid item xs={12}>
                       <Box className={classes.inputWrap}>
                         <Box className={classes.labelInput}>
-                          Địa chỉ <Button style={{ "margin-bottom": 0 }} onClick={() => setOpenModal(!openModal)}><MapIcon /></Button>
+                          Địa chỉ <Button style={{ "margin-bottom": 0 }} 
+                          onClick={() => setOpenModal(!openModal)}><MapIcon /></Button>
                         </Box>
                         <TextField
                           fullWidth
@@ -239,7 +297,11 @@ const CreateFacility = () => {
                           error={!!errors.address}
                           helperText={errors.address?.message}
                           disabled
-                          value={selectPosition?.display_name}
+                          value={
+                            updateAddress ? 
+                            selectPosition?.display_name :
+                            warehouseInfo?.address
+                          }
                         />
                       </Box>
                     </Grid>
@@ -260,9 +322,16 @@ const CreateFacility = () => {
                         <OutlinedInput
                           fullWidth
                           inputRef={register({ required: false })}
-                          name="facilityWidth"
+                          name="warehouseLength"
                           className={classes.settingInput}
                           endAdornment={<InputAdornment position="end">{`(mét)`}</InputAdornment>}
+                          value={warehouseInfo?.warehouseLength}
+                          onChange={(e) => {
+                            setWarehouseInfo({
+                              ...warehouseInfo,
+                              warehouseLength: e.target.value
+                            });
+                          }}
                         />
                       </Box>
                     </Grid>
@@ -273,10 +342,17 @@ const CreateFacility = () => {
                         </Box>
                         <OutlinedInput
                           fullWidth
-                          name="facilityLength"
+                          name="warehouseWidth"
                           inputRef={register({ required: false })}
                           className={classes.settingInput}
                           endAdornment={<InputAdornment position="end">{`(mét)`}</InputAdornment>}
+                          value={warehouseInfo?.warehouseWidth}
+                          onChange={(e) => {
+                            setWarehouseInfo({
+                              ...warehouseInfo,
+                              warehouseWidth: e.target.value
+                            });
+                          }}
                         />
                       </Box>
                     </Grid>
@@ -288,7 +364,6 @@ const CreateFacility = () => {
           <Box className={classes.boxInfor} style={{ margin: 0 }}>
             <Typography className={classes.inforTitle} variant="h6">
               Thông tin chi tiết kho
-
               <input
                 style={{ display: 'none' }}
                 id="raised-button-file"
@@ -296,7 +371,10 @@ const CreateFacility = () => {
                 type="file"
               />
               <label htmlFor="raised-button-file">
-                <Button variant="raised" component="span" style={{ fontSize: "18px !important", color: "#1976d2", marginLeft: 94, textTransform: "none" }}>
+                <Button 
+                  variant="raised" 
+                  component="span" 
+                  style={{ fontSize: "18px !important", color: "#1976d2", marginLeft: 94, textTransform: "none" }}>
                   Tải file lên
                 </Button>
               </label>
@@ -317,28 +395,64 @@ const CreateFacility = () => {
                           <Box style={{ width: `calc(100% - 75px` }} className={classes.rootInput}>
                             <Grid container spacing={1} >
                               <Grid item xs={6} >
-                                <TextField variant="outlined" size="small" label="Tọa độ x" fullWidth name="x" value={data.x} onChange={e => handleChange(index, e)} />
+                                <TextField 
+                                  variant="outlined" 
+                                  size="small" 
+                                  label="Tọa độ x" 
+                                  fullWidth 
+                                  name="x" 
+                                  value={data.x} 
+                                  onChange={e => handleChange(index, e)} />
                               </Grid>
                               <Grid item xs={6} >
-                                <TextField variant="outlined" size="small" label="Chiều dài" fullWidth name={`width`} value={data.width} onChange={e => handleChange(index, e)} />
+                                <TextField 
+                                  variant="outlined" 
+                                  size="small" 
+                                  label="Chiều dài" 
+                                  fullWidth 
+                                  name={`width`} 
+                                  value={data.width} 
+                                  onChange={e => handleChange(index, e)} />
                               </Grid>
                               <Grid item xs={6} >
-                                <TextField variant="outlined" size="small" label="Tọa độ y" fullWidth name={`y`} value={data.y} onChange={e => handleChange(index, e)} />
+                                <TextField 
+                                  variant="outlined" 
+                                  size="small" 
+                                  label="Tọa độ y"
+                                   fullWidth 
+                                   name={`y`} 
+                                   value={data.y} 
+                                   onChange={e => handleChange(index, e)} />
                               </Grid>
                               <Grid item xs={6} >
-                                <TextField variant="outlined" size="small" label="Chiều Rộng" fullWidth name={`length`} value={data.length} onChange={e => handleChange(index, e)} />
+                                <TextField 
+                                  variant="outlined" 
+                                  size="small" 
+                                  label="Chiều Rộng" 
+                                  fullWidth 
+                                  name={`length`} 
+                                  value={data.length} 
+                                  onChange={e => handleChange(index, e)} />
                               </Grid>
                               <Grid item xs={6}>
-                                <TextField variant="outlined" size="small" label="Code" fullWidth name={`code`} value={data.code} onChange={e => handleChange(index, e)} />
+                                <TextField 
+                                  variant="outlined" 
+                                  size="small" 
+                                  label="Code" 
+                                  fullWidth 
+                                  name={`code`} 
+                                  value={data.code} 
+                                  onChange={e => handleChange(index, e)} />
                               </Grid>
                             </Grid>
 
                           </Box>
-                          <Box className={classes.removeIconBox} onClick={() => removeFormFields(index)}  >
+                          <Box 
+                            className={classes.removeIconBox} 
+                            onClick={() => removeFormFields(index)}  >
                             <HighlightOffIcon className={classes.removeIcon} />
                           </Box>
                         </Box>
-
                       </Box>
                     ))
                   }
@@ -350,7 +464,6 @@ const CreateFacility = () => {
                   </Box>
                 </Box>
               </Grid>
-
 
               <Grid xs={9} item sx={{ display: "flex", }} className={classes.boxWrap}>
                 <Box className={classes.titleWap} >
@@ -384,12 +497,18 @@ const CreateFacility = () => {
                           warehouseBox(data, scale)
                         ))}
                       </Layer>
-
                     </Stage>
                     {
                       shelf && pos &&
-                      <Typography style={{ position: "absolute", top: pos.y + 8 + "px", left: pos.x + 8 + "px", padding: "4px", boxShadow: "0px 2px 4px rgb(168 168 168 / 25%)", borderRadius: 3, background: "#FFF", }}>
-                        Kệ {listShelf[shelf - 1].code}
+                      <Typography style={{ 
+                        position: "absolute", 
+                        top: pos.y + 8 + "px", 
+                        left: pos.x + 8 + "px", 
+                        padding: "4px", 
+                        boxShadow: "0px 2px 4px rgb(168 168 168 / 25%)", 
+                        borderRadius: 3, 
+                        background: "#FFF", }}>
+                          Kệ {listShelf[shelf - 1].code}
                       </Typography>
                     }
                   </Box>
@@ -403,4 +522,4 @@ const CreateFacility = () => {
   );
 }
 
-export default CreateFacility;
+export default CreateWarehouse;

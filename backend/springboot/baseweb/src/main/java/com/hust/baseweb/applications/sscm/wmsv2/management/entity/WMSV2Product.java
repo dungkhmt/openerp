@@ -14,8 +14,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @ToString
-@Table(name = "product")
-public class ProductV2 {
+@Table(name = "wmsv2_product")
+public class WMSV2Product {
     @Id
     private UUID productId;
     private String code;
