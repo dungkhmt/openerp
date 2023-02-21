@@ -4,15 +4,17 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
 @Data
-public class ProductFacility {
+@Table(name = "wmsv2_product_warehouse")
+public class WMSV2ProductWarehouse {
     @Id
-    private UUID productFacilityId;
+    private UUID productWarehouseId;
     private UUID productId;
-    private UUID facilityId;
+    private UUID warehouseId;
     private BigDecimal quantityOnHand;
 }

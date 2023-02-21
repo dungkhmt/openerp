@@ -17,13 +17,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "bay")
+@Table(name = "wmsv2_bay")
 public class Bay {
     @Id
     @GenericGenerator(name = "uuid1", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "uuid1")
     private UUID bayId;
-    private UUID facilityId;
+    private UUID warehouseId;
     private String code;
     private Integer x;
     private Integer y;

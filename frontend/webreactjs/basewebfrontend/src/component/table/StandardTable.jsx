@@ -165,6 +165,7 @@ export default function StandardTable(props) {
             ),
             ...props.components,
           }}
+          actions={props.actions}
         />
       </MuiThemeProvider>
     </>
@@ -184,5 +185,6 @@ StandardTable.propTypes = {
   actions: PropTypes.array,
   data: PropTypes.array,
   commandBarComponents: PropTypes.element,
+  actions: PropTypes.array,
 };
 

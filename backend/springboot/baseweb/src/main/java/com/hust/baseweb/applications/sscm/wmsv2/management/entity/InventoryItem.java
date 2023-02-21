@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
@@ -14,12 +15,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @ToString
+@Table(name = "wmsv2_inventory_item")
 public class InventoryItem {
     @Id
     private UUID inventoryItemId;
     private UUID productId;
     private String lotId;
-    private UUID facilityId;
+    private UUID warehouseId;
     private UUID bayId;
 
     private BigDecimal quantityOnHandTotal;
