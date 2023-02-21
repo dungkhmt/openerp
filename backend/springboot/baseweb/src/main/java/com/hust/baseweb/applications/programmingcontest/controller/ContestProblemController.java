@@ -110,6 +110,7 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(modelRunCodeFromIDEOutput);
     }
 
+    @Secured("ROLE_TEACHER")
     @GetMapping("/problem-details/{problemId}")
     public ResponseEntity<?> getProblemDetails(@PathVariable("problemId") String problemId) throws Exception {
         log.info("getProblemDetails problemId ", problemId);
@@ -132,6 +133,7 @@ public class ContestProblemController {
         return ResponseEntity.ok().body("NOTFOUND");
     }
 
+    @Secured("ROLE_TEACHER")
     @GetMapping("/get-problem-detail-view-by-manager/{problemId}")
     public ResponseEntity<?> getProblemDetailViewByManager(Principal principal, @PathVariable String problemId) {
         try {
@@ -618,6 +620,7 @@ public class ContestProblemController {
         ListModelUserRegisteredContestInfo resp = problemTestCaseService.searchUser(pageable, contestId, keyword);
         return ResponseEntity.status(200).body(resp);
     }
+
     @Secured("ROLE_TEACHER")
     @GetMapping("/search-user-based-keyword")
     public ResponseEntity<?> searchUserBaseKeyword(Pageable pageable,
@@ -1469,6 +1472,7 @@ public class ContestProblemController {
         return ResponseEntity.status(200).body(page);
     }
 
+    @Secured("ROLE_TEACHER")
     @GetMapping("/get-contest-submission-paging/{contestId}")
     public ResponseEntity<?> getContestSubmissionPaging(@PathVariable("contestId") String contestId,
             Pageable pageable) {
