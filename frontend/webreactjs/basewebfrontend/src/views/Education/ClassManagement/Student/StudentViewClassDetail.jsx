@@ -6,38 +6,28 @@ import {
   Divider,
   Grid,
   Link,
-  Paper,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import MaterialTable from "material-table";
-import React, { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BiDetail } from "react-icons/bi";
-import {
-  useDispatch,
-  //useSelector
-} from "react-redux";
 import {
   //useHistory,
   useParams,
 } from "react-router";
-import { Link as RouterLink } from "react-router-dom";
+import { classState } from "state/ClassState";
 import { request } from "../../../../api";
-import AssignmentTab from "../../../../component/education/classmanagement/student/AssignmentTab";
 import QuizTab from "../../../../component/education/classmanagement/student/QuizTab";
-import StudentListTab from "../../../../component/education/classmanagement/student/StudentListTab";
 import {
-  a11yProps, AntTab, AntTabs,
-  StyledTab,
-  StyledTabs,
+  a11yProps,
+  AntTab,
+  AntTabs,
   TabPanel,
 } from "../../../../component/tab";
-import { setClassId } from "../../../../reducers/classReducer";
-import StudentViewLearningSessionList from "./StudentViewLearningSessionList";
-import StudentViewClassDetailChapterList from "./StudentViewClassDetailChapterList";
-import StudentViewClassDetailStudentList from "./StudentViewClassDetailStudentList";
-import StudentViewClassDetailLearningSessionList from "./StudentViewClassDetailLearningSessionList";
 import StudentViewClassDetailAssignmentList from "./StudentViewClassDetailAssignmentList";
+import StudentViewClassDetailChapterList from "./StudentViewClassDetailChapterList";
+import StudentViewClassDetailLearningSessionList from "./StudentViewClassDetailLearningSessionList";
+import StudentViewClassDetailStudentList from "./StudentViewClassDetailStudentList";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -62,7 +52,6 @@ const useStyles = makeStyles((theme) => ({
 export default function StudentViewClassDetail() {
   const classes = useStyles();
   const params = useParams();
-  const dispatch = useDispatch();
 
   const classId = params.id;
   const [classDetail, setClassDetail] = useState({});
@@ -75,8 +64,8 @@ export default function StudentViewClassDetail() {
   const getClassDetail = () => {
     const classId = params.id;
     request("get", `/edu/class/${params.id}`, (res) => {
-        setClassDetail(res.data);
-        dispatch(setClassId(classId));
+      setClassDetail(res.data);
+      classState.classId.set(classId);
     });
   };
 
@@ -90,16 +79,18 @@ export default function StudentViewClassDetail() {
     "Bài tập trắc nghiệm",
     "DS sinh viên",
     "Bài tập",
-    "Buổi học"
-  ]
+    "Buổi học",
+  ];
 
   return (
     <div>
-      <AntTabs value={activeTab}
-               onChange={handleChangeTab}
-               aria-label="student-view-class-detail-tabs"
-               scrollButtons="auto"
-               variant="scrollable">
+      <AntTabs
+        value={activeTab}
+        onChange={handleChangeTab}
+        aria-label="student-view-class-detail-tabs"
+        scrollButtons="auto"
+        variant="scrollable"
+      >
         {tabsLabel.map((label, idx) => (
           <AntTab key={label} label={label} {...a11yProps(idx)} />
         ))}

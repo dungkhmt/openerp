@@ -9,9 +9,9 @@ import {
 import { number } from "prop-types";
 import { useEffect, useState } from "react";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { classState } from "state/ClassState";
 import { errorNoti, successNoti } from "utils/notification";
 import { request } from "../../../api";
 import Player from "../../../utils/Player";
@@ -39,10 +39,9 @@ function StudentCourseChapterMaterialDetail() {
   const [listComment, setListComment] = useState([]);
   const params = useParams();
   const chapterMaterialId = params.chapterMaterialId;
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
-  const classId = useSelector((state) => state.class.classId);
-  const history = useHistory();
+
+  const classId = classState.classId.get();
+
   const [chapterMaterial, setChapterMaterial] = useState(null);
   const [sourceId, setSourceId] = useState(null);
   const [chapterId, setChapterId] = useState(null);
