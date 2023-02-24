@@ -33,7 +33,7 @@ const TMSContainerRoute = lazy(() => import("./TMSContainerRoute"));
 // const WMSRoute = lazy(() => import("./WMSRoute"));
 const EduRoute = lazy(() => import("./EduRoute"));
 // const UserLoginRoute = lazy(() => import("./UserLoginRoute"));
-const TestGroupRoute = lazy(() => import("./TestGroupRoute"));
+// const TestGroupRoute = lazy(() => import("./TestGroupRoute"));
 const UserGroupRoute = lazy(() => import("./UserGroupRoute"));
 
 const useStyles = makeStyles(() => ({
@@ -72,6 +72,7 @@ function MainAppRoute(props) {
             path={"/programming-contest/public/contest-raking/:contestId"}
           />
 
+          {/* consider remove */}
           {/* <PrivateRoute component={UserLoginRoute} path="/userlogin" /> */}
 
           <PrivateRoute component={EduRoute} path="/edu" />
@@ -96,11 +97,12 @@ function MainAppRoute(props) {
             path="/bigdataanalysis"
           />
 
-          <PrivateRoute
+          {/* Testing route => consider remove */}
+          {/* <PrivateRoute
             component={TestGroupRoute}
             isAuthenticated={props.isAuthenticated}
             path="/test-group"
-          />
+          /> */}
 
           <PrivateRoute
             component={UserGroupRoute}
