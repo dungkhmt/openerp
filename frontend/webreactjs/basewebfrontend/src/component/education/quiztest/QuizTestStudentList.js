@@ -15,12 +15,9 @@ import * as _ from "lodash";
 import MaterialTable from "material-table";
 import { useEffect, useReducer, useState } from "react";
 import { FcDocument } from "react-icons/fc";
-import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
 import SimpleBar from "simplebar-react";
 import { request } from "../../../api";
 //import { authPostMultiPart } from "../../../api";
-import { useDispatch } from "react-redux";
 import { localization } from "../../../utils/MaterialTableUtils";
 import PrimaryButton from "../../button/PrimaryButton";
 import TertiaryButton from "../../button/TertiaryButton";
@@ -45,13 +42,11 @@ const headerProperties = {
 let count = 0;
 
 export default function QuizTestStudentList(props) {
-  const history = useHistory();
   const classes = useStyles();
-  const token = useSelector((state) => state.auth.token);
+
   const [filename, setFilename] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
-  const dispatch = useDispatch();
 
   //
   const testId = props.testId;

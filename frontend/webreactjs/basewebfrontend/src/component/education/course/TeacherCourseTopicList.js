@@ -2,7 +2,6 @@ import { Card, CardContent } from "@material-ui/core/";
 import AddIcon from "@material-ui/icons/Add";
 import MaterialTable from "material-table";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link, useHistory } from "react-router-dom";
 import { request } from "../../../api";
@@ -10,8 +9,7 @@ import { request } from "../../../api";
 function TeacherCourseTopicList(props) {
   const params = useParams();
   const courseId = props.courseId;
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const history = useHistory();
   const [topics, setTopics] = useState([]);
 

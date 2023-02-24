@@ -4,7 +4,6 @@ import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
 import { tableIcons } from "../../../utils/iconutil";
@@ -18,8 +17,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ClassesList() {
   const classes = useStyles();
   const history = useHistory();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const [allClasses, setAllClasses] = useState([]);
 
   // Table

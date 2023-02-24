@@ -3,7 +3,6 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
 import { tableIcons } from "../../../utils/iconutil";
@@ -11,8 +10,7 @@ import ModalCreate from "./ModalCreate";
 
 function ResourceDomainList(props) {
   const history = useHistory();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const columns = [
     { field: "id", title: "Domain Id" },
     { field: "name", title: "Name" },

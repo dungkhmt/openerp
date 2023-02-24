@@ -24,7 +24,6 @@ import { DropzoneArea } from "material-ui-dropzone";
 import { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link, useHistory } from "react-router-dom";
 import {
@@ -113,8 +112,7 @@ const editorStyle = {
 
 function EditProblem() {
   const { problemId } = useParams();
-  const token = useSelector((state) => state.auth.token);
-  const dispatch = useDispatch();
+
   const history = useHistory();
   const [problemName, setProblemName] = useState("");
   const [problemDescriptions, setProblemDescription] = useState();

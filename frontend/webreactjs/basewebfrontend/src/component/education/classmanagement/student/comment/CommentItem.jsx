@@ -1,26 +1,23 @@
-import { makeStyles } from "@material-ui/core/styles";
-import { authPut, authDelete, authGet, authPost } from "../../../../../api";
 import {
   Avatar,
   Button,
   Dialog,
-  DialogTitle,
+  DialogActions,
   DialogContent,
   DialogContentText,
-  DialogActions,
+  DialogTitle,
+  IconButton,
   Input,
   Menu,
   MenuItem,
-  IconButton,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import { useDispatch, useSelector } from "react-redux";
-import { useState, useEffect } from "react";
-import ReplyCommentItem from "./ReplyCommentItem";
-import { request } from "../../../../../api";
+import { useEffect, useState } from "react";
 import displayTime from "utils/DateTimeUtils";
 import { errorNoti, successNoti } from "utils/notification";
-import { Fragment } from "react";
+import { request } from "../../../../../api";
+import ReplyCommentItem from "./ReplyCommentItem";
 
 const useStyles = makeStyles((theme) => ({
   commentItem: {
@@ -56,8 +53,6 @@ export default function CommentItem({
   setCommentFlag,
   loginUser,
 }) {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
   const [isEditting, setIsEditting] = useState(false);
   const [commentTextEdit, setCommentTextEdit] = useState(comment.commentText);
   const [openModal, setOpenModal] = useState(false);

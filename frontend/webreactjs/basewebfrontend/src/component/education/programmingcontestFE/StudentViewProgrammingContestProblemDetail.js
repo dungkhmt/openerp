@@ -21,7 +21,6 @@ import { ContentState, EditorState } from "draft-js";
 import htmlToDraft from "html-to-draftjs";
 import React, { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import {
   getFileType,
@@ -88,8 +87,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const [runTime, setRunTime] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [selectedTestcase, setSelectedTestcase] = useState();
-  const token = useSelector((state) => state.auth.token);
-  const dispatch = useDispatch();
+
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [editorStateDescription, setEditorStateDescription] = useState(
     EditorState.createEmpty()

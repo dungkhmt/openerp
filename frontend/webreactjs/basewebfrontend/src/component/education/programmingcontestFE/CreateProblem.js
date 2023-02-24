@@ -16,17 +16,16 @@ import {
   OutlinedInput,
   Select,
   TextField,
-  Typography
+  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import {
   errorNoti,
   successNoti,
-  warningNoti
+  warningNoti,
 } from "../../../utils/notification";
 import RichTextEditor from "../../common/editor/RichTextEditor";
 import HustCodeEditor from "../../common/HustCodeEditor";
@@ -65,8 +64,6 @@ function CreateProblem() {
   ]);
   const classes = useStyles();
   const history = useHistory();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
 
   const [problemId, setProblemID] = useState("");
   const [problemName, setProblemName] = useState("");

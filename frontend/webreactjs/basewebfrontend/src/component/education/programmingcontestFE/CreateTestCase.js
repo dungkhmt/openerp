@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { successNoti, warningNoti } from "../../../utils/notification";
 import { request } from "./Request";
@@ -31,7 +31,6 @@ export default function CreateTestCase(props) {
   const [filename, setFilename] = useState("");
   const [uploadMode, setUploadMode] = useState("EXECUTE");
 
-  const dispatch = useDispatch();
   const [uploadMessage, setUploadMessage] = useState("");
   //const token = useSelector((state) => state.auth.token);
   const handleChange = (event, newValue) => {

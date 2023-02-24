@@ -2,7 +2,6 @@ import { Box, Grid, Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useEffect, useState } from "react";
 import { Bar, Doughnut, HorizontalBar, Line } from "react-chartjs-2";
-import { useDispatch, useSelector } from "react-redux";
 import { request } from "../../api";
 import withScreenSecurity from "../withScreenSecurity";
 
@@ -114,8 +113,7 @@ const rows = [
 
 function MainDashBoard(props) {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const taskCounterOption = taskCounterOpt;
 
   const [dataAllProject, setDataAllProject] = useState({});

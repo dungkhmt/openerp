@@ -6,7 +6,6 @@ import { ContentState, EditorState } from "draft-js";
 import htmlToDraft from "html-to-draftjs";
 import React, { useEffect, useRef, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { randomImageName } from "utils/FileUpload/covert";
 import { request } from "../../../api";
@@ -38,8 +37,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
 
   const [openModalPreview, setOpenModalPreview] = useState(false);
   const [selectedTestcase, setSelectedTestcase] = useState();
-  const token = useSelector((state) => state.auth.token);
-  const dispatch = useDispatch();
+
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [editorStateDescription, setEditorStateDescription] = useState(
     EditorState.createEmpty()

@@ -1,8 +1,8 @@
-import { combineReducers } from "redux";
-import classReducer from "./classReducer";
-import screenSecurity from "./screen";
+// import { combineReducers } from "redux";
+// import classReducer from "./classReducer";
+// import screenSecurity from "./screen";
 
-export default combineReducers({
-  screenSecurity,
-  class: classReducer,
-});
+// export default combineReducers({
+//   screenSecurity,
+//   class: classReducer,
+// });

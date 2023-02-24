@@ -12,7 +12,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { EditorState } from "draft-js";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
@@ -53,8 +52,7 @@ function CreateChapterMaterialOfCourse() {
   const [alertSeverity, setAlertSeverty] = useState("info");
   const [openAlert, setOpenAlert] = useState(false);
   const history = useHistory();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [isLoading, setIsLoading] = useState(false);
 

@@ -4,7 +4,6 @@ import AddIcon from "@material-ui/icons/Add";
 import MaterialTable from "material-table";
 import { useEffect, useState } from "react";
 import ReactExport from "react-data-export";
-import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { request } from "../../../api";
 import PositiveButton from "../classmanagement/PositiveButton";
@@ -24,8 +23,7 @@ const useStyles = makeStyles((theme) => ({
 function TeacherCourseQuizList(props) {
   const classes = useStyles();
   const courseId = props.courseId;
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const history = useHistory();
   const [quizs, setQuizs] = useState([]);
   const [fetchedQuizs, setfetchedQuizs] = useState(false);

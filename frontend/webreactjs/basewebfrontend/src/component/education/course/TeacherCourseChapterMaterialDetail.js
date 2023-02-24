@@ -17,7 +17,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Add, KeyboardArrowLeft, KeyboardArrowRight } from "@material-ui/icons";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { request } from "../../../api";
@@ -43,8 +42,7 @@ const useStyles = makeStyles((theme) => ({
 function TeacherCourseChapterMaterialDetail() {
   const params = useParams();
   const chapterMaterialId = params.chapterMaterialId;
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const [chapterMaterial, setChapterMaterial] = useState(null);
   const [sourceId, setSourceId] = useState(null);
   const [listImage, setListImage] = useState([]);

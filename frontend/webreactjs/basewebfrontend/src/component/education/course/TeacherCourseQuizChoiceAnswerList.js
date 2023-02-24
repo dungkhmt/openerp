@@ -3,7 +3,6 @@ import AddIcon from "@material-ui/icons/Add";
 import parse from "html-react-parser";
 import MaterialTable from "material-table";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { request } from "../../../api";
 
@@ -19,8 +18,7 @@ function TeacherCourseQuizChoiceAnswerList(props) {
   // const classes = useStyles();
   const questionId = props.questionId;
   const courseId = props.courseId;
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const history = useHistory();
   const [choiceAnswers, setChoiceAnswers] = useState([]);
 

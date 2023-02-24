@@ -8,7 +8,6 @@ import keycloak, { initOptions } from "config/keycloak.js";
 import { useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { useDispatch } from "react-redux";
 import { Router } from "react-router-dom";
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -87,7 +86,7 @@ const AppLoading = (
 );
 
 function App() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   // TODO: Consider remove this logic!
   const logout = () => {

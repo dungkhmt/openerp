@@ -7,15 +7,13 @@ import {
 } from "@material-ui/core";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { successNoti, warningNoti } from "../../../utils/notification";
 import { request } from "./Request";
 
 export default function EditTestCase(props) {
   const history = useHistory();
-  const token = useSelector((state) => state.auth.token);
-  const dispatch = useDispatch();
+
   const [value, setValue] = useState(0);
   const [input, setInput] = useState("");
   const [result, setResult] = useState("");

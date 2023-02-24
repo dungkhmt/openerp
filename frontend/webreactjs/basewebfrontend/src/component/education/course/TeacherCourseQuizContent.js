@@ -17,7 +17,6 @@ import htmlToDraft from "html-to-draftjs";
 import { DropzoneArea } from "material-ui-dropzone";
 import { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
@@ -82,8 +81,6 @@ function CreateQuizOfCourse() {
   const classes = useStyles();
   const questionId = params.questionId;
   const history = useHistory();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
 
   const [quizCourseTopicId, setQuizCourseTopicId] = useState(null);
   const [levelId, setLevelId] = useState(null);

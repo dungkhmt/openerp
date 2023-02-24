@@ -11,7 +11,6 @@ import Typography from "@material-ui/core/Typography";
 import { CircularProgress } from "@material-ui/core";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
 
@@ -53,8 +52,7 @@ const columns = [
 export default function CreateClass() {
   const classes = useStyles();
   const history = useHistory();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const [isRequesting, setIsRequesting] = useState(false);
 
   const [classId, setClassId] = useState(null);

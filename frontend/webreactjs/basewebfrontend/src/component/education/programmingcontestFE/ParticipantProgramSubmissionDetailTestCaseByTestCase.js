@@ -5,14 +5,13 @@ import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import HustModal from "component/common/HustModal";
 import MaterialTable from "material-table";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { request } from "../../../api";
 import { toFormattedDateTime } from "../../../utils/dateutils";
 
 export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
   props
 ) {
-  const dispatch = useDispatch();
   const { submissionId } = props;
   const [submissionTestCase, setSubmissionTestCase] = useState([]);
   const [openModal, setOpenModal] = useState(false);

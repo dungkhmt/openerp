@@ -11,7 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { request } from "api";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { API_URL } from "../../../config/config";
 import withScreenSecurity from "../../withScreenSecurity";
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 function ClassCreate() {
   const classes = useStyles();
   const history = useHistory();
-  const dispatch = useDispatch();
+
   const token = useSelector((state) => state.auth.token);
   const [isRequesting, setIsRequesting] = useState(false);
 

@@ -12,7 +12,6 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import displayTime from "utils/DateTimeUtils";
 import { errorNoti, successNoti } from "utils/notification";
 import { request } from "../../../../api";
@@ -53,8 +52,6 @@ export default function CommentItem({
   editComment,
   loginUser,
 }) {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
   const [valueCommentMessage, setValueCommentMessage] = useState(
     comment.commentMessage
   );

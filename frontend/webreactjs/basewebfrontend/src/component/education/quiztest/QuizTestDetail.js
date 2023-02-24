@@ -9,7 +9,6 @@ import TertiaryButton from "component/button/TertiaryButton";
 import { a11yProps, AntTab, AntTabs, TabPanel } from "component/tab";
 import { useEffect, useState } from "react";
 import { FcCalendar, FcClock } from "react-icons/fc";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
 import { addZeroBefore } from "utils/dateutils";
@@ -65,9 +64,6 @@ const weekDay = [
 function QuizTestDetail() {
   let param = useParams();
   let testId = param.id;
-
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
 
   const [testInfo, setTestInfo] = useState([]);
   const [courseInfo, setCourseInfo] = useState();

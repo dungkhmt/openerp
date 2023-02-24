@@ -4,7 +4,6 @@ import { grey } from "@material-ui/core/colors";
 import { request } from "api";
 import MaterialTable from "material-table";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { localization } from "../../utils/MaterialTableUtils";
 import RouteDetail from "./RouteDetail";
 const cellStyles = { headerStyle: { padding: 8 }, cellStyle: { padding: 8 } };
@@ -16,11 +15,8 @@ export default function TMSContainerHome() {
   const [selectedRoute, setSelectedRoute] = React.useState(null);
   const [selectedOrders, setSelectedOrders] = React.useState(null);
 
-  const dispatch = useDispatch();
   const [routes, setRoutes] = React.useState([]);
   const [selectedRows, setSelectedRows] = React.useState([]);
-
-  const token = useSelector((state) => state.auth.token);
 
   const columns = [
     { title: "Index", field: "index", ...cellStyles },

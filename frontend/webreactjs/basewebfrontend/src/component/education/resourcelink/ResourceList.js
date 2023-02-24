@@ -4,18 +4,18 @@ import AddCircleIcon from "@material-ui/icons/AddCircle";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { request } from "../../../api";
 import { tableIcons } from "../../../utils/iconutil";
 import ModalCreateResource from "./ModalCreateResource";
+
 function ResourceList(props) {
   const history = useHistory();
   const location = useLocation();
   const params = useParams();
-  const dispatch = useDispatch();
+
   const [open, setOpen] = useState(false);
-  const token = useSelector((state) => state.auth.token);
+
   const columns = [
     {
       field: "link",

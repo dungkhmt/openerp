@@ -3,7 +3,6 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import XLSX from "xlsx";
@@ -21,8 +20,6 @@ import UploadButton from "../UploadButton";
 
 function CourseList() {
   const history = useHistory();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
 
   // Snackbar
   const toastId = React.useRef(null);

@@ -15,7 +15,6 @@ import draftToHtml from "draftjs-to-html";
 import { DropzoneArea } from "material-ui-dropzone";
 import { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
@@ -79,8 +78,7 @@ function CreateQuizOfCourse() {
   const [alertSeverity, setAlertSeverty] = useState("info");
   const [openAlert, setOpenAlert] = useState(false);
   const history = useHistory();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
 
   const onClickAlertBtn = () => {

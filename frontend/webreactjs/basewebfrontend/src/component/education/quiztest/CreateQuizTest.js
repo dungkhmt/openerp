@@ -20,7 +20,6 @@ import {
 } from "@material-ui/pickers";
 import { useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { request } from "../../../api";
 import CreateNewQuestionPopup from "../quiztest/CreateNewQuestionPopup";
@@ -134,9 +133,6 @@ function goToBottom() {
 }
 
 function CreateQuizTest() {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
-
   const [listCourse, setListCourse] = useState([]);
 
   const [classMap, setClassMap] = useState({});

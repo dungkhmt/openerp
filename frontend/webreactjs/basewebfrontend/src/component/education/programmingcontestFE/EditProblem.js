@@ -21,7 +21,6 @@ import {
 import { useEffect, useState } from "react";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { randomImageName } from "../../../utils/FileUpload/covert";
 import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
@@ -63,8 +62,6 @@ function EditProblem() {
   const classes = useStyles();
 
   const { problemId } = useParams();
-  const token = useSelector((state) => state.auth.token);
-  const dispatch = useDispatch();
 
   const [problemName, setProblemName] = useState("");
   const [description, setDescription] = useState("");
