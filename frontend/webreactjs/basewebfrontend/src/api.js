@@ -72,16 +72,16 @@ export const authPostMultiPart = (dispatch, token, url, body) => {
   );
 };
 
-export const authPut = (dispatch, token, url, body) => {
-  return fetch(API_URL + url, {
-    method: "PUT",
-    headers: {
-      "content-type": "application/json",
-      "X-Auth-Token": token,
-    },
-    body: JSON.stringify(body),
-  });
-};
+// export const authPut = (dispatch, token, url, body) => {
+//   return fetch(API_URL + url, {
+//     method: "PUT",
+//     headers: {
+//       "content-type": "application/json",
+//       "X-Auth-Token": token,
+//     },
+//     body: JSON.stringify(body),
+//   });
+// };
 
 export const authGet = (dispatch, token, url) => {
   return fetch(API_URL + url, {
