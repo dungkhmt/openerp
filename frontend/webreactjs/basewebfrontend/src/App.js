@@ -72,7 +72,7 @@ const AppLoading = (
         flexGrow: 1,
       }}
     >
-      <SvgIcon sx={{ fontSize: 150, mb: 4 }} viewBox="150 150">
+      <SvgIcon sx={{ fontSize: 150, mb: 4 }} viewBox="0 0 150 150">
         <Logo width={132} height={132} x={9} y={9} />
       </SvgIcon>
       <Box>
