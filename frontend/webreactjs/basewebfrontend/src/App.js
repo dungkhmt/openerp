@@ -3,7 +3,6 @@ import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { SvgIcon, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { ReactKeycloakProvider } from "@react-keycloak/web";
-import { getScrSecurInfo } from "action/Screen";
 import { FacebookCircularProgress } from "component/common/progressBar/CustomizedCircularProgress.jsx";
 import keycloak, { initOptions } from "config/keycloak.js";
 import { useEffect } from "react";
@@ -123,8 +122,8 @@ function App() {
       //       }),
       //   10 * 1000
       // );
-
-      dispatch(getScrSecurInfo());
+      // Currently not used
+      // dispatch(getScrSecurInfo());
     } else if (event === "onAuthError") {
       console.error("Authenticated failed");
     } else if (event === "onAuthLogout") {
