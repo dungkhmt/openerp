@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { authPostMultiPart, authGet, request } from "../../api";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { authPostMultiPart, request } from "../../api";
 
 export default function ChatMain() {
   const dispatch = useDispatch();
@@ -32,13 +32,18 @@ export default function ChatMain() {
   }
 
   function downloadFile() {
-    authGet(dispatch, token, "/content/get/" + fileId)
-      .then((res) => {
-        console.log("result download = ", res);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+    request(
+      "get",
+      "/content/get/" + fileId,
+      (res) => {
+        console.log("result download = ", res.data);
+      },
+      {
+        onError: (e) => {
+          console.error(e);
+        },
+      }
+    );
   }
 
   return (

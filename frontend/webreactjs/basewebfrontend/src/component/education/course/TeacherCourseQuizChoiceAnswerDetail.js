@@ -16,7 +16,6 @@ import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
-import { authGet } from "../../../api";
 import AlertDialog from "../../common/AlertDialog";
 
 import draftToHtml from "draftjs-to-html";
@@ -77,24 +76,27 @@ function TeacherCourseQuizChoiceAnswerDetail() {
       history.push(reDirect);
     }
   };
+
   const handleCloseAlert = () => {
     setOpenAlert(false);
   };
+
   async function getYesNoList() {
-    let lst = await authGet(dispatch, token, "/get-yes-no-list");
-    setYesno(lst);
+    request("get", "/get-yes-no-list", (res) => {
+      setYesno(res.data);
+    });
   }
+
   const onChangeEditorState = (editorState) => {
     setEditorState(editorState);
   };
 
   async function getQuizChoiceAnswerDetail() {
-    await authGet(
-      dispatch,
-      token,
-      "/get-quiz-choice-answer-detail/" + choiceAnswerId
-    ).then(
+    request(
+      "get",
+      "/get-quiz-choice-answer-detail/" + choiceAnswerId,
       (res) => {
+        res = res.data;
         if (res) {
           setIsCorrectAnswer(res.isCorrectAnswer);
           let blocksFromHtml = htmlToDraft(res.choiceAnswerContent);
@@ -113,8 +115,10 @@ function TeacherCourseQuizChoiceAnswerDetail() {
           alert("Lỗi kết nối, thử tải lại trang");
         }
       },
-      (error) => {
-        alert("Lỗi kết nối, thử tải lại trang");
+      {
+        onError: (error) => {
+          alert("Lỗi kết nối, thử tải lại trang");
+        },
       }
     );
   }

@@ -6,7 +6,7 @@ import MaterialTable, { MTableToolbar } from "material-table";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, useParams } from "react-router-dom";
-import { authGet, request } from "../../../api";
+import { request } from "../../../api";
 import { tableIcons } from "../../../utils/iconutil";
 import ModalCreateResource from "./ModalCreateResource";
 function ResourceList(props) {
@@ -108,7 +108,7 @@ function ResourceList(props) {
                     },
                     {
                       onError: (error) => {
-                        console.log("error");
+                        console.log("error", error);
                       },
                     },
                     {
@@ -116,17 +116,17 @@ function ResourceList(props) {
                     }
                   );
                 } else {
-                  authGet(
-                    dispatch,
-                    token,
+                  request(
+                    "get",
                     `/domains/${params.id}/resources` +
                       "?size=" +
                       query.pageSize +
                       "&page=" +
                       query.page +
-                      sortParam
-                  ).then(
+                      sortParam,
                     (res) => {
+                      res = res.data;
+
                       // console.log(res)
                       resolve({
                         data: res.content,
@@ -134,8 +134,10 @@ function ResourceList(props) {
                         totalCount: res.totalElements,
                       });
                     },
-                    (error) => {
-                      console.log("error");
+                    {
+                      onError: (error) => {
+                        console.log("error", error);
+                      },
                     }
                   );
                 }

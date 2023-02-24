@@ -1,11 +1,10 @@
 import { Card, CardContent } from "@material-ui/core/";
 import MaterialTable from "material-table";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link, useHistory } from "react-router-dom";
-import { authGet } from "../../../api";
-import withScreenSecurity from "../../withScreenSecurity";
+import { request } from "../../../api";
 import TeacherViewCourseList from "./teacher/TeacherViewCourseList";
 
 function TeacherCourseList() {
@@ -28,8 +27,9 @@ function TeacherCourseList() {
   ];
 
   async function getCourseList() {
-    let lst = await authGet(dispatch, token, "/edu/class/get-all-courses");
-    setCourses(lst);
+    request("get", "/edu/class/get-all-courses", (res) => {
+      setCourses(res.data);
+    });
   }
 
   useEffect(() => {
@@ -38,8 +38,8 @@ function TeacherCourseList() {
 
   return (
     <div>
-      <TeacherViewCourseList/>
-      <br/>
+      <TeacherViewCourseList />
+      <br />
 
       <Card>
         <CardContent>

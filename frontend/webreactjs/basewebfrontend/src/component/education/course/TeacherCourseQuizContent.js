@@ -15,21 +15,21 @@ import { ContentState, convertToRaw, EditorState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 import { DropzoneArea } from "material-ui-dropzone";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
-import { authGet, authPostMultiPart } from "../../../api";
+import { authPostMultiPart, request } from "../../../api";
 import {
   dataUrlToFile,
   randomImageName,
 } from "../../../utils/FileUpload/covert";
 import AlertDialog from "../../common/AlertDialog";
 import RichTextEditor from "../../common/editor/RichTextEditor";
-import getFileByStorageId from "../quiztest/quizdoingexplanation/content-utils";
 import FilePreview from "../../common/uploader/FilePreview";
 import FileUploader from "../../common/uploader/FileUploader";
+import getFileByStorageId from "../quiztest/quizdoingexplanation/content-utils";
 
 let reDirect = null;
 const useStyles = makeStyles((theme) => ({
@@ -97,7 +97,7 @@ function CreateQuizOfCourse() {
 
   const [initState, setInitSate] = useState(false);
 
-  const [solutionContent, setSolutionContent] = useState('');
+  const [solutionContent, setSolutionContent] = useState("");
   const [solutionAttachmentIds, setSolutionAttachmentIds] = useState([]);
   const [solutionAttachments, setSolutionAttachments] = useState([]);
   const [deletedAttachmentIds, setDeletedAttachmentIds] = useState([]);
@@ -108,13 +108,18 @@ function CreateQuizOfCourse() {
   async function getSolutionAttachments() {
     console.log("solutionAttachmentIds", solutionAttachmentIds);
     let attachments = await Promise.all(
-      solutionAttachmentIds.map(attachmentId => getFileByStorageId(attachmentId))
-    )
+      solutionAttachmentIds.map((attachmentId) =>
+        getFileByStorageId(attachmentId)
+      )
+    );
     setSolutionAttachments(attachments);
   }
 
   function removeOldSolutionAttachments(attachmentIndex) {
-    setDeletedAttachmentIds([...deletedAttachmentIds, solutionAttachmentIds[attachmentIndex]]);
+    setDeletedAttachmentIds([
+      ...deletedAttachmentIds,
+      solutionAttachmentIds[attachmentIndex],
+    ]);
     solutionAttachments.splice(attachmentIndex, 1);
     setSolutionAttachments([...solutionAttachments]);
   }
@@ -140,67 +145,62 @@ function CreateQuizOfCourse() {
       history.push(reDirect);
     }
   };
+
   const handleCloseAlert = () => {
     setOpenAlert(false);
   };
+
   const onChangeEditorState = (editorState) => {
     setEditorState(editorState);
   };
 
   async function getLevelList() {
-    let lst = await authGet(dispatch, token, "/get-quiz-levels");
-    setLevelList(lst);
+    request("get", "/get-quiz-levels", (res) => {
+      setLevelList(res.data);
+    });
   }
+
   async function getTopicList(courseId) {
-    let lst = await authGet(
-      dispatch,
-      token,
-      "/get-quiz-course-topics-of-course/" + courseId
-    );
-    setTopicList(lst);
+    request("get", "/get-quiz-course-topics-of-course/" + courseId, (res) => {
+      setTopicList(res.data);
+    });
   }
 
   async function getQuizContent() {
-    await authGet(
-      dispatch,
-      token,
-      "/edu/teacher/course/quiz/detail/" + questionId
-    )
-      .then((res) => {
-        if (res) {
-          if (res.attachment && res.attachment.length !== 0) {
-            const newFileURLArray = res.attachment.map((url) => ({
-              id: randomImageName(),
-              url,
-            }));
-            setFetchedImageArray(newFileURLArray);
-          }
-          let quizQuestion = res;
-          setQuizCourseTopicId(quizQuestion.quizCourseTopic.quizCourseTopicId);
-          setLevelId(quizQuestion.levelId);
-          setSolutionContent(quizQuestion.solutionContent ?? '');
-          setSolutionAttachmentIds(quizQuestion.solutionAttachmentIds);
-          let blocksFromHtml = htmlToDraft(quizQuestion.questionContent);
-          let { contentBlocks, entityMap } = blocksFromHtml;
-          let contentState = ContentState.createFromBlockArray(
-            contentBlocks,
-            entityMap
-          );
-          let statement = EditorState.createWithContent(contentState);
-          setEditorState(statement);
-          setCourseId(quizQuestion.quizCourseTopic.eduCourse.id);
-          return quizQuestion.quizCourseTopic.eduCourse.id;
-        } else {
-          alert("Lỗi kết nối, thử tải lại trang");
+    request("get", "/edu/teacher/course/quiz/detail/" + questionId, (res) => {
+      res = res.data;
+
+      if (res) {
+        if (res.attachment && res.attachment.length !== 0) {
+          const newFileURLArray = res.attachment.map((url) => ({
+            id: randomImageName(),
+            url,
+          }));
+          setFetchedImageArray(newFileURLArray);
         }
-      })
-      .then((courseId) => {
+        let quizQuestion = res;
+        setQuizCourseTopicId(quizQuestion.quizCourseTopic.quizCourseTopicId);
+        setLevelId(quizQuestion.levelId);
+        setSolutionContent(quizQuestion.solutionContent ?? "");
+        setSolutionAttachmentIds(quizQuestion.solutionAttachmentIds);
+        let blocksFromHtml = htmlToDraft(quizQuestion.questionContent);
+        let { contentBlocks, entityMap } = blocksFromHtml;
+        let contentState = ContentState.createFromBlockArray(
+          contentBlocks,
+          entityMap
+        );
+        let statement = EditorState.createWithContent(contentState);
+        setEditorState(statement);
+        setCourseId(quizQuestion.quizCourseTopic.eduCourse.id);
+
+        const courseId = quizQuestion.quizCourseTopic.eduCourse.id;
         getTopicList(courseId);
         getLevelList();
-      })
-      .then(() => {
         setInitSate(true);
-      });
+      } else {
+        alert("Lỗi kết nối, thử tải lại trang");
+      }
+    });
   }
 
   async function handleSubmit() {
@@ -231,7 +231,7 @@ function CreateQuizOfCourse() {
       questionContent: statement,
       fileId,
       solutionContent,
-      deletedAttachmentIds
+      deletedAttachmentIds,
     };
 
     let formData = new FormData();
@@ -389,18 +389,34 @@ function CreateQuizOfCourse() {
                 ))}
 
               <div>
-                <Typography variant="h6" style={{ marginBottom: '10px' }}>Hướng dẫn làm bài</Typography>
-                <RichTextEditor content={solutionContent}
-                                onContentChange={content => setSolutionContent(content)}/>
-                { solutionAttachments.map((attachment, index) => (
-                  <div style={{ width: '568px', height: '300px', position: 'relative', marginTop: '10px'}}>
-                    <HighlightOffIcon style={{ position: 'absolute', top: '5px', right: '5px'}}
+                <Typography variant="h6" style={{ marginBottom: "10px" }}>
+                  Hướng dẫn làm bài
+                </Typography>
+                <RichTextEditor
+                  content={solutionContent}
+                  onContentChange={(content) => setSolutionContent(content)}
+                />
+                {solutionAttachments.map((attachment, index) => (
+                  <div
+                    style={{
+                      width: "568px",
+                      height: "300px",
+                      position: "relative",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <HighlightOffIcon
+                      style={{ position: "absolute", top: "5px", right: "5px" }}
                       className={classes.buttonClearImage}
-                      onClick={() => removeOldSolutionAttachments(index)}/>
-                    <FilePreview file={attachment} width="568" height="300"/>
+                      onClick={() => removeOldSolutionAttachments(index)}
+                    />
+                    <FilePreview file={attachment} width="568" height="300" />
                   </div>
                 ))}
-                <FileUploader onChange={files => setAddedSolutionAttachments(files)} multiple/>
+                <FileUploader
+                  onChange={(files) => setAddedSolutionAttachments(files)}
+                  multiple
+                />
               </div>
             </form>
           </CardContent>

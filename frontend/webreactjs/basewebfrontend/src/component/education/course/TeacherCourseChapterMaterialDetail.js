@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { authGet, authPostMultiPart, request } from "../../../api";
+import { authPostMultiPart, request } from "../../../api";
 import { errorNoti, successNoti } from "../../../utils/notification";
 import Player from "../../../utils/Player";
 import Loading from "../../common/Loading";
@@ -77,19 +77,22 @@ function TeacherCourseChapterMaterialDetail() {
   }
 
   async function getCourseChapterMaterialDetail() {
-    let res = await authGet(
-      dispatch,
-      token,
-      "/edu/class/get-course-chapter-material-detail/" + chapterMaterialId
+    request(
+      "get",
+      "/edu/class/get-course-chapter-material-detail/" + chapterMaterialId,
+      (res) => {
+        res = res.data;
+        setChapterMaterial(res);
+        console.log("getCourseChapterMaterialDetail ", res);
+        if (res.sourceId !== null) {
+          setSourceId(res.sourceId);
+        } else if (res.slideId !== null) {
+          getImages(res.slideId);
+        }
+      }
     );
+
     //let res = authGet(dispatch, token, '/edu/class/get-course-chapter-material-detail/' + chapterMaterialId);
-    setChapterMaterial(res);
-    console.log("getCourseChapterMaterialDetail ", res);
-    if (res.sourceId !== null) {
-      setSourceId(res.sourceId);
-    } else if (res.slideId !== null) {
-      getImages(res.slideId);
-    }
   }
 
   async function deleteSlideOrVideo() {
@@ -111,14 +114,17 @@ function TeacherCourseChapterMaterialDetail() {
   }
 
   async function getCourseChapterMaterialTypeList() {
-    let lst = await authGet(
-      dispatch,
-      token,
-      "/edu/class/get-course-chapter-material-type-list"
+    request(
+      "get",
+      "/edu/class/get-course-chapter-material-type-list",
+      (res) => {
+        const lst = res.data;
+        setMaterialTypeList(lst);
+        console.log("types = ", lst);
+      }
     );
-    setMaterialTypeList(lst);
-    console.log("types = ", lst);
   }
+
   function onInputFileChange(event) {
     setSelectedInputFile(event.target.files[0]);
   }

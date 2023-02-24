@@ -1,31 +1,22 @@
-import { makeStyles } from "@material-ui/core/styles";
 import {
   Avatar,
-  TextField,
   Button,
   Dialog,
-  DialogTitle,
+  DialogActions,
   DialogContent,
   DialogContentText,
-  DialogActions,
+  DialogTitle,
   Menu,
   MenuItem,
-  IconButton,
-  Input,
+  TextField,
 } from "@material-ui/core";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import { useState, useEffect } from "react";
-import {
-  authPut,
-  authDelete,
-  authGet,
-  authPost,
-  request,
-} from "../../../../api";
+import { makeStyles } from "@material-ui/core/styles";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ReplyCommentItem from "./ReplyCommentItem";
-import { successNoti, errorNoti } from "utils/notification";
 import displayTime from "utils/DateTimeUtils";
+import { errorNoti, successNoti } from "utils/notification";
+import { request } from "../../../../api";
+import ReplyCommentItem from "./ReplyCommentItem";
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -170,13 +161,12 @@ export default function CommentItem({
   //get list reply of comment
   const onGetListReplyComment = async (commentId) => {
     // if (showReplyList === false) {
-    let res = await authGet(
-      dispatch,
-      token,
-      `/edu/class/reply-comment/${commentId}`
-    );
-    setListReplyComment(res);
-    console.log(listReplyComment);
+
+    request("get", `/edu/class/reply-comment/${commentId}`, (res) => {
+      setListReplyComment(res.data);
+      console.log(listReplyComment);
+    });
+
     // }
     // setShowReplyList(!showReplyList);
   };

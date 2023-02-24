@@ -1,26 +1,41 @@
-import {Button, CircularProgress, Grid, MenuItem, TableHead, TextField, Typography,} from "@material-ui/core";
-import InfoIcon from "@mui/icons-material/Info";
-import {Box, IconButton} from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  MenuItem,
+  TableHead,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@material-ui/core/styles";
 import TableRow from "@material-ui/core/TableRow";
+import InfoIcon from "@mui/icons-material/Info";
+import { Box, IconButton } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
-import {ContentState, EditorState} from "draft-js";
-import htmlToDraft from "html-to-draftjs";
-import React, {useEffect, useState} from "react";
-import {Editor} from "react-draft-wysiwyg";
-import {useDispatch, useSelector} from "react-redux";
-import {useParams} from "react-router";
-import {authGet, authPostMultiPart} from "../../../api";
-import {StyledTableCell, StyledTableRow} from "./lib";
-import {request} from "./Request";
-import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
+import HustModal from "component/common/HustModal";
+import { ContentState, EditorState } from "draft-js";
+import htmlToDraft from "html-to-draftjs";
+import React, { useEffect, useState } from "react";
+import { Editor } from "react-draft-wysiwyg";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router";
+import {
+  getFileType,
+  randomImageName,
+  saveByteArray,
+} from "utils/FileUpload/covert";
+import { authPostMultiPart } from "../../../api";
+import { StyledTableCell, StyledTableRow } from "./lib";
+import { request } from "./Request";
+import {
+  copyAllTestCases,
+  downloadAllTestCases,
+} from "./service/TestCaseService";
 import StudentViewSubmission from "./StudentViewSubmission";
-import {getFileType, randomImageName, saveByteArray} from "utils/FileUpload/covert";
-import {makeStyles} from "@material-ui/core/styles";
-import {copyAllTestCases, downloadAllTestCases} from "./service/TestCaseService";
 
 const editorStyle = {
   toolbar: {
@@ -42,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     marginBottom: "16px",
-    alignItems: "center"
+    alignItems: "center",
   },
   fileName: {
     fontStyle: "italic",
@@ -147,37 +162,41 @@ export default function StudentViewProgrammingContestProblemDetail() {
   }
 
   function getProblemDetail() {
-    authGet(
-      dispatch,
-      token,
-      "/get-problem-detail-view-by-student-in-contest/" + problemId + "/" + contestId
-    ).then((res) => {
-      setProblem(res);
-      console.log(res);
-      //setProblemStatement(res.data.problemStatement);
-      if (res.attachment && res.attachment.length !== 0) {
-        const newFileURLArray = res.attachment.map((url) => ({
-          id: randomImageName(),
-          content: url,
-        }));
-        newFileURLArray.forEach((file, idx) => {
-          file.fileName = res.attachmentNames[idx];
-        });
-        setFetchedImageArray(newFileURLArray);
-      }
+    request(
+      "get",
+      "/get-problem-detail-view-by-student-in-contest/" +
+        problemId +
+        "/" +
+        contestId,
+      (res) => {
+        res = res.data;
 
-      let problemDescriptionHtml = htmlToDraft(res.problemStatement);
-      let { contentBlocks, entityMap } = problemDescriptionHtml;
-      let contentDescriptionState = ContentState.createFromBlockArray(
-        contentBlocks,
-        entityMap
-      );
-      let statementDescription = EditorState.createWithContent(
-        contentDescriptionState
-      );
-      setEditorStateDescription(statementDescription);
-    }, (e) => console.log(e))
-    .then();
+        setProblem(res);
+        console.log(res);
+        //setProblemStatement(res.data.problemStatement);
+        if (res.attachment && res.attachment.length !== 0) {
+          const newFileURLArray = res.attachment.map((url) => ({
+            id: randomImageName(),
+            content: url,
+          }));
+          newFileURLArray.forEach((file, idx) => {
+            file.fileName = res.attachmentNames[idx];
+          });
+          setFetchedImageArray(newFileURLArray);
+        }
+
+        let problemDescriptionHtml = htmlToDraft(res.problemStatement);
+        let { contentBlocks, entityMap } = problemDescriptionHtml;
+        let contentDescriptionState = ContentState.createFromBlockArray(
+          contentBlocks,
+          entityMap
+        );
+        let statementDescription = EditorState.createWithContent(
+          contentDescriptionState
+        );
+        setEditorStateDescription(statementDescription);
+      }
+    );
   }
 
   useEffect(() => {
@@ -262,7 +281,12 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 )}
                 {getFileType(file.fileName) === "pdf" && (
                   <Box className={classes.fileDownload}>
-                    <Typography variant="subtitle2" className={classes.fileName}>{file.fileName}</Typography>
+                    <Typography
+                      variant="subtitle2"
+                      className={classes.fileName}
+                    >
+                      {file.fileName}
+                    </Typography>
                     <Button
                       variant="contained"
                       color="success"
@@ -277,7 +301,12 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 )}
                 {getFileType(file.fileName) === "word" && (
                   <Box className={classes.fileDownload}>
-                    <Typography variant="subtitle2" className={classes.fileName}>{file.fileName}</Typography>
+                    <Typography
+                      variant="subtitle2"
+                      className={classes.fileName}
+                    >
+                      {file.fileName}
+                    </Typography>
                     <Button
                       variant="contained"
                       color="success"
@@ -292,7 +321,12 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 )}
                 {getFileType(file.fileName) === "txt" && (
                   <Box className={classes.fileDownload}>
-                    <Typography variant="subtitle2" className={classes.fileName}>{file.fileName}</Typography>
+                    <Typography
+                      variant="subtitle2"
+                      className={classes.fileName}
+                    >
+                      {file.fileName}
+                    </Typography>
                     <Button
                       variant="contained"
                       color="success"
@@ -322,12 +356,18 @@ export default function StudentViewProgrammingContestProblemDetail() {
               <StyledTableCell align="left">Submit Output</StyledTableCell>
               */}
               <StyledTableCell align="left">
-                <Button variant="contained" onClick={() => copyAllTestCases(testCases)}>
+                <Button
+                  variant="contained"
+                  onClick={() => copyAllTestCases(testCases)}
+                >
                   Copy Tests
                 </Button>
               </StyledTableCell>
               <StyledTableCell align="left">
-                <Button variant="contained" onClick={() => downloadAllTestCases(testCases)}>
+                <Button
+                  variant="contained"
+                  onClick={() => downloadAllTestCases(testCases)}
+                >
                   Download Tests
                 </Button>
               </StyledTableCell>

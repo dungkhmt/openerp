@@ -11,13 +11,13 @@ import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { EditorState } from "draft-js";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
-import { authGet, authPostMultiPart } from "../../../api";
-import AlertDialog from "../../common/AlertDialog";
+import { authPostMultiPart, request } from "../../../api";
 import { errorNoti, successNoti } from "../../../utils/notification";
+import AlertDialog from "../../common/AlertDialog";
 import Loading from "../../common/Loading";
 let reDirect = null;
 const useStyles = makeStyles((theme) => ({
@@ -101,15 +101,18 @@ function CreateChapterMaterialOfCourse() {
     //history.push("/edu/course/chapter/detail/" + chapterId);
     //edu/teacher/course/chapter/detail/010a357c-eb5b-49a6-93de-ec1aef3695dd
   }
+
   async function getCourseChapterMaterialTypeList() {
-    let lst = await authGet(
-      dispatch,
-      token,
-      "/edu/class/get-course-chapter-material-type-list"
+    request(
+      "get",
+      "/edu/class/get-course-chapter-material-type-list",
+      (res) => {
+        setMaterialTypeList(res.data);
+        console.log("types = ", res.data);
+      }
     );
-    setMaterialTypeList(lst);
-    console.log("types = ", lst);
   }
+
   function onInputFileChange(event) {
     setSelectedInputFile(event.target.files[0]);
   }

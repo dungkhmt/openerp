@@ -13,16 +13,16 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { convertToRaw, EditorState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import { DropzoneArea } from "material-ui-dropzone";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
-import { authGet, authPostMultiPart } from "../../../api";
+import { authPostMultiPart, request } from "../../../api";
 import AlertDialog from "../../common/AlertDialog";
-import withScreenSecurity from "../../withScreenSecurity";
 import RichTextEditor from "../../common/editor/RichTextEditor";
 import FileUploader from "../../common/uploader/FileUploader";
+import withScreenSecurity from "../../withScreenSecurity";
 
 let reDirect = null;
 const useStyles = makeStyles((theme) => ({
@@ -64,7 +64,7 @@ function CreateQuizOfCourse() {
 
   const [attachmentFiles, setAttachmentFiles] = useState([]);
 
-  const [solutionContent, setSolutionContent] = useState('');
+  const [solutionContent, setSolutionContent] = useState("");
   const [solutionAttachments, setSolutionAttachments] = useState([]);
 
   const handleAttachmentFiles = (files) => {
@@ -89,24 +89,25 @@ function CreateQuizOfCourse() {
       history.push(reDirect);
     }
   };
+
   const handleCloseAlert = () => {
     setOpenAlert(false);
   };
+
   const onChangeEditorState = (editorState) => {
     setEditorState(editorState);
   };
 
   async function getLevelList() {
-    let lst = await authGet(dispatch, token, "/get-quiz-levels");
-    setLevelList(lst);
+    request("get", "/get-quiz-levels", (res) => {
+      setLevelList(res.data);
+    });
   }
+
   async function getTopicList() {
-    let lst = await authGet(
-      dispatch,
-      token,
-      "/get-quiz-course-topics-of-course/" + courseId
-    );
-    setTopicList(lst);
+    request("get", "/get-quiz-course-topics-of-course/" + courseId, (res) => {
+      setTopicList(res.data);
+    });
   }
 
   async function handleSubmit() {
@@ -120,7 +121,7 @@ function CreateQuizOfCourse() {
       levelId: levelId,
       questionContent: statement,
       fileId: fileId,
-      solutionContent
+      solutionContent,
     };
 
     let formData = new FormData();
@@ -238,12 +239,17 @@ function CreateQuizOfCourse() {
 
             <div>
               <Typography variant="h6">Hướng dẫn làm bài</Typography>
-              <RichTextEditor content={solutionContent}
-                              onContentChange={solutionContent => setSolutionContent(solutionContent)}/>
-              <FileUploader onChange={files => setSolutionAttachments(files)}
-                            multiple/>
+              <RichTextEditor
+                content={solutionContent}
+                onContentChange={(solutionContent) =>
+                  setSolutionContent(solutionContent)
+                }
+              />
+              <FileUploader
+                onChange={(files) => setSolutionAttachments(files)}
+                multiple
+              />
             </div>
-
           </form>
         </CardContent>
         <CardActions>

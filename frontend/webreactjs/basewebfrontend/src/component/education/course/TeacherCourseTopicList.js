@@ -1,11 +1,11 @@
 import { Card, CardContent } from "@material-ui/core/";
 import AddIcon from "@material-ui/icons/Add";
 import MaterialTable from "material-table";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link, useHistory } from "react-router-dom";
-import { authGet } from "../../../api";
+import { request } from "../../../api";
 
 function TeacherCourseTopicList(props) {
   const params = useParams();
@@ -39,12 +39,9 @@ function TeacherCourseTopicList(props) {
   ];
 
   async function getTopicList() {
-    let lst = await authGet(
-      dispatch,
-      token,
-      "/get-quiz-course-topics-of-course/" + courseId
-    );
-    setTopics(lst);
+    request("get", "/get-quiz-course-topics-of-course/" + courseId, (res) => {
+      setTopics(res.data);
+    });
   }
 
   useEffect(() => {

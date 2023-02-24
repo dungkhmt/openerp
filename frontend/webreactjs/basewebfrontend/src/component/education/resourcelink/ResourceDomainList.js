@@ -5,7 +5,7 @@ import MaterialTable, { MTableToolbar } from "material-table";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { authGet, request } from "../../../api";
+import { request } from "../../../api";
 import { tableIcons } from "../../../utils/iconutil";
 import ModalCreate from "./ModalCreate";
 
@@ -92,18 +92,18 @@ function ResourceDomainList(props) {
                     "&" + filterParam.substring(0, filterParam.length - 1);
                 }
 
-                authGet(
-                  dispatch,
-                  token,
+                request(
+                  "get",
                   "/domains" +
                     "?size=" +
                     query.pageSize +
                     "&page=" +
                     query.page +
                     sortParam +
-                    filterParam
-                ).then(
+                    filterParam,
                   (res) => {
+                    res = res.data;
+
                     console.log(res);
                     resolve({
                       data: res.Domains,
@@ -111,8 +111,10 @@ function ResourceDomainList(props) {
                       totalCount: res.totalItems,
                     });
                   },
-                  (error) => {
-                    console.log("error");
+                  {
+                    onError: (error) => {
+                      console.log("error", error);
+                    },
                   }
                 );
               })
