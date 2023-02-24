@@ -1,30 +1,30 @@
+import DateFnsUtils from "@date-io/date-fns";
 import {
-  Card,
-  CardContent,
   Button,
-  Typography,
+  Card,
   CardActions,
-  TextField,
-  MenuItem,
+  CardContent,
   Dialog,
-  DialogTitle,
+  DialogActions,
   DialogContent,
   DialogContentText,
-  DialogActions,
+  DialogTitle,
+  MenuItem,
+  TextField,
+  Typography,
 } from "@material-ui/core/";
-import DateFnsUtils from "@date-io/date-fns";
-import React, { useEffect, useState } from "react";
-import { KeyboardArrowRight, KeyboardArrowLeft, Add } from "@material-ui/icons";
+import { makeStyles } from "@material-ui/core/styles";
+import { Add, KeyboardArrowLeft, KeyboardArrowRight } from "@material-ui/icons";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { Link, useHistory } from "react-router-dom";
-import { authDelete, authGet, authPost, authPostMultiPart } from "../../../api";
-import Player from "../../../utils/Player";
-import withScreenSecurity from "../../withScreenSecurity";
-import { makeStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
+import { authGet, authPost, authPostMultiPart, request } from "../../../api";
 import { errorNoti, successNoti } from "../../../utils/notification";
+import Player from "../../../utils/Player";
 import Loading from "../../common/Loading";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import withScreenSecurity from "../../withScreenSecurity";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -85,20 +85,21 @@ function TeacherCourseChapterMaterialDetail() {
   }
 
   async function deleteSlideOrVideo() {
-    let res = await authDelete(
-      dispatch,
-      token,
+    request(
+      "delete",
       "/edu/class/delete-course-chapter-material-detail-slide-video/" +
-        chapterMaterialId
-    ).then((res) => {
-      if (res.error) {
-        errorNoti("Xóa thất bại", true);
-        setFlag(!flag);
-      } else {
+        chapterMaterialId,
+      (res) => {
         successNoti("Xóa thành công", true);
         setFlag(!flag);
+      },
+      {
+        onError: (e) => {
+          errorNoti("Xóa thất bại", true);
+          setFlag(!flag);
+        },
       }
-    });
+    );
   }
 
   async function getCourseChapterMaterialTypeList() {

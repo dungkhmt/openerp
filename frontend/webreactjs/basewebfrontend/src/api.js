@@ -113,36 +113,36 @@ export const authGet = (dispatch, token, url) => {
   );
 };
 
-export const authDelete = (dispatch, token, url, body) => {
-  return fetch(API_URL + url, {
-    method: "DELETE",
-    headers: {
-      "content-type": "application/json",
-      "X-Auth-Token": token,
-    },
-    body: JSON.stringify(body),
-  }).then(
-    (res) => {
-      if (!res.ok) {
-        if (res.status === 401) {
-          dispatch(failed());
-          throw Error("Unauthorized");
-        } else {
-          console.log(res);
-          try {
-            res.json().then((res1) => console.log(res1));
-          } catch (err) {}
-          throw Error();
-        }
-        // return null;
-      }
-      return res.json();
-    },
-    (error) => {
-      console.log(error);
-    }
-  );
-};
+// export const authDelete = (dispatch, token, url, body) => {
+//   return fetch(API_URL + url, {
+//     method: "DELETE",
+//     headers: {
+//       "content-type": "application/json",
+//       "X-Auth-Token": token,
+//     },
+//     body: JSON.stringify(body),
+//   }).then(
+//     (res) => {
+//       if (!res.ok) {
+//         if (res.status === 401) {
+//           dispatch(failed());
+//           throw Error("Unauthorized");
+//         } else {
+//           console.log(res);
+//           try {
+//             res.json().then((res1) => console.log(res1));
+//           } catch (err) {}
+//           throw Error();
+//         }
+//         // return null;
+//       }
+//       return res.json();
+//     },
+//     (error) => {
+//       console.log(error);
+//     }
+//   );
+// };
 
 export const isFunction = (func) =>
   func &&
