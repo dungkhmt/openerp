@@ -1,24 +1,23 @@
-import { Card, CardContent, Button } from "@material-ui/core/";
+import { Button, Card, CardContent } from "@material-ui/core/";
+import { makeStyles } from "@material-ui/core/styles";
 import {
-  KeyboardArrowRight,
   KeyboardArrowLeft,
+  KeyboardArrowRight,
   ZoomIn,
   ZoomOut,
 } from "@material-ui/icons";
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import { number } from "prop-types";
+import { useEffect, useState } from "react";
+import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link, useHistory } from "react-router-dom";
-import { authGet, authPost, authDelete, authPut } from "../../../api";
-import Player from "../../../utils/Player";
-import InputComment from "./comment/InputComment";
-import CommentItem from "./comment/CommentItem";
-import { makeStyles } from "@material-ui/core/styles";
-import { FullScreen, useFullScreenHandle } from "react-full-screen";
-import { number } from "prop-types";
-import Loading from "../../common/Loading";
-import { request } from "../../../api";
 import { errorNoti, successNoti } from "utils/notification";
+import { authGet, request } from "../../../api";
+import Player from "../../../utils/Player";
+import Loading from "../../common/Loading";
+import CommentItem from "./comment/CommentItem";
+import InputComment from "./comment/InputComment";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,14 +73,22 @@ function StudentCourseChapterMaterialDetail() {
 
   async function getImages(slideId) {
     setIsLoading(true);
-    let res = await authPost(dispatch, token, "/get-slide", {
-      // fileId: "62829f1693445a31606162b6;62829f1793445a31606162b8",
-      fileId: slideId,
-    }).then((res) => {
-      console.log("listImg: ", res);
-      setListImage(res);
-      setIsLoading(false);
-    });
+
+    request(
+      "post",
+      "/get-slide",
+      (res) => {
+        console.log("listImg: ", res.data);
+        setListImage(res.data);
+        setIsLoading(false);
+      },
+      {},
+      {
+        // fileId: "62829f1693445a31606162b6;62829f1793445a31606162b8",
+        fileId: slideId,
+      }
+    );
+
     //let res = authGet(dispatch, token, '/edu/class/get-course-chapter-material-detail/' + chapterMaterialId);
   }
 

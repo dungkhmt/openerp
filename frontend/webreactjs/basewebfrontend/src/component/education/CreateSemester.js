@@ -8,10 +8,10 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import MaterialTable, { MTableToolbar } from "material-table";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { authGet, authPost } from "../../api";
+import { authGet, request } from "../../api";
 import { tableIcons } from "../../utils/iconutil";
 
 const useStyles = makeStyles((theme) => ({
@@ -61,12 +61,17 @@ export default function CreateSemester(props) {
         semesterId: data["semesterId"],
         semesterName: data["semesterName"],
       };
-      authPost(dispatch, token, "/edu/create-semester", input)
-        .then((res) => res.json())
-        .then((res) => {
+
+      request(
+        "post",
+        "/edu/create-semester",
+        (res) => {
           alert("Đã lưu học kì " + data["semesterId"] + ".");
           window.location.reload();
-        });
+        },
+        {},
+        input
+      );
     }
   };
 

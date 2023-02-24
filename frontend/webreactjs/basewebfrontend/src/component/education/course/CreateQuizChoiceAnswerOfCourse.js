@@ -12,12 +12,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { convertToRaw, EditorState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
-import { authGet, authPost } from "../../../api";
+import { authGet, request } from "../../../api";
 import AlertDialog from "../../common/AlertDialog";
 
 let reDirect = null;
@@ -94,22 +94,26 @@ function CreateQuizChoiceAnswerOfCourse() {
       isCorrectAnswer: isCorrectAnswer,
       quizQuestionId: questionId,
     };
-    let chapter = await authPost(
-      dispatch,
-      token,
+
+    request(
+      "post",
       "/create-quiz-choice-answer",
+      (res) => {
+        //history.push("/edu/teacher/course/quiz/detail/" + questionId);
+        history.push(
+          "/edu/teacher/course/quiz/detail/" + questionId + "/" + courseId
+        );
+        //course/quiz/detail/264e1fec-1f92-4687-ad9b-6396a3d9ecc9/IT3170
+      },
+      {},
       body
     );
-
-    //history.push("/edu/teacher/course/quiz/detail/" + questionId);
-    history.push(
-      "/edu/teacher/course/quiz/detail/" + questionId + "/" + courseId
-    );
-    //course/quiz/detail/264e1fec-1f92-4687-ad9b-6396a3d9ecc9/IT3170
   }
+
   useEffect(() => {
     getYesNoList(); // need to be upgraded
   }, []);
+
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Card>

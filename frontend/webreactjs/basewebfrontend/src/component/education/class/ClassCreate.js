@@ -9,11 +9,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import React, { useEffect, useState } from "react";
+import { request } from "api";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { failed } from "../../../action/Auth";
-import { authPost } from "../../../api";
 import { API_URL } from "../../../config/config";
 import withScreenSecurity from "../../withScreenSecurity";
 
@@ -231,29 +230,28 @@ function ClassCreate() {
     }
 
     setIsRequesting(true);
-    authPost(dispatch, token, "/edu/class/add", data)
-      .then(
-        (res) => {
-          setIsRequesting(false);
-          if (res.message === "duplicate") {
-            alert("Mã lớp đã tồn tại");
-            return "duplicate";
-          } else if (res.status === 401) {
-            dispatch(failed());
-            throw Error("Unauthorized");
-          } else if (res.status === 409) {
-            alert("User exits!!");
-          } else if (res.status === 201) {
-            return res.json();
-          }
-        },
-        (error) => {
-          console.log(error);
+    request(
+      "post",
+      "/edu/class/add",
+      (res) => {
+        setIsRequesting(false);
+
+        if (res.data.message === "duplicate") {
+          alert("Mã lớp đã tồn tại");
+          return "duplicate";
+        } else if (res.status === 409) {
+          alert("User exits!!");
+        } else if (res.status === 201) {
+          history.push("/edu/teacher/class/list");
         }
-      )
-      .then((res) => {
-        if (res !== "duplicate") history.push("/edu/teacher/class/list");
-      });
+      },
+      {
+        onError: (error) => {
+          console.log(error);
+        },
+      },
+      data
+    );
   };
 
   return (

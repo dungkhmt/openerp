@@ -6,7 +6,7 @@ import MaterialTable, { MTableToolbar } from "material-table";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, useParams } from "react-router-dom";
-import { authGet, authPost, request } from "../../../api";
+import { authGet, request } from "../../../api";
 import { tableIcons } from "../../../utils/iconutil";
 import ModalCreateResource from "./ModalCreateResource";
 function ResourceList(props) {
@@ -97,17 +97,22 @@ function ResourceList(props) {
                 }
 
                 if (query.search.length > 0) {
-                  authPost(dispatch, token, `/domains/${params.id}/resources`, {
-                    description: query.search,
-                  }).then(
+                  request(
+                    "post",
+                    `/domains/${params.id}/resources`,
                     (res) => {
-                      console.log(res);
+                      console.log(res.data);
                       resolve({
-                        data: res,
+                        data: res.data,
                       });
                     },
-                    (error) => {
-                      console.log("error");
+                    {
+                      onError: (error) => {
+                        console.log("error");
+                      },
+                    },
+                    {
+                      description: query.search,
                     }
                   );
                 } else {

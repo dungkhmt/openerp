@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { authGet, authPost, authPostMultiPart, request } from "../../../api";
+import { authGet, authPostMultiPart, request } from "../../../api";
 import { errorNoti, successNoti } from "../../../utils/notification";
 import Player from "../../../utils/Player";
 import Loading from "../../common/Loading";
@@ -60,12 +60,20 @@ function TeacherCourseChapterMaterialDetail() {
   const classes = useStyles();
 
   async function getImages(slideId) {
-    let res = await authPost(dispatch, token, "/get-slide", {
-      // fileId: "62829f1693445a31606162b6;62829f1793445a31606162b8",
-      fileId: slideId,
-    });
+    request(
+      "post",
+      "/get-slide",
+      (res) => {
+        setListImage(res.data);
+      },
+      {},
+      {
+        // fileId: "62829f1693445a31606162b6;62829f1793445a31606162b8",
+        fileId: slideId,
+      }
+    );
+
     //let res = authGet(dispatch, token, '/edu/class/get-course-chapter-material-detail/' + chapterMaterialId);
-    setListImage(res);
   }
 
   async function getCourseChapterMaterialDetail() {

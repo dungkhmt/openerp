@@ -29,10 +29,10 @@ import QuizTestDetail from "../component/education/quiztest/QuizTestDetail";
 import QuizTestEdit from "../component/education/quiztest/QuizTestEdit";
 import QuizTestList from "../component/education/quiztest/QuizTestList-old-tmp";
 import QuizTestListAll from "../component/education/quiztest/QuizTestListAll";
+import StudentMyQuizTestList from "../component/education/quiztest/StudentMyQuizTestList";
 import StudentQuizDetail from "../component/education/quiztest/StudentQuizDetail";
 import StudentQuizDetailCheckAndConfirmGroupCode from "../component/education/quiztest/StudentQuizDetailCheckAndConfirmGroupCode";
 import StudentQuizList from "../component/education/quiztest/StudentQuizTestList";
-import StudentMyQuizTestList from "../component/education/quiztest/StudentMyQuizTestList";
 import ResourceCreate from "../component/education/resourcelink/ResourceCreate";
 import ResourceDomainCreate from "../component/education/resourcelink/ResourceDomainCreate";
 import ResourceDomainEdit from "../component/education/resourcelink/ResourceDomainEdit";
@@ -45,20 +45,19 @@ import TeacherViewQuestionsOfParticipant from "../component/education/quiztest/T
 import ClassRegistration from "../views/Education/ClassManagement/Student/ClassRegistration";
 import SAssignmentDetail from "../views/Education/ClassManagement/Student/SAssignmentDetail";
 import SClassDetail from "../views/Education/ClassManagement/Student/SClassDetail";
-import SClassList from "../views/Education/ClassManagement/Student/SClassList";
 import StudentViewLearningSessionDetail from "../views/Education/ClassManagement/Student/StudentViewLearningSessionDetail";
 import CreateAssignment from "../views/Education/ClassManagement/Teacher/CreateAssignment";
 import StudentLearningProgressDetail from "../views/Education/ClassManagement/Teacher/StudentLearningProgressDetail";
+import TAllClassList from "../views/Education/ClassManagement/Teacher/TAllClassList";
 import TAssignmentDetail from "../views/Education/ClassManagement/Teacher/TAssignmentDetail";
 import TClassDetail from "../views/Education/ClassManagement/Teacher/TClassDetail";
 import TClassList from "../views/Education/ClassManagement/Teacher/TClassList";
-import TAllClassList from "../views/Education/ClassManagement/Teacher/TAllClassList";
 import TeacherViewDetailClass from "../views/Education/ClassManagement/Teacher/TeacherViewDetailClass";
 import TeacherViewLearningSessionDetail from "../views/Education/ClassManagement/Teacher/TeacherViewLearningSessionDetail";
 
 import StudentCreateThesis from "../component/education/thesisdefensejury/StudentCreateThesis";
-import NotFound from "../views/errors/NotFound";
 import ClassList from "../views/Education/ClassManagement/Student/ClassList";
+import NotFound from "../views/errors/NotFound";
 
 export default function EduRoute() {
   let { path } = useRouteMatch();
@@ -206,8 +205,6 @@ export default function EduRoute() {
         <Route component={AssignmentList} path={`${path}/assignment`} />
 
         {/* <Route component={CreateSemester} path={`${path}/semester`} /> */}
-
-        <Route component={ClassCreate} path={`${path}/class/add`} />
 
         {/**
          * route for quiz test

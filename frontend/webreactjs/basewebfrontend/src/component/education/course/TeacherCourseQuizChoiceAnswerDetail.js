@@ -16,7 +16,7 @@ import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
-import { authGet, authPost } from "../../../api";
+import { authGet } from "../../../api";
 import AlertDialog from "../../common/AlertDialog";
 
 import draftToHtml from "draftjs-to-html";
@@ -128,29 +128,30 @@ function TeacherCourseQuizChoiceAnswerDetail() {
       isCorrectAnswer: isCorrectAnswer,
       quizQuestionId: questionId,
     };
-    await authPost(
-      dispatch,
-      token,
+
+    request(
+      "post",
       "/update-quiz-choice-answer/" + choiceAnswerId,
-      body
-    ).then(
       (res) => {
-        if (res.length !== 0) {
-          alert("Cập nhật thành công");
-        } else {
+        if (res.data === "No permission") {
           alert("Cập nhật không thành công");
+        } else {
+          alert("Cập nhật thành công");
         }
         history.push(
           "/edu/teacher/course/quiz/detail/" + questionId + "/" + courseId
         );
       },
-      (error) => {
-        alert("Cập nhật không thành công");
-        //history.push("/edu/teacher/course/quiz/detail/" + questionId);
-        history.push(
-          "/edu/teacher/course/quiz/detail/" + questionId + "/" + courseId
-        );
-      }
+      {
+        onError: (error) => {
+          alert("Cập nhật không thành công");
+          //history.push("/edu/teacher/course/quiz/detail/" + questionId);
+          history.push(
+            "/edu/teacher/course/quiz/detail/" + questionId + "/" + courseId
+          );
+        },
+      },
+      body
     );
   }
 
