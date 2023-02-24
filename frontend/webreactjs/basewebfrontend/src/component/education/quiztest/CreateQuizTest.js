@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { authPostMultiPart, request } from "../../../api";
+import { request } from "../../../api";
 import CreateNewQuestionPopup from "../quiztest/CreateNewQuestionPopup";
 
 const styles = {
@@ -338,9 +338,24 @@ function CreateQuizTest() {
             console.log(pair[0]+ ', ' + pair[1]); 
         } */
 
-    await authPostMultiPart(dispatch, token, "/create-quiz-test", formData);
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
+      "/create-quiz-test",
+      (res) => {
+        history.push("/edu/class/quiztest/list");
+      },
+      {},
+      formData,
+      config
+    );
+
     //await authPost(dispatch, token, "/create-quiz-test", formData);
-    history.push("/edu/class/quiztest/list");
   }
 
   return (

@@ -1,4 +1,6 @@
-import {makeStyles} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { LoadingButton } from "@mui/lab";
 import {
   Box,
   Button,
@@ -16,25 +18,26 @@ import {
   TextField,
   Typography
 } from "@mui/material";
-import React, {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import {useDispatch, useSelector} from "react-redux";
-import {useHistory} from "react-router-dom";
-import {CompileStatus} from "./CompileStatus";
-import {sleep} from "./lib";
-import {request} from "./Request";
-import {authPostMultiPart} from "../../../api";
-import {useTranslation} from "react-i18next";
-import HustDropzoneArea from "../../common/HustDropzoneArea";
-import {errorNoti, successNoti, warningNoti} from "../../../utils/notification";
-import HustCodeEditor from "../../common/HustCodeEditor";
-import {LoadingButton} from "@mui/lab";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import {
+  errorNoti,
+  successNoti,
+  warningNoti
+} from "../../../utils/notification";
 import RichTextEditor from "../../common/editor/RichTextEditor";
+import HustCodeEditor from "../../common/HustCodeEditor";
 import HustContainerCard from "../../common/HustContainerCard";
-import {CUSTOM_EVALUATION, NORMAL_EVALUATION} from "./Constant";
-import {getAllTags} from "./service/TagService";
+import HustDropzoneArea from "../../common/HustDropzoneArea";
+import { CompileStatus } from "./CompileStatus";
+import { CUSTOM_EVALUATION, NORMAL_EVALUATION } from "./Constant";
+import { sleep } from "./lib";
 import ModelAddNewTag from "./ModelAddNewTag";
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { request } from "./Request";
+import { getAllTags } from "./service/TagService";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -51,13 +54,15 @@ const useStyles = makeStyles((theme) => ({
   },
   description: {
     marginBottom: theme.spacing(2),
-  }
+  },
 }));
 
 function CreateProblem() {
-  const {t} = useTranslation(
-    ["education/programmingcontest/problem", "common", "validation"]
-  );
+  const { t } = useTranslation([
+    "education/programmingcontest/problem",
+    "common",
+    "validation",
+  ]);
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -92,7 +97,7 @@ function CreateProblem() {
   const handleGetTagsSuccess = (res) => setTags(res.data);
   useEffect(() => {
     getAllTags(handleGetTagsSuccess);
-  }, [])
+  }, []);
 
   const handleSelectTags = (event) => {
     setSelectedTags(event.target.value);
@@ -129,19 +134,41 @@ function CreateProblem() {
 
   const validateSubmit = () => {
     if (problemId === "") {
-      errorNoti(t("missingField", {ns: "validation", fieldName: t("problemId")}), 3000);
+      errorNoti(
+        t("missingField", { ns: "validation", fieldName: t("problemId") }),
+        3000
+      );
       return false;
     }
     if (problemName === "") {
-      errorNoti(t("missingField", {ns: "validation", fieldName: t("problemName")}), 3000);
+      errorNoti(
+        t("missingField", { ns: "validation", fieldName: t("problemName") }),
+        3000
+      );
       return false;
     }
     if (timeLimit <= 0 || timeLimit > 60) {
-      errorNoti(t("numberBetween", {ns: "validation", fieldName: t("timeLimit"), min: 1, max: 60}), 3000);
+      errorNoti(
+        t("numberBetween", {
+          ns: "validation",
+          fieldName: t("timeLimit"),
+          min: 1,
+          max: 60,
+        }),
+        3000
+      );
       return false;
     }
     if (memoryLimit <= 0 || timeLimit > 1024) {
-      errorNoti(t("numberBetween", {ns: "validation", fieldName: t("memoryLimit"), min: 1, max: 1024}), 3000);
+      errorNoti(
+        t("numberBetween", {
+          ns: "validation",
+          fieldName: t("memoryLimit"),
+          min: 1,
+          max: 1024,
+        }),
+        3000
+      );
       return false;
     }
     if (!statusSuccessful) {
@@ -149,7 +176,7 @@ function CreateProblem() {
       return false;
     }
     return true;
-  }
+  };
 
   function handleSubmit() {
     if (!validateSubmit()) return;
@@ -171,7 +198,9 @@ function CreateProblem() {
       solutionCheckerLanguage: solutionCheckerLanguage,
       isPublic: isPublic,
       fileId: fileId,
-      scoreEvaluationType: isCustomEvaluated ? CUSTOM_EVALUATION : NORMAL_EVALUATION,
+      scoreEvaluationType: isCustomEvaluated
+        ? CUSTOM_EVALUATION
+        : NORMAL_EVALUATION,
       tagIds: tagIds,
     };
 
@@ -195,17 +224,32 @@ function CreateProblem() {
     }
     */
     setLoading(true);
-    authPostMultiPart(dispatch, token, "/create-problem", formData)
-      .then(
-        () => {
-          successNoti("Problem saved successfully", 1000);
-          sleep(1000).then(() => {
-            history.push("/programming-contest/list-problems");
-          });
+
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
+      "/create-problem",
+      (res) => {
+        setLoading(false);
+        successNoti("Problem saved successfully", 1000);
+        sleep(1000).then(() => {
+          history.push("/programming-contest/list-problems");
+        });
+      },
+      {
+        onError: () => {
+          errorNoti(t("error", { ns: "common" }), 3000);
+          setLoading(false);
         },
-      )
-      .catch(() => errorNoti(t("error", {ns: "common"}), 3000))
-      .finally(() => setLoading(false));
+      },
+      formData,
+      config
+    );
 
     // request(
     //   "post",
@@ -274,7 +318,9 @@ function CreateProblem() {
           onChange={(event) => {
             setTimeLimit(event.target.value);
           }}
-          InputProps={{endAdornment: <InputAdornment position="end">s</InputAdornment>,}}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">s</InputAdornment>,
+          }}
         />
 
         <TextField
@@ -286,27 +332,29 @@ function CreateProblem() {
           onChange={(event) => {
             setMemoryLimit(event.target.value);
           }}
-          InputProps={{endAdornment: <InputAdornment position="end">MB</InputAdornment>,}}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">MB</InputAdornment>,
+          }}
         />
 
         <TextField
           select
           id="isPublicProblem"
-          label={t("public", {ns: "common"})}
+          label={t("public", { ns: "common" })}
           onChange={(event) => {
             setIsPublic(event.target.value);
           }}
           value={isPublic}
         >
           <MenuItem key={"true"} value={true}>
-            {t("yes", {ns: "common"})}
+            {t("yes", { ns: "common" })}
           </MenuItem>
           <MenuItem key={"false"} value={false}>
-            {t("no", {ns: "common"})}
+            {t("no", { ns: "common" })}
           </MenuItem>
         </TextField>
 
-        <FormControl sx={{m: 1, width: "90%"}}>
+        <FormControl sx={{ m: 1, width: "90%" }}>
           <InputLabel id="select-tag-label">Tags</InputLabel>
           <Select
             labelId="select-tag-label"
@@ -314,23 +362,27 @@ function CreateProblem() {
             multiple
             value={selectedTags}
             onChange={handleSelectTags}
-            input={<OutlinedInput label="Tags"/>}
+            input={<OutlinedInput label="Tags" />}
             renderValue={(selectedTags) => (
-              <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.8}}>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
                 {selectedTags.map((selectedTag) => (
-                  <Chip size="small" label={selectedTag.name} sx={{
-                    marginRight: "6px",
-                    marginBottom: "6px",
-                    border: "1px solid lightgray",
-                    fontStyle: "italic"
-                  }}/>
+                  <Chip
+                    size="small"
+                    label={selectedTag.name}
+                    sx={{
+                      marginRight: "6px",
+                      marginBottom: "6px",
+                      border: "1px solid lightgray",
+                      fontStyle: "italic",
+                    }}
+                  />
                 ))}
               </Box>
             )}
           >
             <Button
-              sx={{marginLeft: "20px"}}
-              startIcon={<AddCircleIcon/>}
+              sx={{ marginLeft: "20px" }}
+              startIcon={<AddCircleIcon />}
               onClick={() => setOpenModalAddNewTag(true)}
             >
               {t("common:addNew")}
@@ -338,27 +390,35 @@ function CreateProblem() {
             <ModelAddNewTag
               isOpen={openModalAddNewTag}
               handleSuccess={() => {
-                getAllTags(handleGetTagsSuccess)
+                getAllTags(handleGetTagsSuccess);
               }}
               handleClose={() => setOpenModalAddNewTag(false)}
             />
             {tags.map((tag) => (
               <MenuItem key={tag.tagId} value={tag}>
-                <Checkbox checked={selectedTags.indexOf(tag) > -1}/>
-                <ListItemText primary={tag.name} secondary={tag?.description}/>
+                <Checkbox checked={selectedTags.indexOf(tag) > -1} />
+                <ListItemText primary={tag.name} secondary={tag?.description} />
               </MenuItem>
             ))}
           </Select>
         </FormControl>
-
       </Box>
 
       <Box className={classes.description}>
-        <Typography variant="h5" component="div" sx={{marginTop: "12px", marginBottom: "8px"}}>
+        <Typography
+          variant="h5"
+          component="div"
+          sx={{ marginTop: "12px", marginBottom: "8px" }}
+        >
           {t("problemDescription")}
         </Typography>
-        <RichTextEditor content={description} onContentChange={text => setDescription(text)}/>
-        <HustDropzoneArea onChangeAttachment={(files) => handleAttachmentFiles(files)}/>
+        <RichTextEditor
+          content={description}
+          onContentChange={(text) => setDescription(text)}
+        />
+        <HustDropzoneArea
+          onChangeAttachment={(files) => handleAttachmentFiles(files)}
+        />
       </Box>
       {/* this function is not implemented yet
               <Box>
@@ -387,7 +447,7 @@ function CreateProblem() {
         variant="contained"
         loading={loading}
         onClick={checkCompile}
-        sx={{marginTop: "12px", marginBottom: "6px"}}
+        sx={{ marginTop: "12px", marginBottom: "6px" }}
       >
         {t("checkSolutionCompile")}
       </LoadingButton>
@@ -403,14 +463,19 @@ function CreateProblem() {
           <Checkbox
             checked={isCustomEvaluated}
             onChange={() => setIsCustomEvaluated(!isCustomEvaluated)}
-          />}
+          />
+        }
       />
-      <Typography variant="body2" color="gray">{t("customEvaluationNote1")}</Typography>
+      <Typography variant="body2" color="gray">
+        {t("customEvaluationNote1")}
+      </Typography>
       <Link href="#" underline="hover">
-        <Typography variant="body2" color="gray">{t("customEvaluationNote2")}</Typography>
+        <Typography variant="body2" color="gray">
+          {t("customEvaluationNote2")}
+        </Typography>
       </Link>
 
-      {isCustomEvaluated &&
+      {isCustomEvaluated && (
         <HustCodeEditor
           title={t("checkerSourceCode")}
           language={solutionCheckerLanguage}
@@ -423,16 +488,16 @@ function CreateProblem() {
           }}
           placeholder={t("checkerSourceCodePlaceholder")}
         />
-      }
+      )}
 
-      <Box width="100%" sx={{marginTop: "16px"}}>
+      <Box width="100%" sx={{ marginTop: "16px" }}>
         <LoadingButton
           variant="contained"
           color="success"
           loading={loading}
           onClick={handleSubmit}
         >
-          {t("save", {ns: "common"})}
+          {t("save", { ns: "common" })}
         </LoadingButton>
       </Box>
     </HustContainerCard>

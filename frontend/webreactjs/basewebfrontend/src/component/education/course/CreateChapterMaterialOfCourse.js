@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
-import { authPostMultiPart, request } from "../../../api";
+import { request } from "../../../api";
 import { errorNoti, successNoti } from "../../../utils/notification";
 import AlertDialog from "../../common/AlertDialog";
 import Loading from "../../common/Loading";
@@ -80,24 +80,32 @@ function CreateChapterMaterialOfCourse() {
     formData.append("inputJson", JSON.stringify(body));
     formData.append("files", selectedInputFile);
 
-    let chapter = authPostMultiPart(
-      dispatch,
-      token,
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
       "/edu/class/create-chapter-material-of-course",
-      formData
-    ).then((res) => {
-      console.log("res = ", res);
-      if (res.error) {
-        errorNoti("Tạo bài giảng thất bại", true);
-      } else {
-        successNoti("Tạo bài giảng thành công", true);
-        history.push("/edu/teacher/course/chapter/detail/" + chapterId);
-      }
-      setIsLoading(false);
-    });
+      (res) => {
+        res = res.data;
+        console.log("res = ", res);
+        if (res.error) {
+          errorNoti("Tạo bài giảng thất bại", true);
+        } else {
+          successNoti("Tạo bài giảng thành công", true);
+          history.push("/edu/teacher/course/chapter/detail/" + chapterId);
+        }
+        setIsLoading(false);
+      },
+      {},
+      formData,
+      config
+    );
 
     //let chapter = await authPost(dispatch, token, '/edu/class/create-chapter-material-of-course', body);
-    console.log("Create chapter success, chapter = ", chapter);
     //history.push("/edu/course/chapter/detail/" + chapterId);
     //edu/teacher/course/chapter/detail/010a357c-eb5b-49a6-93de-ec1aef3695dd
   }

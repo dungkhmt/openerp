@@ -28,7 +28,6 @@ import {
   randomImageName,
   saveByteArray,
 } from "utils/FileUpload/covert";
-import { authPostMultiPart } from "../../../api";
 import { StyledTableCell, StyledTableRow } from "./lib";
 import { request } from "./Request";
 import {
@@ -117,13 +116,17 @@ export default function StudentViewProgrammingContestProblemDetail() {
     formData.append("inputJson", JSON.stringify(body));
     formData.append("file", filename);
 
-    authPostMultiPart(
-      dispatch,
-      token,
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
       "/contest-submit-problem-via-upload-file",
-      formData
-    )
-      .then((res) => {
+      (res) => {
+        res = res.data;
         setIsProcessing(false);
         if (res.status == "TIME_OUT") {
           alert("Time Out!!!");
@@ -141,25 +144,30 @@ export default function StudentViewProgrammingContestProblemDetail() {
           setStatus(res.status);
           setMessage(res.message);
         }
-      })
-      .catch((e) => {
-        setIsProcessing(false);
-        console.error(e);
-        //alert("Time Out!!!");
-      });
+      },
+      {
+        onError: (e) => {
+          setIsProcessing(false);
+          console.error(e);
+          //alert("Time Out!!!");
+        },
+      },
+      formData,
+      config
+    );
   };
 
-  function getTestCases() {
-    request(
-      "GET",
-      "/get-test-case-list-by-problem/" + problemId,
+  // function getTestCases() {
+  //   request(
+  //     "GET",
+  //     "/get-test-case-list-by-problem/" + problemId,
 
-      (res) => {
-        setTestCases(res.data.filter((item) => item.isPublic === "Y"));
-      },
-      {}
-    );
-  }
+  //     (res) => {
+  //       setTestCases(res.data.filter((item) => item.isPublic === "Y"));
+  //     },
+  //     {}
+  //   );
+  // }
 
   function getProblemDetail() {
     request(

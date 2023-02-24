@@ -20,7 +20,7 @@ import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
-import { authPostMultiPart, request } from "../../../api";
+import { request } from "../../../api";
 import {
   dataUrlToFile,
   randomImageName,
@@ -244,13 +244,17 @@ function CreateQuizOfCourse() {
       formData.append("addedSolutionAttachments", attachment);
     }
 
-    authPostMultiPart(
-      dispatch,
-      token,
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
       "/update-quiz-question/" + questionId,
-      formData
-    ).then(
       (res) => {
+        res = res.data;
         if (res.length !== 0) {
           //alert(JSON.stringify(res));
           alert("Cập nhật thành công");
@@ -259,10 +263,15 @@ function CreateQuizOfCourse() {
         }
         history.push("/edu/course/detail/" + courseId);
       },
-      (error) => {
-        alert("Cập nhật thất bại");
-      }
+      {
+        onError: (error) => {
+          alert("Cập nhật thất bại");
+        },
+      },
+      formData,
+      config
     );
+
     //let chapter = await authPost(dispatch, token, '/create-quiz-question', body);
     //console.log('Create chapter success, chapter = ',chapter);
   }

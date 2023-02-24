@@ -1,6 +1,5 @@
 import axios from "axios";
 import keycloak from "config/keycloak";
-import { failed } from "./action/Auth";
 import { API_URL } from "./config/config";
 import history from "./history";
 import { infoNoti, wifiOffNotify } from "./utils/notification";
@@ -36,42 +35,42 @@ import { infoNoti, wifiOffNotify } from "./utils/notification";
 //   );
 // };
 
-export const authPostMultiPart = (dispatch, token, url, body) => {
-  /*
-  return fetch(API_URL + url, {
-    method: "POST",
-    headers: {
-      "X-Auth-Token": token,
-    },
-    body: body,
-  });
-  */
+// export const authPostMultiPart = (dispatch, token, url, body) => {
+//   /*
+//   return fetch(API_URL + url, {
+//     method: "POST",
+//     headers: {
+//       "X-Auth-Token": token,
+//     },
+//     body: body,
+//   });
+//   */
 
-  return fetch(API_URL + url, {
-    method: "POST",
-    headers: {
-      "X-Auth-Token": token,
-    },
-    body: body,
-  }).then(
-    (res) => {
-      if (!res.ok) {
-        if (res.status === 401) {
-          dispatch(failed());
-          throw Error("Unauthorized");
-        } else {
-          console.log(res);
-          throw Error();
-        }
-        // return null;
-      }
-      return res.json();
-    },
-    (error) => {
-      console.log(error);
-    }
-  );
-};
+//   return fetch(API_URL + url, {
+//     method: "POST",
+//     headers: {
+//       "X-Auth-Token": token,
+//     },
+//     body: body,
+//   }).then(
+//     (res) => {
+//       if (!res.ok) {
+//         if (res.status === 401) {
+//           dispatch(failed());
+//           throw Error("Unauthorized");
+//         } else {
+//           console.log(res);
+//           throw Error();
+//         }
+//         // return null;
+//       }
+//       return res.json();
+//     },
+//     (error) => {
+//       console.log(error);
+//     }
+//   );
+// };
 
 // export const authPut = (dispatch, token, url, body) => {
 //   return fetch(API_URL + url, {

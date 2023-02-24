@@ -23,7 +23,6 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { authPostMultiPart } from "../../../api";
 import { randomImageName } from "../../../utils/FileUpload/covert";
 import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
 import {
@@ -257,17 +256,29 @@ function EditProblem() {
     }
 
     setLoading(true);
-    authPostMultiPart(
-      dispatch,
-      token,
+
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
       "/update-problem-detail/" + problemId,
-      formData
-    )
-      .then((res) => {
+      (res) => {
+        setLoading(false);
         successNoti("Problem saved successfully", 10000);
-      })
-      .catch(() => errorNoti(t("error", { ns: "common" }), 3000))
-      .finally(() => setLoading(false));
+      },
+      {
+        onError: (e) => {
+          errorNoti(t("error", { ns: "common" }), 3000);
+          setLoading(false);
+        },
+      },
+      formData,
+      config
+    );
   }
 
   return (

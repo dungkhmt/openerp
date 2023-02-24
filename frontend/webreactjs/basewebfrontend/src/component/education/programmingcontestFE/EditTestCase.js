@@ -1,12 +1,16 @@
-import {Button, CircularProgress, Grid, MenuItem, TextField,} from "@material-ui/core";
-import * as React from "react";
-import {useEffect, useState} from "react";
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  MenuItem,
+  TextField,
+} from "@material-ui/core";
 import Typography from "@mui/material/Typography";
-import {useHistory, useParams} from "react-router-dom";
-import {authPostMultiPart} from "../../../api";
-import {useDispatch, useSelector} from "react-redux";
-import {successNoti, warningNoti} from "../../../utils/notification";
-import {request} from "./Request";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router-dom";
+import { successNoti, warningNoti } from "../../../utils/notification";
+import { request } from "./Request";
 
 export default function EditTestCase(props) {
   const history = useHistory();
@@ -121,16 +125,20 @@ export default function EditTestCase(props) {
     let formData = new FormData();
     formData.append("inputJson", JSON.stringify(body));
 
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
     if (filename !== "") {
       formData.append("file", filename);
 
-      authPostMultiPart(
-        dispatch,
-        token,
+      request(
+        "post",
         "/upload-update-test-case/" + testCaseId,
-        formData
-      )
-        .then((res) => {
+        (res) => {
+          res = res.data;
           setIsProcessing(false);
           console.log("handleFormSubmit, res = ", res);
           setUploadMessage(res.message);
@@ -138,21 +146,24 @@ export default function EditTestCase(props) {
           //  alert("Time Out!!!");
           //} else {
           //}
-        })
-        .catch((e) => {
-          setIsProcessing(false);
-          console.error(e);
-          //alert("Time Out!!!");
-        });
+        },
+        {
+          onError: (e) => {
+            setIsProcessing(false);
+            console.error(e);
+            //alert("Time Out!!!");
+          },
+        },
+        formData,
+        config
+      );
     } else {
       // without file attached
-      authPostMultiPart(
-        dispatch,
-        token,
+      request(
+        "post",
         "/update-test-case-without-file/" + testCaseId,
-        formData
-      )
-        .then((res) => {
+        (res) => {
+          res = res.data;
           setIsProcessing(false);
           console.log("handleFormSubmit, res = ", res);
           setUploadMessage(res.message);
@@ -160,17 +171,24 @@ export default function EditTestCase(props) {
           //  alert("Time Out!!!");
           //} else {
           //}
-        })
-        .catch((e) => {
-          setIsProcessing(false);
-          console.error(e);
-          //alert("Time Out!!!");
-        });
+        },
+        {
+          onError: (e) => {
+            setIsProcessing(false);
+            console.error(e);
+            //alert("Time Out!!!");
+          },
+        },
+        formData,
+        config
+      );
     }
   };
+
   function onFileChange(event) {
     setFilename(event.target.files[0]);
   }
+
   const onInputChange = (event) => {
     let name = event.target.value;
     setFilename(name);

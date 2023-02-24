@@ -5,7 +5,7 @@ import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { authPostMultiPart } from "../../../../api";
+import { request } from "../../../../api";
 import {
   components,
   localization,
@@ -74,20 +74,29 @@ function OrderPickupPlanning() {
     formData.append("inputJson", JSON.stringify(body));
     formData.append("file", filename);
 
-    authPostMultiPart(
-      dispatch,
-      token,
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
       "/upload-excel-order-pickup-planning",
-      formData
-    )
-      .then((res) => {
+      (res) => {
+        res = res.data;
         setIsProcessing(false);
         setRoutes(res.routes);
-      })
-      .catch((e) => {
-        setIsProcessing(false);
-        console.error(e);
-      });
+      },
+      {
+        onError: (e) => {
+          setIsProcessing(false);
+          console.error(e);
+        },
+      },
+      formData,
+      config
+    );
   };
 
   const onInputChange = (event) => {

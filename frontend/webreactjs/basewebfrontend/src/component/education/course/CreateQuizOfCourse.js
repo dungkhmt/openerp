@@ -18,7 +18,7 @@ import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useHistory } from "react-router-dom";
-import { authPostMultiPart, request } from "../../../api";
+import { request } from "../../../api";
 import AlertDialog from "../../common/AlertDialog";
 import RichTextEditor from "../../common/editor/RichTextEditor";
 import FileUploader from "../../common/uploader/FileUploader";
@@ -134,10 +134,25 @@ function CreateQuizOfCourse() {
       formData.append("solutionAttachments", attachment);
     }
 
-    authPostMultiPart(dispatch, token, "/create-quiz-question", formData);
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
+      "/create-quiz-question",
+      (res) => {
+        history.push("/edu/course/detail/" + courseId);
+      },
+      {},
+      formData,
+      config
+    );
+
     //let chapter = await authPost(dispatch, token, '/create-quiz-question', body);
     //console.log('Create chapter success, chapter = ',chapter);
-    history.push("/edu/course/detail/" + courseId);
   }
   useEffect(() => {
     getLevelList();

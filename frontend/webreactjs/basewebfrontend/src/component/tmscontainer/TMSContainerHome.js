@@ -1,10 +1,10 @@
 import { Button, Grid } from "@material-ui/core";
 import { IconButton } from "@material-ui/core/";
 import { grey } from "@material-ui/core/colors";
+import { request } from "api";
 import MaterialTable from "material-table";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { authPostMultiPart } from "../../api";
 import { localization } from "../../utils/MaterialTableUtils";
 import RouteDetail from "./RouteDetail";
 const cellStyles = { headerStyle: { padding: 8 }, cellStyle: { padding: 8 } };
@@ -53,19 +53,33 @@ export default function TMSContainerHome() {
     formData.append("inputJson", JSON.stringify(body));
     formData.append("file", filename);
 
-    authPostMultiPart(dispatch, token, "/tmscontainer/solve", formData)
-      .then((res) => {
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
+      "/tmscontainer/solve",
+      (res) => {
+        res = res.data;
         setIsProcessing(false);
         console.log("result submit = ", res);
         setRoutes(res.truckRoutes);
         //var f = document.getElementById("selected-upload-file");
         //f.value = null;
         //setSelectedFile(null);
-      })
-      .catch((e) => {
-        setIsProcessing(false);
-        console.error(e);
-      });
+      },
+      {
+        onError: (e) => {
+          setIsProcessing(false);
+          console.error(e);
+        },
+      },
+      formData,
+      config
+    );
   };
 
   const onInputChange = (event) => {

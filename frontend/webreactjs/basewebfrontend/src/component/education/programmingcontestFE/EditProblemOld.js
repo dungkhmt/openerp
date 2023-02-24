@@ -27,7 +27,6 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link, useHistory } from "react-router-dom";
-import { authPostMultiPart } from "../../../api";
 import {
   getFileType,
   randomImageName,
@@ -319,27 +318,29 @@ function EditProblem() {
       formData.append("files", file);
     }
 
-    try {
-      authPostMultiPart(
-        dispatch,
-        token,
-        "/update-problem-detail/" + problemId,
-        formData
-      ).then(
-        (res) => {
-          setShowSubmitSuccess(true);
-          sleep(1000).then((r) => {
-            history.push("/programming-contest/list-problems");
-          });
-        },
-        {},
-        () => {
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
+      "/update-problem-detail/" + problemId,
+      (res) => {
+        setShowSubmitSuccess(true);
+        sleep(1000).then((r) => {
+          history.push("/programming-contest/list-problems");
+        });
+      },
+      {
+        onError: (e) => {
           alert("Cập nhật thất bại");
-        }
-      );
-    } catch (error) {
-      alert(error);
-    }
+        },
+      },
+      formData,
+      config
+    );
   }
 
   return (

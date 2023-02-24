@@ -9,7 +9,7 @@ import { Editor } from "react-draft-wysiwyg";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { randomImageName } from "utils/FileUpload/covert";
-import { authPostMultiPart, request } from "../../../api";
+import { request } from "../../../api";
 import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
 import { errorNoti, successNoti } from "../../../utils/notification";
 import HustCodeLanguagePicker from "../../common/HustCodeLanguagePicker";
@@ -85,13 +85,18 @@ export default function StudentViewProgrammingContestProblemDetail() {
     formData.append("inputJson", JSON.stringify(body));
     formData.append("file", filename);
 
-    await authPostMultiPart(
-      dispatch,
-      token,
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    //TODO: consider remove duplicate code
+    request(
+      "post",
       "/contest-submit-problem-via-upload-file-v3",
-      formData
-    )
-      .then((res) => {
+      (res) => {
+        res = res.data;
         listSubmissionRef.current.refreshSubmission();
         inputRef.current.value = null;
         if (ERR_STATUS.includes(res.status)) {
@@ -99,15 +104,23 @@ export default function StudentViewProgrammingContestProblemDetail() {
         } else successNoti("Submitted!", 3000);
         setStatus(res.status);
         setMessage(res.message);
-      })
-      .catch((e) => {
-        console.error(e);
-      })
-      .finally(() => {
+
         setIsProcessing(false);
         setFilename(null);
         inputRef.current.value = null;
-      });
+      },
+      {
+        onError: (e) => {
+          setIsProcessing(false);
+          setFilename(null);
+          inputRef.current.value = null;
+
+          console.error(e);
+        },
+      },
+      formData,
+      config
+    );
   };
 
   function getProblemDetail() {
