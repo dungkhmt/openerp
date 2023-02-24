@@ -17,7 +17,6 @@ import Box from "@mui/material/Box";
 import { request } from "api";
 import React, { Fragment, useCallback, useEffect, useState } from "react";
 import { Layer, Rect, Stage } from "react-konva";
-import { useSelector } from "react-redux";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import { setCanvasSize } from "../utilities";
 import ListProductComponent from "./components/ListProductComponent";
@@ -148,7 +147,6 @@ function WarehouseDetail() {
   const [warehouesData, setWarehouseData] = React.useState([]);
   const [maxSize, setMaxsize] = React.useState(100);
   const [listShelf, setListShelf] = React.useState([]);
-  const token = useSelector((state) => state.auth.token);
 
   const [width, setWidth] = useState();
   const [warehouseHeight, setWarehouseHeight] = useState();

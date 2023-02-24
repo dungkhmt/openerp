@@ -8,7 +8,6 @@ import {
 } from "@material-ui/core";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { successNoti, warningNoti } from "../../../utils/notification";
 import { request } from "./Request";
@@ -19,7 +18,7 @@ export default function CreateTestCase(props) {
   const [input, setInput] = useState("");
   const [result, setResult] = useState("");
   const { problemId } = useParams();
-  const token = useSelector((state) => state.auth.token);
+
   const [description, setDescription] = useState();
   const [solution, setSolution] = useState();
   const [load, setLoad] = useState(false);
@@ -32,7 +31,7 @@ export default function CreateTestCase(props) {
   const [uploadMode, setUploadMode] = useState("EXECUTE");
 
   const [uploadMessage, setUploadMessage] = useState("");
-  //const token = useSelector((state) => state.auth.token);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -92,7 +91,7 @@ export default function CreateTestCase(props) {
 
   useEffect(() => {
     console.log("problemId ", problemId);
-    console.log("token ", token);
+
     /*
     request("GET", "/problem-details/" + problemId, (res) => {
       console.log("res ", res);

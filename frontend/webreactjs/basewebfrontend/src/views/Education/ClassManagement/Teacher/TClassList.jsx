@@ -1,27 +1,12 @@
-import {
-  Avatar,
-  Card,
-  CardContent,
-  CardHeader,
-  Paper,
-  Typography,
-  //IconButton,
-} from "@material-ui/core";
+import { Card, CardContent } from "@material-ui/core";
 //import EditIcon from "@material-ui/icons/Edit";
 import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
-import MaterialTable from "material-table";
-import React, { useEffect, useRef, useState } from "react";
-import { FaListUl } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { request } from "../../../../api";
-import changePageSize, {
-  localization,
-  tableIcons,
-} from "../../../../utils/MaterialTableUtils";
-import withScreenSecurity from "../../../../component/withScreenSecurity";
 import CurrentTeacherClassList from "../../../../component/education/class/CurrentTeacherClassList";
 import CurrentUserClassList from "../../../../component/education/class/CurrentUserClassList";
+import withScreenSecurity from "../../../../component/withScreenSecurity";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -89,7 +74,7 @@ function TClassList() {
     <MuiThemeProvider>
       <Card className={classes.card}>
         <CardContent>
-          <CurrentTeacherClassList/>
+          <CurrentTeacherClassList />
         </CardContent>
 
         <CardContent>

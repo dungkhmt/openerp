@@ -13,17 +13,15 @@ import {
   Select,
   TextField,
 } from "@material-ui/core";
-import {request} from "../../../api";
+import { request } from "../../../api";
 
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@mui/material/Alert";
-import React, {useEffect, useState} from "react";
-import {useSelector} from "react-redux";
-import * as yup from "yup";
-import Checkbox from '@mui/material/Checkbox';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import ListItemText from '@mui/material/ListItemText';
-import {SubmitSuccess} from "../programmingcontestFE/SubmitSuccess";
+import Checkbox from "@mui/material/Checkbox";
+import ListItemText from "@mui/material/ListItemText";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import React, { useEffect, useState } from "react";
+import { SubmitSuccess } from "../programmingcontestFE/SubmitSuccess";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -55,8 +53,14 @@ const MenuProps = {
   },
 };
 
-
-export default function ModalAssignKeywordToTeacher({open, handleClose, teacherId, planId, teacherName, handleToggle}) {
+export default function ModalAssignKeywordToTeacher({
+  open,
+  handleClose,
+  teacherId,
+  planId,
+  teacherName,
+  handleToggle,
+}) {
   const classes = useStyles();
 
   const [name, setName] = useState(teacherName);
@@ -75,71 +79,65 @@ export default function ModalAssignKeywordToTeacher({open, handleClose, teacherI
       "GET",
       "/academic_keywords",
       (res) => {
-        console.log(res.data)
+        console.log(res.data);
         var keywordsArray = [];
         for (let i = 0; i < res.data.length; i++) {
-          keywordsArray.push(res.data[i].keyword)
+          keywordsArray.push(res.data[i].keyword);
         }
         console.log(keywordsArray);
         setKeywords(keywordsArray);
-
       }
     );
   }
 
   const handleChangeKeyword = (event) => {
     const {
-      target: {value},
+      target: { value },
     } = event;
     setKeyword(
       // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
+      typeof value === "string" ? value.split(",") : value
     );
   };
   useEffect(() => {
-    console.log(teacherId)
-    getAllKeywords()
-
+    console.log(teacherId);
+    getAllKeywords();
   }, []);
 
-
   async function editKeywordTeacher(e) {
-    e.preventDefault()
-    console.log(teacherID)
+    e.preventDefault();
+    console.log(teacherID);
     var body = {
       teacherId: teacherId,
       teacherName: teacherName,
-      keywords: keyword
-    }
+      keywords: keyword,
+    };
     request(
       "post",
       `/thesis_defense_plan/${planID}/teacher/edit`,
       (res) => {
-        console.log(res.data)
+        console.log(res.data);
         if (res.data.ok) {
-          handleToggle()
+          handleToggle();
           setShowSubmitSuccess(true);
-          setOpenAlert(true)
+          setOpenAlert(true);
           setTimeout(() => {
-              handleClose()
-            }, 5000
-          );
+            handleClose();
+          }, 5000);
         } else if (res.data.err !== "") {
-          setOpenAlert(true)
+          setOpenAlert(true);
           setShowSubmitSuccess(false);
         }
-
       },
       {
         onError: (e) => {
           setShowSubmitSuccess(false);
-          console.log(e)
-        }
+          console.log(e);
+        },
       },
       body
     ).then();
-  };
-
+  }
 
   return (
     <Modal
@@ -155,7 +153,7 @@ export default function ModalAssignKeywordToTeacher({open, handleClose, teacherI
       <Fade in={open}>
         <form onSubmit={editKeywordTeacher}>
           <Card className={classes.card}>
-            <CardHeader title="Gán chuyên môn cho giáo viên"/>
+            <CardHeader title="Gán chuyên môn cho giáo viên" />
             <CardContent>
               <Box
                 display="flex"
@@ -175,21 +173,23 @@ export default function ModalAssignKeywordToTeacher({open, handleClose, teacherI
                   label="ID giảng viên"
                 />
 
-                <InputLabel id="demo-multiple-checkbox-label">Keywords</InputLabel>
+                <InputLabel id="demo-multiple-checkbox-label">
+                  Keywords
+                </InputLabel>
                 <Select
                   labelId="demo-multiple-checkbox-label"
                   id="demo-multiple-checkbox"
                   multiple
                   value={keyword}
                   onChange={handleChangeKeyword}
-                  input={<OutlinedInput label="Tag"/>}
-                  renderValue={(selected) => selected.join(', ')}
+                  input={<OutlinedInput label="Tag" />}
+                  renderValue={(selected) => selected.join(", ")}
                   MenuProps={MenuProps}
                 >
                   {keywords.map((ele) => (
                     <MenuItem key={ele} value={ele}>
-                      <Checkbox checked={keyword.indexOf(ele) > -1}/>
-                      <ListItemText primary={ele}/>
+                      <Checkbox checked={keyword.indexOf(ele) > -1} />
+                      <ListItemText primary={ele} />
                     </MenuItem>
                   ))}
                 </Select>
@@ -199,13 +199,20 @@ export default function ModalAssignKeywordToTeacher({open, handleClose, teacherI
               <Button type="submit" variant="contained" color="primary">
                 Edit
               </Button>
-              {(openAlert === true) ? (<div>
-                {showSubmitSuccess === true ? (<SubmitSuccess
-                  showSubmitSuccess={showSubmitSuccess}
-                  content={"Bạn vừa tạo đợt bảo vệ mới thành công"}
-                />) : (<Alert severity="error">Thêm mới thất bại</Alert>)}
-
-              </div>) : (<></>)}
+              {openAlert === true ? (
+                <div>
+                  {showSubmitSuccess === true ? (
+                    <SubmitSuccess
+                      showSubmitSuccess={showSubmitSuccess}
+                      content={"Bạn vừa tạo đợt bảo vệ mới thành công"}
+                    />
+                  ) : (
+                    <Alert severity="error">Thêm mới thất bại</Alert>
+                  )}
+                </div>
+              ) : (
+                <></>
+              )}
             </CardActions>
           </Card>
         </form>
@@ -213,4 +220,3 @@ export default function ModalAssignKeywordToTeacher({open, handleClose, teacherI
     </Modal>
   );
 }
-  

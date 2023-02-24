@@ -12,21 +12,19 @@ import {
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
-import { PeopleAltRounded, GetApp } from "@material-ui/icons";
+import { GetApp, PeopleAltRounded } from "@material-ui/icons";
 import parse from "html-react-parser";
 import MaterialTable from "material-table";
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { BiDetail } from "react-icons/bi";
 import { FcDownload } from "react-icons/fc";
-import { useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router";
 import { request } from "../../../../api";
 import CustomizedDialogs from "../../../../component/dialog/CustomizedDialogs";
 import NegativeButton from "../../../../component/education/classmanagement/NegativeButton";
 import NegativeDialogButton from "../../../../component/education/classmanagement/NegativeDialogButton";
 import PositiveButton from "../../../../component/education/classmanagement/PositiveButton";
-import { API_URL } from "../../../../config/config";
 import displayTime from "../../../../utils/DateTimeUtils";
 import changePageSize, {
   localization,
@@ -135,7 +133,7 @@ function TAssignmentDetail() {
   const classes = useStyles();
   const params = useParams();
   const history = useHistory();
-  const token = useSelector((state) => state.auth.token);
+  // const token = useSelector((state) => state.auth.token);
 
   // Countdown.
   const [remainingTime, setRemainingTime] = useState(0);
@@ -198,45 +196,39 @@ function TAssignmentDetail() {
 
   // Functions.
   const getAssignDetail = () => {
-    request(
-      // token,
-      // history,
-      "get",
-      `/edu/assignment/${params.assignmentId}/teacher`,
-      (res) => {
-        let assignDetail = res.data.assignmentDetail;
-        let startTime = new Date(assignDetail.openTime);
-        let endTime = new Date(assignDetail.closeTime);
-        let data = res.data.submissions;
+    request("get", `/edu/assignment/${params.assignmentId}/teacher`, (res) => {
+      let assignDetail = res.data.assignmentDetail;
+      let startTime = new Date(assignDetail.openTime);
+      let endTime = new Date(assignDetail.closeTime);
+      let data = res.data.submissions;
 
-        data = data.map((submission) => ({
-          ...submission,
-          submissionDate: new Date(submission.submissionDate),
-        }));
+      data = data.map((submission) => ({
+        ...submission,
+        submissionDate: new Date(submission.submissionDate),
+      }));
 
-        changePageSize(data.length, tableRef);
-        setData(data);
+      changePageSize(data.length, tableRef);
+      setData(data);
 
-        setRemainingTime(
-          endTime.getTime() < Date.now()
-            ? 0
-            : (endTime.getTime() - Date.now()) / 1000
-        );
+      setRemainingTime(
+        endTime.getTime() < Date.now()
+          ? 0
+          : (endTime.getTime() - Date.now()) / 1000
+      );
 
-        setDuration((endTime.getTime() - startTime.getTime()) / 1000);
+      setDuration((endTime.getTime() - startTime.getTime()) / 1000);
 
-        setKey("update-params");
+      setKey("update-params");
 
-        setAssignDetail({
-          name: assignDetail.name,
-          subject: assignDetail.subject,
-          startTime: startTime,
-          endTime: endTime,
-          noSubmissions: res.data.noSubmissions,
-          deleted: assignDetail.deleted,
-        });
-      }
-    );
+      setAssignDetail({
+        name: assignDetail.name,
+        subject: assignDetail.subject,
+        startTime: startTime,
+        endTime: endTime,
+        noSubmissions: res.data.noSubmissions,
+        deleted: assignDetail.deleted,
+      });
+    });
   };
 
   const onSingleDownload = (submission) => {
@@ -244,10 +236,12 @@ function TAssignmentDetail() {
 
     form.setAttribute("method", "post");
     form.setAttribute("target", "_blank");
-    form.setAttribute(
-      "action",
-      `${API_URL}/edu/assignment/${params.assignmentId}/submissions?token=${token}`
-    );
+
+    // // TODO: consider
+    // form.setAttribute(
+    //   "action",
+    //   `${API_URL}/edu/assignment/${params.assignmentId}/submissions?token=${token}`
+    // );
 
     const input = document.createElement("input");
 
@@ -267,10 +261,12 @@ function TAssignmentDetail() {
 
     form.setAttribute("method", "post");
     form.setAttribute("target", "_blank");
-    form.setAttribute(
-      "action",
-      `${API_URL}/edu/assignment/${params.assignmentId}/submissions?token=${token}`
-    );
+
+    // // TODO: consider
+    // form.setAttribute(
+    //   "action",
+    //   `${API_URL}/edu/assignment/${params.assignmentId}/submissions?token=${token}`
+    // );
 
     for (const submission of selectedSubmissions) {
       const input = document.createElement("input");
@@ -287,8 +283,6 @@ function TAssignmentDetail() {
     form.parentNode.removeChild(form);
 
     // request(
-    //   token,
-    //   history,
     //   "post",
     //   `/edu/assignment/${params.assignmentId}/submissions`,
     //   (res) => {
@@ -307,8 +301,6 @@ function TAssignmentDetail() {
     setOpen(false);
 
     request(
-      // token,
-      // history,
       "delete",
       `/edu/assignment/${params.assignmentId}`,
       () => {

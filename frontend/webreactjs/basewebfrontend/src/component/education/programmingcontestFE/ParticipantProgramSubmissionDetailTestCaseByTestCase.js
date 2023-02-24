@@ -5,7 +5,6 @@ import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import HustModal from "component/common/HustModal";
 import MaterialTable from "material-table";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { request } from "../../../api";
 import { toFormattedDateTime } from "../../../utils/dateutils";
 
@@ -19,7 +18,6 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
   const [selectedTestcase, setSelectedTestcase] = useState();
 
   const [isProcessing, setIsProcessing] = useState(false);
-  const token = useSelector((state) => state.auth.token);
 
   const [score, setScore] = useState(0);
 

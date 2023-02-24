@@ -1,14 +1,13 @@
-import React, { useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import MaterialTable from "material-table";
-import { useSelector } from "react-redux";
-import { API_URL } from "../../config/config";
+import { FormControl, Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import XLSX from "xlsx";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
-import { Typography, FormControl } from "@material-ui/core";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+import { makeStyles } from "@material-ui/core/styles";
+import { request } from "api";
+import MaterialTable from "material-table";
+import React, { useEffect } from "react";
+import XLSX from "xlsx";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -19,7 +18,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AssignmentList(props) {
   const classes = useStyles();
-  const token = useSelector((state) => state.auth.token);
 
   // pool
   const [semester, setSemester] = React.useState([]);
@@ -59,39 +57,28 @@ export default function AssignmentList(props) {
     if (semesterQuery === null) {
       return;
     }
-    fetch(
-      API_URL + "/edu/get-all-assignment/" + semesterQuery + "/" + teacherQuery,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json", "X-Auth-Token": token },
+
+    request(
+      "get",
+      "/edu/get-all-assignment/" + semesterQuery + "/" + teacherQuery,
+      (response) => {
+        setAssignment(response.data);
       }
-    )
-      .then((response) => response.json())
-      .then((response) => {
-        setAssignment(response);
-      });
+    );
   };
 
   useEffect(() => {
-    fetch(API_URL + "/edu/get-all-semester", {
-      method: "GET",
-      headers: { "Content-Type": "application/json", "X-Auth-Token": token },
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        console.log(response);
-        setSemester(response);
-      });
+    request("get", "/edu/get-all-semester", (response) => {
+      response = response.data;
+      console.log(response);
+      setSemester(response);
+    });
 
-    fetch(API_URL + "/edu/get-all-teachers", {
-      method: "GET",
-      headers: { "Content-Type": "application/json", "X-Auth-Token": token },
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        console.log(response);
-        setTeacher([...teacher, ...response]);
-      });
+    request("get", "/edu/get-all-teachers", (response) => {
+      response = response.data;
+      console.log(response);
+      setTeacher([...teacher, ...response]);
+    });
   }, []);
 
   const downloadHandler = (event) => {
