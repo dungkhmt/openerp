@@ -1,9 +1,8 @@
 import { Box, Grid, Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Bar, Doughnut, HorizontalBar, Line } from "react-chartjs-2";
-import { useDispatch, useSelector } from "react-redux";
-import { authPost, request } from "../../api";
+import { request } from "../../api";
 import withScreenSecurity from "../withScreenSecurity";
 
 const useStyles = makeStyles((theme) => ({
@@ -114,8 +113,7 @@ const rows = [
 
 function MainDashBoard(props) {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const taskCounterOption = taskCounterOpt;
 
   const [dataAllProject, setDataAllProject] = useState({});
@@ -350,51 +348,51 @@ function MainDashBoard(props) {
     );
   }
 
-  function getRevenueDateRecent() {
-    // console.log("getRevenueDateRecent");
-    authPost(dispatch, token, "/report-date-based-revenue-recent", {
-      nbDays: 15,
-    })
-      .then((response) => {
-        let listRev = response.revenueElements;
-        //setVehicleDistance(response);
-        let arrDates = [];
-        let arrRevenues = [];
-        listRev.forEach((r) => {
-          arrDates.push(r.date);
-          arrRevenues.push(r.revenue);
-        });
-        setDateRevenue(arrDates);
-        setRevenue(arrRevenues);
-        //dataVehicleDistance.labels = vehicle;
-        //dataVehicleDistance.datasets[0].data = distance;
-        //console.log('dataVehicleDistance.vehicle = ', dataVehicleDistance.labels);
-        //console.log('dataVehicleDistance.distance = ', dataVehicleDistance.datasets[0].data);
-      })
-      .catch(console.log);
-  }
+  // function getRevenueDateRecent() {
+  //   // console.log("getRevenueDateRecent");
+  //   authPost(dispatch, token, "/report-date-based-revenue-recent", {
+  //     nbDays: 15,
+  //   })
+  //     .then((response) => {
+  //       let listRev = response.revenueElements;
+  //       //setVehicleDistance(response);
+  //       let arrDates = [];
+  //       let arrRevenues = [];
+  //       listRev.forEach((r) => {
+  //         arrDates.push(r.date);
+  //         arrRevenues.push(r.revenue);
+  //       });
+  //       setDateRevenue(arrDates);
+  //       setRevenue(arrRevenues);
+  //       //dataVehicleDistance.labels = vehicle;
+  //       //dataVehicleDistance.datasets[0].data = distance;
+  //       //console.log('dataVehicleDistance.vehicle = ', dataVehicleDistance.labels);
+  //       //console.log('dataVehicleDistance.distance = ', dataVehicleDistance.datasets[0].data);
+  //     })
+  //     .catch(console.log);
+  // }
 
-  function getVehicleDistance() {
-    // console.log("getVehicleDistance");
-    authPost(dispatch, token, "/statistic-vehicle-distance", {
-      fromDate: "",
-      thruDate: "",
-    })
-      .then((response) => {
-        //setVehicleDistance(response);
-        let vehicle = [];
-        let distance = [];
-        response.forEach((vh) => {
-          vehicle.push(vh.vehicleId);
-          distance.push(vh.distance);
-        });
-        setVehicle(vehicle);
-        setDistance(distance);
-        //dataVehicleDistance.labels = vehicle;
-        //dataVehicleDistance.datasets[0].data = distance;
-      })
-      .catch(console.log);
-  }
+  // function getVehicleDistance() {
+  //   // console.log("getVehicleDistance");
+  //   authPost(dispatch, token, "/statistic-vehicle-distance", {
+  //     fromDate: "",
+  //     thruDate: "",
+  //   })
+  //     .then((response) => {
+  //       //setVehicleDistance(response);
+  //       let vehicle = [];
+  //       let distance = [];
+  //       response.forEach((vh) => {
+  //         vehicle.push(vh.vehicleId);
+  //         distance.push(vh.distance);
+  //       });
+  //       setVehicle(vehicle);
+  //       setDistance(distance);
+  //       //dataVehicleDistance.labels = vehicle;
+  //       //dataVehicleDistance.datasets[0].data = distance;
+  //     })
+  //     .catch(console.log);
+  // }
 
   function getChartBackLog() {
     request(
@@ -449,8 +447,8 @@ function MainDashBoard(props) {
   }
   useEffect(() => {
     getChartBackLog();
-    getVehicleDistance();
-    getRevenueDateRecent();
+    // getVehicleDistance();
+    // getRevenueDateRecent();
     //getStudentParticipation();
     //getQuizParticipation();
     getStudentParticipation();

@@ -1,32 +1,41 @@
 import DateFnsUtils from "@date-io/date-fns";
-import {Card, CardActions, CardContent, MenuItem, TextField, Typography,} from "@material-ui/core/";
-import {makeStyles} from "@material-ui/core/styles";
-import {MuiPickersUtilsProvider} from "@material-ui/pickers";
-import React, {useEffect, useState} from "react";
-import {Link, useHistory} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import {Editor} from "react-draft-wysiwyg";
-import {ContentState, convertToRaw, EditorState} from "draft-js";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import {authGet, authPostMultiPart} from "../../../api";
-import {Button, TableHead} from "@material-ui/core";
-import draftToHtml from "draftjs-to-html";
-import {SubmitWarming} from "./SubmitWarming";
-import {CompileStatus} from "./CompileStatus";
-import {SubmitSuccess} from "./SubmitSuccess";
-import {useParams} from "react-router";
-import {request} from "./Request";
-import {sleep, StyledTableCell, StyledTableRow} from "./lib";
-import htmlToDraft from "html-to-draftjs";
+import { Button, TableHead } from "@material-ui/core";
+import {
+  Card,
+  CardActions,
+  CardContent,
+  MenuItem,
+  TextField,
+  Typography,
+} from "@material-ui/core/";
 import Paper from "@material-ui/core/Paper";
-import TableContainer from "@mui/material/TableContainer";
-import Table from "@mui/material/Table";
+import { makeStyles } from "@material-ui/core/styles";
 import TableRow from "@material-ui/core/TableRow";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { Box } from "@mui/material";
+import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import {getFileType, randomImageName, saveByteArray,} from "../../../utils/FileUpload/covert";
-import {DropzoneArea} from "material-ui-dropzone";
-import {Box} from "@mui/material";
+import TableContainer from "@mui/material/TableContainer";
+import { ContentState, convertToRaw, EditorState } from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
+import { DropzoneArea } from "material-ui-dropzone";
+import { useEffect, useState } from "react";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { useParams } from "react-router";
+import { Link, useHistory } from "react-router-dom";
+import {
+  getFileType,
+  randomImageName,
+  saveByteArray,
+} from "../../../utils/FileUpload/covert";
+import { CompileStatus } from "./CompileStatus";
+import { sleep, StyledTableCell, StyledTableRow } from "./lib";
+import { request } from "./Request";
+import { SubmitSuccess } from "./SubmitSuccess";
+import { SubmitWarming } from "./SubmitWarming";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -103,8 +112,7 @@ const editorStyle = {
 
 function EditProblem() {
   const { problemId } = useParams();
-  const token = useSelector((state) => state.auth.token);
-  const dispatch = useDispatch();
+
   const history = useHistory();
   const [problemName, setProblemName] = useState("");
   const [problemDescriptions, setProblemDescription] = useState();
@@ -149,57 +157,57 @@ function EditProblem() {
   };
 
   useEffect(() => {
-    authGet(dispatch, token, "/problem-details/" + problemId)
-      .then((res) => {
-        console.log("PROBLEM DETAIL", res.attachment);
-        // setEditorStateDescription(EditorState.set(res.data.problemDescription));
+    request("get", "/problem-details/" + problemId, (res) => {
+      res = res.data;
 
-        if (res.attachment && res.attachment.length !== 0) {
-          const newFileURLArray = res.attachment.map((url) => ({
-            id: randomImageName(),
-            content: url,
-          }));
-          newFileURLArray.forEach((file, idx) => {
-            file.fileName = res.attachmentNames[idx];
-          });
-          setFetchedImageArray(newFileURLArray);
-        }
+      console.log("PROBLEM DETAIL", res.attachment);
+      // setEditorStateDescription(EditorState.set(res.data.problemDescription));
 
-        setProblemName(res.problemName);
-        setLevelId(res.levelId);
-        setMemoryLimit(res.memoryLimit);
-        setCodeSolution(res.correctSolutionSourceCode);
+      if (res.attachment && res.attachment.length !== 0) {
+        const newFileURLArray = res.attachment.map((url) => ({
+          id: randomImageName(),
+          content: url,
+        }));
+        newFileURLArray.forEach((file, idx) => {
+          file.fileName = res.attachmentNames[idx];
+        });
+        setFetchedImageArray(newFileURLArray);
+      }
 
-        setCodeChecker(
-          res.solutionCheckerSourceCode != null
-            ? res.solutionCheckerSourceCode
-            : " "
-        );
-        setTimeLimit(res.timeLimit);
-        setIsPublic(res.publicProblem);
-        let problemDescriptionHtml = htmlToDraft(res.problemDescription);
-        let { contentBlocks, entityMap } = problemDescriptionHtml;
-        let contentDescriptionState = ContentState.createFromBlockArray(
-          contentBlocks,
-          entityMap
-        );
-        let statementDescription = EditorState.createWithContent(
-          contentDescriptionState
-        );
-        setEditorStateDescription(statementDescription);
+      setProblemName(res.problemName);
+      setLevelId(res.levelId);
+      setMemoryLimit(res.memoryLimit);
+      setCodeSolution(res.correctSolutionSourceCode);
 
-        let solutionHtml = htmlToDraft(res.solution);
-        let contentBlocks1 = solutionHtml.contentBlocks;
-        let entityMap1 = solutionHtml.entityMap;
-        let contentSolutionState = ContentState.createFromBlockArray(
-          contentBlocks1,
-          entityMap1
-        );
-        let statementSolution =
-          EditorState.createWithContent(contentSolutionState);
-        setEditorStateSolution(statementSolution);
-      }, {})
-      .then();
+      setCodeChecker(
+        res.solutionCheckerSourceCode != null
+          ? res.solutionCheckerSourceCode
+          : " "
+      );
+      setTimeLimit(res.timeLimit);
+      setIsPublic(res.publicProblem);
+      let problemDescriptionHtml = htmlToDraft(res.problemDescription);
+      let { contentBlocks, entityMap } = problemDescriptionHtml;
+      let contentDescriptionState = ContentState.createFromBlockArray(
+        contentBlocks,
+        entityMap
+      );
+      let statementDescription = EditorState.createWithContent(
+        contentDescriptionState
+      );
+      setEditorStateDescription(statementDescription);
+
+      let solutionHtml = htmlToDraft(res.solution);
+      let contentBlocks1 = solutionHtml.contentBlocks;
+      let entityMap1 = solutionHtml.entityMap;
+      let contentSolutionState = ContentState.createFromBlockArray(
+        contentBlocks1,
+        entityMap1
+      );
+      let statementSolution =
+        EditorState.createWithContent(contentSolutionState);
+      setEditorStateSolution(statementSolution);
+    });
 
     getTestCases();
   }, [problemId]);
@@ -308,27 +316,29 @@ function EditProblem() {
       formData.append("files", file);
     }
 
-    try {
-      authPostMultiPart(
-        dispatch,
-        token,
-        "/update-problem-detail/" + problemId,
-        formData
-      ).then(
-        (res) => {
-          setShowSubmitSuccess(true);
-          sleep(1000).then((r) => {
-            history.push("/programming-contest/list-problems");
-          });
-        },
-        {},
-        () => {
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
+      "/update-problem-detail/" + problemId,
+      (res) => {
+        setShowSubmitSuccess(true);
+        sleep(1000).then((r) => {
+          history.push("/programming-contest/list-problems");
+        });
+      },
+      {
+        onError: (e) => {
           alert("Cập nhật thất bại");
-        }
-      );
-    } catch (error) {
-      alert(error);
-    }
+        },
+      },
+      formData,
+      config
+    );
   }
 
   return (
@@ -483,7 +493,7 @@ function EditProblem() {
                     `Vượt quá số lượng tệp tối đa được cho phép. Chỉ được phép tải lên tối đa ${filesLimit} tệp.`
                   }
                   alertSnackbarProps={{
-                    anchorOrigin: {vertical: "bottom", horizontal: "right"},
+                    anchorOrigin: { vertical: "bottom", horizontal: "right" },
                     autoHideDuration: 1800,
                   }}
                   onChange={(files) => handleAttachmentFiles(files)}

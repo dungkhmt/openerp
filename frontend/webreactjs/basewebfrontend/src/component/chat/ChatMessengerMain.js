@@ -1,10 +1,7 @@
-import React, { useState } from "react";
-import { authPostMultiPart, authGet, request } from "../../api";
-import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { request } from "../../api";
 
 export default function ChatMain() {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
   const id = "myfile";
   const [fileId, setFileId] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -20,25 +17,43 @@ export default function ChatMain() {
     formData.append("inputJson", JSON.stringify(body));
     formData.append("file", selectedFile);
 
-    authPostMultiPart(dispatch, token, "/content/create", formData)
-      .then((res) => {
-        console.log("result upload = ", res);
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
 
+    request(
+      "post",
+      "/content/create",
+      (res) => {
+        res = res.data;
+        console.log("result upload = ", res);
         setFileId(res.id);
-      })
-      .catch((e) => {
-        console.error("EXCEPTION ", e);
-      });
+      },
+      {
+        onError: (e) => {
+          console.error("EXCEPTION ", e);
+        },
+      },
+      formData,
+      config
+    );
   }
 
   function downloadFile() {
-    authGet(dispatch, token, "/content/get/" + fileId)
-      .then((res) => {
-        console.log("result download = ", res);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+    request(
+      "get",
+      "/content/get/" + fileId,
+      (res) => {
+        console.log("result download = ", res.data);
+      },
+      {
+        onError: (e) => {
+          console.error(e);
+        },
+      }
+    );
   }
 
   return (

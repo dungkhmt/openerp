@@ -1,19 +1,18 @@
-import {Button, CircularProgress, Grid, Typography,} from "@material-ui/core";
-import {Box, Divider} from "@mui/material";
-import {ContentState, EditorState} from "draft-js";
-import htmlToDraft from "html-to-draftjs";
-import React, {useEffect, useRef, useState} from "react";
-import {Editor} from "react-draft-wysiwyg";
-import {useDispatch, useSelector} from "react-redux";
-import {useParams} from "react-router";
-import {authGet, authPostMultiPart} from "../../../api";
-import HustModal from "component/common/HustModal";
+import { Button, CircularProgress, Grid, Typography } from "@material-ui/core";
+import { Box, Divider } from "@mui/material";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
-import StudentViewSubmission from "./StudentViewSubmission";
-import {randomImageName,} from "utils/FileUpload/covert";
-import {errorNoti, successNoti} from "../../../utils/notification";
-import HustCodeLanguagePicker from "../../common/HustCodeLanguagePicker";
+import HustModal from "component/common/HustModal";
+import { ContentState, EditorState } from "draft-js";
+import htmlToDraft from "html-to-draftjs";
+import React, { useEffect, useRef, useState } from "react";
+import { Editor } from "react-draft-wysiwyg";
+import { useParams } from "react-router";
+import { randomImageName } from "utils/FileUpload/covert";
+import { request } from "../../../api";
 import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
+import { errorNoti, successNoti } from "../../../utils/notification";
+import HustCodeLanguagePicker from "../../common/HustCodeLanguagePicker";
+import StudentViewSubmission from "./StudentViewSubmission";
 
 const editorStyle = {
   toolbar: {
@@ -38,20 +37,21 @@ export default function StudentViewProgrammingContestProblemDetail() {
 
   const [openModalPreview, setOpenModalPreview] = useState(false);
   const [selectedTestcase, setSelectedTestcase] = useState();
-  const token = useSelector((state) => state.auth.token);
-  const dispatch = useDispatch();
+
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [editorStateDescription, setEditorStateDescription] = useState(
     EditorState.createEmpty()
   );
   const [fetchedImageArray, setFetchedImageArray] = useState([]);
 
-  const ERR_STATUS = ["TIME_OUT",
+  const ERR_STATUS = [
+    "TIME_OUT",
     "PARTICIPANT_NOT_APPROVED_OR_REGISTERED",
     "PARTICIPANT_HAS_NOT_PERMISSION_TO_SUBMIT",
     "MAX_NUMBER_SUBMISSIONS_REACHED",
     "MAX_SOURCE_CODE_LENGTH_VIOLATIONS",
-    "SUBMISSION_INTERVAL_VIOLATIONS"];
+    "SUBMISSION_INTERVAL_VIOLATIONS",
+  ];
 
   const inputRef = useRef();
   const listSubmissionRef = useRef(null);
@@ -83,70 +83,80 @@ export default function StudentViewProgrammingContestProblemDetail() {
     formData.append("inputJson", JSON.stringify(body));
     formData.append("file", filename);
 
-    await authPostMultiPart(
-      dispatch,
-      token,
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    //TODO: consider remove duplicate code
+    request(
+      "post",
       "/contest-submit-problem-via-upload-file-v3",
-      formData
-    )
-      .then((res) => {
+      (res) => {
+        res = res.data;
         listSubmissionRef.current.refreshSubmission();
         inputRef.current.value = null;
         if (ERR_STATUS.includes(res.status)) {
           errorNoti(res.message, 3000);
-        } else successNoti("Submitted!", 3000)
+        } else successNoti("Submitted!", 3000);
         setStatus(res.status);
         setMessage(res.message);
-      })
-      .catch((e) => {
-        console.error(e);
-      })
-      .finally(() => {
+
         setIsProcessing(false);
         setFilename(null);
         inputRef.current.value = null;
-      });
+      },
+      {
+        onError: (e) => {
+          setIsProcessing(false);
+          setFilename(null);
+          inputRef.current.value = null;
+
+          console.error(e);
+        },
+      },
+      formData,
+      config
+    );
   };
 
   function getProblemDetail() {
-    authGet(
-      dispatch,
-      token,
+    request(
+      "get",
       "/get-problem-detail-view-by-student-in-contest/" +
-      problemId +
-      "/" +
-      contestId
-    )
-      .then(
-        (res) => {
-          setProblem(res);
-          console.log(res);
-          //setProblemStatement(res.data.problemStatement);
-          if (res.attachment && res.attachment.length !== 0) {
-            const newFileURLArray = res.attachment.map((url) => ({
-              id: randomImageName(),
-              content: url,
-            }));
-            newFileURLArray.forEach((file, idx) => {
-              file.fileName = res.attachmentNames[idx];
-            });
-            setFetchedImageArray(newFileURLArray);
-          }
+        problemId +
+        "/" +
+        contestId,
+      (res) => {
+        res = res.data;
+        setProblem(res);
+        console.log(res);
+        //setProblemStatement(res.data.problemStatement);
+        if (res.attachment && res.attachment.length !== 0) {
+          const newFileURLArray = res.attachment.map((url) => ({
+            id: randomImageName(),
+            content: url,
+          }));
+          newFileURLArray.forEach((file, idx) => {
+            file.fileName = res.attachmentNames[idx];
+          });
+          setFetchedImageArray(newFileURLArray);
+        }
 
-          let problemDescriptionHtml = htmlToDraft(res.problemStatement);
-          let {contentBlocks, entityMap} = problemDescriptionHtml;
-          let contentDescriptionState = ContentState.createFromBlockArray(
-            contentBlocks,
-            entityMap
-          );
-          let statementDescription = EditorState.createWithContent(
-            contentDescriptionState
-          );
-          setEditorStateDescription(statementDescription);
-        },
-        (e) => console.log(e)
-      )
-      .then();
+        let problemDescriptionHtml = htmlToDraft(res.problemStatement);
+        let { contentBlocks, entityMap } = problemDescriptionHtml;
+        let contentDescriptionState = ContentState.createFromBlockArray(
+          contentBlocks,
+          entityMap
+        );
+        let statementDescription = EditorState.createWithContent(
+          contentDescriptionState
+        );
+        setEditorStateDescription(statementDescription);
+      },
+      { onError: (e) => console.log(e) }
+    );
   }
 
   useEffect(() => {
@@ -192,14 +202,14 @@ export default function StudentViewProgrammingContestProblemDetail() {
         />
         {fetchedImageArray.length !== 0 &&
           fetchedImageArray.map((file) => (
-            <FileUploadZone file={file} removable={false}/>
+            <FileUploadZone file={file} removable={false} />
           ))}
       </div>
 
-      <Divider/>
+      <Divider />
 
-      <ModalPreview chosenTestcase={selectedTestcase}/>
-      <Box sx={{mt: 2}}>
+      <ModalPreview chosenTestcase={selectedTestcase} />
+      <Box sx={{ mt: 2 }}>
         <form onSubmit={handleFormSubmit}>
           <Grid container spacing={1} alignItems="center">
             <Grid item xs={3}>
@@ -212,7 +222,10 @@ export default function StudentViewProgrammingContestProblemDetail() {
               />
             </Grid>
             <Grid item xs={1}>
-              <HustCodeLanguagePicker language={language} onChangeLanguage={(e) => setLanguage(e.target.value)}/>
+              <HustCodeLanguagePicker
+                language={language}
+                onChangeLanguage={(e) => setLanguage(e.target.value)}
+              />
             </Grid>
 
             <Grid item xs={2}>
@@ -228,18 +241,22 @@ export default function StudentViewProgrammingContestProblemDetail() {
               </Button>
             </Grid>
 
-            {isProcessing ? <CircularProgress/> : ""}
+            {isProcessing ? <CircularProgress /> : ""}
           </Grid>
         </form>
         <div>
-          <h3>Status: <em>{status}</em></h3>
+          <h3>
+            Status: <em>{status}</em>
+          </h3>
         </div>
         <div>
-          <h3>Message: <em>{message}</em></h3>
+          <h3>
+            Message: <em>{message}</em>
+          </h3>
         </div>
       </Box>
-      <Box sx={{paddingTop: 2}}>
-        <StudentViewSubmission problemId={problemId} ref={listSubmissionRef}/>
+      <Box sx={{ paddingTop: 2 }}>
+        <StudentViewSubmission problemId={problemId} ref={listSubmissionRef} />
       </Box>
     </div>
   );

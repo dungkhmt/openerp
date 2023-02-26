@@ -4,18 +4,18 @@ import AddCircleIcon from "@material-ui/icons/AddCircle";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, useParams } from "react-router-dom";
-import { authGet, authPost, request } from "../../../api";
+import { request } from "../../../api";
 import { tableIcons } from "../../../utils/iconutil";
 import ModalCreateResource from "./ModalCreateResource";
+
 function ResourceList(props) {
   const history = useHistory();
   const location = useLocation();
   const params = useParams();
-  const dispatch = useDispatch();
+
   const [open, setOpen] = useState(false);
-  const token = useSelector((state) => state.auth.token);
+
   const columns = [
     {
       field: "link",
@@ -97,31 +97,36 @@ function ResourceList(props) {
                 }
 
                 if (query.search.length > 0) {
-                  authPost(dispatch, token, `/domains/${params.id}/resources`, {
-                    description: query.search,
-                  }).then(
+                  request(
+                    "post",
+                    `/domains/${params.id}/resources`,
                     (res) => {
-                      console.log(res);
+                      console.log(res.data);
                       resolve({
-                        data: res,
+                        data: res.data,
                       });
                     },
-                    (error) => {
-                      console.log("error");
+                    {
+                      onError: (error) => {
+                        console.log("error", error);
+                      },
+                    },
+                    {
+                      description: query.search,
                     }
                   );
                 } else {
-                  authGet(
-                    dispatch,
-                    token,
+                  request(
+                    "get",
                     `/domains/${params.id}/resources` +
                       "?size=" +
                       query.pageSize +
                       "&page=" +
                       query.page +
-                      sortParam
-                  ).then(
+                      sortParam,
                     (res) => {
+                      res = res.data;
+
                       // console.log(res)
                       resolve({
                         data: res.content,
@@ -129,8 +134,10 @@ function ResourceList(props) {
                         totalCount: res.totalElements,
                       });
                     },
-                    (error) => {
-                      console.log("error");
+                    {
+                      onError: (error) => {
+                        console.log("error", error);
+                      },
                     }
                   );
                 }

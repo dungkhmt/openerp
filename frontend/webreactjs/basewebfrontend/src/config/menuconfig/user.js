@@ -5,22 +5,22 @@ export const user = {
   icon: "PersonIcon",
   text: "Tài khoản",
   child: [
-    {
-      id: "MENU_USER_CREATE",
-      path: "/userlogin/create",
-      isPublic: false,
-      icon: "StarBorder",
-      text: "Tạo mới",
-      child: [],
-    },
-    {
-      id: "MENU_USER_LIST",
-      path: "/userlogin/list",
-      isPublic: false,
-      icon: "StarBorder",
-      text: "Danh sách",
-      child: [],
-    },
+    // {
+    //   id: "MENU_USER_CREATE",
+    //   path: "/userlogin/create",
+    //   isPublic: false,
+    //   icon: "StarBorder",
+    //   text: "Tạo mới",
+    //   child: [],
+    // },
+    // {
+    //   id: "MENU_USER_LIST",
+    //   path: "/userlogin/list",
+    //   isPublic: false,
+    //   icon: "StarBorder",
+    //   text: "Danh sách",
+    //   child: [],
+    // },
     {
       id: "MENU_USER_APPROVE_REGISTRATION",
       path: "/user-group/user/approve-register",

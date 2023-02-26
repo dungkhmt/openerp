@@ -1,91 +1,90 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
-import React, { useEffect, useState } from "react";
-import Button from "@material-ui/core/Button";
-import { authGet } from "../../api";
-import { CircularProgress } from "@material-ui/core";
-import MaterialTable, { MTableToolbar } from "material-table";
+// import { CircularProgress } from "@material-ui/core";
+// import Button from "@material-ui/core/Button";
+// import MaterialTable from "material-table";
+// import { useEffect, useState } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { useHistory } from "react-router-dom";
+// import { authGet, request } from "../../api";
 
-export default function Approve() {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
-  const history = useHistory();
+// // TODO: consider remove
+// export default function Approve() {
+//   const dispatch = useDispatch();
+//   const token = useSelector((state) => state.auth.token);
+//   const history = useHistory();
 
-  const [waiting, setWaiting] = useState({});
-  const [approved, setApproved] = useState({});
+//   const [waiting, setWaiting] = useState({});
+//   const [approved, setApproved] = useState({});
 
-  const [userRegisterList, setUserRegisterList] = useState([]);
+//   const [userRegisterList, setUserRegisterList] = useState([]);
 
-  async function getUserRegisterList() {
-    let userRegisterList = await authGet(
-      dispatch,
-      token,
-      "/user/get-all-register-user"
-    );
-    setUserRegisterList(userRegisterList);
-  }
+//   function getUserRegisterList() {
+//     request("get", "/user/get-all-register-user", (res) => {
+//       let userRegisterList = res.data;
+//       setUserRegisterList(userRegisterList);
+//     });
+//   }
 
-  useEffect(() => {
-    getUserRegisterList().then((r) => r);
-  }, []);
+//   useEffect(() => {
+//     getUserRegisterList();
+//   }, []);
 
-  const columns = [
-    { title: "Tên đăng nhập", field: "userLoginId" },
-    { title: "Email", field: "email" },
-    { title: "Tên đầy đủ", field: "fullName" },
-    {
-      title: "",
-      render: (rowData) =>
-        waiting[rowData["userLoginId"]] ? (
-          <CircularProgress color="secondary" />
-        ) : approved[rowData["userLoginId"]] ? (
-          <Button variant="contained" disabled>
-            Đã phê duyệt
-          </Button>
-        ) : (
-          <Button
-            color={"primary"}
-            variant={"contained"}
-            onClick={() => handleApprove(rowData["userLoginId"])}
-          >
-            Phê duyệt
-          </Button>
-        ),
-    },
-  ];
+//   const columns = [
+//     { title: "Tên đăng nhập", field: "userLoginId" },
+//     { title: "Email", field: "email" },
+//     { title: "Tên đầy đủ", field: "fullName" },
+//     {
+//       title: "",
+//       render: (rowData) =>
+//         waiting[rowData["userLoginId"]] ? (
+//           <CircularProgress color="secondary" />
+//         ) : approved[rowData["userLoginId"]] ? (
+//           <Button variant="contained" disabled>
+//             Đã phê duyệt
+//           </Button>
+//         ) : (
+//           <Button
+//             color={"primary"}
+//             variant={"contained"}
+//             onClick={() => handleApprove(rowData["userLoginId"])}
+//           >
+//             Phê duyệt
+//           </Button>
+//         ),
+//     },
+//   ];
 
-  //phamducdat
+//   //phamducdat
 
-  const handleUpdatePassWord = () => {
-    history.push("/userregister/Register");
-  };
+//   const handleUpdatePassWord = () => {
+//     history.push("/userregister/Register");
+//   };
 
-  async function handleApprove(userLoginId) {
-    waiting[userLoginId] = true;
-    setWaiting(Object.assign({}, waiting));
-    let response = await authGet(
-      dispatch,
-      token,
-      "/user/approve-register/" + userLoginId
-    );
-    waiting[userLoginId] = false;
-    setWaiting(Object.assign({}, waiting));
-    if (response) {
-      approved[userLoginId] = true;
-      setApproved(Object.assign({}, approved));
-    } else {
-      alert("Phê duyệt thất bại!");
-    }
-  }
+//   async function handleApprove(userLoginId) {
+//     waiting[userLoginId] = true;
+//     setWaiting(Object.assign({}, waiting));
+//     let response = await authGet(
+//       dispatch,
+//       token,
+//       "/user/approve-register/" + userLoginId
+//     );
+//     waiting[userLoginId] = false;
+//     setWaiting(Object.assign({}, waiting));
+//     if (response) {
+//       approved[userLoginId] = true;
+//       setApproved(Object.assign({}, approved));
+//     } else {
+//       alert("Phê duyệt thất bại!");
+//     }
+//   }
 
-  return (
-    <div>
-      <MaterialTable
-        title={"Danh sách người dùng cần phê duyệt"}
-        columns={columns}
-        data={userRegisterList}
-        options={{ search: false }}
-      />
-    </div>
-  );
-}
+//   return (
+//     <div>
+//       <MaterialTable
+//         title={"Danh sách người dùng cần phê duyệt"}
+//         columns={columns}
+//         data={userRegisterList}
+//         options={{ search: false }}
+//       />
+//     </div>
+//   );
+// }

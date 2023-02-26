@@ -1,24 +1,22 @@
 import {
   Button,
   Checkbox,
+  CircularProgress,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   Tooltip,
   Typography,
-  CircularProgress,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
 import { Delete } from "@material-ui/icons";
 import * as _ from "lodash";
 import MaterialTable from "material-table";
-import React, { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { FcDocument } from "react-icons/fc";
-import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
 import SimpleBar from "simplebar-react";
-import { request, authPostMultiPart } from "../../../api";
+import { request } from "../../../api";
 //import { authPostMultiPart } from "../../../api";
 import { localization } from "../../../utils/MaterialTableUtils";
 import PrimaryButton from "../../button/PrimaryButton";
@@ -26,7 +24,6 @@ import TertiaryButton from "../../button/TertiaryButton";
 import CustomizedDialogs from "../../dialog/CustomizedDialogs";
 import ErrorDialog from "../../dialog/ErrorDialog";
 import { style } from "./TeacherViewQuizDetailForAssignment";
-import { useDispatch } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   ...style(theme),
   table: {
@@ -45,13 +42,11 @@ const headerProperties = {
 let count = 0;
 
 export default function QuizTestStudentList(props) {
-  const history = useHistory();
   const classes = useStyles();
-  const token = useSelector((state) => state.auth.token);
+
   const [filename, setFilename] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
-  const dispatch = useDispatch();
 
   //
   const testId = props.testId;
@@ -263,8 +258,17 @@ export default function QuizTestStudentList(props) {
     formData.append("inputJson", JSON.stringify(body));
     formData.append("file", filename);
 
-    authPostMultiPart(dispatch, token, "/upload-excel-student-list", formData)
-      .then((res) => {
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
+      "/upload-excel-student-list",
+      (res) => {
+        res = res.data;
         setIsProcessing(false);
         console.log("handleFormSubmit, res = ", res);
         setUploadMessage(res.message);
@@ -272,12 +276,17 @@ export default function QuizTestStudentList(props) {
         //  alert("Time Out!!!");
         //} else {
         //}
-      })
-      .catch((e) => {
-        setIsProcessing(false);
-        console.error(e);
-        //alert("Time Out!!!");
-      });
+      },
+      {
+        onError: (e) => {
+          setIsProcessing(false);
+          console.error(e);
+          //alert("Time Out!!!");
+        },
+      },
+      formData,
+      config
+    );
   };
 
   function onFileChange(event) {

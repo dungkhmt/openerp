@@ -59,7 +59,7 @@ function AccountButton() {
       >
         <Avatar alt="account button" className={classes.avatar}>
           {keycloak.tokenParsed.name
-            .split(" ")
+            ?.split(" ")
             .pop()
             .substring(0, 1)
             .toLocaleUpperCase()}

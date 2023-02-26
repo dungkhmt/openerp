@@ -1,40 +1,13 @@
-import {
-  Avatar,
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  Grid,
-  Link,
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import MaterialTable from "material-table";
-import React, { Fragment, useEffect, useState } from "react";
-import { BiDetail } from "react-icons/bi";
-import {
-  useDispatch,
-  //useSelector
-} from "react-redux";
+import { Fragment, useEffect, useState } from "react";
 import {
   //useHistory,
   useParams,
 } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
+import { classState } from "state/ClassState";
 import { request } from "../../../../api";
-import AssignmentTab from "../../../../component/education/classmanagement/student/AssignmentTab";
-import QuizTab from "../../../../component/education/classmanagement/student/QuizTab";
-import StudentListTab from "../../../../component/education/classmanagement/student/StudentListTab";
-import {
-  a11yProps,
-  StyledTab,
-  StyledTabs,
-  TabPanel,
-} from "../../../../component/tab";
-import { setClassId } from "../../../../reducers/classReducer";
-import StudentViewLearningSessionList from "./StudentViewLearningSessionList";
-import ChapterListOfCourse from "../../../../component/education/classmanagement/student/classdetail/ChapterListOfCourse";
 import StudentViewClassDetail from "./StudentViewClassDetail";
 
 const useStyles = makeStyles((theme) => ({
@@ -60,9 +33,6 @@ const useStyles = makeStyles((theme) => ({
 function SClassDetail() {
   const classes = useStyles();
   const params = useParams();
-  //const token = useSelector((state) => state.auth.token);
-  const dispatch = useDispatch();
-  //const history = useHistory();
 
   const [classDetail, setClassDetail] = useState({});
 
@@ -92,29 +62,18 @@ function SClassDetail() {
   // Functions.
   const getClassDetail = () => {
     const classId = params.id;
-    request(
-      // token, history,
-      "get",
-      `/edu/class/${params.id}`,
-      (res) => {
-        setClassDetail(res.data);
-        dispatch(setClassId(classId));
-      }
-    );
+    request("get", `/edu/class/${params.id}`, (res) => {
+      setClassDetail(res.data);
+      classState.classId.set(classId);
+    });
   };
 
   const getChapterListOfClass = () => {
-    //request(token, history, "get", `/get-quiz-of-class/${params.id}`, (res) => {
-    request(
-      // token,
-      // history,
-      "get",
-      `/edu/class/get-chapters-of-class/${params.id}`,
-      (res) => {
-        console.log("getChapterListOfClass, res.data = ", res.data);
-        setChapterList(res.data);
-      }
-    );
+    //request( "get", `/get-quiz-of-class/${params.id}`, (res) => {
+    request("get", `/edu/class/get-chapters-of-class/${params.id}`, (res) => {
+      console.log("getChapterListOfClass, res.data = ", res.data);
+      setChapterList(res.data);
+    });
   };
 
   useEffect(() => {

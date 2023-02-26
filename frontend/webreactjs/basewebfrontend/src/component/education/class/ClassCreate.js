@@ -9,12 +9,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { request } from "api";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { failed } from "../../../action/Auth";
-import { authPost } from "../../../api";
-import { API_URL } from "../../../config/config";
 import withScreenSecurity from "../../withScreenSecurity";
 
 const useStyles = makeStyles((theme) => ({
@@ -35,8 +32,7 @@ const useStyles = makeStyles((theme) => ({
 function ClassCreate() {
   const classes = useStyles();
   const history = useHistory();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const [isRequesting, setIsRequesting] = useState(false);
 
   const [classId, setClassId] = useState(null);
@@ -85,14 +81,12 @@ function ClassCreate() {
   // }
 
   const getAllCourses = () => {
-    fetch(API_URL + "/edu/class/get-all-courses", {
-      method: "GET",
-      headers: { "Content-Type": "application/json", "X-Auth-Token": token },
-    })
-      .then((response) => response.json())
-      .then(
-        (response) => {
-          /*
+    request(
+      "get",
+      "/edu/class/get-all-courses",
+      (response) => {
+        response = response.data;
+        /*
               console.log(response);
               let arr = [];
               response.forEach((d) => {
@@ -100,53 +94,54 @@ function ClassCreate() {
               });
               setCoursePool(arr);
               */
-          //console.log('getDepartmentList = ',departments);
-          setCoursePool(response);
-        },
-        (error) => {
+        //console.log('getDepartmentList = ',departments);
+        setCoursePool(response);
+      },
+      {
+        onError: (error) => {
           setCoursePool([]);
-        }
-      );
+        },
+      }
+    );
   };
 
   const getAllDepartments = () => {
-    fetch(API_URL + "/edu/class/get-all-departments", {
-      method: "GET",
-      headers: { "Content-Type": "application/json", "X-Auth-Token": token },
-    })
-      .then((response) => response.json())
-      .then(
-        (response) => {
-          setDepartmentPool(response);
-        },
-        (error) => {
+    request(
+      "get",
+      "/edu/class/get-all-departments",
+      (response) => {
+        setDepartmentPool(response.data);
+      },
+      {
+        onError: (error) => {
           setDepartmentPool([]);
-        }
-      );
+        },
+      }
+    );
   };
 
   const getAllSemesters = () => {
-    fetch(API_URL + "/edu/class/get-all-semesters", {
-      method: "GET",
-      headers: { "Content-Type": "application/json", "X-Auth-Token": token },
-    })
-      .then((response) => response.json())
-      .then(
-        (response) => {
-          console.log(response);
-          let arr = [];
-          response.forEach((d) => {
-            arr.push(d);
-          });
-          setSemesterPool(arr);
+    request(
+      "get",
+      "/edu/class/get-all-semesters",
+      (response) => {
+        response = response.data;
+        console.log(response);
+        let arr = [];
+        response.forEach((d) => {
+          arr.push(d);
+        });
+        setSemesterPool(arr);
 
-          //setSemesterPool(response);
-          //console.log('getDepartmentList = ',departments);
-        },
-        (error) => {
+        //setSemesterPool(response);
+        //console.log('getDepartmentList = ',departments);
+      },
+      {
+        onError: (error) => {
           setSemesterPool([]);
-        }
-      );
+        },
+      }
+    );
 
     /*
         authGet(dispatch, token, "/edu/get-all-semester").then((res) => {
@@ -231,29 +226,28 @@ function ClassCreate() {
     }
 
     setIsRequesting(true);
-    authPost(dispatch, token, "/edu/class/add", data)
-      .then(
-        (res) => {
-          setIsRequesting(false);
-          if (res.message === "duplicate") {
-            alert("Mã lớp đã tồn tại");
-            return "duplicate";
-          } else if (res.status === 401) {
-            dispatch(failed());
-            throw Error("Unauthorized");
-          } else if (res.status === 409) {
-            alert("User exits!!");
-          } else if (res.status === 201) {
-            return res.json();
-          }
-        },
-        (error) => {
-          console.log(error);
+    request(
+      "post",
+      "/edu/class/add",
+      (res) => {
+        setIsRequesting(false);
+
+        if (res.data.message === "duplicate") {
+          alert("Mã lớp đã tồn tại");
+          return "duplicate";
+        } else if (res.status === 409) {
+          alert("User exits!!");
+        } else if (res.status === 201) {
+          history.push("/edu/teacher/class/list");
         }
-      )
-      .then((res) => {
-        if (res !== "duplicate") history.push("/edu/teacher/class/list");
-      });
+      },
+      {
+        onError: (error) => {
+          console.log(error);
+        },
+      },
+      data
+    );
   };
 
   return (

@@ -20,9 +20,8 @@ import {
 } from "@material-ui/pickers";
 import { useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { authGet, authPostMultiPart, request } from "../../../api";
+import { request } from "../../../api";
 import CreateNewQuestionPopup from "../quiztest/CreateNewQuestionPopup";
 
 const styles = {
@@ -134,9 +133,6 @@ function goToBottom() {
 }
 
 function CreateQuizTest() {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
-
   const [listCourse, setListCourse] = useState([]);
 
   const [classMap, setClassMap] = useState({});
@@ -164,17 +160,19 @@ function CreateQuizTest() {
   const forceUpdate = useForceUpdate();
 
   async function getListCourse() {
-    let res = await authGet(dispatch, token, "/edu/class/get-all-courses");
+    request("get", "/edu/class/get-all-courses", (res) => {
+      res = res.data;
 
-    let temp = [];
-    res.map((elm) => {
-      temp.push({
-        id: elm.id,
-        value: elm.id + " - " + elm.name + " (" + elm.credit + " tín chỉ)",
+      let temp = [];
+      res.map((elm) => {
+        temp.push({
+          id: elm.id,
+          value: elm.id + " - " + elm.name + " (" + elm.credit + " tín chỉ)",
+        });
       });
+      setListCourse(temp);
+      //console.log(temp);
     });
-    setListCourse(temp);
-    //console.log(temp);
   }
 
   async function getClassList() {
@@ -336,9 +334,24 @@ function CreateQuizTest() {
             console.log(pair[0]+ ', ' + pair[1]); 
         } */
 
-    await authPostMultiPart(dispatch, token, "/create-quiz-test", formData);
+    const config = {
+      headers: {
+        "content-Type": "multipart/form-data",
+      },
+    };
+
+    request(
+      "post",
+      "/create-quiz-test",
+      (res) => {
+        history.push("/edu/class/quiztest/list");
+      },
+      {},
+      formData,
+      config
+    );
+
     //await authPost(dispatch, token, "/create-quiz-test", formData);
-    history.push("/edu/class/quiztest/list");
   }
 
   return (

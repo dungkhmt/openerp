@@ -1,27 +1,28 @@
-import {TableHead, Typography} from "@material-ui/core";
+import { TableHead, Typography } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import TableRow from "@material-ui/core/TableRow";
 import InfoIcon from "@mui/icons-material/Info";
-import {Button, IconButton} from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import HustModal from "component/common/HustModal";
-import {ContentState, EditorState} from "draft-js";
+import { ContentState, EditorState } from "draft-js";
 import htmlToDraft from "html-to-draftjs";
-import React, {useEffect, useState} from "react";
-import {Editor} from "react-draft-wysiwyg";
-import {useDispatch, useSelector} from "react-redux";
-import {useParams} from "react-router";
-import {useHistory} from "react-router-dom";
-import {randomImageName,} from "utils/FileUpload/covert";
-import {authGet} from "../../../api";
-import ContestsUsingAProblem from "./ContestsUsingAProblem";
-import {StyledTableCell, StyledTableRow} from "./lib";
-import {request} from "./Request";
-import {copyAllTestCases, downloadAllTestCases} from "./service/TestCaseService";
+import React, { useEffect, useState } from "react";
+import { Editor } from "react-draft-wysiwyg";
+import { useParams } from "react-router";
+import { useHistory } from "react-router-dom";
+import { randomImageName } from "utils/FileUpload/covert";
 import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
+import ContestsUsingAProblem from "./ContestsUsingAProblem";
+import { StyledTableCell, StyledTableRow } from "./lib";
+import { request } from "./Request";
+import {
+  copyAllTestCases,
+  downloadAllTestCases,
+} from "./service/TestCaseService";
 
 const editorStyle = {
   toolbar: {
@@ -50,8 +51,7 @@ export default function ManagerViewProblemDetail() {
   const [runTime, setRunTime] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [selectedTestcase, setSelectedTestcase] = useState();
-  const token = useSelector((state) => state.auth.token);
-  const dispatch = useDispatch();
+
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [editorStateDescription, setEditorStateDescription] = useState(
     EditorState.createEmpty()
@@ -80,35 +80,36 @@ export default function ManagerViewProblemDetail() {
   }
 
   function getProblemDetail() {
-    authGet(
-      dispatch,
-      token,
-      "/get-problem-detail-view-by-manager/" + problemId
-    ).then((res) => {
-      setProblem(res);
-      console.log(res);
-      if (res.attachment && res.attachment.length !== 0) {
-        const newFileURLArray = res.attachment.map((url) => ({
-          id: randomImageName(),
-          content: url,
-        }));
-        newFileURLArray.forEach((file, idx) => {
-          file.fileName = res.attachmentNames[idx];
-        });
-        setFetchedImageArray(newFileURLArray);
+    request(
+      "get",
+      "/get-problem-detail-view-by-manager/" + problemId,
+      (res) => {
+        res = res.data;
+        setProblem(res);
+        console.log(res);
+        if (res.attachment && res.attachment.length !== 0) {
+          const newFileURLArray = res.attachment.map((url) => ({
+            id: randomImageName(),
+            content: url,
+          }));
+          newFileURLArray.forEach((file, idx) => {
+            file.fileName = res.attachmentNames[idx];
+          });
+          setFetchedImageArray(newFileURLArray);
+        }
+        //setProblemStatement(res.data.problemStatement);
+        let problemDescriptionHtml = htmlToDraft(res.problemStatement);
+        let { contentBlocks, entityMap } = problemDescriptionHtml;
+        let contentDescriptionState = ContentState.createFromBlockArray(
+          contentBlocks,
+          entityMap
+        );
+        let statementDescription = EditorState.createWithContent(
+          contentDescriptionState
+        );
+        setEditorStateDescription(statementDescription);
       }
-      //setProblemStatement(res.data.problemStatement);
-      let problemDescriptionHtml = htmlToDraft(res.problemStatement);
-      let {contentBlocks, entityMap} = problemDescriptionHtml;
-      let contentDescriptionState = ContentState.createFromBlockArray(
-        contentBlocks,
-        entityMap
-      );
-      let statementDescription = EditorState.createWithContent(
-        contentDescriptionState
-      );
-      setEditorStateDescription(statementDescription);
-    }, {});
+    );
   }
 
   useEffect(() => {
@@ -193,12 +194,12 @@ export default function ManagerViewProblemDetail() {
         />
         {fetchedImageArray.length !== 0 &&
           fetchedImageArray.map((file) => (
-            <FileUploadZone file={file} removable={false}/>
+            <FileUploadZone file={file} removable={false} />
           ))}
       </div>
 
       <TableContainer component={Paper}>
-        <Table sx={{minWidth: 750}} aria-label="customized table">
+        <Table sx={{ minWidth: 750 }} aria-label="customized table">
           <TableHead>
             <TableRow>
               <StyledTableCell></StyledTableCell>
@@ -209,12 +210,18 @@ export default function ManagerViewProblemDetail() {
               <StyledTableCell align="left">Submit Output</StyledTableCell>
               */}
               <StyledTableCell align="left">
-                <Button variant="contained" onClick={() => copyAllTestCases(testCases)}>
+                <Button
+                  variant="contained"
+                  onClick={() => copyAllTestCases(testCases)}
+                >
                   Copy Tests
                 </Button>
               </StyledTableCell>
               <StyledTableCell align="left">
-                <Button variant="contained" onClick={() => downloadAllTestCases(testCases)}>
+                <Button
+                  variant="contained"
+                  onClick={() => downloadAllTestCases(testCases)}
+                >
                   Download Tests
                 </Button>
               </StyledTableCell>
@@ -291,7 +298,7 @@ export default function ManagerViewProblemDetail() {
                           setOpenModal(true);
                         }}
                       >
-                        <InfoIcon/>
+                        <InfoIcon />
                       </IconButton>
                     </StyledTableCell>
                     <StyledTableCell align="left"></StyledTableCell>
@@ -302,9 +309,9 @@ export default function ManagerViewProblemDetail() {
           </TableBody>
         </Table>
       </TableContainer>
-      <ModalPreview chosenTestcase={selectedTestcase}/>
+      <ModalPreview chosenTestcase={selectedTestcase} />
 
-      <ContestsUsingAProblem problemId={problemId}/>
+      <ContestsUsingAProblem problemId={problemId} />
     </div>
   );
 }

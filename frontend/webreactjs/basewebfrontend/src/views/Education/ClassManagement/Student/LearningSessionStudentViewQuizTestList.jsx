@@ -6,11 +6,7 @@ import Paper from "@material-ui/core/Paper";
 import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
-import React, { useEffect, useState } from "react";
-import {
-  useDispatch,
-  //useSelector
-} from "react-redux";
+import { useEffect, useState } from "react";
 //import { useHistory } from "react-router-dom";
 import { request } from "../../../../api";
 
@@ -39,10 +35,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LearningSessionStudentViewQuizTestList(props) {
-  //const dispatch = useDispatch();
-  //const token = useSelector((state) => state.auth.token);
-  //const history = useHistory();
-
   //const testQuizId = history.location.state.testId;
   const [testQuizId, setTestQuizId] = useState(null);
   const sessionId = props.sessionId;
@@ -58,20 +50,12 @@ export default function LearningSessionStudentViewQuizTestList(props) {
   const [mapS, setMapS] = useState({});
 
   function getSessionDetail() {
-    request(
-      // token,
-      // history,
-      "get",
-      "/get-sessions-of-class/" + sessionId,
-      (res) => {
-        setSessionDetail(res.data);
-      }
-    );
+    request("get", "/get-sessions-of-class/" + sessionId, (res) => {
+      setSessionDetail(res.data);
+    });
   }
   async function getQuestionList() {
     request(
-      // token,
-      // history,
       "get",
       "/get-active-quiz-of-session-for-participant/" + sessionId,
       (res) => {
@@ -126,8 +110,6 @@ export default function LearningSessionStudentViewQuizTestList(props) {
     };
     console.log(tmpOb);
     request(
-      // token,
-      // history,
       "post",
       "/quiz-test-choose_answer-by-user",
       (res) => {

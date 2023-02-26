@@ -216,7 +216,7 @@ export function AccountMenu(props) {
                         }}
                       >
                         {token.name
-                          .split(" ")
+                          ?.split(" ")
                           .pop()
                           .substring(0, 1)
                           .toLocaleUpperCase()}

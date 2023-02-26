@@ -3,13 +3,11 @@ import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { SvgIcon, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { ReactKeycloakProvider } from "@react-keycloak/web";
-import { getScrSecurInfo } from "action/Screen";
 import { FacebookCircularProgress } from "component/common/progressBar/CustomizedCircularProgress.jsx";
 import keycloak, { initOptions } from "config/keycloak.js";
 import { useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { useDispatch } from "react-redux";
 import { Router } from "react-router-dom";
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -74,7 +72,7 @@ const AppLoading = (
         flexGrow: 1,
       }}
     >
-      <SvgIcon sx={{ fontSize: 150, mb: 4 }} viewBox="150 150">
+      <SvgIcon sx={{ fontSize: 150, mb: 4 }} viewBox="0 0 150 150">
         <Logo width={132} height={132} x={9} y={9} />
       </SvgIcon>
       <Box>
@@ -88,7 +86,7 @@ const AppLoading = (
 );
 
 function App() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   // TODO: Consider remove this logic!
   const logout = () => {
@@ -123,8 +121,8 @@ function App() {
       //       }),
       //   10 * 1000
       // );
-
-      dispatch(getScrSecurInfo());
+      // Currently not used
+      // dispatch(getScrSecurInfo());
     } else if (event === "onAuthError") {
       console.error("Authenticated failed");
     } else if (event === "onAuthLogout") {

@@ -1,19 +1,18 @@
-import { makeStyles } from "@material-ui/core/styles";
-import { authPut, authDelete, authGet, request } from "../../../../../api";
 import {
   Avatar,
   Button,
   Dialog,
-  DialogTitle,
+  DialogActions,
   DialogContent,
   DialogContentText,
-  DialogActions,
+  DialogTitle,
   Input,
 } from "@material-ui/core";
-import { useDispatch, useSelector } from "react-redux";
+import { makeStyles } from "@material-ui/core/styles";
 import { useState } from "react";
-import { errorNoti, successNoti } from "utils/notification";
 import displayTime from "utils/DateTimeUtils";
+import { errorNoti, successNoti } from "utils/notification";
+import { request } from "../../../../../api";
 
 const useStyles = makeStyles((theme) => ({
   commentItem: {
@@ -38,8 +37,6 @@ export default function ReplyCommentItem({
   setFlag,
   loginUser,
 }) {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
   const [isEditting, setIsEditting] = useState(false);
   const [commentTextEdit, setCommentTextEdit] = useState(comment.commentText);
   const [openModal, setOpenModal] = useState(false);

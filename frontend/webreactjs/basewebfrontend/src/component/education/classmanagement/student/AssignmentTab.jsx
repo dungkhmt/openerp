@@ -1,16 +1,7 @@
-import {
-  Avatar,
-  Card,
-  CardContent,
-  CardHeader,
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { Card, CardContent, Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MaterialTable from "material-table";
-import React, { useEffect, useRef, useState } from "react";
-import { FcMindMap } from "react-icons/fc";
-import { useSelector } from "react-redux";
+import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { request } from "../../../../api";
 import displayTime from "../../../../utils/DateTimeUtils";
@@ -26,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 
 function AssignmentTab({ classId }) {
   const classes = useStyles();
-  const token = useSelector((state) => state.auth.token);
+
   const history = useHistory();
 
   // Tables.

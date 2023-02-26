@@ -11,7 +11,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { request } from "../../../api";
 
@@ -34,8 +33,7 @@ const useStyles = makeStyles((theme) => ({
 function ResourceDomainEdit(props) {
   const history = useHistory();
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+
   const [name, setName] = useState(null);
   const [alert, setAlert] = useState(false);
   const [alertContent, setAlertContent] = useState("");
