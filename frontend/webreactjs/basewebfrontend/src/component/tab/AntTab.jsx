@@ -52,7 +52,7 @@ export const AntTab = styled((props) => (
   transition: "text-shadow .3s",
   textTransform: "none",
   minWidth: 72,
-  marginRight: theme.spacing(1),
+  marginRight: `${theme.spacing(1)} !important`,
   fontWeight: theme.typography.fontWeightRegular,
   fontSize: "0.875rem",
   fontFamily: [
