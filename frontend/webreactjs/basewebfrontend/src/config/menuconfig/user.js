@@ -21,14 +21,14 @@ export const user = {
     //   text: "Danh sách",
     //   child: [],
     // },
-    {
-      id: "MENU_USER_APPROVE_REGISTRATION",
-      path: "/user-group/user/approve-register",
-      isPublic: false,
-      icon: "StarBorder",
-      text: "Phê duyệt",
-      child: [],
-    },
+    // {
+    //   id: "MENU_USER_APPROVE_REGISTRATION",
+    //   path: "/user-group/user/approve-register",
+    //   isPublic: false,
+    //   icon: "StarBorder",
+    //   text: "Phê duyệt",
+    //   child: [],
+    // },
     {
       id: "MENU_USER_SEND_MAIL_TO_USERS",
       path: "/user-group/user/send-mail",

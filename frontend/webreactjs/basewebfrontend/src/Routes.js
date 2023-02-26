@@ -1,11 +1,10 @@
 import { LinearProgress } from "@material-ui/core";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { Route, Switch } from "react-router-dom";
-import { Layout } from "./layout";
 import MainAppRoute from "./routers/MainAppRoutes";
 import { routeState } from "./state/RouteState";
 
-const Register = lazy(() => import("../src/views/UserRegister/Register"));
+// const Register = lazy(() => import("../src/views/UserRegister/Register"));
 
 function Routes(props) {
   return (
@@ -22,7 +21,7 @@ function Routes(props) {
       }
     >
       <Switch>
-        <Route component={Register} layout={Layout} path="/user/register" />
+        {/* <Route component={Register} layout={Layout} path="/user/register" /> */}
         <Route
           path="*"
           render={(props) => {
