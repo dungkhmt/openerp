@@ -67,9 +67,10 @@ export default function AssignmentSubmissionListOfClass(props) {
 function getAssignmentSubmissionsTableColumns(submissions) {
   let assignmentList = submissions && submissions.length ? submissions[0].assignmentList : [];
   return [
-    { field: "studentName", title: "Họ và tên sinh viên" },
+    { field: "studentId", title: "Login ID" },
+    { field: "studentName", title: "Họ tên" },
     ...getAssignmentColumns(assignmentList),
-    { field: "totalSubmitedAssignment", title: "Tổng số bài nộp" }
+    { field: "totalSubmitedAssignment", title: "Tổng" }
   ]
 }
 
@@ -91,6 +92,7 @@ function getExcelColumnsFromTableColumns(tableColumns) {
 function mapSubmissionsOfAStudentToExcelDataRow(submissionsOfAStudent) {
   let submissions = submissionsOfAStudent.assignmentList;
   return [
+    { value: submissionsOfAStudent.studentId, style: EXCEL_DATA_CELL_STYLE },
     { value: submissionsOfAStudent.studentName, style: EXCEL_DATA_CELL_STYLE },
     ...submissions.map(submission => ({ value: submission.assignmentStatus, style: EXCEL_DATA_CELL_STYLE })),
     { value: submissionsOfAStudent.totalSubmitedAssignment, style: EXCEL_DATA_CELL_STYLE }

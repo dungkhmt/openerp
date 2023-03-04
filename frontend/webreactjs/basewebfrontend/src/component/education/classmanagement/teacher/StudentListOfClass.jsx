@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-
-import { makeStyles } from "@material-ui/core/styles";
+import {
+  Card,
+  CardContent,
+} from "@material-ui/core";
 import { request } from "../../../../api";
-import { drawerWidth } from "../../../../assets/jss/material-dashboard-react";
 import {Button} from "@mui/material";
 import StandardTable from "../../../table/StandardTable";
 
@@ -51,16 +52,20 @@ export default function StudentListOfClass({ classId }) {
   }
 
   return (
-    <StandardTable
-      title="Danh sách sinh viên"
-      columns={stuCols}
-      data={studentsOfClass}
-      hideCommandBar
-      options={{
-        selection: false,
-        search: true,
-        sorting: true
-      }}
-    />
+    <Card>
+      <CardContent>
+        <StandardTable
+          title="Danh sách sinh viên"
+          columns={stuCols}
+          data={studentsOfClass}
+          hideCommandBar
+          options={{
+            selection: false,
+            search: true,
+            sorting: true
+          }}
+        />
+      </CardContent>
+    </Card>
   )
 }

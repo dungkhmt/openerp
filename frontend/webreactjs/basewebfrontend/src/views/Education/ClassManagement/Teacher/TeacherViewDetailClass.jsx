@@ -6,52 +6,18 @@ import {
   AntTabs,
   TabPanel,
 } from "../../../../component/tab";
-/*
-import {
-  Avatar,
-  Card,
-  CardContent,
-  CardHeader,
-  Paper,
-  Typography,
-  IconButton,
-} from "@material-ui/core";
-*/
-//import EditIcon from "@material-ui/icons/Edit";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { teal } from "@material-ui/core/colors";
-import TeacherViewDetailClassStudentList from "./TeacherViewDetailClassStudentList";
-import TeacherViewDetailClassStudentRegistered from "./TeacherViewDetailClassStudentRegistered";
-//import TClassUpdatePopup from "./TClassUpdatePopup";
+import { useTheme } from "@material-ui/core/styles";
 import TeacherViewDetailClassExercises from "./TeacherViewDetailClassExercises";
 import TeacherViewDetailClassExerciseSubmission from "./TeacherViewDetailClassExerciseSubmission";
 import TeacherViewDetailClassGeneralInfo from "./TeacherViewDetailClassGeneralInfo";
 import TeacherViewLogUserQuizList from "../../../../component/education/course/TeacherViewLogUserQuizList";
-//import TeacherViewQuizDetail from "../../../../component/education/course/TeacherViewQuizDetail";
 import TeacherClassViewLearningSessionList from "./TeacherClassViewLearningSessionList";
 import withScreenSecurity from "../../../../component/withScreenSecurity";
+import StudentListOfClass from "../../../../component/education/classmanagement/teacher/StudentListOfClass";
+import StudentsWaitingForApprovalToClass
+  from "../../../../component/education/classmanagement/teacher/StudentsWaitingForApprovalToClass";
+import AssignmentListOfClass from "../../../../component/education/classmanagement/teacher/AssignmentListOfClass";
 
-/*
-const useStyles = makeStyles((theme) => ({
-  btn: {
-    // width: 180,
-    marginLeft: theme.spacing(1),
-  },
-  courseName: { fontWeight: theme.typography.fontWeightMedium },
-  // editBtn: {
-  //   margin: theme.spacing(2),
-  //   width: 100,
-  //   fontWeight: theme.typography.fontWeightRegular,
-  // },
-  testName: { fontSize: "1.25rem", paddingTop: theme.spacing(1) },
-  time: {
-    paddingLeft: 6,
-    color: teal[800],
-    fontWeight: theme.typography.fontWeightMedium,
-    fontSize: "1rem",
-  },
-}));
-*/
 const tabsLabel = [
   "Thông tin chung",
   "DS Sinh viên",
@@ -65,9 +31,7 @@ const tabsLabel = [
 function TeacherViewDetailClass() {
   const params = useParams();
   const classId = params.classId;
-  //const history = useHistory();
   const [selectedTab, setSelectedTab] = useState(0);
-  // const [open, setOpen] = useState(false);
   const theme = useTheme();
   function handleChangeTab(e, newTab) {
     setSelectedTab(newTab);
@@ -91,13 +55,15 @@ function TeacherViewDetailClass() {
         <TeacherViewDetailClassGeneralInfo classId={classId} />
       </TabPanel>
       <TabPanel value={selectedTab} index={1} dir={theme.direction}>
-        <TeacherViewDetailClassStudentList classId={classId} />
+        <StudentListOfClass classId={classId} />
       </TabPanel>
       <TabPanel value={selectedTab} index={2} dir={theme.direction}>
-        <TeacherViewDetailClassStudentRegistered classId={classId} />
+        <StudentsWaitingForApprovalToClass classId={classId} />
       </TabPanel>
       <TabPanel value={selectedTab} index={3} dir={theme.direction}>
-        <TeacherViewDetailClassExercises classId={classId} />
+        <AssignmentListOfClass classId={classId}
+                               userRole="teacher"
+                               enableCreateAssignment />
       </TabPanel>
 
       <TabPanel value={selectedTab} index={4} dir={theme.direction}>

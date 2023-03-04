@@ -58,6 +58,7 @@ import TeacherViewLearningSessionDetail from "../views/Education/ClassManagement
 import StudentCreateThesis from "../component/education/thesisdefensejury/StudentCreateThesis";
 import NotFound from "../views/errors/NotFound";
 import ClassList from "../views/Education/ClassManagement/Student/ClassList";
+import TeacherViewCourseList from "../component/education/course/teacher/TeacherViewCourseList";
 
 export default function EduRoute() {
   let { path } = useRouteMatch();
@@ -71,7 +72,7 @@ export default function EduRoute() {
         />
 
         <Route
-          component={TeacherCourseList}
+          component={TeacherViewCourseList}
           path={`${path}/teacher/course/list`}
         />
         <Route

@@ -244,6 +244,33 @@ public interface ClassRepo extends JpaRepository<EduClass, UUID> {
            nativeQuery = true)
     List<GetAssigns4TeacherOM> getAssignments4Teacher(UUID classId);
 
+//    @Query(value = "select\n" +
+//                   "\tul.user_login_id id,\n" +
+//                   "\tconcat(p.first_name , ' ', p.middle_name , ' ', p.last_name ) \"name\",\n" +
+//                   "\tcast(ea.id as varchar) assignmentId,\n" +
+//                   "\tea.assignment_name assignmentName,\n" +
+//                   "\tcast(eas.id as varchar) assignmentSubmissionId\n" +
+//                   "from\n" +
+//                   "\tedu_class_registration ecr\n" +
+//                   "inner join user_login ul on\n" +
+//                   "\tecr.student_id = ul.user_login_id\n" +
+//                   "inner join person p on\n" +
+//                   "\tul.party_id = p.party_id\n" +
+//                   "left outer join user_register ur on\n" +
+//                   "\tul.user_login_id = ur.user_login_id\n" +
+//                   "inner join edu_assignment ea on\n" +
+//                   "\tecr.class_id = ea.class_id\n" +
+//                   "left outer join edu_assignment_submission eas on\n" +
+//                   "\tea.id = eas.assignment_id\n" +
+//                   "\tand ecr.student_id = eas.student_id\n" +
+//                   "where\n" +
+//                   "\tecr.class_id = ?1\n" +
+//                   "\tand ecr.status = \'APPROVED\'\n" +
+//                   "order by\n" +
+//                   "\tp.last_name asc, ea.assignment_name asc",
+//           nativeQuery = true)
+//    List<GetAllStuAssigns4TeacherOM> getAllStudentAssignments4Teacher(UUID classId);
+
     @Query(value = "select\n" +
                    "\tul.user_login_id id,\n" +
                    "\tconcat(p.first_name , ' ', p.middle_name , ' ', p.last_name ) \"name\",\n" +
@@ -267,7 +294,7 @@ public interface ClassRepo extends JpaRepository<EduClass, UUID> {
                    "\tecr.class_id = ?1\n" +
                    "\tand ecr.status = \'APPROVED\'\n" +
                    "order by\n" +
-                   "\tp.last_name asc, ea.assignment_name asc",
+                   "\tul.user_login_id asc, ea.assignment_name asc",
            nativeQuery = true)
     List<GetAllStuAssigns4TeacherOM> getAllStudentAssignments4Teacher(UUID classId);
 

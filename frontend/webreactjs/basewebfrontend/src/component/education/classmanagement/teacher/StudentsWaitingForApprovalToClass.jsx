@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { request } from "../../../../api";
 import {errorNoti, successNoti} from "../../../../utils/notification";
 import {Button} from "@mui/material";
+import {
+  Card,
+  CardContent,
+} from "@material-ui/core";
 import StandardTable from "../../../table/StandardTable";
 
 
@@ -68,23 +72,25 @@ export default function StudentsWaitingForApprovalToClass(props) {
   ];
 
   return (
-    <div>
-      { selectedRegists.length > 0 &&
-        <UpdateStatusButtons studentIds={selectedRegists}/>
-      }
-      
-      <StandardTable
-        title="Phê duyệt sinh viên đăng ký"
-        columns={registCols}
-        data={registStudents}
-        hideCommandBar
-        options={{
-          selection: true,
-          search: true,
-          sorting: true
-        }}
-        onSelectionChange={updateSelectedStudentsToUpdateStatus}
-      />
-    </div>
+    <Card>
+      <CardContent>
+        { selectedRegists.length > 0 &&
+          <UpdateStatusButtons studentIds={selectedRegists}/>
+        }
+
+        <StandardTable
+          title="Phê duyệt sinh viên đăng ký"
+          columns={registCols}
+          data={registStudents}
+          hideCommandBar
+          options={{
+            selection: true,
+            search: true,
+            sorting: true
+          }}
+          onSelectionChange={updateSelectedStudentsToUpdateStatus}
+        />
+      </CardContent>
+    </Card>
   );
 }

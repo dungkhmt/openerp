@@ -1,6 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect} from "react";
 import { request } from "../../../../api";
 import {defaultDatetimeFormat} from "../../../../utils/dateutils";
+import {
+  Card,
+  CardContent
+} from "@material-ui/core";
 import StandardTable from "../../../table/StandardTable";
 import moment from "moment";
 import {useHistory} from "react-router-dom";
@@ -69,19 +73,23 @@ export default function AssignmentListOfClass(props) {
   )
 
   return (
-    <div className={classes.assignmentsTableContainer}>
-      <StandardTable  title="Danh sách bài tập"
-                      columns={columns}
-                      data={assignments}
-                      hideCommandBar
-                      options={{
-                        selection: false,
-                        search: true,
-                        sorting: true
-                      }}
-                      onRowClick={ (event, assignment) => navigateToAssignmentDetailPage(assignment.id) }
-                      actions={actions}/>
-    </div>
+    <Card>
+      <CardContent>
+        <div className={classes.assignmentsTableContainer}>
+          <StandardTable  title="Danh sách bài tập"
+                          columns={columns}
+                          data={assignments}
+                          hideCommandBar
+                          options={{
+                            selection: false,
+                            search: true,
+                            sorting: true
+                          }}
+                          onRowClick={ (event, assignment) => navigateToAssignmentDetailPage(assignment.id) }
+                          actions={actions}/>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
