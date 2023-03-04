@@ -19,7 +19,7 @@ function StudentQuizList() {
   }
   const onClickQuizId = (quizid, viewTypeId) => {
     console.log("click " + quizid);
-    history.push("/edu/class/student/quiztest/detail", {
+    history.push(`/edu/class/student/quiztest/detail/${quizid}`, {
       testId: quizid,
       viewTypeId: viewTypeId,
     });

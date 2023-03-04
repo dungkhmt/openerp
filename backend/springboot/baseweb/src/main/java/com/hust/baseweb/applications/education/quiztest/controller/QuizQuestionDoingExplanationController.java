@@ -25,23 +25,23 @@ public class QuizQuestionDoingExplanationController {
     private final QuizQuestionDoingExplanationService quizDoingExplanationService;
 
     @GetMapping("/{questionId}")
-    public ResponseEntity<?> getParticipantExplanationForQuestion(Principal principal,
-                                                                  @PathVariable UUID questionId) {
+    public ResponseEntity<?> getExplanationsForQuestion(Principal principal,
+                                                        @PathVariable UUID questionId) {
         return ResponseEntity.ok(
             quizDoingExplanationService.findExplanationByParticipantIdAndQuestionId(principal.getName(), questionId)
         );
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createQuizDoingExplanation(
+    public ResponseEntity<?> createExplanation(
         Principal principal,
-        @RequestPart QuizDoingExplanationInputModel quizDoingExplanation,
+        @RequestPart QuizDoingExplanationInputModel explanation,
         @RequestPart(required = false) MultipartFile attachment
     ) {
-        log.info("Create quiz doing explanation {}", quizDoingExplanation);
+        log.info("Create quiz doing explanation {}", explanation);
         try {
-            quizDoingExplanation.setParticipantUserId(principal.getName());
-            return ResponseEntity.ok(quizDoingExplanationService.createExplanation(quizDoingExplanation, attachment));
+            explanation.setParticipantUserId(principal.getName());
+            return ResponseEntity.ok(quizDoingExplanationService.createExplanation(explanation, attachment));
         } catch (RuntimeException e) {
             log.error("An error occur when create quiz doing explanation", e.getMessage());
             e.printStackTrace();
@@ -50,13 +50,13 @@ public class QuizQuestionDoingExplanationController {
     }
 
     @PutMapping(value = "/{explanationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateQuizDoingExplanation(@PathVariable UUID explanationId,
-                                                        @RequestPart(required = false) String solutionExplanation,
-                                                        @RequestPart(required = false) MultipartFile attachment) {
-        log.info("Update quiz doing explanation with new explanation = {}", solutionExplanation);
+    public ResponseEntity<?> updateExplanation(@PathVariable UUID explanationId,
+                                               @RequestPart(required = false) String explanationContent,
+                                               @RequestPart(required = false) MultipartFile attachment) {
+        log.info("Update quiz doing explanation with new explanation = {}", explanationContent);
         try {
             return ResponseEntity.ok(
-                quizDoingExplanationService.updateExplanation(explanationId, solutionExplanation, attachment)
+                quizDoingExplanationService.updateExplanation(explanationId, explanationContent, attachment)
             );
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
@@ -69,7 +69,7 @@ public class QuizQuestionDoingExplanationController {
     }
 
     @DeleteMapping("/{explanationId}")
-    public ResponseEntity deleteQuizDoingExplanation(@PathVariable UUID explanationId) {
+    public ResponseEntity deleteExplanation(@PathVariable UUID explanationId) {
         log.info("Delete quiz doing explanation having id = {}", explanationId);
         try {
             quizDoingExplanationService.deleteExplanation(explanationId);

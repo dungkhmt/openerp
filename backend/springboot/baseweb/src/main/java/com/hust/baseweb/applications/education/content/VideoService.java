@@ -116,6 +116,7 @@ public class VideoService {
 
         // Save file to hard disk.
         Path path = Paths.get(videoPath);
+        System.err.println(path.toAbsolutePath().toString());
         Files.copy(
             file.getInputStream(),
             path.resolve(metadata.getId().toString()),

@@ -134,10 +134,8 @@ public class EduQuizTestGroupController {
             res = eduQuizTestGroupService.getTestGroupQuestionDetailNotUsePermutationConfig(principal.getName(),testID);
         }
 
-        if(eduQuizTest.getQuestionStatementViewTypeId() != null &&
-           eduQuizTest.getQuestionStatementViewTypeId().equals(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_HIDDEN)) {
-            //ìf(res != null && res.getListQuestion() != null){
-            if(res != null) if(res.getListQuestion() != null){
+        if(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_HIDDEN.equals(eduQuizTest.getQuestionStatementViewTypeId())) {
+            if(res != null && res.getListQuestion() != null){
                 for (QuizQuestionDetailModel q : res.getListQuestion()) {
                     q.setStatement("");
                 }

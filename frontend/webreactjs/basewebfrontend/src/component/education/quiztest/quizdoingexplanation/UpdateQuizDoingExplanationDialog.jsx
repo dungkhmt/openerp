@@ -10,19 +10,19 @@ import FilePreview from "../../../common/uploader/FilePreview";
 
 export default function UpdateQuizDoingExplanationDialog(props) {
   let solution = props.solution;
-  const [solutionExplanation, setSolutionExplanation] = useState('');
+  const [explanationContent, setExplanationContent] = useState('');
   const [attachment, setAttachment] = useState();
 
   useEffect(refreshStateWhenUpdatedSolutionChange, [props.solution])
 
   function refreshStateWhenUpdatedSolutionChange() {
-    setSolutionExplanation(solution.solutionExplanation)
+    setExplanationContent(solution.solutionExplanation)
     setAttachment(null);
   }
 
   function updateQuizDoingExplanation() {
     let formData = new FormData();
-    formData.append("solutionExplanation", solutionExplanation);
+    formData.append("explanationContent", explanationContent);
     formData.append("attachment", attachment);
 
     let successHandler = (res) => {
@@ -55,8 +55,8 @@ export default function UpdateQuizDoingExplanationDialog(props) {
       contentTopDivider
       content={
         <>
-          <RichTextEditor content={solutionExplanation}
-                          onContentChange={htmlContent => setSolutionExplanation(htmlContent)}/>
+          <RichTextEditor content={explanationContent}
+                          onContentChange={htmlContent => setExplanationContent(htmlContent)}/>
           { (!attachment && solution.attachment) && (
             <FilePreview file={solution.attachment} width="568" height="400" style={{ marginTop: '10px'}}/>
           )}

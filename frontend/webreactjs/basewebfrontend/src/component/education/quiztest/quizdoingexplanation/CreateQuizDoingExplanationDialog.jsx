@@ -8,23 +8,27 @@ import {errorNoti, successNoti} from "../../../../utils/notification";
 import {request} from "../../../../api";
 
 export default function CreateQuizDoingExplanationDialog(props) {
-  const [solutionExplanation, setSolutionExplanation] = useState('');
+  const [explanationContent, setExplanationContent] = useState('');
   const [attachment, setAttachment] = useState();
 
   function createQuizDoingExplanation() {
+    if (!explanationContent && !attachment) {
+      errorNoti("Cần điền nội dung cách làm hoặc đính kèm file cách làm!", true);
+      return;
+    }
     let formData = new FormData();
     const { questionId, testId } = props;
-    let explanation = { questionId, testId, solutionExplanation }
-    formData.append("quizDoingExplanation", new Blob([JSON.stringify(explanation)], { type: "application/json" }));
+    let explanation = { questionId, testId, explanationContent  }
+    formData.append("explanation", new Blob([JSON.stringify(explanation)], { type: "application/json" }));
     formData.append("attachment", attachment);
 
     let successHandler = (res) => {
-      successNoti("Thêm cách làm thành công, xem kết quả trên giao diện");
+      successNoti("Thêm cách làm thành công, xem kết quả trên giao diện", true);
       props.onClose();
       props.onCreateSuccess(res);
     }
     let errorHandlers = {
-      onError: () => errorNoti("Đã xảy ra lỗi khi thêm cách làm!")
+      onError: () => errorNoti("Đã xảy ra lỗi khi thêm cách làm!", true)
     }
     const config = {
       headers: {
@@ -43,8 +47,8 @@ export default function CreateQuizDoingExplanationDialog(props) {
       contentTopDivider
       content={
         <>
-          <RichTextEditor content={solutionExplanation}
-                          onContentChange={htmlContent => setSolutionExplanation(htmlContent)}/>
+          <RichTextEditor content={explanationContent}
+                          onContentChange={htmlContent => setExplanationContent(htmlContent)}/>
           <FileUploader onChange={files => setAttachment(files[0])}/>
         </>
       }

@@ -9,16 +9,16 @@ import java.util.UUID;
 
 public interface QuizQuestionDoingExplanationService {
 
-    Collection<QuizQuestionDoingExplanation> findExplanationByParticipantIdAndQuestionId(String participantLoginId,
+    Collection<QuizQuestionDoingExplanation> findExplanationByParticipantIdAndQuestionId(String studentLoginId,
                                                                                          UUID questionId);
 
-    QuizQuestionDoingExplanation createExplanation(QuizDoingExplanationInputModel solutionExplanation,
+    QuizQuestionDoingExplanation createExplanation(QuizDoingExplanationInputModel explanation,
                                                    MultipartFile attachment);
 
-    QuizQuestionDoingExplanation updateExplanation(UUID explanationId, String newExplanation, MultipartFile attachment);
+    QuizQuestionDoingExplanation updateExplanation(UUID explanationId, String explanationContent, MultipartFile attachment);
 
     void deleteExplanation(UUID explanationId);
 
-    QuizQuestionDoingExplanation setAttachment(QuizQuestionDoingExplanation savedSolution, MultipartFile attachment);
+    QuizQuestionDoingExplanation setAttachment(QuizQuestionDoingExplanation explanation, MultipartFile attachment);
 
 }

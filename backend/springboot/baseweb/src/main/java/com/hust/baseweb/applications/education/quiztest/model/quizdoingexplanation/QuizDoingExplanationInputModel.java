@@ -19,6 +19,6 @@ public class QuizDoingExplanationInputModel {
 
     private String testId;
 
-    private String solutionExplanation;
+    private String explanationContent;
 
 }

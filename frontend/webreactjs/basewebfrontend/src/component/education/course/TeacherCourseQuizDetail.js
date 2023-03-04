@@ -44,7 +44,7 @@ function TeacherCourseQuizDetail() {
           courseId={courseId}
         />
       </Card>
-      <QuizUserRole questionId={questionId} />
+      {/*<QuizUserRole questionId={questionId} />*/}
     </>
   );
 }

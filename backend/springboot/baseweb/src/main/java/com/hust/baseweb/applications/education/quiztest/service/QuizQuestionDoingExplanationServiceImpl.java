@@ -29,23 +29,24 @@ public class QuizQuestionDoingExplanationServiceImpl implements QuizQuestionDoin
 
     @Override
     public Collection<QuizQuestionDoingExplanation> findExplanationByParticipantIdAndQuestionId(
-        String participantLoginId,
+        String studentLoginId,
         UUID questionId
     ) {
         Sort sortDescByCreatedTime = Sort.by(Sort.Direction.DESC, "createdStamp");
-        return quizDoingExplanationRepo.findByParticipantUserIdAndQuestionId(participantLoginId,
-                                                                             questionId,
-                                                                             sortDescByCreatedTime);
+        return quizDoingExplanationRepo.findByParticipantUserIdAndQuestionId(
+            studentLoginId,
+            questionId,
+            sortDescByCreatedTime);
     }
 
     @Override
-    public QuizQuestionDoingExplanation createExplanation(QuizDoingExplanationInputModel quizDoingExplanationIM,
+    public QuizQuestionDoingExplanation createExplanation(QuizDoingExplanationInputModel explanation,
                                                           MultipartFile attachment) {
         QuizQuestionDoingExplanation newQuizDoingExplanation = new QuizQuestionDoingExplanation();
-        newQuizDoingExplanation.setQuestionId(quizDoingExplanationIM.getQuestionId());
-        newQuizDoingExplanation.setParticipantUserId(quizDoingExplanationIM.getParticipantUserId());
-        newQuizDoingExplanation.setTestId(quizDoingExplanationIM.getTestId());
-        newQuizDoingExplanation.setSolutionExplanation(quizDoingExplanationIM.getSolutionExplanation());
+        newQuizDoingExplanation.setQuestionId(explanation.getQuestionId());
+        newQuizDoingExplanation.setParticipantUserId(explanation.getParticipantUserId());
+        newQuizDoingExplanation.setTestId(explanation.getTestId());
+        newQuizDoingExplanation.setSolutionExplanation(explanation.getExplanationContent());
         setAttachment(newQuizDoingExplanation, attachment);
         return quizDoingExplanationRepo.save(newQuizDoingExplanation);
     }
@@ -53,21 +54,21 @@ public class QuizQuestionDoingExplanationServiceImpl implements QuizQuestionDoin
     @Override
     public QuizQuestionDoingExplanation updateExplanation(
         UUID explanationId,
-        String newSolutionExplanation,
+        String explanationContent,
         MultipartFile attachment
     ) {
         QuizQuestionDoingExplanation updatedQuizDoingExplanation = quizDoingExplanationRepo.findById(explanationId)
             .orElseThrow(() -> new ResourceNotFoundException("Doesn't exist quiz doing explanation with id " + explanationId));
-        updatedQuizDoingExplanation.setSolutionExplanation(newSolutionExplanation);
+        updatedQuizDoingExplanation.setSolutionExplanation(explanationContent);
         setAttachment(updatedQuizDoingExplanation, attachment);
         return quizDoingExplanationRepo.save(updatedQuizDoingExplanation);
     }
 
     @Override
     public void deleteExplanation(UUID explanationId) {
-        QuizQuestionDoingExplanation updatedQuizDoingExplanation = quizDoingExplanationRepo.findById(explanationId)
+        QuizQuestionDoingExplanation deletedQuizDoingExplanation = quizDoingExplanationRepo.findById(explanationId)
             .orElseThrow(() -> new ResourceNotFoundException("Doesn't exist quiz doing explanation with id " + explanationId));
-        String attachmentStorageId = updatedQuizDoingExplanation.getAttachment();
+        String attachmentStorageId = deletedQuizDoingExplanation.getAttachment();
         quizDoingExplanationRepo.deleteById(explanationId);
         if (attachmentStorageId != null) {
             mongoContentService.deleteFilesById(attachmentStorageId);
@@ -75,10 +76,10 @@ public class QuizQuestionDoingExplanationServiceImpl implements QuizQuestionDoin
     }
 
     @Override
-    public QuizQuestionDoingExplanation setAttachment(QuizQuestionDoingExplanation savedSolution,
+    public QuizQuestionDoingExplanation setAttachment(QuizQuestionDoingExplanation explanation,
                                                       MultipartFile attachment) {
         if (attachment == null) {
-            return savedSolution;
+            return explanation;
         }
 
         try {
@@ -87,14 +88,14 @@ public class QuizQuestionDoingExplanationServiceImpl implements QuizQuestionDoin
                 .toString();
             ContentModel contentModel = new ContentModel(uniqueFileName, attachment);
             ObjectId newAttachmentStorageId = mongoContentService.storeFileToGridFs(contentModel);
-            String oldAttachmentStorageId = savedSolution.getAttachment();
-            savedSolution.setAttachment(newAttachmentStorageId.toString());
+            String oldAttachmentStorageId = explanation.getAttachment();
+            explanation.setAttachment(newAttachmentStorageId.toString());
             mongoContentService.deleteFilesById(oldAttachmentStorageId);
         } catch (IOException e) {
             log.error("An error occur when set attachment for quiz doing explanation with id {}. Error detal: {}",
-                      savedSolution.getId(), e.getMessage());
+                      explanation.getId(), e.getMessage());
             throw new RuntimeException(e);
         }
-        return savedSolution;
+        return explanation;
     }
 }
