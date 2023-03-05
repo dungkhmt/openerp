@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react";
 import { request } from "../../../../api";
 import { Button, Tooltip } from "@material-ui/core/";
 
-import LearningSessionFormAddQuizTest from "./LearningSessionFormAddQuizTest";
 import {useHistory} from "react-router";
 import {errorNoti} from "../../../../utils/notification";
 import StandardTable from "../../../../component/table/StandardTable";
 import {Card, CardContent} from "@material-ui/core";
+import CreateSessionQuizTestDlg from "../../../../component/education/classmanagement/teacher/CreateSessionQuizTestDlg";
 
 export default function QuizTestListOfClassSession(props) {
   const history = useHistory();
   const sessionId = props.sessionId;
   const [quizTests, setQuizTests] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [createSessionQuizTestDlgOpen, setCreateSessionQuizTestDlgOpen] = useState(false);
 
   useEffect(getQuizTestsOfSession, []);
 
@@ -34,7 +34,7 @@ export default function QuizTestListOfClassSession(props) {
   const CreateSessionQuizTestButton = (
     <Button color="primary"
             variant="outlined"
-            onClick={() => setOpen(true)}>
+            onClick={() => setCreateSessionQuizTestDlgOpen(true)}>
       Thêm mới
     </Button>
   );
@@ -65,11 +65,10 @@ export default function QuizTestListOfClassSession(props) {
                          onRowClick={navigateToQuizTestDetailPage} />
         </CardContent>
       </Card>
-      <LearningSessionFormAddQuizTest
-        open={open}
-        setOpen={setOpen}
-        sessionId={sessionId}
-      />
+      <CreateSessionQuizTestDlg sessionId={sessionId}
+                                open={createSessionQuizTestDlgOpen}
+                                setOpen={setCreateSessionQuizTestDlgOpen}
+                                onCreateSuccess={getQuizTestsOfSession}/>
     </div>
   );
 }
