@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
   infoItem: {
     display: "flex",
     alignItems: "center",
+    "& h4": {flexBasis: "100px"}
   },
 }));
 
@@ -356,18 +357,10 @@ function TeacherCourseChapterMaterialDetail() {
           <Card style={{ marginTop: "20px" }}>
             <CardContent>
               <Typography gutterBottom variant="h5" component="h2">
-                Infomation
+                Thông tin học liệu
               </Typography>
               <div className={classes.infoItem}>
-                <h4>Material chapter name:</h4>
-                <span>
-                  {chapterMaterial?.eduCourseChapter?.chapterName
-                    ? chapterMaterial?.eduCourseChapter?.chapterName
-                    : "undefined"}
-                </span>
-              </div>
-              <div className={classes.infoItem}>
-                <h4>Material chapter Id:</h4>
+                <h4>ID chương:</h4>
                 <a
                   href={`/edu/teacher/course/chapter/detail/${chapterMaterial?.eduCourseChapter?.chapterId}`}
                 >
@@ -377,7 +370,15 @@ function TeacherCourseChapterMaterialDetail() {
                 </a>
               </div>
               <div className={classes.infoItem}>
-                <h4>Course material name:</h4>
+                <h4>Tên chương:</h4>
+                <span>
+                  {chapterMaterial?.eduCourseChapter?.chapterName
+                    ? chapterMaterial?.eduCourseChapter?.chapterName
+                    : "undefined"}
+                </span>
+              </div>
+              <div className={classes.infoItem}>
+                <h4>Tên tài liệu:</h4>
                 <span>
                   {chapterMaterial?.eduCourseMaterialName
                     ? chapterMaterial?.eduCourseMaterialName
@@ -385,7 +386,7 @@ function TeacherCourseChapterMaterialDetail() {
                 </span>
               </div>
               <div className={classes.infoItem}>
-                <h4>Course material type:</h4>
+                <h4>Kiểu tài liệu:</h4>
                 <span>
                   {chapterMaterial?.eduCourseMaterialType
                     ? chapterMaterial?.eduCourseMaterialType

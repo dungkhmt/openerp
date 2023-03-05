@@ -13,12 +13,9 @@ import CreateChapterOfCourse from "../component/education/course/CreateChapterOf
 import CreateQuizChoiceAnswerOfCourse from "../component/education/course/CreateQuizChoiceAnswerOfCourse";
 import CreateQuizOfCourse from "../component/education/course/CreateQuizOfCourse";
 import CreateTopicOfCourse from "../component/education/course/CreateTopicOfCourse";
-import StudentCourseChapterDetail from "../component/education/course/StudentCourseChapterDetail";
 import StudentCourseChapterMaterialDetail from "../component/education/course/StudentCourseChapterMaterialDetail";
-import TeacherCourseChapterDetail from "../component/education/course/TeacherCourseChapterDetail";
 import TeacherCourseChapterMaterialDetail from "../component/education/course/TeacherCourseChapterMaterialDetail";
 import TeacherCourseDetail from "../component/education/course/TeacherCourseDetail";
-import TeacherCourseList from "../component/education/course/TeacherCourseList";
 import TeacherCourseQuizChoiceAnswerDetail from "../component/education/course/TeacherCourseQuizChoiceAnswerDetail";
 import TeacherCourseQuizDetail from "../component/education/course/TeacherCourseQuizDetail";
 import TeacherCourseTopicDetail from "../component/education/course/TeacherCourseTopicDetail";
@@ -57,6 +54,7 @@ import StudentCreateThesis from "../component/education/thesisdefensejury/Studen
 import NotFound from "../views/errors/NotFound";
 import ClassList from "../views/Education/ClassManagement/Student/ClassList";
 import TeacherViewCourseList from "../component/education/course/teacher/TeacherViewCourseList";
+import MaterialListOfChapter from "../component/education/course/MaterialListOfChapter";
 
 export default function EduRoute() {
   let { path } = useRouteMatch();
@@ -95,7 +93,7 @@ export default function EduRoute() {
         />
 
         <Route
-          component={TeacherCourseChapterDetail}
+          component={() => <MaterialListOfChapter role="TEACHER"/>}
           path={`${path}/teacher/course/chapter/detail/:chapterId`}
           exact
         />
@@ -117,7 +115,7 @@ export default function EduRoute() {
         />
 
         <Route
-          component={StudentCourseChapterDetail}
+          component={() => <MaterialListOfChapter role="STUDENT"/>}
           path={`${path}/student/course/chapter/detail/:chapterId`}
           exact
         />

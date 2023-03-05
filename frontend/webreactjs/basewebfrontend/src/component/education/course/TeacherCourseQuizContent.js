@@ -284,7 +284,7 @@ function CreateQuizOfCourse() {
         <Card>
           <CardContent>
             <Typography variant="h5" component="h2">
-              Nội dung bài tập
+              Nội dung câu hỏi trắc nghiệm
             </Typography>
             <form className={classes.root} noValidate autoComplete="off">
               <div>
