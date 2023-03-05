@@ -38,6 +38,8 @@ import StudentViewClassDetailChapterList from "./StudentViewClassDetailChapterLi
 import StudentViewClassDetailStudentList from "./StudentViewClassDetailStudentList";
 import StudentViewClassDetailLearningSessionList from "./StudentViewClassDetailLearningSessionList";
 import StudentViewClassDetailAssignmentList from "./StudentViewClassDetailAssignmentList";
+import LearningSessionListOfClass
+  from "../../../../component/education/classmanagement/teacher/LearningSessionListOfClass";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -187,7 +189,8 @@ export default function StudentViewClassDetail() {
         <StudentViewClassDetailAssignmentList classId={params.id} />
       </TabPanel>
       <TabPanel value={activeTab} index={5}>
-        <StudentViewClassDetailLearningSessionList classId={params.id} />
+        <LearningSessionListOfClass classId={params.id}
+                                    role="STUDENT"/>
       </TabPanel>
     </div>
   );

@@ -105,6 +105,45 @@ public class EduQuizTestGroupController {
         return ResponseEntity.ok().body(eduQuizTestGroupService.getTestGroupQuestionDetail(participantId, testID));
     }
 
+//    @GetMapping("/get-quiz-test-participation-group-question/{testID}")
+//    public ResponseEntity<?> getTestGroupQuestionByUser(Principal principal, @PathVariable String testID) {
+//        EduQuizTest eduQuizTest = quizTestService.getQuizTestById(testID);
+//        Date startDateTime = eduQuizTest.getScheduleDatetime();
+//        Date currentDate = new Date();
+//        int timeTest = ((int) (currentDate.getTime() - startDateTime.getTime())) / (60 * 1000); //minutes
+//        log.info("getTestGroupQuestionByUser, current = " + currentDate.toString() +
+//                 " scheduleDate = " + startDateTime.toString() + " timeTest = " + timeTest);
+//
+//        if (timeTest > eduQuizTest.getDuration() || timeTest < 0) {// out-of-allowed date-time
+//            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
+//        }
+//
+//        EduTestQuizParticipant testParticipant = eduTestQuizParticipationRepo.findEduTestQuizParticipantByParticipantUserLoginIdAndAndTestId(
+//            principal.getName(),
+//            testID);
+//
+//        if (testParticipant == null ||
+//            (!testParticipant.getStatusId().equals(EduTestQuizParticipant.STATUS_APPROVED))) {
+//            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+//        }
+//        QuizGroupTestDetailModel res = null;
+//        if(eduQuizTest.getParticipantQuizGroupAssignmentMode() != null &&
+//           eduQuizTest.getParticipantQuizGroupAssignmentMode().equals(EduQuizTest.PARTICIPANT_QUIZ_GROUP_ASSIGNMENT_MODE_ASSIGN_GROUP_BEFORE_HANDOUT)) {
+//            res = eduQuizTestGroupService.getTestGroupQuestionDetail(principal, testID);
+//        }else{
+//            res = eduQuizTestGroupService.getTestGroupQuestionDetailNotUsePermutationConfig(principal.getName(),testID);
+//        }
+//
+//        if(EduQuizTest.QUESTION_STATEMENT_VIEW_TYPE_HIDDEN.equals(eduQuizTest.getQuestionStatementViewTypeId())) {
+//            if(res != null && res.getListQuestion() != null){
+//                for (QuizQuestionDetailModel q : res.getListQuestion()) {
+//                    q.setStatement("");
+//                }
+//            }
+//        }
+//        return ResponseEntity.ok().body(res);
+//    }
+
     @GetMapping("/get-quiz-test-participation-group-question/{testID}")
     public ResponseEntity<?> getTestGroupQuestionByUser(Principal principal, @PathVariable String testID) {
         EduQuizTest eduQuizTest = quizTestService.getQuizTestById(testID);
@@ -143,6 +182,7 @@ public class EduQuizTestGroupController {
         }
         return ResponseEntity.ok().body(res);
     }
+
     @GetMapping("/confirm-update-group-code-quiz-test/{testID}/{groupCode}")
     public ResponseEntity<?> confirmAndUpdateGroupCodeInQuizTest(Principal principal,
                                                      @PathVariable String testID, @PathVariable String groupCode) {

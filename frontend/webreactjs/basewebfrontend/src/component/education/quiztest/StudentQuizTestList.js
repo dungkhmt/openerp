@@ -111,7 +111,7 @@ function StudentQuizList() {
     <Card>
       <CardContent>
         <MaterialTable
-          title={"Danh sách Contest"}
+          title={"Danh sách quiz test"}
           columns={columns}
           data={ListQuiz}
         />

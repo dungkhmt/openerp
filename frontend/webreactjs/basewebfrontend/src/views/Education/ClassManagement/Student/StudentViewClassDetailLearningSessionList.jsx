@@ -9,7 +9,8 @@ export default function StudentViewClassDetailLearningSessionList(props) {
   return (
     <Card>
       <CardContent>
-        <LearningSessionListOfClass classId={classId}/>
+        <LearningSessionListOfClass classId={classId}
+                                    role="STUDENT"/>
       </CardContent>
     </Card>
   );

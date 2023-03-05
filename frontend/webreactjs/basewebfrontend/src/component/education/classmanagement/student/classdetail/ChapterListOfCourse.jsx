@@ -36,8 +36,7 @@ export default function ChapterListOfCourse(props) {
                       search: true,
                       sorting: true
                     }}
-                    onRowClick={navigateToChapterDetailPage}
-    />
+                    onRowClick={navigateToChapterDetailPage}/>
   );
 }
 

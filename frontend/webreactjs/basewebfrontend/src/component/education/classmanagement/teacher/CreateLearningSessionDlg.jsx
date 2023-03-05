@@ -38,14 +38,20 @@ export default function CreateLearningSessionDlg(props) {
   }
 
   function createLearningSession() {
+    let sessionName = newLearningSession.sessionName;
+    if (!sessionName || !sessionName.trim()) {
+      errorNoti("Vui lòng nhập tên buổi học", true);
+      return;
+    }
+
     let newSession = { classId, ...newLearningSession };
     let successHandler = res => {
-      successNoti("Tạo mới buổi học thành công. Xem kết quả trên giao diện!", 3000);
+      successNoti("Tạo mới buổi học thành công. Xem kết quả trên giao diện!", true);
       onCreateSuccess(res)
       setOpen(false);
     }
     let errorHandlers = {
-      onError: (error) => errorNoti("Đã xảy ra lỗi. Vui lòng kiểm tra lại!", 3000)
+      onError: (error) => errorNoti("Đã xảy ra lỗi. Vui lòng kiểm tra lại!", true)
     }
     request("POST", "edu/class/add-a-session-of-class", successHandler, errorHandlers, newSession);
   }
@@ -56,7 +62,7 @@ export default function CreateLearningSessionDlg(props) {
 
       <DialogContent>
         <TextField
-          label="Tên buổi học"
+          label="Tên buổi học" required
           className={classes.formInput}
           onChange={setSessionName}/>
         <TextField

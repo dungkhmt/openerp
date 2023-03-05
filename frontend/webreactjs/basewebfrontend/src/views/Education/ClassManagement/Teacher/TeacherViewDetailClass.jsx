@@ -17,6 +17,8 @@ import StudentListOfClass from "../../../../component/education/classmanagement/
 import StudentsWaitingForApprovalToClass
   from "../../../../component/education/classmanagement/teacher/StudentsWaitingForApprovalToClass";
 import AssignmentListOfClass from "../../../../component/education/classmanagement/teacher/AssignmentListOfClass";
+import LearningSessionListOfClass
+  from "../../../../component/education/classmanagement/teacher/LearningSessionListOfClass";
 
 const tabsLabel = [
   "Thông tin chung",
@@ -73,7 +75,8 @@ function TeacherViewDetailClass() {
         <TeacherViewLogUserQuizList classId={classId} />
       </TabPanel>
       <TabPanel value={selectedTab} index={6} dir={theme.direction}>
-        <TeacherClassViewLearningSessionList classId={classId} />
+        <LearningSessionListOfClass classId={classId}
+                                    role="TEACHER"/>
       </TabPanel>
     </div>
   );

@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { request } from "../../../../api";
 import { useHistory } from "react-router-dom";
 import { Button } from "@mui/material";
+import {Card, CardContent} from "@mui/material";
 import StandardTable from "../../../table/StandardTable";
 import CreateLearningSessionDlg from "./CreateLearningSessionDlg";
 import PropTypes from "prop-types";
-import { Link as RouterLink } from "react-router-dom";
 import { Link, Typography } from "@material-ui/core/";
+
 export default function LearningSessionListOfClass(props) {
   const history = useHistory();
   const classId = props.classId;
@@ -22,8 +23,11 @@ export default function LearningSessionListOfClass(props) {
     });
   }
 
-  function navigateToLearningSessionDetailPage(learningSessionId) {
-    history.push(`/edu/teacher/class/session/detail/${learningSessionId}`);
+  function navigateToLearningSessionDetailPage(_, { sessionId }) {
+    let url = props.role === "TEACHER" ?
+      `/edu/teacher/class/session/detail/${sessionId}` :
+      `/edu/student/class/session/detail/${sessionId}` ;
+    history.push(url);
   }
 
   function updateLearningSessionsWhenCreateSuccess(res) {
@@ -32,23 +36,12 @@ export default function LearningSessionListOfClass(props) {
   }
 
   const columns = [
-    {
-      title: "Tên buổi học",
-      field: "sessionId",
-      render: (rowData) => (
-        <Link
-          component={RouterLink}
-          to={`/edu/student/class/session/detail/${rowData["sessionId"]}`}
-        >
-          {rowData["sessionName"]}
-        </Link>
-      ),
-    },
+    { title: "Tên buổi học", field: "sessionName" },
     { title: "Mô tả", field: "description" },
     { title: "Người tạo", field: "createdByUserLoginId" },
     { title: "Trạng thái", field: "statusId" },
   ];
-  const actions = props.enableCreateSession
+  const actions = props.role === "TEACHER"
     ? [{ icon: () => CreateLearningSessionButton, isFreeAction: true }]
     : [];
 
@@ -61,27 +54,27 @@ export default function LearningSessionListOfClass(props) {
     </Button>
   );
 
-  const onRowClick = props.viewDetailOnRowClick
-    ? (event, session) => navigateToLearningSessionDetailPage(session.sessionId)
-    : null;
-
   return (
     <div>
-      <StandardTable
-        title="Danh sách buổi học"
-        columns={columns}
-        data={learningSessionsOfClass}
-        hideCommandBar
-        options={{
-          selection: false,
-          search: true,
-          sorting: true,
-        }}
-        onRowClick={onRowClick}
-        actions={actions}
-      />
+      <Card>
+        <CardContent>
+          <StandardTable
+            title="Danh sách buổi học"
+            columns={columns}
+            data={learningSessionsOfClass}
+            hideCommandBar
+            options={{
+              selection: false,
+              search: true,
+              sorting: true,
+            }}
+            onRowClick={navigateToLearningSessionDetailPage}
+            actions={actions}
+          />
+        </CardContent>
+      </Card>
 
-      {props.enableCreateSession && (
+      {props.role === "TEACHER" && (
         <CreateLearningSessionDlg
           classId={classId}
           open={createLearningSessionDlgOpen}
@@ -95,11 +88,5 @@ export default function LearningSessionListOfClass(props) {
 
 LearningSessionListOfClass.propTypes = {
   classId: PropTypes.string.isRequired,
-  enableCreateSession: PropTypes.bool,
-  viewDetailOnRowClick: PropTypes.bool,
-};
-
-LearningSessionListOfClass.defaultProps = {
-  enableCreateSession: false,
-  viewDetailOnRowClick: false,
+  role: PropTypes.oneOf(["TEACHER", "STUDENT"])
 };

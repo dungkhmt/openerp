@@ -45,15 +45,13 @@ import TeacherViewQuestionsOfParticipant from "../component/education/quiztest/T
 import ClassRegistration from "../views/Education/ClassManagement/Student/ClassRegistration";
 import SAssignmentDetail from "../views/Education/ClassManagement/Student/SAssignmentDetail";
 import SClassDetail from "../views/Education/ClassManagement/Student/SClassDetail";
-import SClassList from "../views/Education/ClassManagement/Student/SClassList";
-import StudentViewLearningSessionDetail from "../views/Education/ClassManagement/Student/StudentViewLearningSessionDetail";
 import CreateAssignment from "../views/Education/ClassManagement/Teacher/CreateAssignment";
 import StudentLearningProgressDetail from "../views/Education/ClassManagement/Teacher/StudentLearningProgressDetail";
 import TAssignmentDetail from "../views/Education/ClassManagement/Teacher/TAssignmentDetail";
 import TClassDetail from "../views/Education/ClassManagement/Teacher/TClassDetail";
 import TClassList from "../views/Education/ClassManagement/Teacher/TClassList";
 import TeacherViewDetailClass from "../views/Education/ClassManagement/Teacher/TeacherViewDetailClass";
-import TeacherViewLearningSessionDetail from "../views/Education/ClassManagement/Teacher/TeacherViewLearningSessionDetail";
+import LearningSessionDetail from "../views/Education/ClassManagement/Teacher/LearningSessionDetail";
 
 import StudentCreateThesis from "../component/education/thesisdefensejury/StudentCreateThesis";
 import NotFound from "../views/errors/NotFound";
@@ -146,7 +144,7 @@ export default function EduRoute() {
         />
 
         <Route
-          component={TeacherViewLearningSessionDetail}
+          component={() => <LearningSessionDetail role="TEACHER"/>}
           path={`${path}/teacher/class/session/detail/:sessionId`}
           exact
         />
@@ -282,7 +280,7 @@ export default function EduRoute() {
           exact
         />
         <Route
-          component={StudentViewLearningSessionDetail}
+          component={() => <LearningSessionDetail role="STUDENT"/>}
           path={`${path}/student/class/session/detail/:sessionId`}
           exact
         />
