@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+// import { useState } from "react";
 
-export default function StudentViewSubmissionDetailByTestCase(props) {
-  const submissionId = props.submissionId;
-  const [submission, setSubmission] = useState(null);
+// export default function StudentViewSubmissionDetailByTestCase(props) {
+//   const submissionId = props.submissionId;
+//   const [submission, setSubmission] = useState(null);
 
-  function getSubmissionDetailByTestCase() {}
-  return <div>StudentViewSubmissionDetailByTestCase</div>;
-}
+//   function getSubmissionDetailByTestCase() {}
+//   return <div>StudentViewSubmissionDetailByTestCase</div>;
+// }
