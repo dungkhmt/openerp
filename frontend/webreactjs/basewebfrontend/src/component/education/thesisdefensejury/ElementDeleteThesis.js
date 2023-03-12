@@ -1,58 +1,50 @@
-import React, {useEffect, useState} from "react";
-import {request} from "../../../api";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Checkbox,
-  MenuItem,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@material-ui/core/";
-import MaterialTable, {MTableToolbar} from "material-table";
-import Delete from '@material-ui/icons/Delete';
-import ModalLoading from "./ModalLoading"
+import { Card } from "@material-ui/core/";
+import Delete from "@material-ui/icons/Delete";
+import MaterialTable, { MTableToolbar } from "material-table";
+import { useEffect, useState } from "react";
+import { request } from "../../../api";
+import ModalLoading from "./ModalLoading";
 
-export default function ElementDeleteThesis({thesis, defenseJuryID, handleToggle, getListThesisOfDefenseJury}) {
-
+export default function ElementDeleteThesis({
+  thesis,
+  defenseJuryID,
+  handleToggle,
+  getListThesisOfDefenseJury,
+}) {
   const [openLoading, setOpenLoading] = useState(false);
 
   async function DeleteThesisById(thesisID, defenseJuryID) {
-    setOpenLoading(true)
+    setOpenLoading(true);
     var body = {
-      thesisId: thesisID
-    }
+      thesisId: thesisID,
+    };
     request(
       "post",
       `/defense_jury/${defenseJuryID}/deleteJury`,
       (res) => {
-        console.log(res.data)
-        handleToggle()
-        setOpenLoading(false)
+        console.log(res.data);
+        handleToggle();
+        setOpenLoading(false);
         // setShowSubmitSuccess(true);
         //   history.push(`/thesis/defense_jury/${res.data.id}`);
       },
       {
         onError: (e) => {
           // setShowSubmitSuccess(false);
-          console.log(e)
-        }
+          console.log(e);
+        },
       },
       body
     ).then();
   }
 
-
   const columns = [
-    {title: "STT", field: "stt"},
-    {title: "Tên luận văn", field: "thesisName"},
-    {title: "Người tạo", field: "studentName"},
+    { title: "STT", field: "stt" },
+    { title: "Tên luận văn", field: "thesisName" },
+    { title: "Người tạo", field: "studentName" },
   ];
   useEffect(() => {
     getListThesisOfDefenseJury();
-
   }, []);
   return (
     <Card>
@@ -64,28 +56,26 @@ export default function ElementDeleteThesis({thesis, defenseJuryID, handleToggle
             icon: Delete,
             tooltip: "Delete Thesis",
             onClick: (event, rowData) => {
-              console.log(rowData.id)
-              DeleteThesisById(rowData.id, defenseJuryID)
+              console.log(rowData.id);
+              DeleteThesisById(rowData.id, defenseJuryID);
 
               // setToggle(true)
-            }
-          }
+            },
+          },
         ]}
         data={thesis}
         components={{
           Toolbar: (props) => (
-            <div style={{position: "relative"}}>
+            <div style={{ position: "relative" }}>
               <MTableToolbar {...props} />
               <div
-                style={{position: "absolute", top: "16px", right: "350px"}}
-              >
-
-              </div>
+                style={{ position: "absolute", top: "16px", right: "350px" }}
+              ></div>
             </div>
           ),
         }}
       />
-      <ModalLoading openLoading={openLoading}/>
+      <ModalLoading openLoading={openLoading} />
     </Card>
   );
 }

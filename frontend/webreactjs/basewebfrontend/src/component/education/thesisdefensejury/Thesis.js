@@ -1,24 +1,26 @@
+import { Grid } from "@material-ui/core";
 import {
   Button,
   Card,
-  CardActions,
-  CardContent,
-  Checkbox,
   MenuItem,
   TextField,
-  Tooltip,
   Typography,
 } from "@material-ui/core/";
-import {Box, FormControl, InputAdornment, InputLabel, ListSubheader, Select} from "@mui/material";
-import React, {useEffect, useMemo, useState} from "react";
-import {useHistory} from "react-router-dom";
-import {request} from "../../../api";
-import MaterialTable, {MTableToolbar} from "material-table";
-import {Grid} from "@material-ui/core";
+import Delete from "@material-ui/icons/Delete";
 import SearchIcon from "@mui/icons-material/Search";
-import ModalLoading from "./ModalLoading"
-import Delete from '@material-ui/icons/Delete';
-
+import {
+  Box,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  ListSubheader,
+  Select,
+} from "@mui/material";
+import MaterialTable, { MTableToolbar } from "material-table";
+import React, { useEffect, useMemo, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { request } from "../../../api";
+import ModalLoading from "./ModalLoading";
 
 function Thesis() {
   const history = useHistory();
@@ -31,63 +33,59 @@ function Thesis() {
   const [defenseJuryName, setDefenseJuryName] = React.useState("");
   const [listJury, setListJury] = React.useState([]);
   const [key, setKey] = React.useState("");
-  const [toggle, setToggle] = useState(false)
+  const [toggle, setToggle] = useState(false);
   const [openLoading, setOpenLoading] = React.useState(false);
   const columns = [
-    {title: "Tên luận văn", field: "name"},
-    {title: "Mô tả", field: "thesis_abstract"},
+    { title: "Tên luận văn", field: "name" },
+    { title: "Mô tả", field: "thesis_abstract" },
     // {title:"Tên chương trình",field:"program_name"},
-    {title: "Đợt bảo vệ", field: "thesisPlanName"},
-    {title: "Tên HĐ", field: "defense_jury_name"},
-    {title: "Người hướng dẫn", field: "supervisor_name"},
+    { title: "Đợt bảo vệ", field: "thesisPlanName" },
+    { title: "Tên HĐ", field: "defense_jury_name" },
+    { title: "Người hướng dẫn", field: "supervisor_name" },
     // {title:"Keyword",field:"keyword"},
-    {title: "Người tạo", field: "student_name"},
-    {title: "Ngày tạo", field: "createdTime"},
+    { title: "Người tạo", field: "student_name" },
+    { title: "Ngày tạo", field: "createdTime" },
   ];
   const containsText = (text, searchText) =>
     text.toLowerCase().indexOf(searchText.toLowerCase()) > -1;
   const handlerSearch = (event) => {
     event.preventDefault();
     setOpenLoading(true);
-    let planRes = listPlan.filter(e => e.name == thesisPlanName)
-    console.log(planRes)
-    let juryRes = listJury.filter(e => e.name == defenseJuryName)
-    console.log(juryRes)
-    let planInput = ""
-    let juryInput = ""
+    let planRes = listPlan.filter((e) => e.name == thesisPlanName);
+    console.log(planRes);
+    let juryRes = listJury.filter((e) => e.name == defenseJuryName);
+    console.log(juryRes);
+    let planInput = "";
+    let juryInput = "";
     if (planRes.length > 0) {
-      planInput = planRes[0].id
+      planInput = planRes[0].id;
     }
     if (juryRes.length > 0) {
-      juryInput = juryRes[0].id
+      juryInput = juryRes[0].id;
     }
     let body = {
-      "key": key,
-      "thesisPlanId": planInput,
-      "juryId": juryInput
-    }
+      key: key,
+      thesisPlanId: planInput,
+      juryId: juryInput,
+    };
     request(
       "post",
       "/thesis/_search",
       (res) => {
-
-        console.log(res.data)
+        console.log(res.data);
         setOpenLoading(false);
         if (res.data.ok) {
-          setThesiss(res.data.result)
+          setThesiss(res.data.result);
         } else {
-          setThesiss([])
+          setThesiss([]);
         }
-
       },
       {
-        onError: (e) => {
-        }
+        onError: (e) => {},
       },
       body
     ).then();
-
-  }
+  };
 
   async function getAllPlan() {
     request(
@@ -96,15 +94,14 @@ function Thesis() {
       "GET",
       "/thesis_defense_plan",
       (res) => {
-        console.log("Plan", res.data)
+        console.log("Plan", res.data);
         let objAll = {
           id: "",
-          name: "All"
-        }
-        res.data.unshift(objAll)
-        console.log("Plan", res.data)
-        setListPlan(res.data)
-
+          name: "All",
+        };
+        res.data.unshift(objAll);
+        console.log("Plan", res.data);
+        setListPlan(res.data);
       }
     );
   }
@@ -116,15 +113,14 @@ function Thesis() {
       "GET",
       "/defense_jurys",
       (res) => {
-        console.log("Jury", res.data)
+        console.log("Jury", res.data);
         let objAll = {
           id: "",
-          name: "All"
-        }
-        res.data.DefenseJurys.unshift(objAll)
-        console.log("Plan", res.data.DefenseJurys)
-        setListJury(res.data.DefenseJurys)
-
+          name: "All",
+        };
+        res.data.DefenseJurys.unshift(objAll);
+        console.log("Plan", res.data.DefenseJurys);
+        setListJury(res.data.DefenseJurys);
       }
     );
   }
@@ -138,57 +134,54 @@ function Thesis() {
     [searchText]
   );
 
-
   async function getAllThesis() {
-    setOpenLoading(true)
+    setOpenLoading(true);
     request(
       // token,
       // history,
       "GET",
       "/thesis",
       (res) => {
-        console.log(res.data.content)
-        setOpenLoading(false)
+        console.log(res.data.content);
+        setOpenLoading(false);
         setThesiss(res.data.content);
       }
     );
   }
 
-
   const handlerCreate = () => {
     history.push({
       pathname: `/thesis/create`,
     });
-  }
+  };
 
   async function DeleteThesisById(thesisID, userLoginID) {
-    setOpenLoading(true)
+    setOpenLoading(true);
     var body = {
       id: thesisID,
-      userLogin: userLoginID
-    }
+      userLogin: userLoginID,
+    };
     request(
       "post",
       `/thesis/delete`,
       (res) => {
-        console.log(res.data)
-        setOpenLoading(false)
-        setToggle(!toggle)
+        console.log(res.data);
+        setOpenLoading(false);
+        setToggle(!toggle);
         // setShowSubmitSuccess(true);
         //   history.push(`/thesis/defense_jury/${res.data.id}`);
       },
       {
         onError: (e) => {
           // setShowSubmitSuccess(false);
-          console.log(e)
-        }
+          console.log(e);
+        },
       },
       body
     ).then();
   }
 
   useEffect(() => {
-
     getAllJury();
     getAllPlan();
   }, [showSubmitSuccess]);
@@ -199,27 +192,24 @@ function Thesis() {
   return (
     <Card>
       <Box>
-        <Typography variant="h4" mb={4} component={'h4'}>
+        <Typography variant="h4" mb={4} component={"h4"}>
           Search
         </Typography>
         <Grid container spacing={3}>
           <Grid item={true} xs={3} spacing={2} p={2}>
-            <Box sx={{minWidth: '100%'}}>
-              <FormControl fullWidth style={{margin: "2% 0px"}}>
+            <Box sx={{ minWidth: "100%" }}>
+              <FormControl fullWidth style={{ margin: "2% 0px" }}>
                 <InputLabel id="search-select-label">Đợt bảo vệ</InputLabel>
                 <Select
-
-                  MenuProps={{autoFocus: false}}
+                  MenuProps={{ autoFocus: false }}
                   labelId="search-select-label"
                   id="search-select"
                   value={thesisPlanName}
                   label="Options"
                   onChange={(e) => setThesisPlanName(e.target.value)}
                   onClose={() => setSearchText("")}
-
                   renderValue={() => thesisPlanName}
                 >
-
                   <ListSubheader>
                     <TextField
                       size="small"
@@ -229,14 +219,13 @@ function Thesis() {
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
-                            <SearchIcon/>
+                            <SearchIcon />
                           </InputAdornment>
-                        )
+                        ),
                       }}
                       onChange={(e) => setSearchText(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key !== "Escape") {
-
                           e.stopPropagation();
                         }
                       }}
@@ -252,11 +241,11 @@ function Thesis() {
             </Box>
           </Grid>
           <Grid item={true} xs={3} spacing={2} p={2}>
-            <Box sx={{minWidth: '100%'}}>
-              <FormControl fullWidth style={{margin: "2% 0px"}}>
+            <Box sx={{ minWidth: "100%" }}>
+              <FormControl fullWidth style={{ margin: "2% 0px" }}>
                 <InputLabel id="search-select-label">Tên hội đồng</InputLabel>
                 <Select
-                  MenuProps={{autoFocus: false}}
+                  MenuProps={{ autoFocus: false }}
                   labelId="search-select-label"
                   id="search-select"
                   value={defenseJuryName}
@@ -274,9 +263,9 @@ function Thesis() {
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
-                            <SearchIcon/>
+                            <SearchIcon />
                           </InputAdornment>
-                        )
+                        ),
                       }}
                       onChange={(e) => setSearchText(e.target.value)}
                       onKeyDown={(e) => {
@@ -296,25 +285,30 @@ function Thesis() {
             </Box>
           </Grid>
           <Grid item={true} xs={3} spacing={2} p={2}>
-            <Box sx={{minWidth: '100%'}}>
+            <Box sx={{ minWidth: "100%" }}>
               <TextField
                 label="Contains text"
                 multiline
                 fullWidth={true}
                 value={key}
                 onChange={(event) => {
-                  setKey(event.target.value)
+                  setKey(event.target.value);
                 }}
                 name="search"
               />
             </Box>
           </Grid>
-          <Button variant="contained" color="success" size="small" style={{
-            height: "60%",
-            margin: "2.5%",
-            display: 'flex', justifyContent: 'end'
-          }}
-                  onClick={handlerSearch}
+          <Button
+            variant="contained"
+            color="success"
+            size="small"
+            style={{
+              height: "60%",
+              margin: "2.5%",
+              display: "flex",
+              justifyContent: "end",
+            }}
+            onClick={handlerSearch}
           >
             Search
           </Button>
@@ -327,43 +321,33 @@ function Thesis() {
       <MaterialTable
         title={"Danh sách đề tài"}
         columns={columns}
-        options={
-          {search: false}
-        }
+        options={{ search: false }}
         data={thesiss}
         actions={[
           {
             icon: Delete,
             tooltip: "Delete Thesis",
             onClick: (event, rowData) => {
-              console.log(rowData)
-              console.log(rowData.id)
-              DeleteThesisById(rowData.id, rowData.userLoginID)
-
-
-            }
-          }
+              console.log(rowData);
+              console.log(rowData.id);
+              DeleteThesisById(rowData.id, rowData.userLoginID);
+            },
+          },
         ]}
         components={{
           Toolbar: (props) => (
-            <div style={{position: "relative"}}>
+            <div style={{ position: "relative" }}>
               <MTableToolbar {...props} />
               <div
-                style={{position: "absolute", top: "16px", right: "350px"}}
-              >
-
-              </div>
+                style={{ position: "absolute", top: "16px", right: "350px" }}
+              ></div>
             </div>
           ),
         }}
       />
-      <ModalLoading openLoading={openLoading}/>
+      <ModalLoading openLoading={openLoading} />
     </Card>
-
-
   );
 }
 
 export default Thesis;
-      
-  

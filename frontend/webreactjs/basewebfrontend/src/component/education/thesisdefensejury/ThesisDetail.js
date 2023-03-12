@@ -1,15 +1,14 @@
-import * as React from "react";
-import {useEffect, useState} from "react";
-import {useHistory, useParams} from "react-router-dom";
-import {request} from "../../../api";
-import Typography from "@mui/material/Typography";
-import TableContainer from "@material-ui/core/TableContainer";
+import { Button, TableHead } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
-import Table from "@mui/material/Table";
-import {Button, TableHead} from "@material-ui/core";
+import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
-import {StyledTableCell, StyledTableRow} from "../programmingcontestFE/lib";
+import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
+import Typography from "@mui/material/Typography";
+import { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { request } from "../../../api";
+import { StyledTableCell, StyledTableRow } from "../programmingcontestFE/lib";
 
 export default function ThesisDetail(props) {
   const params = useParams();
@@ -24,25 +23,24 @@ export default function ThesisDetail(props) {
       "GET",
       `/thesis/${params.id}`,
       (res) => {
-        console.log(res.data)
+        console.log(res.data);
         setThesis([res.data]);
-        setName(res.data.name)
+        setName(res.data.name);
       }
     );
   }
 
   useEffect(() => {
-    getAllThesis()
+    getAllThesis();
   }, []);
 
   const handleEdit = () => {
     history.push({
       pathname: `/thesis/edit/${thesis[0].id}`,
       state: {
-        thesisID: params.id
-      }
+        thesisID: params.id,
+      },
     });
-
   };
 
   return (
@@ -53,7 +51,7 @@ export default function ThesisDetail(props) {
 
       <TableContainer component={Paper}>
         <Table
-          sx={{minWidth: window.innerWidth - 500}}
+          sx={{ minWidth: window.innerWidth - 500 }}
           aria-label="customized table"
         >
           <TableHead>

@@ -1,76 +1,60 @@
-import React, {useState} from "react";
-import {request} from "../../../api";
-import Alert from '@mui/material/Alert';
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Checkbox,
-  MenuItem,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@material-ui/core/";
-import MaterialTable, {MTableToolbar} from "material-table";
-import Add from '@mui/icons-material/Add';
-import ModalLoading from "./ModalLoading"
+import { Card } from "@material-ui/core/";
+import Add from "@mui/icons-material/Add";
+import Alert from "@mui/material/Alert";
+import MaterialTable, { MTableToolbar } from "material-table";
+import { useState } from "react";
+import { request } from "../../../api";
+import ModalLoading from "./ModalLoading";
 
 export default function ElementAddTeacherPlan({
-                                                listTeacher,
-                                                defensePlanID,
-                                                toggleTeacher,
-                                                handleToggleTeacher,
-                                                handlerIsLoad,
-                                                handlerNotLoad
-                                              }) {
+  listTeacher,
+  defensePlanID,
+  toggleTeacher,
+  handleToggleTeacher,
+  handlerIsLoad,
+  handlerNotLoad,
+}) {
   const [err, setErr] = useState("");
   const [showSubmitSuccess, setShowSubmitSuccess] = useState(false);
-  const [openLoading, setOpenLoading] = useState(false)
+  const [openLoading, setOpenLoading] = useState(false);
 
   async function AddTeacherById(teacherID, defensePlanID) {
-    handlerIsLoad()
-    setOpenLoading(true)
+    handlerIsLoad();
+    setOpenLoading(true);
     var body = {
-      teacherId: teacherID
-    }
+      teacherId: teacherID,
+    };
     request(
       "post",
       `/thesis_defense_plan/${defensePlanID}/addTeacher`,
       (res) => {
-        console.log(res.data)
+        console.log(res.data);
         if (res.data.ok) {
-          handleToggleTeacher()
-
+          handleToggleTeacher();
         } else if (res.data.err !== "") {
-          setShowSubmitSuccess(true)
-          setErr(res.data.err)
-          setTimeout(
-            () => setErr(""),
-            5000
-          );
-
+          setShowSubmitSuccess(true);
+          setErr(res.data.err);
+          setTimeout(() => setErr(""), 5000);
         }
-
 
         // setShowSubmitSuccess(true);
         //   history.push(`/thesis/defense_jury/${res.data.id}`);
-        handlerNotLoad()
-        setOpenLoading(false)
+        handlerNotLoad();
+        setOpenLoading(false);
       },
       {
         onError: (e) => {
           // setShowSubmitSuccess(false);
-          console.log(e)
-        }
+          console.log(e);
+        },
       },
       body
     ).then();
   }
 
   const columns = [
-    {title: "STT", field: "stt"},
-    {title: "Tên giảng viên", field: "teacherName"},
+    { title: "STT", field: "stt" },
+    { title: "Tên giảng viên", field: "teacherName" },
   ];
   // useEffect(() => {
   //   getAllThesisNotBelongToDefenseJury();
@@ -86,29 +70,31 @@ export default function ElementAddTeacherPlan({
             icon: Add,
             tooltip: "Add Teacher",
             onClick: (event, rowData) => {
-              console.log("AddTeacher RowData:", rowData)
-              AddTeacherById(rowData.teacherId, defensePlanID)
-
-            }
-          }
+              console.log("AddTeacher RowData:", rowData);
+              AddTeacherById(rowData.teacherId, defensePlanID);
+            },
+          },
         ]}
         data={listTeacher}
         components={{
           Toolbar: (props) => (
-            <div style={{position: "relative"}}>
+            <div style={{ position: "relative" }}>
               <MTableToolbar {...props} />
               <div
-                style={{position: "absolute", top: "16px", right: "350px"}}
-              >
-
-              </div>
+                style={{ position: "absolute", top: "16px", right: "350px" }}
+              ></div>
             </div>
           ),
         }}
       />
-      {(err !== "") ?
-        <Alert severity={(err !== "") ? 'error' : 'success'}>{(err !== "") ? err : "Successed"}</Alert> : <></>}
-      <ModalLoading openLoading={openLoading}/>
+      {err !== "" ? (
+        <Alert severity={err !== "" ? "error" : "success"}>
+          {err !== "" ? err : "Successed"}
+        </Alert>
+      ) : (
+        <></>
+      )}
+      <ModalLoading openLoading={openLoading} />
     </Card>
   );
 }

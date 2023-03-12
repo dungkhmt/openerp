@@ -10,11 +10,11 @@ import {
   Modal,
   TextField,
 } from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@mui/material/Alert";
-import React, {useState} from "react";
-import {request} from "../../../api";
-import {SubmitSuccess} from "../programmingcontestFE/SubmitSuccess";
+import React, { useState } from "react";
+import { request } from "../../../api";
+import { SubmitSuccess } from "../programmingcontestFE/SubmitSuccess";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -36,50 +36,48 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ModalCreateThesisDefensePlan({open, handleClose, handleToggle}) {
+export default function ModalCreateThesisDefensePlan({
+  open,
+  handleClose,
+  handleToggle,
+}) {
   const classes = useStyles();
   const [planName, setPlanName] = useState();
   const [id, setId] = useState();
   const [showSubmitSuccess, setShowSubmitSuccess] = React.useState(false);
   const [openAlert, setOpenAlert] = React.useState(false);
 
-
   async function createThesisDefensePlan() {
     let body = {
       name: planName,
-      id: id
+      id: id,
     };
-
 
     request(
       "post",
       "/thesis_defense_plan",
       (res) => {
-        console.log(res.data)
+        console.log(res.data);
         if (res.data.ok) {
           setShowSubmitSuccess(true);
-          setOpenAlert(true)
-
+          setOpenAlert(true);
         } else {
           setShowSubmitSuccess(false);
-          setOpenAlert(true)
+          setOpenAlert(true);
         }
         setTimeout(() => {
-          handleClose()
-          handleToggle()
+          handleClose();
+          handleToggle();
         }, 3000);
-
-
       },
       {
         onError: (e) => {
           setShowSubmitSuccess(false);
-        }
+        },
       },
       body
     ).then();
-
-  };
+  }
   const handleSubmit = (event) => {
     event.preventDefault();
     createThesisDefensePlan();
@@ -103,7 +101,7 @@ export default function ModalCreateThesisDefensePlan({open, handleClose, handleT
       <Fade in={open}>
         <form onSubmit={handleSubmit}>
           <Card className={classes.card}>
-            <CardHeader title="Thêm đợt bảo vệ mới"/>
+            <CardHeader title="Thêm đợt bảo vệ mới" />
             <CardContent>
               <Box
                 display="flex"
@@ -130,17 +128,23 @@ export default function ModalCreateThesisDefensePlan({open, handleClose, handleT
               </Button>
               {/* {alert ? <Alert severity="error">{alertContent}</Alert> : <></>} */}
             </CardActions>
-            {(openAlert === true) ? (<div>
-              {showSubmitSuccess === true ? (<SubmitSuccess
-                showSubmitSuccess={showSubmitSuccess}
-                content={"Bạn vừa tạo đợt bảo vệ mới thành công"}
-              />) : (<Alert severity="error">Thêm mới thất bại</Alert>)}
-
-            </div>) : (<></>)}
+            {openAlert === true ? (
+              <div>
+                {showSubmitSuccess === true ? (
+                  <SubmitSuccess
+                    showSubmitSuccess={showSubmitSuccess}
+                    content={"Bạn vừa tạo đợt bảo vệ mới thành công"}
+                  />
+                ) : (
+                  <Alert severity="error">Thêm mới thất bại</Alert>
+                )}
+              </div>
+            ) : (
+              <></>
+            )}
           </Card>
         </form>
       </Fade>
     </Modal>
   );
 }
-  

@@ -10,8 +10,6 @@ import {
   makeStyles,
   Modal,
 } from "@material-ui/core";
-import React from "react";
-
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -33,8 +31,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-export default function ModalDelete({openDelete, handleDeleteClose, thesisId, userLoginID, DeleteThesisById}) {
+export default function ModalDelete({
+  openDelete,
+  handleDeleteClose,
+  thesisId,
+  userLoginID,
+  DeleteThesisById,
+}) {
   const classes = useStyles();
 
   return (
@@ -50,14 +53,13 @@ export default function ModalDelete({openDelete, handleDeleteClose, thesisId, us
     >
       <Fade in={openDelete}>
         <Card className={classes.card}>
-          <CardHeader title="Xoá thesis"/>
+          <CardHeader title="Xoá thesis" />
           <CardContent>
             <Box
               display="flex"
               flexDirection="column"
               justifyContent="center"
-            >
-            </Box>
+            ></Box>
           </CardContent>
           <CardActions className={classes.action}>
             <Button
@@ -65,7 +67,7 @@ export default function ModalDelete({openDelete, handleDeleteClose, thesisId, us
               variant="contained"
               color="primary"
               onClick={() => {
-                DeleteThesisById(thesisId, userLoginID)
+                DeleteThesisById(thesisId, userLoginID);
               }}
             >
               Delete
@@ -78,7 +80,6 @@ export default function ModalDelete({openDelete, handleDeleteClose, thesisId, us
             >
               Cancel
             </Button>
-
           </CardActions>
         </Card>
       </Fade>

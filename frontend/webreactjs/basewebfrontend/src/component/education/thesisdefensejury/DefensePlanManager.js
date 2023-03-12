@@ -1,13 +1,11 @@
-import * as React from "react";
-import {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
-import {Tab, Tabs} from "@material-ui/core";
-import {a11yProps, TabPanelVertical} from "../programmingcontestFE/TabPanel";
-import DefenseJuryBelongPlan from './DefenseJuryBelongPlan'
-import DefensePlanDetail from './DefensePlanDetail'
-import ThesisBelongPlan from './ThesisBelongPlan'
-import TeacherBelongToPlan from './TeacherBelongToPlan'
-
+import { Tab, Tabs } from "@material-ui/core";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { a11yProps, TabPanelVertical } from "../programmingcontestFE/TabPanel";
+import DefenseJuryBelongPlan from "./DefenseJuryBelongPlan";
+import DefensePlanDetail from "./DefensePlanDetail";
+import TeacherBelongToPlan from "./TeacherBelongToPlan";
+import ThesisBelongPlan from "./ThesisBelongPlan";
 
 export default function DefensePlanManager() {
   const params = useParams();
@@ -17,19 +15,13 @@ export default function DefensePlanManager() {
     setValue(newValue);
   };
 
+  //   const location = useLocation();
+  //   useEffect(() => {
+  //     console.log(location.state.valueTab);
+  //     setValue(location.state.valueTab);
+  //  }, [location]);
 
-//   const location = useLocation();
-//   useEffect(() => {
-//     console.log(location.state.valueTab); 
-//     setValue(location.state.valueTab);
-//  }, [location]);
-
-
-  useEffect(() => {
-
-
-  }, []);
-
+  useEffect(() => {}, []);
 
   return (
     <div>
@@ -51,31 +43,32 @@ export default function DefensePlanManager() {
         <Tab
           label="Thesis Defense Plan Detail"
           {...a11yProps(0)}
-          style={{width: "10%"}}
+          style={{ width: "10%" }}
         />
-        <Tab label="List Thesis Defense" {...a11yProps(1)} style={{width: "10%"}}/>
-        <Tab label="List Thesis" {...a11yProps(2)} style={{width: "10%"}}/>
-        <Tab label="List Teacher" {...a11yProps(3)} style={{width: "10%"}}/>
+        <Tab
+          label="List Thesis Defense"
+          {...a11yProps(1)}
+          style={{ width: "10%" }}
+        />
+        <Tab label="List Thesis" {...a11yProps(2)} style={{ width: "10%" }} />
+        <Tab label="List Teacher" {...a11yProps(3)} style={{ width: "10%" }} />
         {/* <Tab label="List Student" {...a11yProps(3)} style={{ width: "10%" }} /> */}
-
       </Tabs>
 
       <TabPanelVertical value={value} index={0}>
-        <DefensePlanDetail defensePlanId={params.id}/>
+        <DefensePlanDetail defensePlanId={params.id} />
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={1}>
-        <DefenseJuryBelongPlan defensePlanId={params.id}/>
+        <DefenseJuryBelongPlan defensePlanId={params.id} />
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={2}>
-        <ThesisBelongPlan defensePlanId={params.id}/>
+        <ThesisBelongPlan defensePlanId={params.id} />
       </TabPanelVertical>
       <TabPanelVertical value={value} index={3}>
-        <TeacherBelongToPlan defensePlanId={params.id}/>
+        <TeacherBelongToPlan defensePlanId={params.id} />
       </TabPanelVertical>
-
-
     </div>
   );
 }

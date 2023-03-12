@@ -1,31 +1,39 @@
-import {Button, Grid} from "@material-ui/core";
-import React, {useEffect, useMemo, useState} from "react";
-import {useHistory, useLocation, useParams} from "react-router-dom";
-import {SubmitSuccess} from "../programmingcontestFE/SubmitSuccess";
-import {request} from "../../../api";
-import {Alert} from "@material-ui/lab";
-import {Box, FormControl, InputAdornment, InputLabel, ListSubheader, MenuItem, Select, TextField} from "@mui/material";
+import { Button, Grid } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 import SearchIcon from "@mui/icons-material/Search";
-
+import {
+  Box,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  ListSubheader,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
+import React, { useEffect, useMemo, useState } from "react";
+import { useHistory, useLocation, useParams } from "react-router-dom";
+import { request } from "../../../api";
+import { SubmitSuccess } from "../programmingcontestFE/SubmitSuccess";
 
 const modalStyle = {
   paper: {
-    boxSizing: 'border-box',
-    position: 'absolute',
-    width: '55%',
+    boxSizing: "border-box",
+    position: "absolute",
+    width: "55%",
     maxHeight: 1000,
     // border: '2px solid #000',
-    borderRadius: '5px',
-    boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)',
-    backgroundColor: 'white',
+    borderRadius: "5px",
+    boxShadow:
+      "0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)",
+    backgroundColor: "white",
     zIndex: 999,
-    left: '60%',
-    top: '90%',
-    transform: 'translate(-50% , -50%)',
-    padding: '20px 40px'
-
-  }
-}
+    left: "60%",
+    top: "90%",
+    transform: "translate(-50% , -50%)",
+    padding: "20px 40px",
+  },
+};
 
 function EditThesis(props) {
   const history = useHistory();
@@ -52,7 +60,6 @@ function EditThesis(props) {
   const containsText = (text, searchText) =>
     text.toLowerCase().indexOf(searchText.toLowerCase()) > -1;
 
-
   async function getThesisDetail() {
     request(
       // token,
@@ -60,7 +67,7 @@ function EditThesis(props) {
       "GET",
       `/thesis/${params.id}`,
       (res) => {
-        console.log(res.data)
+        console.log(res.data);
         var thesis = res.data;
         setName(thesis.name);
         setThesisAbstract(thesis.thesis_abstract);
@@ -73,7 +80,6 @@ function EditThesis(props) {
         setUserLoginID(thesis.userLoginID);
         setKeyword([]);
         //   setListProgram(res.data)
-
       }
     );
   }
@@ -85,9 +91,8 @@ function EditThesis(props) {
       "GET",
       "/program_tranings",
       (res) => {
-        console.log(res.data)
-        setListProgram(res.data)
-
+        console.log(res.data);
+        setListProgram(res.data);
       }
     );
   }
@@ -99,9 +104,8 @@ function EditThesis(props) {
       "GET",
       "/defense_jurys",
       (res) => {
-        console.log("Jury", res.data)
-        setListJury(res.data.DefenseJurys)
-
+        console.log("Jury", res.data);
+        setListJury(res.data.DefenseJurys);
       }
     );
   }
@@ -113,9 +117,8 @@ function EditThesis(props) {
       "GET",
       "/thesis_defense_plan",
       (res) => {
-        console.log("Plan", res.data)
-        setListPlan(res.data)
-
+        console.log("Plan", res.data);
+        setListPlan(res.data);
       }
     );
   }
@@ -127,9 +130,8 @@ function EditThesis(props) {
       "GET",
       "/teachers",
       (res) => {
-        console.log("Teachers", res.data)
-        setListTeacher(res.data)
-
+        console.log("Teachers", res.data);
+        setListTeacher(res.data);
       }
     );
   }
@@ -139,7 +141,7 @@ function EditThesis(props) {
     history.push({
       pathname: `/thesis/${params.id}`,
     });
-  }
+  };
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
@@ -156,29 +158,26 @@ function EditThesis(props) {
       thesisPlanName: thesisPlanName,
       keyword: keyword,
     };
-    setTimeout(
-      () => setOpenAlert(true),
-      3000
-    );
+    setTimeout(() => setOpenAlert(true), 3000);
     request(
       "put",
       "/thesis/edit",
       (res) => {
-        console.log(res.data)
+        console.log(res.data);
         setShowSubmitSuccess(true);
         //   history.push(`/thesis/defense_jury/${res.data.id}`);
       },
       {
         onError: (e) => {
           setShowSubmitSuccess(false);
-        }
+        },
       },
       body
     ).then();
     history.push({
       pathname: `/thesis`,
     });
-  }
+  };
 
   useEffect(() => {
     getAllProgram();
@@ -186,7 +185,7 @@ function EditThesis(props) {
     getAllTeachers();
     getAllPlan();
     getThesisDetail();
-  }, [])
+  }, []);
 
   useEffect(() => {
     console.log(location.state.thesisID);
@@ -197,7 +196,10 @@ function EditThesis(props) {
     [searchText]
   );
   const displayedTeacherOptions = useMemo(
-    () => listTeacher.filter((option) => containsText(option.teacherName, searchText)),
+    () =>
+      listTeacher.filter((option) =>
+        containsText(option.teacherName, searchText)
+      ),
     [searchText]
   );
   const displayedJuryOptions = useMemo(
@@ -209,36 +211,42 @@ function EditThesis(props) {
     [searchText]
   );
   return (
-
     <div style={modalStyle.paper}>
       <h2 id="simple-modal-title">Cập nhật luận văn</h2>
       <div width="100%">
         <form>
           <Grid container spacing={1}>
-
             <Grid container item xs={12} spacing={2}>
               <TextField
-                style={{margin: "2% 0px"}}
+                style={{ margin: "2% 0px" }}
                 value={name}
                 onChange={(event) => {
-                  setName(event.target.value)
-                }} fullWidth={true} id="input-with-icon-grid" label="Tên luận văn"/>
+                  setName(event.target.value);
+                }}
+                fullWidth={true}
+                id="input-with-icon-grid"
+                label="Tên luận văn"
+              />
             </Grid>
             <Grid container item xs={12} spacing={2}>
               <TextField
-                style={{margin: "2% 0px"}}
+                style={{ margin: "2% 0px" }}
                 value={thesisAbstract}
                 onChange={(event) => {
-                  setThesisAbstract(event.target.value)
-                }} fullWidth={true} id="input-with-icon-grid" label="Mô tả luận văn"/>
+                  setThesisAbstract(event.target.value);
+                }}
+                fullWidth={true}
+                id="input-with-icon-grid"
+                label="Mô tả luận văn"
+              />
             </Grid>
             <Grid container item xs={12} spacing={2}>
-              <Box sx={{minWidth: '100%'}}>
-                <FormControl fullWidth style={{margin: "2% 0px"}}>
+              <Box sx={{ minWidth: "100%" }}>
+                <FormControl fullWidth style={{ margin: "2% 0px" }}>
                   <InputLabel id="search-select-label">Tên hội đồng</InputLabel>
                   <Select
                     // Disables auto focus on MenuItems and allows TextField to be in focus
-                    MenuProps={{autoFocus: false}}
+                    MenuProps={{ autoFocus: false }}
                     labelId="search-select-label"
                     id="search-select"
                     value={defenseJuryName}
@@ -262,9 +270,9 @@ function EditThesis(props) {
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
-                              <SearchIcon/>
+                              <SearchIcon />
                             </InputAdornment>
-                          )
+                          ),
                         }}
                         onChange={(e) => setSearchText(e.target.value)}
                         onKeyDown={(e) => {
@@ -286,19 +294,25 @@ function EditThesis(props) {
             </Grid>
             <Grid container item xs={12} spacing={2}>
               <TextField
-                style={{margin: "2% 0px"}}
+                style={{ margin: "2% 0px" }}
                 value={studentName}
                 onChange={(event) => {
-                  setStudentName(event.target.value)
-                }} fullWidth={true} id="input-with-icon-grid" label="Tên sinh viên"/>
+                  setStudentName(event.target.value);
+                }}
+                fullWidth={true}
+                id="input-with-icon-grid"
+                label="Tên sinh viên"
+              />
             </Grid>
             <Grid container item xs={12} spacing={2}>
-              <Box sx={{minWidth: '100%'}}>
-                <FormControl fullWidth style={{margin: "2% 0px"}}>
-                  <InputLabel id="search-select-label">Tên giảng viên hướng dẫn</InputLabel>
+              <Box sx={{ minWidth: "100%" }}>
+                <FormControl fullWidth style={{ margin: "2% 0px" }}>
+                  <InputLabel id="search-select-label">
+                    Tên giảng viên hướng dẫn
+                  </InputLabel>
                   <Select
                     // Disables auto focus on MenuItems and allows TextField to be in focus
-                    MenuProps={{autoFocus: false}}
+                    MenuProps={{ autoFocus: false }}
                     labelId="search-select-label"
                     id="search-select"
                     value={supervisorName}
@@ -322,9 +336,9 @@ function EditThesis(props) {
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
-                              <SearchIcon/>
+                              <SearchIcon />
                             </InputAdornment>
-                          )
+                          ),
                         }}
                         onChange={(e) => setSearchText(e.target.value)}
                         onKeyDown={(e) => {
@@ -345,12 +359,14 @@ function EditThesis(props) {
               </Box>
             </Grid>
             <Grid container item xs={12} spacing={2}>
-              <Box sx={{minWidth: '100%'}}>
-                <FormControl fullWidth style={{margin: "2% 0px"}}>
-                  <InputLabel id="search-select-label">Tên giảng viên Reviewer</InputLabel>
+              <Box sx={{ minWidth: "100%" }}>
+                <FormControl fullWidth style={{ margin: "2% 0px" }}>
+                  <InputLabel id="search-select-label">
+                    Tên giảng viên Reviewer
+                  </InputLabel>
                   <Select
                     // Disables auto focus on MenuItems and allows TextField to be in focus
-                    MenuProps={{autoFocus: false}}
+                    MenuProps={{ autoFocus: false }}
                     labelId="search-select-label"
                     id="search-select"
                     value={reviewerName}
@@ -374,9 +390,9 @@ function EditThesis(props) {
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
-                              <SearchIcon/>
+                              <SearchIcon />
                             </InputAdornment>
-                          )
+                          ),
                         }}
                         onChange={(e) => setSearchText(e.target.value)}
                         onKeyDown={(e) => {
@@ -397,12 +413,12 @@ function EditThesis(props) {
               </Box>
             </Grid>
             <Grid container item xs={12} spacing={2}>
-              <Box sx={{minWidth: '100%'}}>
-                <FormControl fullWidth style={{margin: "2% 0px"}}>
+              <Box sx={{ minWidth: "100%" }}>
+                <FormControl fullWidth style={{ margin: "2% 0px" }}>
                   <InputLabel id="search-select-label">Đợt bảo vệ</InputLabel>
                   <Select
                     // Disables auto focus on MenuItems and allows TextField to be in focus
-                    MenuProps={{autoFocus: false}}
+                    MenuProps={{ autoFocus: false }}
                     labelId="search-select-label"
                     id="search-select"
                     value={thesisPlanName}
@@ -426,9 +442,9 @@ function EditThesis(props) {
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
-                              <SearchIcon/>
+                              <SearchIcon />
                             </InputAdornment>
-                          )
+                          ),
                         }}
                         onChange={(e) => setSearchText(e.target.value)}
                         onKeyDown={(e) => {
@@ -450,11 +466,15 @@ function EditThesis(props) {
             </Grid>
             <Grid container item xs={12} spacing={2}>
               <TextField
-                style={{margin: "2% 0px"}}
+                style={{ margin: "2% 0px" }}
                 value={userLoginID}
                 onChange={(event) => {
-                  setUserLoginID(event.target.value)
-                }} fullWidth={true} id="input-with-icon-grid" label="Tên người tạo"/>
+                  setUserLoginID(event.target.value);
+                }}
+                fullWidth={true}
+                id="input-with-icon-grid"
+                label="Tên người tạo"
+              />
             </Grid>
             {/* <Grid container item xs={12} spacing={2}>
                                 <TextField 
@@ -465,12 +485,12 @@ function EditThesis(props) {
                                 }} fullWidth={true} id="input-with-icon-grid" label="Tên hướng đề tài lựa chọn" />
                             </Grid> */}
             <Grid container item xs={12} spacing={2}>
-              <Box sx={{minWidth: '100%'}}>
-                <FormControl fullWidth style={{margin: "2% 0px"}}>
+              <Box sx={{ minWidth: "100%" }}>
+                <FormControl fullWidth style={{ margin: "2% 0px" }}>
                   <InputLabel id="search-select-label">Program Name</InputLabel>
                   <Select
                     // Disables auto focus on MenuItems and allows TextField to be in focus
-                    MenuProps={{autoFocus: false}}
+                    MenuProps={{ autoFocus: false }}
                     labelId="search-select-label"
                     id="search-select"
                     value={programName}
@@ -494,9 +514,9 @@ function EditThesis(props) {
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
-                              <SearchIcon/>
+                              <SearchIcon />
                             </InputAdornment>
-                          )
+                          ),
                         }}
                         onChange={(e) => setSearchText(e.target.value)}
                         onKeyDown={(e) => {
@@ -517,28 +537,47 @@ function EditThesis(props) {
               </Box>
             </Grid>
 
-
             <Grid container spacing={2}>
               <Grid item xs={6} alignItems="center">
-                <Button color="primary" type="submit" onClick={handleFormSubmit} width="100%">Cập nhật</Button>
+                <Button
+                  color="primary"
+                  type="submit"
+                  onClick={handleFormSubmit}
+                  width="100%"
+                >
+                  Cập nhật
+                </Button>
               </Grid>
               <Grid item xs={6} alignItems="center">
-                <Button color="primary" type="submit" onClick={handleBack} width="100%">Back</Button>
+                <Button
+                  color="primary"
+                  type="submit"
+                  onClick={handleBack}
+                  width="100%"
+                >
+                  Back
+                </Button>
               </Grid>
             </Grid>
 
-            {(openAlert === true) ? (<div>
-              {showSubmitSuccess === true ? (<SubmitSuccess
-                showSubmitSuccess={showSubmitSuccess}
-                content={"You have saved defense jury"}
-              />) : (<Alert severity="error">Failed</Alert>)}
-
-            </div>) : (<></>)}
+            {openAlert === true ? (
+              <div>
+                {showSubmitSuccess === true ? (
+                  <SubmitSuccess
+                    showSubmitSuccess={showSubmitSuccess}
+                    content={"You have saved defense jury"}
+                  />
+                ) : (
+                  <Alert severity="error">Failed</Alert>
+                )}
+              </div>
+            ) : (
+              <></>
+            )}
           </Grid>
         </form>
       </div>
     </div>
-
   );
 }
 

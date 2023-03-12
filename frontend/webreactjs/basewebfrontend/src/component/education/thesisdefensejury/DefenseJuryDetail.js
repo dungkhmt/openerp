@@ -1,18 +1,16 @@
-import {Button} from "@material-ui/core";
-import {Box, IconButton} from "@material-ui/core/";
-import {MuiThemeProvider} from "@material-ui/core/styles";
+import { Button } from "@material-ui/core";
+import { Box } from "@material-ui/core/";
+import { MuiThemeProvider } from "@material-ui/core/styles";
 import Grid from "@mui/material/Grid";
-import React, {useEffect, useState} from "react";
-import {useHistory, useLocation, useParams} from "react-router-dom";
-import {request} from "../../../api";
+import React, { useEffect, useState } from "react";
+import { useHistory, useLocation, useParams } from "react-router-dom";
+import { request } from "../../../api";
 import ElementAddTeacher from "./ElementAddTeacher";
 import ElementAddThesis from "./ElementAddThesis";
 import ElementDeleteTeacher from "./ElementDeleteTeacher";
 import ElementDeleteThesis from "./ElementDeleteThesis";
 
-
 function DefenseJuryDetail(props) {
-
   const history = useHistory();
   const params = useParams();
   const [toggle, setToggle] = useState(false);
@@ -195,7 +193,7 @@ function DefenseJuryDetail(props) {
         borderBottom={1}
         mt={-3}
         mb={3}
-        style={{borderColor: "#e8e8e8"}}
+        style={{ borderColor: "#e8e8e8" }}
       />
       <MuiThemeProvider>
         <Button color="primary" type="submit" onClick={handleBack} width="20%">

@@ -1,29 +1,18 @@
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Checkbox,
-  MenuItem,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@material-ui/core/";
-import React, {useEffect, useState} from "react";
-import {useHistory} from "react-router-dom";
-import {request} from "../../../api";
-import MaterialTable, {MTableToolbar} from "material-table";
-
+import { Button, Card } from "@material-ui/core/";
+import MaterialTable, { MTableToolbar } from "material-table";
+import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { request } from "../../../api";
 
 function DefenseJury() {
   const history = useHistory();
   const [jurys, setJurys] = useState([]);
 
   const columns = [
-    {title: "ID", field: "id"},
-    {title: "Tên HD", field: "name"},
-    {title: "Người tạo", field: "userLoginId"},
-    {title: "Ngày tạo", field: "createdTime"},
+    { title: "ID", field: "id" },
+    { title: "Tên HD", field: "name" },
+    { title: "Người tạo", field: "userLoginId" },
+    { title: "Ngày tạo", field: "createdTime" },
   ];
 
   async function getAllDefenseJury() {
@@ -33,7 +22,7 @@ function DefenseJury() {
       "GET",
       "/defense_jurys",
       (res) => {
-        console.log(res.data)
+        console.log(res.data);
         setJurys(res.data.DefenseJurys);
       }
     );
@@ -66,10 +55,10 @@ function DefenseJury() {
         //     }}
         components={{
           Toolbar: (props) => (
-            <div style={{position: "relative"}}>
+            <div style={{ position: "relative" }}>
               <MTableToolbar {...props} />
               <div
-                style={{position: "absolute", top: "16px", right: "350px"}}
+                style={{ position: "absolute", top: "16px", right: "350px" }}
               >
                 <Button onClick={handleModalOpen} color="primary">
                   Thêm mới
@@ -84,4 +73,3 @@ function DefenseJury() {
 }
 
 export default DefenseJury;
-  

@@ -1,20 +1,9 @@
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Checkbox,
-  MenuItem,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@material-ui/core/";
-import React, {useEffect, useState} from "react";
-import {useHistory} from "react-router-dom";
-import {request} from "../../../api";
-import MaterialTable, {MTableToolbar} from "material-table";
+import { Button, Card } from "@material-ui/core/";
+import MaterialTable, { MTableToolbar } from "material-table";
+import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { request } from "../../../api";
 import ModalLoading from "./ModalLoading";
-
 
 function DefenseJuryBelongPlan(props) {
   const defensePlanId = props.defensePlanId;
@@ -23,10 +12,10 @@ function DefenseJuryBelongPlan(props) {
   const [openLoading, setOpenLoading] = useState(false);
 
   const columns = [
-    {title: "ID", field: "id"},
-    {title: "Tên HD", field: "name"},
-    {title: "Người tạo", field: "userLoginId"},
-    {title: "Ngày tạo", field: "createdTime"},
+    { title: "ID", field: "id" },
+    { title: "Tên HD", field: "name" },
+    { title: "Người tạo", field: "userLoginId" },
+    { title: "Ngày tạo", field: "createdTime" },
   ];
 
   async function getAllDefenseJuryBelongPlan() {
@@ -37,7 +26,7 @@ function DefenseJuryBelongPlan(props) {
       "GET",
       `/${defensePlanId}/defenseJurysBelongPlan`,
       (res) => {
-        console.log(res.data.result)
+        console.log(res.data.result);
         setJurys(res.data.result);
         setOpenLoading(false);
       }
@@ -62,21 +51,21 @@ function DefenseJuryBelongPlan(props) {
         columns={columns}
         data={jurys}
         onRowClick={(event, rowData) => {
-          console.log(rowData)
+          console.log(rowData);
           history.push({
             pathname: `/thesis/defense_jury/${rowData.id}`,
             state: {
               defenseJuryId: rowData.id,
-              defensePlanId: defensePlanId
+              defensePlanId: defensePlanId,
             },
           });
         }}
         components={{
           Toolbar: (props) => (
-            <div style={{position: "relative"}}>
+            <div style={{ position: "relative" }}>
               <MTableToolbar {...props} />
               <div
-                style={{position: "absolute", top: "16px", right: "350px"}}
+                style={{ position: "absolute", top: "16px", right: "350px" }}
               >
                 <Button onClick={handleModalOpen} color="primary">
                   Thêm mới
@@ -86,11 +75,9 @@ function DefenseJuryBelongPlan(props) {
           ),
         }}
       />
-      <ModalLoading openLoading={openLoading}/>
+      <ModalLoading openLoading={openLoading} />
     </Card>
-
   );
 }
 
 export default DefenseJuryBelongPlan;
-  

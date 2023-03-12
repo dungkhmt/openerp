@@ -1,20 +1,9 @@
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Checkbox,
-  MenuItem,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@material-ui/core/";
-import React, {useEffect, useState} from "react";
-import {useHistory} from "react-router-dom";
-import {request} from "../../../api";
-import MaterialTable, {MTableToolbar} from "material-table";
+import { Button, Card } from "@material-ui/core/";
+import MaterialTable, { MTableToolbar } from "material-table";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { request } from "../../../api";
 import ModalCreateThesisDefensePlan from "./ModalCreateThesisDefensePlan";
-
 
 function ThesisDefensePlans(props) {
   const history = useHistory();
@@ -23,24 +12,23 @@ function ThesisDefensePlans(props) {
   const [open, setOpen] = React.useState(false);
 
   const columns = [
-    {title: "ID", field: "id"},
-    {title: "Tên đợt bảo vệ", field: "name"},
-    {title: "Ngày tạo", field: "createdTime"},
+    { title: "ID", field: "id" },
+    { title: "Tên đợt bảo vệ", field: "name" },
+    { title: "Ngày tạo", field: "createdTime" },
   ];
   const handleToggle = () => {
     setToggle(!toggle);
-  }
+  };
 
   async function getAllPlan() {
-
     request(
       // token,
       // history,
       "GET",
       `/thesis_defense_plan`,
       (res) => {
-        console.log(res.data)
-        setPlans(res.data)
+        console.log(res.data);
+        setPlans(res.data);
       }
     );
   }
@@ -54,8 +42,7 @@ function ThesisDefensePlans(props) {
   };
   const handleClose = () => {
     setOpen(false);
-  }
-
+  };
 
   useEffect(() => {
     getAllPlan();
@@ -68,7 +55,7 @@ function ThesisDefensePlans(props) {
         columns={columns}
         data={plans}
         onRowClick={(event, rowData) => {
-          console.log(rowData)
+          console.log(rowData);
           history.push({
             pathname: `/thesis/thesis_defense_plan/${rowData.id}`,
             state: {},
@@ -76,24 +63,26 @@ function ThesisDefensePlans(props) {
         }}
         components={{
           Toolbar: (props) => (
-            <div style={{position: "relative"}}>
+            <div style={{ position: "relative" }}>
               <MTableToolbar {...props} />
               <div
-                style={{position: "absolute", top: "16px", right: "350px"}}
+                style={{ position: "absolute", top: "16px", right: "350px" }}
               >
                 <Button onClick={handleModalOpen} color="primary">
                   Thêm mới
                 </Button>
-                <ModalCreateThesisDefensePlan open={open} handleClose={handleClose} handleToggle={handleToggle}/>
+                <ModalCreateThesisDefensePlan
+                  open={open}
+                  handleClose={handleClose}
+                  handleToggle={handleToggle}
+                />
               </div>
             </div>
           ),
         }}
       />
-
     </Card>
   );
 }
 
 export default ThesisDefensePlans;
-  
