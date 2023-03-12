@@ -1,32 +1,31 @@
-import React from 'react'
-import { useHistory } from 'react-router-dom'
-import { request } from '../../../api'
-import { nanoid } from 'nanoid'
-import { ROLE_STATUS } from 'utils/whiteboard/constants'
+import { nanoid } from "nanoid";
+import { useHistory } from "react-router-dom";
+import { ROLE_STATUS } from "utils/whiteboard/constants";
+import { request } from "../../../api";
 
 export default function CreateWhiteBoard() {
-  const history = useHistory()
+  const history = useHistory();
 
-  const whiteboardId = nanoid()
+  const whiteboardId = nanoid();
   const onCreateNewWhiteboard = async () => {
     // create new whiteboard
     await request(
-      'post',
-      '/whiteboards',
+      "post",
+      "/whiteboards",
       async () => {
         await request(
-          'put',
+          "put",
           `/whiteboards/user/${whiteboardId}`,
           (res) => {},
           {},
-          { roleId: ROLE_STATUS.WRITE, statusId: ROLE_STATUS.ACCEPTED },
-        )
-        history.push(`/whiteboard/board/${whiteboardId}`)
+          { roleId: ROLE_STATUS.WRITE, statusId: ROLE_STATUS.ACCEPTED }
+        );
+        history.push(`/whiteboard/board/${whiteboardId}`);
       },
       {},
-      { whiteboardId },
-    )
-  }
+      { whiteboardId }
+    );
+  };
 
   return (
     <div>
@@ -34,5 +33,5 @@ export default function CreateWhiteBoard() {
         Create a new board
       </button>
     </div>
-  )
+  );
 }
