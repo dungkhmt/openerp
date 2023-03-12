@@ -94,8 +94,9 @@ function MenuItem(props) {
   return (
     <ListItemLink
       button
+      onClick={menuItem.onClick}
       disableGutters={false}
-      to={process.env.PUBLIC_URL + menuItem.path}
+      to={menuItem.path ? process.env.PUBLIC_URL + menuItem.path : undefined}
       className={clsx(classes.menuItem, {
         [classes[color]]: selected,
         [classes.selected]: !selected,

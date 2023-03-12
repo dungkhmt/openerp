@@ -1,9 +1,12 @@
+import { config } from "config/config";
+import { KC_REALM } from "config/keycloak";
+
 export const user = {
   id: "MENU_USER",
   path: "",
   isPublic: false,
-  icon: "PersonIcon",
-  text: "Tài khoản",
+  icon: "ManageAccountsIcon",
+  text: "Người dùng",
   child: [
     // {
     //   id: "MENU_USER_CREATE",
@@ -21,19 +24,26 @@ export const user = {
     //   text: "Danh sách",
     //   child: [],
     // },
-    // {
-    //   id: "MENU_USER_APPROVE_REGISTRATION",
-    //   path: "/user-group/user/approve-register",
-    //   isPublic: false,
-    //   icon: "StarBorder",
-    //   text: "Phê duyệt",
-    //   child: [],
-    // },
+    {
+      //   id: "MENU_USER_APPROVE_REGISTRATION",
+      //   path: "/user-group/user/approve-register",
+      //   isPublic: false,
+      //   icon: "StarBorder",
+      //   text: "Phê duyệt",
+      //   child: [],
+      // },
+      id: "MENU_USER_APPROVE_REGISTRATION", // TODO: change this
+      onClick: () => {
+        window.location.href = `${config.url.KEYCLOAK_BASE_URL}/admin/${KC_REALM}/console/#/${KC_REALM}/users`;
+      },
+      isPublic: false,
+      text: "Tất cả người dùng",
+      child: [],
+    },
     {
       id: "MENU_USER_SEND_MAIL_TO_USERS",
       path: "/user-group/user/send-mail",
       isPublic: false,
-      icon: "StarBorder",
       text: "Gửi email",
       child: [],
     },

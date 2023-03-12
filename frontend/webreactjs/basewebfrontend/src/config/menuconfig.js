@@ -18,7 +18,8 @@ import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline";
 import PersonIcon from "@material-ui/icons/Person";
 import StarBorder from "@material-ui/icons/StarBorder";
 import StoreMallDirectorySharpIcon from "@material-ui/icons/StoreMallDirectorySharp";
-import React from "react";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import { CiEdit } from "react-icons/ci";
 import { GiTeacher } from "react-icons/gi";
 import TeachingIcon from "../assets/icons/mathematics.svg";
 import { buildMapPathMenu } from "../utils/MenuUtils";
@@ -27,41 +28,44 @@ import { eduLearningManagement } from "./menuconfig/classmanagement/student";
 import { eduTeachingManagement } from "./menuconfig/classmanagement/teacher";
 import { DataAdministration } from "./menuconfig/dataadmin";
 //import { WMS } from "./menuconfig/wms.js";
-import { ThesisDefenseJuryManagement } from "./menuconfig/thesis_defense_jury_management";
-import { ThesisDefensePlanManagement } from "./menuconfig/Thesis_defense_plan_managenment";
+import { bigdataanalysis } from "./menuconfig/bigdataanalysis";
+import { general } from "./menuconfig/general";
+import {
+  ProgrammingContestMenuStudent,
+  ProgrammingContestMenuTeacher,
+} from "./menuconfig/ProgramingContest";
 import { taskmanagement } from "./menuconfig/taskmanagement";
+import { teachingassignment } from "./menuconfig/teachingassignment";
+import { ThesisDefensePlanManagement } from "./menuconfig/Thesis_defense_plan_managenment";
+import { tmscontainer } from "./menuconfig/tmscontainer";
+import { user } from "./menuconfig/user";
 import { warehouse } from "./menuconfig/warehouse";
 import { whiteboard } from "./menuconfig/whiteboard";
-import { bigdataanalysis } from "./menuconfig/bigdataanalysis";
-import {
-  ProgrammingContestMenuTeacher,
-  ProgrammingContestMenuStudent,
-} from "./menuconfig/ProgramingContest";
-import { general } from "./menuconfig/general";
-import { teachingassignment } from "./menuconfig/teachingassignment";
-import { user } from "./menuconfig/user";
-import { tmscontainer } from "./menuconfig/tmscontainer";
 import { WMSV2 } from "./menuconfig/wmsv2";
+
 export const MENU_LIST = [];
+
 MENU_LIST.push(general);
 MENU_LIST.push(ProgrammingContestMenuTeacher);
-MENU_LIST.push(ProgrammingContestMenuStudent);
 MENU_LIST.push(eduTeachingManagement);
+MENU_LIST.push(ProgrammingContestMenuStudent);
 MENU_LIST.push(eduLearningManagement);
-
-MENU_LIST.push(DataAdministration);
-//MENU_LIST.push(WMS);
-MENU_LIST.push(ThesisDefensePlanManagement);
-//MENU_LIST.push(ThesisDefenseJuryManagement);
-MENU_LIST.push(taskmanagement);
 MENU_LIST.push(whiteboard);
+MENU_LIST.push(user);
+MENU_LIST.push(taskmanagement);
 MENU_LIST.push(bigdataanalysis);
+MENU_LIST.push(DataAdministration);
 MENU_LIST.push(Chat);
 MENU_LIST.push(teachingassignment);
+MENU_LIST.push(ThesisDefensePlanManagement);
+MENU_LIST.push(warehouse);
+MENU_LIST.push(WMSV2);
+MENU_LIST.push(tmscontainer);
 // MENU_LIST.push(schedule);
 // MENU_LIST.push(department);
 // MENU_LIST.push(tms);
-MENU_LIST.push(user);
+//MENU_LIST.push(WMS);
+//MENU_LIST.push(ThesisDefenseJuryManagement);
 // MENU_LIST.push(order);
 // MENU_LIST.push(promotax);
 // MENU_LIST.push(invoice);
@@ -70,7 +74,6 @@ MENU_LIST.push(user);
 // MENU_LIST.push(supplier);
 // MENU_LIST.push(purchaseorder);
 // MENU_LIST.push(productpricesupplier);
-MENU_LIST.push(warehouse);
 // MENU_LIST.push(transport);
 // MENU_LIST.push(post);
 // MENU_LIST.push(product);
@@ -83,11 +86,9 @@ MENU_LIST.push(warehouse);
 // MENU_LIST.push(salereport);
 // MENU_LIST.push(facilityreport);
 // MENU_LIST.push(tmsreport);
-MENU_LIST.push(tmscontainer);
 // MENU_LIST.push(webcam);
 // MENU_LIST.push(backlog);
 // MENU_LIST.push(lake_mgr);
-MENU_LIST.push(WMSV2);
 
 export const menuIconMap = new Map();
 menuIconMap.set(
@@ -120,5 +121,6 @@ menuIconMap.set("BlurOnIcon", <BlurOnIcon />);
 menuIconMap.set("GiTeacher", <GiTeacher size={24} />);
 menuIconMap.set("LocalLibraryIcon", <LocalLibraryIcon />);
 menuIconMap.set("AssignmentOutlinedIcon", <AssignmentOutlinedIcon />);
-
+menuIconMap.set("ManageAccountsIcon", <ManageAccountsIcon />);
+menuIconMap.set("CiEdit", <CiEdit />);
 export const mapPathMenu = buildMapPathMenu(MENU_LIST);
