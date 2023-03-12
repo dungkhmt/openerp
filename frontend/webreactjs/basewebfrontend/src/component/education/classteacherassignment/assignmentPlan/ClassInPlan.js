@@ -276,7 +276,6 @@ function ClassInPlan({ planId }) {
                 <NumSelectedRows numSelected={selectedRows.length} />
               </>
             )}
-            <TertiaryButton> Process</TertiaryButton>
           </>
         }
       />
