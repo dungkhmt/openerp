@@ -1,45 +1,28 @@
-import React, { useEffect } from "react";
-import { useState, forwardRef } from "react";
+import { Box, Button, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import { useParams } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Grid,
-  Button
-} from '@mui/material';
+import { useParams } from "react-router-dom";
 
-import {
-  TextField
-} from '@material-ui/core';
-import {
-  boxComponentStyle,
-  boxChildComponent
-} from '../ultis/constant';
-import { request } from "../../../api";
-import BasicAlert from "../alert/BasicAlert";
+import { TextField } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { request } from "../../../api";
+import BasicAlert from "../alert/BasicAlert";
+import { boxChildComponent, boxComponentStyle } from "../ultis/constant";
 
 export default function CreateProject() {
-
   const { projectId, type } = useParams();
 
   const [openModal, setOpenModal] = useState(false);
   const [typeAlert, setTypeAlert] = useState("success");
   const [message, setMessage] = useState("Đã thêm mới thành công");
 
-  const {
-    register,
-    handleSubmit,
-    errors,
-    setValue
-  } = useForm();
+  const { register, handleSubmit, errors, setValue } = useForm();
 
   const history = useHistory();
 
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
 
@@ -52,8 +35,8 @@ export default function CreateProject() {
       `/projects/${projectId}`,
       (res) => {
         console.log(res.data);
-        setValue('name', res.data.name);
-        setValue('code', res.data.code);
+        setValue("name", res.data.name);
+        setValue("code", res.data.code);
       },
       {}
     );
@@ -69,13 +52,13 @@ export default function CreateProject() {
         setTypeAlert("success");
         setMessage("Đã thêm mới thành công");
         setTimeout(() => {
-          history.push('/taskmanagement/project/list');
+          history.push("/taskmanagement/project/list");
         }, 1000);
       },
       {},
       data
     );
-  }
+  };
 
   const onUpdate = (data) => {
     console.log(data);
@@ -87,28 +70,26 @@ export default function CreateProject() {
         setTypeAlert("success");
         setMessage("Đã cập nhật thành công");
         setTimeout(() => {
-          history.push('/taskmanagement/project/list');
+          history.push("/taskmanagement/project/list");
         }, 1000);
       },
       {},
       data
     );
-  }
+  };
 
   return (
     <>
       <Box sx={boxComponentStyle}>
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h4" mb={4} component={'h4'}>
-            {type === 'create' ? ("Thêm dự án mới") : ("Chỉnh sửa dự án")}
+          <Typography variant="h4" mb={4} component={"h4"}>
+            {type === "create" ? "Thêm dự án mới" : "Chỉnh sửa dự án"}
           </Typography>
         </Box>
         <Box sx={boxChildComponent}>
           <Box>
             <Box mb={3}>
-              <Typography variant="body1">
-                Tên dự án *
-              </Typography>
+              <Typography variant="body1">Tên dự án *</Typography>
               <TextField
                 fullWidth={true}
                 autoFocus
@@ -120,32 +101,52 @@ export default function CreateProject() {
               />
             </Box>
             <Box mb={3}>
-              <Typography variant="body1">
-                Mã dự án *
-              </Typography>
+              <Typography variant="body1">Mã dự án *</Typography>
               <TextField
                 fullWidth={true}
                 placeholder="Điền mã dự án ..."
                 variant="standard"
                 name="code"
                 inputRef={register({
-                  required: "Thiếu mã dự án!"
+                  required: "Thiếu mã dự án!",
                 })}
                 helperText={errors.code?.message}
               />
             </Box>
             <Box mb={3} backgroundColor={"#EEE"}>
               <Typography paragraph={true} px={2}>
-                Mã dự án là một chuỗi kí tự được chỉ định cho dự án đó, vì vậy nó nên là duy nhất!
+                Mã dự án là một chuỗi kí tự được chỉ định cho dự án đó, vì vậy
+                nó nên là duy nhất!
               </Typography>
             </Box>
             <Box>
-              {type === 'create' ?
-                <Button variant="contained" color="primary" sx={{ mr: 2 }} onClick={handleSubmit(onSubmit)}>Thêm mới</Button>
-                :
-                <Button variant="contained" color="primary" sx={{ mr: 2 }} onClick={handleSubmit(onUpdate)}>Cập nhật</Button>
-              }
-              <Button variant="contained" color="success"><Link to={"/taskmanagement/project/list"} style={{textDecoration: 'none', color: '#fff'}}>Hủy</Link></Button>
+              {type === "create" ? (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mr: 2 }}
+                  onClick={handleSubmit(onSubmit)}
+                >
+                  Thêm mới
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mr: 2 }}
+                  onClick={handleSubmit(onUpdate)}
+                >
+                  Cập nhật
+                </Button>
+              )}
+              <Button variant="contained" color="success">
+                <Link
+                  to={"/taskmanagement/project/list"}
+                  style={{ textDecoration: "none", color: "#fff" }}
+                >
+                  Hủy
+                </Link>
+              </Button>
             </Box>
           </Box>
         </Box>
