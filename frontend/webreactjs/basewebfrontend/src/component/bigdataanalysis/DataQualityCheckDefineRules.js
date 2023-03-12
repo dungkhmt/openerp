@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { Button, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
 import { request } from "../../api";
 import { errorNoti, successNoti } from "../../utils/notification";
-import { Card, CardContent } from "@material-ui/core";
 import StandardTable from "../table/StandardTable";
-import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
-import { defaultDatetimeFormat } from "../../utils/dateutils";
-import { TextField, Button } from "@mui/material";
 
 export default function DataQualityCheckDefineRules() {
   const [rules, setRules] = useState([]);
