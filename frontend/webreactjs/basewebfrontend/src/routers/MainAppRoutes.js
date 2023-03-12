@@ -8,7 +8,6 @@ import { Layout } from "../layout";
 import { drawerWidth } from "../layout/sidebar/v1/SideBar";
 import { useNotificationState } from "../state/NotificationState";
 import NotFound from "../views/errors/NotFound";
-import AccountActivationRoute from "./AccountActivationRoute";
 import AdminRoute from "./AdminRoute";
 import BigDataAnalysisRoute from "./BigDataAnalysisRoutes";
 import ChatRoute from "./ChatRoute";
@@ -86,7 +85,7 @@ function MainAppRoute(props) {
 
           <PrivateRoute component={AdminRoute} path="/admin/data" />
           <PrivateRoute component={ChatRoute} path="/chat" />
-          <PrivateRoute component={AccountActivationRoute} path="/activation" />
+          {/* <PrivateRoute component={AccountActivationRoute} path="/activation" /> */}
           <PrivateRoute
             component={ProgrammingContestRoutes}
             path="/programming-contest"

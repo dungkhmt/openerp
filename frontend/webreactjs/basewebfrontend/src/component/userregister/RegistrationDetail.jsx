@@ -1,315 +1,315 @@
-import {
-  Avatar,
-  Collapse,
-  Divider,
-  Grid,
-  ListItem,
-  ListItemAvatar,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import ChevronRightRoundedIcon from "@material-ui/icons/ChevronRightRounded";
-import { Skeleton } from "@material-ui/lab";
-import clsx from "clsx";
-import TertiaryButton from "component/button/TertiaryButton";
-import { useEffect, useState } from "react";
-import { request } from "../../api";
-import { getRandomIntInclusive } from "../../layout/notification/Notification";
-import { errorNoti } from "../../utils/notification";
-import PrimaryButton from "../button/PrimaryButton";
-import GrantRole from "./GrantRole";
-import RegistrationInfo from "./RegistrationInfo";
+// import {
+//   Avatar,
+//   Collapse,
+//   Divider,
+//   Grid,
+//   ListItem,
+//   ListItemAvatar,
+//   ListItemIcon,
+//   ListItemText,
+//   Typography,
+// } from "@material-ui/core";
+// import { makeStyles } from "@material-ui/core/styles";
+// import ChevronRightRoundedIcon from "@material-ui/icons/ChevronRightRounded";
+// import { Skeleton } from "@material-ui/lab";
+// import clsx from "clsx";
+// import TertiaryButton from "component/button/TertiaryButton";
+// import { useEffect, useState } from "react";
+// import { request } from "../../api";
+// import { getRandomIntInclusive } from "../../layout/notification/Notification";
+// import { errorNoti } from "../../utils/notification";
+// import PrimaryButton from "../button/PrimaryButton";
+// import GrantRole from "./GrantRole";
+// import RegistrationInfo from "./RegistrationInfo";
 
-// const theme = createMuiTheme({
-//   overrides: {
-//     MuiMenuItem: {
-//       root: {
-//         marginBottom: 2,
-//         "&$selected, &$selected:focus, &$selected:hover": {
-//           // This is to refer to the prop provided by M-UI
-//           color: "white",
-//           backgroundColor: "#1976d2", // updated backgroundColor
-//           marginBottom: 2,
-//         },
-//       },
+// // const theme = createMuiTheme({
+// //   overrides: {
+// //     MuiMenuItem: {
+// //       root: {
+// //         marginBottom: 2,
+// //         "&$selected, &$selected:focus, &$selected:hover": {
+// //           // This is to refer to the prop provided by M-UI
+// //           color: "white",
+// //           backgroundColor: "#1976d2", // updated backgroundColor
+// //           marginBottom: 2,
+// //         },
+// //       },
+// //     },
+// //   },
+// // });
+
+// const dividerStyle = { marginTop: 16, marginBottom: 16 };
+// const approveBtnStyle = { marginTop: 32 };
+
+// const useStyles = makeStyles((theme) => ({
+//   container: {
+//     background: "#ffffff",
+//     paddingLeft: theme.spacing(9),
+//     paddingTop: theme.spacing(3),
+//     paddingBottom: theme.spacing(3),
+//   },
+//   title: {
+//     paddingBottom: theme.spacing(2),
+//   },
+//   roles: {
+//     width: 300,
+//     background: "white",
+//   },
+
+//   icon: {
+//     minWidth: 24,
+//   },
+//   open: { transform: "rotate(90deg)", transition: "0.3s" },
+//   close: { transition: "0.3s" },
+//   listItem: {
+//     background: "#ffffff",
+//     "&:hover": {
+//       background: "#ffffff",
+//     },
+//     // borderRadius: 8,
+//   },
+//   avatar: {
+//     marginLeft: 16,
+//     width: 32,
+//     height: 32,
+//   },
+//   collapse: {
+//     borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+//   },
+//   createdStamp: {
+//     float: "right",
+//     [theme.breakpoints.down("xs")]: {
+//       float: "left",
+//       color: theme.palette.text.secondary,
+//       fontSize: "0.875rem",
 //     },
 //   },
-// });
+// }));
 
-const dividerStyle = { marginTop: 16, marginBottom: 16 };
-const approveBtnStyle = { marginTop: 32 };
+// const formatDate = (strDate) => {
+//   let date = new Date(strDate);
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    background: "#ffffff",
-    paddingLeft: theme.spacing(9),
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(3),
-  },
-  title: {
-    paddingBottom: theme.spacing(2),
-  },
-  roles: {
-    width: 300,
-    background: "white",
-  },
+//   return `${date.getDate()} Tháng ${
+//     date.getMonth() + 1
+//   }, ${date.getFullYear()}`;
+// };
 
-  icon: {
-    minWidth: 24,
-  },
-  open: { transform: "rotate(90deg)", transition: "0.3s" },
-  close: { transition: "0.3s" },
-  listItem: {
-    background: "#ffffff",
-    "&:hover": {
-      background: "#ffffff",
-    },
-    // borderRadius: 8,
-  },
-  avatar: {
-    marginLeft: 16,
-    width: 32,
-    height: 32,
-  },
-  collapse: {
-    borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
-  },
-  createdStamp: {
-    float: "right",
-    [theme.breakpoints.down("xs")]: {
-      float: "left",
-      color: theme.palette.text.secondary,
-      fontSize: "0.875rem",
-    },
-  },
-}));
+// function RegistrationDetail(props) {
+//   const classes = useStyles();
+//   const { data, rolesList } = props;
 
-const formatDate = (strDate) => {
-  let date = new Date(strDate);
+//   //
+//   const [roles, setRoles] = useState(); // To collect granted roles
 
-  return `${date.getDate()} Tháng ${
-    date.getMonth() + 1
-  }, ${date.getFullYear()}`;
-};
+//   const [grantedRoles, setGrantedRoles] = useState(); // Keep final granted roles after approving tp display
+//   const [disabled, setDisabled] = useState(false);
 
-function RegistrationDetail(props) {
-  const classes = useStyles();
-  const { data, rolesList } = props;
+//   //
+//   const handleApprove = () => {
+//     setDisabled(true);
 
-  //
-  const [roles, setRoles] = useState(); // To collect granted roles
+//     // Collect granted roles
+//     const grantedItems = roles.filter((role) => role.granted);
+//     let grantedRolesId = [];
+//     let grantedRolesName = [];
 
-  const [grantedRoles, setGrantedRoles] = useState(); // Keep final granted roles after approving tp display
-  const [disabled, setDisabled] = useState(false);
+//     grantedItems.forEach((role) => {
+//       if (role.granted) {
+//         grantedRolesId.push(role.id);
+//         grantedRolesName.push(role.name);
+//       }
+//     });
 
-  //
-  const handleApprove = () => {
-    setDisabled(true);
+//     // Send request
+//     request(
+//       "post",
+//       //`/user/approve-registration`,
+//       `/user/approve-registration-send-email-for-activation`,
+//       () => {
+//         setGrantedRoles(grantedRolesName);
+//       },
+//       {
+//         onError: () => setDisabled(false),
+//         400: (e) => {
+//           if ("approved" === e.response.data.error) {
+//             errorNoti("Tài khoản đã được phê duyệt trước đó.");
+//           } else {
+//             errorNoti("Rất tiếc! Đã có lỗi xảy ra. Vui lòng thử lại.");
+//           }
+//         },
+//         rest: () => {
+//           errorNoti("Rất tiếc! Đã có lỗi xảy ra. Vui lòng thử lại.");
+//         },
+//       },
+//       { userLoginId: data.id, roles: grantedRolesId }
+//     );
+//   };
+//   const handleDisable = () => {
+//     setDisabled(true);
 
-    // Collect granted roles
-    const grantedItems = roles.filter((role) => role.granted);
-    let grantedRolesId = [];
-    let grantedRolesName = [];
+//     // Send request
+//     request(
+//       "post",
+//       `/user/disable-registration`,
+//       () => {},
+//       {
+//         onError: () => setDisabled(false),
+//         400: (e) => {
+//           if ("approved" === e.response.data.error) {
+//             errorNoti("Tài khoản đã được phê duyệt trước đó.");
+//           } else {
+//             errorNoti("Rất tiếc! Đã có lỗi xảy ra. Vui lòng thử lại.");
+//           }
+//         },
+//         rest: () => {
+//           errorNoti("Rất tiếc! Đã có lỗi xảy ra. Vui lòng thử lại.");
+//         },
+//       },
+//       { userLoginId: data.id }
+//     );
+//   };
 
-    grantedItems.forEach((role) => {
-      if (role.granted) {
-        grantedRolesId.push(role.id);
-        grantedRolesName.push(role.name);
-      }
-    });
+//   //
+//   useEffect(() => {
+//     // data undefined when display loading screen
+//     if (rolesList && data) {
+//       const requestedRolesId = new Set(data.requestedRoleIds);
+//       const roles = JSON.parse(JSON.stringify(rolesList)); //  To deeply clone rolesList
 
-    // Send request
-    request(
-      "post",
-      //`/user/approve-registration`,
-      `/user/approve-registration-send-email-for-activation`,
-      () => {
-        setGrantedRoles(grantedRolesName);
-      },
-      {
-        onError: () => setDisabled(false),
-        400: (e) => {
-          if ("approved" === e.response.data.error) {
-            errorNoti("Tài khoản đã được phê duyệt trước đó.");
-          } else {
-            errorNoti("Rất tiếc! Đã có lỗi xảy ra. Vui lòng thử lại.");
-          }
-        },
-        rest: () => {
-          errorNoti("Rất tiếc! Đã có lỗi xảy ra. Vui lòng thử lại.");
-        },
-      },
-      { userLoginId: data.id, roles: grantedRolesId }
-    );
-  };
-  const handleDisable = () => {
-    setDisabled(true);
+//       roles.forEach((role) => {
+//         if (requestedRolesId.has(role.id)) role.granted = true;
+//       });
 
-    // Send request
-    request(
-      "post",
-      `/user/disable-registration`,
-      () => {},
-      {
-        onError: () => setDisabled(false),
-        400: (e) => {
-          if ("approved" === e.response.data.error) {
-            errorNoti("Tài khoản đã được phê duyệt trước đó.");
-          } else {
-            errorNoti("Rất tiếc! Đã có lỗi xảy ra. Vui lòng thử lại.");
-          }
-        },
-        rest: () => {
-          errorNoti("Rất tiếc! Đã có lỗi xảy ra. Vui lòng thử lại.");
-        },
-      },
-      { userLoginId: data.id }
-    );
-  };
+//       setRoles([...roles]);
+//     }
+//   }, [rolesList]);
 
-  //
-  useEffect(() => {
-    // data undefined when display loading screen
-    if (rolesList && data) {
-      const requestedRolesId = new Set(data.requestedRoleIds);
-      const roles = JSON.parse(JSON.stringify(rolesList)); //  To deeply clone rolesList
+//   //
+//   const [open, setOpen] = useState(true);
 
-      roles.forEach((role) => {
-        if (requestedRolesId.has(role.id)) role.granted = true;
-      });
+//   const handleClick = () => {
+//     setOpen(!open);
+//   };
 
-      setRoles([...roles]);
-    }
-  }, [rolesList]);
+//   return data ? (
+//     <>
+//       <ListItem
+//         divider={!open}
+//         button
+//         onClick={handleClick}
+//         className={classes.listItem}
+//       >
+//         <ListItemIcon className={classes.icon}>
+//           <ChevronRightRoundedIcon
+//             className={clsx(!open && classes.close, open && classes.open)}
+//           />
+//         </ListItemIcon>
+//         <ListItemAvatar>
+//           <Avatar
+//             className={classes.avatar}
+//             style={{
+//               background: data.avatarBgColor,
+//             }}
+//           >
+//             {data.fullName
+//               .substring(data.fullName.lastIndexOf(" ") + 1)
+//               .substring(0, 1)
+//               .toLocaleUpperCase()}
+//           </Avatar>
+//         </ListItemAvatar>
+//         <ListItemText
+//           primary={
+//             <>
+//               <Typography style={{ float: "left" }}>{data.fullName}</Typography>
+//               <Typography className={classes.createdStamp}>
+//                 {`Đăng ký ngày ${formatDate(data.createdStamp)}`}
+//               </Typography>
+//             </>
+//           }
+//         />
+//       </ListItem>
+//       <Collapse
+//         in={open}
+//         timeout="auto"
+//         unmountOnExit
+//         className={classes.collapse}
+//       >
+//         <div className={classes.container}>
+//           <Grid container spacing={4}>
+//             <Grid item md={5} xs={12} sm={12}>
+//               <RegistrationInfo
+//                 id={data.id}
+//                 fullName={data.fullName}
+//                 email={data.email}
+//                 requestedRoleNames={data.requestedRoleNames}
+//               />
+//             </Grid>
 
-  //
-  const [open, setOpen] = useState(true);
+//             <Divider
+//               orientation="vertical"
+//               flexItem
+//               md={2}
+//               sm={0}
+//               xs={0}
+//               style={dividerStyle}
+//             />
 
-  const handleClick = () => {
-    setOpen(!open);
-  };
+//             <Grid item md={5} xs={12} sm={12}>
+//               <GrantRole
+//                 key={data.id}
+//                 roles={roles}
+//                 setRoles={setRoles}
+//                 grantedRoles={grantedRoles}
+//               />
+//             </Grid>
+//           </Grid>
 
-  return data ? (
-    <>
-      <ListItem
-        divider={!open}
-        button
-        onClick={handleClick}
-        className={classes.listItem}
-      >
-        <ListItemIcon className={classes.icon}>
-          <ChevronRightRoundedIcon
-            className={clsx(!open && classes.close, open && classes.open)}
-          />
-        </ListItemIcon>
-        <ListItemAvatar>
-          <Avatar
-            className={classes.avatar}
-            style={{
-              background: data.avatarBgColor,
-            }}
-          >
-            {data.fullName
-              .substring(data.fullName.lastIndexOf(" ") + 1)
-              .substring(0, 1)
-              .toLocaleUpperCase()}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={
-            <>
-              <Typography style={{ float: "left" }}>{data.fullName}</Typography>
-              <Typography className={classes.createdStamp}>
-                {`Đăng ký ngày ${formatDate(data.createdStamp)}`}
-              </Typography>
-            </>
-          }
-        />
-      </ListItem>
-      <Collapse
-        in={open}
-        timeout="auto"
-        unmountOnExit
-        className={classes.collapse}
-      >
-        <div className={classes.container}>
-          <Grid container spacing={4}>
-            <Grid item md={5} xs={12} sm={12}>
-              <RegistrationInfo
-                id={data.id}
-                fullName={data.fullName}
-                email={data.email}
-                requestedRoleNames={data.requestedRoleNames}
-              />
-            </Grid>
+//           <div>
+//             <TertiaryButton
+//               disabled={disabled}
+//               style={approveBtnStyle}
+//               onClick={handleDisable}
+//               sx={{ mr: 1 }}
+//             >
+//               Hủy
+//             </TertiaryButton>
+//             <PrimaryButton
+//               disabled={disabled}
+//               style={approveBtnStyle}
+//               onClick={handleApprove}
+//             >
+//               Phê duyệt
+//             </PrimaryButton>
+//           </div>
+//         </div>
+//       </Collapse>
+//     </>
+//   ) : (
+//     <ListItem divider button className={classes.listItem}>
+//       <Skeleton
+//         variant="circle"
+//         width={32}
+//         height={32}
+//         style={{ marginRight: 8 }}
+//       />
 
-            <Divider
-              orientation="vertical"
-              flexItem
-              md={2}
-              sm={0}
-              xs={0}
-              style={dividerStyle}
-            />
+//       <ListItemText
+//         primary={
+//           <>
+//             <Typography style={{ float: "left" }}>
+//               <Skeleton
+//                 width={getRandomIntInclusive(120, 160)}
+//                 style={{ borderRadius: 8 }}
+//               />
+//             </Typography>
+//             <Typography style={{ float: "right" }}>
+//               <Skeleton width={220} style={{ borderRadius: 8 }} />
+//             </Typography>
+//           </>
+//         }
+//       />
+//     </ListItem>
+//   );
+// }
 
-            <Grid item md={5} xs={12} sm={12}>
-              <GrantRole
-                key={data.id}
-                roles={roles}
-                setRoles={setRoles}
-                grantedRoles={grantedRoles}
-              />
-            </Grid>
-          </Grid>
-
-          <div>
-            <TertiaryButton
-              disabled={disabled}
-              style={approveBtnStyle}
-              onClick={handleDisable}
-              sx={{ mr: 1 }}
-            >
-              Hủy
-            </TertiaryButton>
-            <PrimaryButton
-              disabled={disabled}
-              style={approveBtnStyle}
-              onClick={handleApprove}
-            >
-              Phê duyệt
-            </PrimaryButton>
-          </div>
-        </div>
-      </Collapse>
-    </>
-  ) : (
-    <ListItem divider button className={classes.listItem}>
-      <Skeleton
-        variant="circle"
-        width={32}
-        height={32}
-        style={{ marginRight: 8 }}
-      />
-
-      <ListItemText
-        primary={
-          <>
-            <Typography style={{ float: "left" }}>
-              <Skeleton
-                width={getRandomIntInclusive(120, 160)}
-                style={{ borderRadius: 8 }}
-              />
-            </Typography>
-            <Typography style={{ float: "right" }}>
-              <Skeleton width={220} style={{ borderRadius: 8 }} />
-            </Typography>
-          </>
-        }
-      />
-    </ListItem>
-  );
-}
-
-export default RegistrationDetail;
+// export default RegistrationDetail;
