@@ -22,8 +22,8 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @AllArgsConstructor(onConstructor_ = @Autowired)
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
+//@EnableWebSecurity
+//@EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private BaseWebUserDetailService userDetailsService;
