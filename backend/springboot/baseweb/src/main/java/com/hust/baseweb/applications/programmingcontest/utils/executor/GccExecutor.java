@@ -8,7 +8,7 @@ import com.hust.baseweb.applications.programmingcontest.entity.TestCaseEntity;
 import java.util.List;
 
 public class GccExecutor {
-    private static final String buildCmd = "g++ -o main main.cpp";
+    private static final String buildCmd = "g++ -w -o main main.cpp";
     private static final String suffixes =".cpp";
     private static final String SHFileStart = "#!/bin/bash\n";
 
