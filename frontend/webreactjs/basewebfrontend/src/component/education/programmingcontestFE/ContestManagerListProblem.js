@@ -2,7 +2,7 @@ import * as React from "react";
 import {useEffect, useState} from "react";
 import {useHistory} from "react-router-dom";
 import Typography from "@mui/material/Typography";
-import {Button, CircularProgress, InputAdornment, TextField} from "@mui/material";
+import {Button, CircularProgress, Divider, InputAdornment, TextField} from "@mui/material";
 import StandardTable from "component/table/StandardTable";
 import {pdf} from "@react-pdf/renderer";
 import FileSaver from "file-saver";
@@ -12,6 +12,7 @@ import {errorNoti, successNoti} from "utils/notification";
 import Box from "@mui/material/Box";
 import HustContainerCard from "../../common/HustContainerCard";
 import {request} from "../../../api";
+import {ContestManagerManageProblem} from "./ContestManagerManageProblem";
 
 export function ContestManagerListProblem(props) {
   const contestId = props.contestId;
@@ -263,30 +264,35 @@ export function ContestManagerListProblem(props) {
         {isProcessing ? <CircularProgress/> : ""}
       </Box>
 
+      <Divider sx={{marginTop: "14px"}}/>
       <Box sx={{margin: "14px 0"}}>
-        <StandardTable
-          title={"Problems"}
-          columns={columns}
-          data={problems}
-          hideCommandBar
-          options={{
-            selection: false,
-            pageSize: 20,
-            search: true,
-            sorting: true,
-          }}
-        />
+        <ContestManagerManageProblem contestId={contestId} />
       </Box>
+        {/*
+        <Box sx={{margin: "14px 0"}}>
+          <StandardTable
+            title={"Problems"}
+            columns={columns}
+            data={problems}
+            hideCommandBar
+            options={{
+              selection: false,
+              pageSize: 10,
+              search: true,
+              sorting: true,
+            }}
+          />
+        </Box>
 
-      <UpdateProblemContestDialog
-        open={openUpdateDialog}
-        onClose={handleModelClose}
-        onUpdateInfo={onUpdateInfo}
-        selectedProblemId={selectedProblemId}
-        selectedContestId={contestId}
-        modes={modes}
-      />
-
+        <UpdateProblemContestDialog
+          open={openUpdateDialog}
+          onClose={handleModelClose}
+          onUpdateInfo={onUpdateInfo}
+          selectedProblemId={selectedProblemId}
+          selectedContestId={contestId}
+          modes={modes}
+        />
+      */}
     </HustContainerCard>
   );
 }

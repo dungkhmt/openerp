@@ -64,6 +64,7 @@ const ModalAddProblemToContest = (props) => {
       />
       <TextField
         fullWidth
+        autoFocus
         label={"Problem name in this contest"}
         placeholder={"If this field is left blank, the original problem name will be taken"}
         value={problemRename}
@@ -84,7 +85,6 @@ const ModalAddProblemToContest = (props) => {
       />
       <TextField
         fullWidth
-        autoFocus
         select
         id="Submission Mode"
         label="Submission Mode"

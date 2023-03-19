@@ -62,7 +62,7 @@ export function ContestManagerManageProblem(props) {
     {
       title: "Submission Mode",
       render: (problem) => (
-        <span >
+        <span>
           {getSubmissionModeFromConstant(problem?.submissionMode)}
         </span>
       )
@@ -123,6 +123,8 @@ export function ContestManagerManageProblem(props) {
   }, [])
 
   function addNewProblem(newProblem) {
+    if (newProblem?.addNew) return;
+
     if (contestProblems.filter(problem => problem.problemId === newProblem.problemId).length > 0) {
       errorNoti("Problem is already in contest", 3000);
       return;
@@ -142,21 +144,11 @@ export function ContestManagerManageProblem(props) {
   return (
     <Box sx={{margin: "14px 0"}}>
       <Box display="flex" justifyContent="space-between" sx={{marginBottom: "16px"}}>
-        <Button
-          variant="contained"
-          sx={{
-            width: "14%",
-            padding: "2px 16px"
-          }}
-          onClick={() => window.open("/programming-contest/create-problem")}
-        >
-          <Typography>{"Create Problem"}</Typography>
-        </Button>
         <Autocomplete
           id="problem-select"
           onChange={(event, value) => addNewProblem(value)}
-          options={allProblems}
-          sx={{width: "85%"}}
+          options={[{addNew: "true"}, ...allProblems]}
+          sx={{width: "100%"}}
           autoHighlight
           getOptionLabel={(option) => option.problemName || ""}
           inputValue={searchProblemValue}
@@ -164,23 +156,41 @@ export function ContestManagerManageProblem(props) {
             if (reason === "reset") setSearchProblemValue("");
             else setSearchProblemValue(newInputValue);
           }}
-          renderOption={(props, option) => (
-            <Box {...props} key={option.problemId}>
-              <Grid container>
-                <Grid item xs={6}>
-                  {option.problemName}
-                </Grid>
-                <Grid item xs={6} sx={{display: "flex"}}>
-                  <Typography>
-                    {" "}
-                    {"ID"}: {option.problemId}{" "}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
-          )}
+          renderOption={(props, option) => {
+            if (option.addNew === "true") {
+              return (
+                <Box {...props} key={option.label}>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "100%",
+                    }}
+                    onClick={() => window.open("/programming-contest/create-problem")}
+                  >
+                    <Typography>{"Create new Problem"}</Typography>
+                  </Button>
+                </Box>
+              );
+            } else {
+              return (
+                <Box {...props} key={option.problemId}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      {option.problemName}
+                    </Grid>
+                    <Grid item xs={6} sx={{display: "flex"}}>
+                      <Typography>
+                        {" "}
+                        {"ID"}: {option.problemId}{" "}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Box>
+              )
+            }
+          }}
           renderInput={(params) => {
-            return <TextField {...params} placeholder="Search problem"/>;
+            return <TextField {...params} autoFocus placeholder="Search problem to add to contest"/>;
           }}
         />
       </Box>
