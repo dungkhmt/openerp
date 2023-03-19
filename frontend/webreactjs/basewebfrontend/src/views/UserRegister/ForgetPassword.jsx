@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import { TextField, Button } from "@material-ui/core";
-import { request } from "../../api";
+import React, {useState} from "react";
+import {Button, TextField} from "@mui/material";
+import {request} from "../../api";
+
 export default function ForgetPassword() {
   const [userLogin, setUserLogin] = useState("");
   const [msg, setMsg] = useState("");
+
   function handleChange(e) {
     setUserLogin(e.target.value);
   }
+
   function handleClick() {
-    //alert("reset password for " + userLogin);
     request(
       "get",
       "/public/user/resetpassword/" + userLogin,
@@ -19,11 +21,11 @@ export default function ForgetPassword() {
       {}
     );
   }
+
   return (
     <div
       style={{
         display: "flex",
-
         justifyContent: "center",
       }}
     >
@@ -31,7 +33,6 @@ export default function ForgetPassword() {
         style={{
           display: "flex",
           paddingTop: "50px",
-
           justifyContent: "center",
         }}
       >
@@ -43,7 +44,7 @@ export default function ForgetPassword() {
             justifyContent: "center",
           }}
         >
-          <TextField label="userlogin" onChange={handleChange}></TextField>
+          <TextField autoFocus required label="Username" onChange={handleChange} variant="standard"/>
         </div>
         <div
           style={{

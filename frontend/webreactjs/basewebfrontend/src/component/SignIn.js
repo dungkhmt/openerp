@@ -1,14 +1,14 @@
-import Button from "@material-ui/core/Button";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { green } from "@material-ui/core/colors";
-import Link from "@material-ui/core/Link";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
-import React, { useState } from "react";
-import { Redirect, useHistory } from "react-router";
-import { NavLink } from "react-router-dom";
-import { useRouteState } from "../state/RouteState";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Link from "@mui/material/Link";
+import {makeStyles} from "@material-ui/core/styles";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import React, {useState} from "react";
+import {Redirect, useHistory} from "react-router";
+import {NavLink} from "react-router-dom";
+import {useRouteState} from "../state/RouteState";
+import Box from "@mui/material/Box";
 
 /*
 function Copyright() {
@@ -31,8 +31,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   paper: {
-    padding: 20,
-    maxWidth: 400,
+    maxWidth: 320,
+    marginRight: 34,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -63,22 +63,22 @@ const useStyles = makeStyles((theme) => ({
     background: "white",
   },
   submitBtnWrapper: {
-    margin: theme.spacing(1),
+    // margin: theme.spacing(1),
+    marginTop: 12,
+    paddingBottom: 16,
+    borderBottom: "1px solid gray",
     position: "relative",
   },
   submitBtn: {
-    margin: theme.spacing(3, 0, 2),
     height: 40,
-    width: 160,
-    borderRadius: 20,
+
+    width: "100%",
+    borderRadius: 25,
+    borderBottom: "1px solid lightgray",
     textTransform: "none",
-    backgroundColor: "green",
-    "&:hover": {
-      backgroundColor: "green",
-    },
   },
   buttonProgress: {
-    color: green[500],
+    // color: green[500],
     position: "absolute",
     top: "50%",
     left: "50%",
@@ -92,7 +92,7 @@ export default function SignIn(props) {
   const classes = useStyles();
 
   //
-  const { currentRoute } = useRouteState();
+  const {currentRoute} = useRouteState();
 
   //
   const [userName, setUserName] = useState(""); // new State (var) userName
@@ -139,17 +139,17 @@ export default function SignIn(props) {
       return null;
     } else
       return (
-        <Redirect to={{ pathname: "/", state: { from: history.location } }} />
+        <Redirect to={{pathname: "/", state: {from: history.location}}}/>
       );
   } else
     return (
-      <div className={classes.container}>
+      <Box className={classes.container}>
         <img
           alt="Welcome"
           src="/static/images/welcome.jpg"
           className={classes.image}
         />
-        <div className={classes.paper}>
+        <Box className={classes.paper}>
           {/* <img
           // alt="Hust"
           // className={classes.avatar}
@@ -158,7 +158,7 @@ export default function SignIn(props) {
           <Typography
             component="h1"
             variant="h4"
-            style={{ position: "relative" }}
+            style={{position: "relative"}}
           >
             Đăng nhập
           </Typography>
@@ -176,7 +176,7 @@ export default function SignIn(props) {
               required
               fullWidth
               id="user"
-              label="User Name"
+              label="Username"
               name="user"
               onChange={handleUserNameChange}
               error={
@@ -203,12 +203,8 @@ export default function SignIn(props) {
               }
               autoComplete="current-password"
             />
-            {/* <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            /> */}
 
-            <div className={classes.submitBtnWrapper}>
+            <Box className={classes.submitBtnWrapper}>
               <Button
                 variant="contained"
                 color="primary"
@@ -216,7 +212,7 @@ export default function SignIn(props) {
                 type="submit"
                 className={classes.submitBtn}
               >
-                LogIn
+                Login
               </Button>
               {isRequesting && (
                 <CircularProgress
@@ -224,7 +220,15 @@ export default function SignIn(props) {
                   className={classes.buttonProgress}
                 />
               )}
-            </div>
+              <Link
+                component={NavLink}
+                to={process.env.PUBLIC_URL + "/user/forgetpassword"}
+                variant="body2"
+                sx={{position: "relative", fontSize: "14px"}}
+              >
+                {"Forget password?"}
+              </Link>
+            </Box>
 
             {/* <Grid item xs>
                 
@@ -233,38 +237,30 @@ export default function SignIn(props) {
                 </Link>
               </Grid> */}
 
-            <div style={{ display: "flex", justifyContent: "space-around" }}>
-              <Link
-                component={NavLink}
-                to={process.env.PUBLIC_URL + "/user/register"}
-                variant="body2"
-                style={{ position: "relative", fontSize: "18px" }}
+            <Box sx={{display: "flex", justifyContent: "space-around", marginTop: "12px"}}>
+              <Button
+                variant="contained"
+                color="success"
+                href={process.env.PUBLIC_URL + "/user/register"}
+                sx={{width: "72%"}}
               >
-                {"Sign Up"}
-              </Link>
-              <Link
-                component={NavLink}
-                to={process.env.PUBLIC_URL + "/user/forgetpassword"}
-                variant="body2"
-                style={{ position: "relative", fontSize: "18px" }}
-              >
-                {"Forget Password"}
-              </Link>
-            </div>
-            <div>
+                Sign up
+              </Button>
+            </Box>
+            <Box>
               <Typography
                 component="h1"
                 variant="h6"
-                style={{ position: "relative" }}
+                sx={{position: "relative", marginTop: "28px"}}
               >
                 (Contact: dungkhmt@gmail.com)
               </Typography>
-            </div>
+            </Box>
             {/* <Box mt={2} className={classes.cp}>
                 <Copyright />
               </Box> */}
           </form>
-        </div>
-      </div>
+        </Box>
+      </Box>
     );
 }
