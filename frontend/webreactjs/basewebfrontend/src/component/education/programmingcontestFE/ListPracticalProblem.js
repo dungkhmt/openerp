@@ -1,21 +1,12 @@
 import Pagination from "@material-ui/lab/Pagination";
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import {Grid, MenuItem, Table, TableBody, TableHead, TextField} from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
 import {Link} from "react-router-dom";
-import {request} from "./Request";
-import {API_URL} from "../../../config/config";
+import {request} from "../../../api";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
-import {
-  getColorLevel,
-  Search,
-  SearchIconWrapper,
-  styleBase,
-  StyledInputBase,
-  StyledTableCell,
-  StyledTableRow
-} from "./lib";
+import {getColorLevel, Search, SearchIconWrapper, StyledTableCell, StyledTableRow} from "./lib";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';

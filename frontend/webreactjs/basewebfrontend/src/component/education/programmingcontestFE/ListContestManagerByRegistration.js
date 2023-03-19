@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {request} from "./Request";
+import {request} from "../../../api";
 import {Link} from "react-router-dom";
 import StandardTable from "../../table/StandardTable";
 import Typography from "@mui/material/Typography";

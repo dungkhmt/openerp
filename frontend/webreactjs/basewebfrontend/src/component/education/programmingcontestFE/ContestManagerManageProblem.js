@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
 import {Link, useHistory} from "react-router-dom";
-import {request} from "./Request";
+import {request} from "../../../api";
 import Typography from "@mui/material/Typography";
 import {Autocomplete, Button, Grid, IconButton, TextField} from "@mui/material";
 import StandardTable from "component/table/StandardTable";

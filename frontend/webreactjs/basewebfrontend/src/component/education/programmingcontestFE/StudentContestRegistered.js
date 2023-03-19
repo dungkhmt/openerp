@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {request} from "./Request";
+import {request} from "../../../api";
 import ContestStudentList from "./ContestStudentList";
 
 export function StudentContestRegistered() {

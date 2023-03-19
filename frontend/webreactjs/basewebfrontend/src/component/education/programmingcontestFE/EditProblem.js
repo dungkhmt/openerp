@@ -18,13 +18,11 @@ import {
 import {makeStyles} from "@material-ui/core/styles";
 import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import {authGet, authPostMultiPart} from "../../../api";
+import {authGet, authPostMultiPart, request} from "../../../api";
 import {CompileStatus} from "./CompileStatus";
 import {useParams} from "react-router";
-import {request} from "./Request";
-import {getFileType, randomImageName, saveByteArray,} from "../../../utils/FileUpload/covert";
+import {randomImageName,} from "../../../utils/FileUpload/covert";
 import {useTranslation} from "react-i18next";
 import HustContainerCard from "../../common/HustContainerCard";
 import HustDropzoneArea from "../../common/HustDropzoneArea";

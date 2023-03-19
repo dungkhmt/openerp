@@ -1,7 +1,6 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
 import {useHistory} from "react-router-dom";
-import {request} from "./Request";
 import Typography from "@mui/material/Typography";
 import {Button, CircularProgress, InputAdornment, TextField} from "@mui/material";
 import StandardTable from "component/table/StandardTable";
@@ -11,6 +10,8 @@ import SubmissionOfParticipantPDFDocument from "./template/SubmissionOfParticipa
 import UpdateProblemContestDialog from "./UpdateProblemContestDialog";
 import {errorNoti, successNoti} from "utils/notification";
 import Box from "@mui/material/Box";
+import HustContainerCard from "../../common/HustContainerCard";
+import {request} from "../../../api";
 
 export function ContestManagerListProblem(props) {
   const contestId = props.contestId;
@@ -196,10 +197,7 @@ export function ContestManagerListProblem(props) {
   }
 
   return (
-    <div>
-      <Typography variant="h4" component="h2">
-        Contest: {contestName}
-      </Typography>
+    <HustContainerCard title={"Contest: " + contestName}>
       <Typography variant="h5" component="h2">
         Time Limit: {timeLimit} minutes
       </Typography>
@@ -288,6 +286,7 @@ export function ContestManagerListProblem(props) {
         selectedContestId={contestId}
         modes={modes}
       />
-    </div>
+
+    </HustContainerCard>
   );
 }

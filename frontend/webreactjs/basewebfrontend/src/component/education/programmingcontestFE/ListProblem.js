@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
-import {request} from "./Request";
+import {request} from "../../../api";
 import {useTranslation} from "react-i18next";
 import {toFormattedDateTime} from "../../../utils/dateutils";
 import StandardTable from "component/table/StandardTable";

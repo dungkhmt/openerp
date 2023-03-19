@@ -5,7 +5,7 @@ import HustModal from "component/common/HustModal";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router";
 import {Link, useHistory} from "react-router-dom";
-import {request} from "./Request";
+import {request} from "../../../api";
 import StandardTable from "../../table/StandardTable";
 import InfoIcon from "@mui/icons-material/Info";
 import Box from "@mui/material/Box";

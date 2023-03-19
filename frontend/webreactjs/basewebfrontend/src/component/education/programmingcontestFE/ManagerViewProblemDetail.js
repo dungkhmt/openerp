@@ -19,7 +19,7 @@ import {randomImageName,} from "utils/FileUpload/covert";
 import {authGet} from "../../../api";
 import ContestsUsingAProblem from "./ContestsUsingAProblem";
 import {StyledTableCell, StyledTableRow} from "./lib";
-import {request} from "./Request";
+import {request} from "../../../api";
 import {copyAllTestCases, downloadAllTestCases} from "./service/TestCaseService";
 import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
 

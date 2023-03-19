@@ -6,7 +6,7 @@ import {useHistory, useParams} from "react-router-dom";
 import {authPostMultiPart} from "../../../api";
 import {useDispatch, useSelector} from "react-redux";
 import {successNoti, warningNoti} from "../../../utils/notification";
-import {request} from "./Request";
+import {request} from "../../../api";
 
 export default function EditTestCase(props) {
   const history = useHistory();

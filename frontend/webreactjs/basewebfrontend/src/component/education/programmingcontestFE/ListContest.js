@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {request} from "./Request";
-import {API_URL} from "../../../config/config";
+import {request} from "../../../api";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import {Button, Grid, MenuItem, Table, TableBody, TableHead, TextField} from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
-import {getColorLevel, StyledTableCell, StyledTableRow} from "./lib";
+import {StyledTableCell, StyledTableRow} from "./lib";
 import {Link} from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
 

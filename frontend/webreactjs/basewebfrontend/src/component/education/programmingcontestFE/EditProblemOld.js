@@ -16,7 +16,7 @@ import {SubmitWarming} from "./SubmitWarming";
 import {CompileStatus} from "./CompileStatus";
 import {SubmitSuccess} from "./SubmitSuccess";
 import {useParams} from "react-router";
-import {request} from "./Request";
+import {request} from "../../../api";
 import {sleep, StyledTableCell, StyledTableRow} from "./lib";
 import htmlToDraft from "html-to-draftjs";
 import Paper from "@material-ui/core/Paper";

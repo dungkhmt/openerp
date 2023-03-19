@@ -5,7 +5,7 @@ import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {Link, useParams} from "react-router-dom";
 import {themeTable} from "../../../utils/MaterialTableUtils";
-import {request} from "./Request";
+import {request} from "../../../api";
 
 const useStyles = makeStyles((theme) => ({}));
 

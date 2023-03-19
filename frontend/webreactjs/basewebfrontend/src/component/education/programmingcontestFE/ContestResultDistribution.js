@@ -1,6 +1,6 @@
 import {Box, Divider, LinearProgress, TextField, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {request} from "./Request";
+import {request} from "../../../api";
 import {Chart} from "react-google-charts";
 import HustContainerCard from "../../common/HustContainerCard";
 

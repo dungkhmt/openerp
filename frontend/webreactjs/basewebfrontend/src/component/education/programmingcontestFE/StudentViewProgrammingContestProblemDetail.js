@@ -14,7 +14,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useParams} from "react-router";
 import {authGet, authPostMultiPart} from "../../../api";
 import {StyledTableCell, StyledTableRow} from "./lib";
-import {request} from "./Request";
+import {request} from "../../../api";
 import HustModal from "component/common/HustModal";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import StudentViewSubmission from "./StudentViewSubmission";

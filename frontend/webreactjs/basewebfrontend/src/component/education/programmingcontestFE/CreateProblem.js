@@ -22,7 +22,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useHistory} from "react-router-dom";
 import {CompileStatus} from "./CompileStatus";
 import {sleep} from "./lib";
-import {request} from "./Request";
+import {request} from "../../../api";
 import {authPostMultiPart} from "../../../api";
 import {useTranslation} from "react-i18next";
 import HustDropzoneArea from "../../common/HustDropzoneArea";
