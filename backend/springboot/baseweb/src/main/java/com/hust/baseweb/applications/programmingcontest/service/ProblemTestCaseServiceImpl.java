@@ -754,10 +754,6 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
         //    log.info("updateContest, modelUpdateContest.isPublic = " + modelUpdateContest.getIsPublic() + " -> isPublic  = " + isPublic);
         UserLogin userLogin = userLoginRepo.findByUserLoginId(userName);
-        //check user have privileged
-//            if(!userLogin.getUserLoginId().equals(contestEntityExist.getUserCreatedContest().getUserLoginId())){
-//                throw new MiniLeetCodeException("You don't have privileged");
-//            }
 
         List<UserRegistrationContestEntity> L = userRegistrationContestRepo
             .findUserRegistrationContestEntityByContestIdAndUserIdAndStatus(
@@ -780,13 +776,13 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         //}
 
 
-        List<ProblemEntity> problemEntities = getContestProblemsFromListContestId(modelUpdateContest.getProblemIds());
+//        List<ProblemEntity> problemEntities = getContestProblemsFromListContestId(modelUpdateContest.getProblemIds());
         if (modelUpdateContest.getStartedAt() != null) {
             ContestEntity contestEntity = ContestEntity.builder()
                                                        .contestId(contestId)
                                                        .contestName(modelUpdateContest.getContestName())
                                                        .contestSolvingTime(modelUpdateContest.getContestSolvingTime())
-                                                       .problems(problemEntities)
+                                                       .problems(contestEntityExist.getProblems())
                                                        .userId(userName)
                                                        .countDown(modelUpdateContest.getCountDownTime())
                                                        .startedAt(modelUpdateContest.getStartedAt())
@@ -815,7 +811,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .contestId(contestId)
                                                        .contestName(modelUpdateContest.getContestName())
                                                        .contestSolvingTime(modelUpdateContest.getContestSolvingTime())
-                                                       .problems(problemEntities)
+                                                       .problems(contestEntityExist.getProblems())
                                                        .userId(userName)
                                                        .countDown(modelUpdateContest.getCountDownTime())
                                                        .statusId(modelUpdateContest.getStatusId())

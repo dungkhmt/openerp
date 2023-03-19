@@ -270,6 +270,7 @@ export default function EditContest(props) {
     }).then();
   }, [page]);
 
+
   return (<div>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Card>
@@ -497,6 +498,7 @@ export default function EditContest(props) {
               </LocalizationProvider>
             </form>
 
+            {/*
             <Box sx={{width: "100%"}}>
               <Paper sx={{width: "100%", mb: 2}}>
                 <EnhancedTableToolbar numSelected={problemSelected.length}/>
@@ -565,6 +567,7 @@ export default function EditContest(props) {
                 </TableContainer>
               </Paper>
             </Box>
+            */}
           </CardContent>
           <CardActions>
             <Button
