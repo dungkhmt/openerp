@@ -1,10 +1,6 @@
 package com.hust.baseweb.config.security;
 
 import com.hust.baseweb.applications.education.exception.CustomAccessDeniedHandler;
-import com.hust.baseweb.config.security.Jwt2AuthenticationConverter;
-import com.hust.baseweb.config.security.Jwt2AuthoritiesConverter;
-import com.hust.baseweb.entity.UserLogin;
-import com.hust.baseweb.service.BaseWebUserDetailService;
 import lombok.AllArgsConstructor;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +12,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -36,14 +31,15 @@ import java.util.List;
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private BaseWebUserDetailService userDetailsService;
+//    private BaseWebUserDetailService userDetailsService;
+//
 //    private BasicAuthenticationEndPoint basicAuthenticationEndPoint;
 
     // TODO: consider
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(this.userDetailsService).passwordEncoder(UserLogin.PASSWORD_ENCODER);
-    }
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.userDetailsService(this.userDetailsService).passwordEncoder(UserLogin.PASSWORD_ENCODER);
+//    }
 
     /**
      * OK
