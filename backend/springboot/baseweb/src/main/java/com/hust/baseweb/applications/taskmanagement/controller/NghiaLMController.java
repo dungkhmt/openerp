@@ -1,27 +1,20 @@
 package com.hust.baseweb.applications.taskmanagement.controller;
 
-import com.hust.baseweb.applications.contentmanager.model.ContentModel;
+import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.applications.taskmanagement.dto.dao.*;
 import com.hust.baseweb.applications.taskmanagement.dto.form.*;
 import com.hust.baseweb.applications.taskmanagement.entity.*;
 import com.hust.baseweb.applications.taskmanagement.repository.ProjectMemberRepository;
 import com.hust.baseweb.applications.taskmanagement.service.*;
-import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.entity.Person;
 import com.hust.baseweb.entity.UserLogin;
-import com.hust.baseweb.service.PartyService;
-import com.hust.baseweb.service.UserService;
 import com.hust.baseweb.service.PersonService;
+import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
-import okhttp3.Response;
-import org.bouncycastle.cert.ocsp.RespID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,7 +31,7 @@ public class NghiaLMController {
 
     private final ProjectMemberRepository projectMemberRepository;
 
-    private final PartyService partyService;
+//    private final PartyService partyService;
 
     private final PersonService personService;
 

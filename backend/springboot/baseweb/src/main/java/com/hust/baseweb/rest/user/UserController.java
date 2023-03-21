@@ -1,18 +1,11 @@
 package com.hust.baseweb.rest.user;
 
-import com.hust.baseweb.applications.education.exception.SimpleResponse;
-import com.hust.baseweb.entity.Party;
 import com.hust.baseweb.entity.SecurityGroup;
 import com.hust.baseweb.entity.SecurityPermission;
 import com.hust.baseweb.entity.UserLogin;
-import com.hust.baseweb.model.ModelAssignGroupAllUsersInput;
-import com.hust.baseweb.model.PersonModel;
-import com.hust.baseweb.model.PersonUpdateModel;
-import com.hust.baseweb.model.UpdatePasswordModel;
 import com.hust.baseweb.entity.UserRegister;
-import com.hust.baseweb.repo.UserRegisterRepo;
 import com.hust.baseweb.model.dto.DPersonDetailModel;
-import com.hust.baseweb.service.PartyService;
+import com.hust.baseweb.repo.UserRegisterRepo;
 import com.hust.baseweb.service.SecurityGroupService;
 import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
@@ -21,31 +14,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * UserController
- */
 // @RepositoryRestController
 // @ExposesResourceFor(DPerson.class)
-@RestController
-@AllArgsConstructor(onConstructor = @__(@Autowired))
 @Log4j2
+@RestController
+@AllArgsConstructor(onConstructor_ = @Autowired)
 public class UserController {
 
     public static final String EDIT_REL = "edit";
     public static final String DELETE_REL = "delete";
     private UserService userService;
-    private PartyService partyService;
+
+//    private PartyService partyService;
+
     private SecurityGroupService securityGroupService;
     private UserRegisterRepo userRegisterRepo;
 
@@ -54,38 +47,38 @@ public class UserController {
         return ResponseEntity.ok(userService.findPersonByUserLoginId(userLoginId));
     }
 
-    @PostMapping(path = "/user")
-    public ResponseEntity<?> save(
-        @RequestBody PersonModel personModel,
-        Principal principal
-    ) {
-        // Resources<String> resources = new Resources<String>(producers);\\
-        Party party;
-        try {
-            party = userService.createAndSaveUserLogin(personModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                e.getMessage());
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-            party.getPartyId());
-
-    }
-
-    @PutMapping(path = "/user/{partyId}")
-    public ResponseEntity<?> update(
-        @RequestBody PersonUpdateModel personUpdateModel,
-        Principal principal, @PathVariable String partyId
-    ) {
-        Party party;
-        party = userService.update(personUpdateModel, UUID.fromString(partyId));
-
-
-        return ResponseEntity.status(HttpStatus.OK).body(party.getPartyId());
-    }
+//    @PostMapping(path = "/user")
+//    public ResponseEntity<?> save(
+//        @RequestBody PersonModel personModel,
+//        Principal principal
+//    ) {
+//        // Resources<String> resources = new Resources<String>(producers);\\
+//        Party party;
+//        try {
+//            party = userService.createAndSaveUserLogin(personModel);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+//                e.getMessage());
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.CREATED).body(
+//            party.getPartyId());
+//
+//    }
+//
+//    @PutMapping(path = "/user/{partyId}")
+//    public ResponseEntity<?> update(
+//        @RequestBody PersonUpdateModel personUpdateModel,
+//        Principal principal, @PathVariable String partyId
+//    ) {
+//        Party party;
+//        party = userService.update(personUpdateModel, UUID.fromString(partyId));
+//
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(party.getPartyId());
+//    }
 
     @GetMapping(path = "/users")
     public ResponseEntity<?> getUsers(
@@ -182,14 +175,14 @@ public class UserController {
         return ResponseEntity.ok().body(detailModel);
     }
 
-    @DeleteMapping(path = "/users/{partyId}")
-    public ResponseEntity<?> delete(
-        @PathVariable String partyId,
-        Principal principal
-    ) {
-        partyService.disableParty(partyId);
-        return ResponseEntity.ok("");
-    }
+//    @DeleteMapping(path = "/users/{partyId}")
+//    public ResponseEntity<?> delete(
+//        @PathVariable String partyId,
+//        Principal principal
+//    ) {
+//        partyService.disableParty(partyId);
+//        return ResponseEntity.ok("");
+//    }
 
 	/*
 	@GetMapping(path = "/users") 
@@ -215,37 +208,37 @@ public class UserController {
        }
     */
 
-    @GetMapping("/get-all-user-login-ids")
-    public ResponseEntity<List<String>> getAllUserLoginIds() {
-        return ResponseEntity.ok(userService
-                                     .getAllUserLogins()
-                                     .stream()
-                                     .map(UserLogin::getUserLoginId)
-                                     .collect(Collectors.toList()));
-    }
-
-    @PostMapping("/user/updatepassword2")
-    public ResponseEntity<?> update(Principal principal, @RequestBody UpdatePasswordModel input) {
-        log.info("okController: ");
-        UserLogin u = userService.updatePassword2(input.getUserLoginId(), input.getPassword());
-        return ResponseEntity.ok().body(u);
-    }
-
-    @PostMapping("/user/updatepassword3/{partyId}")
-    public ResponseEntity<?> update3(
-        Principal principal,
-        @PathVariable String partyId,
-        @RequestBody UpdatePasswordModel input
-    ) {
-        DPerson p = userService.findByPartyId(partyId);
-        DPersonDetailModel detailModel = new DPersonDetailModel(p);
-        UserLogin u = userService.updatePassword2(detailModel.getUserLoginId(), input.getPassword());
-        return ResponseEntity.ok().body(u);
-    }
-
-    @PostMapping("/user/assign-group-all-users")
-    public ResponseEntity<?> assignGroup2AllUsers(Principal principal, @RequestBody ModelAssignGroupAllUsersInput I){
-        SimpleResponse res = userService.assignGroup2AllUsers(I);
-        return ResponseEntity.ok().body(res.getMessage());
-    }
+//    @GetMapping("/get-all-user-login-ids")
+//    public ResponseEntity<List<String>> getAllUserLoginIds() {
+//        return ResponseEntity.ok(userService
+//                                     .getAllUserLogins()
+//                                     .stream()
+//                                     .map(UserLogin::getUserLoginId)
+//                                     .collect(Collectors.toList()));
+//    }
+//
+//    @PostMapping("/user/updatepassword2")
+//    public ResponseEntity<?> update(Principal principal, @RequestBody UpdatePasswordModel input) {
+//        log.info("okController: ");
+//        UserLogin u = userService.updatePassword2(input.getUserLoginId(), input.getPassword());
+//        return ResponseEntity.ok().body(u);
+//    }
+//
+//    @PostMapping("/user/updatepassword3/{partyId}")
+//    public ResponseEntity<?> update3(
+//        Principal principal,
+//        @PathVariable String partyId,
+//        @RequestBody UpdatePasswordModel input
+//    ) {
+//        DPerson p = userService.findByPartyId(partyId);
+//        DPersonDetailModel detailModel = new DPersonDetailModel(p);
+//        UserLogin u = userService.updatePassword2(detailModel.getUserLoginId(), input.getPassword());
+//        return ResponseEntity.ok().body(u);
+//    }
+//
+//    @PostMapping("/user/assign-group-all-users")
+//    public ResponseEntity<?> assignGroup2AllUsers(Principal principal, @RequestBody ModelAssignGroupAllUsersInput I){
+//        SimpleResponse res = userService.assignGroup2AllUsers(I);
+//        return ResponseEntity.ok().body(res.getMessage());
+//    }
 }

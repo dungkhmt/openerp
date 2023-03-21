@@ -3,24 +3,21 @@ package com.hust.baseweb.controller;
 
 import com.hust.baseweb.entity.*;
 import com.hust.baseweb.model.ModelPageUserSearchResponse;
-import com.hust.baseweb.model.PasswordChangeModel;
 import com.hust.baseweb.service.ApplicationService;
 import com.hust.baseweb.service.PersonService;
-import com.hust.baseweb.service.SecurityGroupService;
 import com.hust.baseweb.service.UserService;
+import io.lettuce.core.dynamic.annotation.Param;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.CurrentSecurityContext;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.*;
@@ -38,19 +35,28 @@ public class ApiController {
 
     private ApplicationService applicationService;
 
-    private SecurityGroupService securityGroupService;
+//    private SecurityGroupService securityGroupService;
+//
+//    @GetMapping("/")
+//    public ResponseEntity<Map> home(@CurrentSecurityContext(expression = "authentication.name") String name) {
+//        Map<String, String> response = new HashMap<>();
+//        HttpHeaders headers = new HttpHeaders();
+//
+//        response.put("user", name);
+//        headers.set("Access-Control-Expose-Headers", "X-Auth-Token");
+//
+//        return ResponseEntity.ok().headers(headers).body(response);
+//    }
 
     @GetMapping("/")
-    public ResponseEntity<Map> home(@CurrentSecurityContext(expression = "authentication.name") String name) {
-        Map<String, String> response = new HashMap<>();
-        HttpHeaders headers = new HttpHeaders();
-
-        response.put("user", name);
-        headers.set("Access-Control-Expose-Headers", "X-Auth-Token");
-
-        return ResponseEntity.ok().headers(headers).body(response);
+    public void syncUser(JwtAuthenticationToken token) {
+        Jwt principal = (Jwt) token.getPrincipal();
+        userService.synchronizeUser(
+            principal.getClaim("preferred_username"),
+            principal.getClaim("email"),
+            principal.getClaim("given_name"),
+            principal.getClaim("family_name"));
     }
-
 
     @GetMapping("/check-authority")
     public ResponseEntity<?> checkAuthorities(Principal principal, @RequestParam String applicationId) {
@@ -98,39 +104,39 @@ public class ApiController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(Principal principal, @RequestBody PasswordChangeModel passwordChangeModel) {
-        log.info("changePassword, userlogin = " +
-                 principal.getName() +
-                 " password = " +
-                 passwordChangeModel.getNewPassword());
-        UserLogin userLogin = userService.findById(principal.getName());
-
-        // TO BE CHECKED
-        //if (UserLogin.PASSWORD_ENCODER.matches(passwordChangeModel.getCurrentPassword(), userLogin.getPassword())) {
-        if (true) {
-            UserLogin user = userService.updatePassword(userLogin, passwordChangeModel.getNewPassword());
-            log.info("changePassword, userlogin = " +
-                     principal.getName() +
-                     " password = " +
-                     passwordChangeModel.getNewPassword() +
-                     " successfully");
-            return ResponseEntity.ok().body("OK");
-
-        } else {
-            log.info("changePassword, userlogin = " +
-                     principal.getName() +
-                     " password = " +
-                     passwordChangeModel.getNewPassword() +
-                     " ERROR current password  = " +
-                     passwordChangeModel.getCurrentPassword() +
-                     " DIFFERS " +
-                     userLogin.getPassword() +
-                     " not correct");
-
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password isn't correct");
-    }
+//    @PostMapping("/change-password")
+//    public ResponseEntity<?> changePassword(Principal principal, @RequestBody PasswordChangeModel passwordChangeModel) {
+//        log.info("changePassword, userlogin = " +
+//                 principal.getName() +
+//                 " password = " +
+//                 passwordChangeModel.getNewPassword());
+//        UserLogin userLogin = userService.findById(principal.getName());
+//
+//        // TO BE CHECKED
+//        //if (UserLogin.PASSWORD_ENCODER.matches(passwordChangeModel.getCurrentPassword(), userLogin.getPassword())) {
+//        if (true) {
+//            UserLogin user = userService.updatePassword(userLogin, passwordChangeModel.getNewPassword());
+//            log.info("changePassword, userlogin = " +
+//                     principal.getName() +
+//                     " password = " +
+//                     passwordChangeModel.getNewPassword() +
+//                     " successfully");
+//            return ResponseEntity.ok().body("OK");
+//
+//        } else {
+//            log.info("changePassword, userlogin = " +
+//                     principal.getName() +
+//                     " password = " +
+//                     passwordChangeModel.getNewPassword() +
+//                     " ERROR current password  = " +
+//                     passwordChangeModel.getCurrentPassword() +
+//                     " DIFFERS " +
+//                     userLogin.getPassword() +
+//                     " not correct");
+//
+//        }
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password isn't correct");
+//    }
     /*
     @GetMapping("/logout") USE default built by SPRING
     public ResponseEntity<String> logout(Principal principal) {
@@ -163,10 +169,10 @@ public class ApiController {
     }
     */
 
-    @GetMapping("/roles")
-    public ResponseEntity<?> getRoles() {
-        return ResponseEntity.ok().body(securityGroupService.getRoles());
-    }
+//    @GetMapping("/roles")
+//    public ResponseEntity<?> getRoles() {
+//        return ResponseEntity.ok().body(securityGroupService.getRoles());
+//    }
 
     @GetMapping("screen-security")
     public ResponseEntity<?> getScrSecurInfo(Principal principal) {
@@ -174,8 +180,10 @@ public class ApiController {
     }
 
     @GetMapping("/search-user")
-    public ResponseEntity<?> searchUser(Pageable pageable,
-                                        @Param("keyword") String keyword) {
+    public ResponseEntity<?> searchUser(
+        Pageable pageable,
+        @Param("keyword") String keyword
+    ) {
         if (keyword == null) {
             keyword = "";
         }
@@ -188,11 +196,5 @@ public class ApiController {
         Map<String, String> res = jedis.hgetAll("spring:session:sessions:154894ef-efe4-4acf-b479-bce0275694fd");
         return ResponseEntity.ok().body(res.get("sessionAttr:SPRING_SECURITY_CONTEXT"));*/
 
-    @GetMapping("/ping")
-    public ResponseEntity<?> ping(@CurrentSecurityContext(expression = "authentication.name") String name) {
-        Map<String, String> responseBody = new HashMap<>();
-        responseBody.put("user", name);
-        return ResponseEntity.ok().body(responseBody);
-    }
 }
 
