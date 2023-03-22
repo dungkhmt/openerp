@@ -31,12 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ReplyCommentItem({
-  comment,
-  flag,
-  setFlag,
-  loginUser,
-}) {
+export default function ReplyCommentItem({ comment, flag, setFlag, userId }) {
   const [isEditting, setIsEditting] = useState(false);
   const [commentTextEdit, setCommentTextEdit] = useState(comment.commentText);
   const [openModal, setOpenModal] = useState(false);
@@ -78,8 +73,6 @@ export default function ReplyCommentItem({
     //   body
     // );
     request(
-      // token,
-      // history,
       "put",
       `/edit-comment-on-quiz/${comment.commentId}`,
       (res) => {
@@ -184,7 +177,7 @@ export default function ReplyCommentItem({
               </div>
             )}
           </div>
-          {loginUser?.userName === comment.createdByUserLoginId && (
+          {userId === comment.createdByUserLoginId && (
             <div>
               <Button
                 className={classes.commentActionBtn}

@@ -1,20 +1,20 @@
-import { makeStyles } from "@material-ui/core/styles";
 import {
   Avatar,
   Button,
   Dialog,
-  DialogTitle,
+  DialogActions,
   DialogContent,
   DialogContentText,
-  DialogActions,
+  DialogTitle,
+  Input,
   Menu,
   MenuItem,
-  Input,
 } from "@material-ui/core";
-import { useState, useEffect } from "react";
-import { errorNoti, successNoti } from "utils/notification";
+import { makeStyles } from "@material-ui/core/styles";
 import { request } from "api";
+import { useEffect, useState } from "react";
 import displayTime from "utils/DateTimeUtils";
+import { errorNoti, successNoti } from "utils/notification";
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -50,7 +50,7 @@ export default function ReplyCommentItem({
   editComment,
   setFlag,
   flag,
-  loginUser,
+  userId,
 }) {
   const [valueCommentMessage, setValueCommentMessage] = useState(
     comment.commentMessage
@@ -202,7 +202,7 @@ export default function ReplyCommentItem({
           )}
         </div>
         <div>
-          {loginUser?.userName === comment.postedByUserLoginId && (
+          {userId === comment.postedByUserLoginId && (
             <Button
               aria-label="more"
               id="long-button"

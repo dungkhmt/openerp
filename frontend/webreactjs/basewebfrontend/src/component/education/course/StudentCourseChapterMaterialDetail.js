@@ -6,6 +6,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from "@material-ui/icons";
+import { useKeycloak } from "@react-keycloak/web";
 import { number } from "prop-types";
 import { useEffect, useState } from "react";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
@@ -52,7 +53,10 @@ function StudentCourseChapterMaterialDetail() {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [pageNumberValue, setPageNumberValue] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [loginUser, setLoginUser] = useState(null);
+
+  //
+  const { keycloak } = useKeycloak();
+  const token = keycloak.tokenParsed;
 
   //handle change page number
   const onHandleChangePageNumber = (event) => {
@@ -284,8 +288,6 @@ function StudentCourseChapterMaterialDetail() {
       };
 
       request(
-        // token,
-        // history,
         "put",
         `/edu/class/comment/${cmtId}`,
         (res) => {
@@ -322,20 +324,6 @@ function StudentCourseChapterMaterialDetail() {
     getCourseChapterMaterialDetail();
     //setSourceId(chapterMaterial.sourceId);
     //get user login
-    request(
-      "get",
-      "/my-account/",
-      (res) => {
-        let data = res.data;
-
-        setLoginUser({
-          name: data.name,
-          userName: data.user,
-          partyId: data.partyId,
-        });
-      },
-      { 401: () => {} }
-    );
   }, []);
 
   useEffect(() => {
@@ -564,7 +552,7 @@ function StudentCourseChapterMaterialDetail() {
               commentOnCourse={commentOnCourse}
               deleteComment={deleteComment}
               editComment={editComment}
-              loginUser={loginUser}
+              userId={token.preferred_username}
             />
           ))}
       </Card>

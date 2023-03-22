@@ -3,6 +3,7 @@ import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { SvgIcon, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { ReactKeycloakProvider } from "@react-keycloak/web";
+import { request } from "api";
 import { FacebookCircularProgress } from "component/common/progressBar/CustomizedCircularProgress.jsx";
 import keycloak, { initOptions } from "config/keycloak.js";
 import { useEffect } from "react";
@@ -101,6 +102,8 @@ function App() {
   const onKeycloakEvent = async (event, error) => {
     console.log(event);
     if (event === "onAuthSuccess") {
+      request("get", `/`);
+      console.log(keycloak.tokenParsed.preferred_username);
       // // Currently maybe not necessary
       // // Check token validity every 10 seconds (10 000 ms) and, if necessary, update the token.
       // // Refresh token if it's valid for less then 60 seconds

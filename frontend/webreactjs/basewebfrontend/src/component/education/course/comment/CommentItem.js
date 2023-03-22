@@ -50,7 +50,7 @@ export default function CommentItem({
   chapterMaterialId,
   deleteComment,
   editComment,
-  loginUser,
+  userId,
 }) {
   const [valueCommentMessage, setValueCommentMessage] = useState(
     comment.commentMessage
@@ -258,7 +258,7 @@ export default function CommentItem({
             )}
           </Button>
 
-          {loginUser?.userName === comment.postedByUserLoginId && (
+          {userId === comment.postedByUserLoginId && (
             <Button
               aria-label="more"
               id="long-button"
@@ -284,7 +284,7 @@ export default function CommentItem({
                     chapterMaterialId={chapterMaterialId}
                     flag={flag}
                     setFlag={setFlag}
-                    loginUser={loginUser}
+                    userId={userId}
                   />
                 ))}
             </div>

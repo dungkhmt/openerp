@@ -1,14 +1,14 @@
 package com.hust.baseweb.controller;
 
 
-import com.hust.baseweb.entity.*;
-import com.hust.baseweb.model.ModelPageUserSearchResponse;
-import com.hust.baseweb.service.ApplicationService;
-import com.hust.baseweb.service.PersonService;
-import com.hust.baseweb.service.UserService;
-import io.lettuce.core.dynamic.annotation.Param;
-import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +19,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.hust.baseweb.entity.Application;
+import com.hust.baseweb.entity.SecurityGroup;
+import com.hust.baseweb.entity.SecurityPermission;
+import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.model.ModelPageUserSearchResponse;
+import com.hust.baseweb.service.ApplicationService;
+import com.hust.baseweb.service.PersonService;
+import com.hust.baseweb.service.UserService;
+
+import io.lettuce.core.dynamic.annotation.Param;
+import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RestController
@@ -92,18 +101,18 @@ public class ApiController {
 
     }
 
-    @GetMapping("/my-account")
-    public ResponseEntity<?> getAccount(Principal principal) {
-        UserLogin userLogin = userService.findById(principal.getName());
-        Party party = userLogin.getParty();
-        Person person = personService.findByPartyId(party.getPartyId());
-        Map<String, String> response = new HashMap<>();
-        response.put("name", person.getFullName());
-        response.put("partyId", person.getPartyId().toString());
-        response.put("user", principal.getName());
-        return ResponseEntity.ok().body(response);
-    }
-
+//    @GetMapping("/my-account")
+//    public ResponseEntity<?> getAccount(Principal principal) {
+//        UserLogin userLogin = userService.findById(principal.getName());
+//        Party party = userLogin.getParty();
+//        Person person = personService.findByPartyId(party.getPartyId());
+//       Map<String, String> response = new HashMap<>();
+//        response.put("name", person.getFullName());
+//        response.put("partyId", person.getPartyId().toString());
+//        response.put("user", principal.getName());
+//        return ResponseEntity.ok().body(response);
+//    }
+//
 //    @PostMapping("/change-password")
 //    public ResponseEntity<?> changePassword(Principal principal, @RequestBody PasswordChangeModel passwordChangeModel) {
 //        log.info("changePassword, userlogin = " +

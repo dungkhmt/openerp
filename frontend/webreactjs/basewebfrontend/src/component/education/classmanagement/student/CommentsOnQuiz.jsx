@@ -1,26 +1,20 @@
-import React, { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  MenuItem,
-  Button,
-  Table,
-  Avatar,
-} from "@material-ui/core";
+import { Avatar, Button, Table, TextField } from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
-import CommentItem from "./comment/CommentItem.jsx";
-import { request } from "../../../../api";
-import { toFormattedDateTime } from "../../../../utils/dateutils";
+import { useKeycloak } from "@react-keycloak/web";
+import { useEffect, useState } from "react";
 import { errorNoti, successNoti } from "utils/notification/index.js";
+import { request } from "../../../../api";
+import CommentItem from "./comment/CommentItem.jsx";
 
 export default function CommentsOnQuiz(props) {
   const { questionId, open, setOpen } = props;
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [commentFlag, setCommentFlag] = useState(false);
-  const [loginUser, setLoginUser] = useState(null);
+
+  //
+  const { keycloak } = useKeycloak();
+  const token = keycloak.tokenParsed;
 
   function handleChangeComment(e) {
     setComment(e.target.value);
@@ -51,24 +45,6 @@ export default function CommentsOnQuiz(props) {
       );
     }
   }
-
-  //get user login
-  useEffect(() => {
-    request(
-      "get",
-      "/my-account/",
-      (res) => {
-        let data = res.data;
-
-        setLoginUser({
-          name: data.name,
-          userName: data.user,
-          partyId: data.partyId,
-        });
-      },
-      { 401: () => {} }
-    );
-  }, []);
 
   useEffect(() => {
     getCommentList();
@@ -115,7 +91,7 @@ export default function CommentsOnQuiz(props) {
               comment={item}
               setCommentFlag={setCommentFlag}
               commentFlag={commentFlag}
-              loginUser={loginUser}
+              userId={token.preferred_username}
             />
           ))}
         </Table>
