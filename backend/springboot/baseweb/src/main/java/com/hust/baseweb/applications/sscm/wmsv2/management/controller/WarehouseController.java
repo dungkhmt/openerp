@@ -1,6 +1,6 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.controller;
 
-import com.hust.baseweb.applications.sscm.wmsv2.management.entity.WMSV2Warehouse;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.Warehouse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.WarehouseWithBays;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.WarehouseService;
 import lombok.AllArgsConstructor;
@@ -23,13 +23,18 @@ public class WarehouseController {
     private WarehouseService warehouseService;
 
     @PutMapping()
-    public ResponseEntity<WMSV2Warehouse> createWarehouse(@Valid @RequestBody WarehouseWithBays request) {
+    public ResponseEntity<Warehouse> createWarehouse(@Valid @RequestBody WarehouseWithBays request) {
         return ResponseEntity.ok(warehouseService.createWarehouse(request));
     }
 
     @GetMapping()
-    public ResponseEntity<List<WMSV2Warehouse>> getAll() {
-        return ResponseEntity.ok(warehouseService.getAll());
+    public ResponseEntity<List<Warehouse>> getAllWarehouseGeneral() {
+        return ResponseEntity.ok(warehouseService.getAllWarehouseGeneral());
+    }
+
+    @GetMapping(path = "/detail")
+    public ResponseEntity<List<WarehouseWithBays>> getAllWarehouseDetail() {
+        return ResponseEntity.ok(warehouseService.getAllWarehouseDetail());
     }
 
     @DeleteMapping()

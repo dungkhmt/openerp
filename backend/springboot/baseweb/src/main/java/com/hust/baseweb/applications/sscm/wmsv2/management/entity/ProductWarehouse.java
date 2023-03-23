@@ -10,8 +10,8 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "wmsv2_product_warehouse")
-public class WMSV2ProductWarehouse {
+@Table(name = "product_warehouse")
+public class ProductWarehouse {
     @Id
     private UUID productWarehouseId;
     private UUID productId;

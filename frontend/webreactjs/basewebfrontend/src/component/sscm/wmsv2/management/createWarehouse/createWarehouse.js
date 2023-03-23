@@ -15,6 +15,8 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CachedIcon from '@mui/icons-material/Cached';
 import { API_PATH } from '../apiPaths.js';
 import { warehouse } from 'config/menuconfig/warehouse.js';
+import { useRouteMatch } from "react-router-dom";
+import { useHistory } from "react-router";
 
 const CreateWarehouse = ( props ) => {
   const holderShelf = { x: "", y: "", width: "", length: "", num: "" };
@@ -34,6 +36,8 @@ const CreateWarehouse = ( props ) => {
   const warehouseId = props.match?.params?.id;
   const [warehouseInfo, setWarehouseInfo] = useState(null);
   const isCreateForm = warehouseId == null;
+  const history = useHistory();
+  const { path } = useRouteMatch();
   // Use to determine what value of Address text field
   // if updateAddress = true -> Address text field = new select address from map
   // else -> current warehouse address or null
@@ -100,6 +104,11 @@ const CreateWarehouse = ( props ) => {
         let id = res.data.id;
         successNoti(isCreateForm ? "Tạo kho thành công" : "Cập nhật kho thành công");
         // history.push(`${path.replace('/create', '')}/${id}`);
+        if (isCreateForm) {
+          history.push(`${path.replace('/create', '')}`);
+        } else {
+          history.push(`${path.substring(0, path.indexOf('/update'))}`);
+        }
       },
       {
         401: () => { },
@@ -213,7 +222,7 @@ const CreateWarehouse = ( props ) => {
           className={classes.headerBox} >
           <Grid>
             <Typography variant="h5">
-              {isCreateForm ? "Tạo Mới Kho" : "Xem thông tin kho"}
+              {isCreateForm ? "Tạo mới kho" : "Xem thông tin kho"}
             </Typography>
           </Grid>
           <Grid className={classes.buttonWrap}>

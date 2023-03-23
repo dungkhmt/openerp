@@ -16,8 +16,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @ToString
-@Table(name = "wmsv2_warehouse")
-public class WMSV2Warehouse {
+@Table(name = "warehouse")
+public class Warehouse {
     @Id
     @GenericGenerator(name = "uuid1", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "uuid1")
