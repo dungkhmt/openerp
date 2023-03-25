@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductCategory;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductV2;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.ProductRequest;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductGeneralResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductCategoryService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductService;
 import lombok.AllArgsConstructor;
@@ -43,6 +44,11 @@ public class ProductController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProductGeneralResponse>> getProductGeneral() {
+        return ResponseEntity.ok(productService.getAllProductGeneral());
     }
 
     @GetMapping(path = "/category")

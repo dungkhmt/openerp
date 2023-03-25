@@ -1,3 +1,4 @@
+import { RequireStar } from "../components/requireStar";
 import { useRouteMatch } from "react-router-dom";
 import { useHistory } from "react-router";
 import { InputAdornment, TableBody, TableCell, TableContainer, 
@@ -184,90 +185,12 @@ const ProductDetail = () => {
   const [totalQuantity, setTotalQuantity] = useState(0);
 
   const [isShowDetailQuantityModal, setShowDetailQuantityModal] = useState(false);
-  const warehouseDetails = [
-    {
-      "id": "89d07474-1dfa-4ee4-8815-fabfd94afa01",
-      "address": "Ô mai Hồng Lam Trương Định, 540, Truong Dinh Road, Hanoi, 11617, Vietnam",
-      "code": "BKA01",
-      "name": "Kho BKA",
-      "warehouseLength": 2000,
-      "warehouseWidth": 1000,
-      "longitude": 105.8460658,
-      "latitude": 20.9842,
-      "listShelf": []
-    },
-    {
-      "id": "19719f2d-f4e5-4186-98a0-ab4671c91807",
-      "address": "12 Cầu Bươu, Đường Cầu Bươu, Phường Kiến Hưng, Thanh Tri District, Hanoi, 11718, Vietnam",
-      "code": "BKA02",
-      "name": "Kho không kệ",
-      "warehouseLength": 0,
-      "warehouseWidth": 0,
-      "longitude": 105.8038293,
-      "latitude": 20.9593502,
-      "listShelf": []
-    },
-    {
-      "id": "f520712e-ada3-45f7-8e1b-fdc39a48619d",
-      "address": "Ha Nam province, Vietnam",
-      "code": "TGDĐ",
-      "name": "Kho Thế giới di động",
-      "warehouseLength": 200,
-      "warehouseWidth": 150,
-      "longitude": 105.9543527,
-      "latitude": 20.5269088,
-      "listShelf": [
-        {
-          "id": "d96d73d7-75d9-465d-8a79-5456b39ffb0a",
-          "code": "A01",
-          "x": 0,
-          "y": 0,
-          "width": 10,
-          "length": 10
-        },
-        {
-          "id": "a0b1a5b4-3c27-4f60-a505-8357bcd4e58a",
-          "code": "A02",
-          "x": 15,
-          "y": 0,
-          "width": 10,
-          "length": 10
-        }
-      ]
-    },
-    {
-      "id": "0d1fd0ad-69b5-4bbd-9564-90688a5df6b0",
-      "address": "Hoàn Kiếm, Phuoc Hoa District, Nha Trang, Khánh Hòa Province, 65000, Vietnam",
-      "code": "BK0001",
-      "name": "Kho Bach Khoa",
-      "warehouseLength": 500,
-      "warehouseWidth": 300,
-      "longitude": 109.1821144,
-      "latitude": 12.2392953,
-      "listShelf": [
-        {
-          "id": "45e9f39c-6900-4d11-af23-ce2f8d66196e",
-          "code": "A01",
-          "x": 0,
-          "y": 0,
-          "width": 50,
-          "length": 50
-        },
-        {
-          "id": "84652a43-7714-4630-9230-22e6daff511c",
-          "code": "A02",
-          "x": 0,
-          "y": 60,
-          "width": 50,
-          "length": 50
-        }
-      ]
-    }
-  ];
+
   const [initQuantityArray, setInitQuantityArray] = useState([]);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [imageURL, setImageURL] = useState(null);
   const [productCategories, setProductCategories] = useState([]);
+  const [warehouseDetails, setWarehouseDetails] = useState([]);
 
   const history = useHistory();
   const { path } = useRouteMatch();
@@ -330,7 +253,16 @@ const ProductDetail = () => {
           console.log("Response product category request -> ", res);
           setProductCategories(res.data);
         }
-      )
+      );
+      const warehouseResponse = request(
+        "get",
+        API_PATH.WAREHOUSE_DETAIL,
+        (res) => {
+          console.log("warehouse response -> ", res);
+          setWarehouseDetails(res.data);
+          console.log("Warehouse details in fetch data -> ", warehouseDetails);
+        }
+      );
     }
 
     fetchData();
@@ -393,7 +325,8 @@ const ProductDetail = () => {
 
                 <Grid container spacing={3} className={classes.inforWrap}>
                   <Grid item xs={6}>
-                    <Box className={classes.labelInput}>Tên sản phẩm</Box>
+                    <Box className={classes.labelInput}>
+                      Tên sản phẩm <RequireStar /></Box>
                     <TextField
                       fullWidth
                       variant="outlined"
@@ -405,7 +338,8 @@ const ProductDetail = () => {
                     ></TextField>
                   </Grid>
                   <Grid item xs={6}>
-                    <Box className={classes.labelInput}>Mã sản phẩm</Box>
+                    <Box className={classes.labelInput}>
+                      Mã sản phẩm <RequireStar /></Box>
                     <TextField
                       fullWidth
                       variant="outlined"
@@ -426,14 +360,10 @@ const ProductDetail = () => {
                       {...register("categoryId", { required: false })}
                       fullWidth
                     >
-                    {/* TODO: Hard code here */}
-                      <MenuItem value={1}>Đồ bếp</MenuItem>
-                      <MenuItem value={2}>Tivi</MenuItem>
-                      <MenuItem value={3}>Tủ lạnh</MenuItem>
                       {
                         productCategories.length > 0 &&
                         productCategories.map(category => 
-                          <MenuItem values={category.categoryId}>
+                          <MenuItem value={category.categoryId}>
                             {category.name}
                           </MenuItem>)
                       }
@@ -455,7 +385,7 @@ const ProductDetail = () => {
 
                 <Grid container spacing={3} className={classes.inforWrap}>
                   <Grid item xs={6}>
-                    <Box className={classes.labelInput}>Chiều cao (m)</Box>
+                    <Box className={classes.labelInput}>Chiều cao (cm)</Box>
                     <TextField
                       fullWidth
                       variant="outlined"
@@ -466,7 +396,7 @@ const ProductDetail = () => {
                     ></TextField>
                   </Grid>
                   <Grid item xs={6}>
-                    <Box className={classes.labelInput}>Diện tích đáy (m2)</Box>
+                    <Box className={classes.labelInput}>Diện tích đáy (cm2)</Box>
                     <TextField
                       fullWidth
                       variant="outlined"
@@ -541,7 +471,8 @@ const ProductDetail = () => {
 
                 <Grid container spacing={3} className={classes.inforWrap}>
                   <Grid item xs={6}>
-                    <Box className={classes.labelInput}>Giá nhập (VNĐ)</Box>
+                    <Box className={classes.labelInput}>
+                      Giá nhập (VNĐ) <RequireStar /></Box>
                     <TextField
                       fullWidth
                       variant="outlined"
@@ -568,7 +499,8 @@ const ProductDetail = () => {
 
                 <Grid container spacing={3} className={classes.inforWrap}>
                   <Grid item xs={6}>
-                    <Box className={classes.labelInput}>Giá bán buôn (VNĐ)</Box>
+                    <Box className={classes.labelInput}>
+                      Giá bán buôn (VNĐ) <RequireStar /></Box>
                     <TextField
                       fullWidth
                       variant="outlined"
@@ -581,7 +513,8 @@ const ProductDetail = () => {
                     ></TextField>
                   </Grid>
                   <Grid item xs={6}>
-                    <Box className={classes.labelInput}>Giá bán lẻ (VNĐ)</Box>
+                    <Box className={classes.labelInput}>
+                      Giá bán lẻ (VNĐ) <RequireStar /></Box>
                     <TextField
                       fullWidth
                       variant="outlined"

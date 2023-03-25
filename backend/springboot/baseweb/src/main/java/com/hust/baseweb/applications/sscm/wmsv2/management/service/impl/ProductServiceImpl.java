@@ -5,6 +5,7 @@ import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductBay;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductV2;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductWarehouse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.ProductRequest;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductGeneralResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.*;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductWarehouseService;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -127,5 +129,26 @@ public class ProductServiceImpl implements ProductService {
             log.info("Saved product warehouse entity");
         }
         return product;
+    }
+
+    @Override
+    public List<ProductGeneralResponse> getAllProductGeneral() {
+        List<ProductV2> products = productRepository.findAll();
+        Map<String, BigDecimal> productOnHandQuantityMap = new HashMap<>();
+        for (ProductV2 product : products) {
+            String productId = product.getProductId().toString();
+            productOnHandQuantityMap.put(productId,
+                 productWarehouseRepository.getTotalOnHandQuantityByProductId(UUID.fromString(productId)));
+        }
+        List<ProductGeneralResponse> response = products.stream()
+                                    .map(product -> ProductGeneralResponse.builder()
+                                        .productId(product.getProductId().toString())
+                                        .name(product.getName())
+                                        .code(product.getCode())
+                                        .retailPrice(product.getRetailPrice())
+                                        .onHandQuantity(productOnHandQuantityMap.get(product.getProductId().toString()))
+                                        .build())
+                                    .collect(Collectors.toList());
+        return response;
     }
 }
