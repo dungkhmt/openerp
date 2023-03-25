@@ -1,4 +1,4 @@
-import { Grid, TableHead } from "@material-ui/core";
+import {Grid, TableHead} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
@@ -8,11 +8,12 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TablePagination from "@mui/material/TablePagination";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import XLSX from "xlsx";
-import { StyledTableCell, StyledTableRow } from "./lib";
-import { request } from "./Request";
+import {getColorLevel, StyledTableCell, StyledTableRow} from "./lib";
+import {request} from "./Request";
 import HustContainerCard from "../../common/HustContainerCard";
+import StandardTable from "../../table/StandardTable";
 
 export default function ContestManagerRankingNew(props) {
   const contestId = props.contestId;
@@ -31,13 +32,13 @@ export default function ContestManagerRankingNew(props) {
 
     var wbcols = [];
 
-    wbcols.push({ wpx: 80 });
-    wbcols.push({ wpx: 120 });
+    wbcols.push({wpx: 80});
+    wbcols.push({wpx: 120});
     let numOfProblem = ranking[0].mapProblemsToPoints.length;
     for (let i = 0; i < numOfProblem; i++) {
-      wbcols.push({ wpx: 50 });
+      wbcols.push({wpx: 50});
     }
-    wbcols.push({ wpx: 50 });
+    wbcols.push({wpx: 50});
 
     let datas = [];
 
@@ -76,13 +77,63 @@ export default function ContestManagerRankingNew(props) {
     request(
       "get",
       "/get-ranking-contest-new/" +
-        contestId +
-        "?getPointForRankingType=" +
-        getPointForRankingType,
+      contestId +
+      "?getPointForRankingType=" +
+      getPointForRankingType,
       (res) => {
         setRanking(res.data.sort((a, b) => b.totalPoint - a.totalPoint));
       }
     ).then(() => setLoading(false));
+  }
+
+  const columns = [
+    {title: "Username", field: "userId"},
+    {title: "Fullname", field: "fullname"},
+    {title: "TOTAL", field: "totalPoint"},
+    ranking.length > 0 && {
+      ...ranking[0].mapProblemsToPoints.map((problem) => {
+        return (
+          {
+            title: problem.problemId,
+            render: (problem) => (
+              <span style={{color: "yellow"}}>
+              {/*{`${problem.problemId}`}*/}
+                1
+            </span>
+            )
+          }
+        );
+      })
+    },
+    // {
+    //   title: "Level",
+    //   render: (problem) => (
+    //     <span style={{color: getColorLevel(`${problem.levelId}`)}}>
+    //       {`${problem.levelId}`}
+    //     </span>
+    //   )
+    // }
+  ];
+
+  const generateColumns = () => {
+    const columns = [
+      {title: "Username", field: "userId"},
+      {title: "Fullname", field: "fullname"},
+      {title: "TOTAL", field: "totalPoint"}
+    ];
+
+    ranking.length > 0 && ranking[0].mapProblemsToPoints.forEach((problem, i) => {
+      columns.push({
+        title: problem.problemId,
+        render: (rankingRecord) => (
+          <span>
+            {`${rankingRecord.mapProblemsToPoints[i].point}`}
+          </span>
+        )
+      });
+    });
+
+    return columns;
   }
 
   useEffect(() => {
@@ -133,9 +184,21 @@ export default function ContestManagerRankingNew(props) {
 
       <Box>
         {loading && <LinearProgress/>}
+        <StandardTable
+          // title={"Contest Ranking"}
+          columns={generateColumns()}
+          data={ranking}
+          hideCommandBar
+          options={{
+            selection: false,
+            pageSize: 10,
+            search: true,
+            sorting: true,
+          }}
+        />
         <TableContainer component={Paper}>
           <Table
-            sx={{ minWidth: window.innerWidth - 500 }}
+            sx={{minWidth: window.innerWidth - 500}}
             aria-label="customized table"
           >
             <TableHead>
@@ -151,7 +214,7 @@ export default function ContestManagerRankingNew(props) {
                   ranking[0].mapProblemsToPoints.map((problem) => {
                     return (
                       <StyledTableCell
-                        sx={{ color: "yellow !important" }}
+                        sx={{color: "yellow !important"}}
                         align="center"
                       >
                         {problem.problemId}
