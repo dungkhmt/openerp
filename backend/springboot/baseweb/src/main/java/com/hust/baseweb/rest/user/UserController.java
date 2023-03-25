@@ -1,30 +1,18 @@
 package com.hust.baseweb.rest.user;
 
-import com.hust.baseweb.entity.SecurityGroup;
-import com.hust.baseweb.entity.SecurityPermission;
-import com.hust.baseweb.entity.UserLogin;
-import com.hust.baseweb.entity.UserRegister;
-import com.hust.baseweb.model.dto.DPersonDetailModel;
-import com.hust.baseweb.repo.UserRegisterRepo;
-import com.hust.baseweb.service.SecurityGroupService;
 import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 // @RepositoryRestController
 // @ExposesResourceFor(DPerson.class)
@@ -33,15 +21,23 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class UserController {
 
-    public static final String EDIT_REL = "edit";
-    public static final String DELETE_REL = "delete";
+    //    public static final String EDIT_REL = "edit";
+//
+//    public static final String DELETE_REL = "delete";
     private UserService userService;
 
 //    private PartyService partyService;
+//
+//    private SecurityGroupService securityGroupService;
+//
+//    private UserRegisterRepo userRegisterRepo;
 
-    private SecurityGroupService securityGroupService;
-    private UserRegisterRepo userRegisterRepo;
-
+    /**
+     * > This function returns a user's detail by login id
+     *
+     * @param userLoginId The user login id of the user whose details are to be fetched.
+     * @return A ResponseEntity object is being returned.
+     */
     @GetMapping("/users/{userLoginId}/detail")
     public ResponseEntity<?> getUserDetailByLoginId(@PathVariable String userLoginId) {
         return ResponseEntity.ok(userService.findPersonByUserLoginId(userLoginId));
@@ -80,45 +76,69 @@ public class UserController {
 //        return ResponseEntity.status(HttpStatus.OK).body(party.getPartyId());
 //    }
 
+    /**
+     * It returns a list of users, with pagination, and the ability to search by name
+     *
+     * @param page         This is a Pageable object that is used to paginate the results.
+     * @param searchString The search string that the user entered in the search box.
+     * @param filterString This is a string that contains the filter criteria.
+     * @return A list of users
+     */
     @GetMapping(path = "/users")
     public ResponseEntity<?> getUsers(
         Pageable page,
         @RequestParam(name = "search", required = false) String searchString,
         @RequestParam(name = "filter", required = false) String filterString
     ) {
-        log.info("::getUsers, searchString = " + searchString);
-
-
+        log.debug("::getUsers, searchString = " + searchString);
         return ResponseEntity.ok().body(
             userService.findPersonByFullName(page, searchString));
     }
 
-    @GetMapping(path = "/users/search")
-    public ResponseEntity<?> getCustomSearchedUsers(
-        Pageable page,
-        String userLoginId,
-        Principal principal
-    ) {
-        log.info("::getCustomSearchedUsers, userLoginId = " + userLoginId);
+//    @GetMapping(path = "/users/search")
+//    public ResponseEntity<?> getCustomSearchedUsers(
+//        Pageable page,
+//        String userLoginId,
+//        Principal principal
+//    ) {
+//        log.info("::getCustomSearchedUsers, userLoginId = " + userLoginId);
+//
+//        return ResponseEntity.ok().body(
+//            userService.findUsersByUserLoginId(page, userLoginId)
+//        );
+//    }
 
-        return ResponseEntity.ok().body(
-            userService.findUsersByUserLoginId(page, userLoginId)
-        );
-    }
-
+    /**
+     * > This function returns a list of users with their person model, filtered by security group,
+     * search term, page number and page size
+     *
+     * @param securityGroupIds A collection of security group IDs.
+     * @param search           The search string to search for.
+     * @param page             The page number
+     * @param size             The number of items to return per page.
+     * @return A list of users with their person model and security groups.
+     */
     @GetMapping(
         value = "users",
         params = {"securityGroups", "search", "page", "size"}
     )
     public ResponseEntity<?> getUserLoginWithPersonModelBySecurityGroup(
         @RequestParam("securityGroups") Collection<String> securityGroupIds,
-        @RequestParam String search, @RequestParam int page, @RequestParam int size) {
+        @RequestParam String search, @RequestParam int page, @RequestParam int size
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(
             userService.findAllUserLoginWithPersonModelBySecurityGroupId(securityGroupIds, search, pageable)
         );
     }
 
+    /**
+     * > This function returns a list of all enabled user login ids that contain the given string
+     *
+     * @param partOfLoginId The part of the login id that you want to search for.
+     * @param limit         The maximum number of results to return.
+     * @return A list of all enabled user login ids that contain the search string.
+     */
     @GetMapping("/user-login-ids")
     public ResponseEntity<?> getEnabledUserLoginIds(
         @RequestParam(name = "search", required = false, defaultValue = "") String partOfLoginId,
@@ -127,54 +147,54 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllEnabledLoginIdsContains(partOfLoginId, limit));
     }
 
-    @GetMapping(path = "/get-security-groups")
-    public ResponseEntity<?> getSecurityGroups(Principal principal) {
-        List<SecurityGroup> securityGroups = securityGroupService.findAll();
-        return ResponseEntity.ok().body(securityGroups);
-    }
-
-
-    @GetMapping(path = "/users/{partyId}")
-    public ResponseEntity<?> getUsersDetail(
-        @PathVariable String partyId,
-        Principal principal
-    ) {
-        DPerson p = userService.findByPartyId(partyId);
-        DPersonDetailModel detailModel = new DPersonDetailModel(p);
-        UserLogin userLogin = userService.findById(principal.getName());
-        UserLogin u = userService.findById(p.getUserLogin().getUserLoginId());
-        UserRegister ur = userRegisterRepo.findById(u.getUserLoginId()).orElse(null);
-        log.info("users get Detail info " + u.getUserLoginId());
-
-        if(ur != null){
-            detailModel.setEmail(ur.getEmail());
-            log.info("users get Detail info email found = " + ur.getEmail());
-        }else{
-            log.info("users get Detail info user register not found = ");
-        }
-        if(u.isEnabled()) {
-            detailModel.setEnabled("Y");
-            log.info("getUsersDetail, userLoginId " + u.getUserLoginId() + " is enabled");
-        }else {
-            detailModel.setEnabled("N");
-            log.info("getUsersDetail, userLoginId " + u.getUserLoginId() + " is NOT enabled");
-        }
-
-        List<SecurityPermission> permissionList = new ArrayList<>();
-        for (SecurityGroup sg : userLogin.getRoles()) {
-            permissionList.addAll(sg.getPermissions());
-        }
-        List<SecurityPermission> lf = permissionList
-            .stream()
-            .filter(pe -> "USER_CREATE".equals(pe.getPermissionId()))
-            .collect(Collectors.toList());
-        if (lf.size() > 0) {
-            detailModel.add(new Link("/user", EDIT_REL));
-            detailModel.add(new Link("/user", DELETE_REL));
-        }
-        return ResponseEntity.ok().body(detailModel);
-    }
-
+//    @GetMapping(path = "/get-security-groups")
+//    public ResponseEntity<?> getSecurityGroups(Principal principal) {
+//        List<SecurityGroup> securityGroups = securityGroupService.findAll();
+//        return ResponseEntity.ok().body(securityGroups);
+//    }
+//
+//
+//    @GetMapping(path = "/users/{partyId}")
+//    public ResponseEntity<?> getUsersDetail(
+//        @PathVariable String partyId,
+//        Principal principal
+//    ) {
+//        DPerson p = userService.findByPartyId(partyId);
+//        DPersonDetailModel detailModel = new DPersonDetailModel(p);
+//        UserLogin userLogin = userService.findById(principal.getName());
+//        UserLogin u = userService.findById(p.getUserLogin().getUserLoginId());
+//        UserRegister ur = userRegisterRepo.findById(u.getUserLoginId()).orElse(null);
+//        log.info("users get Detail info " + u.getUserLoginId());
+//
+//        if(ur != null){
+//            detailModel.setEmail(ur.getEmail());
+//            log.info("users get Detail info email found = " + ur.getEmail());
+//        }else{
+//            log.info("users get Detail info user register not found = ");
+//        }
+//        if(u.isEnabled()) {
+//            detailModel.setEnabled("Y");
+//            log.info("getUsersDetail, userLoginId " + u.getUserLoginId() + " is enabled");
+//        }else {
+//            detailModel.setEnabled("N");
+//            log.info("getUsersDetail, userLoginId " + u.getUserLoginId() + " is NOT enabled");
+//        }
+//
+//        List<SecurityPermission> permissionList = new ArrayList<>();
+//        for (SecurityGroup sg : userLogin.getRoles()) {
+//            permissionList.addAll(sg.getPermissions());
+//        }
+//        List<SecurityPermission> lf = permissionList
+//            .stream()
+//            .filter(pe -> "USER_CREATE".equals(pe.getPermissionId()))
+//            .collect(Collectors.toList());
+//        if (lf.size() > 0) {
+//            detailModel.add(new Link("/user", EDIT_REL));
+//            detailModel.add(new Link("/user", DELETE_REL));
+//        }
+//        return ResponseEntity.ok().body(detailModel);
+//    }
+//
 //    @DeleteMapping(path = "/users/{partyId}")
 //    public ResponseEntity<?> delete(
 //        @PathVariable String partyId,

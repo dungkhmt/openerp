@@ -1,14 +1,16 @@
 package com.hust.baseweb.controller;
 
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.hust.baseweb.entity.Application;
+import com.hust.baseweb.entity.SecurityGroup;
+import com.hust.baseweb.entity.SecurityPermission;
+import com.hust.baseweb.entity.UserLogin;
+import com.hust.baseweb.model.ModelPageUserSearchResponse;
+import com.hust.baseweb.service.ApplicationService;
+import com.hust.baseweb.service.UserService;
+import io.lettuce.core.dynamic.annotation.Param;
+import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -19,18 +21,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hust.baseweb.entity.Application;
-import com.hust.baseweb.entity.SecurityGroup;
-import com.hust.baseweb.entity.SecurityPermission;
-import com.hust.baseweb.entity.UserLogin;
-import com.hust.baseweb.model.ModelPageUserSearchResponse;
-import com.hust.baseweb.service.ApplicationService;
-import com.hust.baseweb.service.PersonService;
-import com.hust.baseweb.service.UserService;
-
-import io.lettuce.core.dynamic.annotation.Param;
-import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.security.Principal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 @RestController
@@ -40,7 +33,7 @@ public class ApiController {
 
     private UserService userService;
 
-    private PersonService personService;
+//    private PersonService personService;
 
     private ApplicationService applicationService;
 
@@ -57,6 +50,12 @@ public class ApiController {
 //        return ResponseEntity.ok().headers(headers).body(response);
 //    }
 
+    /**
+     * If the user is not in the database, add them. If they are in the database, update their
+     * information to synchronize with Keycloak
+     *
+     * @param token The JWT token that was passed in the request.
+     */
     @GetMapping("/")
     public void syncUser(JwtAuthenticationToken token) {
         Jwt principal = (Jwt) token.getPrincipal();
@@ -67,6 +66,15 @@ public class ApiController {
             principal.getClaim("family_name"));
     }
 
+    /**
+     * It checks if the user has the permission to access the application
+     *
+     * @param principal     This is the user who is currently logged in.
+     * @param applicationId The application id of the application you want to check the user's
+     *                      permission.
+     * @return A map with the key "status" and the value "SUCCESS" and a key "result" with the value
+     * "INCLUDED" or "NOT_INCLUDED"
+     */
     @GetMapping("/check-authority")
     public ResponseEntity<?> checkAuthorities(Principal principal, @RequestParam String applicationId) {
 
@@ -182,12 +190,19 @@ public class ApiController {
 //    public ResponseEntity<?> getRoles() {
 //        return ResponseEntity.ok().body(securityGroupService.getRoles());
 //    }
+//
+//    @GetMapping("screen-security")
+//    public ResponseEntity<?> getScrSecurInfo(Principal principal) {
+//        return ResponseEntity.ok().body(applicationService.getScrSecurInfo(principal.getName()));
+//    }
 
-    @GetMapping("screen-security")
-    public ResponseEntity<?> getScrSecurInfo(Principal principal) {
-        return ResponseEntity.ok().body(applicationService.getScrSecurInfo(principal.getName()));
-    }
-
+    /**
+     * > This function is used to search for users by their name or email
+     *
+     * @param pageable This is a parameter that is used to paginate the results.
+     * @param keyword  the keyword to search for
+     * @return ResponseEntity.status(200).body(res);
+     */
     @GetMapping("/search-user")
     public ResponseEntity<?> searchUser(
         Pageable pageable,

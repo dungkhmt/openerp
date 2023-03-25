@@ -3,7 +3,6 @@ package com.hust.baseweb.controller;
 import com.hust.baseweb.model.PersonModel;
 import com.hust.baseweb.service.UserService;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,7 @@ public class UserRegisterController {
 
     private UserService userService;
 
-    @Autowired
+//    @Autowired
 //    private RegisteredAffiliationService registeredAffiliationService;
 
     public UserRegisterController(UserService userService) {
@@ -89,6 +88,14 @@ public class UserRegisterController {
 //        SimpleResponse res = userService.disableUserRegistration(input);
 //        return ResponseEntity.status(res.getStatus()).body(res);
 //    }
+
+    /**
+     * It takes a userId as a path variable, finds the PersonModel object in the database, and returns
+     * it as a response
+     *
+     * @param userId The userId is the user's login id.
+     * @return A ResponseEntity object.
+     */
     @GetMapping("/get-user-detail/{userId}")
     public ResponseEntity<?> getUserDetail(@PathVariable String userId) {
         log.info("getUserDetail userId = " + userId);
