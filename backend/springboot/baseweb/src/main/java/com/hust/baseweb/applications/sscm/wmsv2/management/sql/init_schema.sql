@@ -57,14 +57,35 @@ create table warehouse
     latitude   decimal(20, 14)
 );
 
+create table product_category
+(
+    category_id uuid        not null default uuid_generate_v1() primary key,
+    name        varchar(60) not null
+);
+
 create table product
 (
-    product_id  uuid         not null default uuid_generate_v1() primary key,
-    code        varchar(60)  not null,
-    name        varchar(100) not null,
-    description varchar(100),
-    volume      decimal(18, 2),
-    weight      decimal(18, 2)
+    product_id         uuid         not null default uuid_generate_v1() primary key,
+    code               varchar(60)  not null,
+    name               varchar(100) not null,
+    description        varchar(100),
+
+    height             decimal(18, 2),
+    weight             decimal(18, 2),
+    area               decimal(18, 2),
+
+    import_price       decimal(18, 2),
+    retail_price       decimal(18, 2),
+    whole_sale_price   decimal(18, 2),
+
+    tax_percentage     decimal(18, 2),
+
+    uom                varchar(20),
+    category_id        uuid,
+
+    image_content_type varchar(20),
+    image_size         int,
+    image_data         oid
 );
 
 create table bay
@@ -76,6 +97,14 @@ create table bay
     y           int         not null,
     x_long       int         not null,
     y_long       int         not null
+);
+
+create table product_bay
+(
+    product_bay_id uuid not null default uuid_generate_v1() primary key,
+    product_id     uuid not null,
+    bay_id         uuid not null,
+    quantity       decimal(18, 2)
 );
 
 create table product_warehouse

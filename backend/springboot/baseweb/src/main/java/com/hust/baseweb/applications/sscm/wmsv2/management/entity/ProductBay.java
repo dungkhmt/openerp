@@ -12,15 +12,17 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
+@Table(name = "product_bay")
 @Data
-@Table(name = "product_warehouse")
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class ProductWarehouse {
+@NoArgsConstructor
+public class ProductBay {
+
     @Id
-    private UUID productWarehouseId;
+    private UUID productBayId;
     private UUID productId;
-    private UUID warehouseId;
-    private BigDecimal quantityOnHand;
+    private UUID bayId;
+    private BigDecimal quantity;
+
 }

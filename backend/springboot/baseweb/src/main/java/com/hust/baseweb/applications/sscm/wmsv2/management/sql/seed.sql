@@ -75,3 +75,7 @@ values ('MENU_WMSv2_PRODUCT_DETAIL', 'MENU', 'MENU_WMSv2', 'WMSv2_PRODUCT_DETAIL
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
     ON CONFLICT DO NOTHING;
 -----------------------------------------------------------------
+
+-- For warehouse management warehouse module data
+insert into product_category (name)
+values ('Tivi'), ('Tủ lạnh'), ('Máy giặt'), ('Gia dụng'), ('Quạt điều hòa');

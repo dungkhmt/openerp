@@ -31,14 +31,14 @@ public class WarehouseServiceImpl implements WarehouseService {
     public Warehouse createWarehouse(WarehouseWithBays request) {
         log.info(String.format("Start create warehouse with request %s", request));
         Warehouse newWarehouse = Warehouse.builder()
-                                                    .name(request.getName())
-                                                    .address(request.getAddress())
-                                                    .width(request.getWarehouseWidth())
-                                                    .length(request.getWarehouseLength())
-                                                    .code(request.getCode())
-                                                    .latitude(request.getLatitude())
-                                                    .longitude(request.getLongitude())
-                                                    .build();
+                                          .name(request.getName())
+                                          .address(request.getAddress())
+                                          .width(request.getWarehouseWidth())
+                                          .length(request.getWarehouseLength())
+                                          .code(request.getCode())
+                                          .latitude(request.getLatitude())
+                                          .longitude(request.getLongitude())
+                                          .build();
 
         List<Bay> prevBays;
         if (request.getId() != null) {

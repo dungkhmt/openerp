@@ -1,3 +1,5 @@
+import { useRouteMatch } from "react-router-dom";
+import { useHistory } from "react-router";
 import { InputAdornment, TableBody, TableCell, TableContainer, 
   TableHead, TableRow } from '@mui/material';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
@@ -7,7 +9,9 @@ import { Box, Grid, Button, Typography, TextField, Select,
   MenuItem, Modal, Table} from "@material-ui/core";
 import useStyles from "../../management/styles";
 import { useForm } from "react-hook-form";
-import { errorNoti } from 'utils/notification';
+import { errorNoti, successNoti } from 'utils/notification';
+import { request } from 'api';
+import { API_PATH } from '../apiPaths';
 
 const DetailQuantityTable = ({ warehouseDetails, 
   setShowDetailQuantityModal, 
@@ -55,19 +59,7 @@ const DetailQuantityTable = ({ warehouseDetails,
       setShowDetailQuantityModal(false)
       return;
     }
-
-    try {
-      const currQuantity = initQuantityArray
-        .map(element => parseInt(element.quantity))
-        .reduce((prev, next) => prev + next);
-      if (currQuantity != totalQuantity) {
-        errorNoti("Vui lòng nhập tổng số lượng chính xác.");
-      } else {
-        setShowDetailQuantityModal(false)
-      }
-    } catch (e) {
-      errorNoti("Có lỗi xảy ra. Vui lòng thử lại");
-    }
+    setShowDetailQuantityModal(false);
   }
 
   const getWarehouseNameByWarehouseId = (id) => {
@@ -189,8 +181,6 @@ const ProductDetail = () => {
   const isCreateForm = true;
   const { register, errors, handleSubmit, watch, getValues } = useForm();
 
-  const [category, setCategory] = useState(null);
-  const [unit, setUnit] = useState(null);
   const [totalQuantity, setTotalQuantity] = useState(0);
 
   const [isShowDetailQuantityModal, setShowDetailQuantityModal] = useState(false);
@@ -277,9 +267,39 @@ const ProductDetail = () => {
   const [initQuantityArray, setInitQuantityArray] = useState([]);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [imageURL, setImageURL] = useState(null);
+  const [productCategories, setProductCategories] = useState([]);
+
+  const history = useHistory();
+  const { path } = useRouteMatch();
 
   const submitForm = (data) => {
-    console.log("Category: ", category, ", unit: ", unit);
+    // remove empty key-value in form data
+    const entries = Object.entries(data);
+    const nonEmptyOrNull = entries.filter(
+      ([key, value]) => value !== '' && value !== null && value !== undefined);
+    var modelData = Object.fromEntries(nonEmptyOrNull);
+    modelData.initProductQuantityList = initQuantityArray;
+
+    const requestBody = new FormData()
+    requestBody.append("image", uploadedImage);
+    requestBody.append("model", JSON.stringify(modelData));
+
+    console.log("Request body -> ", requestBody);
+    request(
+      "put",
+      API_PATH.PRODUCT,
+      (res) => {
+        successNoti(isCreateForm ? "Tạo sản phẩm thành công" : "Cập nhật sản phẩm thành công");
+        if (isCreateForm) {
+          console.log("TODO: Redirect to listing product screen")
+        }
+      },
+      {
+        401: () => { },
+        400: (e) => { errorNoti(e.response.data.errors[0].message); }
+      },
+      requestBody
+    )
   };
 
   useEffect(() => {
@@ -287,7 +307,35 @@ const ProductDetail = () => {
       setImageURL(URL.createObjectURL(uploadedImage));
       console.log("Image url ", imageURL);
     }
-  }, [uploadedImage])
+  }, [uploadedImage]);
+
+  useEffect(() => {
+    if (initQuantityArray != null && initQuantityArray.length > 0) {
+      var newTotalQuantity = 0;
+      for (var i = 0; i < initQuantityArray.length; i++) {
+        const quantity = initQuantityArray[i];
+        newTotalQuantity += parseInt(quantity.quantity);
+      }
+      setTotalQuantity(newTotalQuantity);
+    }
+  }, [initQuantityArray]);
+
+  useEffect(() => {
+
+    async function fetchData() {
+      const categoryResponse = request(
+        "get",
+        API_PATH.PRODUCT_CATEGORY,
+        (res) => {
+          console.log("Response product category request -> ", res);
+          setProductCategories(res.data);
+        }
+      )
+    }
+
+    fetchData();
+
+  }, []);
 
   return (
     <Fragment>
@@ -363,7 +411,7 @@ const ProductDetail = () => {
                       variant="outlined"
                       size="small"
                       inputRef={register({ required: "Vui lòng điền mã sản phẩm" })}
-                      name="name"
+                      name="code"
                       error={!!errors.name}
                       helperText={errors.name?.message}
                     ></TextField>
@@ -374,31 +422,33 @@ const ProductDetail = () => {
                   <Grid item xs={6}>
                     <Box className={classes.labelInput}>Phân loại</Box>
                     <Select
-                      value={category}
-                      label="category"
-                      onChange={(e) => setCategory(e.target.value)}
+                      label="categoryId"
+                      {...register("categoryId", { required: false })}
                       fullWidth
                     >
                     {/* TODO: Hard code here */}
                       <MenuItem value={1}>Đồ bếp</MenuItem>
                       <MenuItem value={2}>Tivi</MenuItem>
                       <MenuItem value={3}>Tủ lạnh</MenuItem>
+                      {
+                        productCategories.length > 0 &&
+                        productCategories.map(category => 
+                          <MenuItem values={category.categoryId}>
+                            {category.name}
+                          </MenuItem>)
+                      }
                     </Select>
                   </Grid>
                   <Grid item xs={6}>
                     <Box className={classes.labelInput}>Đơn vị tính</Box>
                     <Select
-                      value={unit}
-                      label="unit"
-                      onChange={(e) => {
-                        console.log("On change select e: ", e);
-                        setUnit(e.target.value)}}
+                      label="uom"
+                      {...register("uom", { required: false })}
                       fullWidth
                     >
-                    {/* TODO: Hard code here */}
-                      <MenuItem value={1}>Cái</MenuItem>
-                      <MenuItem value={2}>Kg</MenuItem>
-                      <MenuItem value={3}>Gói</MenuItem>
+                      <MenuItem value={"Cái"} >Cái</MenuItem>
+                      <MenuItem value={"Kg"}>Kg</MenuItem>
+                      <MenuItem value={"Gói"}>Gói</MenuItem>
                     </Select>
                   </Grid>
                 </Grid>
@@ -411,6 +461,7 @@ const ProductDetail = () => {
                       variant="outlined"
                       size="small"
                       name="height"
+                      inputRef={register({ required: false })}
                       type={"number"}
                     ></TextField>
                   </Grid>
@@ -421,6 +472,7 @@ const ProductDetail = () => {
                       variant="outlined"
                       size="small"
                       name="area"
+                      inputRef={register({ required: false })}
                       type={"number"}
                     ></TextField>
                   </Grid>
@@ -434,6 +486,7 @@ const ProductDetail = () => {
                       variant="outlined"
                       size="small"
                       name="weight"
+                      inputRef={register({ required: false })}
                       type={"number"}
                     ></TextField>
                   </Grid>
@@ -443,17 +496,19 @@ const ProductDetail = () => {
                       fullWidth
                       variant="outlined"
                       size="small"
-                      name="height"
+                      name="initQuantity"
                       type={"number"}
-                      onChange={(e) => setTotalQuantity(e.target.value)}
                       value={totalQuantity}
-                      InputProps={{startAdornment: (
-                        <InputAdornment position="end">
-                          <Button onClick={() => setShowDetailQuantityModal(true)}>
-                            <FormatListBulletedIcon />
-                          </Button>
-                        </InputAdornment>
-                      )}}
+                      InputProps={{
+                        readOnly: true,
+                        startAdornment: (
+                          <InputAdornment position="end">
+                            <Button onClick={() => setShowDetailQuantityModal(true)}>
+                              <FormatListBulletedIcon />
+                            </Button>
+                          </InputAdornment>
+                        )
+                      }}
                     ></TextField>
                   </Grid>
                 </Grid>
@@ -502,9 +557,10 @@ const ProductDetail = () => {
                     <Box className={classes.labelInput}>Thuế (%)</Box>
                     <TextField
                       fullWidth
+                      inputRef={register({ required: false })}
                       variant="outlined"
                       size="small"
-                      name="tax"
+                      name="taxPercentage"
                       type={"number"}
                     ></TextField>
                   </Grid>
@@ -544,8 +600,10 @@ const ProductDetail = () => {
             <Grid item xs={4}>
               <Box className={classes.boxInfor}>
                 <Typography className={classes.inforTitle} variant="h6">
-                  Note</Typography>
+                  Mô tả thêm</Typography> 
                 <TextField
+                  inputRef={register({ required: false })}
+                  name="description"
                   fullWidth
                   variant="outlined"
                   size="small"

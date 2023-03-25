@@ -101,7 +101,6 @@ const CreateWarehouse = ( props ) => {
       "put",
       API_PATH.WAREHOUSE,
       (res) => {
-        let id = res.data.id;
         successNoti(isCreateForm ? "Tạo kho thành công" : "Cập nhật kho thành công");
         // history.push(`${path.replace('/create', '')}/${id}`);
         if (isCreateForm) {
