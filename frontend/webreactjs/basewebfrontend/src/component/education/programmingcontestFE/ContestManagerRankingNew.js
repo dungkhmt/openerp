@@ -1,16 +1,8 @@
-import {Grid, TableHead} from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableRow from "@material-ui/core/TableRow";
 import {Box, LinearProgress} from "@mui/material";
 import Button from "@mui/material/Button";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TablePagination from "@mui/material/TablePagination";
 import Typography from "@mui/material/Typography";
 import {useEffect, useState} from "react";
 import XLSX from "xlsx";
-import {getColorLevel, StyledTableCell, StyledTableRow} from "./lib";
 import {request} from "./Request";
 import HustContainerCard from "../../common/HustContainerCard";
 import StandardTable from "../../table/StandardTable";
@@ -18,8 +10,6 @@ import StandardTable from "../../table/StandardTable";
 export default function ContestManagerRankingNew(props) {
   const contestId = props.contestId;
   const [ranking, setRanking] = useState([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
 
   const [getPointForRankingType, setGetPointForRankingType] =
@@ -67,10 +57,6 @@ export default function ContestManagerRankingNew(props) {
     );
   };
 
-  const handlePageRankingSizeChange = (event) => {
-    setRowsPerPage(parseInt(event.target.value));
-    setPage(0);
-  };
 
   function getRanking() {
     setLoading(true);
@@ -86,47 +72,30 @@ export default function ContestManagerRankingNew(props) {
     ).then(() => setLoading(false));
   }
 
-  const columns = [
-    {title: "Username", field: "userId"},
-    {title: "Fullname", field: "fullname"},
-    {title: "TOTAL", field: "totalPoint"},
-    ranking.length > 0 && {
-      ...ranking[0].mapProblemsToPoints.map((problem) => {
-        return (
-          {
-            title: problem.problemId,
-            render: (problem) => (
-              <span style={{color: "yellow"}}>
-              {/*{`${problem.problemId}`}*/}
-                1
-            </span>
-            )
-          }
-        );
-      })
-    },
-    // {
-    //   title: "Level",
-    //   render: (problem) => (
-    //     <span style={{color: getColorLevel(`${problem.levelId}`)}}>
-    //       {`${problem.levelId}`}
-    //     </span>
-    //   )
-    // }
-  ];
-
   const generateColumns = () => {
     const columns = [
       {title: "Username", field: "userId"},
-      {title: "Fullname", field: "fullname"},
-      {title: "TOTAL", field: "totalPoint"}
+      {
+        title: "Fullname", render: (rankingRecord) => (
+          <span>
+            <em>{`${rankingRecord.fullname}`}</em>
+          </span>
+        )
+      },
+      {
+        title: "TOTAL", render: (rankingRecord) => (
+          <span style={{fontWeight: 600, color: "#2e7d32"}}>
+            {`${rankingRecord.totalPoint}`}
+          </span>
+        )
+      }
     ];
 
     ranking.length > 0 && ranking[0].mapProblemsToPoints.forEach((problem, i) => {
       columns.push({
         title: problem.problemId,
         render: (rankingRecord) => (
-          <span>
+          <span style={{color: "#2e7d32"}}>
             {`${rankingRecord.mapProblemsToPoints[i].point}`}
           </span>
         )
@@ -196,81 +165,6 @@ export default function ContestManagerRankingNew(props) {
             sorting: true,
           }}
         />
-        <TableContainer component={Paper}>
-          <Table
-            sx={{minWidth: window.innerWidth - 500}}
-            aria-label="customized table"
-          >
-            <TableHead>
-              <TableRow>
-                <StyledTableCell align="center"></StyledTableCell>
-                <StyledTableCell align="center">Username</StyledTableCell>
-                <StyledTableCell align="center">Fullname</StyledTableCell>
-                <StyledTableCell align="center">
-                  <b>TOTAL</b>
-                </StyledTableCell>
-
-                {ranking.length > 0 &&
-                  ranking[0].mapProblemsToPoints.map((problem) => {
-                    return (
-                      <StyledTableCell
-                        sx={{color: "yellow !important"}}
-                        align="center"
-                      >
-                        {problem.problemId}
-                      </StyledTableCell>
-                    );
-                  })}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {ranking.length > 0 &&
-                ranking.map(
-                  (element, index) =>
-                    index >= page * rowsPerPage &&
-                    index < (page + 1) * rowsPerPage && (
-                      <StyledTableRow>
-                        <StyledTableCell>
-                          <b>{index + 1}</b>
-                        </StyledTableCell>
-
-                        <StyledTableCell align="center">
-                          <b>{element.userId}</b>
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
-                          <b>{element.fullname}</b>
-                        </StyledTableCell>
-
-                        <StyledTableCell align="center">
-                          <b>{element.totalPoint}</b>
-                        </StyledTableCell>
-                        {element.mapProblemsToPoints.map((problem) => {
-                          return (
-                            <StyledTableCell align="center">
-                              {problem.point}
-                            </StyledTableCell>
-                          );
-                        })}
-                      </StyledTableRow>
-                    )
-                )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Grid container spacing={12}>
-          <Grid item>
-            <TablePagination
-              shape="rounded"
-              count={ranking.length}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              onPageChange={(event, value) => {
-                setPage(value);
-              }}
-              onRowsPerPageChange={handlePageRankingSizeChange}
-            />
-          </Grid>
-        </Grid>
       </Box>
     </HustContainerCard>
   );
