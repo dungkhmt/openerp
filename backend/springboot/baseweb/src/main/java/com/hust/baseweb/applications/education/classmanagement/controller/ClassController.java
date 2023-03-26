@@ -710,7 +710,6 @@ public class ClassController {
         return ResponseEntity.ok().body(eduCourseChapterMaterial);
     }
 
-    @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
     @GetMapping("/get-chapter-materials-of-course/{chapterId}")
     public ResponseEntity<?> getChapterMaterialsOfCourse(Principal principal, @PathVariable UUID chapterId) {
         //List<EduCourseChapterMaterial> eduCourseChapterMaterials = eduCourseChapterMaterialService.findAll();
