@@ -57,6 +57,22 @@ export default function ContestManagerRankingNew(props) {
     );
   };
 
+  const mapRankingToListProblemResult = (input) => {
+    let output = [];
+    input.forEach((row) => {
+      let outputRow = {};
+      row.mapProblemsToPoints.forEach((mapProblemToPoint) => {
+        outputRow[mapProblemToPoint.problemId] = mapProblemToPoint.point;
+      })
+      outputRow.userId = row.userId;
+      outputRow.fullname = row.fullname;
+      outputRow.totalPoint = row.totalPoint;
+
+      output.push(outputRow);
+    });
+
+    return output;
+  }
 
   function getRanking() {
     setLoading(true);
@@ -67,17 +83,25 @@ export default function ContestManagerRankingNew(props) {
       "?getPointForRankingType=" +
       getPointForRankingType,
       (res) => {
-        setRanking(res.data.sort((a, b) => b.totalPoint - a.totalPoint));
+        let sortedResult = res.data.sort((a, b) => b.totalPoint - a.totalPoint);
+        let rankingOutput = mapRankingToListProblemResult(sortedResult);
+        setRanking(rankingOutput);
       }
     ).then(() => setLoading(false));
   }
 
   const generateColumns = () => {
+    let problemIds = [];
+    if (ranking.length > 0) {
+      // get list of problemIds from "ranking" object
+      // ranking: {problemId1, problemId2,... problemId_n, userId, fullname, totalPoint}
+      problemIds = Object.keys(ranking[0]).slice(0, Object.keys(ranking[0]).length - 3);
+    }
     const columns = [
       {title: "Username", field: "userId"},
       {
         title: "Fullname", render: (rankingRecord) => (
-          <span>
+          <span style={{width: "150px", display: "block"}}>
             <em>{`${rankingRecord.fullname}`}</em>
           </span>
         )
@@ -91,14 +115,10 @@ export default function ContestManagerRankingNew(props) {
       }
     ];
 
-    ranking.length > 0 && ranking[0].mapProblemsToPoints.forEach((problem, i) => {
+    ranking.length > 0 && problemIds.forEach((problemId) => {
       columns.push({
-        title: problem.problemId,
-        render: (rankingRecord) => (
-          <span style={{color: "#2e7d32"}}>
-            {`${rankingRecord.mapProblemsToPoints[i].point}`}
-          </span>
-        )
+        title: problemId,
+        field: problemId
       });
     });
 
