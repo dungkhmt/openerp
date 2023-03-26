@@ -1,5 +1,4 @@
-import {Button, CircularProgress, Grid, Typography,} from "@material-ui/core";
-import {Box, Divider} from "@mui/material";
+import {Box, Button, CircularProgress, Divider, Grid, Typography,} from "@mui/material";
 import {ContentState, EditorState} from "draft-js";
 import htmlToDraft from "html-to-draftjs";
 import React, {useEffect, useRef, useState} from "react";
@@ -15,6 +14,7 @@ import {errorNoti, successNoti} from "../../../utils/notification";
 import HustCodeLanguagePicker from "../../common/HustCodeLanguagePicker";
 import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
 import HustContainerCard from "../../common/HustContainerCard";
+import HustCodeEditor from "../../common/HustCodeEditor";
 
 const editorStyle = {
   toolbar: {
@@ -32,10 +32,12 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const contestId = params.contestId;
   const [problem, setProblem] = useState(null);
   const [testCases, setTestCases] = useState([]);
-  const [filename, setFilename] = useState(null);
+  const [file, setFile] = useState(null);
   const [language, setLanguage] = useState("CPP");
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
+  const [codeSolution, setCodeSolution] = useState("");
+  const [isSubmitCode, setIsSubmitCode] = useState(0);
 
   const [openModalPreview, setOpenModalPreview] = useState(false);
   const [selectedTestcase, setSelectedTestcase] = useState();
@@ -58,16 +60,16 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const listSubmissionRef = useRef(null);
 
   function onFileChange(event) {
-    setFilename(event.target.files[0]);
+    setFile(event.target.files[0]);
   }
 
   const onInputChange = (event) => {
     let name = event.target.value;
-    setFilename(name);
+    setFile(name);
   };
 
   const handleFormSubmit = async (event) => {
-    event.preventDefault();
+    if (event) event.preventDefault();
     setIsProcessing(true);
     let body = {
       problemId: problemId,
@@ -75,14 +77,14 @@ export default function StudentViewProgrammingContestProblemDetail() {
       language: language,
     };
 
-    if (filename == null) {
+    if (file == null) {
       errorNoti("Please choose a file to submit", 2000);
       setIsProcessing(false);
       return;
     }
     let formData = new FormData();
     formData.append("inputJson", JSON.stringify(body));
-    formData.append("file", filename);
+    formData.append("file", file);
 
     await authPostMultiPart(
       dispatch,
@@ -104,7 +106,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
       })
       .finally(() => {
         setIsProcessing(false);
-        setFilename(null);
+        setFile(null);
         inputRef.current.value = null;
       });
   };
@@ -174,6 +176,22 @@ export default function StudentViewProgrammingContestProblemDetail() {
     );
   };
 
+  async function submitCode() {
+    const blob = new Blob(
+      [codeSolution],
+      {type: "text/plain;charset=utf-8"}
+    );
+    const now = new Date();
+    const file = new File([blob], "SourceCode_" + problemId + now.toLocaleTimeString() + ".txt", {type: 'text/plain;charset=utf-8'});
+    setFile(file);
+    setIsSubmitCode(isSubmitCode + 1);
+  }
+
+  useEffect(() => {
+    if (isSubmitCode > 0)
+      handleFormSubmit(null);
+  }, [isSubmitCode])
+
   return (
     <HustContainerCard title={"Problem: " + (problem ? problem.problemName : "")}>
       <Box>
@@ -196,8 +214,39 @@ export default function StudentViewProgrammingContestProblemDetail() {
 
       <ModalPreview chosenTestcase={selectedTestcase}/>
       <Box sx={{mt: 2}}>
+        <Box>
+          <HustCodeEditor
+            title={"Source code"}
+            language={language}
+            onChangeLanguage={(event) => {
+              setLanguage(event.target.value);
+            }}
+            sourceCode={codeSolution}
+            onChangeSourceCode={(code) => {
+              setCodeSolution(code);
+            }}
+            height={"480px"}
+          />
+          <Box sx={{width: "100%", display: "flex", justifyContent: "center"}}>
+            <Button
+              disabled={isProcessing}
+              color="primary"
+              variant="contained"
+              type="submit"
+              onClick={submitCode}
+              sx={{mt: 1, mb: 1}}
+            >
+              SUBMIT CODE
+            </Button>
+          </Box>
+
+        </Box>
+
+        <Divider>or</Divider>
+
         <form onSubmit={handleFormSubmit}>
-          <Grid container spacing={1} alignItems="center">
+          <Grid container spacing={1} alignItems="center" mt={1}>
+            <Grid item xs={3}/>
             <Grid item xs={3}>
               <input
                 type="file"
@@ -207,7 +256,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 ref={inputRef}
               />
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={1} mr={1}>
               <HustCodeLanguagePicker language={language} onChangeLanguage={(e) => setLanguage(e.target.value)}/>
             </Grid>
 
@@ -223,6 +272,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
                 SUBMIT
               </Button>
             </Grid>
+            <Grid item xs={3}/>
 
             {isProcessing ? <CircularProgress/> : ""}
           </Grid>
