@@ -21,6 +21,14 @@ export const WMSV2 = {
       text: "Danh sách kho",
       child: [],
     },
+    {
+      id: "MENU_WMSv2_PRODUCT_DETAIL",
+      path: "/wmsv2/product",
+      isPublic: false,
+      icon: "StarBorder",
+      text: "Danh sách sản phẩm",
+      child: [],
+    },
     // {
     //   id: "MENU_WMSV2_VIEW",
     //   path: "/wms/warehouse/products",

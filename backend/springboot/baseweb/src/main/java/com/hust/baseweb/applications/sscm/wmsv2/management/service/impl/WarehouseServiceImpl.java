@@ -1,7 +1,7 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.Bay;
-import com.hust.baseweb.applications.sscm.wmsv2.management.entity.WMSV2Warehouse;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.Warehouse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.WarehouseWithBays;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.BayRepository;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.WarehouseRepository;
@@ -28,17 +28,17 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Transactional
     @Override
-    public WMSV2Warehouse createWarehouse(WarehouseWithBays request) {
+    public Warehouse createWarehouse(WarehouseWithBays request) {
         log.info(String.format("Start create warehouse with request %s", request));
-        WMSV2Warehouse newWarehouse = WMSV2Warehouse.builder()
-                                                    .name(request.getName())
-                                                    .address(request.getAddress())
-                                                    .width(request.getWarehouseWidth())
-                                                    .length(request.getWarehouseLength())
-                                                    .code(request.getCode())
-                                                    .latitude(request.getLatitude())
-                                                    .longitude(request.getLongitude())
-                                                    .build();
+        Warehouse newWarehouse = Warehouse.builder()
+                                          .name(request.getName())
+                                          .address(request.getAddress())
+                                          .width(request.getWarehouseWidth())
+                                          .length(request.getWarehouseLength())
+                                          .code(request.getCode())
+                                          .latitude(request.getLatitude())
+                                          .longitude(request.getLongitude())
+                                          .build();
 
         List<Bay> prevBays;
         if (request.getId() != null) {
@@ -49,7 +49,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             prevBays = new ArrayList<>();
         }
 
-        WMSV2Warehouse warehouse = warehouseRepository.save(newWarehouse);
+        Warehouse warehouse = warehouseRepository.save(newWarehouse);
         log.info("Start save list shelf");
         List<WarehouseWithBays.Shelf> listShelf = request.getListShelf();
         if (listShelf != null && !listShelf.isEmpty()) {
@@ -85,9 +85,9 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public List<WMSV2Warehouse> getAll() {
+    public List<Warehouse> getAllWarehouseGeneral() {
         log.info("Start get all warehouse in service");
-        List<WMSV2Warehouse> response = warehouseRepository.findAll();
+        List<Warehouse> response = warehouseRepository.findAll();
         // TODO: Filter by company or something else... user can not view all facility in database
         log.info(String.format("Get %d facilities", response.size()));
         return response;
@@ -119,9 +119,9 @@ public class WarehouseServiceImpl implements WarehouseService {
     public WarehouseWithBays getById(String id) {
         log.info(String.format("Start get warehouse information with id %s", id));
         UUID uuid = UUID.fromString(id);
-        Optional<WMSV2Warehouse> warehouseOpt = warehouseRepository.findById(uuid);
+        Optional<Warehouse> warehouseOpt = warehouseRepository.findById(uuid);
         if (warehouseOpt.isPresent()) {
-            WMSV2Warehouse warehouse = warehouseOpt.get();
+            Warehouse warehouse = warehouseOpt.get();
             List<Bay> bays = bayRepository.findAllByWarehouseId(uuid);
             List<WarehouseWithBays.Shelf> shelves = bays.stream()
                                                         .map(bay -> WarehouseWithBays.Shelf.builder()
@@ -150,6 +150,15 @@ public class WarehouseServiceImpl implements WarehouseService {
             log.warn(String.format("Not found warehouse with id %s", id));
             return null;
         }
+    }
+
+    @Override
+    public List<WarehouseWithBays> getAllWarehouseDetail() {
+        List<Warehouse> warehouseGeneral = warehouseRepository.findAll();
+        List<WarehouseWithBays> response = warehouseGeneral.stream()
+                                                           .map(general -> getById(general.getWarehouseId().toString()))
+                                                           .collect(Collectors.toList());
+        return response;
     }
 
 }

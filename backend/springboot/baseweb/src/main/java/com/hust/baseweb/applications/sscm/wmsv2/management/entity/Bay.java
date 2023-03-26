@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "wmsv2_bay")
+@Table(name = "bay")
 public class Bay {
     @Id
     @GenericGenerator(name = "uuid1", strategy = "org.hibernate.id.UUIDGenerator")

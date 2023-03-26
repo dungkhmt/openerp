@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @ToString
-@Table(name = "wmsv2_inventory_item")
+@Table(name = "inventory_item")
 public class InventoryItem {
     @Id
     private UUID inventoryItemId;
@@ -25,16 +25,15 @@ public class InventoryItem {
     private UUID bayId;
 
     private BigDecimal quantityOnHandTotal;
-    private String uomId;
-
-    private String description;
-
     private BigDecimal importPrice;
     private BigDecimal exportPrice;
-    private String currencyOumId;
 
+    private String currencyUomId;
     private Date datetimeReceived;
+    private Date expireDate;
+    private String uomId;
     private Date lastUpdatedStamp;
     private Date createdStamp;
-    private Date expireDate;
+
+    private String description;
 }

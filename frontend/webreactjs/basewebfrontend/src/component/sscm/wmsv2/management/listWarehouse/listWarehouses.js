@@ -38,16 +38,19 @@ const ListWarehouse = () => {
   ];
 
   const removeSelectedFacilities = () => {
-    const selectedFacilityIds = warehousesTableData.filter(
-      (facility) => facility.tableData.checked == true)
-                    .map((obj) => obj.facilityId);
+    const selectedFacilityIds = warehousesTableData
+      .filter((facility) => facility.tableData.checked == true)
+      .map((obj) => obj.warehouseId);
+    
+    console.log("warehousesTableData: ", warehousesTableData);
+
     request(
       "delete",
       API_PATH.WAREHOUSE,
       (res) => { 
         successNoti("Xóa thành công");
       const newTableData = warehousesTableData.filter(
-        (facility) => !selectedFacilityIds.includes(facility.facilityId));
+        (facility) => !selectedFacilityIds.includes(facility.warehouseId));
       setWarehousesTableData(newTableData);
       },
       { },
@@ -89,7 +92,8 @@ const ListWarehouse = () => {
             height: "100%",
           }}>
             <ListingMaps
-              warehouses={warehousesTableData}
+              warehouses={warehousesTableData
+                .filter((warehouse) => warehouse.latitude != null && warehouse.longitude != null)}
             ></ListingMaps>
           </div>
       </Box>
