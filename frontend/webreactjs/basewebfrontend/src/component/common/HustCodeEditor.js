@@ -11,11 +11,12 @@ const HustCodeEditor = (props) => {
   const {
     classRoot,
     title,
-    placeholder="Write your Source code here",
+    placeholder = "Write your Source code here",
     language,
     onChangeLanguage,
     sourceCode,
     onChangeSourceCode,
+    height = "420px",
     ...remainProps
   } = props;
 
@@ -40,7 +41,7 @@ const HustCodeEditor = (props) => {
 
       <AceEditor
         width="100%"
-        height="420px"
+        height={height}
         style={{paddingTop: "6px"}}
         placeholder={placeholder}
         mode={convertLanguageToEditorMode(language)}
