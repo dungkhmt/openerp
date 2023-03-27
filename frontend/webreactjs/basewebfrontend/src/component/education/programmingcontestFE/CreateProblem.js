@@ -95,7 +95,11 @@ function CreateProblem() {
   }, [])
 
   const handleSelectTags = (event) => {
-    setSelectedTags(event.target.value);
+    const selectingTags = event.target.value;
+
+    const filteredTags = [...new Map(selectingTags.map(tag => [tag.tagId, tag])).values()]
+
+    setSelectedTags(filteredTags);
   };
 
   const handleAttachmentFiles = (files) => {
