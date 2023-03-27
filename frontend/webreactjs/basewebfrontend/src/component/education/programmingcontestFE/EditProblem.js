@@ -331,7 +331,7 @@ function EditProblem() {
             input={<OutlinedInput label="Tags"/>}
             renderValue={(selectedTags) => (
               <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.8}}>
-                {selectedTags.map((selectedTag) => (
+                {selectedTags?.map((selectedTag) => (
                   <Chip size="small" label={selectedTag.name} sx={{
                     marginRight: "6px",
                     marginBottom: "6px",
