@@ -13,7 +13,7 @@ create
 -- SELECT * FROM pg_extension;
 select uuid_generate_v1();
 ---
-create table wmsv2_inventory_item
+create table inventory_item
 (
     inventory_item_id      uuid           not null default uuid_generate_v1() primary key,
     product_id             uuid           not null,
@@ -37,7 +37,7 @@ create table wmsv2_inventory_item
 --     available_to_promise_total DECIMAL(18, 6),
 );
 
-create table wmsv2_inventory_item_detail
+create table inventory_item_detail
 (
     inventory_item_detail_id uuid           not null default uuid_generate_v1() primary key,
     inventory_item_id        uuid           not null,
@@ -45,7 +45,7 @@ create table wmsv2_inventory_item_detail
     effective_date           timestamp      not null default current_timestamp
 );
 
-create table wmsv2_warehouse
+create table warehouse
 (
     warehouse_id uuid         not null default uuid_generate_v1() primary key,
     name        varchar(100) not null,
@@ -57,17 +57,38 @@ create table wmsv2_warehouse
     latitude   decimal(20, 14)
 );
 
-create table wmsv2_product
+create table product_category
 (
-    product_id  uuid         not null default uuid_generate_v1() primary key,
-    code        varchar(60)  not null,
-    name        varchar(100) not null,
-    description varchar(100),
-    volume      decimal(18, 2),
-    weight      decimal(18, 2)
+    category_id uuid        not null default uuid_generate_v1() primary key,
+    name        varchar(60) not null
 );
 
-create table wmsv2_bay
+create table product
+(
+    product_id         uuid         not null default uuid_generate_v1() primary key,
+    code               varchar(60)  not null,
+    name               varchar(100) not null,
+    description        varchar(100),
+
+    height             decimal(18, 2),
+    weight             decimal(18, 2),
+    area               decimal(18, 2),
+
+    import_price       decimal(18, 2),
+    retail_price       decimal(18, 2),
+    whole_sale_price   decimal(18, 2),
+
+    tax_percentage     decimal(18, 2),
+
+    uom                varchar(20),
+    category_id        uuid,
+
+    image_content_type varchar(20),
+    image_size         int,
+    image_data         oid
+);
+
+create table bay
 (
     bay_id      uuid        not null default uuid_generate_v1() primary key,
     warehouse_id uuid        not null,
@@ -78,7 +99,15 @@ create table wmsv2_bay
     y_long       int         not null
 );
 
-create table wmsv2_product_warehouse
+create table product_bay
+(
+    product_bay_id uuid not null default uuid_generate_v1() primary key,
+    product_id     uuid not null,
+    bay_id         uuid not null,
+    quantity       decimal(18, 2)
+);
+
+create table product_warehouse
 (
     product_warehouse_id uuid not null default uuid_generate_v1() primary key,
     product_id          uuid not null,
@@ -86,8 +115,8 @@ create table wmsv2_product_warehouse
     quantity_on_hand    decimal(18, 2)
 );
 
-alter table wmsv2_bay
-    add constraint fk_bay_warehouse_id foreign key (warehouse_id) references wmsv2_warehouse (warehouse_id);
+alter table bay
+    add constraint fk_bay_warehouse_id foreign key (warehouse_id) references warehouse (warehouse_id);
 
 -- alter table wmsv2_warehouse rename column facility to code;
 -- TODO: Add constraint for tables
