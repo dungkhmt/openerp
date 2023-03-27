@@ -1,6 +1,6 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
-import {Link, useHistory} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {request} from "../../../api";
 import Typography from "@mui/material/Typography";
 import {Autocomplete, Button, Grid, IconButton, TextField} from "@mui/material";
@@ -19,7 +19,6 @@ export function ContestManagerManageProblem(props) {
   const [allProblems, setAllProblems] = useState([]);
   const [contestProblems, setContestProblems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const history = useHistory();
 
   const [searchProblemValue, setSearchProblemValue] = useState("");
   const [chosenProblem, setChosenProblem] = useState(null);
