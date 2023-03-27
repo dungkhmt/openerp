@@ -26,6 +26,9 @@ const DetailQuantityTable = ({
   const [warehouseId, setWarehouseId] = useState(null);
   const [bayId, setBayId] = useState(null);
   const [quantity, setQuantity] = useState(0);
+  const [importPrice, setImportPrice] = useState(0);
+  const [exportPrice, setExportPrice] = useState(0);
+  const [lotId, setLotId] = useState(null);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
 
   useEffect(() => {
@@ -40,14 +43,17 @@ const DetailQuantityTable = ({
   }, [warehouseId]);
 
   const newLineButtonClickHandle = () => {
-    if (warehouseId == null || bayId == null || quantity <= 0) {
+    if (warehouseId == null || bayId == null || quantity <= 0 || lotId == null) {
       errorNoti("Vui lòng nhập đầy đủ thông tin");
       return;
     }
     const newQuantity = {
       warehouseId: warehouseId,
       bayId: bayId,
-      quantity: quantity
+      quantity: quantity,
+      exportPrice: exportPrice,
+      importPrice: importPrice,
+      lotId: lotId
     };
     setInitQuantityArray([...initQuantityArray, newQuantity]);
     console.log("New quantity array: ", initQuantityArray);
@@ -109,6 +115,9 @@ const DetailQuantityTable = ({
               <TableCell>Kho</TableCell>
               <TableCell>Kệ</TableCell>
               <TableCell>Số lượng</TableCell>
+              <TableCell>Giá nhập</TableCell>
+              <TableCell>Giá bán</TableCell>
+              <TableCell>Lô</TableCell>
             </TableRow>
           </TableHead>
       
@@ -120,6 +129,9 @@ const DetailQuantityTable = ({
                   <TableCell>{getWarehouseNameByWarehouseId(element.warehouseId)}</TableCell>
                   <TableCell>{getBayCodeByBayId(element.bayId)}</TableCell>
                   <TableCell>{element.quantity}</TableCell>
+                  <TableCell>{element.importPrice}</TableCell>
+                  <TableCell>{element.exportPrice}</TableCell>
+                  <TableCell>{element.lotId}</TableCell>
                 </TableRow>
                 )
             }
@@ -169,6 +181,43 @@ const DetailQuantityTable = ({
                     value={quantity}
                     error={quantity < 0}
                     onChange={(e) => setQuantity(e.target.value)}
+                  ></TextField>
+                </TableCell>
+
+                <TableCell>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    name="area"
+                    type={"number"}
+                    value={importPrice}
+                    error={importPrice < 0}
+                    onChange={(e) => setImportPrice(e.target.value)}
+                  ></TextField>
+                </TableCell>
+
+                <TableCell>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    name="area"
+                    type={"number"}
+                    value={exportPrice}
+                    error={exportPrice < 0}
+                    onChange={(e) => setExportPrice(e.target.value)}
+                  ></TextField>
+                </TableCell>
+
+                <TableCell>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    name="area"
+                    value={lotId}
+                    onChange={(e) => setLotId(e.target.value)}
                   ></TextField>
                 </TableCell>
               </TableRow>
@@ -335,6 +384,7 @@ const ProductDetail = ( props ) => {
           p: 4,
         }}>
           <DetailQuantityTable
+            isCreateForm={isCreateForm}
             warehouseDetails={warehouseDetails} 
             setShowDetailQuantityModal={setShowDetailQuantityModal} 
             initQuantityArray={initQuantityArray} 
@@ -399,6 +449,67 @@ const ProductDetail = ( props ) => {
                     ></TextField>
                   </Grid>
                 </Grid>
+
+                {/* <Grid container spacing={3} className={classes.inforWrap}>
+                  <Grid item xs={6}>
+                    <Box className={classes.labelInput}>
+                      Giá nhập (VNĐ) <RequireStar /></Box>
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      size="small"
+                      inputRef={register({ required: "Vui lòng điền giá nhập" })}
+                      name="importPrice"
+                      type={"number"}
+                      error={!!errors.name}
+                      helperText={errors.name?.message}
+                      value={productInfo?.productInfo?.importPrice}
+                    ></TextField>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Box className={classes.labelInput}>
+                      Giá bán lẻ (VNĐ) <RequireStar /></Box>
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      size="small"
+                      inputRef={register({ required: "Vui lòng nhập giá bán lẻ" })}
+                      name="exportPrice"
+                      type={"number"}
+                      error={!!errors.name}
+                      helperText={errors.name?.message}
+                      value={productInfo?.productInfo?.exportPrice}
+                    ></TextField>
+                  </Grid>
+                </Grid> */}
+
+                
+              </Box>
+            </Grid>
+            <Grid item xs={4}>
+              <Box className={classes.boxInfor}>
+                <Typography className={classes.inforTitle} variant="h6">
+                  Ảnh sản phẩm</Typography>
+                <Button variant="contained" component="label" >
+                  Tải ảnh lên
+                  <input type="file" hidden onChange={(e) => {
+                    setUploadedImage(e.target.files[0]); 
+                    console.log(e.target.files[0]);
+                  }} />
+                </Button>
+                <Box>
+                  <img src={imageURL} width={"100%"} height={"100%"} />
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={2}>
+            <Grid item xs={8}>
+              <Box className={classes.boxInfor}>
+                <Typography className={classes.inforTitle} variant="h6">
+                  Thông tin bổ sung
+                </Typography>
 
                 <Grid container spacing={3} className={classes.inforWrap}>
                   <Grid item xs={6}>
@@ -503,96 +614,47 @@ const ProductDetail = ( props ) => {
                     ></TextField>
                   </Grid>
                 </Grid>
-              </Box>
-            </Grid>
-            <Grid item xs={4}>
-              <Box className={classes.boxInfor}>
-                <Typography className={classes.inforTitle} variant="h6">
-                  Ảnh sản phẩm</Typography>
-                <Button variant="contained" component="label" >
-                  Tải ảnh lên
-                  <input type="file" hidden onChange={(e) => {
-                    setUploadedImage(e.target.files[0]); 
-                    console.log(e.target.files[0]);
-                  }} />
-                </Button>
-                <Box>
-                  <img src={imageURL} width={"100%"} height={"100%"} />
-                </Box>
-              </Box>
-            </Grid>
-          </Grid>
 
-          <Grid container spacing={2}>
-            <Grid item xs={8}>
-              <Box className={classes.boxInfor}>
-                <Typography className={classes.inforTitle} variant="h6">
-                  Thông tin giá (trên 1 sản phẩm)
-                </Typography>
-
-                <Grid container spacing={3} className={classes.inforWrap}>
+                {/* <Grid container spacing={3} className={classes.inforWrap}>
                   <Grid item xs={6}>
-                    <Box className={classes.labelInput}>
-                      Giá nhập (VNĐ) <RequireStar /></Box>
+                    <Box className={classes.labelInput}>Ngày nhập</Box>
                     <TextField
                       fullWidth
                       variant="outlined"
                       size="small"
-                      inputRef={register({ required: "Vui lòng điền giá nhập" })}
-                      name="importPrice"
-                      type={"number"}
-                      error={!!errors.name}
-                      helperText={errors.name?.message}
-                      value={productInfo?.productInfo?.importPrice}
-                    ></TextField>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Box className={classes.labelInput}>Thuế (%)</Box>
-                    <TextField
-                      fullWidth
+                      name="datetimeReceived"
                       inputRef={register({ required: false })}
+                      type={"date"}
+                      value={productInfo?.productInfo?.datetimeReceived}
+                    ></TextField>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Box className={classes.labelInput}>Ngày hết hạn</Box>
+                    <TextField
+                      fullWidth
                       variant="outlined"
                       size="small"
-                      name="taxPercentage"
-                      type={"number"}
-                      value={productInfo?.productInfo?.taxPercentage}
+                      name="expiredDate"
+                      inputRef={register({ required: false })}
+                      type={"date"}
+                      value={productInfo?.productInfo?.expiredDate}
                     ></TextField>
                   </Grid>
                 </Grid>
 
                 <Grid container spacing={3} className={classes.inforWrap}>
                   <Grid item xs={6}>
-                    <Box className={classes.labelInput}>
-                      Giá bán buôn (VNĐ) <RequireStar /></Box>
+                    <Box className={classes.labelInput}>Số lô</Box>
                     <TextField
                       fullWidth
                       variant="outlined"
                       size="small"
-                      inputRef={register({ required: "Vui lòng điền giá bán buôn" })}
-                      name="wholeSalePrice"
-                      type={"number"}
-                      error={!!errors.name}
-                      helperText={errors.name?.message}
-                      value={productInfo?.productInfo?.wholeSalePrice}
+                      name="lotId"
+                      inputRef={register({ required: false })}
+                      value={productInfo?.productInfo?.lotId}
                     ></TextField>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Box className={classes.labelInput}>
-                      Giá bán lẻ (VNĐ) <RequireStar /></Box>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                      inputRef={register({ required: "Vui lòng nhập giá bán lẻ" })}
-                      name="retailPrice"
-                      type={"number"}
-                      error={!!errors.name}
-                      helperText={errors.name?.message}
-                      value={productInfo?.productInfo?.retailPrice}
-                    ></TextField>
-                  </Grid>
-                </Grid>
-
+                </Grid> */}
               </Box>
             </Grid>
             <Grid item xs={4}>

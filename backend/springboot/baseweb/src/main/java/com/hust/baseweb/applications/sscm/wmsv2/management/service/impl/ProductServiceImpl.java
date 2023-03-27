@@ -1,9 +1,6 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 
-import com.hust.baseweb.applications.sscm.wmsv2.management.entity.Bay;
-import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductBay;
-import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductV2;
-import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductWarehouse;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.*;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.ProductRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductDetailQuantityResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductDetailResponse;
@@ -33,9 +30,9 @@ public class ProductServiceImpl implements ProductService {
     private ProductWarehouseService productWarehouseService;
 
     private ProductV2Repository productRepository;
-    private ProductBayRepository productBayRepository;
     private ProductWarehouseRepository productWarehouseRepository;
     private BayRepository bayRepository;
+    private InventoryItemRepository inventoryItemRepository;
 
     @Override
     @Transactional
@@ -64,10 +61,6 @@ public class ProductServiceImpl implements ProductService {
         product.setHeight(request.getHeight());
         product.setWeight(request.getWeight());
         product.setArea(request.getArea());
-        product.setImportPrice(request.getImportPrice());
-        product.setRetailPrice(request.getRetailPrice());
-        product.setWholeSalePrice(request.getWholeSalePrice());
-        product.setTaxPercentage(request.getTaxPercentage());
         product.setUom(request.getUom());
         product.setCategoryId(request.getCategoryId() == null
                         ? null
@@ -95,10 +88,12 @@ public class ProductServiceImpl implements ProductService {
         Map<String, BigDecimal> normQuantityMap = new HashMap<>();
         if (quantityList != null && !quantityList.isEmpty()) {
             log.info("Init product quantity list is empty");
+            Map<String, String> bayIdWarehouseIdMap = new HashMap<>();
 
             // normalize list by bay id
             for (ProductRequest.InitProductQuantity quantity : quantityList) {
                 String bayId = quantity.getBayId();
+                bayIdWarehouseIdMap.put(quantity.getBayId(), quantity.getWarehouseId());
                 if (!normQuantityMap.containsKey(quantity.getBayId())) {
                     normQuantityMap.put(bayId, quantity.getQuantity());
                 } else {
@@ -107,14 +102,22 @@ public class ProductServiceImpl implements ProductService {
                 }
             }
 
-            for (Map.Entry<String, BigDecimal> entry : normQuantityMap.entrySet()) {
-                ProductBay productBay = ProductBay.builder()
-                                                  .bayId(UUID.fromString(entry.getKey()))
-                                                  .quantity(entry.getValue())
-                                                  .productId(product.getProductId())
-                                                  .productBayId(UUID.randomUUID())
-                                                  .build();
-                productBayRepository.save(productBay);
+            for (ProductRequest.InitProductQuantity quantity : quantityList) {
+                InventoryItem item = InventoryItem.builder()
+                    .inventoryItemId(UUID.randomUUID())
+                    .bayId(UUID.fromString(quantity.getBayId()))
+                    .quantityOnHandTotal(quantity.getQuantity())
+                    .importPrice(quantity.getImportPrice())
+                    .exportPrice(quantity.getExportPrice())
+                    .productId(product.getProductId())
+                    .lotId(quantity.getLotId())
+                    .currencyUomId("VND")
+                    .datetimeReceived(new Date())
+                    .warehouseId(UUID.fromString(bayIdWarehouseIdMap.get(quantity.getBayId().toString())))
+                    .createdStamp(new Date())
+                    .lastUpdatedStamp(new Date())
+                    .build();
+                inventoryItemRepository.save(item);
             }
             log.info("Saved product bay entity");
 
@@ -168,7 +171,6 @@ public class ProductServiceImpl implements ProductService {
                                         .productId(product.getProductId().toString())
                                         .name(product.getName())
                                         .code(product.getCode())
-                                        .retailPrice(product.getRetailPrice())
                                         .onHandQuantity(productOnHandQuantityMap.get(product.getProductId().toString()))
                                         .build())
                                     .collect(Collectors.toList());
@@ -205,7 +207,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         List<ProductDetailQuantityResponse> quantityList =
-            productBayRepository.getProductDetailQuantityResponseByProductId(productId);
+            productRepository.getProductDetailQuantityResponseByProductId(productId);
         return ProductDetailResponse.builder()
                                     .productInfo(productInfo.get())
                                     .quantityList(quantityList)

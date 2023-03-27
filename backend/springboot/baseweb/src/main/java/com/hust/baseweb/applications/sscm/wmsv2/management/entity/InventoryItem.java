@@ -20,7 +20,7 @@ public class InventoryItem {
     @Id
     private UUID inventoryItemId;
     private UUID productId;
-    private String lotId;
+    private String lotId; // id của lô hàng
     private UUID warehouseId;
     private UUID bayId;
 

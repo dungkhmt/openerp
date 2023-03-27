@@ -23,10 +23,9 @@ create table inventory_item
     quantity_on_hand_total decimal(18, 2) not null, -- Do hàng hóa có thể tính theo cân nặng nên quantity có data type là decimal
     import_price           decimal(18, 2) not null,
     export_price           decimal(18, 2),
-    currency_uom_id        varchar(60)    not null, -- TODO: check lai voi database hien tai cua team
+    currency_uom_id        varchar(60)    not null default 'VND', -- TODO: check lai voi database hien tai cua team
     datetime_received      timestamp      not null default current_timestamp,
     expire_date            timestamp,
-    uom_id                 varchar(60),
     last_updated_stamp     timestamp,
     created_stamp          timestamp               default CURRENT_TIMESTAMP,
     description            varchar(100)
@@ -73,12 +72,6 @@ create table product
     height             decimal(18, 2),
     weight             decimal(18, 2),
     area               decimal(18, 2),
-
-    import_price       decimal(18, 2),
-    retail_price       decimal(18, 2),
-    whole_sale_price   decimal(18, 2),
-
-    tax_percentage     decimal(18, 2),
 
     uom                varchar(20),
     category_id        uuid,
@@ -132,8 +125,14 @@ foreign key (product_id)
 references product (product_id)
 on delete cascade;
 
-alter table product_bay
-add constraint fk_product_bay_product_on_delete_cascade
+alter table inventory_item
+add constraint fk_inventory_item_product_on_delete_cascade
 foreign key (product_id)
 references product (product_id)
+on delete cascade;
+
+alter table inventory_item_detail
+add constraint fk_inventory_item_detail_inventory_item_on_delete_cascade
+foreign key (inventory_item_id)
+references inventory_item (inventory_item_id)
 on delete cascade;

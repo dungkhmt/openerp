@@ -16,4 +16,7 @@ public class ProductDetailQuantityResponse {
     private UUID bayId;
     private String code;
     private BigDecimal quantity;
+    private BigDecimal importPrice;
+    private BigDecimal exportPrice;
+    private String lotId;
 }

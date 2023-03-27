@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,14 +25,6 @@ public class ProductRequest {
     private BigDecimal weight;
     private BigDecimal area;
 
-    @NotNull
-    private BigDecimal importPrice;
-    @NotNull
-    private BigDecimal retailPrice;
-    @NotNull
-    private BigDecimal wholeSalePrice;
-    private BigDecimal taxPercentage;
-
     private String uom;
     private String categoryId;
 
@@ -49,6 +42,9 @@ public class ProductRequest {
         private String bayId;
         private String code;
         private BigDecimal quantity;
+        private BigDecimal importPrice;
+        private BigDecimal exportPrice;
+        private String lotId;
     }
 
 }

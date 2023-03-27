@@ -18,7 +18,6 @@ const ProductListing =  () => {
   const columns = [
     { title: "Tên sản phẩm", field: "name" },
     { title: "Mã sản phẩm", field: "code" },
-    { title: "Giá bán lẻ (VNĐ)", field: "retailPrice" },
     { title: "Số lượng hàng tồn", field: "onHandQuantity" }
   ];
 
