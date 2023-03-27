@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class ProductRequest {
-
+    private String productId;
     @NotBlank
     private String code;
     @NotBlank
@@ -23,8 +24,11 @@ public class ProductRequest {
     private BigDecimal weight;
     private BigDecimal area;
 
+    @NotNull
     private BigDecimal importPrice;
+    @NotNull
     private BigDecimal retailPrice;
+    @NotNull
     private BigDecimal wholeSalePrice;
     private BigDecimal taxPercentage;
 
@@ -41,7 +45,9 @@ public class ProductRequest {
     @NoArgsConstructor
     public static class InitProductQuantity {
         private String warehouseId;
+        private String warehouseName;
         private String bayId;
+        private String code;
         private BigDecimal quantity;
     }
 

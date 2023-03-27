@@ -120,3 +120,20 @@ alter table bay
 
 -- alter table wmsv2_warehouse rename column facility to code;
 -- TODO: Add constraint for tables
+alter table bay
+add constraint fk_bay_warehouse_on_delete_cascade
+foreign key (warehouse_id)
+references warehouse (warehouse_id)
+on delete cascade;
+
+alter table product_warehouse
+add constraint fk_product_warehouse_product_on_delete_cascade
+foreign key (product_id)
+references product (product_id)
+on delete cascade;
+
+alter table product_bay
+add constraint fk_product_bay_product_on_delete_cascade
+foreign key (product_id)
+references product (product_id)
+on delete cascade;

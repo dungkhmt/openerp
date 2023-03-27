@@ -33,6 +33,11 @@ export default function WMSv2Route() {
         <Route
           component={ProductDetail}
           exact
+          path={`${path}/product/update/:id`}
+        ></Route>
+        <Route
+          component={ProductDetail}
+          exact
           path={`${path}/product/create`}
         ></Route>
       </Switch>

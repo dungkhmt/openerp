@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductCategory;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductV2;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.ProductRequest;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductDetailResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductGeneralResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductCategoryService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductService;
@@ -49,6 +50,18 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductGeneralResponse>> getProductGeneral() {
         return ResponseEntity.ok(productService.getAllProductGeneral());
+    }
+
+    @DeleteMapping
+    public ResponseEntity<List<String>> delete(@RequestBody List<String> productIds) {
+        return productService.deleteProducts(productIds) ?
+            ResponseEntity.ok(productIds) :
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(productIds);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDetailResponse> getByProductId(@PathVariable String id) {
+        return ResponseEntity.ok(productService.getById(id));
     }
 
     @GetMapping(path = "/category")
