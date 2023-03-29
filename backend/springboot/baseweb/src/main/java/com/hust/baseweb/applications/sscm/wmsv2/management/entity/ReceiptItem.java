@@ -19,28 +19,24 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @ToString
-@Table(name = "inventory_item")
+@Table(name = "receipt_item")
 @EntityListeners(AuditingEntityListener.class)
-public class InventoryItem {
-    @Id
-    private UUID inventoryItemId;
-    private UUID productId;
-    private String lotId; // id của lô hàng
-    private UUID warehouseId;
-    private UUID bayId;
+public class ReceiptItem {
 
-    private BigDecimal quantityOnHandTotal;
+    @Id
+    private UUID receiptItemId;
+    private UUID receiptId;
+    private UUID productId;
+    private BigDecimal quantity;
+    private UUID bayId;
+    private String lotId;
     private BigDecimal importPrice;
     private BigDecimal exportPrice;
+    private Date expiredDate;
 
-    private String currencyUomId;
-    private Date datetimeReceived;
-    private Date expireDate;
     @LastModifiedDate
     private Date lastUpdatedStamp;
     @CreatedDate
     private Date createdStamp;
 
-    private String description;
-    private boolean isInitQuantity;
 }

@@ -4,6 +4,8 @@ import CreateWarehouse from "component/sscm/wmsv2/management/createWarehouse/cre
 import ListWarehouse from "component/sscm/wmsv2/management/listWarehouse/listWarehouses";
 import ProductDetail from "component/sscm/wmsv2/management/product/productDetail";
 import ProductListing from "component/sscm/wmsv2/management/product/productListing";
+import ReceiptDetail from "component/sscm/wmsv2/management/receipt/receiptDetail";
+import ReceiptListing from "component/sscm/wmsv2/management/receipt/receiptListing";
 
 export default function WMSv2Route() {
   let { path } = useRouteMatch();
@@ -39,6 +41,21 @@ export default function WMSv2Route() {
           component={ProductDetail}
           exact
           path={`${path}/product/create`}
+        ></Route>
+        <Route
+          component={ReceiptDetail}
+          exact
+          path={`${path}/receipt/create`}
+        ></Route>
+        <Route
+          component={ReceiptDetail}
+          exact
+          path={`${path}/receipt/update/:id`}
+        ></Route>
+        <Route
+          component={ReceiptListing}
+          exact
+          path={`${path}/receipt`}
         ></Route>
       </Switch>
     </div>

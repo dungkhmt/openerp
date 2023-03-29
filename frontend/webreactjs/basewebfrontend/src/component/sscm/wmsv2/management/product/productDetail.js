@@ -99,12 +99,12 @@ const DetailQuantityTable = ({
           </Typography>
         </Grid>
         <Grid item xs={4}>
-          <Button variant="contained"
+          {isCreateForm && <Button variant="contained"
             className={classes.addButton}
             type="submit"
             onClick={saveButtonHandle} >
               Lưu
-          </Button>
+          </Button>}
         </Grid>
       </Grid>
 
@@ -430,7 +430,6 @@ const ProductDetail = ( props ) => {
                       inputRef={register({ required: "Vui lòng điền tên sản phẩm" })}
                       name="name"
                       error={!!errors.name}
-                      helperText={errors.name?.message}
                       value={productInfo?.productInfo?.name}
                     ></TextField>
                   </Grid>
@@ -444,45 +443,10 @@ const ProductDetail = ( props ) => {
                       inputRef={register({ required: "Vui lòng điền mã sản phẩm" })}
                       name="code"
                       error={!!errors.name}
-                      helperText={errors.name?.message}
                       value={productInfo?.productInfo?.code}
                     ></TextField>
                   </Grid>
                 </Grid>
-
-                {/* <Grid container spacing={3} className={classes.inforWrap}>
-                  <Grid item xs={6}>
-                    <Box className={classes.labelInput}>
-                      Giá nhập (VNĐ) <RequireStar /></Box>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                      inputRef={register({ required: "Vui lòng điền giá nhập" })}
-                      name="importPrice"
-                      type={"number"}
-                      error={!!errors.name}
-                      helperText={errors.name?.message}
-                      value={productInfo?.productInfo?.importPrice}
-                    ></TextField>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Box className={classes.labelInput}>
-                      Giá bán lẻ (VNĐ) <RequireStar /></Box>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                      inputRef={register({ required: "Vui lòng nhập giá bán lẻ" })}
-                      name="exportPrice"
-                      type={"number"}
-                      error={!!errors.name}
-                      helperText={errors.name?.message}
-                      value={productInfo?.productInfo?.exportPrice}
-                    ></TextField>
-                  </Grid>
-                </Grid> */}
-
                 
               </Box>
             </Grid>
@@ -614,47 +578,6 @@ const ProductDetail = ( props ) => {
                     ></TextField>
                   </Grid>
                 </Grid>
-
-                {/* <Grid container spacing={3} className={classes.inforWrap}>
-                  <Grid item xs={6}>
-                    <Box className={classes.labelInput}>Ngày nhập</Box>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                      name="datetimeReceived"
-                      inputRef={register({ required: false })}
-                      type={"date"}
-                      value={productInfo?.productInfo?.datetimeReceived}
-                    ></TextField>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Box className={classes.labelInput}>Ngày hết hạn</Box>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                      name="expiredDate"
-                      inputRef={register({ required: false })}
-                      type={"date"}
-                      value={productInfo?.productInfo?.expiredDate}
-                    ></TextField>
-                  </Grid>
-                </Grid>
-
-                <Grid container spacing={3} className={classes.inforWrap}>
-                  <Grid item xs={6}>
-                    <Box className={classes.labelInput}>Số lô</Box>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                      name="lotId"
-                      inputRef={register({ required: false })}
-                      value={productInfo?.productInfo?.lotId}
-                    ></TextField>
-                  </Grid>
-                </Grid> */}
               </Box>
             </Grid>
             <Grid item xs={4}>

@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
@@ -19,28 +18,19 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @ToString
-@Table(name = "inventory_item")
+@Table(name = "receipt")
 @EntityListeners(AuditingEntityListener.class)
-public class InventoryItem {
+public class Receipt {
+
     @Id
-    private UUID inventoryItemId;
-    private UUID productId;
-    private String lotId; // id của lô hàng
+    private UUID receiptId;
+    private Date receiptDate;
+    private String receiptName;
     private UUID warehouseId;
-    private UUID bayId;
-
-    private BigDecimal quantityOnHandTotal;
-    private BigDecimal importPrice;
-    private BigDecimal exportPrice;
-
-    private String currencyUomId;
-    private Date datetimeReceived;
-    private Date expireDate;
+    private String description;
     @LastModifiedDate
     private Date lastUpdatedStamp;
     @CreatedDate
     private Date createdStamp;
 
-    private String description;
-    private boolean isInitQuantity;
 }

@@ -28,7 +28,8 @@ create table inventory_item
     expire_date            timestamp,
     last_updated_stamp     timestamp,
     created_stamp          timestamp               default CURRENT_TIMESTAMP,
-    description            varchar(100)
+    description            varchar(100),
+    is_init_quantity bool default false
 --     status_id                  VARCHAR(60),
 --     datetime_manufactured      TIMESTAMP,
 --     activation_valid_thru      TIMESTAMP,
@@ -108,6 +109,35 @@ create table product_warehouse
     quantity_on_hand    decimal(18, 2)
 );
 
+create table receipt
+(
+    receipt_id         uuid not null default uuid_generate_v1() primary key,
+    receipt_date       timestamp,
+    warehouse_id       uuid not null,
+    receipt_name       varchar(60),
+    description        varchar(200),
+    last_updated_stamp TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+    created_stamp      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+    constraint fk_receipt_warehouse_id foreign key (warehouse_id_id) references warehouse (warehouse_id)
+);
+
+create table receipt_item
+(
+    receipt_item_id    uuid not null default uuid_generate_v1() primary key,
+    receipt_id         uuid,
+    product_id         uuid,
+    quantity           DECIMAL(18, 6),
+    bay_id             uuid,
+    lot_id             varchar(60),
+    import_price       decimal(18, 6),
+    export_price       decimal(18, 6),
+    expired_date       TIMESTAMP,
+    last_updated_stamp TIMESTAMP,
+    created_stamp      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+    constraint fk_receipt_item_product_id foreign key (product_id) references product (product_id),
+    constraint fk_receipt_item_receipt_id foreign key (receipt_id) references receipt (receipt_id)
+);
+
 alter table bay
     add constraint fk_bay_warehouse_id foreign key (warehouse_id) references warehouse (warehouse_id);
 
@@ -135,4 +165,16 @@ alter table inventory_item_detail
 add constraint fk_inventory_item_detail_inventory_item_on_delete_cascade
 foreign key (inventory_item_id)
 references inventory_item (inventory_item_id)
+on delete cascade;
+
+alter table receipt
+add constraint fk_receipt_warehouse_on_delete_cascade
+foreign key (warehouse_id)
+references warehouse (warehouse_id)
+on delete cascade;
+
+alter table receipt_item
+add constraint fk_receipt_receipt_item_on_delete_cascade
+foreign key (receipt_id)
+references receipt (receipt_id)
 on delete cascade;

@@ -5,14 +5,6 @@ export const WMSV2 = {
   icon: "HomeSharpIcon",
   text: "QL Kho version 2",
   child: [
-    // {
-    //   id: "MENU_WMSv2_CREATE_FACILITY",
-    //   path: "/wmsv2/warehouse/create",
-    //   isPublic: false,
-    //   icon: "StarBorder",
-    //   text: "Tạo mới kho",
-    //   child: [],
-    // },
     {
       id: "MENU_WMSv2_VIEW_FACILITY",
       path: "/wmsv2/warehouse",
@@ -29,29 +21,13 @@ export const WMSV2 = {
       text: "Danh sách sản phẩm",
       child: [],
     },
-    // {
-    //   id: "MENU_WMSV2_VIEW",
-    //   path: "/wms/warehouse/products",
-    //   isPublic: false,
-    //   icon: "StarBorder",
-    //   text: "Danh sách sản phẩm",
-    //   child: [],
-    // },
-    // {
-    //   id: "MENU_WMSV2_IMPORT",
-    //   path: "/wms/inventory/import",
-    //   isPublic: false,
-    //   icon: "StarBorder",
-    //   text: "Nhập kho",
-    //   child: [],
-    // },
-    // {
-    //   id: "MENU_WMSV2_EXPORT",
-    //   path: "/wms/inventory/export",
-    //   isPublic: false,
-    //   icon: "StarBorder",
-    //   text: "Xuất kho",
-    //   child: [],
-    // }
+    {
+      id: "MENU_WMSv2_RECEIPT_DETAIL",
+      path: "/wmsv2/receipt",
+      isPublic: false,
+      icon: "StarBorder",
+      text: "Danh sách đơn nhập hàng",
+      child: [],
+    }
   ],
 };

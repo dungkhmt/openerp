@@ -116,6 +116,7 @@ public class ProductServiceImpl implements ProductService {
                     .warehouseId(UUID.fromString(bayIdWarehouseIdMap.get(quantity.getBayId().toString())))
                     .createdStamp(new Date())
                     .lastUpdatedStamp(new Date())
+                    .isInitQuantity(true)
                     .build();
                 inventoryItemRepository.save(item);
             }

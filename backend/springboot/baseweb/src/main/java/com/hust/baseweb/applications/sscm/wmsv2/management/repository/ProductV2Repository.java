@@ -17,7 +17,7 @@ public interface ProductV2Repository extends JpaRepository<ProductV2, UUID> {
            "from InventoryItem ii " +
            "join Bay b on b.bayId = ii.bayId " +
            "join Warehouse w on w.warehouseId = b.warehouseId " +
-           "where ii.productId = :productId")
+           "where ii.productId = :productId and ii.isInitQuantity = true ")
     List<ProductDetailQuantityResponse> getProductDetailQuantityResponseByProductId(UUID productId);
 
 }

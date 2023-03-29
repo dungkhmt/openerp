@@ -74,6 +74,9 @@ insert into application (application_id, application_type_id, module_id, permiss
 values ('MENU_WMSv2_PRODUCT_DETAIL', 'MENU', 'MENU_WMSv2', 'WMSv2_PRODUCT_DETAIL', 'Menu for product management in WMS version 2',
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
     ON CONFLICT DO NOTHING;
+
+-- For receipt management
+
 -----------------------------------------------------------------
 
 -- For warehouse management warehouse module data
