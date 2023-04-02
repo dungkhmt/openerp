@@ -108,7 +108,6 @@ public class ProductServiceImpl implements ProductService {
                     .bayId(UUID.fromString(quantity.getBayId()))
                     .quantityOnHandTotal(quantity.getQuantity())
                     .importPrice(quantity.getImportPrice())
-                    .exportPrice(quantity.getExportPrice())
                     .productId(product.getProductId())
                     .lotId(quantity.getLotId())
                     .currencyUomId("VND")

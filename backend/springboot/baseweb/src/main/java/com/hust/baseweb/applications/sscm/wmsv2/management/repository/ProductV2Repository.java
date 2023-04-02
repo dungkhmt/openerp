@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface ProductV2Repository extends JpaRepository<ProductV2, UUID> {
 
     @Query("select new com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductDetailQuantityResponse " +
-           "(w.warehouseId, w.name, b.bayId, b.code, ii.quantityOnHandTotal, ii.importPrice, ii.exportPrice, ii.lotId) " +
+           "(w.warehouseId, w.name, b.bayId, b.code, ii.quantityOnHandTotal, ii.importPrice, ii.lotId) " +
            "from InventoryItem ii " +
            "join Bay b on b.bayId = ii.bayId " +
            "join Warehouse w on w.warehouseId = b.warehouseId " +

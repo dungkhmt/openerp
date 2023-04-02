@@ -196,11 +196,12 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .bayId(item.getBayId().toString())
                 .bayCode(bay.getCode())
                 .importPrice(item.getImportPrice())
-                .exportPrice(item.getExportPrice())
+//                .exportPrice(item.getExportPrice())
+                // TODO: Re-calculate export price by product_price table
                 .build();
             products.add(productDetail);
             totalImportPrice = totalImportPrice.add(item.getImportPrice());
-            totalExportPrice = totalExportPrice.add(item.getExportPrice());
+//            totalExportPrice = totalExportPrice.add(item.getExportPrice());
         }
         return ProductWarehouseResponse
             .builder()

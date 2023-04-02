@@ -54,7 +54,6 @@ public class ReceiptServiceImpl implements ReceiptService {
                                                                             .bayId(UUID.fromString(r.getBayId()))
                                                                             .lotId(r.getLotId())
                                                                             .importPrice(r.getImportPrice())
-                                                                            .exportPrice(r.getExportPrice())
                                                                             .expiredDate(r.getExpiredDate())
                                                                             .build())
                                                        .collect(Collectors.toList());
@@ -115,7 +114,6 @@ public class ReceiptServiceImpl implements ReceiptService {
                 .bayId(item.getBayId().toString())
                 .quantity(item.getQuantity())
                 .importPrice(item.getImportPrice())
-                .exportPrice(item.getExportPrice())
                 .expiredDate(item.getExpiredDate())
                 .build())
             .collect(Collectors.toList());
@@ -144,7 +142,6 @@ public class ReceiptServiceImpl implements ReceiptService {
                                                    .bayId(bayId)
                                                    .quantityOnHandTotal(item.getQuantity())
                                                    .importPrice(item.getImportPrice())
-                                                   .exportPrice(item.getExportPrice())
                                                    .currencyUomId("VND")
                                                    .datetimeReceived(request.getReceivedDate())
                                                    .expireDate(item.getExpiredDate())

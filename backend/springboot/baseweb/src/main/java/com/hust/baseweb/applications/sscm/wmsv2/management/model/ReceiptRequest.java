@@ -32,7 +32,6 @@ public class ReceiptRequest {
         private String bayId;
         private BigDecimal quantity;
         private BigDecimal importPrice;
-        private BigDecimal exportPrice;
         private Date expiredDate;
     }
 

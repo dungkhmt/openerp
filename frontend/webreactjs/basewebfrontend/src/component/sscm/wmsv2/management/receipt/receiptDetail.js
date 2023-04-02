@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { request } from "api";
 import { API_PATH } from "../apiPaths";
 import { errorNoti, successNoti } from "utils/notification";
+import { useHistory } from "react-router";
 
 const ReceiptDetail = ( props ) => {
   const receiptId = props.match?.params?.id;
@@ -25,6 +26,9 @@ const ReceiptDetail = ( props ) => {
   const [bayList, setBayList] = useState([]);
   const [productReceiptList, setProductReceiptList] = useState([]);
   const [receiptInfo, setReceiptInfo] = useState(null);
+  
+  const history = useHistory();
+  const { path } = useRouteMatch();
 
   const submitForm = ( data ) => {
     const requestBody = {
@@ -93,6 +97,9 @@ const ReceiptDetail = ( props ) => {
           setReceiptInfo(data);
           setWarehouseId(data.warehouseId); // for useEffect
           setProductReceiptList(data.receiptItemList);
+          console.log("response data -> ", data);
+          console.log("Receipt info -> ", receiptInfo);
+          console.log("received date -> ", receiptInfo?.receivedDate);
         },
         {
           401: () => { },
@@ -192,14 +199,17 @@ const ReceiptDetail = ( props ) => {
                   <Grid container spacing={3} className={classes.inforWrap}>
                     <Grid item xs={6}>
                       <Box className={classes.labelInput}>
-                        Tên đơn hàng <RequireStar /></Box>
+                        Tên đơn hàng</Box>
                         <TextField
                           fullWidth
                           variant="outlined"
                           size="small"
-                          inputRef={register({ required: "Vui lòng tên đơn hàng nhập" })}
+                          inputRef={register({ required: false })}
                           name="receiptName"
                           value={receiptInfo?.receiptName}
+                          InputProps={{
+                            readOnly: !isCreateForm,
+                          }}
                         ></TextField>
                     </Grid>
                     <Grid item xs={6}>
@@ -211,9 +221,10 @@ const ReceiptDetail = ( props ) => {
                         fullWidth
                         variant="outlined"
                         size="small"
-                        multiline
-                        rows={4}
                         value={receiptInfo?.description}
+                        InputProps={{
+                          readOnly: !isCreateForm,
+                        }}
                       />
                     </Grid>
                   </Grid>
@@ -228,6 +239,9 @@ const ReceiptDetail = ( props ) => {
                           value={warehouseId}
                           defaultValue={warehouseId}
                           onChange={(e) => setWarehouseId(e.target.value)}
+                          inputProps={{
+                            readOnly: !isCreateForm
+                          }}
                         >
                           {
                             warehouseList.length > 0 &&
@@ -246,7 +260,7 @@ const ReceiptDetail = ( props ) => {
                           inputRef={register({ required: "Vui lòng điền số lô nhập" })}
                           name="datetimeReceived"
                           type={"date"}
-                          value={receiptInfo?.receivedDate}
+                          value={receiptInfo?.receivedDate?.substr(0, 10)}
                         ></TextField>
                       </Grid>
                   </Grid>
@@ -280,7 +294,6 @@ const ReceiptDetail = ( props ) => {
                           <TableCell>Vị trí kệ hàng <RequireStar /></TableCell>
                           <TableCell>Số lượng <RequireStar /></TableCell>
                           <TableCell>Giá nhập <RequireStar /></TableCell>
-                          <TableCell>Giá bán</TableCell>
                           <TableCell>Ngày hàng hết hạn</TableCell>
                         </TableRow>
                       </TableHead>
@@ -295,7 +308,6 @@ const ReceiptDetail = ( props ) => {
                               <TableCell>{getBayCodeFromBayId(product.bayId)}</TableCell>
                               <TableCell>{product.quantity}</TableCell>
                               <TableCell>{product.importPrice}</TableCell>
-                              <TableCell>{product.exportPrice}</TableCell>
                               <TableCell>{product.expiredDate}</TableCell>
                             </TableRow>
                           )
@@ -358,16 +370,6 @@ const ReceiptDetail = ( props ) => {
                                 size="small"
                                 inputRef={register({ required: "Vui lòng điền giá nhập hàng", min: 0 })}
                                 name="importPrice"
-                                type={"number"}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                fullWidth
-                                variant="outlined"
-                                size="small"
-                                inputRef={register({ required: false, min: 0 })}
-                                name="exportPrice"
                                 type={"number"}
                               />
                             </TableCell>

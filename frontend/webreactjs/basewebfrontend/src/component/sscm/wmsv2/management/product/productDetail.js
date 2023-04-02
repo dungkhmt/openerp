@@ -275,7 +275,7 @@ const ProductDetail = ( props ) => {
     modelData.productId = productId;
 
     const requestBody = new FormData()
-    requestBody.append("image", imageURL);
+    requestBody.append("image", uploadedImage);
     requestBody.append("model", JSON.stringify(modelData));
 
     request(
@@ -556,7 +556,7 @@ const ProductDetail = ( props ) => {
                       value={productInfo?.productInfo?.weight}
                     ></TextField>
                   </Grid>
-                  <Grid item xs={6}>
+                  {/* <Grid item xs={6}>
                     <Box className={classes.labelInput}>Số lượng ban đầu</Box>
                     <TextField
                       fullWidth
@@ -576,7 +576,7 @@ const ProductDetail = ( props ) => {
                         )
                       }}
                     ></TextField>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </Box>
             </Grid>

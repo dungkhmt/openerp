@@ -31,7 +31,6 @@ public class InventoryItem {
 
     private BigDecimal quantityOnHandTotal;
     private BigDecimal importPrice;
-    private BigDecimal exportPrice;
 
     private String currencyUomId;
     private Date datetimeReceived;

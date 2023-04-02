@@ -22,7 +22,6 @@ create table inventory_item
     bay_id                 uuid           NOT NULL,
     quantity_on_hand_total decimal(18, 2) not null, -- Do hàng hóa có thể tính theo cân nặng nên quantity có data type là decimal
     import_price           decimal(18, 2) not null,
-    export_price           decimal(18, 2),
     currency_uom_id        varchar(60)    not null default 'VND', -- TODO: check lai voi database hien tai cua team
     datetime_received      timestamp      not null default current_timestamp,
     expire_date            timestamp,
@@ -130,7 +129,6 @@ create table receipt_item
     bay_id             uuid,
     lot_id             varchar(60),
     import_price       decimal(18, 6),
-    export_price       decimal(18, 6),
     expired_date       TIMESTAMP,
     last_updated_stamp TIMESTAMP,
     created_stamp      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,

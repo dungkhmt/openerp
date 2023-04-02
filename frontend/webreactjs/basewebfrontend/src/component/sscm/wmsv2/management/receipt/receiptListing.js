@@ -46,7 +46,7 @@ const ReceiptListing = () => {
         data={receiptTableData}
         hideCommandBar={isHideCommandBar}
         options={{
-          selection: true,
+          selection: false,
           pageSize: 20,
           search: true,
           sorting: true,
