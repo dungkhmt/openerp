@@ -1,9 +1,14 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.Bay;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.InventoryItem;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductV2;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.Warehouse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.WarehouseWithBays;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductWarehouseResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.BayRepository;
+import com.hust.baseweb.applications.sscm.wmsv2.management.repository.InventoryItemRepository;
+import com.hust.baseweb.applications.sscm.wmsv2.management.repository.ProductV2Repository;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.WarehouseRepository;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.WarehouseService;
 import lombok.AllArgsConstructor;
@@ -12,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +31,8 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     private BayRepository bayRepository;
     private WarehouseRepository warehouseRepository;
+    private InventoryItemRepository inventoryItemRepository;
+    private ProductV2Repository productRepository;
 
     @Transactional
     @Override
@@ -159,6 +167,48 @@ public class WarehouseServiceImpl implements WarehouseService {
                                                            .map(general -> getById(general.getWarehouseId().toString()))
                                                            .collect(Collectors.toList());
         return response;
+    }
+
+    @Override
+    public ProductWarehouseResponse getProductInWarehouse(String warehouseIdStr) {
+        UUID warehouseId = UUID.fromString(warehouseIdStr);
+        Optional<Warehouse> warehouseOpt = warehouseRepository.findById(warehouseId);
+        if (!warehouseOpt.isPresent()) {
+            log.warn(String.format("Warehouse id %s is not exist", warehouseIdStr));
+            return null;
+        }
+        List<InventoryItem> items = inventoryItemRepository.findAllByWarehouseId(warehouseId);
+        BigDecimal totalImportPrice = new BigDecimal(0.00);
+        BigDecimal totalExportPrice = new BigDecimal(0.00);
+        List<ProductWarehouseResponse.ProductWarehouseDetailResponse> products = new ArrayList<>();
+        for (InventoryItem item : items) {
+            Optional<Bay> bayOpt = bayRepository.findById(item.getBayId());
+            Bay bay = bayOpt.get();
+            Optional<ProductV2> productOpt = productRepository.findById(item.getProductId());
+            ProductV2 product = productOpt.get();
+            ProductWarehouseResponse.ProductWarehouseDetailResponse productDetail = ProductWarehouseResponse
+                .ProductWarehouseDetailResponse
+                .builder()
+                .productId(item.getProductId().toString())
+                .productName(product.getName())
+                .quantity(item.getQuantityOnHandTotal())
+                .lotId(item.getLotId())
+                .bayId(item.getBayId().toString())
+                .bayCode(bay.getCode())
+                .importPrice(item.getImportPrice())
+                .exportPrice(item.getExportPrice())
+                .build();
+            products.add(productDetail);
+            totalImportPrice = totalImportPrice.add(item.getImportPrice());
+            totalExportPrice = totalExportPrice.add(item.getExportPrice());
+        }
+        return ProductWarehouseResponse
+            .builder()
+            .warehouseId(warehouseIdStr)
+            .products(products)
+            .totalImportPrice(totalImportPrice)
+            .totalExportPrice(totalExportPrice)
+            .build();
     }
 
 }

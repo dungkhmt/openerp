@@ -87,7 +87,7 @@ public class ProductServiceImpl implements ProductService {
         List<ProductRequest.InitProductQuantity> quantityList = request.getInitProductQuantityList();
         Map<String, BigDecimal> normQuantityMap = new HashMap<>();
         if (quantityList != null && !quantityList.isEmpty()) {
-            log.info("Init product quantity list is empty");
+            log.info("Init product quantity list is NOT empty");
             Map<String, String> bayIdWarehouseIdMap = new HashMap<>();
 
             // normalize list by bay id

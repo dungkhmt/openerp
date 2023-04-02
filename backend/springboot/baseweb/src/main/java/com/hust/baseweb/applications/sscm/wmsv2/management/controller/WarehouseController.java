@@ -2,6 +2,7 @@ package com.hust.baseweb.applications.sscm.wmsv2.management.controller;
 
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.Warehouse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.WarehouseWithBays;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductWarehouseResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.WarehouseService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,11 @@ public class WarehouseController {
     @GetMapping("/{id}")
     public ResponseEntity<WarehouseWithBays> getByWarehouseId(@PathVariable String id) {
         return ResponseEntity.ok(warehouseService.getById(id));
+    }
+
+    @GetMapping("/product/{id}")
+    public ResponseEntity<ProductWarehouseResponse> getProductInWarehouse(@PathVariable String id) {
+        return ResponseEntity.ok(warehouseService.getProductInWarehouse(id));
     }
 
 }

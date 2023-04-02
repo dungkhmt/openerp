@@ -350,8 +350,8 @@ const ProductDetail = ( props ) => {
           console.log("Image bytes -> ", imageBytes);
           const blob = new Blob([imageBytes], {type: res.data.productInfo.imageContentType});
           console.log("blob is setted to -> ", blob);
-          setUploadedImage(blob);
-          setImageURL(URL.createObjectURL(blob));
+          // setUploadedImage(blob);
+          setImageURL("data:image/png;base64," + imageBytes);
         },
         {
           401: () => { },
@@ -456,7 +456,7 @@ const ProductDetail = ( props ) => {
                   Ảnh sản phẩm</Typography>
                 <Button variant="contained" component="label" >
                   Tải ảnh lên
-                  <input type="file" hidden onChange={(e) => {
+                  <input type="file" accept="image/*" hidden onChange={(e) => {
                     setUploadedImage(e.target.files[0]); 
                     console.log(e.target.files[0]);
                   }} />
