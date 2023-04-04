@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-
 @RequestMapping("/wmsv2/admin/receipt")
 @CrossOrigin
 @Validated

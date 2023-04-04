@@ -1,10 +1,12 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.*;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.ProductPriceRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.ProductRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductDetailQuantityResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductDetailResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductGeneralResponse;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductPriceResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.*;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductWarehouseService;
@@ -28,7 +30,7 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
 
     private ProductWarehouseService productWarehouseService;
-
+    private ProductPriceRepository productPriceRepository;
     private ProductV2Repository productRepository;
     private ProductWarehouseRepository productWarehouseRepository;
     private BayRepository bayRepository;
@@ -212,5 +214,84 @@ public class ProductServiceImpl implements ProductService {
                                     .productInfo(productInfo.get())
                                     .quantityList(quantityList)
                                     .build();
+    }
+
+    @Override
+    public boolean createProductPrice(ProductPriceRequest request) {
+        log.info(String.format("Create product price with request %s", request));
+        if (!productRepository.findById(UUID.fromString(request.getProductId())).isPresent()) {
+            log.warn(String.format("Product id %s is not exist", request.getProductId()));
+            return false;
+        }
+
+        if (request.getEndDate() != null && request.getStartDate().after(request.getEndDate())) {
+            log.warn("Bad request. Start date is after end date");
+            return false;
+        }
+
+        ProductPrice productPrice = ProductPrice
+            .builder()
+            .productPriceId(UUID.randomUUID())
+            .price(request.getPrice())
+            .startDate(request.getStartDate())
+            .endDate(request.getEndDate())
+            .description(request.getDescription())
+            .productId(UUID.fromString(request.getProductId()))
+            .build();
+        productPriceRepository.save(productPrice);
+        log.info("Saved new product price");
+        return true;
+    }
+
+    @Override
+    public List<ProductPriceResponse> getAllProductPrices() {
+        List<ProductPriceResponse> response = new ArrayList<>();
+        List<ProductV2> products = productRepository.findAll();
+        for (ProductV2 product : products) {
+            List<ProductPrice> prices = productPriceRepository.findAllByProductId(product.getProductId());
+            BigDecimal currPrice = getCurrPriceByProductId(product.getProductId());
+            List<ProductPriceResponse.ProductHistoryPrices> historyPrices = prices.stream()
+                .map(price -> ProductPriceResponse.ProductHistoryPrices.builder()
+                    .price(price.getPrice())
+                    .startDate(price.getStartDate())
+                    .endDate(price.getEndDate())
+                    .description(price.getDescription())
+                    .productPriceId(price.getProductPriceId())
+                    .build())
+                .collect(Collectors.toList());
+            response.add(ProductPriceResponse
+                             .builder()
+                             .currPrice(currPrice)
+                             .productName(product.getName())
+                             .productId(product.getProductId())
+                             .historyPrices(historyPrices)
+                             .build());
+        }
+        return response;
+    }
+
+    @Override
+    public boolean deleteProductPriceById(String id) {
+        log.info(String.format("Start delete product price with id %s", id));
+        try {
+            productPriceRepository.deleteById(UUID.fromString(id));
+            return true;
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            return false;
+        }
+    }
+
+    private BigDecimal getCurrPriceByProductId(UUID productId) {
+        List<ProductPrice> prices = productPriceRepository.findAllByProductId(productId);
+        Date now = new Date();
+        BigDecimal currPrice = null;
+        for (ProductPrice price : prices) {
+            if (price.getStartDate().before(now) && (price.getEndDate() == null || price.getEndDate().after(now))) {
+                currPrice = price.getPrice();
+                break;
+            }
+        }
+        return currPrice;
     }
 }

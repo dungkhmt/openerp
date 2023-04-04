@@ -28,6 +28,14 @@ export const WMSV2 = {
       icon: "StarBorder",
       text: "Danh sách đơn nhập hàng",
       child: [],
+    },
+    {
+      id: "MENU_WMSv2_PRODUCT_PRICE_CONFIG",
+      path: "/wmsv2/price-config",
+      isPublic: false,
+      icon: "StarBorder",
+      text: "Cấu hình giá bán",
+      child: [],
     }
   ],
 };

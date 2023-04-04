@@ -1,9 +1,11 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.service;
 
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductV2;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.ProductPriceRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.ProductRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductDetailResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductGeneralResponse;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductPriceResponse;
 
 import java.util.List;
 
@@ -16,5 +18,11 @@ public interface ProductService {
     boolean deleteProducts(List<String> productIds);
 
     ProductDetailResponse getById(String id);
+
+    boolean createProductPrice(ProductPriceRequest request);
+
+    List<ProductPriceResponse> getAllProductPrices();
+
+    boolean deleteProductPriceById(String id);
 
 }

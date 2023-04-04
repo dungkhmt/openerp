@@ -117,7 +117,6 @@ create table receipt
     description        varchar(200),
     last_updated_stamp TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
     created_stamp      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
-    constraint fk_receipt_warehouse_id foreign key (warehouse_id_id) references warehouse (warehouse_id)
 );
 
 create table receipt_item
@@ -132,8 +131,16 @@ create table receipt_item
     expired_date       TIMESTAMP,
     last_updated_stamp TIMESTAMP,
     created_stamp      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
-    constraint fk_receipt_item_product_id foreign key (product_id) references product (product_id),
-    constraint fk_receipt_item_receipt_id foreign key (receipt_id) references receipt (receipt_id)
+);
+
+create table product_price
+(
+    product_price_id uuid not null default uuid_generate_v1() primary key,
+    product_id       uuid not null,
+    price            decimal(18, 2),
+    start_date       timestamp     default current_timestamp,
+    end_date         timestamp,
+    description      varchar(200)
 );
 
 alter table bay
@@ -175,4 +182,16 @@ alter table receipt_item
 add constraint fk_receipt_receipt_item_on_delete_cascade
 foreign key (receipt_id)
 references receipt (receipt_id)
+on delete cascade;
+
+alter table receipt_item
+add constraint fk_receipt_item_product_on_delete_cascade
+foreign key (product_id)
+references product (product_id)
+on delete cascade;
+
+alter table product_price
+add constraint fk_product_price_product_on_delete_cascade
+foreign key (product_id)
+references product (product_id)
 on delete cascade;
