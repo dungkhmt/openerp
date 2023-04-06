@@ -173,6 +173,9 @@ public class ProductServiceImpl implements ProductService {
                                         .productId(product.getProductId().toString())
                                         .name(product.getName())
                                         .code(product.getCode())
+                                        .retailPrice(getCurrPriceByProductId(product.getProductId()))
+                                        .imageData(product.getImageData())
+                                        .imageContentType(product.getImageContentType())
                                         .onHandQuantity(productOnHandQuantityMap.get(product.getProductId().toString()))
                                         .build())
                                     .collect(Collectors.toList());
@@ -282,7 +285,8 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    private BigDecimal getCurrPriceByProductId(UUID productId) {
+    @Override
+    public BigDecimal getCurrPriceByProductId(UUID productId) {
         List<ProductPrice> prices = productPriceRepository.findAllByProductId(productId);
         Date now = new Date();
         BigDecimal currPrice = null;

@@ -36,6 +36,14 @@ export const WMSV2 = {
       icon: "StarBorder",
       text: "Cấu hình giá bán",
       child: [],
+    },
+    {
+      id: "MENU_WMSv2_CUSTOMER_PRODUCT_VIEW",
+      path: "/wmsv2/customer/products",
+      isPublic: false,
+      icon: "StarBorder",
+      text: "Mua hàng online",
+      child: [],
     }
   ],
 };

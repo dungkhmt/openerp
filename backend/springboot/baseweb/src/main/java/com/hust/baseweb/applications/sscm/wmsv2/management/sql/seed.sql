@@ -76,9 +76,121 @@ values ('MENU_WMSv2_PRODUCT_DETAIL', 'MENU', 'MENU_WMSv2', 'WMSv2_PRODUCT_DETAIL
     ON CONFLICT DO NOTHING;
 
 -- For receipt management
+insert into security_permission (permission_id, description, last_updated_stamp, created_stamp)
+values ('WMSv2_RECEIPT_DETAIL', 'Managing products', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    ON CONFLICT DO NOTHING;
 
+insert into security_group_permission (group_id, permission_id, last_updated_stamp, created_stamp)
+values ('ROLE_WMSv2_ADMIN', 'WMSv2_RECEIPT_DETAIL', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    ON CONFLICT DO NOTHING;
+
+insert into application (application_id, application_type_id, module_id, permission_id, description, last_updated_stamp,
+                         created_stamp)
+values ('MENU_WMSv2_RECEIPT_DETAIL', 'MENU', 'MENU_WMSv2', 'MENU_WMSv2_PRODUCT_PRICE_CONFIG', 'Menu for product price management in WMS version 2',
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    ON CONFLICT DO NOTHING;
 -----------------------------------------------------------------
+
+-- For product price config
+insert into security_permission (permission_id, description, last_updated_stamp, created_stamp)
+values ('MENU_WMSv2_PRODUCT_PRICE_CONFIG', 'Managing products', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    ON CONFLICT DO NOTHING;
+
+insert into security_group_permission (group_id, permission_id, last_updated_stamp, created_stamp)
+values ('ROLE_WMSv2_ADMIN', 'MENU_WMSv2_PRODUCT_PRICE_CONFIG', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    ON CONFLICT DO NOTHING;
+
+insert into application (application_id, application_type_id, module_id, permission_id, description, last_updated_stamp,
+                         created_stamp)
+values ('MENU_WMSv2_PRODUCT_PRICE_CONFIG', 'MENU', 'MENU_WMSv2', 'MENU_WMSv2_PRODUCT_PRICE_CONFIG', 'Menu for product price management in WMS version 2',
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    ON CONFLICT DO NOTHING;
+-----------------------------------------------------------------
+
+-- For user account management
+insert into security_permission (permission_id, description, last_updated_stamp, created_stamp)
+values
+    ('USER_CREATE', 'Create user permission', current_timestamp, current_timestamp),
+    ('USER_VIEW', 'View user permission', current_timestamp, current_timestamp)
+    on conflict do nothing;
+
+insert into application (application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
+values
+    ('MENU_USER', 'MENU', null, null, 'Menu user management', current_timestamp, current_timestamp),
+    ('MENU_USER_CREATE', 'MENU', 'MENU_USER', 'USER_CREATE', 'Menu user create', current_timestamp, current_timestamp),
+    ('MENU_USER_LIST', 'MENU', 'MENU_USER', 'USER_VIEW', 'Menu user list', current_timestamp, current_timestamp)
+    on conflict do nothing;
+
+insert into security_group (group_id, description, last_updated_stamp, created_stamp, group_name)
+values ('ROLE_FULL_ADMIN', 'Full admin role', current_timestamp, current_timestamp, 'Full admin')
+    on conflict do nothing ;
+insert into security_group_permission (group_id, permission_id, last_updated_stamp, created_stamp)
+values ('ROLE_FULL_ADMIN', 'USER_CREATE', current_timestamp, current_timestamp),
+       ('ROLE_FULL_ADMIN', 'USER_VIEW', current_timestamp, current_timestamp)
+    on conflict do nothing ;
+insert into user_login_security_group (user_login_id, group_id, last_updated_stamp, created_stamp)
+values ('admin', 'ROLE_FULL_ADMIN', current_timestamp, current_timestamp)
+    on conflict do nothing ;
+
+insert into application_type (application_type_id, description, last_updated_stamp)
+values ('SCREEN', 'Screen application type', current_timestamp);
+insert into application (application_id, application_type_id, module_id, permission_id, description, last_updated_stamp)
+values ('SCREEN_USER_CREATE', 'SCREEN', null, 'USER_CREATE', 'Screen user create', current_timestamp),
+       ('SCREEN_USER_UPDATE', 'SCREEN', null, 'USER_CREATE', 'Screen user update', current_timestamp),
+       ('SCREEN_USER_LIST', 'SCREEN', null, 'USER_VIEW', 'Screen user view', current_timestamp),
+       ('SCREEN_USER_DETAIL', 'SCREEN', null, 'USER_VIEW', 'Screen user detail view', current_timestamp),
+       ('SCREEN_USER_EDIT_BUTTON', 'SCREEN', null, 'USER_CREATE', 'Screen user edit button', current_timestamp),
+       ('SCREEN_USER_DELETE_BUTTON', 'SCREEN', null, 'USER_CREATE', 'Screen user delete button', current_timestamp);
+-----------------------------------------------------------------
+-- For customer role
+insert into security_group (group_id, description, last_updated_stamp, created_stamp, group_name)
+values ('ROLE_WMSv2_CUSTOMER', 'Role khách hàng ở module warehouse management version 2', current_timestamp, current_timestamp, 'Role khách hàng')
+on conflict do nothing ;
+
+insert into user_login_security_group (user_login_id, group_id, last_updated_stamp)
+values ('admin', 'ROLE_WMSv2_CUSTOMER', current_timestamp)
+on conflict do nothing;
+
+insert into status_type (status_type_id, parent_type_id, description, last_updated_stamp)
+values ('USER_STATUS', null, 'Users status', current_timestamp)
+on conflict do nothing;
+
+insert into status_item (status_id, status_type_id, status_code, description, last_updated_stamp)
+values ('USER_REGISTERED', 'USER_STATUS', 'REGISTERED', 'Đã đăng ký', current_timestamp),
+       ('USER_APPROVED', 'USER_STATUS', 'APPROVED', 'Đã phê duyệt', current_timestamp);
+on conflict do nothing;
+
+insert into status_type (status_type_id, parent_type_id, description, last_updated_stamp)
+values ('PARTY_STATUS', null, 'party status', current_timestamp);
+insert into status (status_id, status_type_id, status_code, sequence_id, description, last_updated_stamp)
+values ('PARTY_ENABLED', 'PARTY_STATUS', 'ENABLED', 0, 'Đã kích hoạt', current_timestamp),
+       ('PARTY_DISABLED', 'PARTY_STATUS', 'DISABLEd', 0, 'Đã bị vô hiệu hóa', current_timestamp)
+on conflict do nothing;
+
+insert into security_permission (permission_id, description, last_updated_stamp, created_stamp)
+values ('USER_APPROVE_REGISTRATION', 'Approve user registration', current_timestamp, current_timestamp)
+on conflict do nothing;
+
+insert into application (application_id, application_type_id, module_id, permission_id, description, last_updated_stamp)
+values ('MENU_USER_APPROVE_REGISTRATION', 'MENU', 'MENU_USER', 'USER_APPROVE_REGISTRATION', 'Menu approve user registration', current_timestamp)
+on conflict do nothing;
+
+insert into security_group_permission (group_id, permission_id, last_updated_stamp, created_stamp)
+values ('ROLE_WMSv2_ADMIN', 'USER_APPROVE_REGISTRATION', current_timestamp, current_timestamp)
+on conflict do nothing;
+
+-------------------------------------------------
+-- For customer product view
+insert into security_permission (permission_id, description, last_updated_stamp, created_stamp)
+values ('WMSv2_CUSTOMER_PRODUCT', 'Permission customer view product screen', current_timestamp, current_timestamp);
+
+insert into application (application_id, application_type_id, module_id, permission_id, description, last_updated_stamp)
+values ('MENU_WMSv2_CUSTOMER_PRODUCT_VIEW', 'MENU', 'MENU_WMSv2', 'WMSv2_CUSTOMER_PRODUCT', 'Menu for customer product view', current_timestamp);
+
+insert into security_group_permission (group_id, permission_id, last_updated_stamp, created_stamp)
+values ('ROLE_WMSv2_CUSTOMER', 'WMSv2_CUSTOMER_PRODUCT', current_timestamp, current_timestamp);
 
 -- For warehouse management warehouse module data
 insert into product_category (name)
-values ('Tivi'), ('Tủ lạnh'), ('Máy giặt'), ('Gia dụng'), ('Quạt điều hòa');
+values ('Tivi'), ('Tủ lạnh'), ('Máy giặt'), ('Gia dụng'), ('Quạt điều hòa'), ('Máy lạnh');
+

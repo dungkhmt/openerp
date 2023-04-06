@@ -351,7 +351,7 @@ const ProductDetail = ( props ) => {
           const blob = new Blob([imageBytes], {type: res.data.productInfo.imageContentType});
           console.log("blob is setted to -> ", blob);
           // setUploadedImage(blob);
-          setImageURL("data:image/png;base64," + imageBytes);
+          setImageURL("data:" + res.data.productInfo.imageContentType + ";base64," + imageBytes);
         },
         {
           401: () => { },

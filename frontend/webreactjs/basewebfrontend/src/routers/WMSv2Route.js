@@ -7,6 +7,9 @@ import ProductListing from "component/sscm/wmsv2/management/product/productListi
 import ReceiptDetail from "component/sscm/wmsv2/management/receipt/receiptDetail";
 import ReceiptListing from "component/sscm/wmsv2/management/receipt/receiptListing";
 import PriceConfig from "component/sscm/wmsv2/management/product/priceConfig";
+import ProductGeneralView from "component/sscm/wmsv2/management/ecommerce/productGeneralView";
+import ProductCustomerDetailView from "component/sscm/wmsv2/management/ecommerce/productCustomerDetailView";
+import CartDetail from "component/sscm/wmsv2/management/ecommerce/cartDetail";
 
 export default function WMSv2Route() {
   let { path } = useRouteMatch();
@@ -62,6 +65,21 @@ export default function WMSv2Route() {
           component={PriceConfig}
           exact
           path={`${path}/price-config`}
+        ></Route>
+        <Route
+          component={ProductGeneralView}
+          exact
+          path={`${path}/customer/products`}
+        ></Route>
+        <Route
+          component={ProductCustomerDetailView}
+          exact
+          path={`${path}/customer/products/:id`}
+        ></Route>
+        <Route
+          component={CartDetail}
+          exact
+          path={`${path}/customer/cart`}
         ></Route>
       </Switch>
     </div>

@@ -143,6 +143,52 @@ create table product_price
     description      varchar(200)
 );
 
+create table account_activation
+(
+    id uuid primary key not null default uuid_generate_v1(),
+    user_login_id varchar(60) not null ,
+    status_id varchar(100),
+    last_updated_stamp timestamp ,
+    created_stamp timestamp default current_timestamp
+);
+
+create table customer_address
+(
+    customer_address_id uuid not null primary key default uuid_generate_v1(),
+    user_login_id varchar(255) not null ,
+    address_name varchar(255),
+    longitude decimal(18, 2),
+    latitude decimal(18, 2)
+);
+
+create table sale_order_header
+(
+    order_id uuid primary key not null default uuid_generate_v1(),
+    user_login_id varchar(255),
+    order_date timestamp default current_timestamp,
+    delivery_fee decimal(18, 2),
+    total_product_cost decimal(18, 2),
+    total_order_cost decimal(18, 2),
+    customer_address_id uuid not null,
+    customer_name varchar(255),
+    customer_phone_number varchar(255),
+    description varchar(255),
+    payment_type varchar(50),
+    order_type varchar(50),
+    last_updated_stamp timestamp default current_timestamp,
+    created_stamp timestamp default current_timestamp
+);
+
+create table sale_order_item
+(
+    sale_order_item_id uuid primary key not null default uuid_generate_v1(),
+    order_id uuid not null,
+    product_id uuid not null ,
+    quantity int,
+    price_unit decimal(18, 2)
+);
+
+
 alter table bay
     add constraint fk_bay_warehouse_id foreign key (warehouse_id) references warehouse (warehouse_id);
 
@@ -194,4 +240,10 @@ alter table product_price
 add constraint fk_product_price_product_on_delete_cascade
 foreign key (product_id)
 references product (product_id)
+on delete cascade;
+
+alter table sale_order_item
+add constraint fk_sale_order_item_sale_order_header
+foreign key (order_id)
+references sale_order_header(order_id)
 on delete cascade;

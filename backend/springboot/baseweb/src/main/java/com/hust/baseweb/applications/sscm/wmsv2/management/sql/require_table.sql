@@ -181,3 +181,38 @@ create table notifications
     constraint fk_notification_notification_type foreign key (notification_type_id) references notification_type (notification_type_id),
     constraint fk_notification_to_user foreign key (to_user) references user_login (user_login_id)
 );
+
+create TABLE status_item
+(
+    status_id          VARCHAR(60) NOT NULL,
+    status_type_id     VARCHAR(60),
+    status_code        VARCHAR(60),
+    description        TEXT,
+    last_updated_stamp TIMESTAMP,
+    created_stamp      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_status_id PRIMARY KEY (status_id),
+    CONSTRAINT fk_status_type_id FOREIGN KEY (status_type_id) REFERENCES status_type (status_type_id)
+);
+
+create table registered_affiliation
+(
+    affiliation_id varchar(200) primary key not null ,
+    affiliation_name varchar(500),
+    last_updated_stamp timestamp default current_timestamp,
+    created_stamp timestamp default current_timestamp
+);
+
+create table user_register
+(
+    user_login_id varchar(60) primary key not null ,
+    password varchar(100) not null ,
+    email varchar(100) not null ,
+    first_name varchar(100) not null ,
+    middle_name varchar(100) not null ,
+    last_name varchar(100) not null ,
+    status_id varchar(60) ,
+    registered_roles text not null ,
+    last_updated_stamp timestamp default current_timestamp,
+    created_stamp timestamp default current_timestamp,
+    affiliations varchar(200)
+);
