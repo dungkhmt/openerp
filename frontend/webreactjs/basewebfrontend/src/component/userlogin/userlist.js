@@ -1,9 +1,10 @@
-import Button from "@material-ui/core/Button";
+//import Button from "@material-ui/core/Button";
+import { Button, CircularProgress } from "@mui/material";
 import MaterialTable, { MTableToolbar } from "material-table";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
-import { authGet } from "../../api";
+import { authGet, authPostMultiPart } from "../../api";
 import { tableIcons } from "../../utils/iconutil";
 import withScreenSecurity from "../withScreenSecurity";
 import SearchUserLoginModal from "./searchUserLoginModal";
@@ -14,6 +15,9 @@ function UserList() {
   const [open, setOpen] = React.useState(false);
 
   const [searchString, setSearchString] = React.useState("");
+  const [filename, setFilename] = React.useState(null);
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  const [uploadMessage, setUploadMessage] = React.useState("");
 
   useEffect(() => {
     refreshTable();
@@ -161,9 +165,52 @@ function UserList() {
     { title: "Party Code", field: "partyCode" },
     { title: "Enabled", field: "enabled" },
   ];
+  function onFileChange(event) {
+    setFilename(event.target.files[0]);
+  }
+  const handleUploadExcelUserList = (event) => {
+    event.preventDefault();
+    setIsProcessing(true);
+    setUploadMessage("");
+    //alert("handleUploadExcelStudentList " + testId);
+    let body = {
+      roles: [
+        "ROLE_PROGRAMMING_CONTEST_PARTICIPANT",
+        "ROLE_EDUCATION_LEARNING_MANAGEMENT_STUDENT",
+      ],
+      affiliations: ["HUST"],
+    };
+    let formData = new FormData();
+    formData.append("inputJson", JSON.stringify(body));
+    formData.append("file", filename);
+
+    authPostMultiPart(
+      dispatch,
+      token,
+      "/create-userlogin-list-from-excel",
+      formData
+    )
+      .then((res) => {
+        setIsProcessing(false);
+        console.log("handleFormSubmit, res = ", res);
+        setUploadMessage(res.message);
+        //if (res.status == "TIME_OUT") {
+        //  alert("Time Out!!!");
+        //} else {
+        //}
+      })
+      .catch((e) => {
+        setIsProcessing(false);
+        console.error(e);
+        //alert("Time Out!!!");
+      });
+  };
 
   return (
     <div>
+      <input type="file" id="selected-upload-file" onChange={onFileChange} />
+      <Button onClick={handleUploadExcelUserList}>Upload</Button>
+      {isProcessing ? <CircularProgress /> : ""}
       <MaterialTable
         title="List Users"
         columns={columns}

@@ -3,7 +3,9 @@ package com.hust.baseweb.applications.education.classmanagement.controller;
 import com.google.gson.Gson;
 import com.hust.baseweb.applications.contentmanager.model.ContentModel;
 import com.hust.baseweb.applications.contentmanager.repo.MongoContentService;
+import com.hust.baseweb.applications.education.classmanagement.enumeration.RegistStatus;
 import com.hust.baseweb.applications.education.classmanagement.model.ModelAddUser2ClassInput;
+import com.hust.baseweb.applications.education.classmanagement.model.ModelInputAddStudentToClassViaExcelUpload;
 import com.hust.baseweb.applications.education.classmanagement.model.ModelResponseEduClassDetail;
 import com.hust.baseweb.applications.education.classmanagement.service.ClassServiceImpl;
 import com.hust.baseweb.applications.education.content.Video;
@@ -19,11 +21,18 @@ import com.hust.baseweb.applications.education.report.model.courseparticipation.
 import com.hust.baseweb.applications.education.report.model.quizparticipation.StudentQuizParticipationModel;
 import com.hust.baseweb.applications.education.service.*;
 import com.hust.baseweb.applications.notifications.service.NotificationsService;
+import com.hust.baseweb.applications.programmingcontest.entity.UserRegistrationContestEntity;
+import com.hust.baseweb.applications.programmingcontest.model.ModelAddUserToContest;
+import com.hust.baseweb.applications.programmingcontest.model.ModelUploadExcelParticipantToContestInput;
 import com.hust.baseweb.config.FileSystemStorageProperties;
 import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,6 +51,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.util.*;
 
@@ -782,4 +792,49 @@ public class ClassController {
 
         return ResponseEntity.ok().body(studentQuizParticipationModels);
     }
+
+    @PostMapping("/add-students-to-class-excel-upload")
+    public ResponseEntity<?> addStudentToClassViaExcelUpload(Principal principal,
+                                                             @RequestParam("inputJson") String inputJson,
+                                                             @RequestParam("file") MultipartFile file) {
+        Gson gson = new Gson();
+        ModelInputAddStudentToClassViaExcelUpload modelUpload = gson.fromJson(
+            inputJson,ModelInputAddStudentToClassViaExcelUpload.class);
+        log.info("addStudentToClassViaExcelUpload, classId = " + modelUpload.getClassId());
+
+        List<String> uploadedUsers = new ArrayList();
+        try (InputStream is = file.getInputStream()) {
+            XSSFWorkbook wb = new XSSFWorkbook(is);
+            XSSFSheet sheet = wb.getSheetAt(0);
+            int lastRowNum = sheet.getLastRowNum();
+            //System.out.println("uploadExcelStudentListOfQuizTest, lastRowNum = " + lastRowNum);
+            for (int i = 1; i <= lastRowNum; i++) {
+                Row row = sheet.getRow(i);
+                Cell c = row.getCell(0);
+
+                String userId = c.getStringCellValue();
+                log.info("addStudentToClassViaExcelUpload, extract userId " + userId);
+
+                UserLogin u = userService.findById(userId);
+                if(u == null){
+                    log.info("addStudentToClassViaExcelUpload, user " + userId + " NOT EXISTS");
+                    continue;
+                }
+
+
+                SimpleResponse res = classService.register(modelUpload.getClassId(), userId);
+
+                Set<String> ids = new HashSet();
+                ids.add(userId);
+                classService.updateRegistStatus(modelUpload.getClassId(), ids, RegistStatus.APPROVED);
+
+                uploadedUsers.add(userId);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.ok().body(uploadedUsers);
+    }
+
 }
