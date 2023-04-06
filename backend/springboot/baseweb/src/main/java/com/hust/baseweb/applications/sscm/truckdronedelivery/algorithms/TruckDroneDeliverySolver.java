@@ -12,6 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TruckDroneDeliverySolver {
+    private TruckDroneDeliveryInput input;
     private TruckDroneDeliverySolutionOutput solve(TruckDroneDeliveryInput input){
         return null;
     }
