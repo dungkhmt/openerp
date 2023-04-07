@@ -99,15 +99,24 @@ export default function ContestManagerRankingNew(props) {
     }
     const columns = [
       {title: "Username", field: "userId"},
-      {title: "Fullname", field: "fullname"},
-      {title: "TOTAL", field: "totalPoint"},
-      // {
-      //   title: "TOTAL", render: (rankingRecord) => (
-      //     <span style={{fontWeight: 600, color: "#2e7d32"}}>
-      //       {`${rankingRecord.totalPoint}`}
-      //     </span>
-      //   )
-      // }
+      {
+        title: "Fullname",
+        field: "fullname",
+        render: (rankingRecord) => (
+          <span style={{width: "150px", display: "block"}}>
+            <em>{`${rankingRecord.fullname}`}</em>
+          </span>
+        )
+      },
+      {
+        title: "TOTAL",
+        field: "totalPoint",
+        render: (rankingRecord) => (
+          <span style={{fontWeight: 600, color: "#2e7d32"}}>
+            {`${rankingRecord.totalPoint}`}
+          </span>
+        )
+      }
     ];
 
     ranking.length > 0 && problemIds.forEach((problemId) => {
