@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -187,4 +188,6 @@ public interface ProblemTestCaseService {
     void deleteTag(Integer tagId);
 
     void switchAllContestJudgeMode(String judgeMode);
+
+    void exportProblem(String id, OutputStream outputStream);
 }

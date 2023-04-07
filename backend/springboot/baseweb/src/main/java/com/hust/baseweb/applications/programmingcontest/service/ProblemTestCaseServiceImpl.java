@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.hust.baseweb.applications.contentmanager.model.ContentHeaderModel;
 import com.hust.baseweb.applications.contentmanager.model.ContentModel;
 import com.hust.baseweb.applications.contentmanager.repo.MongoContentService;
-import com.hust.baseweb.applications.education.quiztest.model.ModelResponseSubmitQuizTestExecutionChoice;
+import com.hust.baseweb.applications.education.classmanagement.utils.ZipOutputStreamUtils;
 import com.hust.baseweb.applications.notifications.service.NotificationsService;
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.docker.DockerClientBase;
@@ -27,6 +27,9 @@ import com.hust.baseweb.repo.UserLoginRepo;
 import com.hust.baseweb.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.model.enums.AesKeyStrength;
+import net.lingala.zip4j.model.enums.CompressionMethod;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -38,8 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -83,6 +85,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     private RabbitTemplate rabbitTemplate;
     private SubmissionResponseHandler submissionResponseHandler;
     private ProblemTestCaseServiceCache cacheService;
+    private ContestProblemExportService exporter;
 
     @Override
     @Transactional
@@ -4166,6 +4169,63 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     public void switchAllContestJudgeMode(String judgeMode) {
         contestRepo.switchAllContestToJudgeMode(judgeMode);
         cacheService.flushAllCache();
+    }
+
+    public void exportProblem(String problemId, OutputStream outputStream) {
+        try {
+            ModelCreateContestProblemResponse problem = getContestProblem(problemId);
+
+            if (problem != null) {
+                handleExportProblem(problem, outputStream);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleExportProblem(
+        ModelCreateContestProblemResponse problem,
+        OutputStream outputStream
+    ) throws IOException {
+        List<File> files = new ArrayList<>();
+
+        try {
+            File problemGeneralInfoFile = exporter.exportProblemInfoToFile(problem);
+            File problemDescriptionFile = exporter.exportProblemDescriptionToFile(problem);
+            File problemCorrectSolutionFile = exporter.exportProblemCorrectSolutionToFile(problem);
+
+            files.add(problemGeneralInfoFile);
+            files.add(problemCorrectSolutionFile);
+
+            if (problem.getScoreEvaluationType().equals(Constants.ProblemResultEvaluationType.CUSTOM.getValue())) {
+                File problemCustomCheckerFile = exporter.exportProblemCustomCheckerToFile(problem);
+                files.add(problemCustomCheckerFile);
+            }
+
+            if (problem.getAttachmentNames().size() > 0) {
+                files.addAll(exporter.exportProblemAttachmentToFile(problem));
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Zip files.
+        ZipOutputStreamUtils.zip(
+            outputStream,
+            files,
+            CompressionMethod.DEFLATE,
+            null,
+            EncryptionMethod.AES,
+            AesKeyStrength.KEY_STRENGTH_256);
+
+        //delete files
+        for (File file : files) {
+            file.delete();
+        }
     }
 
 }
