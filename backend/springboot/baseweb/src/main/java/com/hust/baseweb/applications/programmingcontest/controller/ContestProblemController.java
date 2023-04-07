@@ -1803,6 +1803,7 @@ public class ContestProblemController {
         return ResponseEntity.ok().body("OK");
     }
 
+    @Secured("ROLE_TEACHER")
     @PostMapping(value = "/export-problem/{id}", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
     public ResponseEntity<StreamingResponseBody> exportProblem(
         @PathVariable @NotBlank String id
