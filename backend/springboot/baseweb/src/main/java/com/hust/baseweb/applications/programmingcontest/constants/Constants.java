@@ -102,6 +102,18 @@ public class Constants {
             return this.value;
         }
 
+        public static String mapLanguageToExtension(String languages) {
+            switch (languages){
+                case "CPP":
+                    return ".cpp";
+                case "PYTHON3":
+                    return ".py";
+                case "JAVA":
+                    return ".java";
+            }
+            return null;
+        }
+
     }
 
     public enum DockerImage {
