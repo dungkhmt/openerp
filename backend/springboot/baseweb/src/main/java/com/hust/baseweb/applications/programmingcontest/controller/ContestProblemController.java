@@ -1803,7 +1803,7 @@ public class ContestProblemController {
         return ResponseEntity.ok().body("OK");
     }
 
-    @Secured("ROLE_TEACHER")
+//    @Secured("ROLE_TEACHER")
     @PostMapping(value = "/export-problem/{id}", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
     public ResponseEntity<StreamingResponseBody> exportProblem(
         @PathVariable @NotBlank String id
@@ -1814,7 +1814,7 @@ public class ContestProblemController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=result.zip");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + id +".zip");
 
         return ResponseEntity.ok().headers(headers).body(stream);
     }

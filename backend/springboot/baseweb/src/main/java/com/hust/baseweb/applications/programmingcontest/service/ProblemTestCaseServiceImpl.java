@@ -4203,9 +4203,11 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 files.add(problemCustomCheckerFile);
             }
 
-            if (problem.getAttachmentNames().size() > 0) {
+            if (!problem.getAttachmentNames().isEmpty()) {
                 files.addAll(exporter.exportProblemAttachmentToFile(problem));
             }
+
+            files.addAll(exporter.exportProblemTestCasesToFile(problem));
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

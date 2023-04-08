@@ -4,8 +4,10 @@ import com.hust.baseweb.applications.contentmanager.repo.MongoContentService;
 import com.hust.baseweb.applications.programmingcontest.constants.Constants;
 import com.hust.baseweb.applications.programmingcontest.entity.ProblemEntity;
 import com.hust.baseweb.applications.programmingcontest.entity.TagEntity;
+import com.hust.baseweb.applications.programmingcontest.entity.TestCaseEntity;
 import com.hust.baseweb.applications.programmingcontest.model.ModelCreateContestProblemResponse;
 import com.hust.baseweb.applications.programmingcontest.repo.ProblemRepo;
+import com.hust.baseweb.applications.programmingcontest.repo.TestCaseRepo;
 import lombok.AllArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class ContestProblemExportService {
 
     private final ProblemRepo problemRepo;
+    private final TestCaseRepo testCaseRepo;
     private MongoContentService mongoContentService;
 
     public File exportProblemDescriptionToFile(ModelCreateContestProblemResponse problem) throws IOException {
@@ -44,26 +47,42 @@ public class ContestProblemExportService {
         FileWriter fileWriter = new FileWriter(file);
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-        StringBuilder s = new StringBuilder();
+        String s = "<p>Id: <em>" +
+                   problem.getProblemId() +
+                   "</em></p>" +
+                   "<p><strong>Problem: " +
+                   problem.getProblemName() +
+                   "</strong></p>" +
+                   "<p>Created at: <em>" +
+                   problem.getCreatedAt() +
+                   "</em> by <em>" +
+                   problem.getUserId() +
+                   "</em></p>" +
+                   "<p>Public: <em>" +
+                   problem.isPublicProblem() +
+                   "</em></p>" +
+                   "<p>Time limit: <em>" +
+                   problem.getTimeLimit() +
+                   "</em> s</p>" +
+                   "<p>Memory limit: <em>" +
+                   problem.getMemoryLimit() +
+                   "</em> MB</p>" +
+                   "<p>Level: <em>" +
+                   problem.getLevelId() +
+                   "</em></p>" +
+                   "<p>Tags: <em>" +
+                   problem.getTags().stream().map(TagEntity::getName).collect(Collectors.toList()) +
+                   "</em></p>" +
+                   "<p>Score evaluation type: <em>" +
+                   problem.getScoreEvaluationType() +
+                   "</em></p>" +
+                   "<br/>" +
+                   "<div style = \"padding: 12px; border: 2px gray solid\">" +
+                   "<p><strong><em>Problem Description</em></strong></p>" +
+                   problem.getProblemDescription() +
+                   "</div>";
 
-        s.append("<p>Id: <em>" + problem.getProblemId() + "</em></p>");
-        s.append("<p><strong>Problem: " + problem.getProblemName() + "</strong></p>");
-        s.append("<p>Created at: <em>" + problem.getCreatedAt() + "</em> by <em>" + problem.getUserId() + "</em></p>");
-        s.append("<p>Public: <em>" + problem.isPublicProblem() + "</em></p>");
-        s.append("<p>Time limit: <em>" + problem.getTimeLimit() + "</em> s</p>");
-        s.append("<p>Memory limit: <em>" + problem.getMemoryLimit() + "</em> MB</p>");
-        s.append("<p>Level: <em>" + problem.getLevelId() + "</em></p>");
-        s.append("<p>Tags: <em>" +
-                 problem.getTags().stream().map(TagEntity::getName).collect(Collectors.toList()) +
-                 "</em></p>");
-        s.append("<p>Score evaluation type: <em>" + problem.getScoreEvaluationType() + "</em></p>");
-        s.append("<br/>");
-        s.append("<div style = \"padding: 12px; border: 2px gray solid\">");
-        s.append("<p><strong><em>Problem Description</em></strong></p>");
-        s.append(problem.getProblemDescription());
-        s.append("</div>");
-
-        bufferedWriter.write(String.valueOf(s));
+        bufferedWriter.write(s);
 
         bufferedWriter.close();
         fileWriter.close();
@@ -126,5 +145,36 @@ public class ContestProblemExportService {
         return attachments;
     }
 
+    public List<File> exportProblemTestCasesToFile(ModelCreateContestProblemResponse problem) throws IOException {
+        String problemId = problem.getProblemId();
+
+        List<TestCaseEntity> listTestCase = testCaseRepo.findAllByProblemId(problemId);
+        List<File> listTestCaseFile = new ArrayList<>();
+
+        for (int i = 0; i < listTestCase.size(); i++) {
+            TestCaseEntity testCase = listTestCase.get(i);
+            File file = new File(problemId + "_testcase_" + (i + 1) + ".txt");
+
+            FileWriter fileWriter = new FileWriter(file);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+            String s = "- Problem: " + problem.getProblemName() + "\n" +
+                       "- Testcase point: " + testCase.getTestCasePoint() + "\n" +
+                       "- Public: " + testCase.getIsPublic() + "\n" +
+                       "- Status: " + testCase.getStatusId() + "\n" +
+                       "- Description: " + testCase.getDescription() + "\n\n" +
+                       "- Input: \n" + testCase.getTestCase() + "\n\n" +
+                       "- Output: \n" + testCase.getCorrectAnswer() + "\n";
+
+            bufferedWriter.write(s);
+
+            bufferedWriter.close();
+            fileWriter.close();
+
+            listTestCaseFile.add(file);
+        }
+
+        return listTestCaseFile;
+    }
 
 }
