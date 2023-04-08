@@ -4,7 +4,10 @@ import {request} from "../../../api";
 import {useTranslation} from "react-i18next";
 import {toFormattedDateTime} from "../../../utils/dateutils";
 import StandardTable from "component/table/StandardTable";
-import {Box, Chip} from "@mui/material";
+import {Box, Chip, IconButton} from "@mui/material";
+import {GetApp} from "@material-ui/icons";
+import {API_URL} from "../../../config/config";
+import {getColorLevel} from "./lib";
 
 function ListProblem() {
   const [page, setPage] = useState(1);
@@ -15,6 +18,21 @@ function ListProblem() {
   const [problems, setProblems] = useState([]);
 
   const {t} = useTranslation("education/programmingcontest/listproblem");
+
+  const onSingleDownload = (problem) => {
+    const form = document.createElement("form");
+
+    form.setAttribute("method", "post");
+    form.setAttribute("target", "_blank");
+    form.setAttribute(
+      "action",
+      `${API_URL}/export-problem/${problem.problemId}`
+    );
+
+    document.body.appendChild(form);
+    form.submit();
+    form.parentNode.removeChild(form);
+  };
 
   const columns = [
     {
@@ -39,8 +57,14 @@ function ListProblem() {
     },
     {title: "Name", field: "problemName"},
     {title: "Created By", field: "userId"},
-    {title: "Created Date", field: "createdAt"},
-    {title: "Level", field: "levelId"},
+    {title: "Created At", field: "createdAt"},
+    {
+      title: "Level",
+      field: "levelId",
+      render: (rowData) => (
+        <span style={{color: getColorLevel(`${rowData.levelId}`)}}>{`${rowData.levelId}`}</span>
+      )
+    },
     {
       title: "Tags",
       render: (rowData) => (
@@ -53,6 +77,16 @@ function ListProblem() {
             />)}
         </Box>
       ),
+    },
+    {
+      title: "Export",
+      render: (rowData) => {
+        return (
+          <IconButton variant="contained" color="primary" onClick={() => onSingleDownload(rowData)}>
+            <GetApp/>
+          </IconButton>
+        );
+      },
     },
   ];
 
