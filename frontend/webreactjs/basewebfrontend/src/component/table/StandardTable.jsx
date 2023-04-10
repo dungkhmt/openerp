@@ -186,7 +186,6 @@ StandardTable.propTypes = {
   actions: PropTypes.array,
   data: PropTypes.array,
   commandBarComponents: PropTypes.element,
-  actions: PropTypes.array,
   editable: PropTypes.object
 };
 
