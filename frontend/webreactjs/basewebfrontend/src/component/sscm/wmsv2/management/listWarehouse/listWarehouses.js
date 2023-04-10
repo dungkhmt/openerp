@@ -49,9 +49,10 @@ const ListWarehouse = () => {
       API_PATH.WAREHOUSE,
       (res) => { 
         successNoti("Xóa thành công");
-      const newTableData = warehousesTableData.filter(
-        (facility) => !selectedFacilityIds.includes(facility.warehouseId));
-      setWarehousesTableData(newTableData);
+        const newTableData = warehousesTableData.filter(
+          (facility) => !selectedFacilityIds.includes(facility.warehouseId));
+        setWarehousesTableData(newTableData);
+        setHideCommandBar(true);
       },
       { },
       selectedFacilityIds
@@ -111,7 +112,6 @@ const ListWarehouse = () => {
           sorting: true,
         }}
         onRowClick={ (event, rowData) => {
-          console.log("Click on rowData ->", rowData);
           window.location.href = `${path}/update/${rowData.warehouseId}`;
         } } 
         onSelectionChange={onSelectionChangeHandle}

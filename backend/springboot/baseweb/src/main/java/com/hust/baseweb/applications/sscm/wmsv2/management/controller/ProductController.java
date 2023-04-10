@@ -3,8 +3,11 @@ package com.hust.baseweb.applications.sscm.wmsv2.management.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductCategory;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductV2;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.ProductPriceRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.ProductRequest;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductDetailResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductGeneralResponse;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductPriceResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductCategoryService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductService;
 import lombok.AllArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -51,8 +55,39 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllProductGeneral());
     }
 
+    @DeleteMapping
+    public ResponseEntity<List<String>> delete(@RequestBody List<String> productIds) {
+        return productService.deleteProducts(productIds) ?
+            ResponseEntity.ok(productIds) :
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(productIds);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDetailResponse> getByProductId(@PathVariable String id) {
+        return ResponseEntity.ok(productService.getById(id));
+    }
+
     @GetMapping(path = "/category")
     public ResponseEntity<List<ProductCategory>> getAll() {
         return ResponseEntity.ok(productCategoryService.getAll());
+    }
+
+    @PutMapping(path = "/price-config")
+    public ResponseEntity<String> createPriceConfig(@Valid @RequestBody ProductPriceRequest request) {
+        return productService.createProductPrice(request) ?
+            ResponseEntity.ok("OK") :
+            new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping(path = "/price-config")
+    public ResponseEntity<List<ProductPriceResponse>> getAllProductPrices() {
+        return ResponseEntity.ok(productService.getAllProductPrices());
+    }
+
+    @DeleteMapping(path = "/price-config/{priceId}")
+    public ResponseEntity<String> deleteProductPriceById(@PathVariable String priceId) {
+        return productService.deleteProductPriceById(priceId) ?
+            ResponseEntity.ok("OK") :
+            new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -1,28 +1,27 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "product_bay")
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class ProductBay {
-
+@AllArgsConstructor
+@Builder
+@ToString
+@Table(name = "product_price")
+public class ProductPrice {
     @Id
-    private UUID productBayId;
+    private UUID productPriceId;
     private UUID productId;
-    private UUID bayId;
-    private BigDecimal quantity;
-
+    private BigDecimal price;
+    private Date startDate;
+    private Date endDate;
+    private String description;
 }

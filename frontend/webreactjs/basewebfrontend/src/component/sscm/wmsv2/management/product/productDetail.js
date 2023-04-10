@@ -14,7 +14,9 @@ import { errorNoti, successNoti } from 'utils/notification';
 import { request } from 'api';
 import { API_PATH } from '../apiPaths';
 
-const DetailQuantityTable = ({ warehouseDetails, 
+const DetailQuantityTable = ({ 
+  isCreateForm, 
+  warehouseDetails, 
   setShowDetailQuantityModal, 
   initQuantityArray,
   setInitQuantityArray,
@@ -24,6 +26,9 @@ const DetailQuantityTable = ({ warehouseDetails,
   const [warehouseId, setWarehouseId] = useState(null);
   const [bayId, setBayId] = useState(null);
   const [quantity, setQuantity] = useState(0);
+  const [importPrice, setImportPrice] = useState(0);
+  const [exportPrice, setExportPrice] = useState(0);
+  const [lotId, setLotId] = useState(null);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
 
   useEffect(() => {
@@ -38,14 +43,17 @@ const DetailQuantityTable = ({ warehouseDetails,
   }, [warehouseId]);
 
   const newLineButtonClickHandle = () => {
-    if (warehouseId == null || bayId == null || quantity <= 0) {
+    if (warehouseId == null || bayId == null || quantity <= 0 || lotId == null) {
       errorNoti("Vui lòng nhập đầy đủ thông tin");
       return;
     }
     const newQuantity = {
       warehouseId: warehouseId,
       bayId: bayId,
-      quantity: quantity
+      quantity: quantity,
+      exportPrice: exportPrice,
+      importPrice: importPrice,
+      lotId: lotId
     };
     setInitQuantityArray([...initQuantityArray, newQuantity]);
     console.log("New quantity array: ", initQuantityArray);
@@ -91,12 +99,12 @@ const DetailQuantityTable = ({ warehouseDetails,
           </Typography>
         </Grid>
         <Grid item xs={4}>
-          <Button variant="contained"
+          {isCreateForm && <Button variant="contained"
             className={classes.addButton}
             type="submit"
             onClick={saveButtonHandle} >
               Lưu
-          </Button>
+          </Button>}
         </Grid>
       </Grid>
 
@@ -107,6 +115,9 @@ const DetailQuantityTable = ({ warehouseDetails,
               <TableCell>Kho</TableCell>
               <TableCell>Kệ</TableCell>
               <TableCell>Số lượng</TableCell>
+              <TableCell>Giá nhập</TableCell>
+              <TableCell>Giá bán</TableCell>
+              <TableCell>Lô</TableCell>
             </TableRow>
           </TableHead>
       
@@ -118,58 +129,108 @@ const DetailQuantityTable = ({ warehouseDetails,
                   <TableCell>{getWarehouseNameByWarehouseId(element.warehouseId)}</TableCell>
                   <TableCell>{getBayCodeByBayId(element.bayId)}</TableCell>
                   <TableCell>{element.quantity}</TableCell>
+                  <TableCell>{element.importPrice}</TableCell>
+                  <TableCell>{element.exportPrice}</TableCell>
+                  <TableCell>{element.lotId}</TableCell>
                 </TableRow>
                 )
             }
-            <TableRow>
-              <TableCell>
-                <Select
-                  value={warehouseId}
-                  label="warehouseId"
-                  onChange={(e) => setWarehouseId(e.target.value)}
-                  fullWidth
-                >
-                {
-                  warehouseDetails
-                    .map(detail =>
-                      (<MenuItem value={detail.id}>{detail.name}</MenuItem>))
-                }
-                </Select>
-              </TableCell>
-              <TableCell>
-                <Select
-                  value={bayId}
-                  label="bayId"
-                  onChange={(e) => setBayId(e.target.value)}
-                  fullWidth
-                >
-                {
-                  selectedWarehouse != null &&
-                  selectedWarehouse.listShelf != null &&
-                  selectedWarehouse.listShelf.length > 0 &&
-                  selectedWarehouse.listShelf
-                    .map(shelf => <MenuItem value={shelf.id}>{shelf.code}</MenuItem>)
-                }
-                </Select>
-              </TableCell>
-              <TableCell>
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  size="small"
-                  name="area"
-                  type={"number"}
-                  value={quantity}
-                  error={quantity < 0}
-                  onChange={(e) => setQuantity(e.target.value)}
-                ></TextField>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <Button onClick={newLineButtonClickHandle}>
-                Thêm mới
-              </Button>
-            </TableRow>
+            
+            {
+              isCreateForm &&
+              <TableRow>
+                <TableCell>
+                  <Select
+                    value={warehouseId}
+                    label="warehouseId"
+                    onChange={(e) => setWarehouseId(e.target.value)}
+                    fullWidth
+                  >
+                  {
+                    warehouseDetails
+                      .map(detail =>
+                        (<MenuItem value={detail.id}>{detail.name}</MenuItem>))
+                  }
+                  </Select>
+                </TableCell>
+                
+                <TableCell>
+                  <Select
+                    value={bayId}
+                    label="bayId"
+                    onChange={(e) => setBayId(e.target.value)}
+                    fullWidth
+                  >
+                  {
+                    selectedWarehouse != null &&
+                    selectedWarehouse.listShelf != null &&
+                    selectedWarehouse.listShelf.length > 0 &&
+                    selectedWarehouse.listShelf
+                      .map(shelf => <MenuItem value={shelf.id}>{shelf.code}</MenuItem>)
+                  }
+                  </Select>
+                </TableCell>
+              
+                <TableCell>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    name="area"
+                    type={"number"}
+                    value={quantity}
+                    error={quantity < 0}
+                    onChange={(e) => setQuantity(e.target.value)}
+                  ></TextField>
+                </TableCell>
+
+                <TableCell>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    name="area"
+                    type={"number"}
+                    value={importPrice}
+                    error={importPrice < 0}
+                    onChange={(e) => setImportPrice(e.target.value)}
+                  ></TextField>
+                </TableCell>
+
+                <TableCell>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    name="area"
+                    type={"number"}
+                    value={exportPrice}
+                    error={exportPrice < 0}
+                    onChange={(e) => setExportPrice(e.target.value)}
+                  ></TextField>
+                </TableCell>
+
+                <TableCell>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    name="area"
+                    value={lotId}
+                    onChange={(e) => setLotId(e.target.value)}
+                  ></TextField>
+                </TableCell>
+              </TableRow>
+              }
+
+            {
+              isCreateForm &&
+              <TableRow>
+                <Button onClick={newLineButtonClickHandle}>
+                  Thêm mới
+                </Button>
+              </TableRow>
+            }
           </TableBody>
         </Table>
       </TableContainer>
@@ -177,9 +238,8 @@ const DetailQuantityTable = ({ warehouseDetails,
   );
 }
 
-const ProductDetail = () => {
+const ProductDetail = ( props ) => {
   const classes = useStyles();
-  const isCreateForm = true;
   const { register, errors, handleSubmit, watch, getValues } = useForm();
 
   const [totalQuantity, setTotalQuantity] = useState(0);
@@ -192,6 +252,14 @@ const ProductDetail = () => {
   const [productCategories, setProductCategories] = useState([]);
   const [warehouseDetails, setWarehouseDetails] = useState([]);
 
+  const productId = props.match?.params?.id;
+  const isCreateForm = productId == null;
+  const [productInfo, setProductInfo] = useState(null);
+
+  // for selection field
+  const [categoryId, setCategoryId] = useState(null);
+  const [uom, setUom] = useState(null);
+
   const history = useHistory();
   const { path } = useRouteMatch();
 
@@ -202,19 +270,23 @@ const ProductDetail = () => {
       ([key, value]) => value !== '' && value !== null && value !== undefined);
     var modelData = Object.fromEntries(nonEmptyOrNull);
     modelData.initProductQuantityList = initQuantityArray;
+    modelData.categoryId = categoryId;
+    modelData.uom = uom;
+    modelData.productId = productId;
 
     const requestBody = new FormData()
     requestBody.append("image", uploadedImage);
     requestBody.append("model", JSON.stringify(modelData));
 
-    console.log("Request body -> ", requestBody);
     request(
       "put",
       API_PATH.PRODUCT,
       (res) => {
         successNoti(isCreateForm ? "Tạo sản phẩm thành công" : "Cập nhật sản phẩm thành công");
         if (isCreateForm) {
-          console.log("TODO: Redirect to listing product screen")
+          history.push(`${path.replace('/create', '')}`);
+        } else {
+          history.push(`${path.substring(0, path.indexOf('/update'))}`);
         }
       },
       {
@@ -258,11 +330,34 @@ const ProductDetail = () => {
         "get",
         API_PATH.WAREHOUSE_DETAIL,
         (res) => {
-          console.log("warehouse response -> ", res);
           setWarehouseDetails(res.data);
-          console.log("Warehouse details in fetch data -> ", warehouseDetails);
         }
       );
+
+      if (isCreateForm) {
+        return;
+      }
+      console.log("Get information of product with id ", productId);
+      request(
+        "get",
+        API_PATH.PRODUCT + "/" + productId,
+        (res) => {
+          setProductInfo(res.data);
+          setCategoryId(res.data.productInfo.categoryId);
+          setUom(res.data.productInfo.uom);
+          setInitQuantityArray(res.data.quantityList);
+          const imageBytes = res.data.productInfo.imageData;
+          console.log("Image bytes -> ", imageBytes);
+          const blob = new Blob([imageBytes], {type: res.data.productInfo.imageContentType});
+          console.log("blob is setted to -> ", blob);
+          // setUploadedImage(blob);
+          setImageURL("data:" + res.data.productInfo.imageContentType + ";base64," + imageBytes);
+        },
+        {
+          401: () => { },
+          503: () => { errorNoti("Có lỗi khi tải dữ liệu của sản phẩm") }
+        }
+      )
     }
 
     fetchData();
@@ -289,6 +384,7 @@ const ProductDetail = () => {
           p: 4,
         }}>
           <DetailQuantityTable
+            isCreateForm={isCreateForm}
             warehouseDetails={warehouseDetails} 
             setShowDetailQuantityModal={setShowDetailQuantityModal} 
             initQuantityArray={initQuantityArray} 
@@ -334,7 +430,7 @@ const ProductDetail = () => {
                       inputRef={register({ required: "Vui lòng điền tên sản phẩm" })}
                       name="name"
                       error={!!errors.name}
-                      helperText={errors.name?.message}
+                      value={productInfo?.productInfo?.name}
                     ></TextField>
                   </Grid>
                   <Grid item xs={6}>
@@ -347,25 +443,60 @@ const ProductDetail = () => {
                       inputRef={register({ required: "Vui lòng điền mã sản phẩm" })}
                       name="code"
                       error={!!errors.name}
-                      helperText={errors.name?.message}
+                      value={productInfo?.productInfo?.code}
                     ></TextField>
                   </Grid>
                 </Grid>
+                
+              </Box>
+            </Grid>
+            <Grid item xs={4}>
+              <Box className={classes.boxInfor}>
+                <Typography className={classes.inforTitle} variant="h6">
+                  Ảnh sản phẩm</Typography>
+                <Button variant="contained" component="label" >
+                  Tải ảnh lên
+                  <input type="file" accept="image/*" hidden onChange={(e) => {
+                    setUploadedImage(e.target.files[0]); 
+                    console.log(e.target.files[0]);
+                  }} />
+                </Button>
+                <Box>
+                  <img src={imageURL} width={"100%"} height={"100%"} />
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={2}>
+            <Grid item xs={8}>
+              <Box className={classes.boxInfor}>
+                <Typography className={classes.inforTitle} variant="h6">
+                  Thông tin bổ sung
+                </Typography>
 
                 <Grid container spacing={3} className={classes.inforWrap}>
                   <Grid item xs={6}>
                     <Box className={classes.labelInput}>Phân loại</Box>
                     <Select
                       label="categoryId"
-                      {...register("categoryId", { required: false })}
+                      // {...register("categoryId", { required: false })}
                       fullWidth
+                      value={categoryId}
+                      defaultValue={categoryId}
+                      onChange={(e) => setCategoryId(e.target.value)}
                     >
                       {
                         productCategories.length > 0 &&
-                        productCategories.map(category => 
+                        productCategories.map(category =>
+                          category.categoryId == productInfo?.productInfo?.categoryId ? 
+                          <MenuItem selected value={category.categoryId}>
+                            {category.name}
+                          </MenuItem> : 
                           <MenuItem value={category.categoryId}>
                             {category.name}
-                          </MenuItem>)
+                          </MenuItem>
+                          )
                       }
                     </Select>
                   </Grid>
@@ -373,7 +504,9 @@ const ProductDetail = () => {
                     <Box className={classes.labelInput}>Đơn vị tính</Box>
                     <Select
                       label="uom"
-                      {...register("uom", { required: false })}
+                      value={uom}
+                      defaultValue={uom}
+                      onChange={(e) => setUom(e.target.value)}
                       fullWidth
                     >
                       <MenuItem value={"Cái"} >Cái</MenuItem>
@@ -393,6 +526,7 @@ const ProductDetail = () => {
                       name="height"
                       inputRef={register({ required: false })}
                       type={"number"}
+                      value={productInfo?.productInfo?.height}
                     ></TextField>
                   </Grid>
                   <Grid item xs={6}>
@@ -404,6 +538,7 @@ const ProductDetail = () => {
                       name="area"
                       inputRef={register({ required: false })}
                       type={"number"}
+                      value={productInfo?.productInfo?.area}
                     ></TextField>
                   </Grid>
                 </Grid>
@@ -418,9 +553,10 @@ const ProductDetail = () => {
                       name="weight"
                       inputRef={register({ required: false })}
                       type={"number"}
+                      value={productInfo?.productInfo?.weight}
                     ></TextField>
                   </Grid>
-                  <Grid item xs={6}>
+                  {/* <Grid item xs={6}>
                     <Box className={classes.labelInput}>Số lượng ban đầu</Box>
                     <TextField
                       fullWidth
@@ -440,94 +576,8 @@ const ProductDetail = () => {
                         )
                       }}
                     ></TextField>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
-              </Box>
-            </Grid>
-            <Grid item xs={4}>
-              <Box className={classes.boxInfor}>
-                <Typography className={classes.inforTitle} variant="h6">
-                  Ảnh sản phẩm</Typography>
-                <Button variant="contained" component="label" >
-                  Tải ảnh lên
-                  <input type="file" hidden onChange={(e) => {
-                    setUploadedImage(e.target.files[0]); 
-                    console.log(e.target.files[0]);
-                  }} />
-                </Button>
-                <Box>
-                  <img src={imageURL} width={"100%"} height={"100%"} />
-                </Box>
-              </Box>
-            </Grid>
-          </Grid>
-
-          <Grid container spacing={2}>
-            <Grid item xs={8}>
-              <Box className={classes.boxInfor}>
-                <Typography className={classes.inforTitle} variant="h6">
-                  Thông tin giá (trên 1 sản phẩm)
-                </Typography>
-
-                <Grid container spacing={3} className={classes.inforWrap}>
-                  <Grid item xs={6}>
-                    <Box className={classes.labelInput}>
-                      Giá nhập (VNĐ) <RequireStar /></Box>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                      inputRef={register({ required: "Vui lòng điền giá nhập" })}
-                      name="importPrice"
-                      type={"number"}
-                      error={!!errors.name}
-                      helperText={errors.name?.message}
-                    ></TextField>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Box className={classes.labelInput}>Thuế (%)</Box>
-                    <TextField
-                      fullWidth
-                      inputRef={register({ required: false })}
-                      variant="outlined"
-                      size="small"
-                      name="taxPercentage"
-                      type={"number"}
-                    ></TextField>
-                  </Grid>
-                </Grid>
-
-                <Grid container spacing={3} className={classes.inforWrap}>
-                  <Grid item xs={6}>
-                    <Box className={classes.labelInput}>
-                      Giá bán buôn (VNĐ) <RequireStar /></Box>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                      inputRef={register({ required: "Vui lòng điền giá bán buôn" })}
-                      name="wholeSalePrice"
-                      type={"number"}
-                      error={!!errors.name}
-                      helperText={errors.name?.message}
-                    ></TextField>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Box className={classes.labelInput}>
-                      Giá bán lẻ (VNĐ) <RequireStar /></Box>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                      inputRef={register({ required: "Vui lòng nhập giá bán lẻ" })}
-                      name="retailPrice"
-                      type={"number"}
-                      error={!!errors.name}
-                      helperText={errors.name?.message}
-                    ></TextField>
-                  </Grid>
-                </Grid>
-
               </Box>
             </Grid>
             <Grid item xs={4}>
@@ -542,6 +592,7 @@ const ProductDetail = () => {
                   size="small"
                   multiline
                   rows={4}
+                  value={productInfo?.productInfo?.description}
                 ></TextField>
               </Box>
             </Grid>

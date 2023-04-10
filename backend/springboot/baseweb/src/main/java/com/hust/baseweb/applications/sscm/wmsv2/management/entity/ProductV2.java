@@ -27,11 +27,6 @@ public class ProductV2 {
     private BigDecimal weight;
     private BigDecimal area;
 
-    private BigDecimal importPrice;
-    private BigDecimal retailPrice;
-    private BigDecimal wholeSalePrice;
-    private BigDecimal taxPercentage;
-
     private String uom;
     private UUID categoryId;
 
