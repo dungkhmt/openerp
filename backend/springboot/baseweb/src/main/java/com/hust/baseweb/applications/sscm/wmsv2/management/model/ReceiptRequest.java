@@ -14,13 +14,13 @@ import java.util.List;
 @ToString
 @Builder
 public class ReceiptRequest {
-    @NotBlank
     private String warehouseId;
-    @NotNull
     private Date receivedDate;
     private String receiptName;
     private String description;
     private List<ReceiptItemRequest> receiptItemList;
+    private String createdReason;
+    private Date expectedReceiveDate;
 
     @Data
     @AllArgsConstructor
@@ -33,6 +33,7 @@ public class ReceiptRequest {
         private BigDecimal quantity;
         private BigDecimal importPrice;
         private Date expiredDate;
+        private String warehouseId;
     }
 
 }

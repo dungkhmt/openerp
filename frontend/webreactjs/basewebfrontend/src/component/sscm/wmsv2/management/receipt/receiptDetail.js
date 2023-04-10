@@ -257,7 +257,7 @@ const ReceiptDetail = ( props ) => {
                           fullWidth
                           variant="outlined"
                           size="small"
-                          inputRef={register({ required: "Vui lòng điền số lô nhập" })}
+                          inputRef={register({ required: "Vui lòng điền ngày nhập hàng" })}
                           name="datetimeReceived"
                           type={"date"}
                           value={receiptInfo?.receivedDate?.substr(0, 10)}

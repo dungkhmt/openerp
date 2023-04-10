@@ -112,12 +112,27 @@ create table receipt
 (
     receipt_id         uuid not null default uuid_generate_v1() primary key,
     receipt_date       timestamp,
-    warehouse_id       uuid not null,
+    warehouse_id       uuid,
     receipt_name       varchar(60),
     description        varchar(200),
     last_updated_stamp TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
     created_stamp      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+    created_reason varchar(255),
+    expected_receipt_date timestamp,
+    status varchar(100),
+    created_by varchar(255),
+    approved_by varchar(255),
+    cancelled_by varchar(255)
 );
+
+create table receipt_item_request
+(
+    receipt_item_request_id uuid not null default uuid_generate_v1() primary key,
+    receipt_id uuid not null ,
+    product_id uuid not null ,
+    quantity decimal(18, 2) not null ,
+    warehouse_id uuid
+)
 
 create table receipt_item
 (
@@ -176,7 +191,8 @@ create table sale_order_header
     payment_type varchar(50),
     order_type varchar(50),
     last_updated_stamp timestamp default current_timestamp,
-    created_stamp timestamp default current_timestamp
+    created_stamp timestamp default current_timestamp,
+    status varchar(100)
 );
 
 create table sale_order_item

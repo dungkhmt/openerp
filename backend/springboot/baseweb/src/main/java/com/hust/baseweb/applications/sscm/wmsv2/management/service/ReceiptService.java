@@ -3,7 +3,9 @@ package com.hust.baseweb.applications.sscm.wmsv2.management.service;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.Receipt;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.ReceiptRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ReceiptGeneralResponse;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ReceiptRequestResponse;
 
+import java.security.Principal;
 import java.util.List;
 
 public interface ReceiptService {
@@ -14,4 +16,7 @@ public interface ReceiptService {
 
     ReceiptRequest getById(String id);
 
+    List<ReceiptRequestResponse> getForSaleManagement(Principal principal);
+
+    ReceiptRequestResponse getForSaleManagementById(String id);
 }

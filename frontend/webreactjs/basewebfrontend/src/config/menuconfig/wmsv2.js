@@ -44,6 +44,22 @@ export const WMSV2 = {
       icon: "StarBorder",
       text: "Mua hàng online",
       child: [],
-    }
+    },
+    {
+      id: "MENU_WMSv2_ADMIN_ORDER_VIEW",
+      path: "/wmsv2/admin/orders",
+      isPublic: false,
+      icon: "StarBorder",
+      text: "Danh sách đơn bán hàng",
+      child: [],
+    },
+    {
+      id: "MENU_WMSv2_SALE_MANAGEMENT_CREATE_RECEIPT_REQUEST",
+      path: "/wmsv2/sale-management/receipt-request",
+      isPublic: false,
+      icon: "StarBorder",
+      text: "Danh sách đơn xin nhập hàng",
+      child: [],
+    },
   ],
 };

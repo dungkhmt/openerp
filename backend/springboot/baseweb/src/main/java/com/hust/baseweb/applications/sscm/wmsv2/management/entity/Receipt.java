@@ -1,14 +1,13 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.entity;
 
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.ReceiptStatus;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
@@ -32,5 +31,13 @@ public class Receipt {
     private Date lastUpdatedStamp;
     @CreatedDate
     private Date createdStamp;
+    @Enumerated(EnumType.STRING)
+    private ReceiptStatus status;
+    private String createdReason;
+    private Date expectedReceiptDate;
+    @CreatedBy
+    private String createdBy;
+    private String approvedBy;
+    private String cancelledBy;
 
 }

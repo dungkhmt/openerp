@@ -3,6 +3,7 @@ package com.hust.baseweb.applications.sscm.wmsv2.management.controller;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.Receipt;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.ReceiptRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ReceiptGeneralResponse;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ReceiptRequestResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ReceiptService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController

@@ -7,5 +7,7 @@ export const API_PATH = {
   PRODUCT_PRICE: "/wmsv2/admin/product/price-config",
   RECEIPT: "/wmsv2/admin/receipt",
   CART: "/wmsv2/customer/cart",
-  CUSTOMER_SALE_ORDER: "/wmsv2/customer/cart/create-order"
+  CUSTOMER_SALE_ORDER: "/wmsv2/customer/cart/create-order",
+  ADMIN_SALE_ORDER: "/wmsv2/admin/order",
+  SALE_MANAGEMENT_RECEIPT_REQUEST: "/wmsv2/sale-management/receipt"
 }

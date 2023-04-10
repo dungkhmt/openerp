@@ -42,4 +42,5 @@ public class SaleOrderHeader {
     private Date lastUpdatedStamp;
     @LastModifiedDate
     private Date createdStamp;
+    private String status;
 }

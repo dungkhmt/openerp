@@ -60,6 +60,10 @@ values ('admin', '$2a$10$FnkpL3dXh8MXx3nD6yzy7egkmHQ5Evk7BxRPgdrSv1Fh0uPUYmoGu',
         false, null, null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0, '287db6a8-2783-11ea-b1c9-54bf64436441', null)
 on conflict do nothing;
 
+insert into person (party_id, first_name, middle_name, last_name, gender, birth_date, last_updated_stamp)
+values ('287db6a8-2783-11ea-b1c9-54bf64436441', 'admin first name', 'admin middle name', 'admin last name', null, null, current_timestamp)
+on conflict do nothing;
+
 -- For product management
 insert into security_permission (permission_id, description, last_updated_stamp, created_stamp)
 values ('WMSv2_PRODUCT_DETAIL', 'Managing products', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
@@ -190,6 +194,29 @@ values ('MENU_WMSv2_CUSTOMER_PRODUCT_VIEW', 'MENU', 'MENU_WMSv2', 'WMSv2_CUSTOME
 insert into security_group_permission (group_id, permission_id, last_updated_stamp, created_stamp)
 values ('ROLE_WMSv2_CUSTOMER', 'WMSv2_CUSTOMER_PRODUCT', current_timestamp, current_timestamp);
 
+-- For sale management role
+insert into security_permission (permission_id, description, last_updated_stamp, created_stamp)
+values ('WMSv2_SALE_MANAGEMENT', 'Permission for sale management', current_timestamp, current_timestamp)
+    on conflict do nothing ;
+
+insert into application (application_id, application_type_id, module_id, permission_id, description, last_updated_stamp)
+values ('MENU_WMSv2_SALE_MANAGEMENT_CREATE_RECEIPT_REQUEST', 'MENU', 'MENU_WMSv2', 'WMSv2_SALE_MANAGEMENT', 'Menu for sale management create receipt request', current_timestamp)
+    on conflict do nothing ;
+
+insert into security_group_permission (group_id, permission_id, last_updated_stamp, created_stamp)
+values ('ROLE_WMSv2_SALE_MANAGEMENT', 'WMSv2_SALE_MANAGEMENT', current_timestamp, current_timestamp)
+    on conflict do nothing ;
+
+insert into security_group (group_id, description, last_updated_stamp, created_stamp, group_name)
+values ('ROLE_WMSv2_SALE_MANAGEMENT', 'Role quản lý bán hàng ở module warehouse management version 2', current_timestamp, current_timestamp, 'Role quản lý bán hàng')
+    on conflict do nothing ;
+
+insert into security_group_permission (group_id, permission_id, last_updated_stamp, created_stamp)
+values ('ROLE_WMSv2_SALE_MANAGEMENT', 'WMSv2_SALE_MANAGEMENT', current_timestamp, current_timestamp)
+    on conflict do nothing ;
+
+insert into user_login_security_group (user_login_id, group_id, last_updated_stamp)
+values ('admin', 'ROLE_WMSv2_SALE_MANAGEMENT', current_timestamp);
 -- For warehouse management warehouse module data
 insert into product_category (name)
 values ('Tivi'), ('Tủ lạnh'), ('Máy giặt'), ('Gia dụng'), ('Quạt điều hòa'), ('Máy lạnh');

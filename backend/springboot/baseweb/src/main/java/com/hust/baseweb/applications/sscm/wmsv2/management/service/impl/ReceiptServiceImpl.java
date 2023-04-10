@@ -1,8 +1,10 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.*;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.ReceiptStatus;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.ReceiptRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ReceiptGeneralResponse;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ReceiptRequestResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.*;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ReceiptService;
 import lombok.AllArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,9 +26,11 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     private ReceiptRepository receiptRepository;
     private ReceiptItemRepository receiptItemRepository;
+    private ReceiptItemRequestRepository receiptItemRequestRepository;
     private InventoryItemRepository inventoryItemRepository;
     private ProductWarehouseRepository productWarehouseRepository;
     private WarehouseRepository warehouseRepository;
+    private ProductV2Repository productRepository;
 
     @Override
     @Transactional
@@ -39,33 +44,27 @@ public class ReceiptServiceImpl implements ReceiptService {
 
         Receipt receipt = Receipt.builder()
                                  .receiptId(UUID.randomUUID())
-                                 .warehouseId(UUID.fromString(request.getWarehouseId()))
+                                 .warehouseId(request.getWarehouseId() == null ? null : UUID.fromString(request.getWarehouseId()))
                                  .receiptDate(request.getReceivedDate())
                                  .receiptName(request.getReceiptName())
+                                 .status(ReceiptStatus.CREATED)
+                                 .createdReason(request.getCreatedReason())
+                                 .expectedReceiptDate(request.getExpectedReceiveDate())
+                                 // created by set
                                  .build();
         receiptRepository.save(receipt);
 
-        List<ReceiptItem> receiptItemList = receiptList.stream()
-                                                       .map(r -> ReceiptItem.builder()
-                                                                            .receiptItemId(UUID.randomUUID())
-                                                                            .receiptId(receipt.getReceiptId())
-                                                                            .productId(UUID.fromString(r.getProductId()))
-                                                                            .quantity(r.getQuantity())
-                                                                            .bayId(UUID.fromString(r.getBayId()))
-                                                                            .lotId(r.getLotId())
-                                                                            .importPrice(r.getImportPrice())
-                                                                            .expiredDate(r.getExpiredDate())
-                                                                            .build())
-                                                       .collect(Collectors.toList());
-        receiptItemRepository.saveAll(receiptItemList);
+        List<ReceiptItemRequest> receiptItemList = receiptList.stream()
+            .map(r -> ReceiptItemRequest.builder()
+                .receiptItemRequestId(UUID.randomUUID())
+                .receiptId(receipt.getReceiptId())
+                .productId(UUID.fromString(r.getProductId()))
+                .quantity(r.getQuantity())
+                .warehouseId(request.getWarehouseId() == null ? null : UUID.fromString(request.getWarehouseId()))
+                .build())
+            .collect(Collectors.toList());
+        receiptItemRequestRepository.saveAll(receiptItemList);
 
-        for (ReceiptRequest.ReceiptItemRequest item : receiptList) {
-            UUID productId = UUID.fromString(item.getProductId());
-            UUID bayId = UUID.fromString(item.getBayId());
-            UUID warehouseId = UUID.fromString(request.getWarehouseId());
-            updateInventoryItem(request, item, productId, bayId, warehouseId);
-            updateProductWarehouse(item, productId, warehouseId);
-        }
         return receipt;
     }
 
@@ -125,6 +124,60 @@ public class ReceiptServiceImpl implements ReceiptService {
             .description(receipt.getDescription())
             .receiptItemList(receiptItemRequestList)
             .build();
+    }
+
+    @Override
+    public List<ReceiptRequestResponse> getForSaleManagement(Principal principal) {
+        List<Receipt> receipts = receiptRepository.findAllByCreatedBy(principal.getName());
+        return receipts.stream().map(receipt -> ReceiptRequestResponse.builder()
+            .receiptRequestId(receipt.getReceiptId())
+            .approvedBy(receipt.getApprovedBy())
+            .createdDate(receipt.getCreatedStamp())
+            .createdBy(receipt.getCreatedBy())
+            .status(receipt.getStatus().getName())
+            .build())
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public ReceiptRequestResponse getForSaleManagementById(String id) {
+        Optional<Receipt> receiptOpt = receiptRepository.findById(UUID.fromString(id));
+        if (!receiptOpt.isPresent()) {
+            log.warn(String.format("Receipt id %s not present", id));
+            return null;
+        }
+        Receipt receipt = receiptOpt.get();
+        List<ReceiptItemRequest> items = receiptItemRequestRepository.findAllByReceiptId(receipt.getReceiptId());
+        List<ReceiptRequestResponse.ReceiptRequestItemResponse> itemResponse = new ArrayList<>();
+        for (ReceiptItemRequest item : items) {
+            ReceiptRequestResponse.ReceiptRequestItemResponse temp = ReceiptRequestResponse.ReceiptRequestItemResponse
+                .builder()
+                .receiptRequestItemId(item.getReceiptItemRequestId())
+                .quantity(item.getQuantity())
+                .productId(item.getProductId())
+                .productName(productRepository
+                                 .findById(item.getProductId())
+                                 .get()
+                                 .getName())
+                .warehouseId(item.getWarehouseId())
+                .build();
+            if (item.getWarehouseId() != null) {
+                temp.setWarehouseName(warehouseRepository
+                                          .findById(item.getWarehouseId())
+                                          .get()
+                                          .getName());
+            }
+            itemResponse.add(temp);
+        }
+        return ReceiptRequestResponse.builder()
+                .receiptRequestId(receipt.getReceiptId())
+                .createdDate(receipt.getCreatedStamp())
+                .approvedBy(receipt.getApprovedBy())
+                .status(receipt.getStatus().getName())
+                .createdBy(receipt.getCreatedBy())
+                .createdReason(receipt.getCreatedReason())
+                .expectedReceiveDate(receipt.getExpectedReceiptDate())
+                .items(itemResponse).build();
     }
 
     private void updateInventoryItem(
