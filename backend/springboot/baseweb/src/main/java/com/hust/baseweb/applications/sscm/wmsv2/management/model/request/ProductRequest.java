@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class ProductRequest {
-
+    private String productId;
     @NotBlank
     private String code;
     @NotBlank
@@ -22,11 +22,6 @@ public class ProductRequest {
     private BigDecimal height;
     private BigDecimal weight;
     private BigDecimal area;
-
-    private BigDecimal importPrice;
-    private BigDecimal retailPrice;
-    private BigDecimal wholeSalePrice;
-    private BigDecimal taxPercentage;
 
     private String uom;
     private String categoryId;
@@ -41,8 +36,13 @@ public class ProductRequest {
     @NoArgsConstructor
     public static class InitProductQuantity {
         private String warehouseId;
+        private String warehouseName;
         private String bayId;
+        private String code;
         private BigDecimal quantity;
+        private BigDecimal importPrice;
+        private BigDecimal exportPrice;
+        private String lotId;
     }
 
 }

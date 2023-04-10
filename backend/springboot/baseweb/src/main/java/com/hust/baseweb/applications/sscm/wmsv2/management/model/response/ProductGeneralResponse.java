@@ -17,4 +17,6 @@ public class ProductGeneralResponse {
     private String code;
     private BigDecimal retailPrice;
     private BigDecimal onHandQuantity;
+    private byte[] imageData;
+    private String imageContentType;
 }

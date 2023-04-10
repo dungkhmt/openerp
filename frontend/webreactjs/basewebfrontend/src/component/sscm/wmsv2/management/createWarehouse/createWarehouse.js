@@ -17,6 +17,7 @@ import { API_PATH } from '../apiPaths.js';
 import { warehouse } from 'config/menuconfig/warehouse.js';
 import { useRouteMatch } from "react-router-dom";
 import { useHistory } from "react-router";
+import StandardTable from 'component/table/StandardTable.jsx';
 
 const CreateWarehouse = ( props ) => {
   const holderShelf = { x: "", y: "", width: "", length: "", num: "" };
@@ -41,7 +42,8 @@ const CreateWarehouse = ( props ) => {
   // Use to determine what value of Address text field
   // if updateAddress = true -> Address text field = new select address from map
   // else -> current warehouse address or null
-  const [updateAddress, setUpdateAddress] = useState(false); 
+  const [updateAddress, setUpdateAddress] = useState(false);
+  const [productTableData, setProductTableData] = useState([]);
 
   useEffect(() => {
     if (warehouseId != null) {
@@ -57,6 +59,17 @@ const CreateWarehouse = ( props ) => {
           503: () => { errorNoti("Có lỗi khi tải dữ liệu của kho") }
         }
       );
+      request(
+        "get",
+        API_PATH.PRODUCT_WAREHOUSE + "/" + warehouseId,
+        ( res ) => {
+          setProductTableData(res.data.products);
+        },
+        {
+          401: () => { },
+          503: () => { errorNoti("Có lỗi khi tải dữ liệu của kho") }
+        }
+      )
     }
   }, [warehouseId])
 
@@ -523,6 +536,28 @@ const CreateWarehouse = ( props ) => {
                 </Box>
               </Grid>
             </Grid>
+          </Box>
+
+          <Box className={classes.boxInfor}>
+            <StandardTable
+              title={"Danh sách hàng tồn kho"}
+              columns={
+                [
+                  { title: "Tên hàng", field: "productName" },
+                  { title: "Số lượng", field: "quantity" },
+                  { title: "Số lô", field: "lotId" },
+                  { title: "Kệ hàng", field: "bayCode" },
+                  { title: "Giá nhập (VNĐ)", field: "importPrice" },
+                  { title: "Giá bán (VNĐ)", field: "exportPrice" }
+                ]
+              }
+              data={productTableData}
+              options={{
+                pageSize: 20,
+                search: true,
+                sorting: true,
+              }}
+            />
           </Box>
         </Box>
       </Box>

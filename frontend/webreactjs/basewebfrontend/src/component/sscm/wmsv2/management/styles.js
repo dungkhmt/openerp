@@ -209,6 +209,18 @@ const useStyles = makeStyles(() => ({
   },
   detailWrap:{
     margin: 0,
+  },
+  modal: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    width: '50%',
+    height: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
   }
 })
 )
