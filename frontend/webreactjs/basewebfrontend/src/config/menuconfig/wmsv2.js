@@ -61,5 +61,13 @@ export const WMSV2 = {
       text: "Danh sách đơn xin nhập hàng",
       child: [],
     },
+    {
+      id: "MENU_WMSv2_APPROVE_RECEIPT_REQUEST",
+      path: "/wmsv2/approver/receipt-request",
+      isPublic: false,
+      icon: "StarBorder",
+      text: "Phê duyệt đơn xin nhập hàng",
+      child: [],
+    },
   ],
 };

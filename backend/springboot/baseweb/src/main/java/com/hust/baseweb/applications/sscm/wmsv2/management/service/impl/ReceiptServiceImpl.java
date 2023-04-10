@@ -127,8 +127,14 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
     @Override
-    public List<ReceiptRequestResponse> getForSaleManagement(Principal principal) {
-        List<Receipt> receipts = receiptRepository.findAllByCreatedBy(principal.getName());
+    public List<ReceiptRequestResponse> getForSaleManagement(Principal principal, String statusCode) {
+        ReceiptStatus status = ReceiptStatus.findByCode(statusCode);
+        List<Receipt> receipts;
+        if (status != null) {
+            receipts = receiptRepository.findAllByCreatedByAndStatus(principal.getName(), status);
+        } else {
+            receipts = receiptRepository.findAllByCreatedBy(principal.getName());
+        }
         return receipts.stream().map(receipt -> ReceiptRequestResponse.builder()
             .receiptRequestId(receipt.getReceiptId())
             .approvedBy(receipt.getApprovedBy())
@@ -178,6 +184,38 @@ public class ReceiptServiceImpl implements ReceiptService {
                 .createdReason(receipt.getCreatedReason())
                 .expectedReceiveDate(receipt.getExpectedReceiptDate())
                 .items(itemResponse).build();
+    }
+
+    @Override
+    public boolean approve(Principal principal, String id) {
+        Optional<Receipt> receiptOpt = receiptRepository.findById(UUID.fromString(id));
+        if (!receiptOpt.isPresent()) {
+            log.warn(String.format("Receipt %s is not present", id));
+            return false;
+        }
+        Receipt receipt = receiptOpt.get();
+        if (receipt.getStatus() != ReceiptStatus.CREATED) {
+            log.warn("Receipt status is not CREATED");
+            return false;
+        }
+        receipt.setApprovedBy(principal.getName());
+        receipt.setStatus(ReceiptStatus.APPROVED);
+        receiptRepository.save(receipt);
+        return true;
+    }
+
+    @Override
+    public boolean cancel(Principal principal, String id) {
+        Optional<Receipt> receiptOpt = receiptRepository.findById(UUID.fromString(id));
+        if (!receiptOpt.isPresent()) {
+            log.warn(String.format("Receipt %s is not present", id));
+            return false;
+        }
+        Receipt receipt = receiptOpt.get();
+        receipt.setCancelledBy(principal.getName());
+        receipt.setStatus(ReceiptStatus.CANCELLED);
+        receiptRepository.save(receipt);
+        return true;
     }
 
     private void updateInventoryItem(

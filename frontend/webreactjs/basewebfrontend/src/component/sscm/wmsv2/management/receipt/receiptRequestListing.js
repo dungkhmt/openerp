@@ -36,7 +36,8 @@ const ReceiptRequestListing = () => {
   const columns = [
     { title: "Ngày tạo đơn", field: "createdDate" },
     { title: "Trạng thái", field: "status" },
-    { title: "Người phê duyệt", field: "approvedBy" }
+    { title: "Người phê duyệt", field: "approvedBy" },
+    { title: "Người hủy", field: "cancelledBy" }
   ];
 
   return (<Fragment>

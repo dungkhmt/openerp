@@ -50,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/image/**").permitAll()
             .antMatchers("/js/**").permitAll()
             .antMatchers("/chatSocketHandler/**").permitAll()
+            .antMatchers("/wmsv2/*").permitAll()
 
             .antMatchers("/export-problem/*")
             .permitAll()

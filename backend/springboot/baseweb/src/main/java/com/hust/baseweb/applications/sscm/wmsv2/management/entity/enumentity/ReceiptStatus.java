@@ -7,11 +7,21 @@ import lombok.Getter;
 @Getter
 public enum ReceiptStatus {
 
-    CREATED("Khởi tạo"),
-    APPROVED("Đã phê duyệt"),
-    IN_PROGRESS("Đang xử lý"),
-    CANCELLED("Đã hủy"),
-    COMPLETED("Đã hoàn thành");
+    CREATED("Khởi tạo", "CREATED"),
+    APPROVED("Đã phê duyệt", "APPROVED"),
+    IN_PROGRESS("Đang xử lý", "IN_PROGRESS"),
+    CANCELLED("Đã hủy", "CANCELLED"),
+    COMPLETED("Đã hoàn thành", "COMPLETED");
 
     private String name;
+    private String code;
+
+    public static ReceiptStatus findByCode(String code) {
+        for (ReceiptStatus status : ReceiptStatus.values()) {
+            if (status.getCode().equals(code)) {
+                return status;
+            }
+        }
+        return null;
+    }
 }

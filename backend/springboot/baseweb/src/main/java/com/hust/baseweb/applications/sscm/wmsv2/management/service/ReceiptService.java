@@ -16,7 +16,11 @@ public interface ReceiptService {
 
     ReceiptRequest getById(String id);
 
-    List<ReceiptRequestResponse> getForSaleManagement(Principal principal);
+    List<ReceiptRequestResponse> getForSaleManagement(Principal principal, String status);
 
     ReceiptRequestResponse getForSaleManagementById(String id);
+
+    boolean approve(Principal principal, String id);
+
+    boolean cancel(Principal principal, String id);
 }

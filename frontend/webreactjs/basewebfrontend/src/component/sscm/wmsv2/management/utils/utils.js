@@ -15,6 +15,9 @@ const getProductNameFromProductId = (id, productList) => {
 }
 
 const convertTimeStampToDate = ( time ) => {
+  if (time == null) {
+    return "";
+  }
   const date = new Date(time.slice(0, time.indexOf("T")));
   return date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
 }

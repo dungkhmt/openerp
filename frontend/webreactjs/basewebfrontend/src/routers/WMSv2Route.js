@@ -13,6 +13,8 @@ import CartDetail from "component/sscm/wmsv2/management/ecommerce/cartDetail";
 import AdminOrderListing from "component/sscm/wmsv2/management/order/orderListing";
 import ReceiptRequestListing from "component/sscm/wmsv2/management/receipt/receiptRequestListing";
 import ReceiptRequestDetail from "component/sscm/wmsv2/management/receipt/receiptRequestDetail";
+import ReceiptRequestForApproval from "component/sscm/wmsv2/management/receipt/receipRequestForApproval";
+import ReceiptRequestForApprovalListing from "component/sscm/wmsv2/management/receipt/receiptRequestForApprovalListing";
 
 export default function WMSv2Route() {
   let { path } = useRouteMatch();
@@ -103,6 +105,16 @@ export default function WMSv2Route() {
           component={ReceiptRequestDetail}
           exact
           path={`${path}/sale-management/receipt-request/:id`}
+        ></Route>
+        <Route
+          component={ReceiptRequestForApproval}
+          exact
+          path={`${path}/approver/receipt-request/:id`}
+        ></Route>
+        <Route
+          component={ReceiptRequestForApprovalListing}
+          exact
+          path={`${path}/approver/receipt-request`}
         ></Route>
       </Switch>
     </div>
