@@ -1,12 +1,12 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.model.response;
 
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.Receipt;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,24 +14,17 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ReceiptRequestResponse {
-    private UUID receiptRequestId;
-    private Date createdDate;
-    private String approvedBy;
-    private String status;
-    private String createdBy;
-    private String createdReason;
-    private String cancelledBy;
-    private Date lastUpdateStamp;
-    private Date expectedReceiveDate;
-    List<ReceiptRequestItemResponse> items;
+public class ReceiptProcessResponse {
+    Receipt info;
+    List<ProcessedItemModel> processedItems;
+    List<RemainingItemResponse> remainingItems;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class ReceiptRequestItemResponse {
-        private UUID receiptRequestItemId;
+    public static class RemainingItemResponse {
+        private UUID receiptItemRequestId;
         private UUID productId;
         private String productName;
         private BigDecimal quantity;

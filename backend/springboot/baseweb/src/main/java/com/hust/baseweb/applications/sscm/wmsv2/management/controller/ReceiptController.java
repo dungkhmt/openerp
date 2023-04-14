@@ -26,8 +26,8 @@ public class ReceiptController {
     private ReceiptService receiptService;
 
     @PutMapping()
-    public ResponseEntity<Receipt> createReceipt(@RequestBody ReceiptRequest request) {
-        return ResponseEntity.ok(receiptService.createReceipt(request));
+    public ResponseEntity<Receipt> createReceipt(Principal principal, @RequestBody ReceiptRequest request) {
+        return ResponseEntity.ok(receiptService.createReceipt(principal, request));
     }
 
     @GetMapping

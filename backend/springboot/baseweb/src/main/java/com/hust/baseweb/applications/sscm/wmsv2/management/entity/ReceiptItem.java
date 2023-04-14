@@ -32,6 +32,7 @@ public class ReceiptItem {
     private String lotId;
     private BigDecimal importPrice;
     private Date expiredDate;
+    private UUID receiptItemRequestId;
 
     @LastModifiedDate
     private Date lastUpdatedStamp;

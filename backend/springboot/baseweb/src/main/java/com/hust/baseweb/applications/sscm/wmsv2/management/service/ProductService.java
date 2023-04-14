@@ -9,6 +9,7 @@ import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.Produc
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface ProductService {
@@ -28,4 +29,6 @@ public interface ProductService {
     boolean deleteProductPriceById(String id);
 
     BigDecimal getCurrPriceByProductId(UUID id);
+
+    Map<UUID, String> getProductNameMap();
 }

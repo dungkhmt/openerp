@@ -17,6 +17,7 @@ import com.hust.baseweb.applications.sscm.wmsv2.management.service.SaleOrderServ
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -43,7 +44,7 @@ public class SaleOrderServiceImpl implements SaleOrderService {
     @Transactional
     public boolean createSaleOrder(Principal principal, SaleOrderRequest request) {
         String userLoginId = principal.getName();
-        CustomerAddress customerAddress = null;
+        CustomerAddress customerAddress;
         if (request.getCustomerAddressId() == null) {
             customerAddress = CustomerAddress.builder()
                 .customerAddressId(UUID.randomUUID())

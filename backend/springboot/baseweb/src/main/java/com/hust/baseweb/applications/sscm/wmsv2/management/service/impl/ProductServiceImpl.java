@@ -298,4 +298,14 @@ public class ProductServiceImpl implements ProductService {
         }
         return currPrice;
     }
+
+    @Override
+    public Map<UUID, String> getProductNameMap() {
+        List<ProductV2> products = productRepository.findAll();
+        Map<UUID, String> map = new HashMap<>();
+        for (ProductV2 product : products) {
+            map.put(product.getProductId(), product.getName());
+        }
+        return map;
+    }
 }

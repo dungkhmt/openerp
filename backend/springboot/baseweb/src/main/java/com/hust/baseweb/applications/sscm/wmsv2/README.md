@@ -18,3 +18,22 @@
 - Đổi tên entity giống với 07-schema
 - Tăng tốc độ code
 Kịch bản sử dụng cho người muốn mua hàng: Customer Vào xem sản phẩm -> Customer Tạo đơn hàng -> Hệ thống khởi tạo đơn hàng -> Saler phê duyệt đơn hàng -> Hệ thống khởi tạo đơn xuất kho -> Thủ kho phê duyệt đơn xuất kho (Hệ thống tự động tính toán và đưa ra cách lấy hàng để phù hợp với đơn hàng) -> Thành công (có thể xem xét việc assign cho tài xế giao hàng)
+
+# Cách chạy project (Ubuntu)
+Run each command in sparate terminal 
+```agsl
+mongod --port 27017 --dbpath /home/dinh/Documents/HUST/thesis/db/mongo27017/ --replSet rs0
+```
+```agsl
+mongod --port 27018 --dbpath /home/dinh/Documents/HUST/thesis/db/mongo27018 --replSet rs0
+```
+```agsl
+mongod --port 27019 --dbpath /home/dinh/Documents/HUST/thesis/db/mongo27019/ --replSet rs0
+```
+```agsl
+mongosh --port 27017
+```
+```agsl
+sudo docker run -d -p 6379:6379 redis
+```
+- Docker name dang su dung: a03 (postgre) va 2ff (redis)

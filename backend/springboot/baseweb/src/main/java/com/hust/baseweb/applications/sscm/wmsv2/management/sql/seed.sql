@@ -231,6 +231,19 @@ insert into application (application_id, application_type_id, module_id, permiss
 values ('MENU_WMSv2_APPROVE_RECEIPT_REQUEST', 'MENU', 'MENU_WMSv2', 'WMSv2_APPROVE_RECEIPT_REQUEST', 'Menu for Approve receipt request', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
     ON CONFLICT DO NOTHING;
 
+-- For process receipt request screen
+insert into security_permission (permission_id, description, last_updated_stamp, created_stamp)
+values ('WMSv2_PROCESS_RECEIPT_REQUEST', 'Permission for Process receipt request', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    ON CONFLICT DO NOTHING;
+
+insert into security_group_permission (group_id, permission_id, last_updated_stamp, created_stamp)
+values ('ROLE_WMSv2_ADMIN', 'WMSv2_PROCESS_RECEIPT_REQUEST', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    ON CONFLICT DO NOTHING;
+
+insert into application (application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
+values ('MENU_WMSv2_PROCESS_RECEIPT_REQUEST', 'MENU', 'MENU_WMSv2', 'WMSv2_PROCESS_RECEIPT_REQUEST', 'Menu for Process receipt request', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    ON CONFLICT DO NOTHING;
+
 -- For warehouse management warehouse module data
 insert into product_category (name)
 values ('Tivi'), ('Tủ lạnh'), ('Máy giặt'), ('Gia dụng'), ('Quạt điều hòa'), ('Máy lạnh');

@@ -15,4 +15,8 @@ public interface ReceiptRepository extends JpaRepository<Receipt, UUID> {
 
     List<Receipt> findAllByCreatedByAndStatus(String createdBy, ReceiptStatus status);
 
+    List<Receipt> findAllByStatus(ReceiptStatus status);
+
+    List<Receipt> findAllByStatusIn(List<ReceiptStatus> statuses);
+
 }

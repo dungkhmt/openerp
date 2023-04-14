@@ -24,8 +24,10 @@ public class SaleManagementReceiptController {
     private ReceiptService receiptService;
 
     @GetMapping()
-    public ResponseEntity<List<ReceiptRequestResponse>> getReceiptRequestForSaleManagement(Principal principal, @RequestParam(required = false) String status) {
-        return ResponseEntity.ok(receiptService.getForSaleManagement(principal, status));
+    public ResponseEntity<List<ReceiptRequestResponse>> getReceiptRequestForSaleManagement(
+        Principal principal,
+        @RequestParam(name = "status", required = false) String[] statuses) {
+        return ResponseEntity.ok(receiptService.getForSaleManagement(principal, statuses));
     }
 
     @GetMapping(path = "/{id}")
@@ -45,6 +47,11 @@ public class SaleManagementReceiptController {
         return receiptService.cancel(principal, id) ?
             ResponseEntity.ok("OK") :
             new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping(path = "/approval-listing")
+    public ResponseEntity<List<ReceiptRequestResponse>> getReceiptsForSaleManagerListing(@RequestParam(required = false) String status) {
+        return ResponseEntity.ok(receiptService.getAllForSaleManagement(status));
     }
 
 }

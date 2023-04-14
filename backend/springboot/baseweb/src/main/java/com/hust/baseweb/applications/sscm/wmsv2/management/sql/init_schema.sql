@@ -146,6 +146,7 @@ create table receipt_item
     expired_date       TIMESTAMP,
     last_updated_stamp TIMESTAMP,
     created_stamp      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+    receipt_item_request_id uuid not null
 );
 
 create table product_price
@@ -262,4 +263,10 @@ alter table sale_order_item
 add constraint fk_sale_order_item_sale_order_header
 foreign key (order_id)
 references sale_order_header(order_id)
+on delete cascade;
+
+alter table receipt_item_request
+add constraint fk_receipt_item_request_receipt
+foreign key (receipt_id)
+references receipt (receipt_id)
 on delete cascade;

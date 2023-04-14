@@ -15,6 +15,8 @@ import ReceiptRequestListing from "component/sscm/wmsv2/management/receipt/recei
 import ReceiptRequestDetail from "component/sscm/wmsv2/management/receipt/receiptRequestDetail";
 import ReceiptRequestForApproval from "component/sscm/wmsv2/management/receipt/receipRequestForApproval";
 import ReceiptRequestForApprovalListing from "component/sscm/wmsv2/management/receipt/receiptRequestForApprovalListing";
+import ReceiptRequestProcessListing from "component/sscm/wmsv2/management/receipt/receiptRequestProcessListing";
+import ReceiptRequestProcess from "component/sscm/wmsv2/management/receipt/receiptRequestProcess";
 
 export default function WMSv2Route() {
   let { path } = useRouteMatch();
@@ -115,6 +117,16 @@ export default function WMSv2Route() {
           component={ReceiptRequestForApprovalListing}
           exact
           path={`${path}/approver/receipt-request`}
+        ></Route>
+        <Route
+          component={ReceiptRequestProcessListing}
+          exact
+          path={`${path}/process/receipt-request`}
+        ></Route>
+        <Route
+          component={ReceiptRequestProcess}
+          exact
+          path={`${path}/process/receipt-request/:id`}
         ></Route>
       </Switch>
     </div>

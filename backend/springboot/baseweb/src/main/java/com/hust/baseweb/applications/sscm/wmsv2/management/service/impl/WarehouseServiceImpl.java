@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -210,6 +207,16 @@ public class WarehouseServiceImpl implements WarehouseService {
             .totalImportPrice(totalImportPrice)
             .totalExportPrice(totalExportPrice)
             .build();
+    }
+
+    @Override
+    public Map<UUID, String> getWarehouseNameMap() {
+        List<Warehouse> warehouses = warehouseRepository.findAll();
+        Map<UUID, String> map = new HashMap<>();
+        for (Warehouse warehouse : warehouses) {
+            map.put(warehouse.getWarehouseId(), warehouse.getName());
+        }
+        return map;
     }
 
 }

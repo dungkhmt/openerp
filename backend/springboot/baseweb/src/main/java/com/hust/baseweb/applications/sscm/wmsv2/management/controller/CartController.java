@@ -32,7 +32,8 @@ public class CartController {
     }
 
     @PostMapping(path = "/create-order")
-    public ResponseEntity<String> createSaleOrder(Principal principal, @RequestBody SaleOrderRequest request) {
+    public ResponseEntity<String> createSaleOrder(@RequestBody SaleOrderRequest request, Principal principal) {
+        log.info(String.format(String.format("Principal name -> %s", principal.getName())));
         return saleOrderService.createSaleOrder(principal, request) ?
             ResponseEntity.ok("OK") :
             new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);

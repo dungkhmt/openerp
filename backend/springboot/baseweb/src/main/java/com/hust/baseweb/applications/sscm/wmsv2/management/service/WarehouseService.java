@@ -5,6 +5,8 @@ import com.hust.baseweb.applications.sscm.wmsv2.management.model.WarehouseWithBa
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductWarehouseResponse;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public interface WarehouseService {
 
@@ -19,4 +21,6 @@ public interface WarehouseService {
     List<WarehouseWithBays> getAllWarehouseDetail();
 
     ProductWarehouseResponse getProductInWarehouse(String warehouseId);
+
+    Map<UUID, String> getWarehouseNameMap();
 }
