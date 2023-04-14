@@ -3,11 +3,11 @@ import {Link} from "react-router-dom";
 import {request} from "../../../api";
 import {useTranslation} from "react-i18next";
 import {toFormattedDateTime} from "../../../utils/dateutils";
-import StandardTable from "component/table/StandardTable";
 import {Box, Chip, IconButton} from "@mui/material";
 import {GetApp} from "@material-ui/icons";
 import {API_URL} from "../../../config/config";
 import {getColorLevel} from "./lib";
+import {StandardTable} from "erp-hust/lib/StandardTable";
 
 function ListProblem() {
   const [page, setPage] = useState(1);
