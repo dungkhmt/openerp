@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.entity;
 
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.OrderStatus;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.OrderType;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.PaymentType;
 import lombok.*;
@@ -32,6 +33,8 @@ public class SaleOrderHeader {
     private String customerName;
     private String customerPhoneNumber;
     private String description;
+    private String approvedBy;
+    private String cancelledBy;
 
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
@@ -42,5 +45,7 @@ public class SaleOrderHeader {
     private Date lastUpdatedStamp;
     @LastModifiedDate
     private Date createdStamp;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 }

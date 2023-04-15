@@ -193,7 +193,9 @@ create table sale_order_header
     order_type varchar(50),
     last_updated_stamp timestamp default current_timestamp,
     created_stamp timestamp default current_timestamp,
-    status varchar(100)
+    status varchar(100),
+    approved_by varchar(50),
+    cancelled_by varchar(50)
 );
 
 create table sale_order_item

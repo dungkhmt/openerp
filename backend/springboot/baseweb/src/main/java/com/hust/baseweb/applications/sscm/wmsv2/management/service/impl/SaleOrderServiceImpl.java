@@ -3,6 +3,7 @@ package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.CustomerAddress;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.SaleOrderHeader;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.SaleOrderItem;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.OrderStatus;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.OrderType;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.PaymentType;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.CartItemRequest;
@@ -96,6 +97,7 @@ public class SaleOrderServiceImpl implements SaleOrderService {
             .description(request.getDescription())
             .paymentType(paymentType)
             .orderType(orderType)
+            .status(OrderStatus.CREATED)
             .build();
         UUID orderId = saleOrderHeader.getOrderId();
         List<SaleOrderItem> saleOrderItemList = request.getItems().stream().map(item -> SaleOrderItem
