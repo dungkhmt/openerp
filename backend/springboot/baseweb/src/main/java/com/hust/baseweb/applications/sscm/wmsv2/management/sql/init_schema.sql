@@ -207,6 +207,12 @@ create table sale_order_item
     price_unit decimal(18, 2)
 );
 
+create table delivery_person
+(
+    delivery_person_id uuid primary key not null default uuid_generate_v1(),
+    full_name varchar(100) not null,
+    phone_number varchar(50)
+);
 
 alter table bay
     add constraint fk_bay_warehouse_id foreign key (warehouse_id) references warehouse (warehouse_id);
