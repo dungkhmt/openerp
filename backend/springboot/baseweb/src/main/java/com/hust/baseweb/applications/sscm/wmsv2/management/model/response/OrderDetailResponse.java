@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.model.response;
 
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.AssignedOrderItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,8 @@ public class OrderDetailResponse {
     private String receiptAddress;
     private BigDecimal totalOrderCost;
     private List<OrderItemResponse> items;
+    private List<OrderItemResponse> remainingItems;
+    private List<ProcessedOrderItemResponse> processedItems;
     private String status;
 
     @Data
@@ -35,7 +38,22 @@ public class OrderDetailResponse {
     public static class OrderItemResponse {
         private UUID productId;
         private String productName;
-        private long quantity;
+        private BigDecimal quantity;
         private BigDecimal priceUnit;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class ProcessedOrderItemResponse {
+        private UUID productId;
+        private String productName;
+        private BigDecimal quantity;
+        private UUID bayId;
+        private String bayCode;
+        private UUID warehouseId;
+        private String warehouseName;
+        private String lotId;
     }
 }

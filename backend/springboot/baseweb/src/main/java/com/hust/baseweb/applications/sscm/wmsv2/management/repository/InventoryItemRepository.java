@@ -11,7 +11,7 @@ import java.util.UUID;
 @Repository
 public interface InventoryItemRepository extends JpaRepository<InventoryItem, UUID> {
 
-    Optional<InventoryItem> getInventoryItemByProductIdAndBayIdAndWarehouseIdAndLotId(UUID productId, UUID bayId, UUID warehouseId, String lotId);
+    List<InventoryItem> getInventoryItemByProductIdAndBayIdAndWarehouseIdOrderByCreatedStamp(UUID productId, UUID bayId, UUID warehouseId);
 
     List<InventoryItem> findAllByWarehouseId(UUID warehouseId);
 

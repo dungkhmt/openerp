@@ -214,6 +214,21 @@ create table delivery_person
     phone_number varchar(50)
 );
 
+create table assigned_order_item
+(
+    assigned_order_item_id uuid primary key not null default uuid_generate_v1(),
+    order_id uuid not null,
+    product_id uuid not null ,
+    quantity decimal(18, 2) not null ,
+    bay_id uuid not null ,
+    warehouse_id uuid not null ,
+    assigned_by varchar(50),
+    last_updated_stamp timestamp default current_timestamp,
+    created_stamp timestamp default current_timestamp,
+    lot_id varchar(50)
+);
+
+
 alter table bay
     add constraint fk_bay_warehouse_id foreign key (warehouse_id) references warehouse (warehouse_id);
 

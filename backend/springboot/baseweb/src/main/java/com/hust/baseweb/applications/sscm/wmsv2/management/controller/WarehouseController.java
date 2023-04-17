@@ -3,6 +3,7 @@ package com.hust.baseweb.applications.sscm.wmsv2.management.controller;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.Warehouse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.WarehouseWithBays;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductWarehouseResponse;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.WarehouseDetailsResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.WarehouseService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,12 @@ public class WarehouseController {
     public ResponseEntity<List<WarehouseWithBays>> getAllWarehouseDetail() {
         return ResponseEntity.ok(warehouseService.getAllWarehouseDetail());
     }
+
+    @GetMapping(path = "/detail-with-products")
+    public ResponseEntity<List<WarehouseDetailsResponse>> getAllWarehouseDetailWithProducts() {
+        return ResponseEntity.ok(warehouseService.getAllWarehouseDetailWithProducts());
+    }
+
 
     @DeleteMapping()
     public ResponseEntity<List<String>> delete(@RequestBody List<String> warehouseIds) {

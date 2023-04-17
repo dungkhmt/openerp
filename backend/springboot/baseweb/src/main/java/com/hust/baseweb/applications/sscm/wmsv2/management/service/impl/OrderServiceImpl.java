@@ -1,16 +1,20 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.AssignedOrderItem;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.CustomerAddress;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.SaleOrderHeader;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.SaleOrderItem;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.OrderStatus;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.OrderDetailResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.OrderGeneralResponse;
+import com.hust.baseweb.applications.sscm.wmsv2.management.repository.AssignedOrderItemRepository;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.CustomerAddressRepository;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.SaleOrderHeaderRepository;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.SaleOrderItemRepository;
+import com.hust.baseweb.applications.sscm.wmsv2.management.service.BayService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.OrderService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductService;
+import com.hust.baseweb.applications.sscm.wmsv2.management.service.WarehouseService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +33,11 @@ public class OrderServiceImpl implements OrderService {
     private SaleOrderHeaderRepository saleOrderHeaderRepository;
     private CustomerAddressRepository customerAddressRepository;
     private SaleOrderItemRepository saleOrderItemRepository;
+    private AssignedOrderItemRepository assignedOrderItemRepository;
 
     private ProductService productService;
+    private WarehouseService warehouseService;
+    private BayService bayService;
 
     @Override
     public List<OrderGeneralResponse> getAllOrdersByStatus(String[] orderStatusStr) {
@@ -88,9 +95,57 @@ public class OrderServiceImpl implements OrderService {
             .map(item -> OrderDetailResponse.OrderItemResponse.builder()
                 .productId(item.getProductId())
                 .productName(productNameMap.get(item.getProductId()))
-                .quantity(item.getQuantity())
+                .quantity(BigDecimal.valueOf(item.getQuantity()))
                 .priceUnit(item.getPriceUnit()).build())
             .collect(Collectors.toList());
+
+        List<AssignedOrderItem> assignedItems = assignedOrderItemRepository.findAllByOrderId(orderId);
+        Map<UUID, String> warehouseNameMap = warehouseService.getWarehouseNameMap();
+        Map<UUID, String> bayCodeMap = bayService.getBayCodeMap();
+        List<OrderDetailResponse.ProcessedOrderItemResponse> processedItems = assignedItems
+            .stream()
+            .map(item ->
+                     OrderDetailResponse.ProcessedOrderItemResponse
+                         .builder()
+                         .productId(item.getProductId())
+                         .productName(productNameMap.get(item.getProductId()))
+                         .quantity(item.getQuantity())
+                         .bayId(item.getBayId())
+                         .bayCode(bayCodeMap.get(item.getBayId()))
+                         .warehouseId(item.getWarehouseId())
+                         .warehouseName(warehouseNameMap.get(item.getWarehouseId()))
+                         .lotId(item.getLotId())
+                         .build())
+            .collect(Collectors.toList());
+
+        Map<UUID, BigDecimal> remainItemsMap = new HashMap<>();
+        for (OrderDetailResponse.OrderItemResponse item : items) {
+            remainItemsMap.put(item.getProductId(), item.getQuantity());
+        }
+        for (AssignedOrderItem item : assignedItems) {
+            BigDecimal prevQuantity = remainItemsMap.get(item.getProductId());
+            BigDecimal newQuantity = prevQuantity.subtract(item.getQuantity());
+            if (newQuantity.compareTo(BigDecimal.ZERO) > 0){
+                remainItemsMap.put(item.getProductId(), newQuantity);
+            } else {
+                remainItemsMap.remove(item.getProductId());
+            }
+        }
+        List<OrderDetailResponse.OrderItemResponse> remainItems = new ArrayList<>();
+        for (Map.Entry<UUID, BigDecimal> entry : remainItemsMap.entrySet()) {
+            BigDecimal priceUnitLocal = null;
+            for (OrderDetailResponse.OrderItemResponse item : items) {
+                if (item.getProductId().equals(entry.getKey())) {
+                    priceUnitLocal = item.getPriceUnit();
+                    break;
+                }
+            }
+            remainItems.add(OrderDetailResponse.OrderItemResponse.builder()
+                                .productName(productNameMap.get(entry.getKey()))
+                                .priceUnit(priceUnitLocal)
+                                .quantity(entry.getValue())
+                                .productId(entry.getKey()).build());
+        }
 
         return OrderDetailResponse.builder()
             .userLoginId(saleOrderHeader.getUserLoginId())
@@ -104,6 +159,8 @@ public class OrderServiceImpl implements OrderService {
             .receiptAddress(customerAddressOpt.get().getAddressName())
             .totalOrderCost(saleOrderHeader.getTotalOrderCost())
             .status(saleOrderHeader.getStatus().getName())
+            .processedItems(processedItems)
+            .remainingItems(remainItems)
             .items(items)
             .build();
     }

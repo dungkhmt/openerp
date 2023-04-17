@@ -6,6 +6,7 @@ import com.hust.baseweb.applications.sscm.wmsv2.management.entity.ProductV2;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.Warehouse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.WarehouseWithBays;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.ProductWarehouseResponse;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.WarehouseDetailsResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.BayRepository;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.InventoryItemRepository;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.ProductV2Repository;
@@ -160,10 +161,9 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     public List<WarehouseWithBays> getAllWarehouseDetail() {
         List<Warehouse> warehouseGeneral = warehouseRepository.findAll();
-        List<WarehouseWithBays> response = warehouseGeneral.stream()
-                                                           .map(general -> getById(general.getWarehouseId().toString()))
-                                                           .collect(Collectors.toList());
-        return response;
+        return warehouseGeneral.stream()
+                               .map(general -> getById(general.getWarehouseId().toString()))
+                               .collect(Collectors.toList());
     }
 
     @Override
@@ -175,8 +175,8 @@ public class WarehouseServiceImpl implements WarehouseService {
             return null;
         }
         List<InventoryItem> items = inventoryItemRepository.findAllByWarehouseId(warehouseId);
-        BigDecimal totalImportPrice = new BigDecimal(0.00);
-        BigDecimal totalExportPrice = new BigDecimal(0.00);
+        BigDecimal totalImportPrice = BigDecimal.ZERO;
+        BigDecimal totalExportPrice = BigDecimal.ZERO;
         List<ProductWarehouseResponse.ProductWarehouseDetailResponse> products = new ArrayList<>();
         for (InventoryItem item : items) {
             Optional<Bay> bayOpt = bayRepository.findById(item.getBayId());
@@ -217,6 +217,21 @@ public class WarehouseServiceImpl implements WarehouseService {
             map.put(warehouse.getWarehouseId(), warehouse.getName());
         }
         return map;
+    }
+
+    @Override
+    public List<WarehouseDetailsResponse> getAllWarehouseDetailWithProducts() {
+        List<WarehouseWithBays> warehouses = getAllWarehouseDetail();
+        List<WarehouseDetailsResponse> response = new ArrayList<>();
+        for (WarehouseWithBays warehouse : warehouses) {
+            WarehouseDetailsResponse adder = WarehouseDetailsResponse
+                .builder()
+                .info(warehouse)
+                .items(getProductInWarehouse(warehouse.getId()).getProducts())
+                .build();
+            response.add(adder);
+        }
+        return response;
     }
 
 }
