@@ -234,4 +234,21 @@ public class WarehouseServiceImpl implements WarehouseService {
         return response;
     }
 
+    @Override
+    public List<Warehouse> getAllWarehousesHaveProductIds(List<UUID> productIds) {
+        List<Warehouse> response = new ArrayList<>();
+        List<Warehouse> warehouses = warehouseRepository.findAll();
+        for (Warehouse warehouse : warehouses) {
+            List<InventoryItem> inventoryItems = inventoryItemRepository.findAllByWarehouseId(warehouse.getWarehouseId());
+            for (InventoryItem item : inventoryItems) {
+                boolean hasQuantity = item.getQuantityOnHandTotal().compareTo(BigDecimal.ZERO) > 0;
+                if (productIds.contains(item.getProductId()) && hasQuantity) {
+                    response.add(warehouse);
+                    break;
+                }
+            }
+        }
+        return response;
+    }
+
 }

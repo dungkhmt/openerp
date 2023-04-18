@@ -1,6 +1,8 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.controller;
 
+import com.hust.baseweb.applications.sscm.wmsv2.management.auto.AutoAssignOrderItem;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.AssignedOrderItemRequest;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.AutoAssignOrderItemResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.OrderDetailResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.OrderGeneralResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.AssignedOrderItemService;
@@ -29,6 +31,8 @@ public class OrderController {
 
     private AssignedOrderItemService assignedOrderItemService;
 
+    private AutoAssignOrderItem autoAssignOrderItem;
+
     @GetMapping()
     public ResponseEntity<List<OrderGeneralResponse>> getAllOrders(
         @RequestParam(name = "orderStatus", required = false) String[] orderStatus) {
@@ -56,5 +60,10 @@ public class OrderController {
     public ResponseEntity<String> createAssignedOrderItems(@Valid @RequestBody AssignedOrderItemRequest request) {
         return assignedOrderItemService.create(request) ? ResponseEntity.ok("OK") :
             new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping(path = "/auto-assign/{orderId}")
+    public ResponseEntity<AutoAssignOrderItemResponse> autoAssignOrderItems(@PathVariable String orderId) {
+        return ResponseEntity.ok(autoAssignOrderItem.assign(orderId));
     }
 }

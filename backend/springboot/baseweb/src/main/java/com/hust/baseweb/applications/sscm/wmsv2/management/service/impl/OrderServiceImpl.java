@@ -15,6 +15,7 @@ import com.hust.baseweb.applications.sscm.wmsv2.management.service.BayService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.OrderService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.WarehouseService;
+import com.hust.baseweb.applications.sscm.wmsv2.management.utils.DateTimeFormat;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,6 +116,8 @@ public class OrderServiceImpl implements OrderService {
                          .warehouseId(item.getWarehouseId())
                          .warehouseName(warehouseNameMap.get(item.getWarehouseId()))
                          .lotId(item.getLotId())
+                         .status(item.getStatus().getName())
+                         .createdDate(DateTimeFormat.convertDateToString(DateTimeFormat.DD_MM_YYYY_HH_MM_SS, item.getCreatedStamp()))
                          .build())
             .collect(Collectors.toList());
 
@@ -162,6 +165,8 @@ public class OrderServiceImpl implements OrderService {
             .processedItems(processedItems)
             .remainingItems(remainItems)
             .items(items)
+            .cusAddLat(customerAddressOpt.get().getLatitude())
+            .cusAddLon(customerAddressOpt.get().getLongitude())
             .build();
     }
 

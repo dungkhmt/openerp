@@ -225,7 +225,9 @@ create table assigned_order_item
     assigned_by varchar(50),
     last_updated_stamp timestamp default current_timestamp,
     created_stamp timestamp default current_timestamp,
-    lot_id varchar(50)
+    lot_id varchar(50),
+    status varchar(50) not null default 'CREATED',
+    inventory_item_id uuid
 );
 
 

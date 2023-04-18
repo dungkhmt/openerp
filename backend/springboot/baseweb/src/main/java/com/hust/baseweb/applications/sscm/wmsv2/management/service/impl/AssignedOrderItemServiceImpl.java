@@ -2,6 +2,7 @@ package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.AssignedOrderItem;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.InventoryItem;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.AssignedOrderItemStatus;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.AssignedOrderItemRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.AssignedOrderItemRepository;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.InventoryItemRepository;
@@ -64,15 +65,19 @@ public class AssignedOrderItemServiceImpl implements AssignedOrderItemService {
                         }
                         item.setQuantityOnHandTotal(newQuantity);
                         log.info(String.format("Updated inventory_item -> %s", item));
-                        updateInventoryItems.add(item);
-                        assignedOrderItems.add(AssignedOrderItem.builder()
-                            .assignedOrderItemId(UUID.randomUUID())
-                            .orderId(orderId)
-                            .productId(detail.getProductId())
-                            .quantity(assignedOrderItemQuantity)
-                            .bayId(detail.getBayId())
-                            .warehouseId(detail.getWarehouseId())
-                            .lotId(item.getLotId()).build());
+                        if (assignedOrderItemQuantity.compareTo(BigDecimal.ZERO) != 0) {
+                            updateInventoryItems.add(item);
+                            assignedOrderItems.add(AssignedOrderItem.builder()
+                                .assignedOrderItemId(UUID.randomUUID())
+                                .inventoryItemId(item.getInventoryItemId())
+                                .orderId(orderId)
+                                .productId(detail.getProductId())
+                                .quantity(assignedOrderItemQuantity)
+                                .bayId(detail.getBayId())
+                                .warehouseId(detail.getWarehouseId())
+                                .status(AssignedOrderItemStatus.CREATED)
+                                .lotId(item.getLotId()).build());
+                        }
                     }
                 }
             }

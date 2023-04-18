@@ -26,4 +26,7 @@ public interface WarehouseService {
     Map<UUID, String> getWarehouseNameMap();
 
     List<WarehouseDetailsResponse> getAllWarehouseDetailWithProducts();
+
+    List<Warehouse> getAllWarehousesHaveProductIds(List<UUID> productIds);
+
 }
