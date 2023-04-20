@@ -230,6 +230,41 @@ create table assigned_order_item
     inventory_item_id uuid
 );
 
+create table shipment
+(
+    shipment_id varchar(50) primary key not null,
+    expected_delivery_stamp timestamp,
+    created_stamp timestamp default current_timestamp,
+    last_updated_stamp timestamp default current_timestamp,
+    created_by varchar(50),
+    is_deleted boolean default false
+);
+
+create table delivery_trip
+(
+    delivery_trip_id varchar(50) primary key not null,
+    vehicle_id uuid,
+    delivery_person_id uuid,
+    distance decimal(18,2),
+    total_weight decimal(18,2),
+    total_locations int,
+    last_updated_stamp timestamp default current_timestamp,
+    created_stamp timestamp default current_timestamp,
+    created_by varchar(50),
+    is_deleted boolean default false,
+    shipment_id varchar(50),
+    warehouse_id uuid
+);
+
+create table delivery_trip_item
+(
+    delivery_trip_item_id varchar(50) primary key not null,
+    delivery_trip_id varchar(50),
+    sequence int,
+    order_id uuid,
+    assigned_order_item_id uuid,
+    quantity decimal(18, 2)
+);
 
 alter table bay
     add constraint fk_bay_warehouse_id foreign key (warehouse_id) references warehouse (warehouse_id);

@@ -8,9 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -50,5 +48,15 @@ public class DeliveryManagementServiceImpl implements DeliveryManagementService 
             log.warn(e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public Map<UUID, String> getDeliveryPersonNameMap() {
+        Map<UUID, String> nameMap = new HashMap<>();
+        List<DeliveryPerson> persons = getAllDeliveryPersons();
+        for (DeliveryPerson person : persons) {
+            nameMap.put(person.getDeliveryPersonId(), person.getFullName());
+        }
+        return nameMap;
     }
 }

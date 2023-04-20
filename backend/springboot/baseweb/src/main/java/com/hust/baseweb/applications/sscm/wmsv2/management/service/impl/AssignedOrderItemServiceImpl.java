@@ -1,12 +1,20 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.AssignedOrderItem;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.CustomerAddress;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.InventoryItem;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.SaleOrderHeader;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.AssignedOrderItemStatus;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.AssignedOrderItemDTO;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.AssignedOrderItemRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.AssignedOrderItemRepository;
+import com.hust.baseweb.applications.sscm.wmsv2.management.repository.CustomerAddressRepository;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.InventoryItemRepository;
+import com.hust.baseweb.applications.sscm.wmsv2.management.repository.SaleOrderHeaderRepository;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.AssignedOrderItemService;
+import com.hust.baseweb.applications.sscm.wmsv2.management.service.BayService;
+import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductService;
+import com.hust.baseweb.applications.sscm.wmsv2.management.service.WarehouseService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -25,6 +31,12 @@ public class AssignedOrderItemServiceImpl implements AssignedOrderItemService {
 
     private AssignedOrderItemRepository assignedOrderItemRepository;
     private InventoryItemRepository inventoryItemRepository;
+    private SaleOrderHeaderRepository saleOrderHeaderRepository;
+    private CustomerAddressRepository customerAddressRepository;
+
+    private ProductService productService;
+    private WarehouseService warehouseService;
+    private BayService bayService;
 
     @Override
     @Transactional
@@ -89,5 +101,52 @@ public class AssignedOrderItemServiceImpl implements AssignedOrderItemService {
             log.warn(e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public List<AssignedOrderItemDTO> getAllCreatedItems() {
+        List<AssignedOrderItem> items = assignedOrderItemRepository.findAllByStatus(AssignedOrderItemStatus.CREATED);
+        List<AssignedOrderItemDTO> response = new ArrayList<>();
+        Map<UUID, String> warehouseNameMap = warehouseService.getWarehouseNameMap();
+        Map<UUID, String> productNameMap = productService.getProductNameMap();
+        Map<UUID, String> bayCodeMap = bayService.getBayCodeMap();
+        for (AssignedOrderItem item : items) {
+            AssignedOrderItemDTO dto = AssignedOrderItemDTO.builder()
+                .assignOrderItemId(item.getAssignedOrderItemId())
+                .productId(item.getProductId())
+                .warehouseId(item.getWarehouseId())
+                .bayId(item.getBayId())
+                .lotId(item.getLotId())
+                .orderId(item.getOrderId())
+                .quantity(item.getQuantity()).build();
+
+            if (item.getProductId() != null) {
+                dto.setProductName(productNameMap.get(item.getProductId()));
+            }
+            if (item.getBayId() != null) {
+                dto.setBayCode(bayCodeMap.get(item.getBayId()));
+            }
+            if (item.getWarehouseId() != null) {
+                dto.setWarehouseName(warehouseNameMap.get(item.getWarehouseId()));
+            }
+
+            if (item.getOrderId() != null) {
+                Optional<SaleOrderHeader> saleOrderHeaderOpt = saleOrderHeaderRepository.findById(item.getOrderId());
+                if (saleOrderHeaderOpt.isPresent()) {
+                    SaleOrderHeader saleOrderHeader = saleOrderHeaderOpt.get();
+                    if (saleOrderHeader.getCustomerAddressId() != null) {
+                        Optional<CustomerAddress> addressOpt = customerAddressRepository.findById(saleOrderHeader.getCustomerAddressId());
+                        if (addressOpt.isPresent()) {
+                            CustomerAddress address = addressOpt.get();
+                            dto.setCustomerAddressId(address.getCustomerAddressId());
+                            dto.setCustomerAddressName(address.getAddressName());
+                        }
+                    }
+                }
+            }
+
+            response.add(dto);
+        }
+        return response;
     }
 }
