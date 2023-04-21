@@ -1,16 +1,10 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 
-import com.hust.baseweb.applications.sscm.wmsv2.management.entity.AssignedOrderItem;
-import com.hust.baseweb.applications.sscm.wmsv2.management.entity.DeliveryTrip;
-import com.hust.baseweb.applications.sscm.wmsv2.management.entity.DeliveryTripItem;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.*;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.AssignedOrderItemStatus;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.DeliveryTripDTO;
-import com.hust.baseweb.applications.sscm.wmsv2.management.repository.AssignedOrderItemRepository;
-import com.hust.baseweb.applications.sscm.wmsv2.management.repository.DeliveryTripItemRepository;
-import com.hust.baseweb.applications.sscm.wmsv2.management.repository.DeliveryTripRepository;
-import com.hust.baseweb.applications.sscm.wmsv2.management.service.DeliveryManagementService;
-import com.hust.baseweb.applications.sscm.wmsv2.management.service.DeliveryTripService;
-import com.hust.baseweb.applications.sscm.wmsv2.management.service.WarehouseService;
+import com.hust.baseweb.applications.sscm.wmsv2.management.repository.*;
+import com.hust.baseweb.applications.sscm.wmsv2.management.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +24,12 @@ public class DeliveryTripServiceImpl implements DeliveryTripService {
     private DeliveryTripRepository deliveryTripRepository;
     private DeliveryTripItemRepository deliveryTripItemRepository;
     private AssignedOrderItemRepository assignedOrderItemRepository;
+    private SaleOrderHeaderRepository saleOrderHeaderRepository;
+    private CustomerAddressRepository customerAddressRepository;
 
     private WarehouseService warehouseService;
+    private BayService bayService;
+    private ProductService productService;
     private DeliveryManagementService deliveryManagementService;
 
     @Override
@@ -64,7 +62,15 @@ public class DeliveryTripServiceImpl implements DeliveryTripService {
         List<DeliveryTripItem> items = new ArrayList<>();
         List<AssignedOrderItem> updateAssignedOrderItems = new ArrayList<>();
         for (DeliveryTripDTO.DeliveryTripItemDTO item : request.getItems()) {
-            DeliveryTripItem adder = DeliveryTripItem.builder()
+            DeliveryTripItem adder;
+            if (item.getDeliveryTripItemId() != null) {
+                // update quantity of item only
+                adder = deliveryTripItemRepository.findByDeliveryTripItemIdAndIsDeletedIsFalse(item.getDeliveryTripItemId()).get();
+                adder.setQuantity(item.getQuantity());
+                items.add(adder);
+                continue;
+            }
+            adder = DeliveryTripItem.builder()
                                                      .deliveryTripId(deliveryTripId)
                                                      .sequence(item.getSequence())
                                                      .assignedOrderItemId(item.getAssignOrderItemId())
@@ -79,6 +85,9 @@ public class DeliveryTripServiceImpl implements DeliveryTripService {
             }
             AssignedOrderItem updateItemAdder = updateItemAdderOpt.get();
             BigDecimal newQuantity = updateItemAdder.getQuantity().subtract(item.getQuantity());
+            if (newQuantity.compareTo(BigDecimal.ZERO) < 0) {
+                throw new RuntimeException("Quantity of product < 0 ");
+            }
             if (newQuantity.compareTo(BigDecimal.ZERO) == 0) {
                 // nếu đã gán tất cả item cho chuyến giao hàng này
                 // thì sẽ cập nhật status của assigned order item này thành DONE trong database
@@ -120,6 +129,68 @@ public class DeliveryTripServiceImpl implements DeliveryTripService {
         if (trip.getDeliveryPersonId() != null) {
             response.setDeliveryPersonName(personNameMap.get(trip.getDeliveryPersonId()));
         }
+
+        List<DeliveryTripDTO.DeliveryTripItemDTO> responseItems = new ArrayList<>();
+        List<DeliveryTripItem> items = deliveryTripItemRepository.findAllByDeliveryTripIdAndIsDeleted(tripId, trip.isDeleted());
+        Map<UUID, String> productNameMap = productService.getProductNameMap();
+        Map<UUID, String> bayCodeMap = bayService.getBayCodeMap();
+        for (DeliveryTripItem item : items) {
+            AssignedOrderItem assignedOrderItem = assignedOrderItemRepository.findById(item.getAssignedOrderItemId()).get();
+            DeliveryTripDTO.DeliveryTripItemDTO dto = DeliveryTripDTO.DeliveryTripItemDTO.builder()
+                .assignOrderItemId(item.getAssignedOrderItemId())
+                .productId(assignedOrderItem.getProductId())
+                .productName(productNameMap.get(assignedOrderItem.getProductId()))
+                .bayId(assignedOrderItem.getBayId())
+                .bayCode(bayCodeMap.get(assignedOrderItem.getBayId()))
+                .warehouseId(assignedOrderItem.getWarehouseId())
+                .warehouseName(warehouseNameMap.get(assignedOrderItem.getWarehouseId()))
+                .quantity(item.getQuantity())
+                .sequence(item.getSequence())
+                .lotId(assignedOrderItem.getLotId())
+                .deliveryTripItemId(item.getDeliveryTripItemId())
+                .orderID(item.getOrderId()).build();
+            if (assignedOrderItem.getOrderId() != null) {
+                SaleOrderHeader saleOrderHeader = saleOrderHeaderRepository.findById(assignedOrderItem.getOrderId()).get();
+                CustomerAddress customerAddress = customerAddressRepository.findById(saleOrderHeader.getCustomerAddressId()).get();
+                dto.setCustomerAddressName(customerAddress.getAddressName());
+            }
+            responseItems.add(dto);
+        }
+        response.setItems(responseItems);
         return response;
+    }
+
+    @Override
+    @Transactional
+    public DeliveryTripDTO deleteById(String tripId) {
+        Optional<DeliveryTrip> deliveryTripOpt = deliveryTripRepository.findById(tripId);
+        if (!deliveryTripOpt.isPresent()) {
+            log.warn(String.format("Delivery trip with id %s is not exist", tripId));
+            return null;
+        }
+        DeliveryTrip trip = deliveryTripOpt.get();
+        trip.setDeleted(true);
+
+        // delete delivery item
+        // re-calculate quantity of assigned_order_item
+        List<DeliveryTripItem> items = deliveryTripItemRepository.findAllByDeliveryTripIdAndIsDeletedIsFalse(tripId);
+        List<AssignedOrderItem> assignedOrderItems = new ArrayList<>();
+        for (DeliveryTripItem item : items) {
+            item.setDeleted(true);
+            Optional<AssignedOrderItem> assignedOrderItemOpt = assignedOrderItemRepository.findById(item.getAssignedOrderItemId());
+            if (assignedOrderItemOpt.isPresent()) {
+                AssignedOrderItem updateAssignedOrderItem = assignedOrderItemOpt.get();
+                BigDecimal newQuantity = updateAssignedOrderItem.getQuantity().add(item.getQuantity());
+                updateAssignedOrderItem.setQuantity(newQuantity);
+                updateAssignedOrderItem.setStatus(AssignedOrderItemStatus.CREATED);
+
+                assignedOrderItems.add(updateAssignedOrderItem);
+            }
+        }
+
+        assignedOrderItemRepository.saveAll(assignedOrderItems);
+        deliveryTripRepository.save(trip);
+        deliveryTripItemRepository.saveAll(items);
+        return new DeliveryTripDTO(trip);
     }
 }

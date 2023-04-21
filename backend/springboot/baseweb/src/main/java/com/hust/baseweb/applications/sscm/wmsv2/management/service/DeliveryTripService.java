@@ -1,6 +1,5 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.service;
 
-import com.hust.baseweb.applications.sscm.wmsv2.management.entity.DeliveryTrip;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.DeliveryTripDTO;
 
 import java.security.Principal;
@@ -13,5 +12,7 @@ public interface DeliveryTripService {
     List<DeliveryTripDTO> getAll();
 
     DeliveryTripDTO getById(String tripId);
+
+    DeliveryTripDTO deleteById(String tripId);
 
 }

@@ -49,6 +49,11 @@ public class GraphHopperCalculator implements DistanceCalculator {
         return map;
     }
 
+    @Override
+    public double calculate(double fromLon, double fromLat, double toLon, double toLat) {
+        return 0;
+    }
+
     private double roundBigDecimal(BigDecimal b) {
         return Precision.round(b.doubleValue(), 6);
     }

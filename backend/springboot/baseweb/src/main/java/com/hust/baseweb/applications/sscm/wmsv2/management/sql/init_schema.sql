@@ -263,7 +263,8 @@ create table delivery_trip_item
     sequence int,
     order_id uuid,
     assigned_order_item_id uuid,
-    quantity decimal(18, 2)
+    quantity decimal(18, 2),
+    is_deleted boolean default false,
 );
 
 alter table bay

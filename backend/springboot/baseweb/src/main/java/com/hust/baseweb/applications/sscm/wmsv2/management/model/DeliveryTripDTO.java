@@ -27,6 +27,7 @@ public class DeliveryTripDTO {
     private String createdBy;
     private UUID warehouseId;
     private String warehouseName;
+    private boolean isDeleted;
     // TODO: list delivery trip item
     private List<DeliveryTripItemDTO> items;
 
@@ -36,6 +37,7 @@ public class DeliveryTripDTO {
     @ToString
     @Builder
     public static class DeliveryTripItemDTO {
+        private String deliveryTripItemId;
         private UUID assignOrderItemId;
         private UUID productId;
         private String productName;
@@ -46,7 +48,8 @@ public class DeliveryTripDTO {
         private BigDecimal quantity;
         private int sequence;
         private UUID orderID;
-
+        private String lotId;
+        private String customerAddressName;
     }
 
     public DeliveryTripDTO(DeliveryTrip trip) {
@@ -61,5 +64,6 @@ public class DeliveryTripDTO {
         this.createdStamp = DateTimeFormat.convertDateToString(DateTimeFormat.DD_MM_YYYY_HH_MM_SS, trip.getCreatedStamp());
         this.createdBy = trip.getCreatedBy();
         this.warehouseId = trip.getWarehouseId();
+        this.isDeleted = trip.isDeleted();
     }
 }

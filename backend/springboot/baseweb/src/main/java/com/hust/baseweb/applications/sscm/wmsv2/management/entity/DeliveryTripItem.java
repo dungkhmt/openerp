@@ -34,4 +34,5 @@ public class DeliveryTripItem {
     // từ sequence và orderId -> lấy được vị trí cần giao hàng tại vị trí [sequence] của shipper thực hiện delivery_trip này
     private UUID assignedOrderItemId;
     private BigDecimal quantity;
+    private boolean isDeleted = false;
 }

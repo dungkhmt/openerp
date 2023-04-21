@@ -23,4 +23,5 @@ public class AssignedOrderItemDTO {
     private UUID customerAddressId;
     private String customerAddressName;
     private UUID orderId;
+    private String status;
 }

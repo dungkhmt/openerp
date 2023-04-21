@@ -9,6 +9,7 @@ import com.hust.baseweb.applications.sscm.wmsv2.management.service.DeliveryTripS
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ShipmentService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -58,8 +59,25 @@ public class ShipmentController {
         return ResponseEntity.ok(deliveryTripService.getById(tripId));
     }
 
+    @DeleteMapping("/delivery-trip/{tripId}")
+    public ResponseEntity<DeliveryTripDTO> deleteDeliveryTripById(@PathVariable String tripId) {
+        DeliveryTripDTO response = deliveryTripService.deleteById(tripId);
+        return response != null ? ResponseEntity.ok(response) : new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @GetMapping("/assigned-order-items")
     public ResponseEntity<List<AssignedOrderItemDTO>> getAssignedOrderItems() {
         return ResponseEntity.ok(assignedOrderItemService.getAllCreatedItems());
+    }
+
+    @GetMapping("/assigned-order-items/{assignOrderItemId}")
+    public ResponseEntity<AssignedOrderItemDTO> getAssignedOrderItems(@PathVariable UUID assignOrderItemId) {
+        return ResponseEntity.ok(assignedOrderItemService.getById(assignOrderItemId));
+    }
+
+    @PutMapping("/assigned-order-items")
+    public ResponseEntity<AssignedOrderItemDTO> updateItemQuantity(@RequestBody DeliveryTripDTO.DeliveryTripItemDTO request) {
+        // dùng cho onRowDelete ở màn hình thông tin chuyến giao hàng
+        return ResponseEntity.ok(assignedOrderItemService.update(request));
     }
 }
