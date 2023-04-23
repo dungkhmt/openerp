@@ -1,12 +1,7 @@
 package com.hust.baseweb.controller;
 
 
-import com.hust.baseweb.entity.Application;
-import com.hust.baseweb.entity.SecurityGroup;
-import com.hust.baseweb.entity.SecurityPermission;
-import com.hust.baseweb.entity.UserLogin;
 import com.hust.baseweb.model.ModelPageUserSearchResponse;
-import com.hust.baseweb.service.ApplicationService;
 import com.hust.baseweb.service.UserService;
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.AllArgsConstructor;
@@ -18,12 +13,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.security.Principal;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Log4j2
 @RestController
@@ -34,9 +24,9 @@ public class ApiController {
     private UserService userService;
 
 //    private PersonService personService;
-
-    private ApplicationService applicationService;
-
+//
+//    private ApplicationService applicationService;
+//
 //    private SecurityGroupService securityGroupService;
 //
 //    @GetMapping("/")
@@ -66,49 +56,50 @@ public class ApiController {
             principal.getClaim("family_name"));
     }
 
-    /**
-     * It checks if the user has the permission to access the application
-     *
-     * @param principal     This is the user who is currently logged in.
-     * @param applicationId The application id of the application you want to check the user's
-     *                      permission.
-     * @return A map with the key "status" and the value "SUCCESS" and a key "result" with the value
-     * "INCLUDED" or "NOT_INCLUDED"
-     */
-    @GetMapping("/check-authority")
-    public ResponseEntity<?> checkAuthorities(Principal principal, @RequestParam String applicationId) {
-
-        Map<String, String> response = null;
-        UserLogin userLogin = userService.findById(principal.getName());
-        Application application = applicationService.getById(applicationId);
-        if (application == null) {
-
-            response = new HashMap<>();
-            response.put("status", "SUCESSS");
-            response.put("result", "NOT_FOUND");
-
-            return ResponseEntity.ok().body(response);
-        }
-        List<SecurityPermission> permissionList = new ArrayList<>();
-        for (SecurityGroup securityGroup : userLogin.getRoles()) {
-            permissionList.addAll(securityGroup.getPermissions());
-        }
-        Set<String> permissionSet = permissionList.stream().map(permission -> permission.getPermissionId())
-                                                  .collect(Collectors.toSet());
-        if (permissionSet.contains(application.getPermission().getPermissionId())) {
-
-            response = new HashMap<>();
-            response.put("status", "SUCESSS");
-            response.put("result", "INCLUDED");
-        } else {
-            response = new HashMap<>();
-            response.put("status", "SUCESSS");
-            response.put("result", "NOT_INCLUDED");
-        }
-        return ResponseEntity.ok().body(response);
-
-    }
-
+//    /**
+//     * It checks if the user has the permission to access the application
+//     *
+//     * @param principal     This is the user who is currently logged in.
+//     * @param applicationId The application id of the application you want to check the user's
+//     *                      permission.
+//     * @return A map with the key "status" and the value "SUCCESS" and a key "result" with the value
+//     * "INCLUDED" or "NOT_INCLUDED"
+//     */
+//    @Deprecated
+//    @GetMapping("/check-authority")
+//    public ResponseEntity<?> checkAuthorities(Principal principal, @RequestParam String applicationId) {
+//
+//        Map<String, String> response = null;
+//        UserLogin userLogin = userService.findById(principal.getName());
+//        Application application = applicationService.getById(applicationId);
+//        if (application == null) {
+//
+//            response = new HashMap<>();
+//            response.put("status", "SUCESSS");
+//            response.put("result", "NOT_FOUND");
+//
+//            return ResponseEntity.ok().body(response);
+//        }
+//        List<SecurityPermission> permissionList = new ArrayList<>();
+//        for (SecurityGroup securityGroup : userLogin.getRoles()) {
+//            permissionList.addAll(securityGroup.getPermissions());
+//        }
+//        Set<String> permissionSet = permissionList.stream().map(permission -> permission.getPermissionId())
+//                                                  .collect(Collectors.toSet());
+//        if (permissionSet.contains(application.getPermission().getPermissionId())) {
+//
+//            response = new HashMap<>();
+//            response.put("status", "SUCESSS");
+//            response.put("result", "INCLUDED");
+//        } else {
+//            response = new HashMap<>();
+//            response.put("status", "SUCESSS");
+//            response.put("result", "NOT_INCLUDED");
+//        }
+//        return ResponseEntity.ok().body(response);
+//
+//    }
+//
 //    @GetMapping("/my-account")
 //    public ResponseEntity<?> getAccount(Principal principal) {
 //        UserLogin userLogin = userService.findById(principal.getName());
