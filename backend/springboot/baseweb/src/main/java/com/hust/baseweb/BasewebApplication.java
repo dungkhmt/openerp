@@ -6,10 +6,12 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @EnableAsync
 @EnableCaching
 @EnableScheduling
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @SpringBootApplication
 public class BasewebApplication {

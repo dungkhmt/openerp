@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from "react";
-import {Link} from "react-router-dom";
-import {request} from "../../../api";
-import {useTranslation} from "react-i18next";
-import {toFormattedDateTime} from "../../../utils/dateutils";
-import {Box, Chip, IconButton} from "@mui/material";
-import {GetApp} from "@material-ui/icons";
-import {API_URL} from "../../../config/config";
-import {getColorLevel} from "./lib";
-import {StandardTable} from "erp-hust/lib/StandardTable";
+import { GetApp } from "@material-ui/icons";
+import { Box, Chip, IconButton } from "@mui/material";
+import { StandardTable } from "erp-hust/lib/StandardTable";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { request } from "../../../api";
+import { config } from "../../../config/constant";
+import { toFormattedDateTime } from "../../../utils/dateutils";
+import { getColorLevel } from "./lib";
 
 function ListProblem() {
   const [page, setPage] = useState(1);
@@ -17,7 +17,7 @@ function ListProblem() {
   const [contestProblems, setContestProblems] = useState([]);
   const [problems, setProblems] = useState([]);
 
-  const {t} = useTranslation("education/programmingcontest/listproblem");
+  const { t } = useTranslation("education/programmingcontest/listproblem");
 
   const onSingleDownload = (problem) => {
     const form = document.createElement("form");
@@ -26,7 +26,7 @@ function ListProblem() {
     form.setAttribute("target", "_blank");
     form.setAttribute(
       "action",
-      `${API_URL}/export-problem/${problem.problemId}`
+      `${config.url.API_URL}/export-problem/${problem.problemId}`
     );
 
     document.body.appendChild(form);
@@ -55,26 +55,35 @@ function ListProblem() {
         </Link>
       ),
     },
-    {title: "Name", field: "problemName"},
-    {title: "Created By", field: "userId"},
-    {title: "Created At", field: "createdAt"},
+    { title: "Name", field: "problemName" },
+    { title: "Created By", field: "userId" },
+    { title: "Created At", field: "createdAt" },
     {
       title: "Level",
       field: "levelId",
       render: (rowData) => (
-        <span style={{color: getColorLevel(`${rowData.levelId}`)}}>{`${rowData.levelId}`}</span>
-      )
+        <span
+          style={{ color: getColorLevel(`${rowData.levelId}`) }}
+        >{`${rowData.levelId}`}</span>
+      ),
     },
     {
       title: "Tags",
       render: (rowData) => (
         <Box>
-          {rowData?.tags.length > 0 && rowData.tags.map(tag =>
-            <Chip
-              size="small"
-              label={tag.name}
-              sx={{marginRight: "6px", marginBottom: "6px", border: "1px solid lightgray", fontStyle: "italic"}}
-            />)}
+          {rowData?.tags.length > 0 &&
+            rowData.tags.map((tag) => (
+              <Chip
+                size="small"
+                label={tag.name}
+                sx={{
+                  marginRight: "6px",
+                  marginBottom: "6px",
+                  border: "1px solid lightgray",
+                  fontStyle: "italic",
+                }}
+              />
+            ))}
         </Box>
       ),
     },
@@ -82,8 +91,12 @@ function ListProblem() {
       title: "Export",
       render: (rowData) => {
         return (
-          <IconButton variant="contained" color="primary" onClick={() => onSingleDownload(rowData)}>
-            <GetApp/>
+          <IconButton
+            variant="contained"
+            color="primary"
+            onClick={() => onSingleDownload(rowData)}
+          >
+            <GetApp />
           </IconButton>
         );
       },
