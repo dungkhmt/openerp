@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {request} from "./Request";
+import {request} from "../../../api";
 import {successNoti} from "../../../utils/notification";
 import HustContainerCard from "../../common/HustContainerCard";
 import StandardTable, {TablePaginationActions} from "../../table/StandardTable";

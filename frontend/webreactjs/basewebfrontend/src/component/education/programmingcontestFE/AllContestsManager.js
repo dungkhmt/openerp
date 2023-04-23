@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {request} from "./Request";
+import {request} from "../../../api";
 import {Box, Button, IconButton,} from "@mui/material";
 import {Link} from "react-router-dom";
 import {ListContestManagerByRegistration} from "./ListContestManagerByRegistration";

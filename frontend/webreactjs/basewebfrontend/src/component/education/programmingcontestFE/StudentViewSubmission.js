@@ -4,7 +4,7 @@ import StandardTable from "component/table/StandardTable";
 import React, {forwardRef, useEffect, useImperativeHandle, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {Link, useParams} from "react-router-dom";
-import {request} from "./Request";
+import {request} from "../../../api";
 import HustCopyCodeBlock from "../../common/HustCopyCodeBlock";
 import HustModal from "../../common/HustModal";
 
@@ -162,7 +162,7 @@ const StudentViewSubmission = forwardRef((props, ref) => {
           data={submissions}
           options={{
             selection: false,
-            pageSize: 20,
+            pageSize: 10,
             search: true,
             sorting: true,
           }}

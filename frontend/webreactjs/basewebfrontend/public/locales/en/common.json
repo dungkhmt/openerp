@@ -10,5 +10,6 @@
   "yes": "Yes",
   "no": "No",
   "missingField": "must not be null",
-  "addNew": "Add new"
+  "addNew": "Add new",
+  "status": "Status"
 }

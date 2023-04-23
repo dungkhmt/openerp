@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {request} from "./Request";
+import {request} from "../../../api";
 import {ListContestManagerByRegistration} from "./ListContestManagerByRegistration";
 
 export function ListContestManager() {

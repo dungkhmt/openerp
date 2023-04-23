@@ -97,7 +97,11 @@ function CreateProblem() {
   }, []);
 
   const handleSelectTags = (event) => {
-    setSelectedTags(event.target.value);
+    const selectingTags = event.target.value;
+
+    const filteredTags = [...new Map(selectingTags.map(tag => [tag.tagId, tag])).values()]
+
+    setSelectedTags(filteredTags);
   };
 
   const handleAttachmentFiles = (files) => {
@@ -362,7 +366,7 @@ function CreateProblem() {
             input={<OutlinedInput label="Tags" />}
             renderValue={(selectedTags) => (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
-                {selectedTags.map((selectedTag) => (
+                {selectedTags?.map((selectedTag) => (
                   <Chip
                     size="small"
                     label={selectedTag.name}

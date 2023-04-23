@@ -15,6 +15,8 @@ public class JavaExecutor {
     private static final String FILE_LIMIT_ERROR = Constants.TestCaseSubmissionError.FILE_LIMIT.getValue();
     private static final String MEMORY_LIMIT_ERROR = Constants.TestCaseSubmissionError.MEMORY_LIMIT.getValue();
 
+    private static final int DEFAULT_INITIAL_MEMORY = 10;
+
     public JavaExecutor(){
 
     }
@@ -73,6 +75,7 @@ public class JavaExecutor {
 
         String outputFileName = tmpName + "_output.txt";
         String errorFileName = tmpName + "_error.txt";
+        
         String sourceSH = SHFileStart
                           + "mkdir -p " + tmpName + "\n"
                           + "cd " + tmpName + "\n"
@@ -90,8 +93,9 @@ public class JavaExecutor {
                           + "f=\"testcase\"$n\".txt\"" + "\n"
                           + "cat $f | (ulimit -t " + timeLimit
                                             // + " -v " + (memoryLimit * 1024)
-                                            + " -f 20000; "
-                          + "java -Xmx" + memoryLimit + "m Main > " + outputFileName + " 2>&1; ) &> " + errorFileName + "\n"
+                                            + " -f 25000; "
+                          + "java -Xmx" + (memoryLimit + DEFAULT_INITIAL_MEMORY) + "m Main > " + outputFileName + " 2>&1; ) &> " + errorFileName + "\n"
+//                          + "java -Xlint:none -Xmx" + memoryLimit + "m Main > " + outputFileName + " 2>&1; ) &> " + errorFileName + "\n"
                           + "ERROR=$(head -1 " + errorFileName +") \n"
                           + "FILE_LIMIT='" + FILE_LIMIT_ERROR + "' \n"
                           + "TIME_LIMIT='" + TIME_LIMIT_ERROR + "' \n"

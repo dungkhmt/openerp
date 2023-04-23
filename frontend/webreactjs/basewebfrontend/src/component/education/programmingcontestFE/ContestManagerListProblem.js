@@ -1,9 +1,8 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
 import {useHistory} from "react-router-dom";
-import {request} from "./Request";
 import Typography from "@mui/material/Typography";
-import {Button, CircularProgress, InputAdornment, TextField} from "@mui/material";
+import {Button, CircularProgress, Divider, InputAdornment, TextField} from "@mui/material";
 import StandardTable from "component/table/StandardTable";
 import {pdf} from "@react-pdf/renderer";
 import FileSaver from "file-saver";
@@ -11,6 +10,9 @@ import SubmissionOfParticipantPDFDocument from "./template/SubmissionOfParticipa
 import UpdateProblemContestDialog from "./UpdateProblemContestDialog";
 import {errorNoti, successNoti} from "utils/notification";
 import Box from "@mui/material/Box";
+import HustContainerCard from "../../common/HustContainerCard";
+import {request} from "../../../api";
+import {ContestManagerManageProblem} from "./ContestManagerManageProblem";
 
 export function ContestManagerListProblem(props) {
   const contestId = props.contestId;
@@ -126,7 +128,7 @@ export function ContestManagerListProblem(props) {
     event.preventDefault();
     setIsProcessing(true);
     request(
-      "get",
+      "post",
       "/evaluate-batch-submission-of-contest/" + contestId,
       (res) => {
         console.log("handleRejudgeContest", res.data);
@@ -143,7 +145,7 @@ export function ContestManagerListProblem(props) {
     event.preventDefault();
     setIsProcessing(true);
     request(
-      "get",
+      "post",
       "/evaluate-batch-not-evaluated-submission-of-contest/" + contestId,
       (res) => {
         console.log("handleJudgeContest", res.data);
@@ -196,10 +198,7 @@ export function ContestManagerListProblem(props) {
   }
 
   return (
-    <div>
-      <Typography variant="h4" component="h2">
-        Contest: {contestName}
-      </Typography>
+    <HustContainerCard title={"Contest: " + contestName}>
       <Typography variant="h5" component="h2">
         Time Limit: {timeLimit} minutes
       </Typography>
@@ -265,29 +264,35 @@ export function ContestManagerListProblem(props) {
         {isProcessing ? <CircularProgress/> : ""}
       </Box>
 
+      <Divider sx={{marginTop: "14px"}}/>
       <Box sx={{margin: "14px 0"}}>
-        <StandardTable
-          title={"Problems"}
-          columns={columns}
-          data={problems}
-          hideCommandBar
-          options={{
-            selection: false,
-            pageSize: 20,
-            search: true,
-            sorting: true,
-          }}
-        />
+        <ContestManagerManageProblem contestId={contestId} />
       </Box>
+        {/*
+        <Box sx={{margin: "14px 0"}}>
+          <StandardTable
+            title={"Problems"}
+            columns={columns}
+            data={problems}
+            hideCommandBar
+            options={{
+              selection: false,
+              pageSize: 10,
+              search: true,
+              sorting: true,
+            }}
+          />
+        </Box>
 
-      <UpdateProblemContestDialog
-        open={openUpdateDialog}
-        onClose={handleModelClose}
-        onUpdateInfo={onUpdateInfo}
-        selectedProblemId={selectedProblemId}
-        selectedContestId={contestId}
-        modes={modes}
-      />
-    </div>
+        <UpdateProblemContestDialog
+          open={openUpdateDialog}
+          onClose={handleModelClose}
+          onUpdateInfo={onUpdateInfo}
+          selectedProblemId={selectedProblemId}
+          selectedContestId={contestId}
+          modes={modes}
+        />
+      */}
+    </HustContainerCard>
   );
 }

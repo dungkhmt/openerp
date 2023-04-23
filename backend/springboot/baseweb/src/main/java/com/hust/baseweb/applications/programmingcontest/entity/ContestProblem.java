@@ -33,6 +33,12 @@ public class ContestProblem {
     @Column(name="problem_id")
     private String problemId;
 
+    @Column(name="problem_rename")
+    private String problemRename;
+
+    @Column(name="problem_recode")
+    private String problemRecode;
+
     @Column(name="submission_mode")
     private String submissionMode;
 }

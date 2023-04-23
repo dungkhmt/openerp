@@ -1,9 +1,14 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.entity;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
@@ -14,25 +19,27 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @ToString
+@Table(name = "inventory_item")
+@EntityListeners(AuditingEntityListener.class)
 public class InventoryItem {
     @Id
     private UUID inventoryItemId;
     private UUID productId;
-    private String lotId;
-    private UUID facilityId;
+    private String lotId; // id của lô hàng
+    private UUID warehouseId;
     private UUID bayId;
 
     private BigDecimal quantityOnHandTotal;
-    private String uomId;
+    private BigDecimal importPrice;
+
+    private String currencyUomId;
+    private Date datetimeReceived;
+    private Date expireDate;
+    @LastModifiedDate
+    private Date lastUpdatedStamp;
+    @CreatedDate
+    private Date createdStamp;
 
     private String description;
-
-    private BigDecimal importPrice;
-    private BigDecimal exportPrice;
-    private String currencyOumId;
-
-    private Date datetimeReceived;
-    private Date lastUpdatedStamp;
-    private Date createdStamp;
-    private Date expireDate;
+    private boolean isInitQuantity;
 }

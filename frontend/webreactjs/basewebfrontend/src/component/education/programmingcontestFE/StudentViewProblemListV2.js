@@ -2,7 +2,7 @@ import {Box, Checkbox, Chip} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {Link, useParams} from "react-router-dom";
-import {request} from "./Request";
+import {request} from "../../../api";
 import StandardTable from "../../table/StandardTable";
 
 export default function StudentViewProblemList() {
@@ -43,6 +43,10 @@ export default function StudentViewProblemList() {
   }, []);
 
   const columns = [
+    {
+      title: "Code",
+      field: "problemCode",
+    },
     {
       title: t("problem"),
       field: "problemName",

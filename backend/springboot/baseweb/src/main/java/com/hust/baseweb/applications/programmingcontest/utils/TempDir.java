@@ -144,7 +144,7 @@ public class TempDir {
                 sourceSh = javaExecutor.genSubmitScriptFile(testCases, source, tmpName, timeout, memoryLimit);
                 break;
             case PYTHON3:
-                sourceSh = python3Executor.genSubmitScriptFile(testCases, source, tmpName, timeout);
+                sourceSh = python3Executor.genSubmitScriptFile(testCases, source, tmpName, timeout, memoryLimit);
                 break;
             case GOLANG:
                 sourceSh = golangExecutor.genSubmitScriptFile(testCases, source, tmpName, timeout);

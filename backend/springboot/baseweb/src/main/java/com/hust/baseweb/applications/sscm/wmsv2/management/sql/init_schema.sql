@@ -12,25 +12,23 @@ create
     extension if not exists "uuid-ossp";
 -- SELECT * FROM pg_extension;
 select uuid_generate_v1();
-drop table inventory_item;
 ---
 create table inventory_item
 (
     inventory_item_id      uuid           not null default uuid_generate_v1() primary key,
     product_id             uuid           not null,
     lot_id                 varchar(60)    not null,
-    facility_id            uuid           not null,
+    warehouse_id            uuid           not null,
     bay_id                 uuid           NOT NULL,
     quantity_on_hand_total decimal(18, 2) not null, -- Do hàng hóa có thể tính theo cân nặng nên quantity có data type là decimal
     import_price           decimal(18, 2) not null,
-    export_price           decimal(18, 2),
-    currency_uom_id        varchar(60)    not null, -- TODO: check lai voi database hien tai cua team
+    currency_uom_id        varchar(60)    not null default 'VND', -- TODO: check lai voi database hien tai cua team
     datetime_received      timestamp      not null default current_timestamp,
     expire_date            timestamp,
-    uom_id                 varchar(60),
     last_updated_stamp     timestamp,
     created_stamp          timestamp               default CURRENT_TIMESTAMP,
-    description            varchar(100)
+    description            varchar(100),
+    is_init_quantity bool default false
 --     status_id                  VARCHAR(60),
 --     datetime_manufactured      TIMESTAMP,
 --     activation_valid_thru      TIMESTAMP,
@@ -46,9 +44,9 @@ create table inventory_item_detail
     effective_date           timestamp      not null default current_timestamp
 );
 
-create table facility
+create table warehouse
 (
-    facility_id uuid         not null default uuid_generate_v1() primary key,
+    warehouse_id uuid         not null default uuid_generate_v1() primary key,
     name        varchar(100) not null,
     code        varchar(100),
     width       int,
@@ -58,20 +56,35 @@ create table facility
     latitude   decimal(20, 14)
 );
 
+create table product_category
+(
+    category_id uuid        not null default uuid_generate_v1() primary key,
+    name        varchar(60) not null
+);
+
 create table product
 (
-    product_id  uuid         not null default uuid_generate_v1() primary key,
-    code        varchar(60)  not null,
-    name        varchar(100) not null,
-    description varchar(100),
-    volume      decimal(18, 2),
-    weight      decimal(18, 2)
+    product_id         uuid         not null default uuid_generate_v1() primary key,
+    code               varchar(60)  not null,
+    name               varchar(100) not null,
+    description        varchar(100),
+
+    height             decimal(18, 2),
+    weight             decimal(18, 2),
+    area               decimal(18, 2),
+
+    uom                varchar(20),
+    category_id        uuid,
+
+    image_content_type varchar(20),
+    image_size         int,
+    image_data         oid
 );
 
 create table bay
 (
     bay_id      uuid        not null default uuid_generate_v1() primary key,
-    facility_id uuid        not null,
+    warehouse_id uuid        not null,
     code        varchar(60) not null,
     x           int         not null,
     y           int         not null,
@@ -79,15 +92,174 @@ create table bay
     y_long       int         not null
 );
 
-create table product_facility
+create table product_bay
 (
-    product_facility_id uuid not null default uuid_generate_v1() primary key,
+    product_bay_id uuid not null default uuid_generate_v1() primary key,
+    product_id     uuid not null,
+    bay_id         uuid not null,
+    quantity       decimal(18, 2)
+);
+
+create table product_warehouse
+(
+    product_warehouse_id uuid not null default uuid_generate_v1() primary key,
     product_id          uuid not null,
-    facility_id         uuid not null,
+    warehouse_id         uuid not null,
     quantity_on_hand    decimal(18, 2)
 );
 
-alter table bay
-    add constraint fk_bay_facility_id foreign key (facility_id) references facility (facility_id);
+create table receipt
+(
+    receipt_id         uuid not null default uuid_generate_v1() primary key,
+    receipt_date       timestamp,
+    warehouse_id       uuid,
+    receipt_name       varchar(60),
+    description        varchar(200),
+    last_updated_stamp TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+    created_stamp      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+    created_reason varchar(255),
+    expected_receipt_date timestamp,
+    status varchar(100),
+    created_by varchar(255),
+    approved_by varchar(255),
+    cancelled_by varchar(255)
+);
 
-alter table facility rename column facility to code;
+create table receipt_item_request
+(
+    receipt_item_request_id uuid not null default uuid_generate_v1() primary key,
+    receipt_id uuid not null ,
+    product_id uuid not null ,
+    quantity decimal(18, 2) not null ,
+    warehouse_id uuid
+)
+
+create table receipt_item
+(
+    receipt_item_id    uuid not null default uuid_generate_v1() primary key,
+    receipt_id         uuid,
+    product_id         uuid,
+    quantity           DECIMAL(18, 6),
+    bay_id             uuid,
+    lot_id             varchar(60),
+    import_price       decimal(18, 6),
+    expired_date       TIMESTAMP,
+    last_updated_stamp TIMESTAMP,
+    created_stamp      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+);
+
+create table product_price
+(
+    product_price_id uuid not null default uuid_generate_v1() primary key,
+    product_id       uuid not null,
+    price            decimal(18, 2),
+    start_date       timestamp     default current_timestamp,
+    end_date         timestamp,
+    description      varchar(200)
+);
+
+create table account_activation
+(
+    id uuid primary key not null default uuid_generate_v1(),
+    user_login_id varchar(60) not null ,
+    status_id varchar(100),
+    last_updated_stamp timestamp ,
+    created_stamp timestamp default current_timestamp
+);
+
+create table customer_address
+(
+    customer_address_id uuid not null primary key default uuid_generate_v1(),
+    user_login_id varchar(255) not null ,
+    address_name varchar(255),
+    longitude decimal(18, 2),
+    latitude decimal(18, 2)
+);
+
+create table sale_order_header
+(
+    order_id uuid primary key not null default uuid_generate_v1(),
+    user_login_id varchar(255),
+    order_date timestamp default current_timestamp,
+    delivery_fee decimal(18, 2),
+    total_product_cost decimal(18, 2),
+    total_order_cost decimal(18, 2),
+    customer_address_id uuid not null,
+    customer_name varchar(255),
+    customer_phone_number varchar(255),
+    description varchar(255),
+    payment_type varchar(50),
+    order_type varchar(50),
+    last_updated_stamp timestamp default current_timestamp,
+    created_stamp timestamp default current_timestamp,
+    status varchar(100)
+);
+
+create table sale_order_item
+(
+    sale_order_item_id uuid primary key not null default uuid_generate_v1(),
+    order_id uuid not null,
+    product_id uuid not null ,
+    quantity int,
+    price_unit decimal(18, 2)
+);
+
+
+alter table bay
+    add constraint fk_bay_warehouse_id foreign key (warehouse_id) references warehouse (warehouse_id);
+
+-- alter table wmsv2_warehouse rename column facility to code;
+-- TODO: Add constraint for tables
+alter table bay
+add constraint fk_bay_warehouse_on_delete_cascade
+foreign key (warehouse_id)
+references warehouse (warehouse_id)
+on delete cascade;
+
+alter table product_warehouse
+add constraint fk_product_warehouse_product_on_delete_cascade
+foreign key (product_id)
+references product (product_id)
+on delete cascade;
+
+alter table inventory_item
+add constraint fk_inventory_item_product_on_delete_cascade
+foreign key (product_id)
+references product (product_id)
+on delete cascade;
+
+alter table inventory_item_detail
+add constraint fk_inventory_item_detail_inventory_item_on_delete_cascade
+foreign key (inventory_item_id)
+references inventory_item (inventory_item_id)
+on delete cascade;
+
+alter table receipt
+add constraint fk_receipt_warehouse_on_delete_cascade
+foreign key (warehouse_id)
+references warehouse (warehouse_id)
+on delete cascade;
+
+alter table receipt_item
+add constraint fk_receipt_receipt_item_on_delete_cascade
+foreign key (receipt_id)
+references receipt (receipt_id)
+on delete cascade;
+
+alter table receipt_item
+add constraint fk_receipt_item_product_on_delete_cascade
+foreign key (product_id)
+references product (product_id)
+on delete cascade;
+
+alter table product_price
+add constraint fk_product_price_product_on_delete_cascade
+foreign key (product_id)
+references product (product_id)
+on delete cascade;
+
+alter table sale_order_item
+add constraint fk_sale_order_item_sale_order_header
+foreign key (order_id)
+references sale_order_header(order_id)
+on delete cascade;

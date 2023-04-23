@@ -187,10 +187,14 @@ public class SubmissionResponseHandler {
                     message = "Invalid response";
                 } else {
                     String pointString = response.substring(0, response.indexOf(' '));
-                    point = Integer.parseInt(pointString);
+//                    point = Integer.parseInt(pointString);
+                    try {
+                        point = Integer.parseInt(pointString);
+                        message = response.substring(response.indexOf(' '), response.indexOf(Constants.SPLIT_TEST_CASE));
+                    } catch (NumberFormatException e) {
+                        message = "Invalid response";
+                    }
                     totalPoint += point;
-
-                    message = response.substring(response.indexOf(' '), response.indexOf(Constants.SPLIT_TEST_CASE));
                 }
 
             }

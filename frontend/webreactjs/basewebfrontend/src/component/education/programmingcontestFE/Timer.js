@@ -1,6 +1,5 @@
-import {useEffect, useRef, useState} from "react";
 import * as React from "react";
-import {request} from "./Request";
+import {useEffect, useRef, useState} from "react";
 import PropTypes from "prop-types";
 
 Timer.propTypes = {

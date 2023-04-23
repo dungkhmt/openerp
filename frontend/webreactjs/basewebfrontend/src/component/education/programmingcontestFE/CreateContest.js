@@ -19,7 +19,7 @@ import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {visuallyHidden} from "@mui/utils";
-import {request} from "./Request";
+import {request} from "../../../api";
 import Pagination from "@material-ui/lab/Pagination";
 import DateFnsUtils from "@date-io/date-fns";
 import {MuiPickersUtilsProvider} from "@material-ui/pickers";
@@ -262,7 +262,6 @@ export default function CreateContest(props) {
               />
 
               <TextField
-                autoFocus
                 required
                 id="Count Down"
                 label="Count Down"
@@ -273,10 +272,7 @@ export default function CreateContest(props) {
               />
 
               <TextField
-                autoFocus
                 type="number"
-                // required
-                //select
                 id="Max Number Submissions"
                 label="Max number of Submissions"
                 placeholder="Max number of Submissions"
@@ -286,9 +282,7 @@ export default function CreateContest(props) {
                 value={maxNumberSubmissions}
               />
               <TextField
-                autoFocus
                 type="number"
-                // required
                 id="Max Source Code Length"
                 label="Source Length Limit (characters)"
                 placeholder="Max Source Code Length"
@@ -298,7 +292,6 @@ export default function CreateContest(props) {
                 value={maxSourceCodeLength}
               />
               <TextField
-                autoFocus
                 type="number"
                 id="Submission Interval"
                 label="Submission Interval (s)"
@@ -310,7 +303,6 @@ export default function CreateContest(props) {
               />
 
               <TextField
-                autoFocus
                 select
                 id="Judge Mode"
                 label="Judge Mode"
@@ -328,8 +320,6 @@ export default function CreateContest(props) {
               </TextField>
 
               <TextField
-                autoFocus
-                // required
                 select
                 id="Public Contest"
                 label="Public Contest"

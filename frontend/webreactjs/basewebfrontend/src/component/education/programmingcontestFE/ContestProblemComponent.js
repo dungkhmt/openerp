@@ -5,7 +5,7 @@ import {ScrollBox} from "react-scroll-box";
 import Typography from "@material-ui/core/Typography";
 import {Button, Divider, MenuItem, TextField} from "@material-ui/core";
 import {Markup} from "interweave";
-import {request} from "./Request";
+import {request} from "../../../api";
 import PropTypes from "prop-types";
 
 ContestProblemComponent.propTypes ={

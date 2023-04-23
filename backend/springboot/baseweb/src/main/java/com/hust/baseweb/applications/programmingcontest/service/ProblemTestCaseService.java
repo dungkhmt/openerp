@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ public interface ProblemTestCaseService {
 
     Page<ProblemEntity> getContestProblemPaging(Pageable pageable);
     List<ProblemEntity> getAllProblems();
+    List<ModelProblemGeneralInfo> getAllProblemsGeneralInfo();
 
     String executableIDECode(ModelRunCodeFromIDE modelRunCodeFromIDE, String userName, String computerLanguage) throws Exception;
 
@@ -41,6 +43,10 @@ public interface ProblemTestCaseService {
 
     ContestEntity updateContest(ModelUpdateContest modelUpdateContest, String userName, String contestId) throws Exception;
 
+    ContestProblem saveProblemInfoInContest(ModelProblemInfoInContest modelProblemInfoInContest, String userName) throws Exception;
+
+    void removeProblemFromContest(String contestId, String problemId, String userName);
+
     ModelProblemSubmissionDetailResponse findProblemSubmissionById(UUID id, String userName) throws MiniLeetCodeException;
 
     ModelGetContestPageResponse getContestPaging(Pageable pageable);
@@ -57,9 +63,9 @@ public interface ProblemTestCaseService {
 
     ModelContestSubmissionResponse submitContestProblem(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
     ModelContestSubmissionResponse submitContestProblemTestCaseByTestCase(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
-    ModelContestSubmissionResponse submitContestProblemTestCaseByTestCaseWithFile(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
+    ModelContestSubmissionResponse submitContestProblemTestCaseByTestCaseWithFile(ModelContestSubmission modelContestSubmission, String userName, String submittedByUserId) throws Exception;
     void submitContestProblemTestCaseByTestCaseWithFileProcessor(UUID contestSubmissionId) throws Exception;
-    ModelContestSubmissionResponse submitContestProblemStoreOnlyNotExecute(ModelContestSubmission modelContestSubmission, String userName) throws Exception;
+    ModelContestSubmissionResponse submitContestProblemStoreOnlyNotExecute(ModelContestSubmission modelContestSubmission, String userName, String submittedByUserId) throws Exception;
 
 
     ModelContestSubmissionResponse submitSolutionOutput(String solutionOutput, String contestId, String problemId, UUID testCaseId, String userName) throws Exception;
@@ -132,14 +138,16 @@ public interface ProblemTestCaseService {
     ModelEvaluateBatchSubmissionResponse reJudgeAllSubmissionsOfContest(String contestId);
     ModelEvaluateBatchSubmissionResponse judgeAllSubmissionsOfContest(String contestId);
 
-    ModelContestSubmissionResponse evaluateSubmission(UUID submisionId);
-    ModelContestSubmissionResponse evaluateSubmission(ContestSubmissionEntity sub, ContestEntity contest);
+    void evaluateSubmission(UUID submisionId);
+    void evaluateSubmission(ContestSubmissionEntity sub, ContestEntity contest);
+    void evaluateSubmissionUsingQueue(ContestSubmissionEntity submission, ContestEntity contest);
 
     List<ModelContestByRoleResponse> getContestsByRoleOfUser(String userLoginId);
 
     List<CodePlagiarism> findAllByContestId(String contestId);
     List<CodePlagiarism> findAllBy(ModelGetCodeSimilarityParams input);
     List<ModelSimilarityClusterOutput> computeSimilarityClusters(ModelGetCodeSimilarityParams input);
+    List<ModelReponseCodeSimilaritySummaryParticipant> getListModelReponseCodeSimilaritySummaryParticipant(String contestId);
 
     ContestSubmissionEntity updateContestSubmissionSourceCode(ModelUpdateContestSubmission input);
 
@@ -180,4 +188,6 @@ public interface ProblemTestCaseService {
     void deleteTag(Integer tagId);
 
     void switchAllContestJudgeMode(String judgeMode);
+
+    void exportProblem(String id, OutputStream outputStream);
 }

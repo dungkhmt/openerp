@@ -1,6 +1,6 @@
 import InfoIcon from "@mui/icons-material/Info";
-import { IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
+import { IconButton, CircularProgress } from "@mui/material";
 import HustCopyCodeBlock from "component/common/HustCopyCodeBlock";
 import HustModal from "component/common/HustModal";
 import MaterialTable from "material-table";
@@ -52,6 +52,7 @@ export default function ParticipantProgramSubmissionDetailTestCaseByTestCase(
       render: (rowData) =>
         rowData.viewSubmitSolutionOutputMode == "Y" ? (
           <div>
+            {isProcessing ? <CircularProgress /> : ""}
             <button
               color="primary"
               type="submit"

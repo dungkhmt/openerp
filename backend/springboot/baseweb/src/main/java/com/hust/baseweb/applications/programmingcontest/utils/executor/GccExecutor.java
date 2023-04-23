@@ -8,13 +8,15 @@ import com.hust.baseweb.applications.programmingcontest.entity.TestCaseEntity;
 import java.util.List;
 
 public class GccExecutor {
-    private static final String buildCmd = "g++ -o main main.cpp";
+    private static final String buildCmd = "g++ -w -o main main.cpp";
     private static final String suffixes =".cpp";
     private static final String SHFileStart = "#!/bin/bash\n";
 
     private static final String TIME_LIMIT_ERROR = Constants.TestCaseSubmissionError.TIME_LIMIT.getValue();
     private static final String FILE_LIMIT_ERROR = Constants.TestCaseSubmissionError.FILE_LIMIT.getValue();
     private static final String MEMORY_LIMIT_ERROR = Constants.TestCaseSubmissionError.MEMORY_LIMIT.getValue();
+
+    private static final int DEFAULT_INITIAL_MEMORY = 10 * 1024;
 
     public GccExecutor(){
 
@@ -138,7 +140,7 @@ public class GccExecutor {
                           + "f=\"testcase\"$n\".txt\"" + "\n"
                         //   + "cat $f | timeout " + timeLimit + "s " + "./main  || echo Time Limit Exceeded" + "\n"
                           + "cat $f | (ulimit -t " + timeLimit
-                                            + " -v " + (memoryLimit * 1024)
+                                            + " -v " + (memoryLimit * 1024 + DEFAULT_INITIAL_MEMORY)
                                             + " -f 30000; "
                           + "./main > " + outputFileName + "; ) &> " + errorFileName + "\n"
                           + "ERROR=$(head -1 " + errorFileName +") \n"

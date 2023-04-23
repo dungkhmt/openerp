@@ -165,6 +165,8 @@ export default function StandardTable(props) {
             ),
             ...props.components,
           }}
+          actions={props.actions}
+          editable={props.editable}
         />
       </MuiThemeProvider>
     </>
@@ -184,5 +186,6 @@ StandardTable.propTypes = {
   actions: PropTypes.array,
   data: PropTypes.array,
   commandBarComponents: PropTypes.element,
+  editable: PropTypes.object
 };
 

@@ -1,7 +1,7 @@
 import {useParams} from "react-router-dom";
 import * as React from "react";
 import {useEffect, useState} from "react";
-import {request} from "./Request";
+import {request} from "../../../api";
 import {Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 import {Button, Grid, MenuItem, TextField} from "@material-ui/core";

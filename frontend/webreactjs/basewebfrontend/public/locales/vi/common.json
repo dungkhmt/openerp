@@ -10,5 +10,6 @@
     "yes": "Có",
     "no": "Không",
     "missingField": "không được bỏ trống",
-    "addNew": "Thêm mới"
+    "addNew": "Thêm mới",
+    "status": "Trạng thái"
 }

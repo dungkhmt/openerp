@@ -20,6 +20,8 @@ import ContestManagerAddMember2Contest from "./ContestManagerAddMember2Contest";
 import ContestManagerUserSubmission from "./ContestManagerUserSubmission";
 import ContestManagerUserSubmissionNotEvaluated from "./ContestManagerUserSubmissionNotEvaluated";
 import ContestManagerRankingNew from "./ContestManagerRankingNew";
+import ContestResultDistribution from "./ContestResultDistribution";
+import {ContestManagerManageProblem} from "./ContestManagerManageProblem";
 
 export function ContestManager() {
   const { contestId } = useParams();
@@ -212,7 +214,7 @@ export function ContestManager() {
     event.preventDefault();
     setIsProcessing(true);
     request(
-      "get",
+      "post",
       "/evaluate-batch-submission-of-contest/" + contestId,
       (res) => {
         console.log("handleRejudgeContest", res.data);
@@ -230,7 +232,7 @@ export function ContestManager() {
         onChange={handleChange}
         indicatorColor={"primary"}
         autoFocus
-        style={{
+        sx={{
           width: "100%",
           display: "inline-table",
           border: "1px solid transparent ",
@@ -249,8 +251,13 @@ export function ContestManager() {
         <Tab label="Register User" {...a11yProps(2)} style={{ width: "10%" }} />
         <Tab label="Add User" {...a11yProps(3)} style={{ width: "10%" }} />
         <Tab label="Ranking" {...a11yProps(4)} style={{ width: "10%" }} />
+        {/*<Tab*/}
+        {/*  label="User Submission (NA)"*/}
+        {/*  {...a11yProps(5)}*/}
+        {/*  style={{ width: "10%" }}*/}
+        {/*/>*/}
         <Tab
-          label="User Submission (NA)"
+          label="Result Distribution"
           {...a11yProps(5)}
           style={{ width: "10%" }}
         />
@@ -267,6 +274,11 @@ export function ContestManager() {
         <Tab
           label="Check Code Plagiarism"
           {...a11yProps(8)}
+          style={{ width: "10%" }}
+        />
+        <Tab
+          label="Manage Problems"
+          {...a11yProps(9)}
           style={{ width: "10%" }}
         />
       </Tabs>
@@ -300,8 +312,11 @@ export function ContestManager() {
         <ContestManagerRankingNew contestId={contestId} />
       </TabPanelVertical>
 
+      {/*<TabPanelVertical value={value} index={5}>*/}
+      {/*  <ContestManagerUserSubmissionNotEvaluated contestId={contestId} />*/}
+      {/*</TabPanelVertical>*/}
       <TabPanelVertical value={value} index={5}>
-        <ContestManagerUserSubmissionNotEvaluated contestId={contestId} />
+        <ContestResultDistribution contestId={contestId} />
       </TabPanelVertical>
 
       <TabPanelVertical value={value} index={6}>
@@ -314,6 +329,10 @@ export function ContestManager() {
 
       <TabPanelVertical value={value} index={8}>
         <CodeSimilarityCheck contestId={contestId} />
+      </TabPanelVertical>
+
+      <TabPanelVertical value={value} index={9}>
+        <ContestManagerManageProblem contestId={contestId} />
       </TabPanelVertical>
     </div>
   );
