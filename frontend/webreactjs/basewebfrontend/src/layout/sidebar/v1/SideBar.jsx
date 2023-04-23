@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 import PrimaryButton from "../../../component/button/PrimaryButton";
-import { MENU_LIST } from "../../../config/menuconfig";
+import { MENUS } from "../../../config/menuconfig";
 import { fetchMenu } from "../../../state/MenuState";
 import GroupMenuItem, { menuItemBaseStyle } from "./GroupMenuItem";
 import { blackColor, whiteColor } from "./MenuItem";
@@ -114,7 +114,7 @@ export default function SideBar(props) {
         }}
       >
         <List component="nav">
-          {MENU_LIST.map((group) => (
+          {MENUS.map((group) => (
             <GroupMenuItem key={group.text} group={group} color={bgColor} />
           ))}
         </List>

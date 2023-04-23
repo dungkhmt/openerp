@@ -23,7 +23,7 @@ export function fetchMenu() {
 
   request(
     "get",
-    "/menu",
+    "/entity-authorization/MENU_",
     (res) => {
       menuState.merge({
         permittedFunctions: new Set(res.data),

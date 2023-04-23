@@ -9,7 +9,7 @@ import {
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import classNames from "classnames";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { whiteColor } from "../../../assets/jss/material-dashboard-react";
 import { menuIconMap } from "../../../config/menuconfig";
@@ -84,6 +84,17 @@ const activeRoute = (route) => {
   } else return window.location.pathname.indexOf(route) === 0;
 };
 
+/**
+ * This function finds the first element in a set that starts with a given string.
+ * @returns The `findFirstElementStartingWith` function is returning the first element in the `set`
+ * parameter that starts with the `str` parameter. It is using the `find` method to iterate over the
+ * `set` and return the first element that satisfies the condition of starting with the `str`. The
+ * returned value is the first matching element or `undefined` if no element matches the condition.
+ */
+const findFirstElementStartingWith = (str, set) => {
+  return [...set].find((element) => element.startsWith(str));
+};
+
 function GroupMenuItem(props) {
   const classes = useStyles();
   const { color, group } = props;
@@ -119,12 +130,28 @@ function GroupMenuItem(props) {
     checkSelected();
   }, [location.pathname]);
 
-  if (!group.isPublic) {
-    if (!permittedFunctions.has(group.id)) return null;
+  if (group.child) {
+    let hasPublicChild = group.child.find(
+      (childMenuItem) => childMenuItem.isPublic
+    );
+
+    if (!hasPublicChild) {
+      let hasAuthorizedPrivateChild = findFirstElementStartingWith(
+        group.id,
+        permittedFunctions
+      );
+      if (!hasAuthorizedPrivateChild) {
+        return null;
+      }
+    }
   }
 
-  if (group.child?.length === 1) {
+  if (group.child.length === 1) {
     const childMenuItem = group.child[0];
+
+    if (!childMenuItem.icon) {
+      childMenuItem.icon = group.icon;
+    }
 
     return (
       <MenuItem

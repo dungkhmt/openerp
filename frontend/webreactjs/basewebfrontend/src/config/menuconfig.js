@@ -43,29 +43,29 @@ import { warehouse } from "./menuconfig/warehouse";
 import { whiteboard } from "./menuconfig/whiteboard";
 import { WMSV2 } from "./menuconfig/wmsv2";
 
-export const MENU_LIST = [];
+export const MENUS = [];
 
-MENU_LIST.push(general);
-MENU_LIST.push(ProgrammingContestMenuTeacher);
-MENU_LIST.push(eduTeachingManagement);
-MENU_LIST.push(ProgrammingContestMenuStudent);
-MENU_LIST.push(eduLearningManagement);
-MENU_LIST.push(whiteboard);
-MENU_LIST.push(user);
-MENU_LIST.push(taskmanagement);
-MENU_LIST.push(bigdataanalysis);
-MENU_LIST.push(DataAdministration);
-MENU_LIST.push(Chat);
-MENU_LIST.push(teachingassignment);
-MENU_LIST.push(ThesisDefensePlanManagement);
-MENU_LIST.push(warehouse);
-MENU_LIST.push(WMSV2);
-MENU_LIST.push(tmscontainer);
+MENUS.push(general);
+MENUS.push(ProgrammingContestMenuTeacher);
+MENUS.push(eduTeachingManagement);
+MENUS.push(ProgrammingContestMenuStudent);
+MENUS.push(eduLearningManagement);
+MENUS.push(whiteboard);
+MENUS.push(user);
+MENUS.push(taskmanagement);
+MENUS.push(bigdataanalysis);
+MENUS.push(DataAdministration);
+MENUS.push(Chat);
+MENUS.push(teachingassignment);
+MENUS.push(ThesisDefensePlanManagement);
+MENUS.push(warehouse);
+MENUS.push(WMSV2);
+MENUS.push(tmscontainer);
 // MENU_LIST.push(schedule);
 // MENU_LIST.push(department);
 // MENU_LIST.push(tms);
-//MENU_LIST.push(WMS);
-//MENU_LIST.push(ThesisDefenseJuryManagement);
+// MENU_LIST.push(WMS);
+// MENU_LIST.push(ThesisDefenseJuryManagement);
 // MENU_LIST.push(order);
 // MENU_LIST.push(promotax);
 // MENU_LIST.push(invoice);
@@ -91,6 +91,7 @@ MENU_LIST.push(tmscontainer);
 // MENU_LIST.push(lake_mgr);
 
 export const menuIconMap = new Map();
+
 menuIconMap.set(
   "Schedule",
   <EventNoteIcon />
@@ -123,4 +124,5 @@ menuIconMap.set("LocalLibraryIcon", <LocalLibraryIcon />);
 menuIconMap.set("AssignmentOutlinedIcon", <AssignmentOutlinedIcon />);
 menuIconMap.set("ManageAccountsIcon", <ManageAccountsIcon />);
 menuIconMap.set("CiEdit", <CiEdit />);
-export const mapPathMenu = buildMapPathMenu(MENU_LIST);
+
+export const mapPathMenu = buildMapPathMenu(MENUS);
