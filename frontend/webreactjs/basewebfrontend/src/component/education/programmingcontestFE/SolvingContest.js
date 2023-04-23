@@ -1,23 +1,22 @@
-import { useEffect, useState } from "react";
-import { request } from "./Request";
-import { useHistory, useParams } from "react-router-dom";
-import Box from "@mui/material/Box";
-import PropTypes from "prop-types";
 import { Button, Grid, Tab, TableHead, Tabs } from "@material-ui/core";
-import * as React from "react";
 import Paper from "@material-ui/core/Paper";
-import TableRow from "@material-ui/core/TableRow";
-import { getColorLevel, StyledTableCell, StyledTableRow } from "./lib";
 import TableContainer from "@material-ui/core/TableContainer";
+import TableRow from "@material-ui/core/TableRow";
+import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
+import PropTypes from "prop-types";
+import * as React from "react";
+import { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { successNoti } from "../../../utils/notification";
+import { ContestProblemComponent } from "./ContestProblemComponent";
+import LockScreen from "./LockScreen";
+import { request } from "./Request";
 import { TabPanelHorizontal } from "./TabPanel";
 import { Timer } from "./Timer";
-import { ContestProblemComponent } from "./ContestProblemComponent";
-import { API_URL } from "../../../config/config";
-import { successNoti } from "../../../utils/notification";
 import { WaitScreen } from "./WaitScreen";
-import LockScreen from "./LockScreen";
+import { StyledTableCell, StyledTableRow, getColorLevel } from "./lib";
 
 TabPanelHorizontal.propTypes = {
   children: PropTypes.node,

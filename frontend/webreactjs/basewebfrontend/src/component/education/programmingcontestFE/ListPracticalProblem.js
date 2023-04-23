@@ -1,54 +1,56 @@
-import Pagination from "@material-ui/lab/Pagination";
-import React, { useState, useEffect } from "react";
-import {Grid, MenuItem, Table, TableBody, TableHead, TextField} from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
-import {Link} from "react-router-dom";
-import {request} from "./Request";
-import {API_URL} from "../../../config/config";
-import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
 import {
-  getColorLevel,
+  Grid,
+  MenuItem,
+  Table,
+  TableBody,
+  TableHead,
+  TextField,
+} from "@material-ui/core";
+import Paper from "@material-ui/core/Paper";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableRow from "@material-ui/core/TableRow";
+import { makeStyles } from "@material-ui/core/styles";
+import Pagination from "@material-ui/lab/Pagination";
+import SearchIcon from "@mui/icons-material/Search";
+import { InputBase } from "@mui/material";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { request } from "./Request";
+import {
   Search,
   SearchIconWrapper,
-  styleBase,
-  StyledInputBase,
   StyledTableCell,
-  StyledTableRow
+  StyledTableRow,
+  getColorLevel,
 } from "./lib";
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import SearchIcon from '@mui/icons-material/Search';
-import {InputBase} from "@mui/material";
-import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
-  searchStyle:{
-    color: 'inherit',
-    '& .MuiInputBase-input': {
+  searchStyle: {
+    color: "inherit",
+    "& .MuiInputBase-input": {
       padding: theme.spacing(1, 1, 1, 0),
       // vertical padding + font size from searchIcon
       paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-      transition: theme.transitions.create('width'),
-      width: '100%',
-      [theme.breakpoints.up('md')]: {
-        width: '20ch',
+      transition: theme.transitions.create("width"),
+      width: "100%",
+      [theme.breakpoints.up("md")]: {
+        width: "20ch",
       },
     },
-  }
+  },
 }));
 
-
-export default function ListPracticalProblem(){
+export default function ListPracticalProblem() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPage] = useState(0);
-  const pageSizes = [20,50, 100];
-  const [contestProblems, setContestProblems] = useState([])
+  const pageSizes = [20, 50, 100];
+  const [contestProblems, setContestProblems] = useState([]);
 
   const classes = useStyles();
-
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -64,8 +66,8 @@ export default function ListPracticalProblem(){
     console.log("p ", page);
     request(
       "get",
-      "/get-problem-public-paging?size="+pageSize+"&page="+(page-1),
-      (res)=>{
+      "/get-problem-public-paging?size=" + pageSize + "&page=" + (page - 1),
+      (res) => {
         console.log("problem list", res.data);
         setTotalPage(res.data.totalPages);
         setContestProblems(res.data.content);
@@ -73,11 +75,10 @@ export default function ListPracticalProblem(){
     ).then();
   }
 
-
   useEffect(() => {
     console.log("use effect");
     getProblemContestList().then();
-  }, [page, pageSize])
+  }, [page, pageSize]);
 
   return (
     <div>
@@ -89,23 +90,16 @@ export default function ListPracticalProblem(){
                 <SearchIcon />
               </SearchIconWrapper>
               <InputBase
-                style={{paddingLeft:50}}
+                style={{ paddingLeft: 50 }}
                 placeholder={"search..."}
-                onChange={(event) =>{
-
-                }}
+                onChange={(event) => {}}
               />
-
-
             </Search>
           </Toolbar>
         </AppBar>
       </Box>
 
       <div>
-
-
-
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 750 }} aria-label="customized table">
             <TableHead>
@@ -119,22 +113,30 @@ export default function ListPracticalProblem(){
             <TableBody>
               {contestProblems.map((problem) => (
                 <StyledTableRow>
-                  <StyledTableCell component="th" scope="row">
-
-                  </StyledTableCell>
+                  <StyledTableCell component="th" scope="row"></StyledTableCell>
 
                   <StyledTableCell align="left">
-                    <Link to={"/programming-contest/problem-detail/"+problem.problemId}  style={{ textDecoration: 'none', color:"#000000", hover:{color:"#00D8FF", textPrimary:"#00D8FF"}}} >
+                    <Link
+                      to={
+                        "/programming-contest/problem-detail/" +
+                        problem.problemId
+                      }
+                      style={{
+                        textDecoration: "none",
+                        color: "#000000",
+                        hover: { color: "#00D8FF", textPrimary: "#00D8FF" },
+                      }}
+                    >
                       {problem.problemName}
                     </Link>
                   </StyledTableCell>
 
-                  <StyledTableCell align="left">
-
-                  </StyledTableCell>
+                  <StyledTableCell align="left"></StyledTableCell>
 
                   <StyledTableCell align="left">
-                    <span style={{color:getColorLevel(`${problem.levelId}`)}}>{`${problem.levelId}`}</span>
+                    <span
+                      style={{ color: getColorLevel(`${problem.levelId}`) }}
+                    >{`${problem.levelId}`}</span>
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
@@ -142,10 +144,9 @@ export default function ListPracticalProblem(){
           </Table>
         </TableContainer>
       </div>
-      <br/>
+      <br />
       <Grid container spacing={12}>
         <Grid item xs={6}>
-
           <TextField
             variant={"outlined"}
             autoFocus
@@ -164,7 +165,7 @@ export default function ListPracticalProblem(){
           </TextField>
         </Grid>
 
-        <Grid item >
+        <Grid item>
           <Pagination
             className="my-3"
             count={totalPages}
@@ -177,8 +178,6 @@ export default function ListPracticalProblem(){
           />
         </Grid>
       </Grid>
-
-
     </div>
-  )
+  );
 }

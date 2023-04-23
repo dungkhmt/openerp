@@ -3,17 +3,15 @@ import Paper from "@material-ui/core/Paper";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import { Box } from "@mui/material";
-import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TablePagination from "@mui/material/TablePagination";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
-import XLSX from "xlsx";
-import { StyledTableCell, StyledTableRow } from "./lib";
-import { request } from "./Request";
 import { useParams } from "react-router-dom";
-import { API_URL } from "../../../config/config";
+import XLSX from "xlsx";
+import { config } from "../../../config/constant";
+import { StyledTableCell, StyledTableRow } from "./lib";
 
 export default function ContestManagerRankingPublic() {
   const { contestId } = useParams();
@@ -71,7 +69,9 @@ export default function ContestManagerRankingPublic() {
   };
 
   function getRanking() {
-    fetch(API_URL + "/public/ranking-programming-contest/" + contestId)
+    fetch(
+      config.url.API_URL + "/public/ranking-programming-contest/" + contestId
+    )
       .then((response) => response.json())
       .then((data) => {
         console.log("fetch ", data);

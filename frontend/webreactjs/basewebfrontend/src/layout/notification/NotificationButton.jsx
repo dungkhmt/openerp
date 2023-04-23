@@ -8,7 +8,7 @@ import { EventSourcePolyfill } from "event-source-polyfill";
 import randomColor from "randomcolor";
 import React from "react";
 import { bearerAuth, request } from "../../api";
-import { API_URL } from "../../config/config";
+import { config } from "../../config/constant";
 import { useNotificationState } from "../../state/NotificationState";
 import NotificationMenu from "./NotificationMenu";
 
@@ -211,13 +211,16 @@ function NotificationButton() {
     function setupEventSource() {
       fetchNotification();
 
-      es = new EventSourcePolyfill(`${API_URL}/notification/subscription`, {
-        headers: {
-          Authorization: bearerAuth(keycloak.token),
-          // Count: count++,
-        },
-        heartbeatTimeout: 120000,
-      });
+      es = new EventSourcePolyfill(
+        `${config.url.API_URL}/notification/subscription`,
+        {
+          headers: {
+            Authorization: bearerAuth(keycloak.token),
+            // Count: count++,
+          },
+          heartbeatTimeout: 120000,
+        }
+      );
 
       // In fact, this callback function is usually not fired as soon as the connection is opened,
       // but fired when the first event is received. Don't know the reason but this doesn't matter

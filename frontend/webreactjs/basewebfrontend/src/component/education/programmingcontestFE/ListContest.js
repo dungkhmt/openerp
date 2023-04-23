@@ -1,20 +1,27 @@
-import React, {useEffect, useState} from "react";
-import {request} from "./Request";
-import {API_URL} from "../../../config/config";
-import TableContainer from "@material-ui/core/TableContainer";
+import {
+  Button,
+  Grid,
+  MenuItem,
+  Table,
+  TableBody,
+  TableHead,
+  TextField,
+} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
-import {Button, Grid, MenuItem, Table, TableBody, TableHead, TextField} from "@material-ui/core";
+import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
-import {getColorLevel, StyledTableCell, StyledTableRow} from "./lib";
-import {Link} from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { request } from "./Request";
+import { StyledTableCell, StyledTableRow } from "./lib";
 
-export default function ListContest(){
+export default function ListContest() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPage] = useState(0);
-  const pageSizes = [20,50, 100];
-  const [contests, setContests] = useState([])
+  const pageSizes = [20, 50, 100];
+  const [contests, setContests] = useState([]);
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -29,8 +36,8 @@ export default function ListContest(){
   async function getContestList() {
     request(
       "get",
-      "/get-contest-paging?size="+pageSize+"&page="+(page-1),
-      (res)=>{
+      "/get-contest-paging?size=" + pageSize + "&page=" + (page - 1),
+      (res) => {
         console.log("contest list", res.data);
         setTotalPage(res.data.totalPages);
         setContests(res.data.contests);
@@ -41,9 +48,9 @@ export default function ListContest(){
   useEffect(() => {
     console.log("use effect");
     getContestList().then();
-  }, [page, pageSize])
+  }, [page, pageSize]);
 
-  return(
+  return (
     <div>
       <div>
         <div>
@@ -61,34 +68,46 @@ export default function ListContest(){
                 {contests.map((contest, index) => (
                   <StyledTableRow>
                     <StyledTableCell component="th" scope="row">
-                      {pageSize*(page-1) + index +1}
+                      {pageSize * (page - 1) + index + 1}
                     </StyledTableCell>
 
                     <StyledTableCell align="left">
                       <b>{contest.contestName}</b>
-
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      <Link to={"/programming-contest/contest-edit/"+contest.contestId}  style={{ textDecoration: 'none', color:"black", cursor:""}} >
-                        <Button
-                          variant="contained"
-                          color="light"
-                        >
+                      <Link
+                        to={
+                          "/programming-contest/contest-edit/" +
+                          contest.contestId
+                        }
+                        style={{
+                          textDecoration: "none",
+                          color: "black",
+                          cursor: "",
+                        }}
+                      >
+                        <Button variant="contained" color="light">
                           Edit
                         </Button>
                       </Link>
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      <Link to={"/programming-contest/solving-contest/"+contest.contestId}  style={{ textDecoration: 'none', color:"black", cursor:""}} >
-                        <Button
-                          variant="contained"
-                          color="light"
-                        >
+                      <Link
+                        to={
+                          "/programming-contest/solving-contest/" +
+                          contest.contestId
+                        }
+                        style={{
+                          textDecoration: "none",
+                          color: "black",
+                          cursor: "",
+                        }}
+                      >
+                        <Button variant="contained" color="light">
                           Solve
                         </Button>
                       </Link>
                     </StyledTableCell>
-
                   </StyledTableRow>
                 ))}
               </TableBody>
@@ -98,7 +117,6 @@ export default function ListContest(){
         <br></br>
         <Grid container spacing={12}>
           <Grid item xs={6}>
-
             <TextField
               variant={"outlined"}
               autoFocus
@@ -117,7 +135,7 @@ export default function ListContest(){
             </TextField>
           </Grid>
 
-          <Grid item >
+          <Grid item>
             <Pagination
               className="my-3"
               count={totalPages}
@@ -130,11 +148,7 @@ export default function ListContest(){
             />
           </Grid>
         </Grid>
-
-
       </div>
-
-
     </div>
   );
 }

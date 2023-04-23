@@ -1,7 +1,4 @@
-export const API_URL =
-  process.env.NODE_ENV === "production" ? "/api" : "http://localhost:8080/api";
-
-  const prod = {
+const prod = {
   url: {
     KEYCLOAK_BASE_URL: "https://openerp3.dailyopt.ai/iam",
     API_URL: "/api",

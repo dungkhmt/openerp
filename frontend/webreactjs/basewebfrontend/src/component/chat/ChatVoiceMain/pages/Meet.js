@@ -1,22 +1,22 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
 import Peer from "peerjs";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useHistory } from "react-router";
 import { request } from "../../../../api";
+import { config } from "../../../../config/constant";
 import ChatList from "../components/Meet/ChatList";
-import Participant from "../components/Meet/Participant";
 import FooterControl from "../components/Meet/FooterControl";
 import Main from "../components/Meet/Main";
-import { API_URL } from "../../../../config/config";
-import { ADMIN_CHAT_TYPE, ADMIN_ID, PEER_SERVER } from "../utils/constant";
+import Participant from "../components/Meet/Participant";
+import useGetMediaStream from "../hooks/useGetMediaStream";
 import "../styles/meet.css";
+import { ADMIN_CHAT_TYPE, ADMIN_ID, PEER_SERVER } from "../utils/constant";
 import {
   getDisplayMedia,
   getUserMedia,
   stopAndSetMediaStream,
 } from "../utils/helpers";
-import useGetMediaStream from "../hooks/useGetMediaStream";
-import { useHistory } from "react-router";
 
-const SOCKET_URL = API_URL + "/chatSocketHandler";
+const SOCKET_URL = config.url.API_URL + "/chatSocketHandler";
 
 const Meet = () => {
   const stompClient = useMemo(() => {

@@ -1,4 +1,4 @@
-import { config } from "config/config";
+import { config } from "config/constant";
 import { KC_REALM } from "config/keycloak";
 
 export const user = {

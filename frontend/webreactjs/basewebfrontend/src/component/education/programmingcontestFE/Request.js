@@ -1,7 +1,7 @@
 import { bearerAuth } from "api";
 import axios from "axios";
 import keycloak from "config/keycloak";
-import { API_URL } from "../../../config/config";
+import { config } from "../../../config/constant";
 import history from "../../../history";
 import {
   errorNoti,
@@ -17,7 +17,7 @@ const isFunction = (func) =>
     func instanceof Function);
 
 const axiosInstance = axios.create({
-  baseURL: API_URL,
+  baseURL: config.url.API_URL,
 });
 export async function request(
   method,
