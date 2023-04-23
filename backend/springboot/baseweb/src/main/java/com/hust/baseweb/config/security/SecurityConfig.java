@@ -4,30 +4,19 @@ import com.hust.baseweb.applications.education.exception.CustomAccessDeniedHandl
 import lombok.AllArgsConstructor;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.savedrequest.NullRequestCache;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-
-import java.util.Collections;
-import java.util.List;
 
 
 @Configuration
-@EnableGlobalMethodSecurity(securedEnabled = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -87,7 +76,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        }
 
         // Route security
-        // @formatter:off
         http
             .authorizeRequests()
             .antMatchers("/roles").permitAll()
@@ -145,31 +133,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new CustomAccessDeniedHandler();
     }
 
-    /**
-     * OK
-     *
-     * @param allowedOrigins
-     * @return
-     */
-    @Bean
-    @SuppressWarnings("unchecked")
-    public FilterRegistrationBean corsFilterRegistrationBean(
-        @Value("${app.cors.allowed-origins}")
-        List<String> allowedOrigins
-    ) {
-        final var config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(allowedOrigins);
-        config.setAllowedHeaders(Collections.singletonList("*"));
-        config.setAllowedMethods(Collections.singletonList("*"));
-
-        final var source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-
-        final var bean = new FilterRegistrationBean(new CorsFilter(source));
-        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return bean;
-    }
 }
 
 
