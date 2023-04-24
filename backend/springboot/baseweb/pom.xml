@@ -165,10 +165,18 @@
             <version>1.26</version>
         </dependency>
 
+        <!--Ortools - 2 dependencies-->
         <!-- https://mvnrepository.com/artifact/com.google.ortools/ortools-java -->
         <dependency>
             <groupId>com.google.ortools</groupId>
             <artifactId>ortools-java</artifactId>
+            <version>9.3.10497</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.ortools/ortools-linux-x86-64 -->
+        <dependency>
+            <groupId>com.google.ortools</groupId>
+            <artifactId>ortools-linux-x86-64</artifactId>
             <version>9.3.10497</version>
         </dependency>
 
@@ -347,13 +355,6 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.ortools</groupId>
-            <artifactId>ortools-java</artifactId>
-            <version>[9.3.10497,)</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
