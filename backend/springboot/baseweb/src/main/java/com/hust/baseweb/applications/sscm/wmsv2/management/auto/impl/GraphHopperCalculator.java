@@ -50,8 +50,17 @@ public class GraphHopperCalculator implements DistanceCalculator {
     }
 
     @Override
-    public double calculate(double fromLon, double fromLat, double toLon, double toLat) {
-        return 0;
+    public double calculate(BigDecimal fromLat, BigDecimal fromLon, BigDecimal toLat, BigDecimal toLon) {
+        GHRequest request = new GHRequest(roundBigDecimal(fromLat), roundBigDecimal(fromLon),
+                                          roundBigDecimal(toLat), roundBigDecimal(toLon))
+            .setProfile("car").setLocale(Locale.US);
+        GHResponse response = graphHopper.route(request);
+        ResponsePath path = response.getBest();
+        if (path == null) {
+            log.warn(String.format("Not path found from Point(lat:%f, lon:%f) to Point(lat:%f, lon:%f)", fromLat, fromLon, toLat, toLon));
+            return 0;
+        }
+        return path.getDistance();
     }
 
     private double roundBigDecimal(BigDecimal b) {

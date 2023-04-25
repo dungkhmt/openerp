@@ -15,4 +15,6 @@ public interface DeliveryTripService {
 
     DeliveryTripDTO deleteById(String tripId);
 
+    DeliveryTripDTO estimateDistance(String deliveryTripId);
+
 }

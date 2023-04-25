@@ -193,4 +193,9 @@ public class DeliveryTripServiceImpl implements DeliveryTripService {
         deliveryTripItemRepository.saveAll(items);
         return new DeliveryTripDTO(trip);
     }
+
+    @Override
+    public DeliveryTripDTO estimateDistance(String deliveryTripId) {
+        return null;
+    }
 }

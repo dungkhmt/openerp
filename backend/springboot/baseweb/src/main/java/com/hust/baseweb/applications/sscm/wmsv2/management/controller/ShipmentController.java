@@ -54,6 +54,11 @@ public class ShipmentController {
         return ResponseEntity.ok(deliveryTripService.getAll());
     }
 
+    @GetMapping("/delivery-trip/est-dist/{tripId}")
+    public ResponseEntity<DeliveryTripDTO> estimateDistanceForTrip(@PathVariable String tripId) {
+        return ResponseEntity.ok(deliveryTripService.estimateDistance(tripId));
+    }
+
     @GetMapping("/delivery-trip/{tripId}")
     public ResponseEntity<DeliveryTripDTO> getDeliveryTripById(@PathVariable String tripId) {
         return ResponseEntity.ok(deliveryTripService.getById(tripId));

@@ -179,6 +179,9 @@ public class WarehouseServiceImpl implements WarehouseService {
         BigDecimal totalExportPrice = BigDecimal.ZERO;
         List<ProductWarehouseResponse.ProductWarehouseDetailResponse> products = new ArrayList<>();
         for (InventoryItem item : items) {
+            if (item.getQuantityOnHandTotal().compareTo(BigDecimal.ZERO) == 0) {
+                continue;
+            }
             Optional<Bay> bayOpt = bayRepository.findById(item.getBayId());
             Bay bay = bayOpt.get();
             Optional<ProductV2> productOpt = productRepository.findById(item.getProductId());
