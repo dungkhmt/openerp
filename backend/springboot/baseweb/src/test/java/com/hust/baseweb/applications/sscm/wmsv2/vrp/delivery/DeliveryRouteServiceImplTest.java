@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = BasewebApplication.class)
@@ -29,15 +27,15 @@ public class DeliveryRouteServiceImplTest {
     public void tspTest() {
         List<DeliveryAddressDTO> addressDTOs = new ArrayList<>();
         // Thuong Tin Train Station, Đường Trần Lư, Thường Tín District, Hanoi, Vietnam
-        addressDTOs.add(DeliveryAddressDTO.builder().deliveryItemId("TRP_ITEM_00001")
+        addressDTOs.add(DeliveryAddressDTO.builder().deliveryTripItemId("TRP_ITEM_00001")
                                           .longitude(BigDecimal.valueOf(105.86))
                                           .latitude(BigDecimal.valueOf(20.87)).build());
         // Son la, Đường tỉnh 112, Tà Xùa, Bắc Yên District, Son La province, Vietnam
-        addressDTOs.add(DeliveryAddressDTO.builder().deliveryItemId("TRP_ITEM_00002")
+        addressDTOs.add(DeliveryAddressDTO.builder().deliveryTripItemId("TRP_ITEM_00002")
                                           .longitude(BigDecimal.valueOf(104.43))
                                           .latitude(BigDecimal.valueOf(21.28)).build());
         // Nút giao Ô Chợ Dừa, Phố Xã Đàn, Phường Nam Đồng, Dong Da District, Hanoi, 10999, Vietnam
-        addressDTOs.add(DeliveryAddressDTO.builder().deliveryItemId("TRP_ITEM_00003")
+        addressDTOs.add(DeliveryAddressDTO.builder().deliveryTripItemId("TRP_ITEM_00003")
                                           .longitude(BigDecimal.valueOf(105.83))
                                           .latitude(BigDecimal.valueOf(21.02)).build());
         // Ô mai Hồng Lam Trương Định, 540, Truong Dinh Road, Hanoi, 11617, Vietnam

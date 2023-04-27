@@ -3,8 +3,9 @@ package com.hust.baseweb.applications.sscm.wmsv2.management.controller;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.AssignedOrderItemDTO;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.DeliveryTripDTO;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.ShipmentDTO;
+import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.AutoRouteResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.AssignedOrderItemService;
-import com.hust.baseweb.applications.sscm.wmsv2.management.service.DeliveryService;
+import com.hust.baseweb.applications.sscm.wmsv2.management.service.AutoRouteService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.DeliveryTripService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ShipmentService;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class ShipmentController {
     private ShipmentService shipmentService;
     private DeliveryTripService deliveryTripService;
     private AssignedOrderItemService assignedOrderItemService;
+    private AutoRouteService autoRouteService;
 
     @GetMapping("/shipment")
     public ResponseEntity<List<ShipmentDTO>> getAllShipments(Principal principal) {
@@ -84,5 +86,21 @@ public class ShipmentController {
     public ResponseEntity<AssignedOrderItemDTO> updateItemQuantity(@RequestBody DeliveryTripDTO.DeliveryTripItemDTO request) {
         // dùng cho onRowDelete ở màn hình thông tin chuyến giao hàng
         return ResponseEntity.ok(assignedOrderItemService.update(request));
+    }
+
+    @PutMapping("/auto-route")
+    public ResponseEntity<String> autoRoute(Principal principal, @RequestBody DeliveryTripDTO request) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                autoRouteService.route(principal, request);
+            }
+        }).start();
+        return ResponseEntity.ok("OK");
+    }
+
+    @GetMapping("/auto-route/{deliveryTripId}")
+    public ResponseEntity<AutoRouteResponse> getRoutePath(@PathVariable String deliveryTripId) {
+        return ResponseEntity.ok(autoRouteService.getPath(deliveryTripId));
     }
 }

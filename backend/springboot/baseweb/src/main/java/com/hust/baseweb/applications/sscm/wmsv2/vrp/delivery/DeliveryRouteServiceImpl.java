@@ -1,7 +1,6 @@
 package com.hust.baseweb.applications.sscm.wmsv2.vrp.delivery;
 
 import com.graphhopper.ResponsePath;
-import com.graphhopper.routing.Path;
 import com.hust.baseweb.applications.sscm.wmsv2.management.auto.DistanceCalculator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -234,11 +233,11 @@ public class DeliveryRouteServiceImpl implements DeliveryRouteService {
         // calculate cost from address to another
         for (DeliveryAddressDTO addressDTO : r.getAddressDTOs()) {
             Double[] customerToCustomer = new Double[customerCount + 1];
-            ResponsePath toWarehousePath = distanceCalculator.calculate(r.getWarehouseLat(), r.getWarehouseLon(),
-                addressDTO.getLatitude(), addressDTO.getLongitude()); // distance from this address to source warehouse
+            ResponsePath toWarehousePath = distanceCalculator.calculate(addressDTO.getLatitude(), addressDTO.getLongitude(),
+                r.getWarehouseLat(), r.getWarehouseLon()); // distance from this address to source warehouse
             customerToCustomer[0] = toWarehousePath.getDistance();
-            pathMap.put(AddressPair.builder().sourLon(r.getWarehouseLon()).sourLat(r.getWarehouseLat())
-                            .destLon(addressDTO.getLongitude()).destLat(addressDTO.getLatitude()).build(), toWarehousePath);
+            pathMap.put(AddressPair.builder().destLon(r.getWarehouseLon()).destLat(r.getWarehouseLat())
+                            .sourLon(addressDTO.getLongitude()).sourLat(addressDTO.getLatitude()).build(), toWarehousePath);
             for (int i = 0; i < customerCount; i++) {
                 DeliveryAddressDTO destAddressDTO = r.getAddressDTOs().get(i);
                 if (destAddressDTO.compareTo(addressDTO) == 0) {

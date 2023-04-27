@@ -248,3 +248,59 @@ values ('MENU_WMSv2_PROCESS_RECEIPT_REQUEST', 'MENU', 'MENU_WMSv2', 'WMSv2_PROCE
 insert into product_category (name)
 values ('Tivi'), ('Tủ lạnh'), ('Máy giặt'), ('Gia dụng'), ('Quạt điều hòa'), ('Máy lạnh');
 
+-- TODO: Handle permission latter
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_ADMIN.WAREHOUSE', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_ADMIN.PRODUCT', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_ADMIN.ORDER', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_ADMIN.PROCESS_RECEIPT', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_APPROVER.RECEIPTS', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_CUSTOMER.PRODUCTS', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_CUSTOMER.CART', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_DELIVERY_MANAGER.DELIVERY_PERSON', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_DELIVERY_MANAGER.SHIPMENTS', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_DELIVERY_MANAGER.DELIVERY_TRIPS', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_DELIVERY_MANAGER.APPROVAL_ORDERS', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_SALE_MANAGER.PRICE_CONFIG', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_SALE_MANAGER.RECEIPT_REQUEST', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_SALE_MANAGER.ORDERS', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

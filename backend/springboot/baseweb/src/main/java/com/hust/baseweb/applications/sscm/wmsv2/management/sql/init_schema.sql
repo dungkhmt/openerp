@@ -173,8 +173,8 @@ create table customer_address
     customer_address_id uuid not null primary key default uuid_generate_v1(),
     user_login_id varchar(255) not null ,
     address_name varchar(255),
-    longitude decimal(18, 2),
-    latitude decimal(18, 2)
+    longitude  decimal(20, 14),
+    latitude   decimal(20, 14)
 );
 
 create table sale_order_header
@@ -265,6 +265,24 @@ create table delivery_trip_item
     assigned_order_item_id uuid,
     quantity decimal(18, 2),
     is_deleted boolean default false,
+);
+
+create table delivery_trip_path
+(
+    delivery_trip_path_id int primary key not null,
+    delivery_trip_id varchar(50) not null,
+    longitude  decimal(20, 14),
+    latitude   decimal(20, 14),
+    created_stamp timestamp default current_timestamp
+);
+
+create table entity_authorization
+(
+    id varchar(200) not null primary key,
+    role_id varchar(50),
+    description varchar(200),
+    last_updated timestamp default current_timestamp,
+    created timestamp default current_timestamp
 );
 
 alter table bay
