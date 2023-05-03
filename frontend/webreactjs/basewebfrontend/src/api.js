@@ -1,7 +1,6 @@
 import axios from "axios";
 import keycloak from "config/keycloak";
 import { config } from "./config/constant";
-import history from "./history";
 import { infoNoti, wifiOffNotify } from "./utils/notification";
 
 // export const authPost = (dispatch, token, url, body) => {
@@ -205,13 +204,13 @@ export async function request(
     if (e.response) {
       // The request was made and the server responded with a status code that falls out of the range of 2xx.
       switch (e.response.status) {
-        case 401:
-          if (isFunction(errorHandlers[401])) {
-            errorHandlers[401](e);
-          } else {
-            history.push({ pathname: "/login" });
-          }
-          break;
+        // case 401:
+        //   if (isFunction(errorHandlers[401])) {
+        //     errorHandlers[401](e);
+        //   } else {
+        //     history.push({ pathname: "/login" });
+        //   }
+        //   break;
         case 403:
           if (isFunction(errorHandlers[403])) {
             errorHandlers[403](e);
