@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.entity;
 
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.DeliveryTripItemStatus;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.generator.StringPrefixedSequenceCodeGenerator;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -35,4 +36,6 @@ public class DeliveryTripItem {
     private UUID assignedOrderItemId;
     private BigDecimal quantity;
     private boolean isDeleted = false;
+    @Enumerated(EnumType.STRING)
+    private DeliveryTripItemStatus status = DeliveryTripItemStatus.CREATED;
 }

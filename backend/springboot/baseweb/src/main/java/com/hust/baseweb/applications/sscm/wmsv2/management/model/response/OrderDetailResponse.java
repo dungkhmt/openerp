@@ -29,6 +29,7 @@ public class OrderDetailResponse {
     private List<OrderItemResponse> remainingItems;
     private List<ProcessedOrderItemResponse> processedItems;
     private String status;
+    private String statusCode;
     private BigDecimal cusAddLon;
     private BigDecimal cusAddLat;
 

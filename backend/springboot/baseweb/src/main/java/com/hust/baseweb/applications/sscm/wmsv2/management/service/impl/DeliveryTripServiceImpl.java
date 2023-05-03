@@ -2,6 +2,8 @@ package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.*;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.AssignedOrderItemStatus;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.DeliveryTripItemStatus;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.DeliveryTripStatus;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.DeliveryTripDTO;
 import com.hust.baseweb.applications.sscm.wmsv2.management.repository.*;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.*;
@@ -31,6 +33,7 @@ public class DeliveryTripServiceImpl implements DeliveryTripService {
     private BayService bayService;
     private ProductService productService;
     private DeliveryManagementService deliveryManagementService;
+    private SaleOrderService saleOrderService;
 
     @Override
     @Transactional
@@ -39,6 +42,7 @@ public class DeliveryTripServiceImpl implements DeliveryTripService {
         if (request.getDeliveryTripId() == null) {
             trip = DeliveryTrip.builder()
                     .createdBy(principal.getName())
+                    .status(DeliveryTripStatus.CREATED)
                     .shipmentId(request.getShipmentId()).build();
             DeliveryTrip t = deliveryTripRepository.save(trip);
             request.setDeliveryTripId(t.getDeliveryTripId());
@@ -71,12 +75,13 @@ public class DeliveryTripServiceImpl implements DeliveryTripService {
                 continue;
             }
             adder = DeliveryTripItem.builder()
-                                                     .deliveryTripId(deliveryTripId)
-                                                     .sequence(item.getSequence())
-                                                     .assignedOrderItemId(item.getAssignOrderItemId())
-                                                     .quantity(item.getQuantity())
-                                                     .orderId(item.getOrderID())
-                                                     .build();
+                .deliveryTripId(deliveryTripId)
+                .sequence(item.getSequence())
+                .assignedOrderItemId(item.getAssignOrderItemId())
+                .quantity(item.getQuantity())
+                .orderId(item.getOrderId())
+                .status(DeliveryTripItemStatus.CREATED)
+                .build();
             items.add(adder);
             // update quantity of assigned order items
             Optional<AssignedOrderItem> updateItemAdderOpt = assignedOrderItemRepository.findById(item.getAssignOrderItemId());
@@ -125,7 +130,7 @@ public class DeliveryTripServiceImpl implements DeliveryTripService {
             response.setWarehouseName(warehouseNameMap.get(trip.getWarehouseId()));
         }
 
-        Map<UUID, String> personNameMap = deliveryManagementService.getDeliveryPersonNameMap();
+        Map<String, String> personNameMap = deliveryManagementService.getDeliveryPersonNameMap();
         if (trip.getDeliveryPersonId() != null) {
             response.setDeliveryPersonName(personNameMap.get(trip.getDeliveryPersonId()));
         }
@@ -137,22 +142,25 @@ public class DeliveryTripServiceImpl implements DeliveryTripService {
         for (DeliveryTripItem item : items) {
             AssignedOrderItem assignedOrderItem = assignedOrderItemRepository.findById(item.getAssignedOrderItemId()).get();
             DeliveryTripDTO.DeliveryTripItemDTO dto = DeliveryTripDTO.DeliveryTripItemDTO.builder()
-                .assignOrderItemId(item.getAssignedOrderItemId())
-                .productId(assignedOrderItem.getProductId())
-                .productName(productNameMap.get(assignedOrderItem.getProductId()))
-                .bayId(assignedOrderItem.getBayId())
-                .bayCode(bayCodeMap.get(assignedOrderItem.getBayId()))
-                .warehouseId(assignedOrderItem.getWarehouseId())
-                .warehouseName(warehouseNameMap.get(assignedOrderItem.getWarehouseId()))
-                .quantity(item.getQuantity())
-                .sequence(item.getSequence())
-                .lotId(assignedOrderItem.getLotId())
-                .deliveryTripItemId(item.getDeliveryTripItemId())
-                .orderID(item.getOrderId()).build();
+                                                                                         .assignOrderItemId(item.getAssignedOrderItemId())
+                                                                                         .productId(assignedOrderItem.getProductId())
+                                                                                         .productName(productNameMap.get(assignedOrderItem.getProductId()))
+                                                                                         .bayId(assignedOrderItem.getBayId())
+                                                                                         .bayCode(bayCodeMap.get(assignedOrderItem.getBayId()))
+                                                                                         .warehouseId(assignedOrderItem.getWarehouseId())
+                                                                                         .warehouseName(warehouseNameMap.get(assignedOrderItem.getWarehouseId()))
+                                                                                         .quantity(item.getQuantity())
+                                                                                         .sequence(item.getSequence())
+                                                                                         .lotId(assignedOrderItem.getLotId())
+                                                                                         .deliveryTripItemId(item.getDeliveryTripItemId())
+                                                                                         .statusCode(item.getStatus() != null ? item.getStatus().getName() : null)
+                                                                                         .orderId(item.getOrderId()).build();
             if (assignedOrderItem.getOrderId() != null) {
                 SaleOrderHeader saleOrderHeader = saleOrderHeaderRepository.findById(assignedOrderItem.getOrderId()).get();
                 CustomerAddress customerAddress = customerAddressRepository.findById(saleOrderHeader.getCustomerAddressId()).get();
                 dto.setCustomerAddressName(customerAddress.getAddressName());
+                dto.setCustomerName(saleOrderHeader.getCustomerName());
+                dto.setCustomerPhone(saleOrderHeader.getCustomerPhoneNumber());
             }
             responseItems.add(dto);
         }
@@ -197,5 +205,60 @@ public class DeliveryTripServiceImpl implements DeliveryTripService {
     @Override
     public DeliveryTripDTO estimateDistance(String deliveryTripId) {
         return null;
+        // TODO: code
+    }
+
+    @Override
+    public List<DeliveryTripDTO> getTodayDeliveryTrip(Principal principal) {
+        List<DeliveryTrip> trips = deliveryTripRepository.findTodayDeliveryTripsByPerson(principal.getName(),
+            Arrays.asList(DeliveryTripStatus.CREATED.getCode(), DeliveryTripStatus.DELIVERING.getCode()));
+        return trips.stream().map(trip -> getById(trip.getDeliveryTripId())).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public boolean complete(String deliveryTripId) {
+        DeliveryTrip trip = findOrThrow(deliveryTripId);
+        if (trip.getStatus() != DeliveryTripStatus.DELIVERING) {
+            throw new RuntimeException("Delivery trip current status is not DELIVERING");
+        }
+        List<DeliveryTripItem> items = deliveryTripItemRepository.findAllByDeliveryTripIdAndIsDeleted(deliveryTripId, false);
+        int numFailItems = 0;
+        for (DeliveryTripItem item : items) {
+            if (item.getStatus() == DeliveryTripItemStatus.FAIL) {
+                numFailItems += 1;
+                break;
+            }
+        }
+        if (numFailItems > 0) {
+            trip.setStatus(DeliveryTripStatus.FAIL);
+        } else {
+            trip.setStatus(DeliveryTripStatus.DONE);
+        }
+        deliveryTripRepository.save(trip);
+        saleOrderService.updateStatusByDeliveryTripItem(items.stream().map(DeliveryTripItem::getOrderId).collect(Collectors.toSet()));
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public boolean startDelivery(String deliveryTripId) {
+        DeliveryTrip trip = findOrThrow(deliveryTripId);
+        trip.setStatus(DeliveryTripStatus.DELIVERING);
+        deliveryTripRepository.save(trip);
+        List<DeliveryTripItem> items = deliveryTripItemRepository.findAllByDeliveryTripIdAndIsDeleted(deliveryTripId, false);
+        for (DeliveryTripItem item : items) {
+            item.setStatus(DeliveryTripItemStatus.DELIVERING);
+        }
+        deliveryTripItemRepository.saveAll(items);
+        return true;
+    }
+
+    private DeliveryTrip findOrThrow(String deliveryTripId) {
+        Optional<DeliveryTrip> deliveryTripOpt = deliveryTripRepository.findById(deliveryTripId);
+        if (!deliveryTripOpt.isPresent()) {
+            throw new RuntimeException(String.format("Delivery trip with id %s is not exist", deliveryTripId));
+        }
+        return deliveryTripOpt.get();
     }
 }

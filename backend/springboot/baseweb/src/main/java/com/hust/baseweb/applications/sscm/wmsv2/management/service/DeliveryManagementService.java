@@ -14,6 +14,6 @@ public interface DeliveryManagementService {
 
     boolean delete(String deliveryPersonId);
 
-    Map<UUID, String> getDeliveryPersonNameMap();
+    Map<String, String> getDeliveryPersonNameMap();
 
 }

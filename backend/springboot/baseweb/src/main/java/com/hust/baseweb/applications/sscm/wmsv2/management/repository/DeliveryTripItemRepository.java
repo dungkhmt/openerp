@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface DeliveryTripItemRepository extends JpaRepository<DeliveryTripItem, String> {
@@ -23,4 +24,12 @@ public interface DeliveryTripItemRepository extends JpaRepository<DeliveryTripIt
     @Query("update DeliveryTripItem item set item.sequence = ?1 where item.deliveryTripItemId = ?2")
     @Transactional
     void updateSequenceByDeliveryItemId(int sequence, String itemId);
+
+    @Query(value = "select sum(dti.quantity) from delivery_trip_item dti " +
+           "join assigned_order_item aoi on aoi.assigned_order_item_id = dti.assigned_order_item_id " +
+           "join product p on p.product_id = aoi.product_id " +
+           "where dti.order_id = ?1 and dti.is_deleted = false and dti.status = 'DONE' " +
+           "and p.product_id = ?2 ", nativeQuery = true)
+    long getTotalDoneDeliveryItemByOrderIdAndProductId(UUID orderId, UUID productId);
+
 }

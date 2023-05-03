@@ -1,13 +1,11 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.controller;
 
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.DeliveryTrip;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.AssignedOrderItemDTO;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.DeliveryTripDTO;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.ShipmentDTO;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.AutoRouteResponse;
-import com.hust.baseweb.applications.sscm.wmsv2.management.service.AssignedOrderItemService;
-import com.hust.baseweb.applications.sscm.wmsv2.management.service.AutoRouteService;
-import com.hust.baseweb.applications.sscm.wmsv2.management.service.DeliveryTripService;
-import com.hust.baseweb.applications.sscm.wmsv2.management.service.ShipmentService;
+import com.hust.baseweb.applications.sscm.wmsv2.management.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +28,7 @@ public class ShipmentController {
     private DeliveryTripService deliveryTripService;
     private AssignedOrderItemService assignedOrderItemService;
     private AutoRouteService autoRouteService;
+    private DeliveryTripItemService deliveryTripItemService;
 
     @GetMapping("/shipment")
     public ResponseEntity<List<ShipmentDTO>> getAllShipments(Principal principal) {
@@ -54,6 +53,23 @@ public class ShipmentController {
     @GetMapping("/delivery-trip")
     public ResponseEntity<List<DeliveryTripDTO>> getAllDeliveryTrips() {
         return ResponseEntity.ok(deliveryTripService.getAll());
+    }
+
+    @PutMapping("/delivery-trip/start-delivery/{deliveryTripId}")
+    public ResponseEntity<String> startDelivery(@PathVariable String deliveryTripId) {
+        return deliveryTripService.startDelivery(deliveryTripId) ? ResponseEntity.ok("OK") :
+            new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping("/delivery-trip/complete/{deliveryTripId}")
+    public ResponseEntity<String> complete(@PathVariable String deliveryTripId) {
+        return deliveryTripService.complete(deliveryTripId) ? ResponseEntity.ok("OK") :
+            new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping("/delivery-trip/today")
+    public ResponseEntity<List<DeliveryTripDTO>> getToayTripForDeliveryPerson(Principal principal) {
+        return ResponseEntity.ok(deliveryTripService.getTodayDeliveryTrip(principal));
     }
 
     @GetMapping("/delivery-trip/est-dist/{tripId}")
@@ -102,5 +118,23 @@ public class ShipmentController {
     @GetMapping("/auto-route/{deliveryTripId}")
     public ResponseEntity<AutoRouteResponse> getRoutePath(@PathVariable String deliveryTripId) {
         return ResponseEntity.ok(autoRouteService.getPath(deliveryTripId));
+    }
+
+    @PutMapping("/delivery-trip-item/status")
+    public ResponseEntity<String> updateItemStatus(@RequestBody DeliveryTripDTO.DeliveryTripItemDTO request) {
+        return deliveryTripItemService.updateItemStatus(request.getDeliveryTripItemId(), request.getStatusCode()) ?
+            ResponseEntity.ok("OK") : new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping("/delivery-trip-item/complete/{itemIds}")
+    public ResponseEntity<String> completeDeliveryTripItem(@PathVariable String[] itemIds) {
+        return deliveryTripItemService.complete(itemIds) ?
+            ResponseEntity.ok("OK") : new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping("/delivery-trip-item/fail/{itemIds}")
+    public ResponseEntity<String> failDeliveryTripItem(@PathVariable String[] itemIds) {
+        return deliveryTripItemService.fail(itemIds) ?
+            ResponseEntity.ok("OK") : new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -17,7 +17,7 @@ public class DeliveryTripDTO {
     private String deliveryTripId;
     private String shipmentId;
     private UUID vehicleId;
-    private UUID deliveryPersonId;
+    private String deliveryPersonId;
     private String deliveryPersonName;
     private BigDecimal distance;
     private BigDecimal totalWeight;
@@ -30,6 +30,8 @@ public class DeliveryTripDTO {
     private boolean isDeleted;
     // TODO: list delivery trip item
     private List<DeliveryTripItemDTO> items;
+    private String deliveryTripStatus;
+    private String deliveryTripStatusCode;
 
     @Data
     @NoArgsConstructor
@@ -47,9 +49,12 @@ public class DeliveryTripDTO {
         private String warehouseName;
         private BigDecimal quantity;
         private int sequence;
-        private UUID orderID;
+        private UUID orderId;
         private String lotId;
         private String customerAddressName;
+        private String statusCode;
+        private String customerName;
+        private String customerPhone;
     }
 
     public DeliveryTripDTO(DeliveryTrip trip) {
@@ -65,5 +70,7 @@ public class DeliveryTripDTO {
         this.createdBy = trip.getCreatedBy();
         this.warehouseId = trip.getWarehouseId();
         this.isDeleted = trip.isDeleted();
+        this.deliveryTripStatus = trip.getStatus() != null ? trip.getStatus().getName() : null;
+        this.deliveryTripStatusCode = trip.getStatus() != null ? trip.getStatus().getCode() : null;
     }
 }

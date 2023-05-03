@@ -209,9 +209,9 @@ create table sale_order_item
 
 create table delivery_person
 (
-    delivery_person_id uuid primary key not null default uuid_generate_v1(),
     full_name varchar(100) not null,
-    phone_number varchar(50)
+    phone_number varchar(50),
+    user_login_id varchar(50) primary key not null
 );
 
 create table assigned_order_item
@@ -244,7 +244,7 @@ create table delivery_trip
 (
     delivery_trip_id varchar(50) primary key not null,
     vehicle_id uuid,
-    delivery_person_id uuid,
+    delivery_person_id varchar(50),
     distance decimal(18,2),
     total_weight decimal(18,2),
     total_locations int,
@@ -253,7 +253,8 @@ create table delivery_trip
     created_by varchar(50),
     is_deleted boolean default false,
     shipment_id varchar(50),
-    warehouse_id uuid
+    warehouse_id uuid,
+    status varchar(50)
 );
 
 create table delivery_trip_item
@@ -265,6 +266,7 @@ create table delivery_trip_item
     assigned_order_item_id uuid,
     quantity decimal(18, 2),
     is_deleted boolean default false,
+    status varchar(50)
 );
 
 create table delivery_trip_path

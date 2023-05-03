@@ -1,6 +1,7 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.CustomerAddress;
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.DeliveryTripItem;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.SaleOrderHeader;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.SaleOrderItem;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.OrderStatus;
@@ -9,24 +10,19 @@ import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.Pay
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.CartItemRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.request.SaleOrderRequest;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.CartItemResponse;
-import com.hust.baseweb.applications.sscm.wmsv2.management.repository.CustomerAddressRepository;
-import com.hust.baseweb.applications.sscm.wmsv2.management.repository.SaleOrderHeaderRepository;
-import com.hust.baseweb.applications.sscm.wmsv2.management.repository.SaleOrderItemRepository;
+import com.hust.baseweb.applications.sscm.wmsv2.management.repository.*;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.CartService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.SaleOrderService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.security.Principal;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +33,8 @@ public class SaleOrderServiceImpl implements SaleOrderService {
     private SaleOrderHeaderRepository saleOrderHeaderRepository;
     private SaleOrderItemRepository saleOrderItemRepository;
     private CustomerAddressRepository customerAddressRepository;
+    private DeliveryTripItemRepository deliveryTripItemRepository;
+    private DeliveryTripRepository deliveryTripRepository;
 
     private CartService cartService;
     private ProductService productService;
@@ -112,5 +110,35 @@ public class SaleOrderServiceImpl implements SaleOrderService {
         saleOrderHeaderRepository.save(saleOrderHeader);
         saleOrderItemRepository.saveAll(saleOrderItemList);
         return true;
+    }
+
+    @Override
+    @Transactional
+    public void updateStatusByDeliveryTripItem(Set<UUID> orderIds) {
+        List<SaleOrderHeader> updateOrders = new ArrayList<>();
+        for (UUID orderId : orderIds) {
+            Optional<SaleOrderHeader> orderOpt = saleOrderHeaderRepository.findById(orderId);
+            if (!orderOpt.isPresent()) {
+                log.warn(String.format("Order id %s is not exist", orderId));
+                continue;
+            }
+            SaleOrderHeader order = orderOpt.get();
+            boolean isDone = true;
+
+            List<SaleOrderItem> items = saleOrderItemRepository.findAllByOrderId(orderId);
+            for (SaleOrderItem item : items) {
+                long orderQuantity = item.getQuantity();
+                long totalDone = deliveryTripItemRepository.getTotalDoneDeliveryItemByOrderIdAndProductId(orderId, item.getProductId());
+                if (orderQuantity != totalDone) {
+                    isDone = false;
+                    break;
+                }
+            }
+            if (isDone) {
+                order.setStatus(OrderStatus.SUCCESS);
+            }
+            updateOrders.add(order);
+        }
+        saleOrderHeaderRepository.saveAll(updateOrders);
     }
 }

@@ -24,11 +24,10 @@ public class DeliveryManagementServiceImpl implements DeliveryManagementService 
 
     @Override
     public DeliveryPerson create(DeliveryPerson deliveryPerson) {
-        if (deliveryPerson.getFullName() == null) {
-            log.warn("Delivery person full name must not be null");
+        if (deliveryPerson.getFullName() == null || deliveryPerson.getUserLoginId() == null) {
+            log.warn("Delivery person full name or user login id must not be null");
             return null;
         }
-        deliveryPerson.setDeliveryPersonId(UUID.randomUUID());
         deliveryPersonRepository.save(deliveryPerson);
         return deliveryPerson;
     }
@@ -36,8 +35,7 @@ public class DeliveryManagementServiceImpl implements DeliveryManagementService 
     @Override
     public boolean delete(String deliveryPersonId) {
         try {
-            UUID id = UUID.fromString(deliveryPersonId);
-            Optional<DeliveryPerson> deliveryPersonOpt = deliveryPersonRepository.findById(id);
+            Optional<DeliveryPerson> deliveryPersonOpt = deliveryPersonRepository.findById(deliveryPersonId);
             if (!deliveryPersonOpt.isPresent()) {
                 log.warn(String.format("Delivery person with id %s is not exist", deliveryPersonId));
                 return false;
@@ -51,11 +49,11 @@ public class DeliveryManagementServiceImpl implements DeliveryManagementService 
     }
 
     @Override
-    public Map<UUID, String> getDeliveryPersonNameMap() {
-        Map<UUID, String> nameMap = new HashMap<>();
+    public Map<String, String> getDeliveryPersonNameMap() {
+        Map<String, String> nameMap = new HashMap<>();
         List<DeliveryPerson> persons = getAllDeliveryPersons();
         for (DeliveryPerson person : persons) {
-            nameMap.put(person.getDeliveryPersonId(), person.getFullName());
+            nameMap.put(person.getUserLoginId(), person.getFullName());
         }
         return nameMap;
     }

@@ -16,7 +16,7 @@ import java.util.UUID;
 @Table(name = "delivery_person")
 public class DeliveryPerson {
     @Id
-    private UUID deliveryPersonId;
+    private String userLoginId;
     private String fullName;
     private String phoneNumber;
 }

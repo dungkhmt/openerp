@@ -17,4 +17,10 @@ public interface DeliveryTripService {
 
     DeliveryTripDTO estimateDistance(String deliveryTripId);
 
+    List<DeliveryTripDTO> getTodayDeliveryTrip(Principal principal);
+
+    boolean complete(String deliveryTripId);
+
+    boolean startDelivery(String deliveryTripId);
+
 }

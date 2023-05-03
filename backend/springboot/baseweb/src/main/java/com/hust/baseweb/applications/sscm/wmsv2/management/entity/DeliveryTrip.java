@@ -1,5 +1,6 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.entity;
 
+import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.DeliveryTripStatus;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.generator.StringPrefixedSequenceCodeGenerator;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -34,7 +35,7 @@ public class DeliveryTrip {
     private String deliveryTripId;
     private String shipmentId;
     private UUID vehicleId;
-    private UUID deliveryPersonId;
+    private String deliveryPersonId;
     private BigDecimal distance;
     private BigDecimal totalWeight;
     private int totalLocations;
@@ -46,4 +47,6 @@ public class DeliveryTrip {
     private String createdBy;
     private boolean isDeleted = false;
     private UUID warehouseId;
+    @Enumerated(EnumType.STRING)
+    private DeliveryTripStatus status = DeliveryTripStatus.CREATED;
 }

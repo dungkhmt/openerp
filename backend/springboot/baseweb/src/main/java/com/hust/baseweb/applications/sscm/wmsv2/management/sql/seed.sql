@@ -304,3 +304,11 @@ VALUES('MENU_WMSv2_SALE_MANAGER.RECEIPT_REQUEST', 'ADMIN', null, CURRENT_TIMESTA
 INSERT INTO public.entity_authorization
 (id, role_id, description, last_updated, created)
 VALUES('MENU_WMSv2_SALE_MANAGER.ORDERS', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('MENU_WMSv2_DELIVERY_PERSON.DELIVERY_TRIP', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO public.entity_authorization
+(id, role_id, description, last_updated, created)
+VALUES('SCR_WMSv2_WAREHOUSE.VIEW', 'ADMIN', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

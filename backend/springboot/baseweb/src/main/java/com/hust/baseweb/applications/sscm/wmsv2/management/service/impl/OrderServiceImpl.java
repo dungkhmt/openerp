@@ -162,6 +162,7 @@ public class OrderServiceImpl implements OrderService {
             .receiptAddress(customerAddressOpt.get().getAddressName())
             .totalOrderCost(saleOrderHeader.getTotalOrderCost())
             .status(saleOrderHeader.getStatus().getName())
+            .statusCode(saleOrderHeader.getStatus().getCode())
             .processedItems(processedItems)
             .remainingItems(remainItems)
             .items(items)
