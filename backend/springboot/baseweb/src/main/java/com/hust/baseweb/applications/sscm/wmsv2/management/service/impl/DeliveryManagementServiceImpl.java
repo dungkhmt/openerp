@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -33,14 +34,17 @@ public class DeliveryManagementServiceImpl implements DeliveryManagementService 
     }
 
     @Override
-    public boolean delete(String deliveryPersonId) {
+    @Transactional
+    public boolean delete(String[] deliveryPersonIds) {
         try {
-            Optional<DeliveryPerson> deliveryPersonOpt = deliveryPersonRepository.findById(deliveryPersonId);
-            if (!deliveryPersonOpt.isPresent()) {
-                log.warn(String.format("Delivery person with id %s is not exist", deliveryPersonId));
-                return false;
+            for (String deliveryPersonId : deliveryPersonIds) {
+                Optional<DeliveryPerson> deliveryPersonOpt = deliveryPersonRepository.findById(deliveryPersonId);
+                if (!deliveryPersonOpt.isPresent()) {
+                    log.warn(String.format("Delivery person with id %s is not exist", deliveryPersonId));
+                    return false;
+                }
+                deliveryPersonRepository.delete(deliveryPersonOpt.get());
             }
-            deliveryPersonRepository.delete(deliveryPersonOpt.get());
             return true;
         } catch (Exception e) {
             log.warn(e.getMessage());

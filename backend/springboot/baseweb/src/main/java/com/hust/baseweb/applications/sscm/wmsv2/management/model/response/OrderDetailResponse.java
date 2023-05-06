@@ -21,7 +21,7 @@ public class OrderDetailResponse {
     private BigDecimal totalSuccessOrderCost;
     private BigDecimal totalCancelledOrderCount;
     private BigDecimal totalCancelledOrderCost;
-    private Date createdDate;
+    private String createdDate;
     private String paymentMethod;
     private String receiptAddress;
     private BigDecimal totalOrderCost;
@@ -42,6 +42,7 @@ public class OrderDetailResponse {
         private String productName;
         private BigDecimal quantity;
         private BigDecimal priceUnit;
+        private String deliveryStatus;
     }
 
     @Data

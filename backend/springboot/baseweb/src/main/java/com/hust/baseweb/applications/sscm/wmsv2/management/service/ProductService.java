@@ -26,7 +26,7 @@ public interface ProductService {
 
     List<ProductPriceResponse> getAllProductPrices();
 
-    boolean deleteProductPriceById(String id);
+    boolean deleteProductPriceById(String[] ids);
 
     BigDecimal getCurrPriceByProductId(UUID id);
 

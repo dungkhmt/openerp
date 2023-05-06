@@ -13,7 +13,7 @@ import java.util.UUID;
 @ToString
 public class OrderGeneralResponse {
     private UUID orderId;
-    private Date createdOrderDate;
+    private String createdOrderDate;
     private String orderType;
     private String status;
     private BigDecimal totalOrderCost;

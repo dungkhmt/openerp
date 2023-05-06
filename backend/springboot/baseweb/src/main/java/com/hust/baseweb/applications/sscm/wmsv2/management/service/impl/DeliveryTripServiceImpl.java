@@ -223,6 +223,11 @@ public class DeliveryTripServiceImpl implements DeliveryTripService {
             throw new RuntimeException("Delivery trip current status is not DELIVERING");
         }
         List<DeliveryTripItem> items = deliveryTripItemRepository.findAllByDeliveryTripIdAndIsDeleted(deliveryTripId, false);
+        for (DeliveryTripItem item : items) {
+            if (item.getStatus() == DeliveryTripItemStatus.DELIVERING) {
+                throw new RuntimeException("Có sản phẩm chưa được giao");
+            }
+        }
         int numFailItems = 0;
         for (DeliveryTripItem item : items) {
             if (item.getStatus() == DeliveryTripItemStatus.FAIL) {

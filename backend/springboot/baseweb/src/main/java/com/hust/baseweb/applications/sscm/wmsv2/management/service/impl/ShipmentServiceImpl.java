@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -97,5 +98,23 @@ public class ShipmentServiceImpl implements ShipmentService {
             .lastUpdatedStamp(DateTimeFormat.convertDateToString(DateTimeFormat.DD_MM_YYYY_HH_MM_SS, shipment.getLastUpdatedStamp()))
             .trips(tripDTOS)
             .build();
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteByIds(String[] shipmentIds) {
+        try {
+            for (String shipmentId : shipmentIds) {
+                Optional<Shipment> shipmentOpt = shipmentRepository.findById(shipmentId);
+                if (shipmentOpt.isPresent()) {
+                    Shipment shipment = shipmentOpt.get();
+                    shipment.setDeleted(true);
+                    shipmentRepository.save(shipment);
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

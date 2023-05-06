@@ -33,9 +33,9 @@ public class DeliveryManagementController {
         return response == null ? new ResponseEntity<>(person, HttpStatus.INTERNAL_SERVER_ERROR) : ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/delivery-person/{deliveryPersonId}")
-    public ResponseEntity<String> delete(@PathVariable String deliveryPersonId) {
-        return deliveryManagementService.delete(deliveryPersonId) ?
+    @DeleteMapping("/delivery-person/{deliveryPersonIds}")
+    public ResponseEntity<String> delete(@PathVariable String[] deliveryPersonIds) {
+        return deliveryManagementService.delete(deliveryPersonIds) ?
             ResponseEntity.ok("OK") :
             new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
     }

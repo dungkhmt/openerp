@@ -274,10 +274,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean deleteProductPriceById(String id) {
-        log.info(String.format("Start delete product price with id %s", id));
+    @Transactional
+    public boolean deleteProductPriceById(String[] ids) {
         try {
-            productPriceRepository.deleteById(UUID.fromString(id));
+            for (String id : ids) {
+                productPriceRepository.deleteById(UUID.fromString(id));
+            }
             return true;
         } catch (Exception e) {
             log.warn(e.getMessage());

@@ -84,9 +84,9 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllProductPrices());
     }
 
-    @DeleteMapping(path = "/price-config/{priceId}")
-    public ResponseEntity<String> deleteProductPriceById(@PathVariable String priceId) {
-        return productService.deleteProductPriceById(priceId) ?
+    @DeleteMapping(path = "/price-config/{priceIds}")
+    public ResponseEntity<String> deleteProductPriceById(@PathVariable String[] priceIds) {
+        return productService.deleteProductPriceById(priceIds) ?
             ResponseEntity.ok("OK") :
             new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
     }

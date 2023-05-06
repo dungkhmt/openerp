@@ -1,6 +1,5 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.controller;
 
-import com.hust.baseweb.applications.sscm.wmsv2.management.entity.DeliveryTrip;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.AssignedOrderItemDTO;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.DeliveryTripDTO;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.ShipmentDTO;
@@ -38,6 +37,12 @@ public class ShipmentController {
     @GetMapping("/shipment/{shipmentId}")
     public ResponseEntity<ShipmentDTO> getAllShipments(@PathVariable String shipmentId) {
         return ResponseEntity.ok(shipmentService.getShipmentById(shipmentId));
+    }
+
+    @DeleteMapping("/shipment/{shipmentIds}")
+    public ResponseEntity<String> getAllShipments(@PathVariable String[] shipmentIds) {
+        return shipmentService.deleteByIds(shipmentIds) ? ResponseEntity.ok("OK") :
+            new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @PutMapping("/shipment")

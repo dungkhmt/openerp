@@ -12,7 +12,7 @@ public interface DeliveryManagementService {
 
     DeliveryPerson create(DeliveryPerson deliveryPerson);
 
-    boolean delete(String deliveryPersonId);
+    boolean delete(String[] deliveryPersonId);
 
     Map<String, String> getDeliveryPersonNameMap();
 

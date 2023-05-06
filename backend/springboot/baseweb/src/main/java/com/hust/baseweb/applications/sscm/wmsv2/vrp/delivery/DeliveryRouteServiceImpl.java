@@ -21,6 +21,9 @@ public class DeliveryRouteServiceImpl implements DeliveryRouteService {
 
     @Override
     public RouteResponse getRoute(RouteRequest r) {
+        // remove duplicate customer address
+        buildNormAddressList(r);
+
         List<Double[]> matrix = calCostMatrix(r);
         log.info("Cost matrix => ");
         for (Double[] m : matrix) {
@@ -81,6 +84,29 @@ public class DeliveryRouteServiceImpl implements DeliveryRouteService {
             return response;
         }
         return null;
+    }
+
+    private void buildNormAddressList(RouteRequest r) {
+        List<DeliveryAddressDTO> originAddress = r.getAddressDTOs();
+        log.info(String.format("Origin address => %s", originAddress));
+        List<DeliveryAddressDTO> normAddress = new ArrayList<>();
+        normAddress.addAll(originAddress);
+        Set<Integer> duplicateIndex = new HashSet<>();
+        for (int i = 0; i < originAddress.size() - 1; i++) {
+            for (int j = i + 1; j < originAddress.size(); j++) {
+                if (originAddress.get(i).getLatitude().compareTo(originAddress.get(j).getLatitude()) == 0 &&
+                    originAddress.get(i).getLongitude().compareTo(originAddress.get(j).getLongitude()) == 0) {
+                    duplicateIndex.add(j);
+                }
+            }
+        }
+        List<Integer> sortedIndex = new ArrayList<>(duplicateIndex);
+        Collections.sort(sortedIndex);
+        for (int i = sortedIndex.size() - 1; i >= 0; i--) {
+            normAddress.remove(i);
+        }
+        r.setAddressDTOs(normAddress);
+        log.info(String.format("Norm address => %s", normAddress));
     }
 
     public void getSimpleRoute(List<Double[]> costMatrix) {

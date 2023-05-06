@@ -7,10 +7,7 @@ import com.hust.baseweb.applications.sscm.wmsv2.management.entity.SaleOrderItem;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.OrderStatus;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.OrderDetailResponse;
 import com.hust.baseweb.applications.sscm.wmsv2.management.model.response.OrderGeneralResponse;
-import com.hust.baseweb.applications.sscm.wmsv2.management.repository.AssignedOrderItemRepository;
-import com.hust.baseweb.applications.sscm.wmsv2.management.repository.CustomerAddressRepository;
-import com.hust.baseweb.applications.sscm.wmsv2.management.repository.SaleOrderHeaderRepository;
-import com.hust.baseweb.applications.sscm.wmsv2.management.repository.SaleOrderItemRepository;
+import com.hust.baseweb.applications.sscm.wmsv2.management.repository.*;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.BayService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.OrderService;
 import com.hust.baseweb.applications.sscm.wmsv2.management.service.ProductService;
@@ -35,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
     private CustomerAddressRepository customerAddressRepository;
     private SaleOrderItemRepository saleOrderItemRepository;
     private AssignedOrderItemRepository assignedOrderItemRepository;
+    private DeliveryTripItemRepository deliveryTripItemRepository;
 
     private ProductService productService;
     private WarehouseService warehouseService;
@@ -55,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
             .map(order -> OrderGeneralResponse
                 .builder()
                 .orderId(order.getOrderId())
-                .createdOrderDate(order.getOrderDate())
+                .createdOrderDate(DateTimeFormat.convertDateToString(DateTimeFormat.DD_MM_YYYY_HH_MM_SS, order.getOrderDate()))
                 .orderType(order.getOrderType().getName())
                 .status(order.getStatus().getName())
                 .totalOrderCost(order.getTotalOrderCost())
@@ -92,13 +90,22 @@ public class OrderServiceImpl implements OrderService {
 
         Map<UUID, String> productNameMap = productService.getProductNameMap();
         List<SaleOrderItem> saleOrderItems = saleOrderItemRepository.findAllByOrderId(saleOrderHeader.getOrderId());
-        List<OrderDetailResponse.OrderItemResponse> items = saleOrderItems.stream()
-            .map(item -> OrderDetailResponse.OrderItemResponse.builder()
-                .productId(item.getProductId())
-                .productName(productNameMap.get(item.getProductId()))
-                .quantity(BigDecimal.valueOf(item.getQuantity()))
-                .priceUnit(item.getPriceUnit()).build())
-            .collect(Collectors.toList());
+        List<OrderDetailResponse.OrderItemResponse> items = new ArrayList<>();
+        for (SaleOrderItem item : saleOrderItems) {
+            OrderDetailResponse.OrderItemResponse adder = OrderDetailResponse.OrderItemResponse.builder()
+               .productId(item.getProductId())
+               .productName(productNameMap.get(item.getProductId()))
+               .quantity(BigDecimal.valueOf(item.getQuantity()))
+               .priceUnit(item.getPriceUnit())
+               .build();
+            Long totalFail = deliveryTripItemRepository.getTotalDoneDeliveryItemByOrderIdAndProductId(orderId, item.getProductId());
+            if (totalFail == null || totalFail == 0) {
+                adder.setDeliveryStatus("Giao hàng thành công");
+            } else {
+                adder.setDeliveryStatus("Giao hàng thất bại");
+            }
+            items.add(adder);
+        }
 
         List<AssignedOrderItem> assignedItems = assignedOrderItemRepository.findAllByOrderId(orderId);
         Map<UUID, String> warehouseNameMap = warehouseService.getWarehouseNameMap();
@@ -157,7 +164,7 @@ public class OrderServiceImpl implements OrderService {
             .totalSuccessOrderCount(BigDecimal.valueOf(successCustomerOrders.size()))
             .totalCancelledOrderCost(totalCancelledOrderCost)
             .totalCancelledOrderCount(BigDecimal.valueOf(cancelledCustomerOrders.size()))
-            .createdDate(saleOrderHeader.getCreatedStamp())
+            .createdDate(DateTimeFormat.convertDateToString(DateTimeFormat.DD_MM_YYYY_HH_MM_SS, saleOrderHeader.getCreatedStamp()))
             .paymentMethod(saleOrderHeader.getPaymentType().getName())
             .receiptAddress(customerAddressOpt.get().getAddressName())
             .totalOrderCost(saleOrderHeader.getTotalOrderCost())

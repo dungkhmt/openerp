@@ -16,14 +16,14 @@ import java.util.UUID;
 @Builder
 public class ReceiptRequestResponse {
     private UUID receiptRequestId;
-    private Date createdDate;
+    private String createdDate;
     private String approvedBy;
     private String status;
     private String createdBy;
     private String createdReason;
     private String cancelledBy;
-    private Date lastUpdateStamp;
-    private Date expectedReceiveDate;
+    private String lastUpdateStamp;
+    private String expectedReceiveDate;
     List<ReceiptRequestItemResponse> items;
 
     @Data

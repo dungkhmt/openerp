@@ -1,11 +1,9 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.model;
 
-import com.hust.baseweb.applications.sscm.wmsv2.management.model.DeliveryTripDTO;
 import lombok.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor

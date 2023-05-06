@@ -13,4 +13,6 @@ public interface ShipmentService {
 
     ShipmentDTO getShipmentById(String shipmentId);
 
+    boolean deleteByIds(String[] shipmentIds);
+
 }

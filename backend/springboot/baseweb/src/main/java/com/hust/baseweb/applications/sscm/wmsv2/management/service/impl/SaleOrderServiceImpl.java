@@ -1,7 +1,6 @@
 package com.hust.baseweb.applications.sscm.wmsv2.management.service.impl;
 
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.CustomerAddress;
-import com.hust.baseweb.applications.sscm.wmsv2.management.entity.DeliveryTripItem;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.SaleOrderHeader;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.SaleOrderItem;
 import com.hust.baseweb.applications.sscm.wmsv2.management.entity.enumentity.OrderStatus;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -123,19 +121,21 @@ public class SaleOrderServiceImpl implements SaleOrderService {
                 continue;
             }
             SaleOrderHeader order = orderOpt.get();
-            boolean isDone = true;
+            boolean isComplete = true;
 
             List<SaleOrderItem> items = saleOrderItemRepository.findAllByOrderId(orderId);
             for (SaleOrderItem item : items) {
                 long orderQuantity = item.getQuantity();
-                long totalDone = deliveryTripItemRepository.getTotalDoneDeliveryItemByOrderIdAndProductId(orderId, item.getProductId());
-                if (orderQuantity != totalDone) {
-                    isDone = false;
+                Long totalComplete = deliveryTripItemRepository.getTotalCompleteDeliveryItemByOrderIdAndProductId(orderId, item.getProductId());
+                if (totalComplete == null || orderQuantity != totalComplete) {
+                    isComplete = false;
                     break;
                 }
             }
-            if (isDone) {
-                order.setStatus(OrderStatus.SUCCESS);
+            if (isComplete) {
+                order.setStatus(OrderStatus.COMPLETED);
+            } else {
+                order.setStatus(OrderStatus.DELIVERING_A_PART);
             }
             updateOrders.add(order);
         }
