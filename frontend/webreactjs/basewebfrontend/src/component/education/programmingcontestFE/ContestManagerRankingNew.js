@@ -56,24 +56,6 @@ export default function ContestManagerRankingNew(props) {
       contestId + "-RANKING-" + getPointForRankingType + ".xlsx"
     );
   };
-
-  const mapRankingToListProblemResult = (input) => {
-    let output = [];
-    input.forEach((row) => {
-      let outputRow = {};
-      row.mapProblemsToPoints.forEach((mapProblemToPoint) => {
-        outputRow[mapProblemToPoint.problemId] = mapProblemToPoint.point;
-      })
-      outputRow.userId = row.userId;
-      outputRow.fullname = row.fullname;
-      outputRow.totalPoint = row.totalPoint;
-
-      output.push(outputRow);
-    });
-
-    return output;
-  }
-
   function getRanking() {
     setLoading(true);
     request(
@@ -84,18 +66,15 @@ export default function ContestManagerRankingNew(props) {
       getPointForRankingType,
       (res) => {
         let sortedResult = res.data.sort((a, b) => b.totalPoint - a.totalPoint);
-        let rankingOutput = mapRankingToListProblemResult(sortedResult);
-        setRanking(rankingOutput);
+        setRanking(sortedResult);
       }
     ).then(() => setLoading(false));
   }
 
   const generateColumns = () => {
-    let problemIds = [];
+    let problems = [];
     if (ranking.length > 0) {
-      // get list of problemIds from "ranking" object
-      // ranking: {problemId1, problemId2,... problemId_n, userId, fullname, totalPoint}
-      problemIds = Object.keys(ranking[0]).slice(0, Object.keys(ranking[0]).length - 3);
+      problems = ranking[0].mapProblemsToPoints;
     }
     const columns = [
       {title: "Username", field: "userId"},
@@ -119,10 +98,14 @@ export default function ContestManagerRankingNew(props) {
       }
     ];
 
-    ranking.length > 0 && problemIds.forEach((problemId) => {
+    ranking.length > 0 && problems.forEach((problem) => {
       columns.push({
-        title: problemId,
-        field: problemId
+        title: problem.problemId,
+        render: (rankingRecord) => (
+          <span>
+            {`${rankingRecord.mapProblemsToPoints.find(item => item.problemId === problem.problemId).point}`}
+          </span>
+        )
       });
     });
 
@@ -133,9 +116,9 @@ export default function ContestManagerRankingNew(props) {
     getRanking();
   }, []);
 
-  useEffect(() => {
-    getRanking();
-  }, [getPointForRankingType]);
+  // useEffect(() => {
+  //   getRanking();
+  // }, [getPointForRankingType]);
 
   return (
     <HustContainerCard title={"Contest Ranking"}>
@@ -153,21 +136,21 @@ export default function ContestManagerRankingNew(props) {
           {getPointForRankingType} Submission
         </Typography>
         <Box>
-          {getPointForRankingType === "HIGHEST" ? (
-            <Button
-              variant="contained"
-              onClick={() => setGetPointForRankingType("LATEST")}
-            >
-              Switch to Latest Submission Score
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              onClick={() => setGetPointForRankingType("HIGHEST")}
-            >
-              Switch to Highest Submission Score
-            </Button>
-          )}
+          {/*{getPointForRankingType === "HIGHEST" ? (*/}
+          {/*  <Button*/}
+          {/*    variant="contained"*/}
+          {/*    onClick={() => setGetPointForRankingType("LATEST")}*/}
+          {/*  >*/}
+          {/*    Switch to Latest Submission Score*/}
+          {/*  </Button>*/}
+          {/*) : (*/}
+          {/*  <Button*/}
+          {/*    variant="contained"*/}
+          {/*    onClick={() => setGetPointForRankingType("HIGHEST")}*/}
+          {/*  >*/}
+          {/*    Switch to Highest Submission Score*/}
+          {/*  </Button>*/}
+          {/*)}*/}
           <Button variant="contained" onClick={downloadHandler} color="success" sx={{marginLeft: "12px"}}>
             Export
           </Button>
