@@ -17,9 +17,6 @@ import HustContainerCard from "../../common/HustContainerCard";
 import HustCodeEditor from "../../common/HustCodeEditor";
 
 const editorStyle = {
-  toolbar: {
-    background: "#FFFFFF",
-  },
   editor: {
     border: "1px solid black",
     minHeight: "300px",
@@ -201,7 +198,7 @@ export default function StudentViewProgrammingContestProblemDetail() {
         <Editor
           editorState={editorStateDescription}
           handlePastedText={() => false}
-          toolbarStyle={editorStyle.toolbar}
+          readOnly
           editorStyle={editorStyle.editor}
         />
         {fetchedImageArray.length !== 0 &&
