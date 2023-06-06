@@ -1,19 +1,17 @@
 import {Box, LinearProgress} from "@mui/material";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import {useEffect, useState} from "react";
 import XLSX from "xlsx";
-import {request} from "./Request";
 import HustContainerCard from "../../common/HustContainerCard";
 import StandardTable from "../../table/StandardTable";
+import {request} from "../../../api";
 
 export default function ContestManagerRankingNew(props) {
   const contestId = props.contestId;
   const [ranking, setRanking] = useState([]);
+  const [rankingDetail, setRankingDetail] = useState([]);
+  const [problemIds, setProblemIds] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  const [getPointForRankingType, setGetPointForRankingType] =
-    useState("HIGHEST");
 
   const downloadHandler = (event) => {
     if (ranking.length === 0) {
@@ -53,23 +51,43 @@ export default function ContestManagerRankingNew(props) {
     XLSX.utils.book_append_sheet(wb, sheet, "ranking");
     XLSX.writeFile(
       wb,
-      contestId + "-RANKING-" + getPointForRankingType + ".xlsx"
+      contestId + "-RANKING.xlsx"
     );
   };
+
   function getRanking() {
     setLoading(true);
     request(
       "get",
       "/get-ranking-contest-new/" +
       contestId +
-      "?getPointForRankingType=" +
-      getPointForRankingType,
+      "?getPointForRankingType=HIGHEST",
       (res) => {
         let sortedResult = res.data.sort((a, b) => b.totalPoint - a.totalPoint);
         setRanking(sortedResult);
       }
     ).then(() => setLoading(false));
   }
+
+  useEffect(() => {
+    if (ranking.length > 0) {
+      const problemIdsExtracted = ranking[0].mapProblemsToPoints.map(item => item.problemId);
+      setProblemIds(problemIdsExtracted);
+
+      let arr = [];
+      ranking.forEach(record => {
+        const convertedData = {
+          ...Object.fromEntries(record.mapProblemsToPoints.map(item => [item.problemId, item.point])),
+          userId: record.userId,
+          fullname: record.fullname,
+          totalPoint: record.totalPoint
+        };
+        arr.push(convertedData);
+      })
+      setRankingDetail(arr);
+    }
+
+  }, [ranking])
 
   const generateColumns = () => {
     let problems = [];
@@ -98,14 +116,10 @@ export default function ContestManagerRankingNew(props) {
       }
     ];
 
-    ranking.length > 0 && problems.forEach((problem) => {
+    problemIds.length > 0 && problemIds.forEach((problemId) => {
       columns.push({
-        title: problem.problemId,
-        render: (rankingRecord) => (
-          <span>
-            {`${rankingRecord.mapProblemsToPoints.find(item => item.problemId === problem.problemId).point}`}
-          </span>
-        )
+        title: problemId,
+        field: problemId,
       });
     });
 
@@ -116,54 +130,15 @@ export default function ContestManagerRankingNew(props) {
     getRanking();
   }, []);
 
-  // useEffect(() => {
-  //   getRanking();
-  // }, [getPointForRankingType]);
-
   return (
     <HustContainerCard title={"Contest Ranking"}>
-      <Box
-        sx={{
-          width: "100%",
-          marginBottom: "20px",
-          paddingLeft: "4px",
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
-      >
-        <Typography variant="h5">
-          {getPointForRankingType} Submission
-        </Typography>
-        <Box>
-          {/*{getPointForRankingType === "HIGHEST" ? (*/}
-          {/*  <Button*/}
-          {/*    variant="contained"*/}
-          {/*    onClick={() => setGetPointForRankingType("LATEST")}*/}
-          {/*  >*/}
-          {/*    Switch to Latest Submission Score*/}
-          {/*  </Button>*/}
-          {/*) : (*/}
-          {/*  <Button*/}
-          {/*    variant="contained"*/}
-          {/*    onClick={() => setGetPointForRankingType("HIGHEST")}*/}
-          {/*  >*/}
-          {/*    Switch to Highest Submission Score*/}
-          {/*  </Button>*/}
-          {/*)}*/}
-          <Button variant="contained" onClick={downloadHandler} color="success" sx={{marginLeft: "12px"}}>
-            Export
-          </Button>
-        </Box>
-
-      </Box>
 
       <Box>
         {loading && <LinearProgress/>}
         <StandardTable
-          // title={"Contest Ranking"}
+          title={"Contest: " + contestId}
           columns={generateColumns()}
-          data={ranking}
+          data={rankingDetail}
           hideCommandBar
           options={{
             selection: false,
@@ -171,6 +146,18 @@ export default function ContestManagerRankingNew(props) {
             search: true,
             sorting: true,
           }}
+          actions={[
+            {
+              icon: () => {
+                return <Button variant="contained" onClick={downloadHandler} color="success"
+                               className={"no-background-btn"}>
+                  Export
+                </Button>
+              },
+              tooltip: 'Export Ranking as Excel file',
+              isFreeAction: true
+            }
+          ]}
         />
       </Box>
     </HustContainerCard>
