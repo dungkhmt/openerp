@@ -13,6 +13,16 @@ import FileUploadZone from "../../../utils/FileUpload/FileUploadZone";
 import HustContainerCard from "../../common/HustContainerCard";
 import HustCodeEditor from "../../common/HustCodeEditor";
 import ReactHtmlParser from "react-html-parser";
+import {ContentState, EditorState} from "draft-js";
+import htmlToDraft from "html-to-draftjs";
+import {Editor} from "react-draft-wysiwyg";
+
+const editorStyle = {
+  editor: {
+    // border: "1px solid black",
+    // minHeight: "300px",
+  },
+};
 
 export default function StudentViewProgrammingContestProblemDetail() {
   const params = useParams();
@@ -32,7 +42,10 @@ export default function StudentViewProgrammingContestProblemDetail() {
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const [isProcessing, setIsProcessing] = React.useState(false);
-  const [problemDescription, setProblemDescription] = useState("");
+  // const [problemDescription, setProblemDescription] = useState("");
+  const [editorStateDescription, setEditorStateDescription] = useState(
+    EditorState.createEmpty()
+  );
   const [fetchedImageArray, setFetchedImageArray] = useState([]);
 
   const ERR_STATUS = ["TIME_OUT",
@@ -121,7 +134,17 @@ export default function StudentViewProgrammingContestProblemDetail() {
             setFetchedImageArray(newFileURLArray);
           }
 
-          setProblemDescription(res.problemStatement || "");
+          // setProblemDescription(res?.problemStatement || "");
+          let problemDescriptionHtml = htmlToDraft(res.problemStatement);
+          let {contentBlocks, entityMap} = problemDescriptionHtml;
+          let contentDescriptionState = ContentState.createFromBlockArray(
+            contentBlocks,
+            entityMap
+          );
+          let statementDescription = EditorState.createWithContent(
+            contentDescriptionState
+          );
+          setEditorStateDescription(statementDescription);
         },
         (e) => console.log(e)
       )
@@ -175,7 +198,14 @@ export default function StudentViewProgrammingContestProblemDetail() {
         <Typography>
           <h3>Description</h3>
         </Typography>
-        {ReactHtmlParser(problemDescription)}
+        {/*{ReactHtmlParser(problemDescription)}*/}
+        <Editor
+          toolbarHidden
+          editorState={editorStateDescription}
+          handlePastedText={() => false}
+          readOnly
+          editorStyle={editorStyle.editor}
+        />
         {fetchedImageArray.length !== 0 &&
           fetchedImageArray.map((file) => (
             <FileUploadZone file={file} removable={false}/>
