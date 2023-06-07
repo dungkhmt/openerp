@@ -3936,7 +3936,9 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 e.setProblemId(s.getProblemId());
                 e.setSubmissionSourceCode(s.getSourceCode());
                 e.setPoint(s.getPoint());
-                e.setProblemName(mID2Problem.get(s.getProblemId()).getProblemName());
+                if (mID2Problem.get(s.getProblemId()).getProblemName() != null)
+                    e.setProblemName(mID2Problem.get(s.getProblemId()).getProblemName());
+                else e.setProblemName("");
                 e.setTestCasePassed(s.getTestCasePass());
                 e.setStatus(s.getStatus());
                 mUserId2Submission.get(s.getUserId()).add(e);
