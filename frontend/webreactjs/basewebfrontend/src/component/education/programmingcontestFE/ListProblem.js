@@ -7,8 +7,8 @@ import {Box, Chip, IconButton} from "@mui/material";
 import {GetApp} from "@material-ui/icons";
 import {API_URL} from "../../../config/config";
 import {getColorLevel} from "./lib";
-import {StandardTable} from "erp-hust/lib/StandardTable";
-
+// import {StandardTable} from "erp-hust/lib/StandardTable";
+import StandardTable from "../../table/StandardTable";
 function ListProblem() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
