@@ -233,19 +233,19 @@ export default function EditContest() {
               value={minTimeBetweenTwoSubmissions}
             />
 
-            <TextField
-              select
-              id="judgeMode"
-              label="Judge Mode"
-              onChange={(event) => {
-                setJudgeMode(event.target.value);
-              }}
-              value={judgeMode}
-            >
-              {listJudgeModes.map((item) => (<MenuItem key={item} value={item}>
-                {item}
-              </MenuItem>))}
-            </TextField>
+            {/*<TextField*/}
+            {/*  select*/}
+            {/*  id="judgeMode"*/}
+            {/*  label="Judge Mode"*/}
+            {/*  onChange={(event) => {*/}
+            {/*    setJudgeMode(event.target.value);*/}
+            {/*  }}*/}
+            {/*  value={judgeMode}*/}
+            {/*>*/}
+            {/*  {listJudgeModes.map((item) => (<MenuItem key={item} value={item}>*/}
+            {/*    {item}*/}
+            {/*  </MenuItem>))}*/}
+            {/*</TextField>*/}
 
             <TextField
               select
