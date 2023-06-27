@@ -46,8 +46,6 @@ export default function EditContest() {
   const [submissionActionType, setSubmissionActionType] = useState("");
   const [listSubmissionActionType, setListSubmissionActionType] = useState([]);
   const [maxNumberSubmission, setMaxNumberSubmission] = useState(10);
-  const [participantViewResultMode, setParticipantViewResultMode] = useState("");
-  const [listParticipantViewResultModes, setListParticipantViewResultModes] = useState([]);
 
   const [problemDescriptionViewType, setProblemDescriptionViewType] = useState("");
   const [listProblemDescriptionViewTypes, setListProblemDescriptionViewTypes] = useState([]);
@@ -77,7 +75,6 @@ export default function EditContest() {
       statusId: statusId,
       submissionActionType: submissionActionType,
       maxNumberSubmission: maxNumberSubmission,
-      participantViewResultMode: participantViewResultMode,
       problemDescriptionViewType: problemDescriptionViewType,
       useCacheContestProblem: useCacheContestProblem,
       maxSourceCodeLength: maxSourceCodeLength,
@@ -106,8 +103,6 @@ export default function EditContest() {
       setListStatusIds(res.data.listStatusIds);
       setSubmissionActionType(res.data.submissionActionType);
       setListSubmissionActionType(res.data.listSubmissionActionTypes);
-      setParticipantViewResultMode(res.data.participantViewResultMode);
-      setListParticipantViewResultModes(res.data.listParticipantViewModes);
       setMaxNumberSubmission(res.data.maxNumberSubmission);
       setProblemDescriptionViewType(res.data.problemDescriptionViewType);
       setMinTimeBetweenTwoSubmissions(res.data.minTimeBetweenTwoSubmissions);
@@ -238,19 +233,6 @@ export default function EditContest() {
               value={minTimeBetweenTwoSubmissions}
             />
 
-            <TextField
-              select
-              id="participantViewResultMode"
-              label="Participant View Result Mode"
-              onChange={(event) => {
-                setParticipantViewResultMode(event.target.value);
-              }}
-              value={participantViewResultMode}
-            >
-              {listParticipantViewResultModes.map((item) => (<MenuItem key={item} value={item}>
-                {item}
-              </MenuItem>))}
-            </TextField>
             <TextField
               select
               id="judgeMode"

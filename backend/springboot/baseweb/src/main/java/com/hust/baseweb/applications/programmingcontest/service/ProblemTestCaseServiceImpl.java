@@ -638,7 +638,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                              .submissionActionType(ContestEntity.CONTEST_SUBMISSION_ACTION_TYPE_STORE_AND_EXECUTE)
                                              .problemDescriptionViewType(ContestEntity.CONTEST_PROBLEM_DESCRIPTION_VIEW_TYPE_VISIBLE)
                                              //.participantViewResultMode(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER)
-                                             .participantViewResultMode(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT)
+//                                             .participantViewResultMode(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT)
                                              .evaluateBothPublicPrivateTestcase(ContestEntity.EVALUATE_USE_BOTH_PUBLIC_PRIVATE_TESTCASE_NO)
                                              .createdAt(new Date())
                                              .build();
@@ -799,7 +799,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .statusId(modelUpdateContest.getStatusId())
                                                        .submissionActionType(modelUpdateContest.getSubmissionActionType())
                                                        .maxNumberSubmissions(modelUpdateContest.getMaxNumberSubmission())
-                                                       .participantViewResultMode(modelUpdateContest.getParticipantViewResultMode())
+//                                                       .participantViewResultMode(modelUpdateContest.getParticipantViewResultMode())
                                                        .problemDescriptionViewType(modelUpdateContest.getProblemDescriptionViewType())
                                                        .useCacheContestProblem(modelUpdateContest.getUseCacheContestProblem())
                                                        .maxSourceCodeLength(modelUpdateContest.getMaxSourceCodeLength())
@@ -1014,14 +1014,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                 testCase = tc.getTestCase();
                 testCaseOutput = tc.getCorrectAnswer();
             }
-            if (contest != null) {
-                if (contest
-                    .getParticipantViewResultMode()
-                    .equals(ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT)) {
-                    testCaseOutput = StringHandler.shorthen(testCaseOutput, 100);
-                    participantSolutionOutput = StringHandler.shorthen(participantSolutionOutput, 100);
-                }
-            }
+
             retLst.add(new ModelProblemSubmissionDetailByTestCaseResponse(
                 e.getContestSubmissionTestcaseId(),
                 e.getContestId(),
@@ -1080,24 +1073,24 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
 
                 testCase = tc.getTestCase();
                 testCaseOutput = tc.getCorrectAnswer();
-                switch (contest.getParticipantViewResultMode()) {
-                    case ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE: {
-//                        testCaseOutput = tc.getCorrectAnswer();
-                        break;
-                    }
-                    case ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT: {
-//                        testCaseOutput = tc.getCorrectAnswer();
-                        //testCase = StringHandler.shorthen(testCase,100);
-                        testCaseOutput = StringHandler.shorthen(testCaseOutput, 100);
-                        participantSolutionOutput = StringHandler.shorthen(participantSolutionOutput, 100);
-                        break;
-                    }
-                    case ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_NOT_SEE_CORRECT_ANSWER: {
-                        testCaseOutput = "HIDDEN";//StringHandler.shorthen(testCaseOutput,100);
-                        participantSolutionOutput = StringHandler.shorthen(participantSolutionOutput, 100);
-                        break;
-                    }
-                }
+//                switch (contest.getParticipantViewResultMode()) {
+//                    case ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE: {
+////                        testCaseOutput = tc.getCorrectAnswer();
+//                        break;
+//                    }
+//                    case ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_SEE_CORRECT_ANSWER_AND_PRIVATE_TESTCASE_SHORT: {
+////                        testCaseOutput = tc.getCorrectAnswer();
+//                        //testCase = StringHandler.shorthen(testCase,100);
+//                        testCaseOutput = StringHandler.shorthen(testCaseOutput, 100);
+//                        participantSolutionOutput = StringHandler.shorthen(participantSolutionOutput, 100);
+//                        break;
+//                    }
+//                    case ContestEntity.CONTEST_PARTICIPANT_VIEW_MODE_NOT_SEE_CORRECT_ANSWER: {
+//                        testCaseOutput = "HIDDEN";//StringHandler.shorthen(testCaseOutput,100);
+//                        participantSolutionOutput = StringHandler.shorthen(participantSolutionOutput, 100);
+//                        break;
+//                    }
+//                }
             }
 
             retLst.add(new ModelProblemSubmissionDetailByTestCaseResponse(
