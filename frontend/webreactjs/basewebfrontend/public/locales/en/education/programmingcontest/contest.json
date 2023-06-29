@@ -7,7 +7,7 @@
   "submissionActionType": "Action for Submission",
   "maxNumberSubmission": "Max number of Submissions",
   "maxSourceCodeLength": "Max source code length (characters)",
-  "participantViewResultMode": "Participant view result Mode",
+  "participantViewResultMode": "Allow viewing testcase detail",
   "judgeMode": "Judging Mode",
   "evaluateBothPublicPrivateTestcase": "Evaluate Private Testcases",
   "problemDescriptionViewType": "Participant view problem description",

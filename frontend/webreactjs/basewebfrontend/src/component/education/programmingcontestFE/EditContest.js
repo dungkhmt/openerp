@@ -242,7 +242,7 @@ export default function EditContest() {
             <TextField
               select
               id="participantViewResultMode"
-              label="Participant View Result Mode"
+              label="Allow Viewing Testcase Detail"
               onChange={(event) => {
                 setParticipantViewResultMode(event.target.value);
               }}
