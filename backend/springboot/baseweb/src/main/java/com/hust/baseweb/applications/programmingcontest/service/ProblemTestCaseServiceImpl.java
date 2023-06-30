@@ -786,7 +786,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .contestName(modelUpdateContest.getContestName())
                                                        .contestSolvingTime(modelUpdateContest.getContestSolvingTime())
                                                        .problems(contestEntityExist.getProblems())
-                                                       .userId(userName)
+                                                       //.userId(userName)
                                                        .countDown(modelUpdateContest.getCountDownTime())
                                                        .startedAt(modelUpdateContest.getStartedAt())
                                                        .startedCountDownTime(DateTimeUtils.minusMinutesDate(
@@ -815,7 +815,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
                                                        .contestName(modelUpdateContest.getContestName())
                                                        .contestSolvingTime(modelUpdateContest.getContestSolvingTime())
                                                        .problems(contestEntityExist.getProblems())
-                                                       .userId(userName)
+                                                       //.userId(userName)
                                                        .countDown(modelUpdateContest.getCountDownTime())
                                                        .statusId(modelUpdateContest.getStatusId())
                                                        .build();

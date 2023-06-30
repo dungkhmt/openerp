@@ -219,17 +219,6 @@ create TABLE uom_type
     CONSTRAINT pk_oum_type_id PRIMARY KEY (uom_type_id),
     CONSTRAINT fk_parent_type_id FOREIGN KEY (parent_type_id) REFERENCES uom_type (uom_type_id)
 );
-create TABLE uom
-(
-    uom_id             VARCHAR(60) NOT NULL,
-    uom_type_id        VARCHAR(60),
-    abbreviation       VARCHAR(60),
-    description        TEXT,
-    last_updated_stamp TIMESTAMP,
-    created_stamp      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT pk_oum PRIMARY KEY (uom_id),
-    CONSTRAINT fk_uom_type_id FOREIGN KEY (uom_type_id) REFERENCES uom_type (uom_type_id)
-);
 create TABLE content_type
 (
     content_type_id    VARCHAR(60) NOT NULL,
