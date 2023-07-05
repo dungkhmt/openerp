@@ -299,3 +299,15 @@ create table participant_doing_quiz_add_explanation(
     constraint fk_participant_doing_quiz_add_explanation_participant foreign key(participant_user_id) references user_login(user_login_id)
 );
 
+create table analyze_participant_doing_quiz_in_class(
+    id uuid not null default uuid_generate_v1(),
+    class_id uuid,
+    participant_userlogin_id varchar(60),
+    number_quiz_test int,
+    number_participation_select int,
+    number_correct int,
+    number_correct_fastest int,
+
+    last_updated_stamp            TIMESTAMP,
+    created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+);
