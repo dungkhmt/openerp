@@ -4,11 +4,7 @@ import com.hust.baseweb.applications.education.quiztest.UserQuestionQuizExecutio
 import com.hust.baseweb.applications.education.quiztest.entity.EduQuizTest;
 import com.hust.baseweb.applications.education.quiztest.entity.QuizGroupQuestionParticipationExecutionChoice;
 import com.hust.baseweb.applications.education.quiztest.entity.QuizTestExecutionSubmission;
-import com.hust.baseweb.applications.education.quiztest.model.EditQuizTestInputModel;
-import com.hust.baseweb.applications.education.quiztest.model.EduQuizTestModel;
-import com.hust.baseweb.applications.education.quiztest.model.ModelResponseGetMyQuizTest;
-import com.hust.baseweb.applications.education.quiztest.model.QuizTestCreateInputModel;
-import com.hust.baseweb.applications.education.quiztest.model.StudentInTestQueryReturnModel;
+import com.hust.baseweb.applications.education.quiztest.model.*;
 import com.hust.baseweb.applications.education.quiztest.model.edutestquizparticipation.QuizTestParticipationExecutionResultOutputModel;
 import com.hust.baseweb.applications.education.quiztest.model.quitestgroupquestion.AutoAssignQuestion2QuizTestGroupInputModel;
 import com.hust.baseweb.applications.education.quiztest.model.quiztestgroup.AutoAssignParticipants2QuizTestGroupInputModel;
@@ -70,4 +66,8 @@ public interface QuizTestService {
     public boolean updateFromQuizTestExecutionSubmission(UUID submissionId);
 
     public int summarizeQuizTestExecutionChoice(String testId);
+
+    public int summarizeQuizTestInClass(UUID classId);
+
+    public List<ModelResponseAnalyzeDoQuizInClass> getAnalyzeDoQuizInClass(UUID classId);
 }
