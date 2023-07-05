@@ -197,7 +197,7 @@ public class ContestProblemController {
         List<UserContestProblemRole> L = userContestProblemRoleRepo.findAllByProblemIdAndUserId(problemId, principal.getName());
         boolean hasPermission = false;
         for(UserContestProblemRole e: L){
-            if(e.getRoleId().equals(UserContestProblemRole.ROLE_MANAGER) || e.getRoleId().equals(UserContestProblemRole.ROLE_OWNER)){
+            if(e.getRoleId().equals(UserContestProblemRole.ROLE_EDITOR) || e.getRoleId().equals(UserContestProblemRole.ROLE_OWNER)){
                 hasPermission = true; break;
             }
         }

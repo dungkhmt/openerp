@@ -169,7 +169,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         upr = new UserContestProblemRole();
         upr.setProblemId(problemEntity.getProblemId());
         upr.setUserId(userID);
-        upr.setRoleId(UserContestProblemRole.ROLE_MANAGER);
+        upr.setRoleId(UserContestProblemRole.ROLE_EDITOR);
         upr.setUpdateByUserId(userID);
         upr.setCreatedStamp(new Date());
         upr.setLastUpdated(new Date());
@@ -178,7 +178,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
         upr = new UserContestProblemRole();
         upr.setProblemId(problemEntity.getProblemId());
         upr.setUserId(userID);
-        upr.setRoleId(UserContestProblemRole.ROLE_VIEW);
+        upr.setRoleId(UserContestProblemRole.ROLE_VIEWER);
         upr.setUpdateByUserId(userID);
         upr.setCreatedStamp(new Date());
         upr.setLastUpdated(new Date());
@@ -191,7 +191,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             upr = new UserContestProblemRole();
             upr.setProblemId(problemEntity.getProblemId());
             upr.setUserId(admin.getUserLoginId());
-            upr.setRoleId(UserContestProblemRole.ROLE_MANAGER);
+            upr.setRoleId(UserContestProblemRole.ROLE_EDITOR);
             upr.setUpdateByUserId(userID);
             upr.setCreatedStamp(new Date());
             upr.setLastUpdated(new Date());
@@ -200,7 +200,7 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
             upr = new UserContestProblemRole();
             upr.setProblemId(problemEntity.getProblemId());
             upr.setUserId(admin.getUserLoginId());
-            upr.setRoleId(UserContestProblemRole.ROLE_VIEW);
+            upr.setRoleId(UserContestProblemRole.ROLE_VIEWER);
             upr.setUpdateByUserId(userID);
             upr.setCreatedStamp(new Date());
             upr.setLastUpdated(new Date());
