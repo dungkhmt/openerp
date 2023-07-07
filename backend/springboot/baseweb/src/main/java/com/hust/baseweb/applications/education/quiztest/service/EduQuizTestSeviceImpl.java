@@ -1829,6 +1829,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
     @Override
     public List<ModelResponseAnalyzeDoQuizInClass> getAnalyzeDoQuizInClass(UUID classId) {
         List<AnalyzeParticipantDoingQuizInClass> lst = analyzeParticipantDoingQuizInClassRepo.findAllByClassId(classId);
+        log.info("getAnalyzeDoQuizInClass, lst.sz = " + lst.size());
 
         List<ModelResponseAnalyzeDoQuizInClass> res = new ArrayList();
         for(AnalyzeParticipantDoingQuizInClass e: lst){

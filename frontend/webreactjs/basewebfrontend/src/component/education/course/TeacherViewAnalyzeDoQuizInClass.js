@@ -17,11 +17,12 @@ export default function TeacherViewLogUserQuizList(props) {
   function getData() {
     request("get", "/get-analyze-do-quiz-in-class/" + classId, (res) => {
       console.log("get data analyze do quiz in class, res = ", res);
-      const data = res.data;
-      const content = data.content.map((c) => ({
+      const tmp = res.data;
+      const content = tmp.map((c) => ({
         ...c,
         date: toFormattedDateTime(c.date),
       }));
+      setData(content);
     });
   }
 
