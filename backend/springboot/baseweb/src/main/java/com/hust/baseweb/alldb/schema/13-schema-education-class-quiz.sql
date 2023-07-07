@@ -310,4 +310,8 @@ create table analyze_participant_doing_quiz_in_class(
 
     last_updated_stamp            TIMESTAMP,
     created_stamp                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    constraint pk_analyze_participant_doing_quiz_in_class primary key(id),
+    constraint fk_analyze_participant_doing_quiz_in_class_user_id foreign key(participant_userlogin_id) references user_login(user_login_id),
+    constraint fk_participant_userlogin_id_class_id foreign key(class_id) references edu_class(id)
+
 );

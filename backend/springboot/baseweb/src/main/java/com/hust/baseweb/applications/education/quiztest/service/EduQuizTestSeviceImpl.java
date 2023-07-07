@@ -1708,7 +1708,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         HashMap<String, Integer> mUserID2NumSelect = new HashMap();
         HashMap<String, Integer> mUserID2NumCorrect = new HashMap();
         HashMap<String, Integer> mUserID2NumFastestCorrect = new HashMap();
-
+        log.info("summarizeQuizTestInClass, number quiz test = " + quizTests.size());
         for(EduQuizTest t: quizTests) {
             // list of users participating in the test t
             List<EduTestQuizParticipant> users = eduTestQuizParticipantRepo
@@ -1782,7 +1782,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                             if (fastestTimePoint == null) {
                                 fastestTimePoint = timePoint;
                             } else {
-                                if(timePoint.before(fastestTimePoint)){
+                                if(timePoint != null && timePoint.before(fastestTimePoint)){
                                     fastestTimePoint = timePoint;
                                     earliestUser = gpa.getParticipationUserLoginId();
                                 }

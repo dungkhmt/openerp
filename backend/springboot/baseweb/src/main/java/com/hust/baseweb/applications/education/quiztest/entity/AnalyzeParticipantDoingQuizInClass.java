@@ -3,10 +3,7 @@ package com.hust.baseweb.applications.education.quiztest.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.*;
 @Getter
 @Setter
@@ -15,6 +12,7 @@ import java.util.*;
 public class AnalyzeParticipantDoingQuizInClass {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @Column(name="class_id")

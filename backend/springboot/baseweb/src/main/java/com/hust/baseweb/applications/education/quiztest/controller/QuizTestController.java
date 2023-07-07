@@ -570,10 +570,12 @@ public class QuizTestController {
         return ResponseEntity.ok().body(judgeModes);
     }
 
-    @Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
-    @PostMapping("/analyze-do-quiz-test-in-class/}")
+    //@Secured({"ROLE_EDUCATION_TEACHING_MANAGEMENT_TEACHER"})
+    @PostMapping("/analyze-do-quiz-test-in-class")
     public ResponseEntity<?> analyzeDoQuizTestInClass(Principal principal, @RequestBody ModelAnalyzeDoQuizTestInClassInput I){
+        log.info("analyzeDoQuizTestInClass, classId = " + I.getClassId());
         int res = quizTestService.summarizeQuizTestInClass(I.getClassId());
+
         return ResponseEntity.ok().body(res);
     }
     @GetMapping("/get-analyze-do-quiz-in-class/{classId}")
