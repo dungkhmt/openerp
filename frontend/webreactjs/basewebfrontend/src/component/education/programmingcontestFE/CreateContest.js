@@ -218,6 +218,10 @@ export default function CreateContest(props) {
     }).then();
   }, [page]);
 
+  const isValidContestId = () => {
+    return new RegExp(/[%^/\\|.?;[\]]/g).test(contestId);
+  };
+
   return (<div>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Card>
@@ -236,6 +240,12 @@ export default function CreateContest(props) {
                 onChange={(event) => {
                   setContestId(event.target.value);
                 }}
+                error={isValidContestId()}
+                helperText={
+                  isValidContestId()
+                    ? "Contest ID must not contain special characters including %^/\\|.?;[]"
+                    : ""
+                }
               />
 
               <TextField
