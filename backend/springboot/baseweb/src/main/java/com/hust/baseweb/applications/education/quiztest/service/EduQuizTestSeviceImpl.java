@@ -1813,15 +1813,29 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
             if(mUserID2NumFastestCorrect.get(userID)!=null){
                 number_correct_fastest = mUserID2NumFastestCorrect.get(userID);
             }
-            AnalyzeParticipantDoingQuizInClass o = new AnalyzeParticipantDoingQuizInClass();
-            o.setClassId(classId);
-            o.setParticipantUserloginId(userID);
-            o.setNumberQuizTest(quizTests.size());
-            o.setNumberCorrect(number_correct);
-            o.setNumberParticipationSelect(number_participation_select);
-            o.setNumberCorrectFastest(number_correct_fastest);
-            o.setCreatedStamp(new Date());
-            o = analyzeParticipantDoingQuizInClassRepo.save(o);
+            AnalyzeParticipantDoingQuizInClass o = null;
+            List<AnalyzeParticipantDoingQuizInClass> L = analyzeParticipantDoingQuizInClassRepo.findAllByClassIdAndParticipantUserloginId(classId,userID);
+            if(L != null && L.size() > 0){
+                o = L.get(0);
+            }
+            if(o == null) {// record not exists, add new one
+                o = new AnalyzeParticipantDoingQuizInClass();
+                o.setClassId(classId);
+                o.setParticipantUserloginId(userID);
+                o.setNumberQuizTest(quizTests.size());
+                o.setNumberCorrect(number_correct);
+                o.setNumberParticipationSelect(number_participation_select);
+                o.setNumberCorrectFastest(number_correct_fastest);
+                o.setCreatedStamp(new Date());
+                o = analyzeParticipantDoingQuizInClassRepo.save(o);
+            }else{// do not add more, just update
+                o.setNumberQuizTest(quizTests.size());
+                o.setNumberCorrect(number_correct);
+                o.setNumberParticipationSelect(number_participation_select);
+                o.setNumberCorrectFastest(number_correct_fastest);
+                o.setCreatedStamp(new Date());
+                o = analyzeParticipantDoingQuizInClassRepo.save(o);
+            }
         }
         return userOfClass.size();
     }
