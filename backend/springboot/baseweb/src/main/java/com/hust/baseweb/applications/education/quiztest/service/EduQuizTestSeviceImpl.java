@@ -1692,9 +1692,7 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         }
     }
     private boolean equalSet(Set<UUID> S1, Set<UUID> S2){
-        for(UUID e: S1){
-            if(!S2.contains(e)) return false;
-        }
+        for(UUID e: S1)   if(!S2.contains(e)) return false;
         for(UUID e: S2) if(!S1.contains(e)) return false;
         return true;
     }
@@ -1708,8 +1706,9 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
         HashMap<String, Integer> mUserID2NumSelect = new HashMap();
         HashMap<String, Integer> mUserID2NumCorrect = new HashMap();
         HashMap<String, Integer> mUserID2NumFastestCorrect = new HashMap();
-        log.info("summarizeQuizTestInClass, number quiz test = " + quizTests.size());
+        log.debug("summarizeQuizTestInClass, number quiz test = " + quizTests.size());
         for(EduQuizTest t: quizTests) {
+            log.debug("summarizeQuizTestInClass, consider QuizTest " + t.getTestId() + " Test Name " + t.getTestName());
             // list of users participating in the test t
             List<EduTestQuizParticipant> users = eduTestQuizParticipantRepo
                 .findByTestIdAndStatusId(t.getTestId(), EduTestQuizParticipant.STATUS_APPROVED);
@@ -1758,11 +1757,12 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                         int point = 0;
                         if(equalSet(correctChoiceAnsId,choiceIds)){
                             point = 1;
+                            log.debug("summarizeQuizTestInClass,user " + userID + " get point " + point);
                         }
                         int numSelect = 0;
                         if(choices.size() > 0) numSelect = 1;
-                        Info info = new Info(userID,t.getTestId(),q.getQuestionId(),point,timePoint,numSelect);
-                        infos.add(info);
+                        //Info info = new Info(userID,t.getTestId(),q.getQuestionId(),point,timePoint,numSelect);
+                        //infos.add(info);
                         userOfClass.add(userID);
 
                         if(numSelect > 0){
@@ -1774,17 +1774,23 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                         }
 
                         if(point > 0) {
-                            if(mUserID2NumCorrect.get(userID)==null)
-                                mUserID2NumCorrect.put(userID,1);
-                            else{
+                            if(mUserID2NumCorrect.get(userID)==null) {
+                                mUserID2NumCorrect.put(userID, 1);
+                                log.debug("summarizeQuizTestInClass user " + userID + " get first point " + mUserID2NumCorrect.get(userID));
+
+                            }else{
                                 mUserID2NumCorrect.put(userID,mUserID2NumCorrect.get(userID)+1);
+                                log.debug("summarizeQuizTestInClass user " + userID + " get points " + mUserID2NumCorrect.get(userID));
                             }
                             if (fastestTimePoint == null) {
                                 fastestTimePoint = timePoint;
+                                earliestUser = gpa.getParticipationUserLoginId();
+                                log.debug("summarizeQuizTestInClass user " + earliestUser + " INIT FIRST");
                             } else {
                                 if(timePoint != null && timePoint.before(fastestTimePoint)){
                                     fastestTimePoint = timePoint;
                                     earliestUser = gpa.getParticipationUserLoginId();
+                                    log.debug("summarizeQuizTestInClass user " + earliestUser + " UPDATE new Earliest");
                                 }
                             }
                         }
