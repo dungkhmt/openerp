@@ -1740,7 +1740,8 @@ public class EduQuizTestSeviceImpl implements QuizTestService {
                             .findAllByQuizQuestion(q);
                         Set<UUID> correctChoiceAnsId = new HashSet();
                         for(QuizChoiceAnswer c: correctChoiceAns)
-                            correctChoiceAnsId.add(c.getChoiceAnswerId());
+                            if(c.getIsCorrectAnswer()=='Y')
+                                correctChoiceAnsId.add(c.getChoiceAnswerId());
 
                         Date timePoint = null;
                         List<QuizGroupQuestionParticipationExecutionChoice> choices = quizGroupQuestionParticipationExecutionChoiceRepo
