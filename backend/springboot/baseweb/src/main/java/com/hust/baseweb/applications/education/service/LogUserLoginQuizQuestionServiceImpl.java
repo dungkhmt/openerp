@@ -79,10 +79,10 @@ public class LogUserLoginQuizQuestionServiceImpl implements LogUserLoginQuizQues
                            personModel.getMiddleName() +
                            " " +
                            personModel.getFirstName();
-                log.info("findByClassId, fullName = " + fullName);
+                //log.info("findByClassId, fullName = " + fullName);
                 affiliations = personModel.getAffiliations();
             }else{
-                log.info("findByClassId, personModel NULL!");
+                //log.info("findByClassId, personModel NULL!");
 
             }
 
