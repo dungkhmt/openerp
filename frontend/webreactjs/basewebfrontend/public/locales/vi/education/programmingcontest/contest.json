@@ -7,7 +7,7 @@
   "submissionActionType": "Action for Submission",
   "maxNumberSubmission": "Số lượt nộp bài tối đa",
   "maxSourceCodeLength": "Độ dài source code tối đa (ký tự)",
-  "participantViewResultMode": "Chế độ xem kết quả của sinh viên",
+  "participantViewResultMode": "Cho phép sinh viên xem kết quả testcase ",
   "judgeMode": "Chế độ chấm",
   "evaluateBothPublicPrivateTestcase": "Đánh giá Testcase",
   "problemDescriptionViewType": "Hiển thị mô tả bài tập",

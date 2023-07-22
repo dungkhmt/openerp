@@ -1,5 +1,5 @@
-// import HustModal from "component/common/HustModal";
-import {HustModal} from "erp-hust/lib/HustModal";
+import HustModal from "component/common/HustModal";
+// import {HustModal} from "erp-hust/lib/HustModal";
 import React, {useState} from "react";
 import {MenuItem, TextField} from "@mui/material";
 import {useTranslation} from "react-i18next";

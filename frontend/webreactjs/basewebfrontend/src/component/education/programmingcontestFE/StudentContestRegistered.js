@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
-import {request} from "../../../api";
+import React, { useEffect, useState } from "react";
+import { request } from "../../../api";
 import ContestStudentList from "./ContestStudentList";
-
+import CircularProgress from "@mui/material/CircularProgress";
 export function StudentContestRegistered() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -9,6 +9,8 @@ export function StudentContestRegistered() {
   const pageSizes = [20, 50, 100];
   const [contests, setContests] = useState([]);
   const [isCountDowns, setIsCountDowns] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const handlePageChange = (event, value) => {
     setPage(value);
   };
@@ -20,6 +22,7 @@ export function StudentContestRegistered() {
   };
 
   async function getContestList() {
+    setIsProcessing(true);
     request(
       "get",
       "/get-contest-paging-registered?size=" + pageSize + "&page=" + (page - 1),
@@ -31,6 +34,7 @@ export function StudentContestRegistered() {
         });
         console.log("arr ", arr);
         setIsCountDowns(arr);
+        setIsProcessing(false);
       }
     ).then();
   }
@@ -41,7 +45,9 @@ export function StudentContestRegistered() {
 
   return (
     <div>
-      <ContestStudentList/>
+      {isProcessing ? <CircularProgress /> : ""}
+
+      <ContestStudentList />
       {/*
       <div>
         <div>

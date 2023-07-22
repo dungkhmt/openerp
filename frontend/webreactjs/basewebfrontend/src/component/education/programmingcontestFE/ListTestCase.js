@@ -92,7 +92,7 @@ export default function ListTestCase() {
       },
 
       {title: "Point", field: "point"},
-      {title: "Public", field: "public"},
+      {title: "Public", field: "isPublic"},
       {title: "Description", field: "description"},
       {title: "Status", field: "status"},
       {

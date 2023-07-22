@@ -27,6 +27,8 @@ import TeacherViewDetailClassExercises from "./TeacherViewDetailClassExercises";
 import TeacherViewDetailClassExerciseSubmission from "./TeacherViewDetailClassExerciseSubmission";
 import TeacherViewDetailClassGeneralInfo from "./TeacherViewDetailClassGeneralInfo";
 import TeacherViewLogUserQuizList from "../../../../component/education/course/TeacherViewLogUserQuizList";
+import TeacherViewAnalyzeDoQuizInClass from "../../../../component/education/course/TeacherViewAnalyzeDoQuizInClass";
+
 //import TeacherViewQuizDetail from "../../../../component/education/course/TeacherViewQuizDetail";
 import TeacherClassViewLearningSessionList from "./TeacherClassViewLearningSessionList";
 import withScreenSecurity from "../../../../component/withScreenSecurity";
@@ -105,6 +107,7 @@ function TeacherViewDetailClass() {
       </TabPanel>
       <TabPanel value={selectedTab} index={5} dir={theme.direction}>
         <TeacherViewLogUserQuizList classId={classId} />
+        <TeacherViewAnalyzeDoQuizInClass classId={classId} />
       </TabPanel>
       <TabPanel value={selectedTab} index={6} dir={theme.direction}>
         <TeacherClassViewLearningSessionList classId={classId} />
