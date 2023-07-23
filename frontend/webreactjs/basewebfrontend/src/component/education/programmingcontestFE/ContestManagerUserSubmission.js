@@ -1,69 +1,177 @@
-import React, { useEffect, useState } from "react";
-import Typography from "@mui/material/Typography";
-import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
-import Table from "@mui/material/Table";
-import { Link } from "react-router-dom";
-import {
-  Grid,
-  MenuItem,
-  TableHead,
-  TextField,
-  Button,
-} from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
-import TableBody from "@mui/material/TableBody";
-import { request } from "./Request";
-import Pagination from "@material-ui/lab/Pagination";
-import { getStatusColor, StyledTableCell, StyledTableRow } from "./lib";
+import React, {useEffect, useState} from "react";
+import {Box, IconButton, Tooltip} from "@mui/material";
 import ContestManagerViewSubmissionOfAUserDialog from "./ContestManagerViewSubmissionOfAUserDialog";
 import ManagerSubmitCodeOfParticipant from "./ManagerSubmitCodeOfParticipant";
-import ManagerSubmitCodeOfParticipantDialog from "./ManagerSubmitCodeOfParticipantDialog";
+import {request} from "../../../api";
+import StandardTable from "component/table/StandardTable";
+import HustModal from "component/common/HustModal";
+import {Link} from "react-router-dom";
+import {getStatusColor} from "./lib";
+import {errorNoti, successNoti} from "../../../utils/notification";
+import {LoadingButton} from "@mui/lab";
+import CodeIcon from '@mui/icons-material/Code';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import {pdf} from "@react-pdf/renderer";
+import SubmissionOfParticipantPDFDocument from "./template/SubmissionOfParticipantPDFDocument";
+import FileSaver from "file-saver";
+import {MTableToolbar} from "material-table";
+import {MuiThemeProvider} from "@material-ui/core/styles";
 
 export default function ContestManagerUserSubmission(props) {
   const contestId = props.contestId;
 
   const [contestSubmissions, setContestSubmissions] = useState([]);
-  const [pageSubmissionSize, setPageSubmissionSize] = useState(10);
-  const [totalPageSubmission, setTotalPageSubmission] = useState(0);
-  const [pageSubmission, setPageSubmission] = useState(1);
-  const pageSizes = [10, 20, 50, 100, 150];
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [userId, setUserId] = useState(null);
   const [
     isOpenManagerSubmitCodeOfParticipant,
     setIsOpenManagerSubmitCodeOfParticipant,
   ] = useState(false);
 
+  const [filterParams, setFilterParams] = useState({page: 0, size: 10, search: ''});
+  const [totalSizeSubmission, setTotalSizeSubmission] = useState(0);
+
+  const [isProcessing, setIsProcessing] = useState(false);
+
   function handleCloseManagerSubmitParticipantCode() {
     setIsOpenManagerSubmitCodeOfParticipant(false);
-    getSubmission(pageSubmissionSize, 1);
+    setFilterParams({page: 0, size: filterParams.size, search: filterParams.search})
+    getSubmission();
   }
+
   function handleCloseDialog() {
     setIsOpen(false);
   }
-  const handlePageSubmissionSizeChange = (event) => {
-    setPageSubmissionSize(event.target.value);
-    setPageSubmission(1);
-    getSubmission(event.target.value, 1);
-  };
-  function getSubmission(s, p) {
+
+  function getSubmission() {
     request(
       "get",
       "/get-contest-submission-paging/" +
-        contestId +
-        "?size=" +
-        s +
-        "&page=" +
-        (p - 1),
+      contestId,
       (res) => {
-        console.log("res submission", res.data);
         setContestSubmissions(res.data.content);
-        console.log("contest submission", contestSubmissions);
-        setTotalPageSubmission(res.data.totalPages);
+        setTotalSizeSubmission(res.data.totalElements)
+      },
+      {onError: (error) => errorNoti("An error happened", 3000)},
+      null,
+      {params: filterParams}
+    ).then();
+  }
+
+  function handleRejudgeAll() {
+    setIsProcessing(true);
+    request(
+      "post",
+      "/evaluate-batch-submission-of-contest/" + contestId,
+      (res) => {
+        setIsProcessing(false);
+        successNoti("Submissions will be rejudged", 5000)
       }
     ).then();
+  }
+
+  function handleJudgeAll() {
+    setIsProcessing(true);
+    request(
+      "post",
+      "/evaluate-batch-not-evaluated-submission-of-contest/" + contestId,
+      (res) => {
+        setIsProcessing(false);
+        successNoti("Submissions will be judged", 5000)
+      }
+    ).then();
+  }
+
+  const generatePdfDocument = async (documentData, fileName) => {
+    const blob = await pdf(
+      <SubmissionOfParticipantPDFDocument data={documentData}/>
+    ).toBlob();
+
+    FileSaver.saveAs(blob, fileName);
+  };
+
+  function handleExportParticipantSubmission() {
+    setIsProcessing(true);
+    request(
+      "get",
+      "/get-user-judged-problem-submission/" + contestId,
+      (res) => {
+        generatePdfDocument(
+          res.data,
+          `USER_JUDGED_SUBMISSION-${contestId}.pdf`
+        );
+      }
+    ).then(() => setIsProcessing(false));
+  }
+
+  const generateColumns = () => {
+    const columns = [
+      {
+        title: "ID",
+        field: "contestSubmissionId",
+        render: (rowData) => (
+          <Link
+            to={
+              "/programming-contest/manager-view-contest-problem-submission-detail/" +
+              rowData.contestSubmissionId
+            }
+          >
+            {rowData.contestSubmissionId.substring(0, 6)}
+          </Link>
+        )
+      },
+      {title: "User ID", field: "userId"},
+      {title: "FullName", field: "fullname"},
+      {title: "Problem ID", field: "problemId"},
+      {title: "Testcases Passed", field: "testCasePass"},
+      {title: "Lang", field: "sourceCodeLanguage"},
+      {
+        title: "Status",
+        field: "status",
+        render: (rowData) => (
+          <span
+            style={{color: getStatusColor(`${rowData.status}`)}}
+          >
+            {`${rowData.status}`}
+          </span>
+        )
+      },
+      // {title: "Message", field: "message"},
+      {title: "Point", field: "point"},
+      {title: "Submitted At", field: "createAt"},
+      {
+        title: "Rejudge",
+        sortable: "false",
+        render: (rowData) => (
+          <IconButton
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              handleRejudge(rowData.contestSubmissionId);
+            }}
+          >
+            <CodeIcon/>
+          </IconButton>
+        )
+      },
+      {
+        title: "View By User",
+        sortable: false,
+        render: (rowData) => (
+          <IconButton
+            variant="contained"
+            color="success"
+            onClick={() => {
+              setSelectedUserId(rowData.userId);
+              setIsOpen(true);
+            }}
+          >
+            <VisibilityIcon/>
+          </IconButton>
+        )
+      },
+    ]
+    return columns;
   }
 
   function handleRejudge(submissionId) {
@@ -72,232 +180,105 @@ export default function ContestManagerUserSubmission(props) {
       console.log("evaluate submission", res.data);
     }).then();
   }
-  function ViewAllSubmissions() {
-    alert("view all submission");
-  }
-  function getSubmissionOfUser() {
-    //alert('view submission of user ' + userId);
-    request(
-      "get",
-      "/get-contest-submission-of-a-user-paging/" +
-        contestId +
-        "/" +
-        userId +
-        "?size=" +
-        pageSubmissionSize +
-        "&page=" +
-        (pageSubmission - 1),
-      (res) => {
-        console.log("res submission", res.data);
-        setContestSubmissions(res.data.content);
-        console.log("contest submission", contestSubmissions);
-        setTotalPageSubmission(res.data.totalPages);
-      }
-    ).then();
-  }
 
   function handleSubmitCodeParticipant() {
     setIsOpenManagerSubmitCodeOfParticipant(true);
   }
+
   useEffect(() => {
-    getSubmission(pageSubmissionSize, 1);
+    getSubmission();
   }, []);
+
+  useEffect(() => {
+    getSubmission();
+  }, [filterParams]);
+
   return (
-    <div>
-      <section id={"#submission"}>
-        <Typography
-          variant="h5"
-          component="h2"
-          style={{ marginTop: 10, marginBottom: 10 }}
-        >
-          User Submission
-        </Typography>
-        <TextField
-          autoFocus
-          required
-          id="userId"
-          label="userId"
-          placeholder="userId"
-          value={userId}
-          onChange={(event) => {
-            setUserId(event.target.value);
-          }}
-        ></TextField>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={getSubmissionOfUser}
-        >
-          View of user
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={ViewAllSubmissions}
-        >
-          View All
-        </Button>
+    <Box sx={{marginTop: "12px"}}>
+      <StandardTable
+        title={"Contest Submissions"}
+        columns={generateColumns()}
+        data={contestSubmissions}
+        hideCommandBar
+        options={{
+          selection: false,
+          pageSize: 10,
+          search: true,
+          sorting: false,
+          searchText: filterParams.search,
+          debounceInterval: 800
+        }}
+        localization={{
+          toolbar: {
+            searchPlaceholder: "Search by UserID or ProblemID",
+          },
+        }}
+        page={filterParams.page}
+        totalCount={totalSizeSubmission}
+        onChangePage={(page, size) => setFilterParams({...filterParams, page, size})}
+        onSearchChange={search => setFilterParams({page: 0, size: filterParams.size, search})}
+        components={{
+          Toolbar: (props) => (
+            <div>
+              <MTableToolbar {...props} searchFieldStyle={{width: 320}}/>
+              <MuiThemeProvider>
+                <Box display="flex" justifyContent="flex-end" width="100%" sx={{padding: "8px 0 16px 16px"}}>
+                  <Tooltip title="Submit code as a participant">
+                    <LoadingButton loading={isProcessing} variant="contained"
+                                   sx={{marginRight: "16px"}} color="primary"
+                                   onClick={handleSubmitCodeParticipant}>
+                      Submit Participant Code
+                    </LoadingButton>
+                  </Tooltip>
+                  <Tooltip title="Judge all submissions that are NOT EVALUATED">
+                    <LoadingButton loading={isProcessing} variant="contained"
+                                   sx={{marginRight: "16px"}} color="primary"
+                                   onClick={handleJudgeAll}>
+                      Judge All
+                    </LoadingButton>
+                  </Tooltip>
+                  <Tooltip title="Rejudge all submissions in this contest">
+                    <LoadingButton loading={isProcessing} variant="contained"
+                                   sx={{marginRight: "16px"}} color="primary"
+                                   onClick={handleRejudgeAll}>
+                      Rejudge All
+                    </LoadingButton>
+                  </Tooltip>
+                  <Tooltip title="Export all submissions in this contest">
+                    <LoadingButton loading={isProcessing} variant="contained"
+                                   sx={{marginRight: "16px"}} color="primary"
+                                   onClick={handleExportParticipantSubmission}>
+                      Export
+                    </LoadingButton>
+                  </Tooltip>
+                </Box>
+              </MuiThemeProvider>
+            </div>
+          ),
+        }}
+      />
 
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleSubmitCodeParticipant}
-        >
-          Submit Code Of Participant
-        </Button>
-      </section>
-
-      <TableContainer component={Paper}>
-        <Table
-          sx={{ minWidth: window.innerWidth - 500 }}
-          aria-label="customized table"
-        >
-          <TableHead>
-            <TableRow>
-              <StyledTableCell align="center">Submission Id</StyledTableCell>
-              <StyledTableCell align="center">UserID</StyledTableCell>
-              <StyledTableCell align="center">FullName</StyledTableCell>
-              <StyledTableCell align="center">Problem Id</StyledTableCell>
-              <StyledTableCell align="center">Test Case Pass</StyledTableCell>
-              <StyledTableCell align="center">Lang</StyledTableCell>
-              <StyledTableCell align="center">Status</StyledTableCell>
-              <StyledTableCell align="center">Message</StyledTableCell>
-              <StyledTableCell align="center">Point</StyledTableCell>
-              <StyledTableCell align="center">Submitted At</StyledTableCell>
-              <StyledTableCell align="center">Action</StyledTableCell>
-              <StyledTableCell align="center">Action</StyledTableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {contestSubmissions.map((s) => (
-              <StyledTableRow>
-                <StyledTableCell align="center">
-                  <Link
-                    to={
-                      "/programming-contest/manager-view-contest-problem-submission-detail/" +
-                      s.contestSubmissionId
-                    }
-                    style={{
-                      textDecoration: "none",
-                      color: "blue",
-                      cursor: "",
-                    }}
-                  >
-                    <b style={{ color: "blue" }}>{s.contestSubmissionId}</b>
-                  </Link>
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <b>{s.userId}</b>
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <b>{s.fullname}</b>
-                </StyledTableCell>
-
-                <StyledTableCell align="center">
-                  <b>{s.problemId}</b>
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <b>{s.testCasePass}</b>
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <b>{s.sourceCodeLanguage}</b>
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <b>
-                    <span
-                      style={{ color: getStatusColor(`${s.status}`) }}
-                    >{`${s.status}`}</span>
-                  </b>
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <b>{s.message}</b>
-                </StyledTableCell>
-
-                <StyledTableCell align="center">
-                  <b>{s.point}</b>
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <b>{s.createAt}</b>
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <b>
-                    <Button
-                      onClick={() => {
-                        handleRejudge(s.contestSubmissionId);
-                      }}
-                    >
-                      {" "}
-                      REJUDGE{" "}
-                    </Button>
-                  </b>
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <b>
-                    <Button
-                      onClick={() => {
-                        setSelectedUserId(s.userId);
-                        setIsOpen(true);
-                      }}
-                    >
-                      {" "}
-                      ViewByUser{" "}
-                    </Button>
-                  </b>
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <Grid container spacing={12}>
-        <Grid item xs={6}>
-          <TextField
-            variant={"outlined"}
-            autoFocus
-            size={"small"}
-            required
-            select
-            id="pageSize"
-            value={pageSubmissionSize}
-            onChange={handlePageSubmissionSizeChange}
-          >
-            {pageSizes.map((item) => (
-              <MenuItem key={item} value={item}>
-                {item}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-
-        <Grid item>
-          <Pagination
-            className="my-3"
-            count={totalPageSubmission}
-            page={pageSubmission}
-            siblingCount={1}
-            boundaryCount={1}
-            variant="outlined"
-            shape="rounded"
-            onChange={(event, value) => {
-              setPageSubmission(value);
-              getSubmission(pageSubmissionSize, value);
-            }}
-          />
-        </Grid>
-      </Grid>
       <ContestManagerViewSubmissionOfAUserDialog
         open={isOpen}
         onClose={handleCloseDialog}
         contestId={contestId}
         userId={selectedUserId}
       />
-      <ManagerSubmitCodeOfParticipantDialog
+      {/* <ManagerSubmitCodeOfParticipantDialog
         open={isOpenManagerSubmitCodeOfParticipant}
         onClose={handleCloseManagerSubmitParticipantCode}
         contestId={contestId}
-      />
-    </div>
+      /> */}
+      <HustModal
+        open={isOpenManagerSubmitCodeOfParticipant}
+        textOk={'OK'}
+        onClose={handleCloseManagerSubmitParticipantCode}
+        title={'Submit code of participant'}
+      >
+        <ManagerSubmitCodeOfParticipant
+          contestId={contestId}
+        />
+      </HustModal>
+    </Box>
   );
 }

@@ -2523,9 +2523,10 @@ public class ProblemTestCaseServiceImpl implements ProblemTestCaseService {
     }
 
     @Override
-    public Page<ContestSubmission> findContestSubmissionByContestIdPaging(Pageable pageable, String contestId) {
+    public Page<ContestSubmission> findContestSubmissionByContestIdPaging(Pageable pageable, String contestId, String searchTerm) {
         return contestSubmissionPagingAndSortingRepo
-            .findAllByContestId(pageable, contestId)
+//            .findAllByContestId(pageable, contestId)
+            .searchSubmissionInContestPaging(contestId, searchTerm, searchTerm, pageable)
             .map(contestSubmissionEntity -> ContestSubmission
                 .builder()
                 .contestSubmissionId(contestSubmissionEntity.getContestSubmissionId())
