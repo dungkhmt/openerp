@@ -237,16 +237,16 @@ export default function SignIn(props) {
                 </Link>
               </Grid> */}
 
-            <Box sx={{display: "flex", justifyContent: "space-around", marginTop: "12px"}}>
-              <Button
-                variant="contained"
-                color="success"
-                href={process.env.PUBLIC_URL + "/user/register"}
-                sx={{width: "72%"}}
-              >
-                Sign up
-              </Button>
-            </Box>
+            {/*<Box sx={{display: "flex", justifyContent: "space-around", marginTop: "12px"}}>*/}
+            {/*  <Button*/}
+            {/*    variant="contained"*/}
+            {/*    color="success"*/}
+            {/*    href={process.env.PUBLIC_URL + "/user/register"}*/}
+            {/*    sx={{width: "72%"}}*/}
+            {/*  >*/}
+            {/*    Sign up*/}
+            {/*  </Button>*/}
+            {/*</Box>*/}
             <Box>
               <Typography
                 component="h1"

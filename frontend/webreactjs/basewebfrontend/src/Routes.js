@@ -34,7 +34,7 @@ function Routes(props) {
       }
     >
       <Switch>
-        <Route component={Register} layout={Layout} path="/user/register" />
+        {/*<Route component={Register} layout={Layout} path="/user/register" />*/}
         <Route
           component={ForgetPassword}
           layout={Layout}
